@@ -281,7 +281,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 }
 
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient], err error) {
+func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -305,10 +305,6 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetRecipeStepIngredients(ctx, q.db, &generated.GetRecipeStepIngredientsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
@@ -324,6 +320,10 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
 
+	var (
+		data                      []*mealplanning.RecipeStepIngredient
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		recipeStepIngredient := &mealplanning.RecipeStepIngredient{
 			CreatedAt:                 result.CreatedAt,
@@ -406,10 +406,20 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 			}
 		}
 
-		x.Data = append(x.Data, recipeStepIngredient)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, recipeStepIngredient)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *mealplanning.RecipeStepIngredient) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

@@ -235,10 +235,6 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForUser(ctx, q.db, &generated.GetServiceSettingConfigurationsForUserParams{
 		BelongsToUser:   userID,
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -253,6 +249,10 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
 
+	var (
+		data                      = []*types.ServiceSettingConfiguration{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		usableEnumeration := []string{}
 		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
@@ -284,10 +284,20 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 			},
 		}
 
-		x.Data = append(x.Data, serviceSettingConfiguration)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, serviceSettingConfiguration)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.ServiceSettingConfiguration) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -311,10 +321,6 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, &generated.GetServiceSettingConfigurationsForAccountParams{
 		BelongsToAccount: accountID,
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -329,6 +335,10 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
 
+	var (
+		data                      = []*types.ServiceSettingConfiguration{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		usableEnumeration := []string{}
 		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
@@ -360,10 +370,20 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 			},
 		}
 
-		x.Data = append(x.Data, serviceSettingConfiguration)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, serviceSettingConfiguration)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.ServiceSettingConfiguration) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

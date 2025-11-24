@@ -73,11 +73,6 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	// TODO: REFACTORME
-	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUser(ctx, q.db, &generated.GetAuditLogEntriesForUserParams{
 		BelongsToUser: database.NullStringFromString(userID),
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -89,6 +84,10 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
 	}
 
+	var (
+		data                      []*audit.AuditLogEntry
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
@@ -104,10 +103,20 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 			return nil, observability.PrepareAndLogError(err, logger, span, "parsing audit log entry JSON data")
 		}
 
-		x.Data = append(x.Data, auditLogEntry)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, auditLogEntry)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *audit.AuditLogEntry) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -137,11 +146,6 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	// TODO: REFACTORME
-	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForUserAndResourceTypeParams{
 		BelongsToUser: database.NullStringFromString(userID),
 		Resources:     resourceTypes,
@@ -154,6 +158,10 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
 	}
 
+	var (
+		data                      []*audit.AuditLogEntry
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
@@ -169,10 +177,20 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 			return nil, observability.PrepareAndLogError(err, logger, span, "parsing audit log entry JSON data")
 		}
 
-		x.Data = append(x.Data, auditLogEntry)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, auditLogEntry)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *audit.AuditLogEntry) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -196,11 +214,6 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	// TODO: REFACTORME
-	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetAuditLogEntriesForAccount(ctx, q.db, &generated.GetAuditLogEntriesForAccountParams{
 		BelongsToAccount: database.NullStringFromString(accountID),
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -212,6 +225,10 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
 	}
 
+	var (
+		data                      []*audit.AuditLogEntry
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
@@ -227,10 +244,20 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 			return nil, observability.PrepareAndLogError(err, logger, span, "parsing audit log entry JSON data")
 		}
 
-		x.Data = append(x.Data, auditLogEntry)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, auditLogEntry)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *audit.AuditLogEntry) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -260,11 +287,6 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	// TODO: REFACTORME
-	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetAuditLogEntriesForAccountAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForAccountAndResourceTypeParams{
 		BelongsToAccount: database.NullStringFromString(accountID),
 		Resources:        resourceTypes,
@@ -277,6 +299,10 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
 	}
 
+	var (
+		data                      []*audit.AuditLogEntry
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
@@ -292,10 +318,20 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 			return nil, observability.PrepareAndLogError(err, logger, span, "parsing audit log entry JSON data")
 		}
 
-		x.Data = append(x.Data, auditLogEntry)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, auditLogEntry)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *audit.AuditLogEntry) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

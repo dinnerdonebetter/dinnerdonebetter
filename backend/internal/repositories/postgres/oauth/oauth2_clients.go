@@ -87,7 +87,7 @@ func (q *repository) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID s
 }
 
 // GetOAuth2Clients gets a list of OAuth2 clients.
-func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.OAuth2Client], err error) {
+func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.OAuth2Client], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -98,10 +98,6 @@ func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.Que
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	x = &filtering.QueryFilteredResult[types.OAuth2Client]{
-		Pagination: filter.ToPagination(),
-	}
 
 	results, err := q.generatedQuerier.GetOAuth2Clients(ctx, q.db, &generated.GetOAuth2ClientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -114,8 +110,12 @@ func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.Que
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 clients")
 	}
 
+	var (
+		data                      = []*types.OAuth2Client{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x.Data = append(x.Data, &types.OAuth2Client{
+		data = append(data, &types.OAuth2Client{
 			CreatedAt:    result.CreatedAt,
 			ArchivedAt:   database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:         result.Name,
@@ -124,9 +124,19 @@ func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.Que
 			ID:           result.ID,
 			ClientSecret: result.ClientSecret,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.OAuth2Client) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

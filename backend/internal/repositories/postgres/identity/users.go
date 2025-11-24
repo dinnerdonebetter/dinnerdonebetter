@@ -317,7 +317,7 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.User], err error) {
+func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -328,10 +328,6 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger) // TODO: is assignment necessary here? if not, make consistent
-
-	x = &filtering.QueryFilteredResult[identity.User]{
-		Pagination: filter.ToPagination(),
-	}
 
 	results, err := r.generatedQuerier.GetUsers(ctx, r.db, &generated.GetUsersParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -346,6 +342,10 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
+	var (
+		data                      = []*identity.User{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		u := &identity.User{
 			CreatedAt:                  result.CreatedAt,
@@ -371,10 +371,20 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
 
-		x.Data = append(x.Data, u)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, u)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *identity.User) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

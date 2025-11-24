@@ -330,7 +330,7 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 }
 
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
-func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStep], err error) {
+func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStep], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -348,10 +348,6 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.RecipeStep]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetRecipeSteps(ctx, q.db, &generated.GetRecipeStepsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -366,6 +362,10 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe steps")
 	}
 
+	var (
+		data                      = []*mealplanning.RecipeStep{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		recipeStep := &mealplanning.RecipeStep{
 			CreatedAt: result.CreatedAt,
@@ -425,9 +425,9 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 			StartTimerAutomatically: result.StartTimerAutomatically,
 		}
 
-		x.Data = append(x.Data, recipeStep)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, recipeStep)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
 
 	// Fetch all related data for all recipe steps
@@ -457,34 +457,34 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	}
 
 	// Populate each recipe step with its related data
-	for i, step := range x.Data {
+	for i, step := range data {
 		for _, ingredient := range ingredients {
 			if ingredient.BelongsToRecipeStep == step.ID {
-				x.Data[i].Ingredients = append(x.Data[i].Ingredients, ingredient)
+				data[i].Ingredients = append(data[i].Ingredients, ingredient)
 			}
 		}
 
 		for _, product := range products {
 			if product.BelongsToRecipeStep == step.ID {
-				x.Data[i].Products = append(x.Data[i].Products, product)
+				data[i].Products = append(data[i].Products, product)
 			}
 		}
 
 		for _, instrument := range instruments {
 			if instrument.BelongsToRecipeStep == step.ID {
-				x.Data[i].Instruments = append(x.Data[i].Instruments, instrument)
+				data[i].Instruments = append(data[i].Instruments, instrument)
 			}
 		}
 
 		for _, vessel := range vessels {
 			if vessel.BelongsToRecipeStep == step.ID {
-				x.Data[i].Vessels = append(x.Data[i].Vessels, vessel)
+				data[i].Vessels = append(data[i].Vessels, vessel)
 			}
 		}
 
 		for _, completionCondition := range completionConditions {
 			if completionCondition.BelongsToRecipeStep == step.ID {
-				x.Data[i].CompletionConditions = append(x.Data[i].CompletionConditions, completionCondition)
+				data[i].CompletionConditions = append(data[i].CompletionConditions, completionCondition)
 			}
 		}
 
@@ -492,8 +492,18 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 		if mediaErr != nil {
 			return nil, observability.PrepareAndLogError(mediaErr, logger, span, "fetching recipe media for recipe step")
 		}
-		x.Data[i].Media = recipeMedia
+		data[i].Media = recipeMedia
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *mealplanning.RecipeStep) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

@@ -455,10 +455,6 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 	logger := r.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := r.generatedQuerier.GetPendingInvitesFromUser(ctx, r.db, &generated.GetPendingInvitesFromUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -474,8 +470,12 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account invitation query")
 	}
 
+	var (
+		data                      []*identity.AccountInvitation
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x.Data = append(x.Data, &identity.AccountInvitation{
+		data = append(data, &identity.AccountInvitation{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -534,9 +534,19 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 			},
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *identity.AccountInvitation) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -551,10 +561,6 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 	}
 	logger := r.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
-
-	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
-		Pagination: filter.ToPagination(),
-	}
 
 	results, err := r.generatedQuerier.GetPendingInvitesForUser(ctx, r.db, &generated.GetPendingInvitesForUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -571,8 +577,12 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account invitation query")
 	}
 
+	var (
+		data                      []*identity.AccountInvitation
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x.Data = append(x.Data, &identity.AccountInvitation{
+		data = append(data, &identity.AccountInvitation{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -631,9 +641,19 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 			},
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *identity.AccountInvitation) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
