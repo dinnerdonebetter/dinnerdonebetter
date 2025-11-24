@@ -18,7 +18,7 @@ const (
 
 func ConditionallyCease() {
 	if ShouldCeaseOperation() {
-		slog.Info("CEASE_OPERATION is set to true, exiting")
+		slog.Info(fmt.Sprintf("%s is set to true, exiting", CeaseOperationEnvVarKey))
 		os.Exit(0)
 	}
 }

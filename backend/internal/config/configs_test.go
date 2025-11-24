@@ -160,7 +160,7 @@ func TestLoadConfigFromEnvironment(T *testing.T) {
 
 		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 		// Set an invalid environment variable that would cause parsing to fail
-		t.Setenv("DINNER_DONE_BETTER_HTTP_HTTP_PORT", "invalid_port")
+		t.Setenv(envvars.HTTPPortEnvVarKey, "invalid_port")
 
 		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
 		assert.Error(t, err)
