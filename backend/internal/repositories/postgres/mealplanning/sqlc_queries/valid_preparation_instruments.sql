@@ -116,13 +116,13 @@ WHERE
 		OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
+	AND valid_preparation_instruments.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY
 	valid_preparation_instruments.id,
 	valid_preparations.id,
 	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_preparation_instruments.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationInstrumentsForPreparation :many
 SELECT
@@ -170,36 +170,35 @@ SELECT
 	(
 		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-		WHERE
-			valid_preparation_instruments.archived_at IS NULL
+		JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE valid_preparation_instruments.archived_at IS NULL
+			AND
+			valid_preparation_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_preparation_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
 			AND valid_preparation_instruments.valid_preparation_id = sqlc.arg(id)
-			AND valid_preparation_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-	AND (
-		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
-	)
-	AND (
-		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
-	)
-			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
-	) as filtered_count,
+	) AS filtered_count,
 	(
 		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-		WHERE
-			valid_preparation_instruments.archived_at IS NULL
+		JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
 			AND valid_preparation_instruments.valid_preparation_id = sqlc.arg(id)
-	) as total_count
+	) AS total_count
 FROM valid_preparation_instruments
 	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
@@ -219,13 +218,13 @@ WHERE
 		OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
+	AND valid_preparation_instruments.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY
 	valid_preparation_instruments.id,
 	valid_preparations.id,
 	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_preparation_instruments.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationInstruments :many
 SELECT
@@ -273,34 +272,33 @@ SELECT
 	(
 		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-		WHERE
-			valid_preparation_instruments.archived_at IS NULL
+		JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE valid_preparation_instruments.archived_at IS NULL
+			AND
+			valid_preparation_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_preparation_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-	AND (
-		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
-	)
-	AND (
-		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
-	)
-			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
-	) as filtered_count,
+	) AS filtered_count,
 	(
 		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-		WHERE
-			valid_preparation_instruments.archived_at IS NULL
+		JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM valid_preparation_instruments
 	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
@@ -319,13 +317,13 @@ WHERE
 		OR valid_preparation_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparation_instruments.archived_at = NULL)
+	AND valid_preparation_instruments.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY
 	valid_preparation_instruments.id,
 	valid_preparations.id,
 	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_preparation_instruments.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationInstrument :one
 SELECT

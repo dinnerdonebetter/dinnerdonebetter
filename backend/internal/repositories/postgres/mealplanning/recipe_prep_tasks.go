@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -318,6 +319,46 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 	if currentRecipePrepTask != nil && currentRecipePrepTask.ID != "" {
 		x = append(x, currentRecipePrepTask)
 	}
+
+	// Return nil instead of empty slice to match database behavior
+	if len(x) == 0 {
+		return nil, nil
+	}
+
+	return x, nil
+}
+
+// GetRecipePrepTasks gets recipe prep tasks with filtering support.
+func (q *repository) GetRecipePrepTasks(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipePrepTask], error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	tasks, err := q.getRecipePrepTasksForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe prep tasks")
+	}
+
+	x := filtering.NewQueryFilteredResult(
+		tasks,
+		uint64(len(tasks)),
+		uint64(len(tasks)),
+		func(rpt *mealplanning.RecipePrepTask) string { return rpt.ID },
+		filter,
+	)
 
 	return x, nil
 }

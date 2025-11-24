@@ -267,8 +267,9 @@ WHERE users.archived_at IS NULL
 		OR users.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND users.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY users.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetUsersWithIDs :many
 SELECT
@@ -422,10 +423,46 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+			AND
+			users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+	) AS total_count
 FROM users
-WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
-AND users.archived_at IS NULL;
+WHERE users.archived_at IS NULL
+	AND users.username ILIKE '%' || sqlc.arg(username)::text || '%'
+	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
+	AND users.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY users.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateUserAvatarSrc :execrows
 UPDATE users SET

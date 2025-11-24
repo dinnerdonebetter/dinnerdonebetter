@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"testing"
+	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
@@ -487,5 +488,80 @@ func Test_decideOptionWinner(T *testing.T) {
 		assert.Empty(t, actual)
 		assert.False(t, tiebroken)
 		assert.False(t, chosen)
+	})
+}
+
+func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+
+	// Create a meal plan with one event but no options in it
+	// We create this directly without using createMealPlanForTest to avoid strict nil vs empty slice comparisons
+	mealPlan := fakes.BuildFakeMealPlan()
+	mealPlan.CreatedByUser = user.ID
+	mealPlan.BelongsToAccount = account.ID
+
+	// Create event without any options
+	now := fakes.BuildFakeTime()
+	inTenMinutes := now.Add(10 * time.Minute)
+	inOneWeek := now.Add(7 * 24 * time.Hour)
+	mealPlanEvent := &types.MealPlanEvent{
+		ID:                fakes.BuildFakeID(),
+		Notes:             fakes.BuildFakeID(),
+		StartsAt:          inTenMinutes,
+		EndsAt:            inOneWeek,
+		MealName:          types.BreakfastMealName,
+		CreatedAt:         now,
+		BelongsToMealPlan: mealPlan.ID,
+		Options:           nil,
+	}
+	mealPlan.Events = []*types.MealPlanEvent{mealPlanEvent}
+
+	// Create the meal plan directly
+	dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan)
+	createdMealPlan, err := dbc.CreateMealPlan(ctx, dbInput)
+	require.NoError(t, err)
+	require.NotNil(t, createdMealPlan)
+	require.NotEmpty(t, createdMealPlan.Events)
+
+	mealPlanEventID := createdMealPlan.Events[0].ID
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.MealPlanOption]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "meal plan option",
+		CreateItem: func(ctx context.Context, i int) *types.MealPlanOption {
+			mealPlanOption := buildMealPlanOptionForIntegrationTest(meal)
+			mealPlanOption.BelongsToMealPlanEvent = mealPlanEventID
+			return createMealPlanOptionForTest(t, ctx, createdMealPlan.ID, mealPlanOption, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOption], error) {
+			return dbc.GetMealPlanOptions(ctx, createdMealPlan.ID, mealPlanEventID, filter)
+		},
+		GetID: func(mealPlanOption *types.MealPlanOption) string {
+			return mealPlanOption.ID
+		},
+		CleanupItem: func(ctx context.Context, mealPlanOption *types.MealPlanOption) error {
+			return dbc.ArchiveMealPlanOption(ctx, createdMealPlan.ID, mealPlanEventID, mealPlanOption.ID)
+		},
 	})
 }

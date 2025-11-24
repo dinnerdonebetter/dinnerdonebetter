@@ -125,7 +125,7 @@ WHERE %s.%s IS NULL
 					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
 					webhooksTableName, archivedAtColumn,
 					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(webhooksTableName),
 				)),
 			},
 			{

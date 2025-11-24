@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -363,5 +364,50 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+	})
+}
+
+func TestQuerier_Integration_MealPlans_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.MealPlan]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "meal plan",
+		CreateItem: func(ctx context.Context, i int) *types.MealPlan {
+			// Create a unique recipe and meal for each meal plan
+			recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+			meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+			mealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+			mealPlan.BelongsToAccount = account.ID
+			return createMealPlanForTest(t, ctx, mealPlan, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
+			return dbc.GetMealPlansForAccount(ctx, account.ID, filter)
+		},
+		GetID: func(mealPlan *types.MealPlan) string {
+			return mealPlan.ID
+		},
+		CleanupItem: func(ctx context.Context, mealPlan *types.MealPlan) error {
+			return dbc.ArchiveMealPlan(ctx, mealPlan.ID, account.ID)
+		},
 	})
 }

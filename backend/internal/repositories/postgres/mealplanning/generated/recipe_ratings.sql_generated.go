@@ -183,20 +183,20 @@ WHERE
 	)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
 	AND recipe_ratings.recipe_id = $6
+	AND recipe_ratings.id > COALESCE($7, '')
 GROUP BY recipe_ratings.id
-ORDER BY recipe_ratings.id
-LIMIT $8
-OFFSET $7
+ORDER BY recipe_ratings.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetRecipeRatingsForRecipeParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	RecipeID        string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -225,8 +225,8 @@ func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *G
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.RecipeID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -318,20 +318,20 @@ WHERE
 	)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
 	AND recipe_ratings.by_user = $6
+	AND recipe_ratings.id > COALESCE($7, '')
 GROUP BY recipe_ratings.id
-ORDER BY recipe_ratings.id
-LIMIT $8
-OFFSET $7
+ORDER BY recipe_ratings.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetRecipeRatingsForUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	ByUser          string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -360,8 +360,8 @@ func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *Get
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ByUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

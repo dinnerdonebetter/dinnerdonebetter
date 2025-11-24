@@ -36,9 +36,14 @@ func Test_redisConsumer_Consume(T *testing.T) {
 
 		ctx := t.Context()
 
-		cfg, containerShutdown := BuildContainerBackedRedisConfigForTest(t)
+		cfg, containerShutdown, err := BuildContainerBackedRedisConfigForTest(t)
+		if err != nil {
+			t.Skipf("Skipping test due to container setup failure: %v", err)
+		}
 		defer func() {
-			assert.NoError(t, containerShutdown(ctx))
+			if containerShutdown != nil {
+				assert.NoError(t, containerShutdown(ctx))
+			}
 		}()
 
 		hf := func(context.Context, []byte) error {
@@ -64,9 +69,14 @@ func Test_redisConsumer_Consume(T *testing.T) {
 
 		ctx := t.Context()
 
-		cfg, containerShutdown := BuildContainerBackedRedisConfigForTest(t)
+		cfg, containerShutdown, err := BuildContainerBackedRedisConfigForTest(t)
+		if err != nil {
+			t.Skipf("Skipping test due to container setup failure: %v", err)
+		}
 		defer func() {
-			assert.NoError(t, containerShutdown(ctx))
+			if containerShutdown != nil {
+				assert.NoError(t, containerShutdown(ctx))
+			}
 		}()
 
 		anticipatedError := errors.New("blah")
@@ -84,9 +94,9 @@ func Test_redisConsumer_Consume(T *testing.T) {
 		publisher := buildRedisBackedPublisher(t, cfg, t.Name())
 		require.NoError(t, publisher.Publish(ctx, []byte("blah")))
 
-		err := <-errorsChan
-		assert.Error(t, err)
-		assert.Equal(t, anticipatedError, err)
+		receivedErr := <-errorsChan
+		assert.Error(t, receivedErr)
+		assert.Equal(t, anticipatedError, receivedErr)
 
 		stopChan <- true
 	})

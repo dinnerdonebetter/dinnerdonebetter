@@ -26,7 +26,7 @@ func BuildFakeUserNotificationsList() *filtering.QueryFilteredResult[types.UserN
 
 	return &filtering.QueryFilteredResult[types.UserNotification]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

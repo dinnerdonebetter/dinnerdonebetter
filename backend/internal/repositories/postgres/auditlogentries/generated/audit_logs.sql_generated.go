@@ -85,16 +85,17 @@ FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_account = $3
-LIMIT $5
-OFFSET $4
+	AND audit_log_entries.id > COALESCE($4, '')
+ORDER BY audit_log_entries.id ASC
+LIMIT COALESCE($5, 50)
 `
 
 type GetAuditLogEntriesForAccountParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	BelongsToAccount sql.NullString
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 }
 
 type GetAuditLogEntriesForAccountRow struct {
@@ -115,8 +116,8 @@ func (q *Queries) GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.BelongsToAccount,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -181,17 +182,18 @@ WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::I
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_account = $3
 	AND audit_log_entries.resource_type = ANY($4::text[])
-LIMIT $6
-OFFSET $5
+	AND audit_log_entries.id > COALESCE($5, '')
+ORDER BY audit_log_entries.id ASC
+LIMIT COALESCE($6, 50)
 `
 
 type GetAuditLogEntriesForAccountAndResourceTypeParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	BelongsToAccount sql.NullString
 	Resources        []string
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 }
 
 type GetAuditLogEntriesForAccountAndResourceTypeRow struct {
@@ -213,8 +215,8 @@ func (q *Queries) GetAuditLogEntriesForAccountAndResourceType(ctx context.Contex
 		arg.CreatedBefore,
 		arg.BelongsToAccount,
 		pq.Array(arg.Resources),
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -276,16 +278,17 @@ FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_user = $3
-LIMIT $5
-OFFSET $4
+	AND audit_log_entries.id > COALESCE($4, '')
+ORDER BY audit_log_entries.id ASC
+LIMIT COALESCE($5, 50)
 `
 
 type GetAuditLogEntriesForUserParams struct {
+	ResultLimit   interface{}
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	BelongsToUser sql.NullString
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
+	Cursor        sql.NullString
 }
 
 type GetAuditLogEntriesForUserRow struct {
@@ -306,8 +309,8 @@ func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *G
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.BelongsToUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -372,17 +375,18 @@ WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::I
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_user = $3
 	AND audit_log_entries.resource_type = ANY($4::text[])
-LIMIT $6
-OFFSET $5
+	AND audit_log_entries.id > COALESCE($5, '')
+ORDER BY audit_log_entries.id ASC
+LIMIT COALESCE($6, 50)
 `
 
 type GetAuditLogEntriesForUserAndResourceTypeParams struct {
+	ResultLimit   interface{}
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	BelongsToUser sql.NullString
 	Resources     []string
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
+	Cursor        sql.NullString
 }
 
 type GetAuditLogEntriesForUserAndResourceTypeRow struct {
@@ -404,8 +408,8 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 		arg.CreatedBefore,
 		arg.BelongsToUser,
 		pq.Array(arg.Resources),
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

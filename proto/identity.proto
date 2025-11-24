@@ -315,6 +315,7 @@ message AccountCreationRequestInput {
   string State = 8;
   string ZipCode = 9;
   string Country = 10;
+  string BelongsToUser = 11;
 }
 
 message AccountInvitation {

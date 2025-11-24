@@ -378,18 +378,19 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $7
-OFFSET $6
+	AND valid_ingredient_measurement_units.id > COALESCE($6, '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidIngredientMeasurementUnitsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidIngredientMeasurementUnitsRow struct {
@@ -463,8 +464,8 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -650,18 +651,19 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_ingredient_measurement_units.id > COALESCE($7, '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidIngredientMeasurementUnitsForIngredientParams struct {
+	ResultLimit       interface{}
 	CreatedAfter      sql.NullTime
 	CreatedBefore     sql.NullTime
 	UpdatedBefore     sql.NullTime
 	UpdatedAfter      sql.NullTime
 	ValidIngredientID string
-	QueryOffset       sql.NullInt32
-	QueryLimit        sql.NullInt32
+	Cursor            sql.NullString
 	IncludeArchived   sql.NullBool
 }
 
@@ -737,8 +739,8 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ValidIngredientID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -924,18 +926,19 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_ingredient_measurement_units.id > COALESCE($7, '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidIngredientMeasurementUnitsForMeasurementUnitParams struct {
+	ResultLimit            interface{}
 	CreatedAfter           sql.NullTime
 	CreatedBefore          sql.NullTime
 	UpdatedBefore          sql.NullTime
 	UpdatedAfter           sql.NullTime
 	ValidMeasurementUnitID string
-	QueryOffset            sql.NullInt32
-	QueryLimit             sql.NullInt32
+	Cursor                 sql.NullString
 	IncludeArchived        sql.NullBool
 }
 
@@ -1011,8 +1014,8 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ValidMeasurementUnitID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

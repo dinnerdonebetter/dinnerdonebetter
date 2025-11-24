@@ -268,27 +268,33 @@ func (q *repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPla
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.MealPlanOption]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*mealplanning.MealPlanOption
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMealPlanOptions(ctx, q.db, &generated.GetMealPlanOptionsParams{
-		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 		MealPlanID:      mealPlanID,
+		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options list retrieval query")
 	}
 
 	for _, result := range results {
-		mealPlanOption := &mealplanning.MealPlanOption{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.MealPlanOption{
 			CreatedAt:              result.CreatedAt,
 			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
 			AssignedCook:           database.StringPointerFromNullString(result.AssignedCook),
@@ -304,11 +310,16 @@ func (q *repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPla
 			MealScale: database.Float32FromString(result.MealScale),
 			Chosen:    result.Chosen,
 			TieBroken: result.Tiebroken,
-		}
-		x.Data = append(x.Data, mealPlanOption)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(mpo *mealplanning.MealPlanOption) string { return mpo.ID },
+		filter,
+	)
 
 	return x, nil
 }

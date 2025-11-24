@@ -266,3 +266,52 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, exampleWebhookID, ""))
 	})
 }
+
+func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.Webhook]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "webhook",
+		CreateItem: func(ctx context.Context, i int) *types.Webhook {
+			webhook := fakes.BuildFakeWebhook()
+			webhook.Name = fmt.Sprintf("Webhook %02d", i) // Use zero-padded numbers for consistent sorting
+			webhook.BelongsToAccount = account.ID
+			return createWebhookForTest(t, ctx, webhook, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
+			return dbc.GetWebhooks(ctx, account.ID, filter)
+		},
+		GetID: func(webhook *types.Webhook) string {
+			return webhook.ID
+		},
+		CleanupItem: func(ctx context.Context, webhook *types.Webhook) error {
+			// Cleanup webhook events first
+			for _, event := range webhook.Events {
+				if err = dbc.ArchiveWebhookTriggerEvent(ctx, webhook.ID, event.ID); err != nil {
+					return err
+				}
+			}
+			return dbc.ArchiveWebhook(ctx, webhook.ID, account.ID)
+		},
+	})
+}

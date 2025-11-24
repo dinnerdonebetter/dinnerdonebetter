@@ -248,7 +248,7 @@ WHERE %s.%s IS NULL
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					buildFilterConditions(mealPlansTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealPlansTableName),
 				)),
 			},
 			{

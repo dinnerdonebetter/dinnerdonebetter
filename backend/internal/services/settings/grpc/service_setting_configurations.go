@@ -24,7 +24,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
-	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input)
+	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input, sessionContextData.GetUserID(), sessionContextData.GetActiveAccountID())
 	input.BelongsToUser = sessionContextData.GetUserID()
 	input.BelongsToAccount = sessionContextData.GetActiveAccountID()
 
@@ -86,7 +86,9 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	serviceSettingConfigs, err := s.serviceSettingsRepository.GetServiceSettingConfigurationsForAccount(ctx, sessionContextData.ActiveAccountID, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	serviceSettingConfigs, err := s.serviceSettingsRepository.GetServiceSettingConfigurationsForAccount(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for account")
 	}

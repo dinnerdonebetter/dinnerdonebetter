@@ -102,8 +102,8 @@ SELECT
 	recipe_steps.archived_at as recipe_step_archived_at,
 	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
-	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
-	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+	LEFT JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	LEFT JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
 ORDER BY recipe_steps.index;
@@ -230,8 +230,9 @@ FROM recipes
 		recipes.last_updated_at IS NULL
 		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipes.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipesCreatedByUser :many
 SELECT
@@ -292,8 +293,9 @@ FROM recipes
 		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND recipes.created_by_user = sqlc.arg(created_by_user)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipes.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: RecipeSearch :many
 SELECT
@@ -351,8 +353,9 @@ WHERE recipes.archived_at IS NULL
 		recipes.last_updated_at IS NULL
 		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipes.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipesNeedingIndexing :many
 SELECT recipes.id

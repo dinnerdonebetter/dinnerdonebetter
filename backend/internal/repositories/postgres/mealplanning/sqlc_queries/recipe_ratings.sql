@@ -86,10 +86,10 @@ WHERE
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipe_ratings.archived_at = NULL)
 	AND recipe_ratings.recipe_id = sqlc.arg(recipe_id)
+	AND recipe_ratings.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY recipe_ratings.id
-ORDER BY recipe_ratings.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY recipe_ratings.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipeRatingsForUser :many
 SELECT
@@ -145,10 +145,10 @@ WHERE
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipe_ratings.archived_at = NULL)
 	AND recipe_ratings.by_user = sqlc.arg(by_user)
+	AND recipe_ratings.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY recipe_ratings.id
-ORDER BY recipe_ratings.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY recipe_ratings.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipeRating :one
 SELECT

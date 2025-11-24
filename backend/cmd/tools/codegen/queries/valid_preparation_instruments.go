@@ -121,7 +121,6 @@ GROUP BY
 	%s.%s,
 	%s.%s,
 	%s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(
@@ -162,8 +161,7 @@ ORDER BY %s.%s
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
 					validInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationInstrumentsTableName),
 				)),
 			},
 			{
@@ -173,29 +171,8 @@ ORDER BY %s.%s
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			%s
-	) as filtered_count,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-	) as total_count
+	%s,
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
@@ -209,30 +186,31 @@ GROUP BY
 	%s.%s,
 	%s.%s,
 	%s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
-					validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn, ///
-					buildFilterConditions(
+					buildFilterCountSelect(
 						validPreparationInstrumentsTableName,
 						true,
 						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("%s.%s IS NULL", validInstrumentsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validPreparationsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn),
 					),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
-					validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn, ///
+					buildTotalCountSelect(
+						validPreparationInstrumentsTableName,
+						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("%s.%s IS NULL", validInstrumentsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validPreparationsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn),
+					),
 					validPreparationInstrumentsTableName,
 					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
 					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
@@ -248,8 +226,7 @@ ORDER BY %s.%s
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
 					validInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationInstrumentsTableName),
 				)),
 			},
 			{
@@ -259,27 +236,8 @@ ORDER BY %s.%s
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-			%s
-	) as filtered_count,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-	) as total_count
+	%s,
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
@@ -292,28 +250,29 @@ GROUP BY
 	%s.%s,
 	%s.%s,
 	%s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
-					buildFilterConditions(
+					buildFilterCountSelect(
 						validPreparationInstrumentsTableName,
 						true,
 						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("%s.%s IS NULL", validInstrumentsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validPreparationsTableName, archivedAtColumn),
 					),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
+					buildTotalCountSelect(
+						validPreparationInstrumentsTableName,
+						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("%s.%s IS NULL", validInstrumentsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validPreparationsTableName, archivedAtColumn),
+					),
 					validPreparationInstrumentsTableName,
 					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
 					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
@@ -328,8 +287,7 @@ ORDER BY %s.%s
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
 					validInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationInstrumentsTableName),
 				)),
 			},
 			{

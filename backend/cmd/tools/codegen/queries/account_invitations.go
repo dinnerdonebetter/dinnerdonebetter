@@ -253,7 +253,7 @@ WHERE %s.%s IS NULL
 					accountInvitationsTableName, fromUserColumn, fromUserColumn,
 					accountInvitationsTableName, accountInvitationsStatusColumn, accountInvitationsStatusColumn,
 					buildFilterConditions(accountInvitationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(accountInvitationsTableName),
 				)),
 			},
 			{
@@ -287,7 +287,7 @@ WHERE %s.%s IS NULL
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(accountInvitationsTableName),
 				)),
 			},
 			{

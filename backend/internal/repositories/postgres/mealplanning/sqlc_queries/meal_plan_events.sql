@@ -91,10 +91,10 @@ WHERE
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plan_events.archived_at = NULL)
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
+	AND meal_plan_events.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY meal_plan_events.id
-ORDER BY meal_plan_events.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY meal_plan_events.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetAllMealPlanEventsForMealPlan :many
 SELECT

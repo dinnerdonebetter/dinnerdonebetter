@@ -857,18 +857,19 @@ WHERE users.archived_at IS NULL
 		OR users.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR users.archived_at = NULL)
-LIMIT $7
-OFFSET $6
+	AND users.id > COALESCE($6, '')
+ORDER BY users.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetUsersParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetUsersRow struct {
@@ -906,8 +907,8 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -1149,40 +1150,98 @@ SELECT
 	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
-	users.archived_at
+	users.archived_at,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+			AND
+			users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR users.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+	) AS total_count
 FROM users
-WHERE users.username ILIKE '%' || $1::text || '%'
-AND users.archived_at IS NULL
+WHERE users.archived_at IS NULL
+	AND users.username ILIKE '%' || $6::text || '%'
+	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR users.archived_at = NULL)
+	AND users.id > COALESCE($7, '')
+ORDER BY users.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchUsersByUsernameParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	Username        string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchUsersByUsernameRow struct {
 	CreatedAt                     time.Time
-	Birthday                      sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	LastIndexedAt                 sql.NullTime
-	PasswordLastChangedAt         sql.NullTime
 	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
 	EmailAddressVerifiedAt        sql.NullTime
-	UserAccountStatus             string
+	TwoFactorSecret               string
+	Username                      string
 	UserAccountStatusExplanation  string
-	ID                            string
+	UserAccountStatus             string
 	ServiceRole                   string
 	FirstName                     string
 	LastName                      string
-	TwoFactorSecret               string
-	HashedPassword                string
 	EmailAddress                  string
-	Username                      string
-	EmailAddressVerificationToken sql.NullString
+	ID                            string
+	HashedPassword                string
 	AvatarSrc                     sql.NullString
+	EmailAddressVerificationToken sql.NullString
+	FilteredCount                 int64
+	TotalCount                    int64
 	RequiresPasswordChange        bool
 }
 
-func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error) {
-	rows, err := db.QueryContext(ctx, searchUsersByUsername, username)
+func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, arg *SearchUsersByUsernameParams) ([]*SearchUsersByUsernameRow, error) {
+	rows, err := db.QueryContext(ctx, searchUsersByUsername,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.Username,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1214,6 +1273,8 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username s
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

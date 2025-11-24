@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -187,5 +188,49 @@ func TestQuerier_ArchiveValidIngredientStateIngredient(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidIngredientStateIngredient(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidIngredientStateIngredients_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create different ingredients and ingredient states for each item to ensure uniqueness
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredientStateIngredient]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient state ingredient",
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredientStateIngredient {
+			// Create unique ingredient and ingredient state for each item
+			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			exampleValidIngredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+			exampleValidIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
+			exampleValidIngredientStateIngredient.Ingredient = *exampleValidIngredient
+			exampleValidIngredientStateIngredient.IngredientState = *exampleValidIngredientState
+			return createValidIngredientStateIngredientForTest(t, ctx, exampleValidIngredientStateIngredient, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
+			return dbc.GetValidIngredientStateIngredients(ctx, filter)
+		},
+		GetID: func(validIngredientStateIngredient *types.ValidIngredientStateIngredient) string {
+			return validIngredientStateIngredient.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredientStateIngredient *types.ValidIngredientStateIngredient) error {
+			return dbc.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredient.ID)
+		},
 	})
 }

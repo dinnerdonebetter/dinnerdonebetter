@@ -8,8 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 const (
@@ -17,13 +18,15 @@ const (
 	redisContainerImageToUse = "redis:7-bullseye"
 )
 
-func BuildContainerBackedRedisConfigForTest(t *testing.T) (config *Config, shutdownFunc func(context.Context) error) {
+func BuildContainerBackedRedisConfigForTest(t *testing.T) (config *Config, shutdownFunc func(context.Context) error, err error) {
 	t.Helper()
 
 	cfg, sdf, err := BuildContainerBackedRedisConfig(t.Context())
-	require.NoError(t, err)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	return cfg, sdf
+	return cfg, sdf, nil
 }
 
 func BuildContainerBackedRedisConfig(ctx context.Context) (config *Config, shutdownFunc func(context.Context) error, err error) {
@@ -31,13 +34,11 @@ func BuildContainerBackedRedisConfig(ctx context.Context) (config *Config, shutd
 		ctx,
 		redisContainerImageToUse,
 		rediscontainers.WithLogLevel(rediscontainers.LogLevelNotice),
+		testcontainers.WithWaitStrategyAndDeadline(30*time.Second, wait.ForListeningPort("6379/tcp")),
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to build redis container: %w", err)
 	}
-
-	// Wait a small amount to ensure container is fully ready
-	time.Sleep(100 * time.Millisecond)
 
 	redisAddress, err := redisContainer.ConnectionString(ctx)
 	if err != nil {

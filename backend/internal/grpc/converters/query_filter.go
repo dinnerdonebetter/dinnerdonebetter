@@ -11,14 +11,42 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filteri
 		return filtering.DefaultQueryFilter()
 	}
 
-	// TODO: better sourcing for the Page and PageSize fields
 	filter := &filtering.QueryFilter{
-		Page:            pointer.To[uint16](1),
-		PageSize:        pointer.To[uint8](50),
+		Limit:           pointer.To[uint8](50),
 		IncludeArchived: qf.IncludeArchived,
-		NextCursor:      qf.NextCursor,
-		Query:           "",
+		Cursor:          qf.NextCursor,
+		Query:           qf.Query,
+		SortBy:          qf.SortBy,
+		CreatedAfter:    ConvertPBTimestampToTimePointer(qf.CreatedAfter),
+		CreatedBefore:   ConvertPBTimestampToTimePointer(qf.CreatedBefore),
+		UpdatedAfter:    ConvertPBTimestampToTimePointer(qf.UpdatedAfter),
+		UpdatedBefore:   ConvertPBTimestampToTimePointer(qf.UpdatedBefore),
+	}
+	if qf.PageSize != nil {
+		filter.Limit = pointer.To(uint8(*qf.PageSize))
 	}
 
 	return filter
+}
+
+func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagination filtering.Pagination) *grpcfiltering.QueryFilter {
+	if qf == nil {
+		qf = filtering.DefaultQueryFilter()
+	}
+
+	f := &grpcfiltering.QueryFilter{
+		IncludeArchived: qf.IncludeArchived,
+		NextCursor:      qf.Cursor,
+		SortBy:          qf.SortBy,
+		CreatedAfter:    ConvertTimePointerToPBTimestamp(qf.CreatedAfter),
+		CreatedBefore:   ConvertTimePointerToPBTimestamp(qf.CreatedBefore),
+		UpdatedAfter:    ConvertTimePointerToPBTimestamp(qf.UpdatedAfter),
+		UpdatedBefore:   ConvertTimePointerToPBTimestamp(qf.UpdatedBefore),
+		Query:           qf.Query,
+	}
+	if qf.Limit != nil {
+		f.PageSize = pointer.To(uint32(*qf.Limit))
+	}
+
+	return f
 }

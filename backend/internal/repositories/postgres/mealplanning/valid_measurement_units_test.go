@@ -91,7 +91,7 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	assert.Subset(t, validMeasurementUnits.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidMeasurementUnits(ctx, updatedValidMeasurementUnit.Name)
+	byName, err := dbc.SearchForValidMeasurementUnits(ctx, updatedValidMeasurementUnit.Name, nil)
 	assert.NoError(t, err)
 	assert.Subset(t, validMeasurementUnits.Data, byName)
 
@@ -174,7 +174,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, "")
+		actual, err := c.SearchForValidMeasurementUnits(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -247,5 +247,44 @@ func TestQuerier_MarkValidMeasurementUnitAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkValidMeasurementUnitAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidMeasurementUnits_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidMeasurementUnit]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid measurement unit",
+		CreateItem: func(ctx context.Context, i int) *types.ValidMeasurementUnit {
+			validMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+			validMeasurementUnit.Name = fmt.Sprintf("Valid Measurement Unit %02d", i)
+			return createValidMeasurementUnitForTest(t, ctx, validMeasurementUnit, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+			return dbc.GetValidMeasurementUnits(ctx, filter)
+		},
+		GetID: func(validMeasurementUnit *types.ValidMeasurementUnit) string {
+			return validMeasurementUnit.ID
+		},
+		CleanupItem: func(ctx context.Context, validMeasurementUnit *types.ValidMeasurementUnit) error {
+			return dbc.ArchiveValidMeasurementUnit(ctx, validMeasurementUnit.ID)
+		},
 	})
 }

@@ -338,18 +338,19 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 		user_ingredient_preferences.last_updated_at IS NULL
 		OR user_ingredient_preferences.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND user_ingredient_preferences.id > COALESCE($7, '')
+ORDER BY user_ingredient_preferences.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetUserIngredientPreferencesForUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	BelongsToUser   string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -412,8 +413,8 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.BelongsToUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

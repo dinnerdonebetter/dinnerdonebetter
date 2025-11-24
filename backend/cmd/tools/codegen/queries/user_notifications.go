@@ -121,7 +121,7 @@ WHERE %s%s
 					userNotificationsTableName,
 					fmt.Sprintf("user_notifications.status != '%s'\n\t", userNotificationStatusDismissed),
 					buildFilterConditions(userNotificationsTableName, true, false, "user_notifications.belongs_to_user = sqlc.arg(user_id)"),
-					offsetLimitAddendum,
+					buildCursorLimitClause(userNotificationsTableName),
 				)),
 			},
 			{

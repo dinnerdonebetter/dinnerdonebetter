@@ -220,16 +220,18 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 		meal_plan_option_votes.last_updated_at IS NULL
 		OR meal_plan_option_votes.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND meal_plan_option_votes.id > COALESCE($9, '')
 GROUP BY
 	meal_plan_option_votes.id,
 	meal_plan_options.id,
 	meal_plan_events.id,
 	meal_plans.id
-LIMIT $10
-OFFSET $9
+ORDER BY meal_plan_option_votes.id ASC
+LIMIT COALESCE($10, 50)
 `
 
 type GetMealPlanOptionVotesParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
@@ -237,8 +239,7 @@ type GetMealPlanOptionVotesParams struct {
 	MealPlanOptionID string
 	MealPlanID       string
 	MealPlanEventID  sql.NullString
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 	IncludeArchived  sql.NullBool
 }
 
@@ -266,8 +267,8 @@ func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetM
 		arg.MealPlanOptionID,
 		arg.MealPlanEventID,
 		arg.MealPlanID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

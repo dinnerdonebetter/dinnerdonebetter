@@ -310,3 +310,53 @@ func TestQuerier_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepCompletionCondition(ctx, exampleRecipeStepID, ""))
 	})
 }
+
+func TestQuerier_Integration_RecipeStepCompletionConditions_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
+	// Clear the default completion conditions from the step so we start fresh
+	for _, step := range recipeStruct.Steps {
+		step.CompletionConditions = nil // Use nil instead of empty slice to match database behavior
+	}
+	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
+	recipeStep := recipe.Steps[0]
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeStepCompletionCondition]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe step completion condition",
+		CreateItem: func(ctx context.Context, i int) *types.RecipeStepCompletionCondition {
+			ingredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+			recipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
+			recipeStepCompletionCondition.BelongsToRecipeStep = recipeStep.ID
+			recipeStepCompletionCondition.IngredientState = *ingredientState
+			return createRecipeStepCompletionConditionForTest(t, ctx, recipe.ID, recipeStepCompletionCondition, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepCompletionCondition], error) {
+			return dbc.GetRecipeStepCompletionConditions(ctx, recipe.ID, recipeStep.ID, filter)
+		},
+		GetID: func(recipeStepCompletionCondition *types.RecipeStepCompletionCondition) string {
+			return recipeStepCompletionCondition.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeStepCompletionCondition *types.RecipeStepCompletionCondition) error {
+			return dbc.ArchiveRecipeStepCompletionCondition(ctx, recipeStep.ID, recipeStepCompletionCondition.ID)
+		},
+	})
+}

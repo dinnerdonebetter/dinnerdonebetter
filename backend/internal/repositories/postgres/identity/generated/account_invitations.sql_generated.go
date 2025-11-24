@@ -1017,19 +1017,20 @@ WHERE account_invitations.archived_at IS NULL
 		OR account_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR account_invitations.archived_at = NULL)
-LIMIT $9
-OFFSET $8
+	AND account_invitations.id > COALESCE($8, '')
+ORDER BY account_invitations.id ASC
+LIMIT COALESCE($9, 50)
 `
 
 type GetPendingInvitesForUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	Status          InvitationState
 	ToUser          sql.NullString
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -1105,8 +1106,8 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 		arg.IncludeArchived,
 		arg.ToUser,
 		arg.Status,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -1288,19 +1289,20 @@ WHERE account_invitations.archived_at IS NULL
 		account_invitations.last_updated_at IS NULL
 		OR account_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $9
-OFFSET $8
+	AND account_invitations.id > COALESCE($8, '')
+ORDER BY account_invitations.id ASC
+LIMIT COALESCE($9, 50)
 `
 
 type GetPendingInvitesFromUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	FromUser        string
 	Status          InvitationState
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -1376,8 +1378,8 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 		arg.IncludeArchived,
 		arg.FromUser,
 		arg.Status,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

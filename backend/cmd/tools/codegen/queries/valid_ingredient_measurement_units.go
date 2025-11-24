@@ -132,7 +132,7 @@ WHERE
 						true,
 						false,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientMeasurementUnitsTableName),
 				)),
 			},
 			{
@@ -165,7 +165,7 @@ WHERE
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitIDColumn,
 					buildFilterConditions(validIngredientMeasurementUnitsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientMeasurementUnitsTableName),
 				)),
 			},
 			{
@@ -196,7 +196,7 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					buildFilterConditions(validIngredientMeasurementUnitsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientMeasurementUnitsTableName),
 				)),
 			},
 			{

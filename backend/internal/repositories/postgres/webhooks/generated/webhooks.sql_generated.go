@@ -234,18 +234,19 @@ WHERE webhooks.archived_at IS NULL
 			AND (NOT COALESCE($5, false)::boolean OR webhooks.archived_at = NULL)
 	AND webhooks.belongs_to_account = $6
 	AND webhook_trigger_events.archived_at IS NULL
-LIMIT $8
-OFFSET $7
+	AND webhooks.id > COALESCE($7, '')
+ORDER BY webhooks.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetWebhooksForAccountParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
 	BelongsToAccount string
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 	IncludeArchived  sql.NullBool
 }
 
@@ -276,8 +277,8 @@ func (q *Queries) GetWebhooksForAccount(ctx context.Context, db DBTX, arg *GetWe
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.BelongsToAccount,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

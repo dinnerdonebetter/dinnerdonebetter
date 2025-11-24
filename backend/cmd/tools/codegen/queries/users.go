@@ -322,7 +322,7 @@ WHERE %s.%s IS NULL
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(usersTableName),
 				)),
 			},
 			{
@@ -486,16 +486,31 @@ WHERE %s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.%s %s
-AND %s.%s IS NULL;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(usersTableName, true, true, []string{}),
+					buildTotalCountSelect(usersTableName, true, []string{}),
 					usersTableName,
-					usersTableName, usernameColumn, buildILIKEForArgument(usernameColumn),
-					usersTableName, archivedAtColumn,
+					usersTableName,
+					archivedAtColumn,
+					usersTableName,
+					usernameColumn,
+					buildILIKEForArgument(usernameColumn),
+					buildFilterConditions(
+						usersTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(usersTableName),
 				)),
 			},
 			{

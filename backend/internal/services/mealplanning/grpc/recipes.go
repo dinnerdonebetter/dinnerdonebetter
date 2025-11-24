@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -593,8 +594,9 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipePrepTasks, _, err := s.recipeManager.ListRecipePrepTask(ctx, request.RecipeID, filter)
+	recipePrepTasks, err := s.recipeManager.ListRecipePrepTask(ctx, request.RecipeID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe prep tasks")
 	}
@@ -603,9 +605,10 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(filter, recipePrepTasks.Pagination),
 	}
 
-	for _, recipePrepTask := range recipePrepTasks {
+	for _, recipePrepTask := range recipePrepTasks.Data {
 		x.Results = append(x.Results, converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(recipePrepTask))
 	}
 
@@ -645,8 +648,9 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeRatings, _, err := s.recipeManager.ListRecipeRatings(ctx, request.RecipeID, filter)
+	recipeRatings, err := s.recipeManager.ListRecipeRatings(ctx, request.RecipeID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe ratings")
 	}
@@ -657,7 +661,7 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 		},
 	}
 
-	for _, recipePrepTask := range recipeRatings {
+	for _, recipePrepTask := range recipeRatings.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeRatingToGRPCRecipeRating(recipePrepTask))
 	}
 
@@ -723,8 +727,9 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepCompletionConditions, _, err := s.recipeManager.ListRecipeStepCompletionConditions(ctx, request.RecipeID, request.RecipeStepID, filter)
+	recipeStepCompletionConditions, err := s.recipeManager.ListRecipeStepCompletionConditions(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step completion conditions")
 	}
@@ -735,7 +740,7 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 		},
 	}
 
-	for _, recipePrepTask := range recipeStepCompletionConditions {
+	for _, recipePrepTask := range recipeStepCompletionConditions.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(recipePrepTask))
 	}
 
@@ -777,8 +782,9 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepIngredients, _, err := s.recipeManager.ListRecipeStepIngredients(ctx, request.RecipeID, request.RecipeStepID, filter)
+	recipeStepIngredients, err := s.recipeManager.ListRecipeStepIngredients(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step ingredients")
 	}
@@ -789,7 +795,7 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 		},
 	}
 
-	for _, recipeStepIngredient := range recipeStepIngredients {
+	for _, recipeStepIngredient := range recipeStepIngredients.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(recipeStepIngredient))
 	}
 
@@ -831,8 +837,9 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepInstruments, _, err := s.recipeManager.ListRecipeStepInstruments(ctx, request.RecipeID, request.RecipeStepID, filter)
+	recipeStepInstruments, err := s.recipeManager.ListRecipeStepInstruments(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step instruments")
 	}
@@ -843,7 +850,7 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 		},
 	}
 
-	for _, recipeStepInstrument := range recipeStepInstruments {
+	for _, recipeStepInstrument := range recipeStepInstruments.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(recipeStepInstrument))
 	}
 
@@ -885,8 +892,9 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepProducts, _, err := s.recipeManager.ListRecipeStepProducts(ctx, request.RecipeID, request.RecipeStepID, filter)
+	recipeStepProducts, err := s.recipeManager.ListRecipeStepProducts(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step product")
 	}
@@ -897,7 +905,7 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 		},
 	}
 
-	for _, recipeStepProduct := range recipeStepProducts {
+	for _, recipeStepProduct := range recipeStepProducts.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(recipeStepProduct))
 	}
 
@@ -939,8 +947,9 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepVessels, _, err := s.recipeManager.ListRecipeStepVessels(ctx, request.RecipeID, request.RecipeStepID, filter)
+	recipeStepVessels, err := s.recipeManager.ListRecipeStepVessels(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
 	}
@@ -951,7 +960,7 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 		},
 	}
 
-	for _, recipeStepVessel := range recipeStepVessels {
+	for _, recipeStepVessel := range recipeStepVessels.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(recipeStepVessel))
 	}
 
@@ -967,8 +976,9 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeSteps, _, err := s.recipeManager.ListRecipeSteps(ctx, request.RecipeID, filter)
+	recipeSteps, err := s.recipeManager.ListRecipeSteps(ctx, request.RecipeID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
 	}
@@ -979,7 +989,7 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 		},
 	}
 
-	for _, recipeStep := range recipeSteps {
+	for _, recipeStep := range recipeSteps.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeStepToGRPCRecipeStep(recipeStep))
 	}
 
@@ -992,7 +1002,10 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 
 	logger := s.logger.WithSpan(span)
 
-	recipes, _, err := s.recipeManager.ListRecipes(ctx, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	recipes, err := s.recipeManager.ListRecipes(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching list of recipes")
 	}
@@ -1003,7 +1016,7 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 		},
 	}
 
-	for _, recipe := range recipes {
+	for _, recipe := range recipes.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
 	}
 
@@ -1019,6 +1032,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {

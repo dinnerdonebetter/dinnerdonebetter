@@ -382,18 +382,19 @@ WHERE
 		valid_ingredient_state_ingredients.last_updated_at IS NULL
 		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $7
-OFFSET $6
+	AND valid_ingredient_state_ingredients.id > COALESCE($6, '')
+ORDER BY valid_ingredient_state_ingredients.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidIngredientStateIngredientsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidIngredientStateIngredientsRow struct {
@@ -464,8 +465,8 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -645,18 +646,19 @@ WHERE
 		valid_ingredient_state_ingredients.last_updated_at IS NULL
 		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_ingredient_state_ingredients.id > COALESCE($7, '')
+ORDER BY valid_ingredient_state_ingredients.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidIngredientStateIngredientsForIngredientParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	ValidIngredient string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -729,8 +731,8 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ValidIngredient,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -910,18 +912,19 @@ WHERE
 		valid_ingredient_state_ingredients.last_updated_at IS NULL
 		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_ingredient_state_ingredients.id > COALESCE($7, '')
+ORDER BY valid_ingredient_state_ingredients.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidIngredientStateIngredientsForIngredientStateParams struct {
+	ResultLimit          interface{}
 	CreatedAfter         sql.NullTime
 	CreatedBefore        sql.NullTime
 	UpdatedBefore        sql.NullTime
 	UpdatedAfter         sql.NullTime
 	ValidIngredientState string
-	QueryOffset          sql.NullInt32
-	QueryLimit           sql.NullInt32
+	Cursor               sql.NullString
 	IncludeArchived      sql.NullBool
 }
 
@@ -994,8 +997,8 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ValidIngredientState,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

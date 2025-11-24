@@ -113,7 +113,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
@@ -127,9 +126,7 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validPreparationsTableName, idColumn,
-					validPreparationsTableName, idColumn,
-					offsetLimitAddendum,
+					validPreparationsTableName, idColumn, buildCursorLimitClause(validPreparationsTableName),
 				)),
 			},
 			{
@@ -210,17 +207,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.%s %s
-	AND %s.%s IS NULL
-LIMIT 50;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(validPreparationsTableName, true, true, []string{}),
+					buildTotalCountSelect(validPreparationsTableName, true, []string{}),
 					validPreparationsTableName,
-					validPreparationsTableName, nameColumn, buildILIKEForArgument("name_query"),
-					validPreparationsTableName, archivedAtColumn,
+					validPreparationsTableName,
+					archivedAtColumn,
+					validPreparationsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validPreparationsTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(validPreparationsTableName),
 				)),
 			},
 			{

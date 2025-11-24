@@ -367,20 +367,20 @@ WHERE
 		OR valid_preparations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR valid_preparations.archived_at = NULL)
+	AND valid_preparations.id > COALESCE($6, '')
 GROUP BY valid_preparations.id
-ORDER BY valid_preparations.id
-LIMIT $7
-OFFSET $6
+ORDER BY valid_preparations.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidPreparationsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidPreparationsRow struct {
@@ -418,8 +418,8 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -628,41 +628,98 @@ SELECT
 	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
-	valid_preparations.archived_at
+	valid_preparations.archived_at,
+	(
+		SELECT COUNT(valid_preparations.id)
+		FROM valid_preparations
+		WHERE valid_preparations.archived_at IS NULL
+			AND
+			valid_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_preparations.last_updated_at IS NULL
+				OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_preparations.last_updated_at IS NULL
+				OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_preparations.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_preparations.id)
+		FROM valid_preparations
+		WHERE valid_preparations.archived_at IS NULL
+	) AS total_count
 FROM valid_preparations
-WHERE valid_preparations.name ILIKE '%' || $1::text || '%'
-	AND valid_preparations.archived_at IS NULL
-LIMIT 50
+WHERE valid_preparations.archived_at IS NULL
+	AND valid_preparations.name ILIKE '%' || $6::text || '%'
+	AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_preparations.last_updated_at IS NULL
+		OR valid_preparations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_preparations.last_updated_at IS NULL
+		OR valid_preparations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_preparations.archived_at = NULL)
+	AND valid_preparations.id > COALESCE($7, '')
+ORDER BY valid_preparations.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchForValidPreparationsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchForValidPreparationsRow struct {
 	CreatedAt                   time.Time
-	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastUpdatedAt               sql.NullTime
 	LastIndexedAt               sql.NullTime
-	Name                        string
-	IconPath                    string
 	ID                          string
-	PastTense                   string
+	Name                        string
 	Description                 string
+	IconPath                    string
+	PastTense                   string
 	Slug                        string
+	TotalCount                  int64
+	FilteredCount               int64
+	MaximumVesselCount          sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
 	MaximumIngredientCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumIngredientCount      int32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
+	MinimumIngredientCount      int32
 	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
 	TemperatureRequired         bool
+	RestrictToIngredients       bool
 	YieldsNothing               bool
 }
 
-func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidPreparationsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidPreparations, nameQuery)
+func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, arg *SearchForValidPreparationsParams) ([]*SearchForValidPreparationsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidPreparations,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -694,6 +751,8 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQ
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

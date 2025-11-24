@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -191,5 +192,50 @@ func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveRecipeRating(ctx, t.Name(), ""))
+	})
+}
+
+func TestQuerier_Integration_RecipeRatings_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeRating]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe rating",
+		CreateItem: func(ctx context.Context, i int) *types.RecipeRating {
+			// Create a unique user for each rating since there's a unique constraint on (by_user, recipe_id)
+			ratingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
+			recipeRating := fakes.BuildFakeRecipeRating()
+			recipeRating.RecipeID = recipe.ID
+			recipeRating.ByUser = ratingUser.ID
+			return createRecipeRatingForTest(t, ctx, recipeRating, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeRating], error) {
+			return dbc.GetRecipeRatingsForRecipe(ctx, recipe.ID, filter)
+		},
+		GetID: func(recipeRating *types.RecipeRating) string {
+			return recipeRating.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeRating *types.RecipeRating) error {
+			return dbc.ArchiveRecipeRating(ctx, recipe.ID, recipeRating.ID)
+		},
 	})
 }

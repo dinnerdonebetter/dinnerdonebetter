@@ -47,7 +47,7 @@ func BuildFakeMealsList() *filtering.QueryFilteredResult[mealplanning.Meal] {
 
 	return &filtering.QueryFilteredResult[mealplanning.Meal]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

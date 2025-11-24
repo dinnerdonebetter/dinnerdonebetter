@@ -506,19 +506,20 @@ WHERE
 		OR meal_plan_options.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND meal_plan_options.belongs_to_meal_plan_event = $6
-LIMIT $9
-OFFSET $8
+	AND meal_plan_options.id > COALESCE($8, '')
+ORDER BY meal_plan_options.id ASC
+LIMIT COALESCE($9, 50)
 `
 
 type GetMealPlanOptionsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	MealPlanID      string
 	MealPlanEventID sql.NullString
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -559,8 +560,8 @@ func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealP
 		arg.IncludeArchived,
 		arg.MealPlanEventID,
 		arg.MealPlanID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

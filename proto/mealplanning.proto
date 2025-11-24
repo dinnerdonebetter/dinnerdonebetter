@@ -1590,6 +1590,7 @@ message RecipeCreationRequestInput {
   bool AlsoCreateMeal = 12;
   bool SealOfApproval = 13;
   bool EligibleForMeals = 14;
+  repeated RecipeMediaCreationRequestInput Media = 15;
 }
 
 message RecipeMedia {

@@ -26,7 +26,7 @@ func BuildFakeValidPreparationVesselsList() *filtering.QueryFilteredResult[types
 
 	return &filtering.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

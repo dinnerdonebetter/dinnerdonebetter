@@ -174,8 +174,9 @@ WHERE accounts.archived_at IS NULL
 		OR accounts.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND account_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND accounts.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY accounts.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateAccount :execrows
 UPDATE accounts SET

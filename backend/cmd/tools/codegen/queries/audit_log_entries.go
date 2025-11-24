@@ -91,7 +91,7 @@ WHERE %s
 					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn)),
 					auditLogsTableName,
 					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn)), "AND "),
-					offsetLimitAddendum,
+					buildCursorLimitClause(auditLogsTableName),
 				)),
 			},
 			{
@@ -124,7 +124,7 @@ WHERE %s
 					),
 					auditLogsTableName,
 					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
-					offsetLimitAddendum,
+					buildCursorLimitClause(auditLogsTableName),
 				)),
 			},
 			{
@@ -150,7 +150,7 @@ WHERE %s
 					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn)),
 					auditLogsTableName,
 					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn)), "AND "),
-					offsetLimitAddendum,
+					buildCursorLimitClause(auditLogsTableName),
 				)),
 			},
 			{
@@ -183,7 +183,7 @@ WHERE %s
 					),
 					auditLogsTableName,
 					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
-					offsetLimitAddendum,
+					buildCursorLimitClause(auditLogsTableName),
 				)),
 			},
 		}

@@ -235,16 +235,24 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
-		Pagination: filter.ToPagination(),
-	}
-
-	// TODO: properly apply query filter to this
-	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForUser(ctx, q.db, userID)
+	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForUser(ctx, q.db, &generated.GetServiceSettingConfigurationsForUserParams{
+		BelongsToUser:   userID,
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
 
+	var (
+		data                      = []*types.ServiceSettingConfiguration{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		usableEnumeration := []string{}
 		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
@@ -276,8 +284,20 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 			},
 		}
 
-		x.Data = append(x.Data, serviceSettingConfiguration)
+		data = append(data, serviceSettingConfiguration)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.ServiceSettingConfiguration) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -301,16 +321,24 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
-		Pagination: filter.ToPagination(),
-	}
-
-	// TODO: properly apply query filter to this
-	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, accountID)
+	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, &generated.GetServiceSettingConfigurationsForAccountParams{
+		BelongsToAccount: accountID,
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
 
+	var (
+		data                      = []*types.ServiceSettingConfiguration{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		usableEnumeration := []string{}
 		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
@@ -342,8 +370,20 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 			},
 		}
 
-		x.Data = append(x.Data, serviceSettingConfiguration)
+		data = append(data, serviceSettingConfiguration)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.ServiceSettingConfiguration) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

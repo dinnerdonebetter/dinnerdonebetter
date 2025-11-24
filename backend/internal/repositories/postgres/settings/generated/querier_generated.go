@@ -19,10 +19,10 @@ type Querier interface {
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)
 	GetServiceSettingConfigurationForAccountBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForAccountBySettingNameParams) (*GetServiceSettingConfigurationForAccountBySettingNameRow, error)
 	GetServiceSettingConfigurationForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForUserBySettingNameParams) (*GetServiceSettingConfigurationForUserBySettingNameRow, error)
-	GetServiceSettingConfigurationsForAccount(ctx context.Context, db DBTX, belongsToAccount string) ([]*GetServiceSettingConfigurationsForAccountRow, error)
-	GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetServiceSettingConfigurationsForUserRow, error)
+	GetServiceSettingConfigurationsForAccount(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForAccountParams) ([]*GetServiceSettingConfigurationsForAccountRow, error)
+	GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForUserParams) ([]*GetServiceSettingConfigurationsForUserRow, error)
 	GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error)
-	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*ServiceSettings, error)
+	SearchForServiceSettings(ctx context.Context, db DBTX, arg *SearchForServiceSettingsParams) ([]*SearchForServiceSettingsRow, error)
 	UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) (int64, error)
 }
 

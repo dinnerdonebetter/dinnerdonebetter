@@ -126,8 +126,9 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_preparation_vessels.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationVesselsForVessel :many
 SELECT
@@ -233,8 +234,9 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_preparation_vessels.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationVessels :many
 SELECT
@@ -339,8 +341,9 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_preparation_vessels.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidPreparationVessel :one
 SELECT

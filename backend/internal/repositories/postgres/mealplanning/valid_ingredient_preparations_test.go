@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -218,5 +219,49 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidIngredientPreparation(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidIngredientPreparations_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create different ingredients and preparations for each item to ensure uniqueness
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredientPreparation]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient preparation",
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredientPreparation {
+			// Create unique ingredient and preparation for each item
+			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
+			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.Ingredient = *exampleValidIngredient
+			exampleValidIngredientPreparation.Preparation = *exampleValidPreparation
+			return createValidIngredientPreparationForTest(t, ctx, exampleValidIngredientPreparation, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error) {
+			return dbc.GetValidIngredientPreparations(ctx, filter)
+		},
+		GetID: func(validIngredientPreparation *types.ValidIngredientPreparation) string {
+			return validIngredientPreparation.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredientPreparation *types.ValidIngredientPreparation) error {
+			return dbc.ArchiveValidIngredientPreparation(ctx, validIngredientPreparation.ID)
+		},
 	})
 }

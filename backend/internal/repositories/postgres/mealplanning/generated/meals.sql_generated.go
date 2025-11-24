@@ -229,18 +229,19 @@ WHERE
 		OR meals.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR meals.archived_at = NULL)
-LIMIT $7
-OFFSET $6
+	AND meals.id > COALESCE($6, '')
+ORDER BY meals.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetMealsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetMealsRow struct {
@@ -266,8 +267,8 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -357,18 +358,19 @@ WHERE
 	)
 			AND (NOT COALESCE($5, false)::boolean OR meals.archived_at = NULL)
 	AND meals.created_by_user = $6
-LIMIT $8
-OFFSET $7
+	AND meals.id > COALESCE($7, '')
+ORDER BY meals.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetMealsCreatedByUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	CreatedByUser   string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -396,8 +398,8 @@ func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMe
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.CreatedByUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -514,6 +516,7 @@ FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE
 	meals.archived_at IS NULL
+	AND meal_components.archived_at IS NULL
 	AND meals.name ILIKE '%' || $6::text || '%'
 	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
@@ -526,18 +529,19 @@ WHERE
 		OR meals.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR meals.archived_at = NULL)
-LIMIT $8
-OFFSET $7
+	AND meals.id > COALESCE($7, '')
+ORDER BY meals.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type SearchForMealsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	Query           string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -573,8 +577,8 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.Query,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

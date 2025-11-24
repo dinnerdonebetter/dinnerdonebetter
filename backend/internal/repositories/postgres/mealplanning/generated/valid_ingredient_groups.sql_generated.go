@@ -364,20 +364,20 @@ WHERE
 		OR valid_ingredient_groups.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+	AND valid_ingredient_groups.id > COALESCE($6, '')
 GROUP BY valid_ingredient_groups.id
-ORDER BY valid_ingredient_groups.id
-LIMIT $7
-OFFSET $6
+ORDER BY valid_ingredient_groups.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidIngredientGroupsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidIngredientGroupsRow struct {
@@ -399,8 +399,8 @@ func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *Ge
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -534,20 +534,20 @@ WHERE
 		OR valid_ingredient_groups.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+	AND valid_ingredient_groups.id > COALESCE($7, '')
 GROUP BY valid_ingredient_groups.id
-ORDER BY valid_ingredient_groups.id
-LIMIT $8
-OFFSET $7
+ORDER BY valid_ingredient_groups.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type SearchForValidIngredientGroupsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	Name            string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -571,8 +571,8 @@ func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, a
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.Name,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

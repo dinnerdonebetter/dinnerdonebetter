@@ -127,7 +127,7 @@ WHERE
 					validIngredientStatesTableName, archivedAtColumn,
 					validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientColumn,
 					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientStateIngredientsTableName),
 				)),
 			},
 			{
@@ -160,7 +160,7 @@ WHERE
 					validIngredientStatesTableName, archivedAtColumn,
 					validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStateColumn,
 					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientStateIngredientsTableName),
 				)),
 			},
 			{
@@ -191,7 +191,7 @@ WHERE
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientStatesTableName, archivedAtColumn,
 					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientStateIngredientsTableName),
 				)),
 			},
 			{

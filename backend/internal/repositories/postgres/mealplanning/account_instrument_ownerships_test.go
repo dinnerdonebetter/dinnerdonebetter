@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -182,5 +183,49 @@ func TestQuerier_ArchiveAccountInstrumentOwnership(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccountInstrumentOwnership(ctx, "", exampleAccountID))
+	})
+}
+
+func TestQuerier_Integration_AccountInstrumentOwnerships_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.AccountInstrumentOwnership]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "account instrument ownership",
+		CreateItem: func(ctx context.Context, i int) *types.AccountInstrumentOwnership {
+			instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+			accountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+			accountInstrumentOwnership.BelongsToAccount = account.ID
+			accountInstrumentOwnership.Instrument = *instrument
+			return createAccountInstrumentOwnershipForTest(t, ctx, accountInstrumentOwnership, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error) {
+			return dbc.GetAccountInstrumentOwnerships(ctx, account.ID, filter)
+		},
+		GetID: func(accountInstrumentOwnership *types.AccountInstrumentOwnership) string {
+			return accountInstrumentOwnership.ID
+		},
+		CleanupItem: func(ctx context.Context, accountInstrumentOwnership *types.AccountInstrumentOwnership) error {
+			return dbc.ArchiveAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, account.ID)
+		},
 	})
 }

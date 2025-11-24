@@ -250,23 +250,41 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identit
 }
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
-func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, _ *filtering.QueryFilter) ([]*identity.User, error) {
+func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*identity.User, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := r.logger.WithSpan(span)
 
 	if usernameQuery == "" {
 		return []*identity.User{}, database.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, keys.SearchQueryKey, usernameQuery)
+	logger = logger.WithValue(keys.UsernameKey, usernameQuery)
 
-	results, err := r.generatedQuerier.SearchUsersByUsername(ctx, r.db, usernameQuery)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	filter.AttachToLogger(logger)
+
+	results, err := r.generatedQuerier.SearchUsersByUsername(ctx, r.db, &generated.SearchUsersByUsernameParams{
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Username:        usernameQuery,
+	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying database for users")
 	}
 
-	users := make([]*identity.User, len(results))
-	for i, result := range results {
-		users[i] = &identity.User{
+	users := []*identity.User{}
+	for _, result := range results {
+		users = append(users, &identity.User{
 			CreatedAt:                  result.CreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -288,7 +306,7 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
-		}
+		})
 	}
 
 	if len(users) == 0 {
@@ -299,7 +317,7 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.User], err error) {
+func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -309,25 +327,25 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
-	filter.AttachToLogger(logger)
-
-	x = &filtering.QueryFilteredResult[identity.User]{
-		Pagination: filter.ToPagination(),
-	}
+	filter.AttachToLogger(logger) // TODO: is assignment necessary here? if not, make consistent
 
 	results, err := r.generatedQuerier.GetUsers(ctx, r.db, &generated.GetUsersParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
+	var (
+		data                      = []*identity.User{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		u := &identity.User{
 			CreatedAt:                  result.CreatedAt,
@@ -353,10 +371,20 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
 
-		x.Data = append(x.Data, u)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, u)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *identity.User) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }
@@ -481,6 +509,9 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
 		ServiceRole:                   authorization.ServiceUserRole.String(),
 		EmailAddressVerificationToken: database.NullStringFromString(token),
+		RequiresPasswordChange:        false,
+		UserAccountStatusExplanation:  "",
+		TwoFactorSecretVerifiedAt:     database.NullTimeFromTimePointer(nil),
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 
@@ -579,19 +610,20 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 
 	// create the account.
 	if err := r.generatedQuerier.CreateAccount(ctx, querier, &generated.CreateAccountParams{
-		City:          accountCreationInput.City,
-		Name:          accountCreationInput.Name,
-		BillingStatus: identity.UnpaidAccountBillingStatus,
-		ContactPhone:  accountCreationInput.ContactPhone,
-		AddressLine1:  accountCreationInput.AddressLine1,
-		AddressLine2:  accountCreationInput.AddressLine2,
-		ID:            accountCreationInput.ID,
-		State:         accountCreationInput.State,
-		ZipCode:       accountCreationInput.ZipCode,
-		Country:       accountCreationInput.Country,
-		BelongsToUser: accountCreationInput.BelongsToUser,
-		Latitude:      database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
-		Longitude:     database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
+		City:              accountCreationInput.City,
+		Name:              accountCreationInput.Name,
+		BillingStatus:     identity.UnpaidAccountBillingStatus,
+		ContactPhone:      accountCreationInput.ContactPhone,
+		AddressLine1:      accountCreationInput.AddressLine1,
+		AddressLine2:      accountCreationInput.AddressLine2,
+		ID:                accountCreationInput.ID,
+		State:             accountCreationInput.State,
+		ZipCode:           accountCreationInput.ZipCode,
+		Country:           accountCreationInput.Country,
+		BelongsToUser:     accountCreationInput.BelongsToUser,
+		Latitude:          database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
+		Longitude:         database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
+		WebhookHmacSecret: accountCreationInput.WebhookEncryptionKey,
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating account")

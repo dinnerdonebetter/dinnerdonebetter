@@ -353,19 +353,20 @@ WHERE recipe_step_products.archived_at IS NULL
 		OR recipe_step_products.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_step_products.archived_at = NULL)
-LIMIT $9
-OFFSET $8
+	AND recipe_step_products.id > COALESCE($8, '')
+ORDER BY recipe_step_products.id ASC
+LIMIT COALESCE($9, 50)
 `
 
 type GetRecipeStepProductsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	RecipeStepID    string
 	RecipeID        string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -416,8 +417,8 @@ func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRe
 		arg.IncludeArchived,
 		arg.RecipeStepID,
 		arg.RecipeID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

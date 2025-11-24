@@ -378,18 +378,19 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $7
-OFFSET $6
+	AND valid_preparation_vessels.id > COALESCE($6, '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidPreparationVesselsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidPreparationVesselsRow struct {
@@ -464,8 +465,8 @@ func (q *Queries) GetValidPreparationVessels(ctx context.Context, db DBTX, arg *
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -655,18 +656,19 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_preparation_vessels.id > COALESCE($7, '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidPreparationVesselsForPreparationParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	ID              string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -743,8 +745,8 @@ func (q *Queries) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -934,18 +936,19 @@ WHERE
 		valid_preparation_vessels.last_updated_at IS NULL
 		OR valid_preparation_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT $8
-OFFSET $7
+	AND valid_preparation_vessels.id > COALESCE($7, '')
+ORDER BY valid_preparation_vessels.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetValidPreparationVesselsForVesselParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	ID              string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -1022,8 +1025,8 @@ func (q *Queries) GetValidPreparationVesselsForVessel(ctx context.Context, db DB
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.ID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

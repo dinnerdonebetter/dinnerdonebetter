@@ -78,7 +78,7 @@ type (
 		ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error)
 		GetServiceSetting(ctx context.Context, serviceSettingID string) (*ServiceSetting, error)
 		GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSetting], error)
-		SearchForServiceSettings(ctx context.Context, query string) ([]*ServiceSetting, error) // TODO: add query filter
+		SearchForServiceSettings(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSetting], error)
 		ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error
 	}
 
