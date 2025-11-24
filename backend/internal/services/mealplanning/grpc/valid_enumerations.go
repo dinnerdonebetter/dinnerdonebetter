@@ -1030,41 +1030,24 @@ func (s *serviceImpl) GetValidMeasurementUnitConversion(ctx context.Context, req
 	return res, nil
 }
 
-func (s *serviceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsFromUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnitConversionsForUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsForUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsForUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 
-	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsFromMeasurementUnit(ctx, request.ValidMeasurementUnitID)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions from unit")
-	}
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	res := &mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse{}
-
-	for _, y := range x {
-		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
-	}
-
-	return res, nil
-}
-
-func (s *serviceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsToUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsToUnitResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
-
-	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsToMeasurementUnit(ctx, request.ValidMeasurementUnitID)
+	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsForMeasurementUnit(ctx, request.ValidMeasurementUnitID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions to unit")
 	}
 
-	res := &mealplanning.GetValidMeasurementUnitConversionsToUnitResponse{}
-	for _, y := range x {
+	// TODO: add filter to response
+	res := &mealplanning.GetValidMeasurementUnitConversionsForUnitResponse{}
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
 	}
 

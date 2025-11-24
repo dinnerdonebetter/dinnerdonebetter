@@ -343,6 +343,12 @@ func (m *MockValidEnumerationsManager) ArchiveValidInstrument(ctx context.Contex
 	return returnValues.Error(0)
 }
 
+func (m *MockValidEnumerationsManager) ValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion], error) {
+	returnValues := m.Called(ctx, validMeasurementUnitID, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion]), returnValues.Error(1)
+}
+
 func (m *MockValidEnumerationsManager) ValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 

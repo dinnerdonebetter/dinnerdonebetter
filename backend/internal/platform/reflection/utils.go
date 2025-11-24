@@ -3,6 +3,8 @@ package reflection
 import (
 	"fmt"
 	"reflect"
+	"runtime"
+	"strings"
 )
 
 // GetTagNameByValue searches struct s (or *s) for a field whose value equals fieldValue
@@ -69,4 +71,23 @@ func GetTagNameByValue(strukt, fieldValue any, tagKey string) (string, error) {
 		return tag, nil
 	}
 	return "", fmt.Errorf("no matching field with that value found in struct")
+}
+
+// GetMethodName is meant to fetch the name of a given method passed in as an argument.
+func GetMethodName(method any) string {
+	v := reflect.ValueOf(method)
+	if v.Kind() != reflect.Func {
+		return ""
+	}
+
+	if pc := v.Pointer(); pc != 0 {
+		if f := runtime.FuncForPC(pc); f != nil {
+			fullName := f.Name()
+			parts := strings.Split(fullName, ".")
+			if len(parts) > 0 {
+				return strings.TrimSuffix(parts[len(parts)-1], "-fm")
+			}
+		}
+	}
+	return ""
 }

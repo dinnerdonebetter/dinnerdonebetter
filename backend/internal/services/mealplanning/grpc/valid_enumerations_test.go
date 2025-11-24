@@ -1288,37 +1288,10 @@ func TestServiceImpl_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ValidMeasurementUnitConversionsFromMeasurementUnit", testutils.ContextMatcher, exampleID).Return(exampleResult.Data, nil)
+		mvem.On("ValidMeasurementUnitConversionsForMeasurementUnit", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidMeasurementUnitConversionsFromUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsFromUnitRequest{
-			ValidMeasurementUnitID: exampleID,
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, result)
-		assert.Len(t, result.Results, len(exampleResult.Data))
-
-		mock.AssertExpectationsForObjects(t, mvem)
-	})
-}
-
-func TestServiceImpl_GetValidMeasurementUnitConversionsToUnit(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleID := mealplanningfakes.BuildFakeID()
-		exampleResult := mealplanningfakes.BuildFakeValidMeasurementUnitConversionsList()
-
-		ctx := t.Context()
-		s := buildServiceImplForTest(t)
-
-		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ValidMeasurementUnitConversionsToMeasurementUnit", testutils.ContextMatcher, exampleID).Return(exampleResult.Data, nil)
-		s.validEnumerationsManager = mvem
-
-		result, err := s.GetValidMeasurementUnitConversionsToUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsToUnitRequest{
+		result, err := s.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForUnitRequest{
 			ValidMeasurementUnitID: exampleID,
 		})
 		assert.NoError(t, err)

@@ -1071,25 +1071,13 @@ message GetValidMeasurementUnitConversionResponse {
   ValidMeasurementUnitConversion Result = 2;
 }
 
-// GetValidMeasurementUnitConversionsFromUnit
-message GetValidMeasurementUnitConversionsFromUnitRequest {
+// GetValidMeasurementUnitConversionsForUnit
+message GetValidMeasurementUnitConversionsForUnitRequest {
   filtering.QueryFilter Filter = 1;
   string ValidMeasurementUnitID = 2;
 }
 
-message GetValidMeasurementUnitConversionsFromUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated ValidMeasurementUnitConversion Results = 3;
-}
-
-// GetValidMeasurementUnitConversionsToUnit
-message GetValidMeasurementUnitConversionsToUnitRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidMeasurementUnitID = 2;
-}
-
-message GetValidMeasurementUnitConversionsToUnitResponse {
+message GetValidMeasurementUnitConversionsForUnitResponse {
   common.ResponseDetails ResponseDetails = 1;
   filtering.QueryFilter Filter = 2;
   repeated ValidMeasurementUnitConversion Results = 3;
@@ -3499,8 +3487,7 @@ service MealPlanningService {
   rpc GetValidInstruments(GetValidInstrumentsRequest) returns (GetValidInstrumentsResponse);
   rpc GetValidMeasurementUnit(GetValidMeasurementUnitRequest) returns (GetValidMeasurementUnitResponse);
   rpc GetValidMeasurementUnitConversion(GetValidMeasurementUnitConversionRequest) returns (GetValidMeasurementUnitConversionResponse);
-  rpc GetValidMeasurementUnitConversionsFromUnit(GetValidMeasurementUnitConversionsFromUnitRequest) returns (GetValidMeasurementUnitConversionsFromUnitResponse);
-  rpc GetValidMeasurementUnitConversionsToUnit(GetValidMeasurementUnitConversionsToUnitRequest) returns (GetValidMeasurementUnitConversionsToUnitResponse);
+  rpc GetValidMeasurementUnitConversionsForUnit(GetValidMeasurementUnitConversionsForUnitRequest) returns (GetValidMeasurementUnitConversionsForUnitResponse);
   rpc GetValidMeasurementUnits(GetValidMeasurementUnitsRequest) returns (GetValidMeasurementUnitsResponse);
   rpc GetValidPreparation(GetValidPreparationRequest) returns (GetValidPreparationResponse);
   rpc GetValidPreparationInstrument(GetValidPreparationInstrumentRequest) returns (GetValidPreparationInstrumentResponse);

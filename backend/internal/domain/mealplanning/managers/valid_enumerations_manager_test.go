@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -84,7 +85,7 @@ func TestValidEnumerationManager_SearchValidIngredientGroups(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredientGroups), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientGroups), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -110,7 +111,7 @@ func TestValidEnumerationManager_ListValidIngredientGroups(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientGroups), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientGroups), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -137,7 +138,7 @@ func TestValidEnumerationManager_CreateValidIngredientGroup(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroupDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroupDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientGroupCreatedServiceEventType: {keys.ValidIngredientGroupIDKey},
@@ -166,7 +167,7 @@ func TestValidEnumerationManager_ReadValidIngredientGroup(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -193,8 +194,8 @@ func TestValidEnumerationManager_UpdateValidIngredientGroup(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredientGroup), testutils.ContextMatcher, exampleValidIngredientGroup.ID).Return(exampleValidIngredientGroup, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroup]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredientGroup), testutils.ContextMatcher, exampleValidIngredientGroup.ID).Return(exampleValidIngredientGroup, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroup]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientGroupUpdatedServiceEventType: {keys.ValidIngredientGroupIDKey},
@@ -223,7 +224,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientGroup(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientGroupArchivedServiceEventType: {keys.ValidIngredientGroupIDKey},
@@ -250,7 +251,7 @@ func TestValidEnumerationManager_ListValidIngredientMeasurementUnits(T *testing.
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientMeasurementUnits), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientMeasurementUnits), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -277,7 +278,7 @@ func TestValidEnumerationManager_CreateValidIngredientMeasurementUnit(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientMeasurementUnitCreatedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
@@ -306,7 +307,7 @@ func TestValidEnumerationManager_ReadValidIngredientMeasurementUnit(T *testing.T
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -333,8 +334,8 @@ func TestValidEnumerationManager_UpdateValidIngredientMeasurementUnit(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, exampleValidIngredientMeasurementUnit.ID).Return(exampleValidIngredientMeasurementUnit, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnit]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, exampleValidIngredientMeasurementUnit.ID).Return(exampleValidIngredientMeasurementUnit, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientMeasurementUnit]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientMeasurementUnitUpdatedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
@@ -363,7 +364,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientMeasurementUnit(T *testin
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientMeasurementUnitArchivedServiceEventType: {keys.ValidIngredientMeasurementUnitIDKey},
@@ -391,7 +392,7 @@ func TestValidEnumerationManager_SearchValidIngredientMeasurementUnitsByIngredie
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientMeasurementUnitsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientMeasurementUnitsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -418,7 +419,7 @@ func TestValidEnumerationManager_SearchValidIngredientMeasurementUnitsByMeasurem
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientMeasurementUnitsForMeasurementUnit), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientMeasurementUnitsForMeasurementUnit), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -444,7 +445,7 @@ func TestValidEnumerationManager_ListValidIngredientPreparations(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -471,7 +472,7 @@ func TestValidEnumerationManager_CreateValidIngredientPreparation(T *testing.T) 
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparationDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientPreparationCreatedServiceEventType: {keys.ValidIngredientPreparationIDKey},
@@ -500,7 +501,7 @@ func TestValidEnumerationManager_ReadValidIngredientPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -527,8 +528,8 @@ func TestValidEnumerationManager_UpdateValidIngredientPreparation(T *testing.T) 
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredientPreparation), testutils.ContextMatcher, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparation]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredientPreparation), testutils.ContextMatcher, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientPreparation]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientPreparationUpdatedServiceEventType: {keys.ValidIngredientPreparationIDKey},
@@ -557,7 +558,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientPreparation(T *testing.T)
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientPreparationArchivedServiceEventType: {keys.ValidIngredientPreparationIDKey},
@@ -585,7 +586,7 @@ func TestValidEnumerationManager_SearchValidIngredientPreparationsByIngredient(T
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparationsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientPreparationsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -612,7 +613,7 @@ func TestValidEnumerationManager_SearchValidIngredientPreparationsByPreparation(
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparationsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientPreparationsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -639,7 +640,7 @@ func TestValidEnumerationManager_SearchValidIngredients(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredients), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredients), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -665,7 +666,7 @@ func TestValidEnumerationManager_ListValidIngredients(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -692,7 +693,7 @@ func TestValidEnumerationManager_CreateValidIngredient(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientCreatedServiceEventType: {keys.ValidIngredientIDKey},
@@ -721,7 +722,7 @@ func TestValidEnumerationManager_ReadValidIngredient(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -747,7 +748,7 @@ func TestValidEnumerationManager_RandomValidIngredient(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetRandomValidIngredient), testutils.ContextMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetRandomValidIngredient), testutils.ContextMatcher).Return(expected, nil)
 			},
 		)
 
@@ -774,8 +775,8 @@ func TestValidEnumerationManager_UpdateValidIngredient(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredient]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredient), testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredient]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientUpdatedServiceEventType: {keys.ValidIngredientIDKey},
@@ -804,7 +805,7 @@ func TestValidEnumerationManager_ArchiveValidIngredient(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientArchivedServiceEventType: {keys.ValidIngredientIDKey},
@@ -833,7 +834,7 @@ func TestValidEnumerationManager_SearchValidIngredientsByPreparationAndIngredien
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredientsForPreparation), testutils.ContextMatcher, preparationID, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientsForPreparation), testutils.ContextMatcher, preparationID, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -859,7 +860,7 @@ func TestValidEnumerationManager_ListValidIngredientStateIngredients(T *testing.
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientStateIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -886,7 +887,7 @@ func TestValidEnumerationManager_CreateValidIngredientStateIngredient(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredientDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateIngredientCreatedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
@@ -915,7 +916,7 @@ func TestValidEnumerationManager_ReadValidIngredientStateIngredient(T *testing.T
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -942,8 +943,8 @@ func TestValidEnumerationManager_UpdateValidIngredientStateIngredient(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredientStateIngredient), testutils.ContextMatcher, exampleValidIngredientStateIngredient.ID).Return(exampleValidIngredientStateIngredient, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredient]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredientStateIngredient), testutils.ContextMatcher, exampleValidIngredientStateIngredient.ID).Return(exampleValidIngredientStateIngredient, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientStateIngredient), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateIngredient]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateIngredientUpdatedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
@@ -972,7 +973,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientStateIngredient(T *testin
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateIngredientArchivedServiceEventType: {keys.ValidIngredientStateIngredientIDKey},
@@ -1000,7 +1001,7 @@ func TestValidEnumerationManager_SearchValidIngredientStateIngredientsByIngredie
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredientsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientStateIngredientsForIngredient), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1027,7 +1028,7 @@ func TestValidEnumerationManager_SearchValidIngredientStateIngredientsByIngredie
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredientsForIngredientState), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientStateIngredientsForIngredientState), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1054,7 +1055,7 @@ func TestValidEnumerationManager_SearchValidIngredientStates(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -1080,7 +1081,7 @@ func TestValidEnumerationManager_ListValidIngredientStates(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientStates), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientStates), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1107,7 +1108,7 @@ func TestValidEnumerationManager_CreateValidIngredientState(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientStateDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateCreatedServiceEventType: {keys.ValidIngredientStateIDKey},
@@ -1136,7 +1137,7 @@ func TestValidEnumerationManager_ReadValidIngredientState(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidIngredientState), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidIngredientState), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1163,8 +1164,8 @@ func TestValidEnumerationManager_UpdateValidIngredientState(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidIngredientState), testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientState]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidIngredientState), testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidIngredientState), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientState]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateUpdatedServiceEventType: {keys.ValidIngredientStateIDKey},
@@ -1193,7 +1194,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientState(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientState), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidIngredientState), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidIngredientStateArchivedServiceEventType: {keys.ValidIngredientStateIDKey},
@@ -1221,7 +1222,7 @@ func TestValidEnumerationManager_SearchValidMeasurementUnits(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -1248,7 +1249,7 @@ func TestValidEnumerationManager_SearchValidMeasurementUnitsByIngredientID(T *te
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ValidMeasurementUnitsForIngredientID), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.ValidMeasurementUnitsForIngredientID), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1274,7 +1275,7 @@ func TestValidEnumerationManager_ListValidMeasurementUnits(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnits), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidMeasurementUnits), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1301,7 +1302,7 @@ func TestValidEnumerationManager_CreateValidMeasurementUnit(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitCreatedServiceEventType: {keys.ValidMeasurementUnitIDKey},
@@ -1330,7 +1331,7 @@ func TestValidEnumerationManager_ReadValidMeasurementUnit(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1357,8 +1358,8 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnit(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidMeasurementUnit), testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnit]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidMeasurementUnit), testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidMeasurementUnit), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnit]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitUpdatedServiceEventType: {keys.ValidMeasurementUnitIDKey},
@@ -1387,7 +1388,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnit(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitArchivedServiceEventType: {keys.ValidMeasurementUnitIDKey},
@@ -1415,7 +1416,7 @@ func TestValidEnumerationManager_SearchValidInstruments(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -1441,7 +1442,7 @@ func TestValidEnumerationManager_ListValidInstruments(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1468,7 +1469,7 @@ func TestValidEnumerationManager_CreateValidInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrumentDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidInstrumentCreatedServiceEventType: {keys.ValidInstrumentIDKey},
@@ -1497,7 +1498,7 @@ func TestValidEnumerationManager_ReadValidInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1523,7 +1524,7 @@ func TestValidEnumerationManager_RandomValidInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetRandomValidInstrument), testutils.ContextMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetRandomValidInstrument), testutils.ContextMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1550,8 +1551,8 @@ func TestValidEnumerationManager_UpdateValidInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidInstrument), testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrument]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidInstrument), testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidInstrument]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidInstrumentUpdatedServiceEventType: {keys.ValidInstrumentIDKey},
@@ -1580,7 +1581,7 @@ func TestValidEnumerationManager_ArchiveValidInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidInstrumentArchivedServiceEventType: {keys.ValidInstrumentIDKey},
@@ -1593,7 +1594,7 @@ func TestValidEnumerationManager_ArchiveValidInstrument(T *testing.T) {
 	})
 }
 
-func TestValidEnumerationManager_ValidMeasurementUnitConversionsFromMeasurementUnit(T *testing.T) {
+func TestValidEnumerationManager_ValidMeasurementUnitConversionsForMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1608,40 +1609,13 @@ func TestValidEnumerationManager_ValidMeasurementUnitConversionsFromMeasurementU
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnitConversionsFromUnit), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidMeasurementUnitConversionsForUnit), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
-		actual, err := vem.ValidMeasurementUnitConversionsFromMeasurementUnit(ctx, exampleQuery)
+		actual, err := vem.ValidMeasurementUnitConversionsForMeasurementUnit(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
-
-		mock.AssertExpectationsForObjects(t, expectations...)
-	})
-}
-
-func TestValidEnumerationManager_ValidMeasurementUnitConversionsToMeasurementUnit(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		vem := buildValidEnumerationsManagerForTest(t)
-
-		expected := fakes.BuildFakeValidMeasurementUnitConversionsList()
-		exampleQuery := fakes.BuildFakeID()
-
-		expectations := setupExpectationsForValidEnumerationManager(
-			vem,
-			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnitConversionsToUnit), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
-			},
-		)
-
-		actual, err := vem.ValidMeasurementUnitConversionsToMeasurementUnit(ctx, exampleQuery)
-		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1662,7 +1636,7 @@ func TestValidEnumerationManager_CreateValidMeasurementUnitConversion(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversionDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitConversionCreatedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
@@ -1691,7 +1665,7 @@ func TestValidEnumerationManager_ReadValidMeasurementUnitConversion(T *testing.T
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1718,8 +1692,8 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnitConversion(T *testing
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidMeasurementUnitConversion), testutils.ContextMatcher, exampleValidMeasurementUnitConversion.ID).Return(exampleValidMeasurementUnitConversion, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversion]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidMeasurementUnitConversion), testutils.ContextMatcher, exampleValidMeasurementUnitConversion.ID).Return(exampleValidMeasurementUnitConversion, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidMeasurementUnitConversion), testutils.ContextMatcher, testutils.MatchType[*types.ValidMeasurementUnitConversion]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitConversionUpdatedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
@@ -1748,7 +1722,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnitConversion(T *testin
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidMeasurementUnitConversionArchivedServiceEventType: {keys.ValidMeasurementUnitConversionIDKey},
@@ -1775,7 +1749,7 @@ func TestValidEnumerationManager_ListValidPreparationInstruments(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1802,7 +1776,7 @@ func TestValidEnumerationManager_CreateValidPreparationInstrument(T *testing.T) 
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrumentDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidPreparationInstrumentCreatedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
@@ -1831,7 +1805,7 @@ func TestValidEnumerationManager_ReadValidPreparationInstrument(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1858,8 +1832,8 @@ func TestValidEnumerationManager_UpdateValidPreparationInstrument(T *testing.T) 
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidPreparationInstrument), testutils.ContextMatcher, exampleValidPreparationInstrument.ID).Return(exampleValidPreparationInstrument, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrument]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidPreparationInstrument), testutils.ContextMatcher, exampleValidPreparationInstrument.ID).Return(exampleValidPreparationInstrument, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparationInstrument), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationInstrument]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationInstrumentUpdatedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
@@ -1888,7 +1862,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationInstrument(T *testing.T)
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationInstrumentArchivedServiceEventType: {keys.ValidPreparationInstrumentIDKey},
@@ -1916,7 +1890,7 @@ func TestValidEnumerationManager_SearchValidPreparationInstrumentsByPreparation(
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationInstrumentsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationInstrumentsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1943,7 +1917,7 @@ func TestValidEnumerationManager_SearchValidPreparationInstrumentsByInstrument(T
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationInstrumentsForInstrument), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationInstrumentsForInstrument), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1970,7 +1944,7 @@ func TestValidEnumerationManager_SearchValidPreparations(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidPreparations), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidPreparations), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
 			},
 		)
 
@@ -1996,7 +1970,7 @@ func TestValidEnumerationManager_ListValidPreparations(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2023,7 +1997,7 @@ func TestValidEnumerationManager_CreateValidPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidPreparationCreatedServiceEventType: {keys.ValidPreparationIDKey},
@@ -2052,7 +2026,7 @@ func TestValidEnumerationManager_ReadValidPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -2078,7 +2052,7 @@ func TestValidEnumerationManager_RandomValidPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetRandomValidPreparation), testutils.ContextMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetRandomValidPreparation), testutils.ContextMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2105,8 +2079,8 @@ func TestValidEnumerationManager_UpdateValidPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparation]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidPreparation), testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparation), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparation]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationUpdatedServiceEventType: {keys.ValidPreparationIDKey},
@@ -2135,7 +2109,7 @@ func TestValidEnumerationManager_ArchiveValidPreparation(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationArchivedServiceEventType: {keys.ValidPreparationIDKey},
@@ -2162,7 +2136,7 @@ func TestValidEnumerationManager_ListValidPreparationVessels(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2189,7 +2163,7 @@ func TestValidEnumerationManager_CreateValidPreparationVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVesselDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidPreparationVesselCreatedServiceEventType: {keys.ValidPreparationVesselIDKey},
@@ -2218,7 +2192,7 @@ func TestValidEnumerationManager_ReadValidPreparationVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -2245,8 +2219,8 @@ func TestValidEnumerationManager_UpdateValidPreparationVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidPreparationVessel), testutils.ContextMatcher, exampleValidPreparationVessel.ID).Return(exampleValidPreparationVessel, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVessel]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidPreparationVessel), testutils.ContextMatcher, exampleValidPreparationVessel.ID).Return(exampleValidPreparationVessel, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidPreparationVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidPreparationVessel]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationVesselUpdatedServiceEventType: {keys.ValidPreparationVesselIDKey},
@@ -2275,7 +2249,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidPreparationVesselArchivedServiceEventType: {keys.ValidPreparationVesselIDKey},
@@ -2303,7 +2277,7 @@ func TestValidEnumerationManager_SearchValidPreparationVesselsByPreparation(T *t
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationVesselsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationVesselsForPreparation), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2330,7 +2304,7 @@ func TestValidEnumerationManager_SearchValidPreparationVesselsByVessel(T *testin
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidPreparationVesselsForVessel), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidPreparationVesselsForVessel), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2357,7 +2331,7 @@ func TestValidEnumerationManager_SearchValidVessels(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -2383,7 +2357,7 @@ func TestValidEnumerationManager_ListValidVessels(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2410,7 +2384,7 @@ func TestValidEnumerationManager_CreateValidVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.CreateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVesselDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.CreateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.ValidVesselCreatedServiceEventType: {keys.ValidVesselIDKey},
@@ -2439,7 +2413,7 @@ func TestValidEnumerationManager_ReadValidVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetValidVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetValidVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -2465,7 +2439,7 @@ func TestValidEnumerationManager_RandomValidVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.GetRandomValidVessel), testutils.ContextMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(vem.db.GetRandomValidVessel), testutils.ContextMatcher).Return(expected, nil)
 			},
 		)
 
@@ -2492,8 +2466,8 @@ func TestValidEnumerationManager_UpdateValidVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.GetValidVessel), testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
-				db.On(testutils.GetMethodName(mpm.db.UpdateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVessel]()).Return(nil)
+				db.On(reflection.GetMethodName(mpm.db.GetValidVessel), testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
+				db.On(reflection.GetMethodName(mpm.db.UpdateValidVessel), testutils.ContextMatcher, testutils.MatchType[*types.ValidVessel]()).Return(nil)
 			},
 			map[string][]string{
 				types.ValidVesselUpdatedServiceEventType: {keys.ValidVesselIDKey},
@@ -2522,7 +2496,7 @@ func TestValidEnumerationManager_ArchiveValidVessel(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.ArchiveValidVessel), testutils.ContextMatcher, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(vem.db.ArchiveValidVessel), testutils.ContextMatcher, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.ValidVesselArchivedServiceEventType: {keys.ValidVesselIDKey},

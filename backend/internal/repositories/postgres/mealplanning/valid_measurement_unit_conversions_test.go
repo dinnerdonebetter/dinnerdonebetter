@@ -79,11 +79,11 @@ func TestQuerier_Integration_ValidMeasurementUnitConversions(t *testing.T) {
 	updatedValidMeasurementUnitConversion.To = *to
 	assert.NoError(t, dbc.UpdateValidMeasurementUnitConversion(ctx, updatedValidMeasurementUnitConversion))
 
-	toUnits, err := dbc.GetValidMeasurementUnitConversionsToUnit(ctx, updatedValidMeasurementUnitConversion.To.ID)
+	toUnits, err := dbc.GetValidMeasurementUnitConversionsForUnit(ctx, updatedValidMeasurementUnitConversion.To.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, toUnits)
 
-	fromUnits, err := dbc.GetValidMeasurementUnitConversionsFromUnit(ctx, updatedValidMeasurementUnitConversion.From.ID)
+	fromUnits, err := dbc.GetValidMeasurementUnitConversionsForUnit(ctx, updatedValidMeasurementUnitConversion.From.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fromUnits)
 

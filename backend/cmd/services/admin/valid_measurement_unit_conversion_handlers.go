@@ -33,32 +33,18 @@ func (s *AdminFrontendServer) ValidMeasurementUnitConversionsForUnit(_ http.Resp
 		), nil
 	}
 
-	// Fetch conversions FROM this unit
-	fromRes, err := c.GetValidMeasurementUnitConversionsFromUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsFromUnitRequest{
+	fromRes, err := c.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
 		ValidMeasurementUnitID: measurementUnitID,
 	})
 	if err != nil {
 		s.logger.Error("error fetching conversions from unit", err)
 	}
 
-	// Fetch conversions TO this unit
-	toRes, err := c.GetValidMeasurementUnitConversionsToUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsToUnitRequest{
-		ValidMeasurementUnitID: measurementUnitID,
-	})
-	if err != nil {
-		s.logger.Error("error fetching conversions to unit", err)
-	}
-
-	return renderMeasurementUnitConversions(measurementUnitID, fromRes.Results, toRes.Results, &design.StandardPalette), nil
+	return renderMeasurementUnitConversions(measurementUnitID, fromRes.Results, &design.StandardPalette), nil
 }
 
 // renderMeasurementUnitConversions creates a custom display for unit conversions
-func renderMeasurementUnitConversions(measurementUnitID string, fromConversions, toConversions []*mealplanningsvc.ValidMeasurementUnitConversion, palette *design.Palette) g.Node {
-	// Combine all conversions into one list
-	allConversions := make([]*mealplanningsvc.ValidMeasurementUnitConversion, 0, len(fromConversions)+len(toConversions))
-	allConversions = append(allConversions, fromConversions...)
-	allConversions = append(allConversions, toConversions...)
-
+func renderMeasurementUnitConversions(measurementUnitID string, conversions []*mealplanningsvc.ValidMeasurementUnitConversion, palette *design.Palette) g.Node {
 	return ghtml.Div(
 		ghtml.Class("space-y-4"),
 
@@ -176,7 +162,7 @@ func renderMeasurementUnitConversions(measurementUnitID string, fromConversions,
 
 		// All conversions in one list
 		g.If(
-			len(allConversions) == 0,
+			len(conversions) == 0,
 			ghtml.Div(
 				ghtml.Class("text-center py-12 px-4 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg"),
 				ghtml.Div(
@@ -196,11 +182,11 @@ func renderMeasurementUnitConversions(measurementUnitID string, fromConversions,
 			),
 		),
 		g.If(
-			len(allConversions) > 0,
+			len(conversions) > 0,
 			ghtml.Div(
 				ghtml.Class("space-y-2"),
 				g.Group(
-					g.Map(allConversions, func(conv *mealplanningsvc.ValidMeasurementUnitConversion) g.Node {
+					g.Map(conversions, func(conv *mealplanningsvc.ValidMeasurementUnitConversion) g.Node {
 						return renderConversionItem(conv, measurementUnitID, palette)
 					}),
 				),

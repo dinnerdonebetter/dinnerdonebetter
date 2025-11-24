@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -142,8 +143,8 @@ func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 	return validMeasurementUnitConversion, nil
 }
 
-// GetValidMeasurementUnitConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
-func (q *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsForUnit fetches all valid measurement conversions involving a given measurement unit.
+func (q *repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -155,201 +156,131 @@ func (q *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Cont
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx, q.db, validMeasurementUnitID)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	results, err := q.generatedQuerier.GetValidMeasurementUnitConversionsForMeasurementUnit(ctx, q.db, &generated.GetValidMeasurementUnitConversionsForMeasurementUnitParams{
+		ID:              validMeasurementUnitID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for valid measurement conversions")
 	}
 
-	validMeasurementUnitConversions := make([]*mealplanning.ValidMeasurementUnitConversion, len(results))
-	for i, result := range results {
-		r := result
-		validMeasurementUnitConversions[i] = &mealplanning.ValidMeasurementUnitConversion{
-			CreatedAt:     r.ValidMeasurementUnitConversionCreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(r.ValidMeasurementUnitConversionLastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(r.ValidMeasurementUnitConversionArchivedAt),
-			OnlyForIngredient: &mealplanning.ValidIngredient{
-				CreatedAt:     r.ValidIngredientCreatedAt.Time,
-				LastUpdatedAt: &r.ValidIngredientLastUpdatedAt.Time,
-				ArchivedAt:    &r.ValidIngredientArchivedAt.Time,
+	var (
+		data          []*mealplanning.ValidMeasurementUnitConversion
+		filteredCount uint64
+		totalCount    uint64
+	)
+
+	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+
+		conversion := &mealplanning.ValidMeasurementUnitConversion{
+			CreatedAt:     result.ValidMeasurementUnitConversionCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitConversionLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitConversionArchivedAt),
+			Notes:         result.ValidMeasurementUnitConversionNotes,
+			ID:            result.ValidMeasurementUnitConversionID,
+			From: mealplanning.ValidMeasurementUnit{
+				CreatedAt:     result.FromUnitCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.FromUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.FromUnitArchivedAt),
+				Name:          result.FromUnitName,
+				IconPath:      result.FromUnitIconPath,
+				ID:            result.FromUnitID,
+				Description:   result.FromUnitDescription,
+				PluralName:    result.FromUnitPluralName,
+				Slug:          result.FromUnitSlug,
+				Volumetric:    database.BoolFromNullBool(result.FromUnitVolumetric),
+				Universal:     result.FromUnitUniversal,
+				Metric:        result.FromUnitMetric,
+				Imperial:      result.FromUnitImperial,
+			},
+			To: mealplanning.ValidMeasurementUnit{
+				CreatedAt:     result.ToUnitCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ToUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ToUnitArchivedAt),
+				Name:          result.ToUnitName,
+				IconPath:      result.ToUnitIconPath,
+				ID:            result.ToUnitID,
+				Description:   result.ToUnitDescription,
+				PluralName:    result.ToUnitPluralName,
+				Slug:          result.ToUnitSlug,
+				Volumetric:    database.BoolFromNullBool(result.ToUnitVolumetric),
+				Universal:     result.ToUnitUniversal,
+				Metric:        result.ToUnitMetric,
+				Imperial:      result.ToUnitImperial,
+			},
+			Modifier: database.Float32FromString(result.ValidMeasurementUnitConversionModifier),
+		}
+
+		if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
+			conversion.OnlyForIngredient = &mealplanning.ValidIngredient{
+				CreatedAt:     result.ValidIngredientCreatedAt.Time,
+				LastUpdatedAt: &result.ValidIngredientLastUpdatedAt.Time,
+				ArchivedAt:    &result.ValidIngredientArchivedAt.Time,
 				StorageTemperatureInCelsius: types.OptionalFloat32Range{
 					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
 					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				},
-				IconPath:               r.ValidIngredientIconPath.String,
-				Warning:                r.ValidIngredientWarning.String,
-				PluralName:             r.ValidIngredientPluralName.String,
-				StorageInstructions:    r.ValidIngredientStorageInstructions.String,
-				Name:                   r.ValidIngredientName.String,
-				ID:                     r.ValidIngredientID.String,
-				Description:            r.ValidIngredientDescription.String,
-				Slug:                   r.ValidIngredientSlug.String,
-				ShoppingSuggestions:    r.ValidIngredientShoppingSuggestions.String,
-				ContainsShellfish:      r.ValidIngredientContainsShellfish.Bool,
-				IsLiquid:               r.ValidIngredientIsLiquid.Bool,
-				ContainsPeanut:         r.ValidIngredientContainsPeanut.Bool,
-				ContainsTreeNut:        r.ValidIngredientContainsTreeNut.Bool,
-				ContainsEgg:            r.ValidIngredientContainsEgg.Bool,
-				ContainsWheat:          r.ValidIngredientContainsWheat.Bool,
-				ContainsSoy:            r.ValidIngredientContainsSoy.Bool,
-				AnimalDerived:          r.ValidIngredientAnimalDerived.Bool,
-				RestrictToPreparations: r.ValidIngredientRestrictToPreparations.Bool,
-				ContainsSesame:         r.ValidIngredientContainsSesame.Bool,
-				ContainsFish:           r.ValidIngredientContainsFish.Bool,
-				ContainsGluten:         r.ValidIngredientContainsGluten.Bool,
-				ContainsDairy:          r.ValidIngredientContainsDairy.Bool,
-				ContainsAlcohol:        r.ValidIngredientContainsAlcohol.Bool,
-				AnimalFlesh:            r.ValidIngredientAnimalFlesh.Bool,
-				IsStarch:               r.ValidIngredientIsStarch.Bool,
-				IsProtein:              r.ValidIngredientIsProtein.Bool,
-				IsGrain:                r.ValidIngredientIsGrain.Bool,
-				IsFruit:                r.ValidIngredientIsFruit.Bool,
-				IsSalt:                 r.ValidIngredientIsSalt.Bool,
-				IsFat:                  r.ValidIngredientIsFat.Bool,
-				IsAcid:                 r.ValidIngredientIsAcid.Bool,
-				IsHeat:                 r.ValidIngredientIsHeat.Bool,
-			},
-			Notes: r.ValidMeasurementUnitConversionNotes,
-			ID:    r.ValidMeasurementUnitConversionID,
-			From: mealplanning.ValidMeasurementUnit{
-				CreatedAt:     r.FromUnitCreatedAt,
-				LastUpdatedAt: database.TimePointerFromNullTime(r.FromUnitLastUpdatedAt),
-				ArchivedAt:    database.TimePointerFromNullTime(r.FromUnitArchivedAt),
-				Name:          r.FromUnitName,
-				IconPath:      r.FromUnitIconPath,
-				ID:            r.FromUnitID,
-				Description:   r.FromUnitDescription,
-				PluralName:    r.FromUnitPluralName,
-				Slug:          r.FromUnitSlug,
-				Volumetric:    database.BoolFromNullBool(r.FromUnitVolumetric),
-				Universal:     r.FromUnitUniversal,
-				Metric:        r.FromUnitMetric,
-				Imperial:      r.FromUnitImperial,
-			},
-			To: mealplanning.ValidMeasurementUnit{
-				CreatedAt:     r.ToUnitCreatedAt,
-				LastUpdatedAt: database.TimePointerFromNullTime(r.ToUnitLastUpdatedAt),
-				ArchivedAt:    database.TimePointerFromNullTime(r.ToUnitArchivedAt),
-				Name:          r.ToUnitName,
-				IconPath:      r.ToUnitIconPath,
-				ID:            r.ToUnitID,
-				Description:   r.ToUnitDescription,
-				PluralName:    r.ToUnitPluralName,
-				Slug:          r.ToUnitSlug,
-				Volumetric:    database.BoolFromNullBool(r.ToUnitVolumetric),
-				Universal:     r.ToUnitUniversal,
-				Metric:        r.ToUnitMetric,
-				Imperial:      r.ToUnitImperial,
-			},
-			Modifier: database.Float32FromString(r.ValidMeasurementUnitConversionModifier),
+				IconPath:               result.ValidIngredientIconPath.String,
+				Warning:                result.ValidIngredientWarning.String,
+				PluralName:             result.ValidIngredientPluralName.String,
+				StorageInstructions:    result.ValidIngredientStorageInstructions.String,
+				Name:                   result.ValidIngredientName.String,
+				ID:                     result.ValidIngredientID.String,
+				Description:            result.ValidIngredientDescription.String,
+				Slug:                   result.ValidIngredientSlug.String,
+				ShoppingSuggestions:    result.ValidIngredientShoppingSuggestions.String,
+				ContainsShellfish:      result.ValidIngredientContainsShellfish.Bool,
+				IsLiquid:               result.ValidIngredientIsLiquid.Bool,
+				ContainsPeanut:         result.ValidIngredientContainsPeanut.Bool,
+				ContainsTreeNut:        result.ValidIngredientContainsTreeNut.Bool,
+				ContainsEgg:            result.ValidIngredientContainsEgg.Bool,
+				ContainsWheat:          result.ValidIngredientContainsWheat.Bool,
+				ContainsSoy:            result.ValidIngredientContainsSoy.Bool,
+				AnimalDerived:          result.ValidIngredientAnimalDerived.Bool,
+				RestrictToPreparations: result.ValidIngredientRestrictToPreparations.Bool,
+				ContainsSesame:         result.ValidIngredientContainsSesame.Bool,
+				ContainsFish:           result.ValidIngredientContainsFish.Bool,
+				ContainsGluten:         result.ValidIngredientContainsGluten.Bool,
+				ContainsDairy:          result.ValidIngredientContainsDairy.Bool,
+				ContainsAlcohol:        result.ValidIngredientContainsAlcohol.Bool,
+				AnimalFlesh:            result.ValidIngredientAnimalFlesh.Bool,
+				IsStarch:               result.ValidIngredientIsStarch.Bool,
+				IsProtein:              result.ValidIngredientIsProtein.Bool,
+				IsGrain:                result.ValidIngredientIsGrain.Bool,
+				IsFruit:                result.ValidIngredientIsFruit.Bool,
+				IsSalt:                 result.ValidIngredientIsSalt.Bool,
+				IsFat:                  result.ValidIngredientIsFat.Bool,
+				IsAcid:                 result.ValidIngredientIsAcid.Bool,
+				IsHeat:                 result.ValidIngredientIsHeat.Bool,
+			}
 		}
+
+		data = append(data, conversion)
 	}
 
-	return validMeasurementUnitConversions, nil
-}
-
-// GetValidMeasurementUnitConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
-func (q *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if validMeasurementUnitID == "" {
-		return nil, database.ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-
-	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx, q.db, validMeasurementUnitID)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "querying for valid measurement conversions")
-	}
-
-	validMeasurementUnitConversions := make([]*mealplanning.ValidMeasurementUnitConversion, len(results))
-	for i, result := range results {
-		r := result
-		validMeasurementUnitConversions[i] = &mealplanning.ValidMeasurementUnitConversion{
-			CreatedAt:     r.ValidMeasurementUnitConversionCreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(r.ValidMeasurementUnitConversionLastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(r.ValidMeasurementUnitConversionArchivedAt),
-			OnlyForIngredient: &mealplanning.ValidIngredient{
-				CreatedAt:     r.ValidIngredientCreatedAt.Time,
-				LastUpdatedAt: &r.ValidIngredientLastUpdatedAt.Time,
-				ArchivedAt:    &r.ValidIngredientArchivedAt.Time,
-				StorageTemperatureInCelsius: types.OptionalFloat32Range{
-					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
-				},
-				IconPath:               r.ValidIngredientIconPath.String,
-				Warning:                r.ValidIngredientWarning.String,
-				PluralName:             r.ValidIngredientPluralName.String,
-				StorageInstructions:    r.ValidIngredientStorageInstructions.String,
-				Name:                   r.ValidIngredientName.String,
-				ID:                     r.ValidIngredientID.String,
-				Description:            r.ValidIngredientDescription.String,
-				Slug:                   r.ValidIngredientSlug.String,
-				ShoppingSuggestions:    r.ValidIngredientShoppingSuggestions.String,
-				ContainsShellfish:      r.ValidIngredientContainsShellfish.Bool,
-				IsLiquid:               r.ValidIngredientIsLiquid.Bool,
-				ContainsPeanut:         r.ValidIngredientContainsPeanut.Bool,
-				ContainsTreeNut:        r.ValidIngredientContainsTreeNut.Bool,
-				ContainsEgg:            r.ValidIngredientContainsEgg.Bool,
-				ContainsWheat:          r.ValidIngredientContainsWheat.Bool,
-				ContainsSoy:            r.ValidIngredientContainsSoy.Bool,
-				AnimalDerived:          r.ValidIngredientAnimalDerived.Bool,
-				RestrictToPreparations: r.ValidIngredientRestrictToPreparations.Bool,
-				ContainsSesame:         r.ValidIngredientContainsSesame.Bool,
-				ContainsFish:           r.ValidIngredientContainsFish.Bool,
-				ContainsGluten:         r.ValidIngredientContainsGluten.Bool,
-				ContainsDairy:          r.ValidIngredientContainsDairy.Bool,
-				ContainsAlcohol:        r.ValidIngredientContainsAlcohol.Bool,
-				AnimalFlesh:            r.ValidIngredientAnimalFlesh.Bool,
-				IsStarch:               r.ValidIngredientIsStarch.Bool,
-				IsProtein:              r.ValidIngredientIsProtein.Bool,
-				IsGrain:                r.ValidIngredientIsGrain.Bool,
-				IsFruit:                r.ValidIngredientIsFruit.Bool,
-				IsSalt:                 r.ValidIngredientIsSalt.Bool,
-				IsFat:                  r.ValidIngredientIsFat.Bool,
-				IsAcid:                 r.ValidIngredientIsAcid.Bool,
-				IsHeat:                 r.ValidIngredientIsHeat.Bool,
-			},
-			Notes: r.ValidMeasurementUnitConversionNotes,
-			ID:    r.ValidMeasurementUnitConversionID,
-			From: mealplanning.ValidMeasurementUnit{
-				CreatedAt:     r.FromUnitCreatedAt,
-				LastUpdatedAt: database.TimePointerFromNullTime(r.FromUnitLastUpdatedAt),
-				ArchivedAt:    database.TimePointerFromNullTime(r.FromUnitArchivedAt),
-				Name:          r.FromUnitName,
-				IconPath:      r.FromUnitIconPath,
-				ID:            r.FromUnitID,
-				Description:   r.FromUnitDescription,
-				PluralName:    r.FromUnitPluralName,
-				Slug:          r.FromUnitSlug,
-				Volumetric:    database.BoolFromNullBool(r.FromUnitVolumetric),
-				Universal:     r.FromUnitUniversal,
-				Metric:        r.FromUnitMetric,
-				Imperial:      r.FromUnitImperial,
-			},
-			To: mealplanning.ValidMeasurementUnit{
-				CreatedAt:     r.ToUnitCreatedAt,
-				LastUpdatedAt: database.TimePointerFromNullTime(r.ToUnitLastUpdatedAt),
-				ArchivedAt:    database.TimePointerFromNullTime(r.ToUnitArchivedAt),
-				Name:          r.ToUnitName,
-				IconPath:      r.ToUnitIconPath,
-				ID:            r.ToUnitID,
-				Description:   r.ToUnitDescription,
-				PluralName:    r.ToUnitPluralName,
-				Slug:          r.ToUnitSlug,
-				Volumetric:    database.BoolFromNullBool(r.ToUnitVolumetric),
-				Universal:     r.ToUnitUniversal,
-				Metric:        r.ToUnitMetric,
-				Imperial:      r.ToUnitImperial,
-			},
-			Modifier: database.Float32FromString(r.ValidMeasurementUnitConversionModifier),
-		}
-	}
-
-	return validMeasurementUnitConversions, nil
+	return filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(c *mealplanning.ValidMeasurementUnitConversion) string { return c.ID },
+		filter,
+	), nil
 }
 
 // CreateValidMeasurementUnitConversion creates a valid measurement conversion in the database.

@@ -1049,18 +1049,11 @@ func (m *Repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPla
 	return returnValues.Error(0)
 }
 
-// GetValidMeasurementUnitConversionsFromUnit is a mock function.
-func (m *Repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
-	returnValues := m.Called(ctx, validMeasurementUnitID)
+// GetValidMeasurementUnitConversionsForUnit is a mock function.
+func (m *Repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion], error) {
+	returnValues := m.Called(ctx, validMeasurementUnitID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnitConversion), returnValues.Error(1)
-}
-
-// GetValidMeasurementUnitConversionsToUnit is a mock function.
-func (m *Repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
-	returnValues := m.Called(ctx, validMeasurementUnitID)
-
-	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnitConversion), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnitConversion]), returnValues.Error(1)
 }
 
 // ValidMeasurementUnitConversionExists is a mock function.

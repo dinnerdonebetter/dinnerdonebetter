@@ -291,10 +291,7 @@ var (
 		mealPlanningPerm("GetValidMeasurementUnitConversion"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
-		mealPlanningPerm("GetValidMeasurementUnitConversionsFromUnit"): {
-			authorization.ReadValidMeasurementUnitConversionsPermission,
-		},
-		mealPlanningPerm("GetValidMeasurementUnitConversionsToUnit"): {
+		mealPlanningPerm("GetValidMeasurementUnitConversionsForUnit"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
 		mealPlanningPerm("CreateUserIngredientPreference"): {

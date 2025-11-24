@@ -75,43 +75,27 @@ func TestValidMeasurementUnitConversions_Creating(T *testing.T) {
 func TestValidMeasurementUnitConversions_Listing(T *testing.T) {
 	T.Parallel()
 
-	createdValidMeasurementUnitConversions := []*types.ValidMeasurementUnitConversion{}
-	toUnit, fromUnit, created := createValidMeasurementUnitConversionForTest(T)
-	createdValidMeasurementUnitConversions = append(createdValidMeasurementUnitConversions, created)
-	for range exampleQuantity - 1 {
-		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
-		exampleValidMeasurementUnitConversionInput := mealplanningconverters.ConvertCreateValidMeasurementUnitConversionRequestToGRPCValidMeasurementUnitConversionCreationRequestInput(converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(exampleValidMeasurementUnitConversion))
-		exampleValidMeasurementUnitConversionInput.To = toUnit.ID
-		exampleValidMeasurementUnitConversionInput.From = fromUnit.ID
-
-		createdValidMeasurementUnitConversion, err := adminClient.CreateValidMeasurementUnitConversion(T.Context(), &mealplanningsvc.CreateValidMeasurementUnitConversionRequest{Input: exampleValidMeasurementUnitConversionInput})
-		require.NoError(T, err)
-		require.NotNil(T, createdValidMeasurementUnitConversion)
-
-		createdValidMeasurementUnitConversions = append(createdValidMeasurementUnitConversions, mealplanningconverters.ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(createdValidMeasurementUnitConversion.Result))
-	}
-
-	T.Run("to unit", func(t *testing.T) {
+	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidMeasurementUnitConversionsToUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsToUnitRequest{
+		toUnit, fromUnit, created := createValidMeasurementUnitConversionForTest(T)
+		createdValidMeasurementUnitConversions := []*types.ValidMeasurementUnitConversion{created}
+
+		results, err := adminClient.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
 			ValidMeasurementUnitID: toUnit.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidMeasurementUnitConversions))
-	})
+		assert.Equal(t, len(results.Results), len(createdValidMeasurementUnitConversions))
+		assert.Equal(t, results.Results[0].ID, createdValidMeasurementUnitConversions[0].ID)
 
-	T.Run("from unit", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		results, err := adminClient.GetValidMeasurementUnitConversionsFromUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsFromUnitRequest{
+		results, err = adminClient.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
 			ValidMeasurementUnitID: fromUnit.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, results)
-		assert.True(t, len(results.Results) >= len(createdValidMeasurementUnitConversions))
+		assert.Equal(t, len(results.Results), len(createdValidMeasurementUnitConversions))
+		assert.Equal(t, results.Results[0].ID, createdValidMeasurementUnitConversions[0].ID)
 	})
 }

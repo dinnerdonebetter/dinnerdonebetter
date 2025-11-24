@@ -90,8 +90,7 @@ type (
 		UpdateValidInstrument(ctx context.Context, validInstrumentID string, input *types.ValidInstrumentUpdateRequestInput) (*types.ValidInstrument, error)
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
 
-		ValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error)
-		ValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error)
+		ValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnitConversion], error)
 		CreateValidMeasurementUnitConversion(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*types.ValidMeasurementUnitConversion, error)
 		ReadValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*types.ValidMeasurementUnitConversion, error)
 		UpdateValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string, input *types.ValidMeasurementUnitConversionUpdateRequestInput) (*types.ValidMeasurementUnitConversion, error)
@@ -1539,33 +1538,22 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 	return nil
 }
 
-// ValidMeasurementUnitConversionsFromMeasurementUnit implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) ValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// ValidMeasurementUnitConversionsForMeasurementUnit implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) ValidMeasurementUnitConversionsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnitConversion], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	results, err := m.db.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := m.db.GetValidMeasurementUnitConversionsForUnit(ctx, validMeasurementUnitID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit conversions from unit")
-	}
-
-	return results, nil
-}
-
-// ValidMeasurementUnitConversionsToMeasurementUnit implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) ValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
-	ctx, span := m.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-
-	results, err := m.db.GetValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit conversions to unit")
 	}
 
 	return results, nil

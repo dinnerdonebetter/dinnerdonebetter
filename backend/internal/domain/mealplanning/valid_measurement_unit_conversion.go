@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -83,8 +84,7 @@ type (
 		CreateValidMeasurementUnitConversion(ctx context.Context, input *ValidMeasurementUnitConversionDatabaseCreationInput) (*ValidMeasurementUnitConversion, error)
 		UpdateValidMeasurementUnitConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
 		ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error
-		GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
-		GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
+		GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnitConversion], error)
 	}
 
 	// ValidMeasurementUnitConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
