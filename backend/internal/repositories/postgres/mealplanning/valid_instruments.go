@@ -103,7 +103,7 @@ func (q *repository) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 }
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (q *repository) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+func (q *repository) SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -115,7 +115,22 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, query)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, &generated.SearchForValidInstrumentsParams{
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
@@ -155,25 +170,31 @@ func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.ValidInstrument]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidInstruments(ctx, q.db, &generated.GetValidInstrumentsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
+	var (
+		data          []*types.ValidInstrument
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &types.ValidInstrument{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.ValidInstrument{
 			CreatedAt:                      result.CreatedAt,
 			LastUpdatedAt:                  database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:                     database.TimePointerFromNullTime(result.ArchivedAt),
@@ -187,9 +208,15 @@ func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.
 			IncludeInGeneratedInstructions: result.IncludeInGeneratedInstructions,
 			UsableForStorage:               result.UsableForStorage,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vi *types.ValidInstrument) string { return vi.ID },
+		filter,
+	)
 
 	return x, nil
 }

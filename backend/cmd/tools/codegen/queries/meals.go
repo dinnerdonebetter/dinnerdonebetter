@@ -163,7 +163,7 @@ WHERE
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{
@@ -190,7 +190,7 @@ WHERE
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{
@@ -206,6 +206,7 @@ FROM %s
 	JOIN %s ON %s.%s=%s.%s
 WHERE
 	%s.%s IS NULL
+	AND %s.%s IS NULL
 	AND %s.%s %s
 	%s
 %s;`,
@@ -215,13 +216,14 @@ WHERE
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealsTableName, archivedAtColumn,
+					mealComponentsTableName, archivedAtColumn,
 					mealsTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(
 						mealsTableName,
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{

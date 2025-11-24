@@ -107,7 +107,7 @@ func (r *repository) GetAccount(ctx context.Context, accountID string) (*identit
 }
 
 // getAccountsForUser fetches a list of accounts from the database that meet a particular filter.
-func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.Account], err error) {
+func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.Account], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -125,18 +125,14 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[identity.Account]{
-		Pagination: filter.ToPagination(),
-	}
-
 	args := &generated.GetAccountsForUserParams{
 		BelongsToUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	}
 	results, err := r.generatedQuerier.GetAccountsForUser(ctx, querier, args)
@@ -148,8 +144,12 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 		return nil, sql.ErrNoRows
 	}
 
+	var (
+		data                      []*identity.Account
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x.Data = append(x.Data, &identity.Account{
+		data = append(data, &identity.Account{
 			CreatedAt:                  result.CreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -170,9 +170,19 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 			Name:                       result.Name,
 			Members:                    nil,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *identity.Account) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

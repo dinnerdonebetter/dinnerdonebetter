@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -126,6 +127,7 @@ type (
 	RecipePrepTaskDataManager interface {
 		RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error)
 		GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (*RecipePrepTask, error)
+		GetRecipePrepTasks(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipePrepTask], error)
 		GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*RecipePrepTask, error)
 		CreateRecipePrepTask(ctx context.Context, input *RecipePrepTaskDatabaseCreationInput) (*RecipePrepTask, error)
 		UpdateRecipePrepTask(ctx context.Context, updated *RecipePrepTask) error

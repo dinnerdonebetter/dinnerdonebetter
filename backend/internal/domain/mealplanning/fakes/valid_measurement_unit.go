@@ -34,7 +34,7 @@ func BuildFakeValidMeasurementUnitsList() *filtering.QueryFilteredResult[types.V
 
 	return &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

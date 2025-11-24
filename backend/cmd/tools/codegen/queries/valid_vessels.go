@@ -121,7 +121,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validVesselsTableName, s)
@@ -136,11 +135,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validVesselsTableName,
-					idColumn,
-					validVesselsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validVesselsTableName, idColumn,
+					buildCursorLimitClause(validVesselsTableName),
 				)),
 			},
 			{
@@ -252,18 +248,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.%s %s
-	AND %s.%s IS NULL
-LIMIT 50;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(validVesselsTableName, true, true, []string{}),
+					buildTotalCountSelect(validVesselsTableName, true, []string{}),
 					validVesselsTableName,
-					validVesselsTableName, nameColumn, buildILIKEForArgument("name_query"),
 					validVesselsTableName,
 					archivedAtColumn,
+					validVesselsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validVesselsTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(validVesselsTableName),
 				)),
 			},
 			{

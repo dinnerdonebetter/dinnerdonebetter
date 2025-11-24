@@ -502,7 +502,7 @@ func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealp
 
 	logger := observability.ObserveValues(nil, span, s.logger)
 
-	mealPlans, _, err := s.mealPlanningManager.ListMealPlans(ctx, sessionContextData.GetActiveAccountID(), filter)
+	mealPlansResult, err := s.mealPlanningManager.ListMealPlans(ctx, sessionContextData.GetActiveAccountID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list meal plans")
 	}
@@ -514,7 +514,7 @@ func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealp
 		Filter: request.Filter,
 	}
 
-	for _, mealPlan := range mealPlans {
+	for _, mealPlan := range mealPlansResult.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanToGRPCMealPlan(mealPlan))
 	}
 
@@ -555,7 +555,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanEvents, _, err := s.mealPlanningManager.ListMealPlanEvents(ctx, request.MealPlanID, filter)
+	mealPlanEventsResult, err := s.mealPlanningManager.ListMealPlanEvents(ctx, request.MealPlanID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan events")
 	}
@@ -566,7 +566,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 		},
 	}
 
-	for _, mealPlanEvent := range mealPlanEvents {
+	for _, mealPlanEvent := range mealPlanEventsResult.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanEventToGRPCMealPlanEvent(mealPlanEvent))
 	}
 
@@ -688,7 +688,7 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanOptionVotes, _, err := s.mealPlanningManager.ListMealPlanOptionVotes(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, filter)
+	mealPlanOptionVotesResult, err := s.mealPlanningManager.ListMealPlanOptionVotes(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan option votes")
 	}
@@ -699,7 +699,7 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 		},
 	}
 
-	for _, mealPlanOptionVote := range mealPlanOptionVotes {
+	for _, mealPlanOptionVote := range mealPlanOptionVotesResult.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(mealPlanOptionVote))
 	}
 
@@ -716,7 +716,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanOptions, _, err := s.mealPlanningManager.ListMealPlanOptions(ctx, request.MealPlanID, request.MealPlanEventID, filter)
+	mealPlanOptionsResult, err := s.mealPlanningManager.ListMealPlanOptions(ctx, request.MealPlanID, request.MealPlanEventID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan options")
 	}
@@ -727,7 +727,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 		},
 	}
 
-	for _, mealPlanOption := range mealPlanOptions {
+	for _, mealPlanOption := range mealPlanOptionsResult.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanOptionToGRPCMealPlanOption(mealPlanOption))
 	}
 
@@ -794,7 +794,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanningsvc.Get
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	meals, _, err := s.mealPlanningManager.ListMeals(ctx, filter)
+	mealsResult, err := s.mealPlanningManager.ListMeals(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
@@ -805,7 +805,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanningsvc.Get
 		},
 	}
 
-	for _, meal := range meals {
+	for _, meal := range mealsResult.Data {
 		x.Results = append(x.Results, converters.ConvertMealToGRPCMeal(meal))
 	}
 
@@ -850,7 +850,7 @@ func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request 
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	userIngredientPreferences, _, err := s.mealPlanningManager.ListUserIngredientPreferences(ctx, sessionContextData.GetUserID(), filter)
+	userIngredientPreferencesResult, err := s.mealPlanningManager.ListUserIngredientPreferences(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
@@ -861,7 +861,7 @@ func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request 
 		},
 	}
 
-	for _, userIngredientPreference := range userIngredientPreferences {
+	for _, userIngredientPreference := range userIngredientPreferencesResult.Data {
 		x.Results = append(x.Results, converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(userIngredientPreference))
 	}
 
@@ -1245,7 +1245,7 @@ func (s *serviceImpl) GetAccountInstrumentOwnerships(ctx context.Context, reques
 
 	logger := observability.ObserveValues(nil, span, s.logger)
 
-	results, _, err := s.mealPlanningManager.ListAccountInstrumentOwnerships(ctx, sessionContextData.GetActiveAccountID(), filter)
+	results, err := s.mealPlanningManager.ListAccountInstrumentOwnerships(ctx, sessionContextData.GetActiveAccountID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list account instrument ownerships")
 	}
@@ -1256,7 +1256,7 @@ func (s *serviceImpl) GetAccountInstrumentOwnerships(ctx context.Context, reques
 		},
 	}
 
-	for _, result := range results {
+	for _, result := range results.Data {
 		x.Results = append(x.Results, converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(result))
 	}
 

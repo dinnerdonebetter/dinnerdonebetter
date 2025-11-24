@@ -334,37 +334,97 @@ SELECT
 	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
-	service_setting_configurations.archived_at
+	service_setting_configurations.archived_at,
+	(
+		SELECT COUNT(service_setting_configurations.id)
+		FROM service_setting_configurations
+		WHERE service_setting_configurations.archived_at IS NULL
+			AND
+			service_setting_configurations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND service_setting_configurations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				service_setting_configurations.last_updated_at IS NULL
+				OR service_setting_configurations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				service_setting_configurations.last_updated_at IS NULL
+				OR service_setting_configurations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR service_setting_configurations.archived_at = NULL)
+			AND service_setting_configurations.belongs_to_account = $6
+	) AS filtered_count,
+	(
+		SELECT COUNT(service_setting_configurations.id)
+		FROM service_setting_configurations
+		WHERE service_setting_configurations.archived_at IS NULL
+			AND service_setting_configurations.belongs_to_account = $6
+	) AS total_count
 FROM service_setting_configurations
 	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
-	AND service_setting_configurations.belongs_to_account = $1
+	AND service_setting_configurations.belongs_to_account = $6
+	AND service_setting_configurations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_setting_configurations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		service_setting_configurations.last_updated_at IS NULL
+		OR service_setting_configurations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		service_setting_configurations.last_updated_at IS NULL
+		OR service_setting_configurations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR service_setting_configurations.archived_at = NULL)
+	AND service_setting_configurations.id > COALESCE($7, '')
+ORDER BY service_setting_configurations.id ASC
+LIMIT COALESCE($8, 50)
 `
 
+type GetServiceSettingConfigurationsForAccountParams struct {
+	ResultLimit      interface{}
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
+	UpdatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
+	BelongsToAccount string
+	Cursor           sql.NullString
+	IncludeArchived  sql.NullBool
+}
+
 type GetServiceSettingConfigurationsForAccountRow struct {
-	ServiceSettingCreatedAt     time.Time
 	CreatedAt                   time.Time
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingArchivedAt    sql.NullTime
 	ArchivedAt                  sql.NullTime
 	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
 	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
+	Value                       string
+	BelongsToUser               string
+	Notes                       string
 	ServiceSettingEnumeration   string
 	ServiceSettingDescription   string
 	ServiceSettingType          SettingType
-	ID                          string
-	BelongsToUser               string
-	BelongsToAccount            string
+	ServiceSettingName          string
 	ServiceSettingID            string
-	Notes                       string
-	Value                       string
+	BelongsToAccount            string
+	ID                          string
 	ServiceSettingDefaultValue  sql.NullString
+	FilteredCount               int64
+	TotalCount                  int64
 	ServiceSettingAdminsOnly    bool
 }
 
-func (q *Queries) GetServiceSettingConfigurationsForAccount(ctx context.Context, db DBTX, belongsToAccount string) ([]*GetServiceSettingConfigurationsForAccountRow, error) {
-	rows, err := db.QueryContext(ctx, getServiceSettingConfigurationsForAccount, belongsToAccount)
+func (q *Queries) GetServiceSettingConfigurationsForAccount(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForAccountParams) ([]*GetServiceSettingConfigurationsForAccountRow, error) {
+	rows, err := db.QueryContext(ctx, getServiceSettingConfigurationsForAccount,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.BelongsToAccount,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -391,6 +451,8 @@ func (q *Queries) GetServiceSettingConfigurationsForAccount(ctx context.Context,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}
@@ -424,37 +486,97 @@ SELECT
 	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
-	service_setting_configurations.archived_at
+	service_setting_configurations.archived_at,
+	(
+		SELECT COUNT(service_setting_configurations.id)
+		FROM service_setting_configurations
+		WHERE service_setting_configurations.archived_at IS NULL
+			AND
+			service_setting_configurations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND service_setting_configurations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				service_setting_configurations.last_updated_at IS NULL
+				OR service_setting_configurations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				service_setting_configurations.last_updated_at IS NULL
+				OR service_setting_configurations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR service_setting_configurations.archived_at = NULL)
+			AND service_setting_configurations.belongs_to_user = $6
+	) AS filtered_count,
+	(
+		SELECT COUNT(service_setting_configurations.id)
+		FROM service_setting_configurations
+		WHERE service_setting_configurations.archived_at IS NULL
+			AND service_setting_configurations.belongs_to_user = $6
+	) AS total_count
 FROM service_setting_configurations
 	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
-	AND service_setting_configurations.belongs_to_user = $1
+	AND service_setting_configurations.belongs_to_user = $6
+	AND service_setting_configurations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_setting_configurations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		service_setting_configurations.last_updated_at IS NULL
+		OR service_setting_configurations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		service_setting_configurations.last_updated_at IS NULL
+		OR service_setting_configurations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR service_setting_configurations.archived_at = NULL)
+	AND service_setting_configurations.id > COALESCE($7, '')
+ORDER BY service_setting_configurations.id ASC
+LIMIT COALESCE($8, 50)
 `
 
+type GetServiceSettingConfigurationsForUserParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	BelongsToUser   string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
 type GetServiceSettingConfigurationsForUserRow struct {
-	ServiceSettingCreatedAt     time.Time
 	CreatedAt                   time.Time
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingArchivedAt    sql.NullTime
 	ArchivedAt                  sql.NullTime
 	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
 	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
+	Value                       string
+	BelongsToUser               string
+	Notes                       string
 	ServiceSettingEnumeration   string
 	ServiceSettingDescription   string
 	ServiceSettingType          SettingType
-	ID                          string
-	BelongsToUser               string
-	BelongsToAccount            string
+	ServiceSettingName          string
 	ServiceSettingID            string
-	Notes                       string
-	Value                       string
+	BelongsToAccount            string
+	ID                          string
 	ServiceSettingDefaultValue  sql.NullString
+	FilteredCount               int64
+	TotalCount                  int64
 	ServiceSettingAdminsOnly    bool
 }
 
-func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetServiceSettingConfigurationsForUserRow, error) {
-	rows, err := db.QueryContext(ctx, getServiceSettingConfigurationsForUser, belongsToUser)
+func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForUserParams) ([]*GetServiceSettingConfigurationsForUserRow, error) {
+	rows, err := db.QueryContext(ctx, getServiceSettingConfigurationsForUser,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.BelongsToUser,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -481,6 +603,8 @@ func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

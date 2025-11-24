@@ -107,7 +107,7 @@ WHERE %s.%s IS NULL
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(serviceSettingsTableName),
 				)),
 			},
 			{
@@ -134,17 +134,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s %s
-LIMIT 50;`,
+	%s
+%s;`,
 					strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(serviceSettingsTableName, true, true, []string{}),
+					buildTotalCountSelect(serviceSettingsTableName, true, []string{}),
 					serviceSettingsTableName,
-					serviceSettingsTableName, archivedAtColumn,
-					serviceSettingsTableName, nameColumn, buildILIKEForArgument("name_query"),
+					serviceSettingsTableName,
+					archivedAtColumn,
+					serviceSettingsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						serviceSettingsTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(serviceSettingsTableName),
 				)),
 			},
 		}

@@ -29,7 +29,7 @@ func BuildFakeUserIngredientPreferencesList() *filtering.QueryFilteredResult[typ
 
 	return &filtering.QueryFilteredResult[types.UserIngredientPreference]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

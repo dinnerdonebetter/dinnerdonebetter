@@ -116,7 +116,7 @@ func TestServiceImpl_CreateServiceSettingConfiguration(t *testing.T) {
 
 		settingsRepo.On("CreateServiceSettingConfiguration", testutils.ContextMatcher, mock.MatchedBy(func(input *settings.ServiceSettingConfigurationDatabaseCreationInput) bool {
 			return input != nil
-		})).Return(nil, errors.New("repository error"))
+		})).Return((*settings.ServiceSettingConfiguration)(nil), errors.New("repository error"))
 
 		actual, err := service.CreateServiceSettingConfiguration(ctx, request)
 
@@ -189,10 +189,9 @@ func TestServiceImpl_GetServiceSettingConfigurationByName(t *testing.T) {
 			ServiceSettingConfigurationName: exampleServiceSettingConfiguration.ServiceSetting.Name,
 		}
 
-		settingsRepo.On("GetServiceSettingConfigurationForAccountByName", testutils.ContextMatcher, "test-account-id", exampleServiceSettingConfiguration.ServiceSetting.Name).Return(nil, errors.New("repository error"))
+		settingsRepo.On("GetServiceSettingConfigurationForAccountByName", testutils.ContextMatcher, "test-account-id", exampleServiceSettingConfiguration.ServiceSetting.Name).Return((*settings.ServiceSettingConfiguration)(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSettingConfigurationByName(ctx, request)
-
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assertGRPCErrorHasStatus(t, err, codes.Internal)
@@ -272,7 +271,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForAccount(t *testing.T) {
 
 		settingsRepo.On("GetServiceSettingConfigurationsForAccount", testutils.ContextMatcher, "test-account-id", mock.MatchedBy(func(filter *filtering.QueryFilter) bool {
 			return filter != nil
-		})).Return(nil, errors.New("repository error"))
+		})).Return((*filtering.QueryFilteredResult[settings.ServiceSettingConfiguration])(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSettingConfigurationsForAccount(ctx, request)
 
@@ -355,7 +354,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForUser(t *testing.T) {
 
 		settingsRepo.On("GetServiceSettingConfigurationsForUser", testutils.ContextMatcher, "test-user-id", mock.MatchedBy(func(filter *filtering.QueryFilter) bool {
 			return filter != nil
-		})).Return(nil, errors.New("repository error"))
+		})).Return((*filtering.QueryFilteredResult[settings.ServiceSettingConfiguration])(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSettingConfigurationsForUser(ctx, request)
 
@@ -421,7 +420,7 @@ func TestServiceImpl_UpdateServiceSettingConfiguration(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("GetServiceSettingConfiguration", testutils.ContextMatcher, exampleServiceSettingConfiguration.ID).Return(nil, errors.New("repository error"))
+		settingsRepo.On("GetServiceSettingConfiguration", testutils.ContextMatcher, exampleServiceSettingConfiguration.ID).Return((*settings.ServiceSettingConfiguration)(nil), errors.New("repository error"))
 
 		actual, err := service.UpdateServiceSettingConfiguration(ctx, request)
 

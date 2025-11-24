@@ -121,8 +121,8 @@ func buildRecipesQueries(database string) []*Query {
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN %s ON %s.%s=%s.%s
-	JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 ORDER BY %s.%s;`,
@@ -180,7 +180,7 @@ FROM %s
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
 					buildFilterConditions(recipesTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{
@@ -206,7 +206,7 @@ FROM %s
 					recipesTableName, archivedAtColumn,
 					recipesTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(recipesTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, createdByUserColumn, createdByUserColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{
@@ -232,7 +232,7 @@ WHERE %s.%s IS NULL
 					recipesTableName, archivedAtColumn,
 					recipesTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(recipesTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{

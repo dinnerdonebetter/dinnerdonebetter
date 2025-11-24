@@ -389,18 +389,19 @@ WHERE accounts.archived_at IS NULL
 		OR accounts.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND account_user_memberships.belongs_to_user = $6
-LIMIT $8
-OFFSET $7
+	AND accounts.id > COALESCE($7, '')
+ORDER BY accounts.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetAccountsForUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	BelongsToUser   string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -438,8 +439,8 @@ func (q *Queries) GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccou
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.BelongsToUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

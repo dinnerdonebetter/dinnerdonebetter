@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -196,5 +197,48 @@ func TestQuerier_ArchiveUserIngredientPreference(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveUserIngredientPreference(ctx, "", exampleUserID))
+	})
+}
+
+func TestQuerier_Integration_UserIngredientPreferences_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.UserIngredientPreference]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "user ingredient preference",
+		CreateItem: func(ctx context.Context, i int) *types.UserIngredientPreference {
+			ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			userIngredientPreference := fakes.BuildFakeUserIngredientPreference()
+			userIngredientPreference.BelongsToUser = user.ID
+			userIngredientPreference.Ingredient = *ingredient
+			return createUserIngredientPreferenceForTest(t, ctx, userIngredientPreference, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserIngredientPreference], error) {
+			return dbc.GetUserIngredientPreferences(ctx, user.ID, filter)
+		},
+		GetID: func(userIngredientPreference *types.UserIngredientPreference) string {
+			return userIngredientPreference.ID
+		},
+		CleanupItem: func(ctx context.Context, userIngredientPreference *types.UserIngredientPreference) error {
+			return dbc.ArchiveUserIngredientPreference(ctx, userIngredientPreference.ID, user.ID)
+		},
 	})
 }

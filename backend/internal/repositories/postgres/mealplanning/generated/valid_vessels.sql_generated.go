@@ -438,20 +438,20 @@ WHERE
 		OR valid_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR valid_vessels.archived_at = NULL)
+	AND valid_vessels.id > COALESCE($6, '')
 GROUP BY valid_vessels.id
-ORDER BY valid_vessels.id
-LIMIT $7
-OFFSET $6
+ORDER BY valid_vessels.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetValidVesselsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetValidVesselsRow struct {
@@ -485,8 +485,8 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -683,22 +683,101 @@ SELECT
 	valid_vessels.last_indexed_at,
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
-	valid_vessels.archived_at
+	valid_vessels.archived_at,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+			AND
+			valid_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_vessels.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+	) AS total_count
 FROM valid_vessels
-WHERE valid_vessels.name ILIKE '%' || $1::text || '%'
-	AND valid_vessels.archived_at IS NULL
-LIMIT 50
+WHERE valid_vessels.archived_at IS NULL
+	AND valid_vessels.name ILIKE '%' || $6::text || '%'
+	AND valid_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_vessels.archived_at = NULL)
+	AND valid_vessels.id > COALESCE($7, '')
+ORDER BY valid_vessels.id ASC
+LIMIT COALESCE($8, 50)
 `
 
-func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, nameQuery string) ([]*ValidVessels, error) {
-	rows, err := db.QueryContext(ctx, searchForValidVessels, nameQuery)
+type SearchForValidVesselsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
+type SearchForValidVesselsRow struct {
+	CreatedAt                      time.Time
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	LastIndexedAt                  sql.NullTime
+	Shape                          VesselShape
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	Capacity                       string
+	ID                             string
+	CapacityUnit                   sql.NullString
+	HeightInMillimeters            sql.NullString
+	LengthInMillimeters            sql.NullString
+	WidthInMillimeters             sql.NullString
+	FilteredCount                  int64
+	TotalCount                     int64
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
+}
+
+func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, arg *SearchForValidVesselsParams) ([]*SearchForValidVesselsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidVessels,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*ValidVessels{}
+	items := []*SearchForValidVesselsRow{}
 	for rows.Next() {
-		var i ValidVessels
+		var i SearchForValidVesselsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -719,6 +798,8 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, nameQuery 
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

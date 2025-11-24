@@ -139,29 +139,30 @@ func (q *repository) GetValidPreparationVessels(ctx context.Context, filter *fil
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]{
-		Pagination: filter.ToPagination(),
-	}
-	tracing.AttachQueryFilterToSpan(span, filter)
-
 	results, err := q.generatedQuerier.GetValidPreparationVessels(ctx, q.db, &generated.GetValidPreparationVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation vessels list retrieval query")
 	}
 
-	if len(results) == 0 {
-		return nil, sql.ErrNoRows
-	}
+	var (
+		data          []*mealplanning.ValidPreparationVessel
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validPreparationVessel := &mealplanning.ValidPreparationVessel{
 			CreatedAt:     result.ValidPreparationVesselCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationVesselLastUpdatedAt),
@@ -237,10 +238,16 @@ func (q *repository) GetValidPreparationVessels(ctx context.Context, filter *fil
 			validPreparationVessel.Vessel.CapacityUnit = nil
 		}
 
-		x.Data = append(x.Data, validPreparationVessel)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validPreparationVessel)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpv *mealplanning.ValidPreparationVessel) string { return vpv.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -264,19 +271,14 @@ func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]{
-		Pagination: filter.ToPagination(),
-	}
-	tracing.AttachQueryFilterToSpan(span, filter)
-
 	results, err := q.generatedQuerier.GetValidPreparationVesselsForPreparation(ctx, q.db, &generated.GetValidPreparationVesselsForPreparationParams{
 		ID:              preparationID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -287,7 +289,17 @@ func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 		return nil, sql.ErrNoRows
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparationVessel
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validPreparationVessel := &mealplanning.ValidPreparationVessel{
 			CreatedAt:     result.ValidPreparationVesselCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationVesselLastUpdatedAt),
@@ -363,10 +375,16 @@ func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 			validPreparationVessel.Vessel.CapacityUnit = nil
 		}
 
-		x.Data = append(x.Data, validPreparationVessel)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validPreparationVessel)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpv *mealplanning.ValidPreparationVessel) string { return vpv.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -390,18 +408,14 @@ func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidPreparationVesselsForVessel(ctx, q.db, &generated.GetValidPreparationVesselsForVesselParams{
 		ID:              vesselID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -412,7 +426,17 @@ func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 		return nil, sql.ErrNoRows
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparationVessel
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validPreparationVessel := &mealplanning.ValidPreparationVessel{
 			CreatedAt:     result.ValidPreparationVesselCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationVesselLastUpdatedAt),
@@ -488,10 +512,16 @@ func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 			validPreparationVessel.Vessel.CapacityUnit = nil
 		}
 
-		x.Data = append(x.Data, validPreparationVessel)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validPreparationVessel)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpv *mealplanning.ValidPreparationVessel) string { return vpv.ID },
+		filter,
+	)
 
 	return x, nil
 }

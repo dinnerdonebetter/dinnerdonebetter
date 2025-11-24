@@ -136,7 +136,7 @@ WHERE
 					validIngredientIDColumn,
 					idColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{
@@ -176,7 +176,7 @@ WHERE
 					validPreparationIDColumn,
 					idColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{
@@ -212,7 +212,7 @@ WHERE
 					validIngredientPreparationsTableName,
 					archivedAtColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{
@@ -280,6 +280,8 @@ WHERE
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -289,8 +291,12 @@ WHERE
 	AND %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
-	AND %s.%s %s;`,
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(validIngredientPreparationsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", validPreparationsTableName, idColumn, idColumn)),
+					buildTotalCountSelect(validIngredientPreparationsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", validPreparationsTableName, idColumn, idColumn)),
 					validIngredientPreparationsTableName,
 					validIngredientsTableName,
 					validIngredientPreparationsTableName,
@@ -313,7 +319,14 @@ WHERE
 					idColumn,
 					validIngredientsTableName,
 					nameColumn,
-					"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validIngredientPreparationsTableName,
+						true,
+						true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", validPreparationsTableName, idColumn, idColumn),
+					),
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{

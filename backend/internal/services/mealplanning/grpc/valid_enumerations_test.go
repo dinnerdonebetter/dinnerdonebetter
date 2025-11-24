@@ -796,7 +796,7 @@ func TestServiceImpl_GetValidIngredientGroups(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidIngredientGroups", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredientGroups", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientGroups(ctx, &mealplanninggrpc.GetValidIngredientGroupsRequest{})
@@ -837,16 +837,16 @@ func TestServiceImpl_GetValidIngredientMeasurementUnits(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleResult := mealplanningfakes.BuildFakeValidMeasurementUnitsList()
+		exampleResult := mealplanningfakes.BuildFakeValidIngredientMeasurementUnitsList()
 
 		ctx := t.Context()
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredientMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidMeasurementUnits(ctx, &mealplanninggrpc.GetValidMeasurementUnitsRequest{})
+		result, err := s.GetValidIngredientMeasurementUnits(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitsRequest{})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -944,7 +944,7 @@ func TestServiceImpl_GetValidIngredientPreparations(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidIngredientPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredientPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientPreparations(ctx, &mealplanninggrpc.GetValidIngredientPreparationsRequest{})
@@ -1068,7 +1068,7 @@ func TestServiceImpl_GetValidIngredientStateIngredients(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidIngredientStateIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredientStateIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientStateIngredients(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientsRequest{})
@@ -1146,7 +1146,7 @@ func TestServiceImpl_GetValidIngredientStates(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidIngredientStates", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredientStates", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientStates(ctx, &mealplanninggrpc.GetValidIngredientStatesRequest{})
@@ -1170,7 +1170,7 @@ func TestServiceImpl_GetValidIngredients(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredients(ctx, &mealplanninggrpc.GetValidIngredientsRequest{})
@@ -1217,7 +1217,7 @@ func TestServiceImpl_GetValidInstruments(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidInstruments(ctx, &mealplanninggrpc.GetValidInstrumentsRequest{})
@@ -1341,7 +1341,7 @@ func TestServiceImpl_GetValidMeasurementUnits(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidMeasurementUnits(ctx, &mealplanninggrpc.GetValidMeasurementUnitsRequest{})
@@ -1411,7 +1411,7 @@ func TestServiceImpl_GetValidPreparationInstruments(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidPreparationInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidPreparationInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationInstruments(ctx, &mealplanninggrpc.GetValidPreparationInstrumentsRequest{})
@@ -1512,7 +1512,7 @@ func TestServiceImpl_GetValidPreparationVessels(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidPreparationVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidPreparationVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationVessels(ctx, &mealplanninggrpc.GetValidPreparationVesselsRequest{})
@@ -1590,7 +1590,7 @@ func TestServiceImpl_GetValidPreparations(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparations(ctx, &mealplanninggrpc.GetValidPreparationsRequest{})
@@ -1637,7 +1637,7 @@ func TestServiceImpl_GetValidVessels(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("ListValidVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mvem.On("ListValidVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidVessels(ctx, &mealplanninggrpc.GetValidVesselsRequest{})

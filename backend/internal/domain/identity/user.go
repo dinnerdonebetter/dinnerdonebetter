@@ -120,7 +120,6 @@ type (
 		TwoFactorSecret string     `json:"twoFactorSecret"`
 		FirstName       string     `json:"firstName"`
 		LastName        string     `json:"lastName"`
-		IsAdmin         bool       `json:"isAdmin"`
 	}
 
 	// UserDetailsUpdateRequestInput represents input a User would provide when updating their information.

@@ -590,7 +590,7 @@ func (s *serviceImpl) GetValidIngredientGroups(ctx context.Context, request *mea
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredientGroups(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredientGroups(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient groups")
 	}
@@ -598,7 +598,7 @@ func (s *serviceImpl) GetValidIngredientGroups(ctx context.Context, request *mea
 	res := &mealplanning.GetValidIngredientGroupsResponse{
 		Filter: request.Filter,
 	}
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
 	}
 
@@ -632,7 +632,7 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, re
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredientMeasurementUnits(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredientMeasurementUnits(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient measurement units")
 	}
@@ -640,7 +640,7 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, re
 	res := &mealplanning.GetValidIngredientMeasurementUnitsResponse{
 		Filter: request.Filter,
 	}
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
@@ -723,7 +723,7 @@ func (s *serviceImpl) GetValidIngredientPreparations(ctx context.Context, reques
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredientPreparations(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredientPreparations(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient preparations")
 	}
@@ -732,7 +732,7 @@ func (s *serviceImpl) GetValidIngredientPreparations(ctx context.Context, reques
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
@@ -835,7 +835,7 @@ func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredientStateIngredients(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredientStateIngredients(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state ingredients")
 	}
@@ -844,7 +844,7 @@ func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
@@ -909,7 +909,7 @@ func (s *serviceImpl) GetValidIngredientStates(ctx context.Context, request *mea
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredientStates(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredientStates(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient states")
 	}
@@ -918,7 +918,7 @@ func (s *serviceImpl) GetValidIngredientStates(ctx context.Context, request *mea
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
 	}
 
@@ -933,7 +933,7 @@ func (s *serviceImpl) GetValidIngredients(ctx context.Context, request *mealplan
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidIngredients(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidIngredients(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredients")
 	}
@@ -942,7 +942,7 @@ func (s *serviceImpl) GetValidIngredients(ctx context.Context, request *mealplan
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
@@ -976,7 +976,7 @@ func (s *serviceImpl) GetValidInstruments(ctx context.Context, request *mealplan
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidInstruments(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidInstruments(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid instruments")
 	}
@@ -985,7 +985,7 @@ func (s *serviceImpl) GetValidInstruments(ctx context.Context, request *mealplan
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
 	}
 
@@ -1079,7 +1079,7 @@ func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *mea
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidMeasurementUnits(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidMeasurementUnits(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement units")
 	}
@@ -1088,7 +1088,7 @@ func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *mea
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 
@@ -1141,7 +1141,7 @@ func (s *serviceImpl) GetValidPreparationInstruments(ctx context.Context, reques
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidPreparationInstruments(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidPreparationInstruments(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation instruments")
 	}
@@ -1150,7 +1150,7 @@ func (s *serviceImpl) GetValidPreparationInstruments(ctx context.Context, reques
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
@@ -1234,7 +1234,7 @@ func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidPreparationVessels(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidPreparationVessels(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation vessels")
 	}
@@ -1243,7 +1243,7 @@ func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
@@ -1308,7 +1308,7 @@ func (s *serviceImpl) GetValidPreparations(ctx context.Context, request *mealpla
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidPreparations(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidPreparations(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparations")
 	}
@@ -1317,7 +1317,7 @@ func (s *serviceImpl) GetValidPreparations(ctx context.Context, request *mealpla
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationToGRPCValidPreparation(y))
 	}
 
@@ -1351,7 +1351,7 @@ func (s *serviceImpl) GetValidVessels(ctx context.Context, request *mealplanning
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x, _, err := s.validEnumerationsManager.ListValidVessels(ctx, filter)
+	x, err := s.validEnumerationsManager.ListValidVessels(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid vessels")
 	}
@@ -1360,7 +1360,7 @@ func (s *serviceImpl) GetValidVessels(ctx context.Context, request *mealplanning
 		Filter: request.Filter,
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidVesselToGRPCValidVessel(y))
 	}
 

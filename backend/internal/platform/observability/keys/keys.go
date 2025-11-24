@@ -45,6 +45,8 @@ const (
 	FilterSortByKey = "query_filter.sort_by"
 	// FilterPageKey is the standard key for referring to a types.QueryFilter's page.
 	FilterPageKey = "query_filter.page"
+	// FilterCursorKey is the standard key for referring to a types.QueryFilter's next cursor.
+	FilterCursorKey = "query_filter.cursor"
 	// FilterLimitKey is the standard key for referring to a types.QueryFilter's limit.
 	FilterLimitKey = "query_filter.limit"
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.

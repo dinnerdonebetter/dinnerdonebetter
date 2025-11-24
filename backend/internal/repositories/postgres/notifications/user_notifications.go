@@ -92,7 +92,7 @@ func (q *repository) GetUserNotification(ctx context.Context, userID, userNotifi
 }
 
 // GetUserNotifications fetches a list of user notifications from the database that meet a particular filter.
-func (q *repository) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.UserNotification], err error) {
+func (q *repository) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserNotification], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -110,23 +110,23 @@ func (q *repository) GetUserNotifications(ctx context.Context, userID string, fi
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.UserNotification]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated.GetUserNotificationsForUserParams{
 		UserID:        userID,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user notifications list retrieval query")
 	}
 
+	var (
+		data                      = []*types.UserNotification{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		userNotification := &types.UserNotification{
 			CreatedAt:     result.CreatedAt,
@@ -134,10 +134,20 @@ func (q *repository) GetUserNotifications(ctx context.Context, userID string, fi
 			ID:            result.ID,
 		}
 
-		x.Data = append(x.Data, userNotification)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, userNotification)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.UserNotification) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

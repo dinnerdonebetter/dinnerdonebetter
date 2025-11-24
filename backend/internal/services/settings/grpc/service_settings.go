@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -90,7 +91,10 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 
 	logger := s.logger.WithSpan(span).WithValue(keys.SearchQueryKey, request.Query)
 
-	serviceSettings, err := s.serviceSettingsRepository.SearchForServiceSettings(ctx, request.Query)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	serviceSettings, err := s.serviceSettingsRepository.SearchForServiceSettings(ctx, request.Query, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service settings")
 	}
@@ -101,7 +105,7 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 		},
 	}
 
-	for _, serviceSetting := range serviceSettings {
+	for _, serviceSetting := range serviceSettings.Data {
 		x.Results = append(x.Results, converters.ConvertServiceSettingToGRPCServiceSetting(serviceSetting))
 	}
 

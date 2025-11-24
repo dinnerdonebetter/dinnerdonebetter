@@ -194,28 +194,34 @@ func (q *repository) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.MealPlanOptionVote]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.MealPlanOptionVote
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMealPlanOptionVotes(ctx, q.db, &generated.GetMealPlanOptionVotesParams{
+		MealPlanID:       mealPlanID,
 		MealPlanOptionID: mealPlanOptionID,
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
-		MealPlanID:       mealPlanID,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan option votes list retrieval query")
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.MealPlanOptionVote{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.MealPlanOptionVote{
 			CreatedAt:               result.CreatedAt,
 			ArchivedAt:              database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:           database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -227,6 +233,14 @@ func (q *repository) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 			Abstain:                 result.Abstain,
 		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(mpov *types.MealPlanOptionVote) string { return mpov.ID },
+		filter,
+	)
 
 	return x, nil
 }

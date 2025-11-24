@@ -73,7 +73,7 @@ func (q *repository) GetValidIngredientState(ctx context.Context, validIngredien
 }
 
 // SearchForValidIngredientStates fetches a valid ingredient state from the database.
-func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
+func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -85,7 +85,22 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, query)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, &generated.SearchForValidIngredientStatesParams{
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
@@ -122,25 +137,31 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.ValidIngredientState]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated.GetValidIngredientStatesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
 
+	var (
+		data          []*types.ValidIngredientState
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &types.ValidIngredientState{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.ValidIngredientState{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -152,9 +173,15 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 			AttributeType: string(result.AttributeType),
 			Slug:          result.Slug,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vis *types.ValidIngredientState) string { return vis.ID },
+		filter,
+	)
 
 	return x, nil
 }

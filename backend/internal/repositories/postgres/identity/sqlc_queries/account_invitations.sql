@@ -412,8 +412,9 @@ WHERE account_invitations.archived_at IS NULL
 		account_invitations.last_updated_at IS NULL
 		OR account_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND account_invitations.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY account_invitations.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetPendingInvitesForUser :many
 SELECT
@@ -514,8 +515,9 @@ WHERE account_invitations.archived_at IS NULL
 		OR account_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR account_invitations.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND account_invitations.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY account_invitations.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: SetAccountInvitationStatus :exec
 UPDATE account_invitations SET

@@ -88,7 +88,7 @@ func BuildFakeRecipeStepsList() *filtering.QueryFilteredResult[types.RecipeStep]
 
 	return &filtering.QueryFilteredResult[types.RecipeStep]{
 		Pagination: filtering.Pagination{
-			Page:          1,
+			Cursor:        BuildFakeID(),
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,

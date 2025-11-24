@@ -91,13 +91,12 @@ WHERE
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR account_instrument_ownerships.archived_at = NULL)
 	AND account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)
+	AND account_instrument_ownerships.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY
 	account_instrument_ownerships.id,
 	valid_instruments.id
-ORDER BY
-	account_instrument_ownerships.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY account_instrument_ownerships.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetAccountInstrumentOwnership :one
 SELECT

@@ -453,18 +453,19 @@ WHERE meal_plans.archived_at IS NULL
 	)
 			AND (NOT COALESCE($5, false)::boolean OR meal_plans.archived_at = NULL)
 	AND meal_plans.belongs_to_account = $6
-LIMIT $8
-OFFSET $7
+	AND meal_plans.id > COALESCE($7, '')
+ORDER BY meal_plans.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetMealPlansForAccountParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
 	BelongsToAccount string
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 	IncludeArchived  sql.NullBool
 }
 
@@ -493,8 +494,8 @@ func (q *Queries) GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetM
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.BelongsToAccount,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

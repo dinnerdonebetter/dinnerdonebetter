@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -90,7 +91,7 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	assert.Equal(t, validPreparations.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidPreparations(ctx, updatedValidPreparation.Name)
+	byName, err := dbc.SearchForValidPreparations(ctx, updatedValidPreparation.Name, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, validPreparations.Data, byName)
 
@@ -161,7 +162,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidPreparations(ctx, "")
+		actual, err := c.SearchForValidPreparations(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -233,5 +234,44 @@ func TestQuerier_MarkValidPreparationAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidPreparations_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidPreparation]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid preparation",
+		CreateItem: func(ctx context.Context, i int) *types.ValidPreparation {
+			validPreparation := fakes.BuildFakeValidPreparation()
+			validPreparation.Name = fmt.Sprintf("Valid Preparation %02d", i)
+			return createValidPreparationForTest(t, ctx, validPreparation, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparation], error) {
+			return dbc.GetValidPreparations(ctx, filter)
+		},
+		GetID: func(validPreparation *types.ValidPreparation) string {
+			return validPreparation.ID
+		},
+		CleanupItem: func(ctx context.Context, validPreparation *types.ValidPreparation) error {
+			return dbc.ArchiveValidPreparation(ctx, validPreparation.ID)
+		},
 	})
 }

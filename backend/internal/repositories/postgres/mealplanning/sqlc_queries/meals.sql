@@ -113,8 +113,9 @@ WHERE
 		OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meals.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND meals.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY meals.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetMealsCreatedByUser :many
 SELECT
@@ -169,8 +170,9 @@ WHERE
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meals.archived_at = NULL)
 	AND meals.created_by_user = sqlc.arg(created_by_user)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND meals.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY meals.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: SearchForMeals :many
 SELECT
@@ -219,6 +221,7 @@ FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE
 	meals.archived_at IS NULL
+	AND meal_components.archived_at IS NULL
 	AND meals.name ILIKE '%' || sqlc.arg(query)::text || '%'
 	AND meals.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND meals.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -231,8 +234,9 @@ WHERE
 		OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meals.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND meals.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY meals.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateMealLastIndexedAt :execrows
 UPDATE meals SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

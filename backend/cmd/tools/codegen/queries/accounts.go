@@ -176,7 +176,7 @@ WHERE %s.%s IS NULL
 					accountsTableName, archivedAtColumn,
 					accountUserMembershipsTableName, archivedAtColumn,
 					buildFilterConditions(accountsTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(accountsTableName),
 				)),
 			},
 			{

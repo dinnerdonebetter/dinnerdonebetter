@@ -236,23 +236,22 @@ WHERE
 	)
 			AND (NOT COALESCE($5, false)::boolean OR account_instrument_ownerships.archived_at = NULL)
 	AND account_instrument_ownerships.belongs_to_account = $6
+	AND account_instrument_ownerships.id > COALESCE($7, '')
 GROUP BY
 	account_instrument_ownerships.id,
 	valid_instruments.id
-ORDER BY
-	account_instrument_ownerships.id
-LIMIT $8
-OFFSET $7
+ORDER BY account_instrument_ownerships.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetAccountInstrumentOwnershipsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	AccountID       string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -289,8 +288,8 @@ func (q *Queries) GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, a
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.AccountID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

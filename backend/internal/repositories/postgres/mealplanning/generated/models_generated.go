@@ -728,25 +728,3 @@ type RecipeRatings struct {
 	Instructions  sql.NullString
 	Overall       sql.NullString
 }
-
-type ValidVessels struct {
-	CreatedAt                      time.Time
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	LastIndexedAt                  sql.NullTime
-	ID                             string
-	Name                           string
-	PluralName                     string
-	Description                    string
-	IconPath                       string
-	Slug                           string
-	Capacity                       string
-	Shape                          VesselShape
-	LengthInMillimeters            sql.NullString
-	HeightInMillimeters            sql.NullString
-	WidthInMillimeters             sql.NullString
-	CapacityUnit                   sql.NullString
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
-}

@@ -135,6 +135,7 @@ SELECT
 			AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 					AND (NOT COALESCE($3, false)::boolean OR oauth2_clients.archived_at = NULL)
+			AND oauth2_clients.id > COALESCE($4, '')
 	) as filtered_count,
 	(
 		SELECT COUNT(users.id)
@@ -146,16 +147,17 @@ WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (NOT COALESCE($3, false)::boolean OR oauth2_clients.archived_at = NULL)
-LIMIT $5
-OFFSET $4
+	AND oauth2_clients.id > COALESCE($4, '')
+ORDER BY oauth2_clients.id ASC
+LIMIT COALESCE($5, 50)
 `
 
 type GetOAuth2ClientsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
 }
 
 type GetOAuth2ClientsRow struct {
@@ -175,8 +177,8 @@ func (q *Queries) GetOAuth2Clients(ctx context.Context, db DBTX, arg *GetOAuth2C
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.IncludeArchived,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

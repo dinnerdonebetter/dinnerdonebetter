@@ -395,29 +395,30 @@ FROM recipe_step_completion_condition_ingredients
 	JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step = recipe_steps.id
 	JOIN valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state = valid_ingredient_states.id
 WHERE recipe_step_completion_conditions.archived_at IS NULL
-	AND recipe_step_completion_condition_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND recipe_step_completion_condition_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND recipe_step_completion_conditions.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_completion_conditions.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
-		recipe_step_completion_condition_ingredients.last_updated_at IS NULL
-		OR recipe_step_completion_condition_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+		recipe_step_completion_conditions.last_updated_at IS NULL
+		OR recipe_step_completion_conditions.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
-		recipe_step_completion_condition_ingredients.last_updated_at IS NULL
-		OR recipe_step_completion_condition_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+		recipe_step_completion_conditions.last_updated_at IS NULL
+		OR recipe_step_completion_conditions.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND recipe_step_completion_conditions.belongs_to_recipe_step = $6
-LIMIT $8
-OFFSET $7
+	AND recipe_step_completion_conditions.id > COALESCE($7, '')
+ORDER BY recipe_step_completion_conditions.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetRecipeStepCompletionConditionsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	RecipeStepID    string
-	QueryOffset     sql.NullInt32
-	QueryLimit      sql.NullInt32
+	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
 
@@ -459,8 +460,8 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.RecipeStepID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

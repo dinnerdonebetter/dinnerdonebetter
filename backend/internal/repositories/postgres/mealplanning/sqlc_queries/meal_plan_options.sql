@@ -157,8 +157,9 @@ WHERE
 		OR meal_plan_options.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND meal_plan_options.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY meal_plan_options.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetMealPlanOption :one
 SELECT

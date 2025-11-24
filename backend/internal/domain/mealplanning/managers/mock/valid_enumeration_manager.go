@@ -19,10 +19,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientGroups(ctx context.C
 	return returnValues.Get(0).([]*mealplanning.ValidIngredientGroup), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientGroup), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredientGroup(ctx context.Context, input *mealplanning.ValidIngredientGroupCreationRequestInput) (*mealplanning.ValidIngredientGroup, error) {
@@ -49,10 +49,10 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredientGroup(ctx context.C
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientMeasurementUnit, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientMeasurementUnit), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredientMeasurementUnit(ctx context.Context, input *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput) (*mealplanning.ValidIngredientMeasurementUnit, error) {
@@ -91,10 +91,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByMe
 	return returnValues.Get(0).([]*mealplanning.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientPreparation, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientPreparation), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredientPreparation(ctx context.Context, input *mealplanning.ValidIngredientPreparationCreationRequestInput) (*mealplanning.ValidIngredientPreparation, error) {
@@ -139,10 +139,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredients(ctx context.Contex
 	return returnValues.Get(0).([]*mealplanning.ValidIngredient), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredient, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredient), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredient]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredient(ctx context.Context, input *mealplanning.ValidIngredientCreationRequestInput) (*mealplanning.ValidIngredient, error) {
@@ -181,10 +181,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientsByPreparationAndIng
 	return returnValues.Get(0).([]*mealplanning.ValidIngredient), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientStateIngredient, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientStateIngredient), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredientStateIngredient(ctx context.Context, input *mealplanning.ValidIngredientStateIngredientCreationRequestInput) (*mealplanning.ValidIngredientStateIngredient, error) {
@@ -229,10 +229,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientStates(ctx context.C
 	return returnValues.Get(0).([]*mealplanning.ValidIngredientState), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientState, string, error) {
+func (m *MockValidEnumerationsManager) ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientState), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientState]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidIngredientState(ctx context.Context, input *mealplanning.ValidIngredientStateCreationRequestInput) (*mealplanning.ValidIngredientState, error) {
@@ -271,10 +271,10 @@ func (m *MockValidEnumerationsManager) SearchValidMeasurementUnitsByIngredientID
 	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnit), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidMeasurementUnit, string, error) {
+func (m *MockValidEnumerationsManager) ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnit), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidMeasurementUnit(ctx context.Context, input *mealplanning.ValidMeasurementUnitCreationRequestInput) (*mealplanning.ValidMeasurementUnit, error) {
@@ -307,10 +307,10 @@ func (m *MockValidEnumerationsManager) SearchValidInstruments(ctx context.Contex
 	return returnValues.Get(0).([]*mealplanning.ValidInstrument), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidInstrument, string, error) {
+func (m *MockValidEnumerationsManager) ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidInstrument), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidInstrument(ctx context.Context, input *mealplanning.ValidInstrumentCreationRequestInput) (*mealplanning.ValidInstrument, error) {
@@ -379,10 +379,10 @@ func (m *MockValidEnumerationsManager) ArchiveValidMeasurementUnitConversion(ctx
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) ListValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationInstrument, string, error) {
+func (m *MockValidEnumerationsManager) ListValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationInstrument), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidPreparationInstrument(ctx context.Context, input *mealplanning.ValidPreparationInstrumentCreationRequestInput) (*mealplanning.ValidPreparationInstrument, error) {
@@ -427,10 +427,10 @@ func (m *MockValidEnumerationsManager) SearchValidPreparations(ctx context.Conte
 	return returnValues.Get(0).([]*mealplanning.ValidPreparation), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparation, string, error) {
+func (m *MockValidEnumerationsManager) ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparation), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparation]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidPreparation(ctx context.Context, input *mealplanning.ValidPreparationCreationRequestInput) (*mealplanning.ValidPreparation, error) {
@@ -463,10 +463,10 @@ func (m *MockValidEnumerationsManager) ArchiveValidPreparation(ctx context.Conte
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) ListValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationVessel, string, error) {
+func (m *MockValidEnumerationsManager) ListValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationVessel), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselCreationRequestInput) (*mealplanning.ValidPreparationVessel, error) {
@@ -511,10 +511,10 @@ func (m *MockValidEnumerationsManager) SearchValidVessels(ctx context.Context, q
 	return returnValues.Get(0).([]*mealplanning.ValidVessel), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.ValidVessel, string, error) {
+func (m *MockValidEnumerationsManager) ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidVessel), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidVessel]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) CreateValidVessel(ctx context.Context, input *mealplanning.ValidVesselCreationRequestInput) (*mealplanning.ValidVessel, error) {

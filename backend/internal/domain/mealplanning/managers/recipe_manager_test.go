@@ -106,10 +106,9 @@ func TestRecipeManager_ListRecipes(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipes(ctx, nil)
+		actual, err := rm.ListRecipes(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -388,10 +387,9 @@ func TestRecipeManager_ListRecipeSteps(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeSteps(ctx, exampleRecipeID, nil)
+		actual, err := rm.ListRecipeSteps(ctx, exampleRecipeID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -552,10 +550,9 @@ func TestRecipeManager_ListRecipeStepProducts(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeStepProducts(ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := rm.ListRecipeStepProducts(ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -713,10 +710,9 @@ func TestRecipeManager_ListRecipeStepInstruments(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeStepInstruments(ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := rm.ListRecipeStepInstruments(ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -874,10 +870,9 @@ func TestRecipeManager_ListRecipeStepIngredients(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeStepIngredients(ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := rm.ListRecipeStepIngredients(ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1030,14 +1025,13 @@ func TestRecipeManager_ListRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipePrepTasksForRecipe), testutils.ContextMatcher, exampleRecipeID).Return(expected.Data, nil)
+				db.On(testutils.GetMethodName(rm.db.GetRecipePrepTasks), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipePrepTask(ctx, exampleRecipeID, nil)
+		actual, err := rm.ListRecipePrepTask(ctx, exampleRecipeID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1188,10 +1182,9 @@ func TestRecipeManager_ListRecipeStepCompletionConditions(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeStepCompletionConditions(ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := rm.ListRecipeStepCompletionConditions(ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1349,10 +1342,9 @@ func TestRecipeManager_ListRecipeStepVessels(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeStepVessels(ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := rm.ListRecipeStepVessels(ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1509,10 +1501,9 @@ func TestRecipeManager_ListRecipeRatings(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.ListRecipeRatings(ctx, exampleRecipeID, nil)
+		actual, err := rm.ListRecipeRatings(ctx, exampleRecipeID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

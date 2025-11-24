@@ -74,8 +74,9 @@ WHERE user_notifications.status != 'dismissed'
 		OR user_notifications.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND user_notifications.belongs_to_user = sqlc.arg(user_id)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND user_notifications.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY user_notifications.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateUserNotification :execrows
 UPDATE user_notifications SET

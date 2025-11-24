@@ -13,7 +13,6 @@ import (
 
 	filtering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	types "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -1893,9 +1892,9 @@ type SearchForUsersRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Filter           *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
 	Query            string                 `protobuf:"bytes,2,opt,name=Query,proto3" json:"Query,omitempty"`
+	UseSearchService bool                   `protobuf:"varint,3,opt,name=UseSearchService,proto3" json:"UseSearchService,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	UseSearchService bool `protobuf:"varint,3,opt,name=UseSearchService,proto3" json:"UseSearchService,omitempty"`
 }
 
 func (x *SearchForUsersRequest) Reset() {
@@ -2057,9 +2056,9 @@ func (x *SetDefaultAccountRequest) GetAccountID() string {
 type SetDefaultAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=ResponseDetails,proto3" json:"ResponseDetails,omitempty"`
+	Success         bool                   `protobuf:"varint,2,opt,name=Success,proto3" json:"Success,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Success         bool `protobuf:"varint,2,opt,name=Success,proto3" json:"Success,omitempty"`
 }
 
 func (x *SetDefaultAccountResponse) Reset() {
@@ -2162,9 +2161,9 @@ func (x *TransferAccountOwnershipRequest) GetInput() *AccountOwnershipTransferIn
 type TransferAccountOwnershipResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=ResponseDetails,proto3" json:"ResponseDetails,omitempty"`
+	Success         bool                   `protobuf:"varint,2,opt,name=Success,proto3" json:"Success,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Success         bool `protobuf:"varint,2,opt,name=Success,proto3" json:"Success,omitempty"`
 }
 
 func (x *TransferAccountOwnershipResponse) Reset() {
@@ -3686,9 +3685,9 @@ type AccountUserMembership struct {
 	BelongsToUser    string                 `protobuf:"bytes,5,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
 	BelongsToAccount string                 `protobuf:"bytes,6,opt,name=BelongsToAccount,proto3" json:"BelongsToAccount,omitempty"`
 	AccountRole      string                 `protobuf:"bytes,7,opt,name=AccountRole,proto3" json:"AccountRole,omitempty"`
+	DefaultAccount   bool                   `protobuf:"varint,8,opt,name=DefaultAccount,proto3" json:"DefaultAccount,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	DefaultAccount   bool `protobuf:"varint,8,opt,name=DefaultAccount,proto3" json:"DefaultAccount,omitempty"`
 }
 
 func (x *AccountUserMembership) Reset() {
@@ -3786,9 +3785,9 @@ type AccountUserMembershipWithUser struct {
 	ID               string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
 	BelongsToAccount string                 `protobuf:"bytes,6,opt,name=BelongsToAccount,proto3" json:"BelongsToAccount,omitempty"`
 	AccountRole      string                 `protobuf:"bytes,7,opt,name=AccountRole,proto3" json:"AccountRole,omitempty"`
+	DefaultAccount   bool                   `protobuf:"varint,8,opt,name=DefaultAccount,proto3" json:"DefaultAccount,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
-	DefaultAccount   bool `protobuf:"varint,8,opt,name=DefaultAccount,proto3" json:"DefaultAccount,omitempty"`
 }
 
 func (x *AccountUserMembershipWithUser) Reset() {
@@ -3888,20 +3887,20 @@ type User struct {
 	AvatarSrc                  *string                `protobuf:"bytes,7,opt,name=AvatarSrc,proto3,oneof" json:"AvatarSrc,omitempty"`
 	Birthday                   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=Birthday,proto3" json:"Birthday,omitempty"`
 	ArchivedAt                 *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=ArchivedAt,proto3" json:"ArchivedAt,omitempty"`
-	EmailAddressVerifiedAt     *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=EmailAddressVerifiedAt,proto3" json:"EmailAddressVerifiedAt,omitempty"`
-	HashedPassword             string                 `protobuf:"bytes,12,opt,name=HashedPassword,proto3" json:"HashedPassword,omitempty"`
+	AccountStatusExplanation   string                 `protobuf:"bytes,10,opt,name=AccountStatusExplanation,proto3" json:"AccountStatusExplanation,omitempty"`
 	TwoFactorSecret            string                 `protobuf:"bytes,11,opt,name=TwoFactorSecret,proto3" json:"TwoFactorSecret,omitempty"`
+	HashedPassword             string                 `protobuf:"bytes,12,opt,name=HashedPassword,proto3" json:"HashedPassword,omitempty"`
 	ID                         string                 `protobuf:"bytes,13,opt,name=ID,proto3" json:"ID,omitempty"`
 	AccountStatus              string                 `protobuf:"bytes,14,opt,name=AccountStatus,proto3" json:"AccountStatus,omitempty"`
 	Username                   string                 `protobuf:"bytes,15,opt,name=Username,proto3" json:"Username,omitempty"`
 	FirstName                  string                 `protobuf:"bytes,16,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
 	LastName                   string                 `protobuf:"bytes,17,opt,name=LastName,proto3" json:"LastName,omitempty"`
 	EmailAddress               string                 `protobuf:"bytes,18,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
-	AccountStatusExplanation   string                 `protobuf:"bytes,10,opt,name=AccountStatusExplanation,proto3" json:"AccountStatusExplanation,omitempty"`
+	EmailAddressVerifiedAt     *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=EmailAddressVerifiedAt,proto3" json:"EmailAddressVerifiedAt,omitempty"`
 	ServiceRole                string                 `protobuf:"bytes,20,opt,name=ServiceRole,proto3" json:"ServiceRole,omitempty"`
+	RequiresPasswordChange     bool                   `protobuf:"varint,21,opt,name=RequiresPasswordChange,proto3" json:"RequiresPasswordChange,omitempty"`
 	unknownFields              protoimpl.UnknownFields
 	sizeCache                  protoimpl.SizeCache
-	RequiresPasswordChange     bool `protobuf:"varint,21,opt,name=RequiresPasswordChange,proto3" json:"RequiresPasswordChange,omitempty"`
 }
 
 func (x *User) Reset() {
@@ -4146,17 +4145,17 @@ type UserCreationResponse struct {
 	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=ResponseDetails,proto3" json:"ResponseDetails,omitempty"`
 	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
 	Birthday        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=Birthday,proto3" json:"Birthday,omitempty"`
-	TwoFactorQRCode string                 `protobuf:"bytes,6,opt,name=TwoFactorQRCode,proto3" json:"TwoFactorQRCode,omitempty"`
-	EmailAddress    string                 `protobuf:"bytes,5,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
 	Username        string                 `protobuf:"bytes,4,opt,name=Username,proto3" json:"Username,omitempty"`
+	EmailAddress    string                 `protobuf:"bytes,5,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
+	TwoFactorQRCode string                 `protobuf:"bytes,6,opt,name=TwoFactorQRCode,proto3" json:"TwoFactorQRCode,omitempty"`
 	CreatedUserID   string                 `protobuf:"bytes,7,opt,name=CreatedUserID,proto3" json:"CreatedUserID,omitempty"`
 	AccountStatus   string                 `protobuf:"bytes,8,opt,name=AccountStatus,proto3" json:"AccountStatus,omitempty"`
 	TwoFactorSecret string                 `protobuf:"bytes,9,opt,name=TwoFactorSecret,proto3" json:"TwoFactorSecret,omitempty"`
 	FirstName       string                 `protobuf:"bytes,10,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
 	LastName        string                 `protobuf:"bytes,11,opt,name=LastName,proto3" json:"LastName,omitempty"`
+	IsAdmin         bool                   `protobuf:"varint,12,opt,name=IsAdmin,proto3" json:"IsAdmin,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	IsAdmin         bool `protobuf:"varint,12,opt,name=IsAdmin,proto3" json:"IsAdmin,omitempty"`
 }
 
 func (x *UserCreationResponse) Reset() {
@@ -4412,18 +4411,18 @@ func (x *UserDetailsUpdateRequest) GetTOTPToken() string {
 type UserRegistrationInput struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Birthday              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=Birthday,proto3" json:"Birthday,omitempty"`
-	Username              string                 `protobuf:"bytes,6,opt,name=Username,proto3" json:"Username,omitempty"`
+	Password              string                 `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
 	EmailAddress          string                 `protobuf:"bytes,3,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
 	InvitationToken       string                 `protobuf:"bytes,4,opt,name=InvitationToken,proto3" json:"InvitationToken,omitempty"`
 	InvitationID          string                 `protobuf:"bytes,5,opt,name=InvitationID,proto3" json:"InvitationID,omitempty"`
-	Password              string                 `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
+	Username              string                 `protobuf:"bytes,6,opt,name=Username,proto3" json:"Username,omitempty"`
 	FirstName             string                 `protobuf:"bytes,7,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
 	LastName              string                 `protobuf:"bytes,8,opt,name=LastName,proto3" json:"LastName,omitempty"`
 	AccountName           string                 `protobuf:"bytes,9,opt,name=AccountName,proto3" json:"AccountName,omitempty"`
+	AcceptedTOS           bool                   `protobuf:"varint,10,opt,name=AcceptedTOS,proto3" json:"AcceptedTOS,omitempty"`
+	AcceptedPrivacyPolicy bool                   `protobuf:"varint,11,opt,name=AcceptedPrivacyPolicy,proto3" json:"AcceptedPrivacyPolicy,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
-	AcceptedTOS           bool `protobuf:"varint,10,opt,name=AcceptedTOS,proto3" json:"AcceptedTOS,omitempty"`
-	AcceptedPrivacyPolicy bool `protobuf:"varint,11,opt,name=AcceptedPrivacyPolicy,proto3" json:"AcceptedPrivacyPolicy,omitempty"`
 }
 
 func (x *UserRegistrationInput) Reset() {

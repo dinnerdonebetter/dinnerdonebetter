@@ -100,25 +100,25 @@ func comparePackages(config *CheckConfig, auxPackage string) error {
 				switch config.PatternType {
 				case PatternTypeFunctionCallArgs:
 					if et, ok := n.(*ast.CallExpr); ok {
-						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName); err != nil {
+						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset); err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 				case PatternTypeStructLiterals:
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						if err = checkStructLiteral(cl, paramTypes, fileName); err != nil {
+						if err = checkStructLiteral(cl, paramTypes, fileName, fileset); err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 				default:
 					// Check both patterns for backward compatibility
 					if et, ok := n.(*ast.CallExpr); ok {
-						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName); err != nil {
+						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset); err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						if err = checkStructLiteral(cl, paramTypes, fileName); err != nil {
+						if err = checkStructLiteral(cl, paramTypes, fileName, fileset); err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
@@ -131,7 +131,7 @@ func comparePackages(config *CheckConfig, auxPackage string) error {
 	return errors.ErrorOrNil()
 }
 
-func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string) error {
+func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet) error {
 	if targetFieldName == "" {
 		return nil // Skip if no target field name specified
 	}
@@ -144,7 +144,7 @@ func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructTy
 					thirdParam := et.Args[2]
 					if ue, isUE := thirdParam.(*ast.UnaryExpr); isUE {
 						if se, isSE := ue.X.(*ast.CompositeLit); isSE {
-							return checkCompositeFields(se, paramTypes, fileName)
+							return checkCompositeFields(se, paramTypes, fileName, fileset)
 						}
 					}
 				}
@@ -154,12 +154,15 @@ func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructTy
 	return nil
 }
 
-func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string) error {
-	return checkCompositeFields(cl, paramTypes, fileName)
+func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet) error {
+	return checkCompositeFields(cl, paramTypes, fileName, fileset)
 }
 
-func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string) error {
+func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet) error {
 	var errors *multierror.Error
+	pos := fileset.Position(se.Pos())
+	lineNum := pos.Line
+
 	if tt, isType := se.Type.(*ast.SelectorExpr); isType {
 		lookup := tt.Sel.Name
 		if fieldDef, present := paramTypes[lookup]; present {
@@ -175,7 +178,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 			structsForField := getFieldsForStruct(fieldDef)
 			for fieldName := range structsForField {
 				if _, used := fieldsUsed[fieldName]; !used {
-					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in %s", fieldName, lookup, fileName))
+					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in backend/%s:%d", fieldName, lookup, fileName, lineNum))
 				}
 			}
 		}
@@ -197,7 +200,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 			structsForField := getFieldsForStruct(fieldDef)
 			for fieldName := range structsForField {
 				if _, used := fieldsUsed[fieldName]; !used {
-					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in %s", fieldName, lookup, fileName))
+					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in %s:%d", fieldName, lookup, fileName, lineNum))
 				}
 			}
 		}

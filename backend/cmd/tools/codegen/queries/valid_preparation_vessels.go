@@ -135,7 +135,7 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validPreparationVesselsTableName, validPreparationIDColumn, idColumn,
 					buildFilterConditions(validPreparationVesselsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationVesselsTableName),
 				)),
 			},
 			{
@@ -173,7 +173,7 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validPreparationVesselsTableName, validVesselIDColumn, idColumn,
 					buildFilterConditions(validPreparationVesselsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationVesselsTableName),
 				)),
 			},
 			{
@@ -208,7 +208,7 @@ WHERE
 					validPreparationsTableName, archivedAtColumn,
 					validMeasurementUnitsTableName, archivedAtColumn,
 					buildFilterConditions(validPreparationVesselsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validPreparationVesselsTableName),
 				)),
 			},
 			{

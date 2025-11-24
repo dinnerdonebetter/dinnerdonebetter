@@ -39,15 +39,15 @@ const (
 
 	// QueryKeyLimit is the query param key to specify a limit in a query.
 	QueryKeyLimit = "limit"
-	// QueryKeyPage is the query param key for specifying which page the user would in a list query.
-	QueryKeyPage = "page"
+	// QueryKeyCursor is the query param key for specifying which cursor to use in a list query.
+	QueryKeyCursor = "cursor"
 	// QueryKeyCreatedBefore is the query param key for a creation time limit in a list query.
 	QueryKeyCreatedBefore = "createdBefore"
 	// QueryKeyCreatedAfter is the query param key for a creation time limit in a list query.
 	QueryKeyCreatedAfter = "createdAfter"
-	// QueryKeyUpdatedBefore is the query param key for a creation time limit in a list query.
+	// QueryKeyUpdatedBefore is the query param key for an updated time limit in a list query.
 	QueryKeyUpdatedBefore = "updatedBefore"
-	// QueryKeyUpdatedAfter is the query param key for a creation time limit in a list query.
+	// QueryKeyUpdatedAfter is the query param key for an updated time limit in a list query.
 	QueryKeyUpdatedAfter = "updatedAfter"
 	// QueryKeyIncludeArchived is the query param key for including archived results in a query.
 	QueryKeyIncludeArchived = "includeArchived"
@@ -55,45 +55,45 @@ const (
 	QueryKeySortBy = "sortBy"
 )
 
-// Pagination represents a pagination request.
-type Pagination struct {
-	_ struct{} `json:"-"`
+type (
+	// Pagination represents a pagination request.
+	Pagination struct {
+		_ struct{} `json:"-"`
 
-	Page          uint16 `json:"page"`
-	Limit         uint8  `json:"limit"`
-	FilteredCount uint64 `json:"filteredCount"`
-	TotalCount    uint64 `json:"totalCount"`
-}
+		Cursor        string `json:"cursor"`
+		Limit         uint8  `json:"limit"`
+		FilteredCount uint64 `json:"filteredCount"`
+		TotalCount    uint64 `json:"totalCount"`
+	}
 
-type QueryFilteredResult[T any] struct {
-	_ struct{} `json:"-"`
+	// QueryFilter represents all the filters a User could apply to a list query.
+	QueryFilter struct {
+		_ struct{} `json:"-"`
 
-	Data []*T `json:"data"`
-	Pagination
-}
+		SortBy          *string    `json:"sortBy,omitempty"`
+		CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
+		CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
+		UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
+		UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
+		Limit           *uint8     `json:"limit,omitempty"`
+		IncludeArchived *bool      `json:"includeArchived,omitempty"`
+		Cursor          *string    `json:"cursor,omitempty"`
+		Query           string     `json:"q,omitempty"` // TODO: REMOVE ME
+	}
 
-// QueryFilter represents all the filters a User could apply to a list query.
-type QueryFilter struct {
-	_ struct{} `json:"-"`
+	QueryFilteredResult[T any] struct {
+		_ struct{} `json:"-"`
 
-	SortBy          *string    `json:"sortBy,omitempty"`
-	Page            *uint16    `json:"page,omitempty"`
-	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
-	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
-	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
-	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
-	PageSize        *uint8     `json:"pageSize,omitempty"`
-	IncludeArchived *bool      `json:"includeArchived,omitempty"`
-	NextCursor      *string    `json:"nextCursor,omitempty"`
-	Query           string     `json:"q,omitempty"`
-}
+		Data []*T `json:"data"`
+		Pagination
+	}
+)
 
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:     pointer.To(uint16(1)),
-		PageSize: pointer.To(uint8(DefaultQueryFilterLimit)),
-		SortBy:   SortAscending,
+		Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
+		SortBy: SortAscending,
 	}
 }
 
@@ -109,12 +109,12 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 		l = l.WithValue(textsearch.QueryKeySearch, qf.Query)
 	}
 
-	if qf.Page != nil {
-		l = l.WithValue(QueryKeyPage, qf.Page)
+	if qf.Cursor != nil {
+		l = l.WithValue(QueryKeyCursor, qf.Cursor)
 	}
 
-	if qf.PageSize != nil {
-		l = l.WithValue(QueryKeyLimit, qf.PageSize)
+	if qf.Limit != nil {
+		l = l.WithValue(QueryKeyLimit, qf.Limit)
 	}
 
 	if qf.SortBy != nil {
@@ -146,12 +146,12 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 		qf.Query = i
 	}
 
-	if i, err := strconv.ParseUint(params.Get(QueryKeyPage), 10, 64); err == nil {
-		qf.Page = pointer.To(uint16(math.Max(float64(i), 1)))
+	if i := params.Get(QueryKeyCursor); i != "" {
+		qf.Cursor = &i
 	}
 
 	if i, err := strconv.ParseUint(params.Get(QueryKeyLimit), 10, 64); err == nil {
-		qf.PageSize = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
+		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedBefore)); err == nil {
@@ -182,24 +182,11 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 }
 
-// SetPage sets the current page with certain constraints.
-func (qf *QueryFilter) SetPage(page *uint16) {
-	if page != nil {
-		qf.Page = pointer.To(uint16(math.Max(1, float64(*page))))
+// SetCursor sets the current page with certain constraints.
+func (qf *QueryFilter) SetCursor(cursor *string) {
+	if cursor != nil {
+		qf.Cursor = cursor
 	}
-}
-
-// QueryOffset calculates a query page from the current filter values.
-func (qf *QueryFilter) QueryOffset() uint16 {
-	if qf != nil && qf.PageSize != nil && qf.Page != nil {
-		page := *qf.Page
-		if page == 0 {
-			page = 1
-		}
-
-		return uint16(*qf.PageSize) * (page - 1)
-	}
-	return 0
 }
 
 // ToValues returns a url.Values from a QueryFilter.
@@ -214,12 +201,12 @@ func (qf *QueryFilter) ToValues() url.Values {
 		v.Set(textsearch.QueryKeySearch, qf.Query)
 	}
 
-	if qf.Page != nil {
-		v.Set(QueryKeyPage, strconv.FormatUint(uint64(*qf.Page), 10))
+	if qf.Cursor != nil {
+		v.Set(QueryKeyCursor, *qf.Cursor)
 	}
 
-	if qf.PageSize != nil {
-		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.PageSize), 10))
+	if qf.Limit != nil {
+		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.Limit), 10))
 	}
 
 	if qf.SortBy != nil {
@@ -257,12 +244,12 @@ func (qf *QueryFilter) ToPagination() Pagination {
 
 	x := Pagination{}
 
-	if qf.Page != nil {
-		x.Page = *qf.Page
+	if qf.Cursor != nil {
+		x.Cursor = *qf.Cursor
 	}
 
-	if qf.PageSize != nil {
-		x.Limit = *qf.PageSize
+	if qf.Limit != nil {
+		x.Limit = *qf.Limit
 	}
 
 	return x
@@ -273,11 +260,36 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	qf := DefaultQueryFilter()
 	qf.FromParams(req.URL.Query())
 
-	if qf.PageSize != nil {
-		if *qf.PageSize == 0 {
-			qf.PageSize = pointer.To(uint8(DefaultQueryFilterLimit))
+	if qf.Limit != nil {
+		if *qf.Limit == 0 {
+			qf.Limit = pointer.To(uint8(DefaultQueryFilterLimit))
 		}
 	}
 
 	return qf
+}
+
+// NewQueryFilteredResult creates a new QueryFilteredResult.
+func NewQueryFilteredResult[T any](
+	data []*T,
+	filteredCount,
+	totalCount uint64,
+	idExtractor func(*T) string,
+	filter *QueryFilter,
+) *QueryFilteredResult[T] {
+	x := &QueryFilteredResult[T]{
+		Data:       data,
+		Pagination: filter.ToPagination(),
+	}
+
+	x.FilteredCount = filteredCount
+	x.TotalCount = totalCount
+
+	if len(data) > 0 {
+		x.Cursor = idExtractor(data[len(data)-1])
+	} else {
+		x.Cursor = ""
+	}
+
+	return x
 }

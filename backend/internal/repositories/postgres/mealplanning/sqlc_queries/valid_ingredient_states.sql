@@ -77,10 +77,10 @@ WHERE
 		OR valid_ingredient_states.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_states.archived_at = NULL)
+	AND valid_ingredient_states.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY valid_ingredient_states.id
-ORDER BY valid_ingredient_states.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_ingredient_states.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientStatesNeedingIndexing :many
 SELECT valid_ingredient_states.id
@@ -137,11 +137,46 @@ SELECT
 	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
-	valid_ingredient_states.archived_at
+	valid_ingredient_states.archived_at,
+	(
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+		WHERE valid_ingredient_states.archived_at IS NULL
+			AND
+			valid_ingredient_states.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_states.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_states.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+		WHERE valid_ingredient_states.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_states
-WHERE valid_ingredient_states.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
-	AND valid_ingredient_states.archived_at IS NULL
-LIMIT 50;
+WHERE valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_states.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
+	AND valid_ingredient_states.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_states.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_states.archived_at = NULL)
+	AND valid_ingredient_states.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_states.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateValidIngredientState :execrows
 UPDATE valid_ingredient_states SET

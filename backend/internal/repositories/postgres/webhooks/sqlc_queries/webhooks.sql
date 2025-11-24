@@ -88,8 +88,9 @@ WHERE webhooks.archived_at IS NULL
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
 	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhook_trigger_events.archived_at IS NULL
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND webhooks.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY webhooks.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetWebhooksForAccountAndEvent :many
 SELECT

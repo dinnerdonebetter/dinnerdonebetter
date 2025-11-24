@@ -1587,10 +1587,10 @@ message RecipeCreationRequestInput {
   common.Float32RangeWithOptionalMax EstimatedPortions = 9;
   repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
   repeated RecipeStepCreationRequestInput Steps = 11;
-  repeated RecipeMediaCreationRequestInput Media = 12;
-  bool AlsoCreateMeal = 13;
-  bool SealOfApproval = 14;
-  bool EligibleForMeals = 15;
+  bool AlsoCreateMeal = 12;
+  bool SealOfApproval = 13;
+  bool EligibleForMeals = 14;
+  repeated RecipeMediaCreationRequestInput Media = 15;
 }
 
 message RecipeMedia {

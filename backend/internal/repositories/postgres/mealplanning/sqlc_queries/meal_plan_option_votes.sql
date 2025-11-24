@@ -121,13 +121,14 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 		meal_plan_option_votes.last_updated_at IS NULL
 		OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND meal_plan_option_votes.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY
 	meal_plan_option_votes.id,
 	meal_plan_options.id,
 	meal_plan_events.id,
 	meal_plans.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY meal_plan_option_votes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetMealPlanOptionVote :one
 SELECT

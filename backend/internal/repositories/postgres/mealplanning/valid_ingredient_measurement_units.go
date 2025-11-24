@@ -147,27 +147,32 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]{
-		Pagination: filter.ToPagination(),
-		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForIngredient(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForIngredientParams{
 		ValidIngredientID: ingredientID,
 		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:     database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:      database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:       database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:        database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:            database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:       database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived:   database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientMeasurementUnit
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.ValidIngredientMeasurementUnit{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidIngredientMeasurementUnit{
 			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
@@ -234,10 +239,15 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
 		})
-
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vimu *mealplanning.ValidIngredientMeasurementUnit) string { return vimu.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -261,27 +271,32 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]{
-		Pagination: filter.ToPagination(),
-		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForMeasurementUnitParams{
 		ValidMeasurementUnitID: validMeasurementUnitID,
 		CreatedBefore:          database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:           database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:          database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:           database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:            database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:             database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:                 database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:            database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived:        database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientMeasurementUnit
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.ValidIngredientMeasurementUnit{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidIngredientMeasurementUnit{
 			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
@@ -348,10 +363,15 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 			},
 		})
-
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vimu *mealplanning.ValidIngredientMeasurementUnit) string { return vimu.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -369,26 +389,31 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]{
-		Pagination: filter.ToPagination(),
-		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientMeasurementUnit
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.ValidIngredientMeasurementUnit{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidIngredientMeasurementUnit{
 			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
@@ -455,10 +480,15 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 				IsHeat:                 result.ValidIngredientIsHeat,
 			},
 		})
-
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vimu *mealplanning.ValidIngredientMeasurementUnit) string { return vimu.ID },
+		filter,
+	)
 
 	return x, nil
 }

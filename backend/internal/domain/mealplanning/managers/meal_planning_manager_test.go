@@ -87,10 +87,9 @@ func TestMealPlanningManager_ListMeals(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMeals(ctx, nil)
+		actual, err := mpm.ListMeals(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -227,10 +226,9 @@ func TestMealPlanningManager_ListMealPlans(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlans(ctx, exampleOwnerID, nil)
+		actual, err := mpm.ListMealPlans(ctx, exampleOwnerID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -401,10 +399,9 @@ func TestMealPlanningManager_ListMealPlanEvents(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlanEvents(ctx, exampleMealPlanID, nil)
+		actual, err := mpm.ListMealPlanEvents(ctx, exampleMealPlanID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -552,10 +549,9 @@ func TestMealPlanningManager_ListMealPlanOptions(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, nil)
+		actual, err := mpm.ListMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -709,10 +705,9 @@ func TestMealPlanningManager_ListMealPlanOptionVotes(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlanOptionVotes(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, nil)
+		actual, err := mpm.ListMealPlanOptionVotes(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1134,10 +1129,9 @@ func TestMealPlanningManager_ListUserIngredientPreferences(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListUserIngredientPreferences(ctx, exampleOwnerID, nil)
+		actual, err := mpm.ListUserIngredientPreferences(ctx, exampleOwnerID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1256,10 +1250,9 @@ func TestMealPlanningManager_ListAccountInstrumentOwnerships(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListAccountInstrumentOwnerships(ctx, exampleOwnerID, nil)
+		actual, err := mpm.ListAccountInstrumentOwnerships(ctx, exampleOwnerID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

@@ -27,33 +27,33 @@ const (
 
 type (
 	MealPlanningManager interface {
-		ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error)
+		ListMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error)
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
 		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
 
-		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.MealPlan, string, error)
+		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error)
 		CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
 		ReadMealPlan(ctx context.Context, mealPlanID, ownerID string) (*types.MealPlan, error)
 		UpdateMealPlan(ctx context.Context, mealPlanID, ownerID string, input *types.MealPlanUpdateRequestInput) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, ownerID string) error
 		FinalizeMealPlan(ctx context.Context, mealPlanID, ownerID string) (bool, error)
 
-		ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanEvent, string, error)
+		ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanEvent], error)
 		CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error)
 		ReadMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanEventUpdateRequestInput) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
 
-		ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) ([]*types.MealPlanOption, string, error)
+		ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOption], error)
 		CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error)
 		CreateMealPlanOptionWithEventID(ctx context.Context, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error)
 		ReadMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, input *types.MealPlanOptionUpdateRequestInput) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
 
-		ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error)
+		ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOptionVote], error)
 		CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error)
 		ReadMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error
@@ -71,12 +71,12 @@ type (
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error
 
 		ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*types.UserIngredientPreference, error)
-		ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.UserIngredientPreference, string, error)
+		ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserIngredientPreference], error)
 		CreateUserIngredientPreference(ctx context.Context, ownerID string, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string, input *types.UserIngredientPreferenceUpdateRequestInput) error
 		ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error
 
-		ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.AccountInstrumentOwnership, string, error)
+		ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error)
 		CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error)
 		ReadAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) (*types.AccountInstrumentOwnership, error)
 		UpdateAccountInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.AccountInstrumentOwnershipUpdateRequestInput) error
@@ -127,13 +127,8 @@ func NewMealPlanningManager(
 	return m, nil
 }
 
-func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error) {
+func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
-
-	if filter == nil {
-		filter = filtering.DefaultQueryFilter()
-	}
-
 	defer span.End()
 
 	if filter == nil {
@@ -142,10 +137,10 @@ func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.Q
 
 	results, err := m.db.GetMeals(ctx, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, m.logger, span, "fetching meals from database")
+		return nil, observability.PrepareAndLogError(err, m.logger, span, "fetching meals from database")
 	}
 
-	return results.Data, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error) {
@@ -249,7 +244,7 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.MealPlan, string, error) {
+func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -262,10 +257,10 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 
 	mealPlans, err := m.db.GetMealPlansForAccount(ctx, ownerID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching list of meal plans for account")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching list of meal plans for account")
 	}
 
-	return mealPlans.Data, "", nil
+	return mealPlans, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error) {
@@ -399,7 +394,7 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	return finalized, nil
 }
 
-func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanEvent, string, error) {
+func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanEvent], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -412,10 +407,10 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 
 	mealPlanEvents, err := m.db.GetMealPlanEvents(ctx, mealPlanID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan events")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan events")
 	}
 
-	return mealPlanEvents.Data, "", nil
+	return mealPlanEvents, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error) {
@@ -518,7 +513,7 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) ([]*types.MealPlanOption, string, error) {
+func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOption], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -535,10 +530,10 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 
 	results, err := m.db.GetMealPlanOptions(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan options")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan options")
 	}
 
-	return results.Data, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
@@ -679,7 +674,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error) {
+func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOptionVote], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -698,10 +693,10 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 
 	results, err := m.db.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes")
 	}
 
-	return results.Data, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
@@ -1018,7 +1013,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 	return nil
 }
 
-func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.UserIngredientPreference, string, error) {
+func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserIngredientPreference], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1031,10 +1026,10 @@ func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context,
 
 	results, err := m.db.GetUserIngredientPreferences(ctx, ownerID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching ingredient preferences")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching ingredient preferences")
 	}
 
-	return results.Data, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*types.UserIngredientPreference, error) {
@@ -1146,7 +1141,7 @@ func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Contex
 	return nil
 }
 
-func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.AccountInstrumentOwnership, string, error) {
+func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1159,10 +1154,10 @@ func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Contex
 
 	results, err := m.db.GetAccountInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching instrument ownerships")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching instrument ownerships")
 	}
 
-	return results.Data, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error) {

@@ -222,9 +222,11 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.RecipeStepCompletionCondition]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.RecipeStepCompletionCondition
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetRecipeStepCompletionConditions(ctx, q.db, &generated.GetRecipeStepCompletionConditionsParams{
 		RecipeStepID:    recipeStepID,
@@ -232,12 +234,12 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "querying for recipe step completion conditions")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step completion conditions list retrieval query")
 	}
 
 	idOrder := []string{}
@@ -278,13 +280,23 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 			RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 	}
 
 	for _, id := range idOrder {
-		x.Data = append(x.Data, byID[id])
+		data = append(data, byID[id])
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rscc *types.RecipeStepCompletionCondition) string { return rscc.ID },
+		filter,
+	)
 
 	return x, nil
 }

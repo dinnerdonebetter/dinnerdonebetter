@@ -123,7 +123,7 @@ WHERE %s.%s IS NULL
 					userIngredientPreferencesTableName, belongsToUserColumn, belongsToUserColumn,
 					validIngredientsTableName, archivedAtColumn,
 					buildFilterConditions(userIngredientPreferencesTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(userIngredientPreferencesTableName),
 				)),
 			},
 			{

@@ -218,7 +218,7 @@ WHERE
 					recipesTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
 					buildFilterConditions(recipeStepInstrumentsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipeStepInstrumentsTableName),
 				)),
 			},
 			{

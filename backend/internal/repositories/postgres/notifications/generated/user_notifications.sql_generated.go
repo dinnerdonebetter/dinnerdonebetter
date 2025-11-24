@@ -132,18 +132,19 @@ WHERE user_notifications.status != 'dismissed'
 		OR user_notifications.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND user_notifications.belongs_to_user = $5
-LIMIT $7
-OFFSET $6
+	AND user_notifications.id > COALESCE($6, '')
+ORDER BY user_notifications.id ASC
+LIMIT COALESCE($7, 50)
 `
 
 type GetUserNotificationsForUserParams struct {
+	ResultLimit   interface{}
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UserID        string
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
+	Cursor        sql.NullString
 }
 
 type GetUserNotificationsForUserRow struct {
@@ -164,8 +165,8 @@ func (q *Queries) GetUserNotificationsForUser(ctx context.Context, db DBTX, arg 
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.UserID,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

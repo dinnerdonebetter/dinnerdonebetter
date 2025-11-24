@@ -237,26 +237,32 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.RecipeStepProduct]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*mealplanning.RecipeStepProduct
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.db, &generated.GetRecipeStepProductsParams{
-		RecipeStepID:    recipeStepID,
 		RecipeID:        recipeID,
+		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step products")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
 	}
 
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		recipeStepProduct := &mealplanning.RecipeStepProduct{
 			CreatedAt: result.CreatedAt,
 			Quantity: types.OptionalFloat32Range{
@@ -304,10 +310,16 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 			}
 		}
 
-		x.Data = append(x.Data, recipeStepProduct)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, recipeStepProduct)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rsp *mealplanning.RecipeStepProduct) string { return rsp.ID },
+		filter,
+	)
 
 	return x, nil
 }

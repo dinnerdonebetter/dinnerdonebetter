@@ -133,11 +133,8 @@ func (r *repository) GetWebhooks(ctx context.Context, accountID string, filter *
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &filtering.QueryFilteredResult[types.Webhook]{
-		Pagination: filter.ToPagination(),
-	}
 
 	results, err := r.generatedQuerier.GetWebhooksForAccount(ctx, r.db, &generated.GetWebhooksForAccountParams{
 		BelongsToAccount: accountID,
@@ -145,16 +142,20 @@ func (r *repository) GetWebhooks(ctx context.Context, accountID string, filter *
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
 	}
 
+	var (
+		data                      []*types.Webhook
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x.Data = append(x.Data, &types.Webhook{
+		data = append(data, &types.Webhook{
 			CreatedAt:        database.TimeFromNullTime(result.CreatedAt),
 			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -166,9 +167,19 @@ func (r *repository) GetWebhooks(ctx context.Context, accountID string, filter *
 			ContentType:      result.ContentType,
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.Webhook) string {
+			return t.ID
+		},
+		filter,
+	)
 
 	return x, nil
 }

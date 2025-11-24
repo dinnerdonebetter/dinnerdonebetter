@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -603,5 +604,46 @@ func TestQuerier_MarkRecipeAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkRecipeAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[mealplanning.Recipe]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe",
+		CreateItem: func(ctx context.Context, i int) *mealplanning.Recipe {
+			recipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
+			recipe.Name = fmt.Sprintf("Recipe %02d", i)
+			return createRecipeForTest(t, ctx, recipe, dbc, false)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+			return dbc.GetRecipes(ctx, filter)
+		},
+		GetID: func(recipe *mealplanning.Recipe) string {
+			return recipe.ID
+		},
+		CleanupItem: func(ctx context.Context, recipe *mealplanning.Recipe) error {
+			return dbc.ArchiveRecipe(ctx, recipe.ID, user.ID)
+		},
 	})
 }
