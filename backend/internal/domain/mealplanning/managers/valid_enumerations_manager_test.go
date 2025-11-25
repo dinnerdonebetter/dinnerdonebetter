@@ -592,7 +592,7 @@ func TestValidEnumerationManager_SearchValidIngredientPreparationsByIngredient(T
 
 		actual, err := vem.SearchValidIngredientPreparationsByIngredient(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -619,7 +619,7 @@ func TestValidEnumerationManager_SearchValidIngredientPreparationsByPreparation(
 
 		actual, err := vem.SearchValidIngredientPreparationsByPreparation(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

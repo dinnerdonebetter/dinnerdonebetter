@@ -104,7 +104,7 @@ type (
 		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)
 		GetValidIngredientState(ctx context.Context, validIngredientState string) (*ValidIngredientState, error)
 		GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientState], error)
-		SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientState, error)
+		SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientState, error) // TODO: QueryFilterize
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error
 		MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientState string) error
@@ -124,7 +124,7 @@ type (
 	}
 )
 
-// Update merges an ValidIngredientStateUpdateRequestInput with a valid ingredient state.
+// Update merges a ValidIngredientStateUpdateRequestInput with a valid ingredient state.
 func (x *ValidIngredientState) Update(input *ValidIngredientStateUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

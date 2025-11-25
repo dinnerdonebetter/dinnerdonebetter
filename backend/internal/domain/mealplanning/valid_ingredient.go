@@ -256,7 +256,7 @@ type (
 	}
 )
 
-// Update merges an ValidIngredientUpdateRequestInput with a valid ingredient.
+// Update merges a ValidIngredientUpdateRequestInput with a valid ingredient.
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

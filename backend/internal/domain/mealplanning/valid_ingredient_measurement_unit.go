@@ -97,7 +97,7 @@ type (
 	}
 )
 
-// Update merges an ValidIngredientMeasurementUnitUpdateRequestInput with a valid ingredient measurement unit.
+// Update merges a ValidIngredientMeasurementUnitUpdateRequestInput with a valid ingredient measurement unit.
 func (x *ValidIngredientMeasurementUnit) Update(input *ValidIngredientMeasurementUnitUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes

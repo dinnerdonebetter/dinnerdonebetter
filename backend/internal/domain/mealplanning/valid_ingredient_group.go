@@ -103,7 +103,7 @@ type (
 		ValidIngredientGroupExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredientGroup(ctx context.Context, validIngredientID string) (*ValidIngredientGroup, error)
 		GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientGroup], error)
-		SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientGroup, error)
+		SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientGroup, error) // TODO: QueryFilterize
 		CreateValidIngredientGroup(ctx context.Context, input *ValidIngredientGroupDatabaseCreationInput) (*ValidIngredientGroup, error)
 		UpdateValidIngredientGroup(ctx context.Context, updated *ValidIngredientGroup) error
 		ArchiveValidIngredientGroup(ctx context.Context, validIngredientID string) error
@@ -120,7 +120,7 @@ type (
 	}
 )
 
-// Update merges an ValidIngredientGroupUpdateRequestInput with a valid ingredient group.
+// Update merges a ValidIngredientGroupUpdateRequestInput with a valid ingredient group.
 func (x *ValidIngredientGroup) Update(input *ValidIngredientGroupUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

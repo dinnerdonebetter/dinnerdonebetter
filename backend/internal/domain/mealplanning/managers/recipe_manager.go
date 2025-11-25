@@ -33,7 +33,7 @@ type (
 		ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
-		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error)
+		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) // TODO: QueryFilterize
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)

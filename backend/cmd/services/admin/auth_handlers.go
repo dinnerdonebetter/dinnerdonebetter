@@ -81,6 +81,6 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 	// This causes HTMX to do a full page redirect instead of swapping content
 	res.Header().Set("HX-Redirect", "/")
 	res.WriteHeader(http.StatusOK)
-	
+
 	return nil, nil
 }

@@ -14,6 +14,6 @@ message QueryFilter {
   optional google.protobuf.Timestamp UpdatedBefore = 6;
   optional uint32 PageSize = 7;
   optional bool IncludeArchived = 8;
-  optional string NextCursor = 9;
+  optional string Cursor = 9;
   string Query = 10;
 }

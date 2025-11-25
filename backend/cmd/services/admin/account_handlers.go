@@ -226,8 +226,8 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	usersRes, err := c.GetUsersForAccount(ctx, &identitysvc.GetUsersForAccountRequest{
 		AccountID: accountID,
 		Filter: &filtering.QueryFilter{
-			PageSize:   &pageSize,
-			NextCursor: nextCursor,
+			PageSize: &pageSize,
+			Cursor:   nextCursor,
 		},
 	})
 	if err != nil {
@@ -281,7 +281,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	var paginationControls []g.Node
 
 	// Add pagination controls if there's a next page
-	if usersRes.Filter != nil && usersRes.Filter.NextCursor != nil && *usersRes.Filter.NextCursor != "" {
+	if usersRes.Filter != nil && usersRes.Filter.Cursor != nil && *usersRes.Filter.Cursor != "" {
 		paginationControls = append(paginationControls,
 			ghtml.Div(
 				ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
@@ -295,7 +295,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 						design.Background(design.StandardPalette.Primary),
 						design.Background(design.Color{Value: design.StandardPalette.Primary.Value + "-700"}),
 					)),
-					g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/users?page=%s", accountID, *usersRes.Filter.NextCursor)),
+					g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/users?page=%s", accountID, *usersRes.Filter.Cursor)),
 					g.Attr("hx-target", "#account-users-container"),
 					g.Attr("hx-swap", "innerHTML"),
 					g.Text("Load More"),

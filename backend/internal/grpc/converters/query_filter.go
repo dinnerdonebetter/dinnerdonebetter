@@ -14,7 +14,7 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filteri
 	filter := &filtering.QueryFilter{
 		Limit:           pointer.To[uint8](50),
 		IncludeArchived: qf.IncludeArchived,
-		Cursor:          qf.NextCursor,
+		Cursor:          qf.Cursor,
 		Query:           qf.Query,
 		SortBy:          qf.SortBy,
 		CreatedAfter:    ConvertPBTimestampToTimePointer(qf.CreatedAfter),
@@ -34,9 +34,15 @@ func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagina
 		qf = filtering.DefaultQueryFilter()
 	}
 
+	// Use the cursor from the result pagination if available (for next page), otherwise use the filter's cursor
+	cursor := qf.Cursor
+	if resultPagination.Cursor != "" {
+		cursor = pointer.To(resultPagination.Cursor)
+	}
+
 	f := &grpcfiltering.QueryFilter{
 		IncludeArchived: qf.IncludeArchived,
-		NextCursor:      qf.Cursor,
+		Cursor:          cursor,
 		SortBy:          qf.SortBy,
 		CreatedAfter:    ConvertTimePointerToPBTimestamp(qf.CreatedAfter),
 		CreatedBefore:   ConvertTimePointerToPBTimestamp(qf.CreatedBefore),

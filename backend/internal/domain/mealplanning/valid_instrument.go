@@ -112,7 +112,7 @@ type (
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
 		GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidInstrument], error)
-		SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidInstrument, error)
+		SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidInstrument, error) // TODO: QueryFilterize
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error
@@ -133,7 +133,7 @@ type (
 	}
 )
 
-// Update merges an ValidInstrumentUpdateRequestInput with a valid instrument.
+// Update merges a ValidInstrumentUpdateRequestInput with a valid instrument.
 func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

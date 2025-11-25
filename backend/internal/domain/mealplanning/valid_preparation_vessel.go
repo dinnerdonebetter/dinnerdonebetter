@@ -92,7 +92,7 @@ type (
 	}
 )
 
-// Update merges an ValidPreparationVesselUpdateRequestInput with a valid preparation instrument.
+// Update merges a ValidPreparationVesselUpdateRequestInput with a valid preparation instrument.
 func (x *ValidPreparationVessel) Update(input *ValidPreparationVesselUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes

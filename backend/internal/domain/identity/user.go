@@ -168,7 +168,7 @@ type (
 		GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		GetUsersWithIDs(ctx context.Context, ids []string) ([]*User, error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*User, error)
+		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*User, error) // TODO: QueryFilterize
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error

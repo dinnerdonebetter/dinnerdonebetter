@@ -92,7 +92,7 @@ type (
 	}
 )
 
-// Update merges an ValidIngredientStateIngredientUpdateRequestInput with a valid ingredient state ingredient.
+// Update merges a ValidIngredientStateIngredientUpdateRequestInput with a valid ingredient state ingredient.
 func (x *ValidIngredientStateIngredient) Update(input *ValidIngredientStateIngredientUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes

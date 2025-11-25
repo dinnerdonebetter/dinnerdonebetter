@@ -159,7 +159,7 @@ type (
 		GetValidVessel(ctx context.Context, validVesselID string) (*ValidVessel, error)
 		GetRandomValidVessel(ctx context.Context) (*ValidVessel, error)
 		GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
-		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidVessel, error)
+		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidVessel, error) // TODO: QueryFilterize
 		CreateValidVessel(ctx context.Context, input *ValidVesselDatabaseCreationInput) (*ValidVessel, error)
 		UpdateValidVessel(ctx context.Context, updated *ValidVessel) error
 		MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error
@@ -180,7 +180,7 @@ type (
 	}
 )
 
-// Update merges an ValidVesselUpdateRequestInput with a valid vessel.
+// Update merges a ValidVesselUpdateRequestInput with a valid vessel.
 func (x *ValidVessel) Update(input *ValidVesselUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

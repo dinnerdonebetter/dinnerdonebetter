@@ -98,7 +98,7 @@ type (
 	}
 )
 
-// Update merges an ValidMeasurementUnitConversionUpdateRequestInput with a valid measurement conversion.
+// Update merges a ValidMeasurementUnitConversionUpdateRequestInput with a valid measurement conversion.
 func (x *ValidMeasurementUnitConversion) Update(input *ValidMeasurementUnitConversionUpdateRequestInput) {
 	if input.From != nil && *input.From != x.From.ID {
 		x.From.ID = *input.From

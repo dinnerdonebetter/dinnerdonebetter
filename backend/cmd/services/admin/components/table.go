@@ -2,11 +2,13 @@ package components
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -20,15 +22,21 @@ type FieldRenderer func(value any) g.Node
 // RowLinkGenerator is a function type that takes an item and returns a URL path for navigation
 type RowLinkGenerator[T any] func(item T) string
 
+// PaginationURLGenerator is a function type that generates a URL for pagination with the given cursor
+type PaginationURLGenerator func(cursor string) string
+
 // TableOptions holds configuration options for the table
 type TableOptions[T any] struct {
-	FieldRenderers    map[string]FieldRenderer
-	FieldReplacements map[string]string
-	Palette           *design.Palette
-	RowLinkGenerator  RowLinkGenerator[T]
-	TableID           string
-	CSSClasses        string
-	Fields            []string
+	FieldRenderers         map[string]FieldRenderer
+	FieldReplacements      map[string]string
+	Palette                *design.Palette
+	RowLinkGenerator       RowLinkGenerator[T]
+	Pagination             *filtering.Pagination
+	PaginationURLGenerator PaginationURLGenerator
+	TableID                string
+	CSSClasses             string
+	PaginationHTMXTarget   string
+	Fields                 []string
 }
 
 // DefaultFieldRenderer provides default rendering for common types
@@ -164,13 +172,10 @@ func applyFieldOrdering(fields []fieldInfo, customOrder []string, replacements m
 }
 
 // Table creates a generic HTML table from a slice of structs
+// It returns a wrapper div that includes both the table and pagination controls
 func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 	if options == nil {
 		options = &TableOptions[T]{}
-	}
-
-	if len(data) == 0 {
-		return createEmptyTable(options), nil
 	}
 
 	// Get palette (use standard if not provided)
@@ -179,35 +184,55 @@ func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 		palette = &design.StandardPalette
 	}
 
-	// Extract field information from the first item
-	fields, err := extractFields(data[0])
-	if err != nil {
-		return nil, fmt.Errorf("failed to extract fields: %w", err)
+	var tableNode g.Node
+
+	if len(data) == 0 {
+		tableNode = createEmptyTable(options)
+	} else {
+		// Extract field information from the first item
+		fields, extractErr := extractFields(data[0])
+		if extractErr != nil {
+			return nil, fmt.Errorf("failed to extract fields: %w", extractErr)
+		}
+
+		// Apply field ordering and replacements
+		fields = applyFieldOrdering(fields, options.Fields, options.FieldReplacements)
+
+		if len(fields) == 0 {
+			tableNode = createEmptyTable(options)
+		} else {
+			// Build table classes
+			tableClasses := buildTableClasses(options.CSSClasses)
+
+			tableAttrs := []g.Node{ghtml.Class(tableClasses)}
+			if options.TableID != "" {
+				tableAttrs = append(tableAttrs, ghtml.ID(options.TableID))
+			}
+
+			tableNode = ghtml.Table(
+				append(tableAttrs,
+					// Table header
+					createTableHeader(fields, palette),
+					// Table body
+					createTableBody(data, fields, options, palette),
+				)...,
+			)
+		}
 	}
 
-	// Apply field ordering and replacements
-	fields = applyFieldOrdering(fields, options.Fields, options.FieldReplacements)
+	// Create pagination controls if pagination info is provided
+	paginationNode := createPaginationControls(options, palette)
 
-	if len(fields) == 0 {
-		return createEmptyTable(options), nil
+	// If there's pagination, wrap both table and pagination in a container
+	if paginationNode != nil {
+		return ghtml.Div(
+			ghtml.Class("space-y-4"),
+			tableNode,
+			paginationNode,
+		), nil
 	}
 
-	// Build table classes
-	tableClasses := buildTableClasses(options.CSSClasses)
-
-	tableAttrs := []g.Node{ghtml.Class(tableClasses)}
-	if options.TableID != "" {
-		tableAttrs = append(tableAttrs, ghtml.ID(options.TableID))
-	}
-
-	return ghtml.Table(
-		append(tableAttrs,
-			// Table header
-			createTableHeader(fields, palette),
-			// Table body
-			createTableBody(data, fields, options, palette),
-		)...,
-	), nil
+	return tableNode, nil
 }
 
 // fieldInfo holds information about a struct field
@@ -501,4 +526,103 @@ func camelCaseToTitleCase(s string) string {
 	}
 
 	return result.String()
+}
+
+// createPaginationControls creates pagination controls if pagination information is available
+func createPaginationControls[T any](options *TableOptions[T], palette *design.Palette) g.Node {
+	if options.Pagination == nil {
+		return nil
+	}
+
+	pagination := options.Pagination
+	hasMore := pagination.Cursor != ""
+
+	// Build pagination info text
+	var infoText string
+	if pagination.FilteredCount > 0 || pagination.TotalCount > 0 {
+		if pagination.FilteredCount == pagination.TotalCount {
+			// No filters applied, show total count
+			infoText = fmt.Sprintf("Showing %d of %d total", pagination.FilteredCount, pagination.TotalCount)
+		} else {
+			// Filters applied, show both filtered and total
+			infoText = fmt.Sprintf("Showing %d filtered of %d total", pagination.FilteredCount, pagination.TotalCount)
+		}
+	}
+
+	// If there's no more data and no counts to show, don't render pagination
+	if !hasMore && infoText == "" {
+		return nil
+	}
+
+	var children []g.Node
+
+	// Add info text
+	if infoText != "" {
+		children = append(children,
+			ghtml.Div(
+				ghtml.Class("text-sm text-gray-600"),
+				g.Text(infoText),
+			),
+		)
+	}
+
+	// Add "Load More" button if there's a cursor
+	if hasMore && options.PaginationURLGenerator != nil {
+		nextURL := options.PaginationURLGenerator(pagination.Cursor)
+		if nextURL != "" {
+			// Determine HTMX target
+			htmxTarget := options.PaginationHTMXTarget
+			if htmxTarget == "" {
+				htmxTarget = "#search-results"
+			}
+
+			// Ensure cursor is in the URL (the generator should handle this, but we'll add it if missing)
+			parsedURL, parseErr := url.Parse(nextURL)
+			if parseErr == nil {
+				query := parsedURL.Query()
+				// Only add cursor if it's not already present
+				if query.Get("cursor") == "" {
+					query.Set("cursor", pagination.Cursor)
+					parsedURL.RawQuery = query.Encode()
+					nextURL = parsedURL.String()
+				}
+			} else {
+				// If URL parsing fails, append cursor as query param only if not already present
+				if !strings.Contains(nextURL, "cursor=") {
+					if strings.Contains(nextURL, "?") {
+						nextURL += "&cursor=" + url.QueryEscape(pagination.Cursor)
+					} else {
+						nextURL += "?cursor=" + url.QueryEscape(pagination.Cursor)
+					}
+				}
+			}
+
+			children = append(children,
+				ghtml.Button(
+					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
+						design.TextColor(design.Color{Value: "white"}),
+						design.Background(palette.Primary),
+						design.Background(design.Color{Value: palette.Primary.Value + "-700"}),
+						palette.Primary.Value,
+					)),
+					g.Attr("hx-get", nextURL),
+					g.Attr("hx-target", htmxTarget),
+					g.Attr("hx-swap", "innerHTML"),
+					g.Attr("hx-push-url", "false"),
+					g.Text("Load More"),
+				),
+			)
+		}
+	}
+
+	// If there are no children, don't render anything
+	if len(children) == 0 {
+		return nil
+	}
+
+	// Create pagination container
+	return ghtml.Div(
+		ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
+		g.Group(children),
+	)
 }

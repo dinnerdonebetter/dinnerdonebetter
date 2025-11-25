@@ -380,6 +380,8 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	logger := s.logger.WithSpan(span)
+
 	c, err := fetchClientFromContext(ctx)
 	if err != nil {
 		return page("Valid Ingredients", s.renderValidIngredientsError("Error: No API client available")), nil
@@ -389,6 +391,8 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 	if err != nil {
 		return page("Valid Ingredients", s.renderValidIngredientsError(fmt.Sprintf("Error loading valid ingredients: %v", err))), nil
 	}
+
+	logger.WithValue("filter", validIngredientsRes.Filter).Info("Valid ingredients retrieved")
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredient]{
