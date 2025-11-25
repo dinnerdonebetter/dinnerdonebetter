@@ -127,6 +127,7 @@ func (s *serviceImpl) GetReceivedAccountInvitations(ctx context.Context, request
 
 	x := &identitysvc.GetReceivedAccountInvitationsResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(invites.Pagination, filter),
 	}
 
 	for _, invite := range invites.Data {
@@ -155,6 +156,7 @@ func (s *serviceImpl) GetSentAccountInvitations(ctx context.Context, request *id
 
 	x := &identitysvc.GetSentAccountInvitationsResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(invites.Pagination, filter),
 	}
 
 	for _, invite := range invites.Data {

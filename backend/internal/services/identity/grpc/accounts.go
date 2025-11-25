@@ -124,6 +124,7 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 
 	x := &identitysvc.GetAccountsResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(accounts.Pagination, filter),
 	}
 
 	for _, account := range accounts.Data {
@@ -145,6 +146,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 
 	x := &identitysvc.GetAccountsForUserResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(accounts.Pagination, filter),
 	}
 
 	for _, account := range accounts.Data {

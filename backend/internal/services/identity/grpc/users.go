@@ -82,6 +82,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 
 	x := &identitysvc.GetUsersResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
 	}
 
 	for _, user := range users.Data {
@@ -106,6 +107,7 @@ func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitys
 
 	x := &identitysvc.GetUsersForAccountResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
 	}
 
 	for _, user := range users.Data {
@@ -132,6 +134,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 
 	x := &identitysvc.SearchForUsersResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
 	}
 
 	for _, user := range users.Data {

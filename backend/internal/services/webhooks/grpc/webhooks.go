@@ -112,7 +112,8 @@ func (s *serviceImpl) GetWebhooks(ctx context.Context, request *webhookssvc.GetW
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	retrieved, err := s.webhookRepository.GetWebhooks(ctx, sessionContextData.ActiveAccountID, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	retrieved, err := s.webhookRepository.GetWebhooks(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhooks")
 	}
@@ -121,6 +122,7 @@ func (s *serviceImpl) GetWebhooks(ctx context.Context, request *webhookssvc.GetW
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(retrieved.Pagination, filter),
 	}
 
 	for _, webhook := range retrieved.Data {

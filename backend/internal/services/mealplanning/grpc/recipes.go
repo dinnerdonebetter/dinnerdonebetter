@@ -605,7 +605,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Pagination: nil,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(recipePrepTasks.Pagination, filter),
 	}
 
 	for _, recipePrepTask := range recipePrepTasks.Data {

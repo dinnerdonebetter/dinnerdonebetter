@@ -67,7 +67,8 @@ func (s *serviceImpl) GetServiceSettings(ctx context.Context, request *settingss
 
 	logger := s.logger.WithSpan(span)
 
-	serviceSettings, err := s.serviceSettingsRepository.GetServiceSettings(ctx, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	serviceSettings, err := s.serviceSettingsRepository.GetServiceSettings(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service settings")
 	}
@@ -76,6 +77,7 @@ func (s *serviceImpl) GetServiceSettings(ctx context.Context, request *settingss
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettings.Pagination, filter),
 	}
 
 	for _, serviceSetting := range serviceSettings.Data {
@@ -103,6 +105,7 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettings.Pagination, filter),
 	}
 
 	for _, serviceSetting := range serviceSettings.Data {

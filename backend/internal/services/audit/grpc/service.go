@@ -60,7 +60,7 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 			CurrentAccountID: "",
 			TraceID:          span.SpanContext().TraceID().String(),
 		},
-		Pagination: nil,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(auditLogEntries.Pagination, filter),
 		Results:    nil,
 	}
 
@@ -88,7 +88,7 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 			CurrentAccountID: "",
 			TraceID:          span.SpanContext().TraceID().String(),
 		},
-		Pagination: nil,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(auditLogEntries.Pagination, filter),
 		Results:    nil,
 	}
 

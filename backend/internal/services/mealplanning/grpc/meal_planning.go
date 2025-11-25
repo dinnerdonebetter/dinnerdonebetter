@@ -511,7 +511,7 @@ func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealp
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Pagination: nil,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealPlansResult.Pagination, filter),
 	}
 
 	for _, mealPlan := range mealPlansResult.Data {
@@ -777,6 +777,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealPlanTasks.Pagination, filter),
 	}
 
 	for _, mealPlanTask := range mealPlanTasks.Data {
@@ -803,6 +804,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanningsvc.Get
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealsResult.Pagination, filter),
 	}
 
 	for _, meal := range mealsResult.Data {
@@ -944,6 +946,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(meals.Pagination, filter),
 	}
 
 	for _, meal := range meals.Data {

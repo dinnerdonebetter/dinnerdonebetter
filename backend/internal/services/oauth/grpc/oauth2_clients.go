@@ -90,6 +90,7 @@ func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(oauth2Clients.Pagination, filter),
 	}
 
 	for _, client := range oauth2Clients.Data {
