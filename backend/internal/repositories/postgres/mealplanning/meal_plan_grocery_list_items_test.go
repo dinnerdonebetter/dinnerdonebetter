@@ -96,10 +96,10 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 	assert.NoError(t, dbc.UpdateMealPlanGroceryListItem(ctx, createdMealPlanGroceryListItems[0]))
 
 	// fetch as list
-	mealPlanGroceryListItems, err := dbc.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlan.ID)
+	mealPlanGroceryListItems, err := dbc.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlan.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mealPlanGroceryListItems)
-	assert.Equal(t, len(createdMealPlanGroceryListItems), len(mealPlanGroceryListItems))
+	assert.Equal(t, len(createdMealPlanGroceryListItems), len(mealPlanGroceryListItems.Data))
 
 	// delete
 	for _, mealPlanGroceryListItem := range createdMealPlanGroceryListItems {

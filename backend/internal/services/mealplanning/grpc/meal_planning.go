@@ -607,7 +607,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanGroceryListItems, _, err := s.mealPlanningManager.ListMealPlanGroceryListItemsByMealPlan(ctx, request.MealPlanID, filter)
+	mealPlanGroceryListItems, err := s.mealPlanningManager.ListMealPlanGroceryListItemsByMealPlan(ctx, request.MealPlanID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan grocery list items")
 	}
@@ -618,7 +618,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 		},
 	}
 
-	for _, mealPlanGroceryListItem := range mealPlanGroceryListItems {
+	for _, mealPlanGroceryListItem := range mealPlanGroceryListItems.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(mealPlanGroceryListItem))
 	}
 
@@ -768,7 +768,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanTasks, _, err := s.mealPlanningManager.ListMealPlanTasksByMealPlan(ctx, request.MealPlanID, filter)
+	mealPlanTasks, err := s.mealPlanningManager.ListMealPlanTasksByMealPlan(ctx, request.MealPlanID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan tasks")
 	}
@@ -779,7 +779,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 		},
 	}
 
-	for _, mealPlanTask := range mealPlanTasks {
+	for _, mealPlanTask := range mealPlanTasks.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanTaskToGRPCMealPlanTask(mealPlanTask))
 	}
 
@@ -946,7 +946,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 		},
 	}
 
-	for _, meal := range meals {
+	for _, meal := range meals.Data {
 		x.Results = append(x.Results, converters.ConvertMealToGRPCMeal(meal))
 	}
 

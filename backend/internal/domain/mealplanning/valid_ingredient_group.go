@@ -103,7 +103,7 @@ type (
 		ValidIngredientGroupExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredientGroup(ctx context.Context, validIngredientID string) (*ValidIngredientGroup, error)
 		GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientGroup], error)
-		SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientGroup, error) // TODO: QueryFilterize
+		SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientGroup], error)
 		CreateValidIngredientGroup(ctx context.Context, input *ValidIngredientGroupDatabaseCreationInput) (*ValidIngredientGroup, error)
 		UpdateValidIngredientGroup(ctx context.Context, updated *ValidIngredientGroup) error
 		ArchiveValidIngredientGroup(ctx context.Context, validIngredientID string) error

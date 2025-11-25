@@ -670,7 +670,7 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
-		return users, todoRes, nil
+		return users.Data, todoRes, nil
 	} else {
 		uss, err := m.userSearchIndex.Search(ctx, query)
 		if err != nil {

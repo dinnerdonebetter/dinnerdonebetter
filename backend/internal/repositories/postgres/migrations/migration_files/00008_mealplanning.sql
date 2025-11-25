@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS valid_ingredient_group_members (
     belongs_to_group TEXT NOT NULL REFERENCES valid_ingredient_groups("id") ON DELETE CASCADE,
     valid_ingredient TEXT NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE
 );
 

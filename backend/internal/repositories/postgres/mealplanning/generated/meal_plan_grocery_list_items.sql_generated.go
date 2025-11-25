@@ -398,73 +398,134 @@ SELECT
 	meal_plan_grocery_list_items.status,
 	meal_plan_grocery_list_items.created_at,
 	meal_plan_grocery_list_items.last_updated_at,
-	meal_plan_grocery_list_items.archived_at
+	meal_plan_grocery_list_items.archived_at,
+	(
+		SELECT COUNT(meal_plan_grocery_list_items.id)
+		FROM meal_plan_grocery_list_items
+		JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan = meal_plans.id
+	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit = valid_measurement_units.id
+		WHERE meal_plan_grocery_list_items.archived_at IS NULL
+			AND
+			meal_plan_grocery_list_items.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_grocery_list_items.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_grocery_list_items.last_updated_at IS NULL
+				OR meal_plan_grocery_list_items.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_grocery_list_items.last_updated_at IS NULL
+				OR meal_plan_grocery_list_items.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR meal_plan_grocery_list_items.archived_at = NULL)
+			AND valid_measurement_units.archived_at IS NULL
+			AND valid_ingredients.archived_at IS NULL
+			AND meal_plans.archived_at IS NULL
+			AND meal_plan_grocery_list_items.belongs_to_meal_plan = $6
+	) AS filtered_count,
+	(
+		SELECT COUNT(meal_plan_grocery_list_items.id)
+		FROM meal_plan_grocery_list_items
+		JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan = meal_plans.id
+	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit = valid_measurement_units.id
+		WHERE meal_plan_grocery_list_items.archived_at IS NULL
+			AND valid_measurement_units.archived_at IS NULL
+			AND valid_ingredients.archived_at IS NULL
+			AND meal_plans.archived_at IS NULL
+			AND meal_plan_grocery_list_items.belongs_to_meal_plan = $6
+	) AS total_count
 FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
 	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
 	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit=valid_measurement_units.id
 WHERE meal_plan_grocery_list_items.archived_at IS NULL
+	AND meal_plan_grocery_list_items.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_grocery_list_items.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meal_plan_grocery_list_items.last_updated_at IS NULL
+		OR meal_plan_grocery_list_items.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meal_plan_grocery_list_items.last_updated_at IS NULL
+		OR meal_plan_grocery_list_items.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR meal_plan_grocery_list_items.archived_at = NULL)
+	AND meal_plan_grocery_list_items.belongs_to_meal_plan = $6
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-	AND meal_plan_grocery_list_items.belongs_to_meal_plan = $1
 	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
+	AND meal_plan_grocery_list_items.id > COALESCE($7, '')
 GROUP BY meal_plan_grocery_list_items.id,
 	valid_ingredients.id,
 	valid_measurement_units.id,
 	meal_plans.id
-ORDER BY meal_plan_grocery_list_items.id
+ORDER BY meal_plan_grocery_list_items.id ASC
+LIMIT COALESCE($8, 50)
 `
 
+type GetMealPlanGroceryListItemsForMealPlanParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	MealPlanID      string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
 type GetMealPlanGroceryListItemsForMealPlanRow struct {
+	ValidMeasurementUnitCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	CreatedAt                                              time.Time
-	ValidMeasurementUnitCreatedAt                          time.Time
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidIngredientPluralName                              string
-	StatusExplanation                                      string
-	BelongsToMealPlan                                      string
-	ValidIngredientID                                      string
+	Status                                                 GroceryListItemStatus
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitName                               string
+	ValidMeasurementUnitID                                 string
 	ID                                                     string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientIconPath                                string
-	MinimumQuantityNeeded                                  string
-	ValidMeasurementUnitID                                 string
-	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
+	ValidIngredientWarning                                 string
+	BelongsToMealPlan                                      string
 	ValidMeasurementUnitIconPath                           string
+	ValidIngredientID                                      string
+	StatusExplanation                                      string
 	ValidIngredientStorageInstructions                     string
 	ValidIngredientSlug                                    string
-	ValidMeasurementUnitSlug                               string
+	MinimumQuantityNeeded                                  string
 	ValidIngredientShoppingSuggestions                     string
-	Status                                                 GroceryListItemStatus
-	ValidIngredientWarning                                 string
+	ValidIngredientPluralName                              string
 	ValidMeasurementUnitPluralName                         string
-	PurchasedUpc                                           sql.NullString
+	ValidMeasurementUnitDescription                        string
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	PurchasePrice                                          sql.NullString
 	MaximumQuantityNeeded                                  sql.NullString
 	QuantityPurchased                                      sql.NullString
 	PurchasedMeasurementUnit                               sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	PurchasedUpc                                           sql.NullString
+	PurchasePrice                                          sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
 	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsHeat                                  bool
 	ValidIngredientIsAcid                                  bool
-	ValidIngredientIsFat                                   bool
-	ValidIngredientIsSalt                                  bool
 	ValidMeasurementUnitUniversal                          bool
 	ValidMeasurementUnitMetric                             bool
 	ValidMeasurementUnitImperial                           bool
+	ValidIngredientIsFat                                   bool
+	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsGrain                                 bool
 	ValidIngredientIsProtein                               bool
@@ -484,8 +545,17 @@ type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ValidIngredientContainsEgg                             bool
 }
 
-func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
-	rows, err := db.QueryContext(ctx, getMealPlanGroceryListItemsForMealPlan, mealPlanID)
+func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemsForMealPlanParams) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlanGroceryListItemsForMealPlan,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.MealPlanID,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -559,6 +629,8 @@ func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

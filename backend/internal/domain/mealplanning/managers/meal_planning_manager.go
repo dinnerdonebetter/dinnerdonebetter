@@ -30,7 +30,7 @@ type (
 		ListMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error)
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
-		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error) // TODO: QueryFilterize
+		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
 
 		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error)
@@ -59,12 +59,12 @@ type (
 		UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error
 		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
 
-		ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanTask, string, error) // TODO: QueryFilterize
+		ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanTask], error)
 		ReadMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error)
 		CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskCreationRequestInput) (*types.MealPlanTask, error)
 		MealPlanTaskStatusChange(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error
 
-		ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanGroceryListItem, string, error) // TODO: QueryFilterize
+		ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanGroceryListItem], error)
 		CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemCreationRequestInput) (*types.MealPlanGroceryListItem, error)
 		ReadMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*types.MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error
@@ -183,7 +183,7 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 	return meal, nil
 }
 
-func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error) {
+func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -194,14 +194,14 @@ func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, use
 	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	var results []*types.Meal
+	var results *filtering.QueryFilteredResult[types.Meal]
 	if useDatabase {
 		allResults, err := m.db.SearchForMeals(ctx, query, filter)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching for meals")
 		}
 
-		results = allResults.Data
+		results = allResults
 	} else {
 		mealSubsets, err := m.mealsSearchIndex.Search(ctx, query)
 		if err != nil {
@@ -213,10 +213,14 @@ func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, use
 			ids = append(ids, mealSubset.ID)
 		}
 
-		results, err = m.db.GetMealsWithIDs(ctx, ids)
+		idResults, err := m.db.GetMealsWithIDs(ctx, ids)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals from database")
 		}
+
+		results = filtering.NewQueryFilteredResult(idResults, uint64(len(idResults)), uint64(len(idResults)), func(m *types.Meal) string {
+			return m.ID
+		}, filter)
 	}
 
 	return results, nil
@@ -819,19 +823,19 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, _ *filtering.QueryFilter) ([]*types.MealPlanTask, string, error) {
+func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanTask], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
+	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "getting meal plan tasks for meal plan")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan tasks for meal plan")
 	}
 
-	return results, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error) {
@@ -899,19 +903,19 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, _ *filtering.QueryFilter) ([]*types.MealPlanGroceryListItem, string, error) {
+func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanGroceryListItem], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
+	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list items for meal plan")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list items for meal plan")
 	}
 
-	return results, "", nil
+	return results, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemCreationRequestInput) (*types.MealPlanGroceryListItem, error) {
@@ -1020,7 +1024,11 @@ func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context,
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
+	tracing.AttachQueryFilterToSpan(span, filter)
 
+	if ownerID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
 	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 

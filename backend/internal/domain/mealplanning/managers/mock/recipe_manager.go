@@ -31,10 +31,10 @@ func (m *MockRecipeManager) ReadRecipe(ctx context.Context, recipeID string) (*m
 	return returnValues.Get(0).(*mealplanning.Recipe), returnValues.Error(1)
 }
 
-func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) {
+func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.Recipe), returnValues.Get(1).(string), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
 func (m *MockRecipeManager) UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error {

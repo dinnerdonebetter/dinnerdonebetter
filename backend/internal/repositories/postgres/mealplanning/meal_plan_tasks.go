@@ -6,6 +6,7 @@ import (
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -179,7 +180,7 @@ func (q *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPl
 }
 
 // GetMealPlanTasksForMealPlan fetches a list of meal plan tasks.
-func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
+func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanTask], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -196,7 +197,10 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	x = []*types.MealPlanTask{}
+	var (
+		data                      = []*types.MealPlanTask{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		mealPlanTask := &types.MealPlanTask{
 			RecipePrepTask:      types.RecipePrepTask{},
@@ -227,10 +231,12 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 			},
 		}
 
-		x = append(x, mealPlanTask)
+		data = append(data, mealPlanTask)
 	}
 
-	logger.Info("meal plan tasks retrieved")
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(t *types.MealPlanTask) string {
+		return t.ID
+	}, filter)
 
 	return x, nil
 }

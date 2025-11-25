@@ -180,6 +180,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+			AND valid_ingredient_groups.name ILIKE '%' || sqlc.arg(name)::text || '%'
 	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredient_groups.id)

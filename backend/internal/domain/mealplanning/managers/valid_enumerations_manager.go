@@ -27,7 +27,7 @@ const (
 
 type (
 	ValidEnumerationsManager interface {
-		SearchValidIngredientGroups(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) // TODO: QueryFilterize
+		SearchValidIngredientGroups(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientGroup], error)
 		ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientGroup], error)
 		CreateValidIngredientGroup(ctx context.Context, input *types.ValidIngredientGroupCreationRequestInput) (*types.ValidIngredientGroup, error)
 		ReadValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*types.ValidIngredientGroup, error)
@@ -222,7 +222,7 @@ func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Contex
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
-	results, err := m.db.SearchForValidIngredientGroups(ctx, query, nil)
+	results, err := m.db.SearchForValidIngredientGroups(ctx, query, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid ingredient groups failed")
 	}

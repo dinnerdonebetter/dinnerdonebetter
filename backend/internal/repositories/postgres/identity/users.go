@@ -250,14 +250,14 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identit
 }
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
-func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*identity.User, error) {
+func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := r.logger.WithSpan(span)
 
 	if usernameQuery == "" {
-		return []*identity.User{}, database.ErrEmptyInputProvided
+		return nil, database.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, keys.SearchQueryKey, usernameQuery)
 	logger = logger.WithValue(keys.UsernameKey, usernameQuery)
@@ -282,8 +282,14 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 		return nil, observability.PrepareError(err, span, "querying database for users")
 	}
 
-	users := []*identity.User{}
+	var (
+		users                     = []*identity.User{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+
 		users = append(users, &identity.User{
 			CreatedAt:                  result.CreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
@@ -313,7 +319,11 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 		return nil, sql.ErrNoRows
 	}
 
-	return users, nil
+	x := filtering.NewQueryFilteredResult(users, filteredCount, totalCount, func(t *identity.User) string {
+		return t.ID
+	}, filter)
+
+	return x, nil
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.

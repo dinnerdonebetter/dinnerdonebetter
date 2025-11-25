@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -111,7 +112,7 @@ type (
 	MealPlanGroceryListItemDataManager interface {
 		MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (bool, error)
 		GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*MealPlanGroceryListItem, error)
-		GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*MealPlanGroceryListItem, error)
+		GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanGroceryListItem], error)
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error

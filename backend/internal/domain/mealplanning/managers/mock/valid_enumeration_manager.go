@@ -13,10 +13,10 @@ type MockValidEnumerationsManager struct {
 	mock.Mock
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientGroup), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {

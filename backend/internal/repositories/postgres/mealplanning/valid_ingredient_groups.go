@@ -127,7 +127,7 @@ func (q *repository) GetValidIngredientGroup(ctx context.Context, validIngredien
 }
 
 // SearchForValidIngredientGroups fetches a valid ingredient group from the database.
-func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, error) {
+func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -159,8 +159,15 @@ func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query s
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
-	validIngredientGroups := []*mealplanning.ValidIngredientGroup{}
+	var (
+		validIngredientGroups     = []*mealplanning.ValidIngredientGroup{}
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+
 		validIngredientGroup := &mealplanning.ValidIngredientGroup{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -231,7 +238,9 @@ func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query s
 		validIngredientGroups = append(validIngredientGroups, validIngredientGroup)
 	}
 
-	return validIngredientGroups, nil
+	x := filtering.NewQueryFilteredResult(validIngredientGroups, filteredCount, totalCount, func(vig *mealplanning.ValidIngredientGroup) string { return vig.ID }, filter)
+
+	return x, nil
 }
 
 // GetValidIngredientGroups fetches a list of valid ingredients group from the database that meet a particular filter.

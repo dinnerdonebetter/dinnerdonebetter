@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -94,7 +96,7 @@ type (
 		MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error)
 		CreateMealPlanTask(ctx context.Context, input *MealPlanTaskDatabaseCreationInput) (*MealPlanTask, error)
 		GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*MealPlanTask, error)
-		GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*MealPlanTask, error)
+		GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanTask], error)
 		CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*MealPlanTaskDatabaseCreationInput) ([]*MealPlanTask, error)
 		ChangeMealPlanTaskStatus(ctx context.Context, input *MealPlanTaskStatusChangeRequestInput) error
 		MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error

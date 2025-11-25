@@ -83,10 +83,10 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 	createdMealPlanTasks = append(createdMealPlanTasks, createMealPlanTaskForTest(t, ctx, exampleMealPlanTask, dbc))
 
 	// fetch as list
-	mealPlanTasks, err := dbc.GetMealPlanTasksForMealPlan(ctx, mealPlan.ID)
+	mealPlanTasks, err := dbc.GetMealPlanTasksForMealPlan(ctx, mealPlan.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mealPlanTasks)
-	assert.Equal(t, len(createdMealPlanTasks), len(mealPlanTasks))
+	assert.Equal(t, len(createdMealPlanTasks), len(mealPlanTasks.Data))
 
 	// delete
 	for _, mealPlanTask := range createdMealPlanTasks {
@@ -175,7 +175,7 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetMealPlanTasksForMealPlan(ctx, "")
+		actual, err := c.GetMealPlanTasksForMealPlan(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

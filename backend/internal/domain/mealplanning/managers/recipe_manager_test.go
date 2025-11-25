@@ -194,9 +194,8 @@ func TestRecipeManager_SearchRecipes(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := rm.SearchRecipes(ctx, exampleQuery, false, nil)
+		actual, err := rm.SearchRecipes(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
 		assert.Equal(t, expected.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)

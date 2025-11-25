@@ -866,9 +866,8 @@ func TestMealPlanningManager_ListMealPlanTasksByMealPlan(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlanTasksByMealPlan(ctx, exampleMealPlanID, nil)
+		actual, err := mpm.ListMealPlanTasksByMealPlan(ctx, exampleMealPlanID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
 		assert.Equal(t, expected.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
@@ -980,9 +979,8 @@ func TestMealPlanningManager_ListMealPlanGroceryListItemsByMealPlan(T *testing.T
 			},
 		)
 
-		actual, cursor, err := mpm.ListMealPlanGroceryListItemsByMealPlan(ctx, exampleMealPlanID, nil)
+		actual, err := mpm.ListMealPlanGroceryListItemsByMealPlan(ctx, exampleMealPlanID, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
 		assert.Equal(t, expected.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)

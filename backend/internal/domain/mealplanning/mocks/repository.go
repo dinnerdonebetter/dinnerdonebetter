@@ -167,10 +167,10 @@ func (m *Repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 }
 
 // SearchForValidIngredientGroups is a mock method.
-func (m *Repository) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, error) {
+func (m *Repository) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], error) {
 	returnValues := m.Called(ctx, query, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientGroup), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup]), returnValues.Error(1)
 }
 
 // CreateValidIngredientGroup is a mock method.
@@ -948,9 +948,9 @@ func (m *Repository) CreateMealPlanTask(ctx context.Context, input *mealplanning
 }
 
 // GetMealPlanTasksForMealPlan is a mock function.
-func (m *Repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanTask, error) {
-	returnValues := m.Called(ctx, mealPlanID)
-	return returnValues.Get(0).([]*mealplanning.MealPlanTask), returnValues.Error(1)
+func (m *Repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanTask], error) {
+	returnValues := m.Called(ctx, mealPlanID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanTask]), returnValues.Error(1)
 }
 
 // CreateMealPlanTasksForMealPlanOption is a mock function.
@@ -1026,9 +1026,9 @@ func (m *Repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 }
 
 // GetMealPlanGroceryListItemsForMealPlan is a mock function.
-func (m *Repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
-	returnValues := m.Called(ctx, mealPlanID)
-	return returnValues.Get(0).([]*mealplanning.MealPlanGroceryListItem), returnValues.Error(1)
+func (m *Repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanGroceryListItem], error) {
+	returnValues := m.Called(ctx, mealPlanID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanGroceryListItem]), returnValues.Error(1)
 }
 
 // CreateMealPlanGroceryListItem is a mock function.

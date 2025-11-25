@@ -1034,7 +1034,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
+	recipes, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
 	}
@@ -1045,7 +1045,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 		},
 	}
 
-	for _, recipe := range recipes {
+	for _, recipe := range recipes.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
 	}
 
