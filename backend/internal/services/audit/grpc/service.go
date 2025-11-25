@@ -60,8 +60,8 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 			CurrentAccountID: "",
 			TraceID:          span.SpanContext().TraceID().String(),
 		},
-		Filter:  request.Filter,
-		Results: nil,
+		Pagination: nil,
+		Results:    nil,
 	}
 
 	for _, y := range auditLogEntries.Data {
@@ -88,8 +88,8 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 			CurrentAccountID: "",
 			TraceID:          span.SpanContext().TraceID().String(),
 		},
-		Filter:  request.Filter,
-		Results: nil,
+		Pagination: nil,
+		Results:    nil,
 	}
 
 	for _, y := range auditLogEntries.Data {

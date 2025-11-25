@@ -324,9 +324,9 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Equal(t, len(exampleAccounts.Data), len(result.Result))
-		for i := range result.Result {
-			assert.Equal(t, result.Result[i].ID, exampleAccounts.Data[i].ID)
+		assert.Equal(t, len(exampleAccounts.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleAccounts.Data[i].ID)
 		}
 	})
 

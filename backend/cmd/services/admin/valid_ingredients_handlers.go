@@ -392,7 +392,7 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 		return page("Valid Ingredients", s.renderValidIngredientsError(fmt.Sprintf("Error loading valid ingredients: %v", err))), nil
 	}
 
-	logger.WithValue("filter", validIngredientsRes.Filter).Info("Valid ingredients retrieved")
+	logger.WithValue("filter", validIngredientsRes.Pagination).Info("Valid ingredients retrieved")
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredient]{

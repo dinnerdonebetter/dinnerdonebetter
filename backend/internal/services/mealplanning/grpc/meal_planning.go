@@ -511,7 +511,7 @@ func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealp
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Filter: request.Filter,
+		Pagination: nil,
 	}
 
 	for _, mealPlan := range mealPlansResult.Data {

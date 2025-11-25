@@ -94,7 +94,7 @@ func TestAccounts_Listing(T *testing.T) {
 		accounts, err := testClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
 		assert.NoError(t, err)
 		assert.NotNil(t, accounts)
-		assert.Equal(t, len(accounts.Result), len(createdAccounts)+defaultNumberOfAccountsAssociatedWithUsers)
+		assert.Equal(t, len(accounts.Results), len(createdAccounts)+defaultNumberOfAccountsAssociatedWithUsers)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -343,13 +343,13 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.NotEmpty(t, sentInvitations.Result)
+		assert.NotEmpty(t, sentInvitations.Results)
 
 		// verify the invitee can see the invitation as received
 		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, invitations)
-		assert.NotEmpty(t, invitations.Result)
+		assert.NotEmpty(t, invitations.Results)
 
 		// accept the invitation
 		_, err = inviteeClient.AcceptAccountInvitation(ctx, &identitysvc.AcceptAccountInvitationRequest{
@@ -369,16 +369,16 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.Empty(t, sentInvitations.Result)
+		assert.Empty(t, sentInvitations.Results)
 
 		// verify that the invited user can see the account in their accounts list
 		accounts, err := inviteeClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, accounts)
-		assert.Len(t, accounts.Result, 2)
+		assert.Len(t, accounts.Results, 2)
 
 		var found bool
-		for _, account := range accounts.Result {
+		for _, account := range accounts.Results {
 			if !found {
 				found = account.ID == accountID
 			}
@@ -421,7 +421,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.NotEmpty(t, sentInvitations.Result)
+		assert.NotEmpty(t, sentInvitations.Results)
 
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
@@ -444,22 +444,22 @@ func TestAccounts_Inviting(T *testing.T) {
 		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, invitations)
-		assert.Empty(t, invitations.Result)
+		assert.Empty(t, invitations.Results)
 
 		// verify that we don't have any sent invitations because they've all been accepted
 		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.Empty(t, sentInvitations.Result)
+		assert.Empty(t, sentInvitations.Results)
 
 		// verify that the invited user can see the account in their accounts list
 		accounts, err := inviteeClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, accounts)
-		assert.Len(t, accounts.Result, 2)
+		assert.Len(t, accounts.Results, 2)
 
 		var found bool
-		for _, account := range accounts.Result {
+		for _, account := range accounts.Results {
 			if !found {
 				found = account.ID == accountID
 			}
@@ -515,13 +515,13 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.NotEmpty(t, sentInvitations.Result)
+		assert.NotEmpty(t, sentInvitations.Results)
 
 		// verify the invitee can see the invitation as received
 		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, invitations)
-		assert.NotEmpty(t, invitations.Result)
+		assert.NotEmpty(t, invitations.Results)
 
 		_, err = testClient.CancelAccountInvitation(ctx, &identitysvc.CancelAccountInvitationRequest{
 			AccountInvitationID: invitation.Created.ID,
@@ -546,7 +546,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.Empty(t, sentInvitations.Result)
+		assert.Empty(t, sentInvitations.Results)
 
 		// validate we can see the webhook created before our user existed
 		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
@@ -590,13 +590,13 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.NotEmpty(t, sentInvitations.Result)
+		assert.NotEmpty(t, sentInvitations.Results)
 
 		// verify the invitee can see the invitation as received
 		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, invitations)
-		assert.NotEmpty(t, invitations.Result)
+		assert.NotEmpty(t, invitations.Results)
 
 		// accept the invitation
 		_, err = inviteeClient.RejectAccountInvitation(ctx, &identitysvc.RejectAccountInvitationRequest{
@@ -612,7 +612,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
 		require.NoError(t, err)
 		require.NotNil(t, sentInvitations)
-		assert.Empty(t, sentInvitations.Result)
+		assert.Empty(t, sentInvitations.Results)
 	})
 }
 
@@ -715,7 +715,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 
 		inviteeAccountsRes, err := inviteeClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
 		require.NoError(t, err)
-		require.Len(t, inviteeAccountsRes.Result, 2)
+		require.Len(t, inviteeAccountsRes.Results, 2)
 
 		_, err = testClient.UpdateAccountMemberPermissions(ctx, &identitysvc.UpdateAccountMemberPermissionsRequest{
 			UserID: invitee.ID,
@@ -733,7 +733,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 			otherAccountID string
 		)
 
-		for _, account := range inviteeAccountsRes.Result {
+		for _, account := range inviteeAccountsRes.Results {
 			if account.ID == accountID {
 				if !found {
 					found = true

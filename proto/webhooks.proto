@@ -112,7 +112,7 @@ message GetWebhooksRequest {
 
 message GetWebhooksResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated Webhook Results = 3;
 }
 

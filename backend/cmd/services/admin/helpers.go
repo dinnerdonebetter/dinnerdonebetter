@@ -91,17 +91,17 @@ func buildPaginationFromGRPCResponse(grpcFilter *grpcfiltering.QueryFilter, resu
 
 	responseFilter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(grpcFilter)
 	pagination := &filtering.Pagination{
-		Cursor:        "",
-		Limit:         0,
-		FilteredCount: 0,
-		TotalCount:    0,
+		Cursor:          "",
+		MaxResponseSize: 0,
+		FilteredCount:   0,
+		TotalCount:      0,
 	}
 
 	if responseFilter.Cursor != nil {
 		pagination.Cursor = *responseFilter.Cursor
 	}
 	if responseFilter.Limit != nil {
-		pagination.Limit = *responseFilter.Limit
+		pagination.MaxResponseSize = *responseFilter.Limit
 	}
 
 	// Estimate counts based on results

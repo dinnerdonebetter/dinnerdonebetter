@@ -120,8 +120,8 @@ message GetAccountsRequest {
 
 message GetAccountsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated Account Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated Account Results = 3;
 }
 
 // GetAccountsForUser
@@ -132,8 +132,8 @@ message GetAccountsForUserRequest {
 
 message GetAccountsForUserResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated Account Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated Account Results = 3;
 }
 
 // GetReceivedAccountInvitations
@@ -143,8 +143,8 @@ message GetReceivedAccountInvitationsRequest {
 
 message GetReceivedAccountInvitationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated AccountInvitation Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetSentAccountInvitations
@@ -154,8 +154,8 @@ message GetSentAccountInvitationsRequest {
 
 message GetSentAccountInvitationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated AccountInvitation Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetUser
@@ -175,8 +175,8 @@ message GetUsersRequest {
 
 message GetUsersResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated User Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated User Results = 3;
 }
 
 // GetUsersForAccount
@@ -187,8 +187,8 @@ message GetUsersForAccountRequest {
 
 message GetUsersForAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated User Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated User Results = 3;
 }
 
 // RejectAccountInvitation
@@ -210,7 +210,7 @@ message SearchForUsersRequest {
 
 message SearchForUsersResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated User Results = 3;
 }
 

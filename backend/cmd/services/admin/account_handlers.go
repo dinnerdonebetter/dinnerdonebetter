@@ -215,19 +215,12 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	}
 
 	// Get page parameter from query string
-	pageParam := req.URL.Query().Get("page")
 	var pageSize uint32 = 10 // Default page size
-	var nextCursor *string
-
-	if pageParam != "" {
-		nextCursor = &pageParam
-	}
 
 	usersRes, err := c.GetUsersForAccount(ctx, &identitysvc.GetUsersForAccountRequest{
 		AccountID: accountID,
 		Filter: &filtering.QueryFilter{
 			PageSize: &pageSize,
-			Cursor:   nextCursor,
 		},
 	})
 	if err != nil {
@@ -241,7 +234,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	}
 
 	// If no users, show empty state
-	if len(usersRes.Result) == 0 {
+	if len(usersRes.Results) == 0 {
 		return g.El("div",
 			g.Attr("class", "text-center py-8"),
 			ghtml.P(
@@ -252,7 +245,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	}
 
 	// Create compact table for users
-	table, err := components.Table(usersRes.Result, &components.TableOptions[*identitysvc.User]{
+	table, err := components.Table(usersRes.Results, &components.TableOptions[*identitysvc.User]{
 		TableID: "account-users-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -281,13 +274,13 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	var paginationControls []g.Node
 
 	// Add pagination controls if there's a next page
-	if usersRes.Filter != nil && usersRes.Filter.Cursor != nil && *usersRes.Filter.Cursor != "" {
+	if usersRes.Pagination != nil && usersRes.Pagination.Cursor != "" {
 		paginationControls = append(paginationControls,
 			ghtml.Div(
 				ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
 				ghtml.Div(
 					ghtml.Class("text-sm text-gray-500"),
-					g.Text(fmt.Sprintf("Showing %d users", len(usersRes.Result))),
+					g.Text(fmt.Sprintf("Showing %d users", len(usersRes.Results))),
 				),
 				ghtml.Button(
 					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s",
@@ -295,20 +288,20 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 						design.Background(design.StandardPalette.Primary),
 						design.Background(design.Color{Value: design.StandardPalette.Primary.Value + "-700"}),
 					)),
-					g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/users?page=%s", accountID, *usersRes.Filter.Cursor)),
+					g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/users?page=%s", accountID, usersRes.Pagination.Cursor)),
 					g.Attr("hx-target", "#account-users-container"),
 					g.Attr("hx-swap", "innerHTML"),
 					g.Text("Load More"),
 				),
 			),
 		)
-	} else if len(usersRes.Result) > 0 {
+	} else if len(usersRes.Results) > 0 {
 		paginationControls = append(paginationControls,
 			ghtml.Div(
 				ghtml.Class("text-center mt-4 pt-4 border-t border-gray-200"),
 				ghtml.P(
 					ghtml.Class("text-sm text-gray-500"),
-					g.Text(fmt.Sprintf("Showing all %d user(s)", len(usersRes.Result))),
+					g.Text(fmt.Sprintf("Showing all %d user(s)", len(usersRes.Results))),
 				),
 			),
 		)
@@ -343,7 +336,7 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 		ShowSearch:        true,
 		SearchPlaceholder: "Search accounts...",
 		HTMXSearchTarget:  "/api/accounts/search",
-		Data:              accountsRes.Result,
+		Data:              accountsRes.Results,
 		Actions:           []g.Node{},
 		TableOptions: &components.TableOptions[*identitysvc.Account]{
 			TableID: "accounts-table",
@@ -422,11 +415,11 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 	var filteredAccounts []*identitysvc.Account
 	if searchQuery == "" {
 		// No search query, return all accounts
-		filteredAccounts = accountsRes.Result
+		filteredAccounts = accountsRes.Results
 	} else {
 		// Filter accounts by search query (case insensitive)
 		searchQueryLower := strings.ToLower(searchQuery)
-		for _, account := range accountsRes.Result {
+		for _, account := range accountsRes.Results {
 			if strings.Contains(strings.ToLower(account.Name), searchQueryLower) {
 				filteredAccounts = append(filteredAccounts, account)
 			}

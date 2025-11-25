@@ -127,7 +127,7 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 	}
 
 	for _, account := range accounts.Data {
-		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
+		x.Results = append(x.Results, converters.ConvertAccountToGRPCAccount(account))
 	}
 
 	return x, nil
@@ -148,7 +148,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 	}
 
 	for _, account := range accounts.Data {
-		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
+		x.Results = append(x.Results, converters.ConvertAccountToGRPCAccount(account))
 	}
 
 	return x, nil

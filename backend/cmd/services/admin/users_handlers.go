@@ -226,7 +226,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 	}
 
 	// If no accounts, show empty state
-	if len(accountsRes.Result) == 0 {
+	if len(accountsRes.Results) == 0 {
 		return g.El("div",
 			g.Attr("class", "text-center py-8"),
 			ghtml.P(
@@ -237,7 +237,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 	}
 
 	// Create compact table for accounts
-	table, err := components.Table(accountsRes.Result, &components.TableOptions[*identitysvc.Account]{
+	table, err := components.Table(accountsRes.Results, &components.TableOptions[*identitysvc.Account]{
 		TableID: "user-accounts-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -270,13 +270,13 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 	var paginationControls []g.Node
 
 	// Add pagination controls if there's a next page
-	if accountsRes.Filter != nil && accountsRes.Filter.Cursor != nil && *accountsRes.Filter.Cursor != "" {
+	if accountsRes.Pagination != nil && accountsRes.Pagination.Cursor != "" {
 		paginationControls = append(paginationControls,
 			ghtml.Div(
 				ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
 				ghtml.Div(
 					ghtml.Class("text-sm text-gray-500"),
-					g.Text(fmt.Sprintf("Showing %d accounts", len(accountsRes.Result))),
+					g.Text(fmt.Sprintf("Showing %d accounts", len(accountsRes.Results))),
 				),
 				ghtml.Button(
 					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s",
@@ -284,20 +284,20 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 						design.Background(design.StandardPalette.Primary),
 						design.Background(design.Color{Value: design.StandardPalette.Primary.Value + "-700"}),
 					)),
-					g.Attr("hx-get", fmt.Sprintf("/api/users/%s/accounts?page=%s", userID, *accountsRes.Filter.Cursor)),
+					g.Attr("hx-get", fmt.Sprintf("/api/users/%s/accounts?page=%s", userID, accountsRes.Pagination.Cursor)),
 					g.Attr("hx-target", "#user-accounts-container"),
 					g.Attr("hx-swap", "innerHTML"),
 					g.Text("Load More"),
 				),
 			),
 		)
-	} else if len(accountsRes.Result) > 0 {
+	} else if len(accountsRes.Results) > 0 {
 		paginationControls = append(paginationControls,
 			ghtml.Div(
 				ghtml.Class("text-center mt-4 pt-4 border-t border-gray-200"),
 				ghtml.P(
 					ghtml.Class("text-sm text-gray-500"),
-					g.Text(fmt.Sprintf("Showing all %d account(s)", len(accountsRes.Result))),
+					g.Text(fmt.Sprintf("Showing all %d account(s)", len(accountsRes.Results))),
 				),
 			),
 		)
@@ -332,7 +332,7 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 		ShowSearch:        true,
 		SearchPlaceholder: "Search users...",
 		HTMXSearchTarget:  "/api/users/search",
-		Data:              usersRes.Result,
+		Data:              usersRes.Results,
 		Actions:           []g.Node{},
 		TableOptions: &components.TableOptions[*identitysvc.User]{
 			TableID: "users-table",
@@ -420,11 +420,11 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 	var filteredUsers []*identitysvc.User
 	if searchQuery == "" {
 		// No search query, return all users
-		filteredUsers = usersRes.Result
+		filteredUsers = usersRes.Results
 	} else {
 		// Filter users by search query (case insensitive)
 		searchQueryLower := strings.ToLower(searchQuery)
-		for _, user := range usersRes.Result {
+		for _, user := range usersRes.Results {
 			if strings.Contains(strings.ToLower(user.Username), searchQueryLower) ||
 				strings.Contains(strings.ToLower(user.FirstName), searchQueryLower) ||
 				strings.Contains(strings.ToLower(user.LastName), searchQueryLower) ||

@@ -130,7 +130,7 @@ func (s *serviceImpl) GetReceivedAccountInvitations(ctx context.Context, request
 	}
 
 	for _, invite := range invites.Data {
-		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
+		x.Results = append(x.Results, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
 	return x, nil
@@ -158,7 +158,7 @@ func (s *serviceImpl) GetSentAccountInvitations(ctx context.Context, request *id
 	}
 
 	for _, invite := range invites.Data {
-		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
+		x.Results = append(x.Results, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
 	return x, nil

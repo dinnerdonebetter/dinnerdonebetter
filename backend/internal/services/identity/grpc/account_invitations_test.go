@@ -343,9 +343,9 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Equal(t, len(exampleInvitations.Data), len(result.Result))
-		for i := range result.Result {
-			assert.Equal(t, result.Result[i].ID, exampleInvitations.Data[i].ID)
+		assert.Equal(t, len(exampleInvitations.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleInvitations.Data[i].ID)
 		}
 	})
 
@@ -428,9 +428,9 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Equal(t, len(exampleInvitations.Data), len(result.Result))
-		for i := range result.Result {
-			assert.Equal(t, result.Result[i].ID, exampleInvitations.Data[i].ID)
+		assert.Equal(t, len(exampleInvitations.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleInvitations.Data[i].ID)
 		}
 	})
 

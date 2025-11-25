@@ -127,12 +127,12 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, &identitygrpc.GetSentAccountInvitationsRequest{})
 			require.NotNil(t, sentInvitations)
 			require.NoError(t, err)
-			assert.NotEmpty(t, sentInvitations.Result)
+			assert.NotEmpty(t, sentInvitations.Results)
 
 			invitations, err := c.GetReceivedAccountInvitations(ctx, &identitygrpc.GetReceivedAccountInvitationsRequest{})
 			require.NotNil(t, invitations)
 			require.NoError(t, err)
-			assert.NotEmpty(t, invitations.Result)
+			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
 				AccountInvitationID: invitation.Created.ID,
@@ -343,12 +343,12 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, &identitygrpc.GetSentAccountInvitationsRequest{})
 			require.NotNil(t, sentInvitations)
 			require.NoError(t, err)
-			assert.NotEmpty(t, sentInvitations.Result)
+			assert.NotEmpty(t, sentInvitations.Results)
 
 			invitations, err := c.GetReceivedAccountInvitations(ctx, &identitygrpc.GetReceivedAccountInvitationsRequest{})
 			require.NotNil(t, invitations)
 			require.NoError(t, err)
-			assert.NotEmpty(t, invitations.Result)
+			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
 				AccountInvitationID: invitation.Created.ID,

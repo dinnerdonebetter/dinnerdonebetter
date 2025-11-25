@@ -15,5 +15,12 @@ message QueryFilter {
   optional uint32 PageSize = 7;
   optional bool IncludeArchived = 8;
   optional string Cursor = 9;
-  string Query = 10;
+}
+
+message Pagination {
+  uint32 Limit = 1;
+  uint64 FilteredCount = 2;
+  uint64 TotalCount = 3;
+  string Cursor = 4;
+  QueryFilter AppliedQueryFilter = 5;
 }

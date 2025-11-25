@@ -33,10 +33,10 @@ func BuildFakeRecipeStepVesselsList() *filtering.QueryFilteredResult[types.Recip
 
 	return &filtering.QueryFilteredResult[types.RecipeStepVessel]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

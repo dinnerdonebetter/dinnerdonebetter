@@ -31,7 +31,7 @@ func (s *AdminFrontendServer) HomePage(_ http.ResponseWriter, req *http.Request)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching users for dashboard")
 	} else if usersRes != nil {
-		userCountStr = fmt.Sprintf("%d", len(usersRes.Result))
+		userCountStr = fmt.Sprintf("%d", len(usersRes.Results))
 	}
 
 	// Fetch account count
@@ -40,7 +40,7 @@ func (s *AdminFrontendServer) HomePage(_ http.ResponseWriter, req *http.Request)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching accounts for dashboard")
 	} else if accountsRes != nil {
-		accountCountStr = fmt.Sprintf("%d", len(accountsRes.Result))
+		accountCountStr = fmt.Sprintf("%d", len(accountsRes.Results))
 	}
 
 	// Fetch recipe count

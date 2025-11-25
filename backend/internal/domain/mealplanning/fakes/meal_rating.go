@@ -31,10 +31,10 @@ func BuildFakeRecipeRatingsList() *filtering.QueryFilteredResult[types.RecipeRat
 
 	return &filtering.QueryFilteredResult[types.RecipeRating]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

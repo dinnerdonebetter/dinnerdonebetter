@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 )
 
 const (
@@ -58,12 +57,12 @@ const (
 type (
 	// Pagination represents a pagination request.
 	Pagination struct {
-		_ struct{} `json:"-"`
-
-		Cursor        string `json:"cursor"`
-		Limit         uint8  `json:"limit"`
-		FilteredCount uint64 `json:"filteredCount"`
-		TotalCount    uint64 `json:"totalCount"`
+		_                  struct{}     `json:"-"`
+		AppliedQueryFilter *QueryFilter `json:"appliedQueryFilter"`
+		Cursor             string       `json:"cursor"`
+		FilteredCount      uint64       `json:"filteredCount"`
+		TotalCount         uint64       `json:"totalCount"`
+		MaxResponseSize    uint8        `json:"maxResponseSize"`
 	}
 
 	// QueryFilter represents all the filters a User could apply to a list query.
@@ -78,13 +77,11 @@ type (
 		Limit           *uint8     `json:"limit,omitempty"`
 		IncludeArchived *bool      `json:"includeArchived,omitempty"`
 		Cursor          *string    `json:"cursor,omitempty"`
-		Query           string     `json:"q,omitempty"` // TODO: REMOVE ME
 	}
 
 	QueryFilteredResult[T any] struct {
-		_ struct{} `json:"-"`
-
-		Data []*T `json:"data"`
+		_    struct{} `json:"-"`
+		Data []*T     `json:"data"`
 		Pagination
 	}
 )
@@ -103,10 +100,6 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 	if qf == nil {
 		return l.WithValue(keys.FilterIsNilKey, true)
-	}
-
-	if qf.Query != "" {
-		l = l.WithValue(textsearch.QueryKeySearch, qf.Query)
 	}
 
 	if qf.Cursor != nil {
@@ -142,10 +135,6 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
-	if i := params.Get(textsearch.QueryKeySearch); i != "" {
-		qf.Query = i
-	}
-
 	if i := params.Get(QueryKeyCursor); i != "" {
 		qf.Cursor = &i
 	}
@@ -197,10 +186,6 @@ func (qf *QueryFilter) ToValues() url.Values {
 
 	v := url.Values{}
 
-	if qf.Query != "" {
-		v.Set(textsearch.QueryKeySearch, qf.Query)
-	}
-
 	if qf.Cursor != nil {
 		v.Set(QueryKeyCursor, *qf.Cursor)
 	}
@@ -249,7 +234,7 @@ func (qf *QueryFilter) ToPagination() Pagination {
 	}
 
 	if qf.Limit != nil {
-		x.Limit = *qf.Limit
+		x.MaxResponseSize = *qf.Limit
 	}
 
 	return x
@@ -284,6 +269,7 @@ func NewQueryFilteredResult[T any](
 
 	x.FilteredCount = filteredCount
 	x.TotalCount = totalCount
+	x.AppliedQueryFilter = filter
 
 	if len(data) > 0 {
 		x.Cursor = idExtractor(data[len(data)-1])

@@ -35,10 +35,10 @@ func BuildFakeAccountInvitationsList() *filtering.QueryFilteredResult[types.Acco
 
 	return &filtering.QueryFilteredResult[types.AccountInvitation]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

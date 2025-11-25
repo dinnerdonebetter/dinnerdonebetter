@@ -859,7 +859,7 @@ message GetValidIngredientGroupsRequest {
 
 message GetValidIngredientGroupsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientGroup Results = 3;
 }
 
@@ -880,7 +880,7 @@ message GetValidIngredientMeasurementUnitsRequest {
 
 message GetValidIngredientMeasurementUnitsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
@@ -892,7 +892,7 @@ message GetValidIngredientMeasurementUnitsByIngredientRequest {
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
@@ -904,7 +904,7 @@ message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
 
 message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
@@ -925,7 +925,7 @@ message GetValidIngredientPreparationsRequest {
 
 message GetValidIngredientPreparationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientPreparation Results = 3;
 }
 
@@ -937,7 +937,7 @@ message GetValidIngredientPreparationsByIngredientRequest {
 
 message GetValidIngredientPreparationsByIngredientResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientPreparation Results = 3;
 }
 
@@ -949,7 +949,7 @@ message GetValidIngredientPreparationsByPreparationRequest {
 
 message GetValidIngredientPreparationsByPreparationResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientPreparation Results = 3;
 }
 
@@ -980,7 +980,7 @@ message GetValidIngredientStateIngredientsRequest {
 
 message GetValidIngredientStateIngredientsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientStateIngredient Results = 3;
 }
 
@@ -992,7 +992,7 @@ message GetValidIngredientStateIngredientsByIngredientRequest {
 
 message GetValidIngredientStateIngredientsByIngredientResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientStateIngredient Results = 3;
 }
 
@@ -1004,7 +1004,7 @@ message GetValidIngredientStateIngredientsByIngredientStateRequest {
 
 message GetValidIngredientStateIngredientsByIngredientStateResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientStateIngredient Results = 3;
 }
 
@@ -1015,7 +1015,7 @@ message GetValidIngredientStatesRequest {
 
 message GetValidIngredientStatesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientState Results = 3;
 }
 
@@ -1026,7 +1026,7 @@ message GetValidIngredientsRequest {
 
 message GetValidIngredientsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredient Results = 3;
 }
 
@@ -1047,7 +1047,7 @@ message GetValidInstrumentsRequest {
 
 message GetValidInstrumentsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidInstrument Results = 3;
 }
 
@@ -1079,7 +1079,7 @@ message GetValidMeasurementUnitConversionsForUnitRequest {
 
 message GetValidMeasurementUnitConversionsForUnitResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidMeasurementUnitConversion Results = 3;
 }
 
@@ -1090,7 +1090,7 @@ message GetValidMeasurementUnitsRequest {
 
 message GetValidMeasurementUnitsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidMeasurementUnit Results = 3;
 }
 
@@ -1121,7 +1121,7 @@ message GetValidPreparationInstrumentsRequest {
 
 message GetValidPreparationInstrumentsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationInstrument Results = 3;
 }
 
@@ -1133,7 +1133,7 @@ message GetValidPreparationInstrumentsByInstrumentRequest {
 
 message GetValidPreparationInstrumentsByInstrumentResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationInstrument Results = 3;
 }
 
@@ -1145,7 +1145,7 @@ message GetValidPreparationInstrumentsByPreparationRequest {
 
 message GetValidPreparationInstrumentsByPreparationResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationInstrument Results = 3;
 }
 
@@ -1166,7 +1166,7 @@ message GetValidPreparationVesselsRequest {
 
 message GetValidPreparationVesselsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationVessel Results = 3;
 }
 
@@ -1178,7 +1178,7 @@ message GetValidPreparationVesselsByPreparationRequest {
 
 message GetValidPreparationVesselsByPreparationResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationVessel Results = 3;
 }
 
@@ -1190,20 +1190,18 @@ message GetValidPreparationVesselsByVesselRequest {
 
 message GetValidPreparationVesselsByVesselResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparationVessel Results = 3;
 }
 
 // GetValidPreparations
 message GetValidPreparationsRequest {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated ValidPreparation Results = 3;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidPreparationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparation Results = 3;
 }
 
@@ -1224,7 +1222,7 @@ message GetValidVesselsRequest {
 
 message GetValidVesselsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidVessel Results = 3;
 }
 
@@ -1237,7 +1235,7 @@ message SearchForValidIngredientGroupsRequest {
 
 message SearchForValidIngredientGroupsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientGroup Results = 3;
 }
 
@@ -1250,7 +1248,7 @@ message SearchForValidIngredientStatesRequest {
 
 message SearchForValidIngredientStatesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredientState Results = 3;
 }
 
@@ -1263,7 +1261,7 @@ message SearchForValidIngredientsRequest {
 
 message SearchForValidIngredientsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredient Results = 3;
 }
 
@@ -1276,7 +1274,7 @@ message SearchForValidInstrumentsRequest {
 
 message SearchForValidInstrumentsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidInstrument Results = 3;
 }
 
@@ -1289,7 +1287,7 @@ message SearchForValidMeasurementUnitsRequest {
 
 message SearchForValidMeasurementUnitsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidMeasurementUnit Results = 3;
 }
 
@@ -1302,7 +1300,7 @@ message SearchForValidPreparationsRequest {
 
 message SearchForValidPreparationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidPreparation Results = 3;
 }
 
@@ -1315,7 +1313,7 @@ message SearchForValidVesselsRequest {
 
 message SearchForValidVesselsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidVessel Results = 3;
 }
 
@@ -1328,7 +1326,7 @@ message SearchValidIngredientsByPreparationRequest {
 
 message SearchValidIngredientsByPreparationResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidIngredient Results = 3;
 }
 
@@ -1341,7 +1339,7 @@ message SearchValidMeasurementUnitsByIngredientRequest {
 
 message SearchValidMeasurementUnitsByIngredientResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ValidMeasurementUnit Results = 3;
 }
 
@@ -1524,7 +1522,7 @@ message GetUserIngredientPreferencesRequest {
 
 message GetUserIngredientPreferencesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated UserIngredientPreference Results = 3;
 }
 
@@ -2287,7 +2285,7 @@ message GetRecipePrepTasksRequest {
 
 message GetRecipePrepTasksResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipePrepTask Results = 3;
 }
 
@@ -2310,7 +2308,7 @@ message GetRecipeRatingsForRecipeRequest {
 
 message GetRecipeRatingsForRecipeResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeRating Results = 3;
 }
 
@@ -2346,7 +2344,7 @@ message GetRecipeStepCompletionConditionsRequest {
 
 message GetRecipeStepCompletionConditionsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStepCompletionCondition Results = 3;
 }
 
@@ -2371,7 +2369,7 @@ message GetRecipeStepIngredientsRequest {
 
 message GetRecipeStepIngredientsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStepIngredient Results = 3;
 }
 
@@ -2396,7 +2394,7 @@ message GetRecipeStepInstrumentsRequest {
 
 message GetRecipeStepInstrumentsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStepInstrument Results = 3;
 }
 
@@ -2421,7 +2419,7 @@ message GetRecipeStepProductsRequest {
 
 message GetRecipeStepProductsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStepProduct Results = 3;
 }
 
@@ -2446,7 +2444,7 @@ message GetRecipeStepVesselsRequest {
 
 message GetRecipeStepVesselsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStepVessel Results = 3;
 }
 
@@ -2458,7 +2456,7 @@ message GetRecipeStepsRequest {
 
 message GetRecipeStepsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated RecipeStep Results = 3;
 }
 
@@ -2469,7 +2467,7 @@ message GetRecipesRequest {
 
 message GetRecipesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated Recipe Results = 3;
 }
 
@@ -2482,7 +2480,7 @@ message SearchForRecipesRequest {
 
 message SearchForRecipesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated Recipe Results = 3;
 }
 
@@ -3044,7 +3042,7 @@ message GetMealPlanEventsRequest {
 
 message GetMealPlanEventsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlanEvent Results = 3;
 }
 
@@ -3067,7 +3065,7 @@ message GetMealPlanGroceryListItemsForMealPlanRequest {
 
 message GetMealPlanGroceryListItemsForMealPlanResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlanGroceryListItem Results = 3;
 }
 
@@ -3106,7 +3104,7 @@ message GetMealPlanOptionVotesRequest {
 
 message GetMealPlanOptionVotesResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlanOptionVote Results = 3;
 }
 
@@ -3119,7 +3117,7 @@ message GetMealPlanOptionsRequest {
 
 message GetMealPlanOptionsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlanOption Results = 3;
 }
 
@@ -3142,7 +3140,7 @@ message GetMealPlanTasksRequest {
 
 message GetMealPlanTasksResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlanTask Results = 3;
 }
 
@@ -3153,7 +3151,7 @@ message GetMealPlansForAccountRequest {
 
 message GetMealPlansForAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated MealPlan Results = 3;
 }
 
@@ -3164,7 +3162,7 @@ message GetMealsRequest {
 
 message GetMealsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated Meal Results = 3;
 }
 
@@ -3199,7 +3197,7 @@ message SearchForMealsRequest {
 
 message SearchForMealsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated Meal Results = 3;
 }
 
@@ -3319,7 +3317,7 @@ message GetAccountInstrumentOwnershipsRequest {
 
 message GetAccountInstrumentOwnershipsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated AccountInstrumentOwnership Results = 3;
 }
 
