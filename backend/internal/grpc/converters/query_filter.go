@@ -54,3 +54,19 @@ func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagina
 
 	return f
 }
+
+func ConvertPaginationToGRPCPagination(pagination filtering.Pagination, qf *filtering.QueryFilter) *grpcfiltering.Pagination {
+	if qf == nil {
+		qf = filtering.DefaultQueryFilter()
+	}
+
+	f := &grpcfiltering.Pagination{
+		AppliedQueryFilter: ConvertQueryFilterToGRPCQueryFilter(qf, pagination),
+		Cursor:             pagination.Cursor,
+		FilteredCount:      pagination.FilteredCount,
+		TotalCount:         pagination.TotalCount,
+		MaxResponseSize:    uint32(pagination.MaxResponseSize),
+	}
+
+	return f
+}

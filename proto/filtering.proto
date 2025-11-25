@@ -18,7 +18,7 @@ message QueryFilter {
 }
 
 message Pagination {
-  uint32 Limit = 1;
+  uint32 MaxResponseSize = 1;
   uint64 FilteredCount = 2;
   uint64 TotalCount = 3;
   string Cursor = 4;
