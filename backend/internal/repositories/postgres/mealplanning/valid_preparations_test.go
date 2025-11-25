@@ -93,7 +93,7 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidPreparations(ctx, updatedValidPreparation.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validPreparations.Data, byName)
+	assert.Equal(t, validPreparations, byName)
 
 	whatever, err := dbc.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
 	assert.NoError(t, err)

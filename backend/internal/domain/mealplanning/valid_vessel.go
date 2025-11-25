@@ -159,7 +159,7 @@ type (
 		GetValidVessel(ctx context.Context, validVesselID string) (*ValidVessel, error)
 		GetRandomValidVessel(ctx context.Context) (*ValidVessel, error)
 		GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
-		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidVessel, error) // TODO: QueryFilterize
+		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
 		CreateValidVessel(ctx context.Context, input *ValidVesselDatabaseCreationInput) (*ValidVessel, error)
 		UpdateValidVessel(ctx context.Context, updated *ValidVessel) error
 		MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error

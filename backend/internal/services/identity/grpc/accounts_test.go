@@ -8,6 +8,7 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -299,15 +300,17 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		exampleAccounts := []*identity.Account{
-			identityfakes.BuildFakeAccount(),
-			identityfakes.BuildFakeAccount(),
+		exampleAccounts := &filtering.QueryFilteredResult[identity.Account]{
+			Data: []*identity.Account{
+				identityfakes.BuildFakeAccount(),
+				identityfakes.BuildFakeAccount(),
+			},
 		}
 
-		// TODO: wtf
-		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleAccounts, "", nil)
+		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleAccounts, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
@@ -316,14 +319,15 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetAccounts(t.Context(), request)
+		result, err := service.GetAccounts(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Result, len(exampleAccounts))
-		assert.Equal(t, exampleAccounts[0].ID, result.Result[0].ID)
-		assert.Equal(t, exampleAccounts[1].ID, result.Result[1].ID)
+		assert.Equal(t, len(exampleAccounts.Data), len(result.Result))
+		for i := range result.Result {
+			assert.Equal(t, result.Result[i].ID, exampleAccounts.Data[i].ID)
+		}
 	})
 
 	t.Run("with session error", func(t *testing.T) {
@@ -353,7 +357,7 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.Account)(nil), "", errors.New("database error"))
+		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.Account])(nil), errors.New("database error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
@@ -602,7 +606,7 @@ func TestServiceImpl_UpdateAccountMemberPermissions(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("UpdateAccountMemberPermissions", testutils.ContextMatcher, exampleUserID, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(nil)
+		identityDataManager.On("UpdateAccountMemberPermissions", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleUserID, mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(nil)
 
 		request := &identitysvc.UpdateAccountMemberPermissionsRequest{
 			UserID: exampleUserID,

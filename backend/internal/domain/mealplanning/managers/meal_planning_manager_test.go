@@ -174,7 +174,7 @@ func TestMealPlanningManager_SearchMeals(T *testing.T) {
 
 		actual, err := mpm.SearchMeals(ctx, exampleQuery, true, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -862,13 +862,13 @@ func TestMealPlanningManager_ListMealPlanTasksByMealPlan(T *testing.T) {
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(mpm.db.GetMealPlanTasksForMealPlan), testutils.ContextMatcher, exampleMealPlanID).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(mpm.db.GetMealPlanTasksForMealPlan), testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := mpm.ListMealPlanTasksByMealPlan(ctx, exampleMealPlanID, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -975,13 +975,13 @@ func TestMealPlanningManager_ListMealPlanGroceryListItemsByMealPlan(T *testing.T
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(mpm.db.GetMealPlanGroceryListItemsForMealPlan), testutils.ContextMatcher, exampleMealPlanID).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(mpm.db.GetMealPlanGroceryListItemsForMealPlan), testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := mpm.ListMealPlanGroceryListItemsByMealPlan(ctx, exampleMealPlanID, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

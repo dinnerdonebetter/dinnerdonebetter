@@ -332,7 +332,7 @@ func TestServiceImpl_GetWebhooks(t *testing.T) {
 
 		fakeWebhooks := webhookfakes.BuildFakeWebhooksList()
 
-		mockRepo.On("GetWebhooks", testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeWebhooks, nil)
+		mockRepo.On("GetWebhooks", testutils.ContextMatcher, "test-account-id", testutils.QueryFilterMatcher).Return(fakeWebhooks, nil)
 
 		request := &webhookssvc.GetWebhooksRequest{
 			Filter: &grpcfiltering.QueryFilter{
@@ -374,7 +374,7 @@ func TestServiceImpl_GetWebhooks(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo := buildTestService(t)
 
-		mockRepo.On("GetWebhooks", testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, errors.New("repository error"))
+		mockRepo.On("GetWebhooks", testutils.ContextMatcher, "test-account-id", testutils.QueryFilterMatcher).Return(nil, errors.New("repository error"))
 
 		request := &webhookssvc.GetWebhooksRequest{
 			Filter: &grpcfiltering.QueryFilter{},

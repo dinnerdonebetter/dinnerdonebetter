@@ -79,16 +79,16 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredientMeasurementUnit(ctx
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientMeasurementUnit, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, validIngredientID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientMeasurementUnit), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientMeasurementUnit, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientMeasurementUnit), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], error) {
@@ -133,10 +133,10 @@ func (m *MockValidEnumerationsManager) SearchValidIngredientPreparationsByPrepar
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredient, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredient), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredient]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
@@ -175,10 +175,10 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredient(ctx context.Contex
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredient, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredient], error) {
 	returnValues := m.Called(ctx, preparationID, query, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredient), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredient]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
@@ -211,22 +211,22 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredientStateIngredient(ctx
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientStateIngredient, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, validIngredientID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientStateIngredient), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientStateIngredient, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, validIngredientStateID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientStateIngredient), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientState, error) {
+func (m *MockValidEnumerationsManager) SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidIngredientState), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidIngredientState]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientState], error) {
@@ -259,16 +259,16 @@ func (m *MockValidEnumerationsManager) ArchiveValidIngredientState(ctx context.C
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidMeasurementUnit, error) {
+func (m *MockValidEnumerationsManager) SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnit), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidMeasurementUnit, error) {
+func (m *MockValidEnumerationsManager) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
 	returnValues := m.Called(ctx, validIngredientID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnit), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidMeasurementUnit], error) {
@@ -301,10 +301,10 @@ func (m *MockValidEnumerationsManager) ArchiveValidMeasurementUnit(ctx context.C
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidInstrument, error) {
+func (m *MockValidEnumerationsManager) SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidInstrument), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidInstrument]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidInstrument], error) {
@@ -415,22 +415,22 @@ func (m *MockValidEnumerationsManager) ArchiveValidPreparationInstrument(ctx con
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationInstrument, error) {
+func (m *MockValidEnumerationsManager) SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, validPreparationID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationInstrument), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationInstrument, error) {
+func (m *MockValidEnumerationsManager) SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, validInstrumentID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationInstrument), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparation, error) {
+func (m *MockValidEnumerationsManager) SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparation), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparation]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
@@ -499,22 +499,22 @@ func (m *MockValidEnumerationsManager) ArchiveValidPreparationVessel(ctx context
 	return returnValues.Error(0)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationVessel, error) {
+func (m *MockValidEnumerationsManager) SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, validPreparationID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationVessel), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparationVessel, error) {
+func (m *MockValidEnumerationsManager) SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, validVesselID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidPreparationVessel), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel]), returnValues.Error(1)
 }
 
-func (m *MockValidEnumerationsManager) SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.ValidVessel, error) {
+func (m *MockValidEnumerationsManager) SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
 
-	return returnValues.Get(0).([]*mealplanning.ValidVessel), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.ValidVessel]), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidVessel], error) {

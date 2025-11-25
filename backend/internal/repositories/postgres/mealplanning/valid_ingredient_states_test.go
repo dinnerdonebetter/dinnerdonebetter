@@ -93,7 +93,7 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidIngredientStates(ctx, updatedValidIngredientState.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validIngredientStates.Data, byName)
+	assert.Equal(t, validIngredientStates, byName)
 
 	needingIndexing, err := dbc.GetValidIngredientStateIDsThatNeedSearchIndexing(ctx)
 	assert.NoError(t, err)

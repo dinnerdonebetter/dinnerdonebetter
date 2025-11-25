@@ -39,8 +39,8 @@ type (
 		ReadValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string, input *types.ValidIngredientMeasurementUnitUpdateRequestInput) (*types.ValidIngredientMeasurementUnit, error)
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error
-		SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error)           // TODO: QueryFilterize
-		SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) // TODO: QueryFilterize
+		SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error)
+		SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error)
 
 		ListValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error)
 		CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*types.ValidIngredientPreparation, error)
@@ -50,39 +50,39 @@ type (
 		SearchValidIngredientPreparationsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error)
 		SearchValidIngredientPreparationsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error)
 
-		SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) // TODO: QueryFilterize
+		SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 		ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 		CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*types.ValidIngredient, error)
 		ReadValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error)
 		RandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, validIngredientID string, input *types.ValidIngredientUpdateRequestInput) (*types.ValidIngredient, error)
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
-		SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) // TODO: QueryFilterize
+		SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 
 		ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error)
 		CreateValidIngredientStateIngredient(ctx context.Context, input *types.ValidIngredientStateIngredientCreationRequestInput) (*types.ValidIngredientStateIngredient, error)
 		ReadValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*types.ValidIngredientStateIngredient, error)
 		UpdateValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string, input *types.ValidIngredientStateIngredientUpdateRequestInput) (*types.ValidIngredientStateIngredient, error)
 		ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error
-		SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error)           // TODO: QueryFilterize
-		SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) // TODO: QueryFilterize
+		SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error)
+		SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error)
 
-		SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) // TODO: QueryFilterize
+		SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error)
 		ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error)
 		CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateCreationRequestInput) (*types.ValidIngredientState, error)
 		ReadValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, validIngredientStateID string, input *types.ValidIngredientStateUpdateRequestInput) (*types.ValidIngredientState, error)
 		ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error
 
-		SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error)    // TODO: QueryFilterize
-		SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) // TODO: QueryFilterize
+		SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error)
+		SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error)
 		ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitCreationRequestInput) (*types.ValidMeasurementUnit, error)
 		ReadValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string, input *types.ValidMeasurementUnitUpdateRequestInput) (*types.ValidMeasurementUnit, error)
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
 
-		SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) // TODO: QueryFilterize
+		SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error)
 		ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error)
 		CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (*types.ValidInstrument, error)
 		ReadValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error)
@@ -101,10 +101,10 @@ type (
 		ReadValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string, input *types.ValidPreparationInstrumentUpdateRequestInput) (*types.ValidPreparationInstrument, error)
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error
-		SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) // TODO: QueryFilterize
-		SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error)   // TODO: QueryFilterize
+		SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error)
+		SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error)
 
-		SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) // TODO: QueryFilterize
+		SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparation], error)
 		ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparation], error)
 		CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (*types.ValidPreparation, error)
 		ReadValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error)
@@ -117,10 +117,10 @@ type (
 		ReadValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*types.ValidPreparationVessel, error)
 		UpdateValidPreparationVessel(ctx context.Context, validPreparationVesselID string, input *types.ValidPreparationVesselUpdateRequestInput) (*types.ValidPreparationVessel, error)
 		ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error
-		SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) // TODO: QueryFilterize
-		SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error)           // TODO: QueryFilterize
+		SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error)
+		SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error)
 
-		SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) // TODO: QueryFilterize
+		SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error)
 		ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error)
 		CreateValidVessel(ctx context.Context, input *types.ValidVesselCreationRequestInput) (*types.ValidVessel, error)
 		ReadValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error)
@@ -465,7 +465,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 }
 
 // SearchValidIngredientMeasurementUnitsByIngredient implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
+func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -482,11 +482,11 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredi
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient measurement units for ingredient")
 	}
 
-	return results.Data, nil
+	return results, nil
 }
 
 // SearchValidIngredientMeasurementUnitsByMeasurementUnit implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
+func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -503,7 +503,7 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasure
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient measurement units for measurement unit")
 	}
 
-	return results.Data, nil
+	return results, nil
 }
 
 // ListValidIngredientPreparations implements the ValidEnumerationsManager interface.
@@ -666,7 +666,7 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation
 }
 
 // SearchValidIngredients implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -680,7 +680,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		results []*types.ValidIngredient
+		results *filtering.QueryFilteredResult[types.ValidIngredient]
 	)
 	if !useSearchService {
 		rawResults, err := m.db.SearchForValidIngredients(ctx, query, filter)
@@ -688,7 +688,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching database for valid ingredients")
 		}
 
-		results = rawResults.Data
+		results = rawResults
 	} else {
 		var validIngredientSubsets []*eatingindexing.ValidIngredientSearchSubset
 		validIngredientSubsets, err := m.validIngredientSearchIndex.Search(ctx, query)
@@ -701,10 +701,20 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 			ids = append(ids, validIngredientSubset.ID)
 		}
 
-		results, err = m.db.GetValidIngredientsWithIDs(ctx, ids)
+		dbResults, err := m.db.GetValidIngredientsWithIDs(ctx, ids)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients from database")
 		}
+
+		results = filtering.NewQueryFilteredResult(
+			dbResults,
+			uint64(len(dbResults)),
+			uint64(len(dbResults)),
+			func(v *types.ValidIngredient) string {
+				return v.ID
+			},
+			filter,
+		)
 	}
 
 	return results, nil
@@ -847,7 +857,7 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 }
 
 // SearchValidIngredientsByPreparationAndIngredientName implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -865,7 +875,7 @@ func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredie
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid ingredient preparations")
 	}
 
-	return validIngredients.Data, nil
+	return validIngredients, nil
 }
 
 // ListValidIngredientStateIngredients implements the ValidEnumerationsManager interface.
@@ -986,7 +996,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 }
 
 // SearchValidIngredientStateIngredientsByIngredient implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) {
+func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1003,11 +1013,11 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient state ingredients for ingredient")
 	}
 
-	return results.Data, nil
+	return results, nil
 }
 
 // SearchValidIngredientStateIngredientsByIngredientState implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) {
+func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1024,11 +1034,11 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient state ingredients for ingredient state")
 	}
 
-	return results.Data, nil
+	return results, nil
 }
 
 // SearchValidIngredientStates implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
+func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1042,7 +1052,7 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		results []*types.ValidIngredientState
+		results *filtering.QueryFilteredResult[types.ValidIngredientState]
 		err     error
 	)
 	if !useSearchService {
@@ -1059,7 +1069,14 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 			ids = append(ids, validIngredientStateSubset.ID)
 		}
 
-		results, err = m.db.GetValidIngredientStatesWithIDs(ctx, ids)
+		searchResults, searchErr := m.db.GetValidIngredientStatesWithIDs(ctx, ids)
+		if searchErr != nil {
+			return nil, observability.PrepareAndLogError(searchErr, logger, span, "fetching valid ingredient states")
+		}
+
+		results = filtering.NewQueryFilteredResult(searchResults, uint64(len(searchResults)), uint64(len(searchResults)), func(v *types.ValidIngredientState) string {
+			return v.ID
+		}, filter)
 	}
 
 	if err != nil {
@@ -1187,7 +1204,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 }
 
 // SearchValidMeasurementUnits implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
+func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1201,7 +1218,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		results []*types.ValidMeasurementUnit
+		results *filtering.QueryFilteredResult[types.ValidMeasurementUnit]
 		err     error
 	)
 	if !useSearchService {
@@ -1218,7 +1235,14 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 			ids = append(ids, validMeasurementUnitSubset.ID)
 		}
 
-		results, err = m.db.GetValidMeasurementUnitsWithIDs(ctx, ids)
+		searchResults, searchErr := m.db.GetValidMeasurementUnitsWithIDs(ctx, ids)
+		if searchErr != nil {
+			return nil, observability.PrepareAndLogError(searchErr, logger, span, "fetching valid measurement units")
+		}
+
+		results = filtering.NewQueryFilteredResult(searchResults, uint64(len(searchResults)), uint64(len(searchResults)), func(v *types.ValidMeasurementUnit) string {
+			return v.ID
+		}, filter)
 	}
 
 	if err != nil {
@@ -1229,7 +1253,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 }
 
 // SearchValidMeasurementUnitsByIngredientID implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
+func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1246,7 +1270,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx 
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid measurement units for ingredient")
 	}
 
-	return validMeasurementUnits.Data, nil
+	return validMeasurementUnits, nil
 }
 
 // ListValidMeasurementUnits implements the ValidEnumerationsManager interface.
@@ -1366,7 +1390,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 }
 
 // SearchValidInstruments implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
+func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1380,7 +1404,7 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		results []*types.ValidInstrument
+		results *filtering.QueryFilteredResult[types.ValidInstrument]
 		err     error
 	)
 	if !useSearchService {
@@ -1397,7 +1421,20 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 			ids = append(ids, validInstrumentSubset.ID)
 		}
 
-		results, err = m.db.GetValidInstrumentsWithIDs(ctx, ids)
+		searchResults, searchErr := m.db.GetValidInstrumentsWithIDs(ctx, ids)
+		if searchErr != nil {
+			return nil, observability.PrepareAndLogError(searchErr, logger, span, "fetching valid instruments")
+		}
+
+		results = filtering.NewQueryFilteredResult(
+			searchResults,
+			uint64(len(searchResults)),
+			uint64(len(searchResults)),
+			func(v *types.ValidInstrument) string {
+				return v.ID
+			},
+			filter,
+		)
 	}
 
 	if err != nil {
@@ -1774,7 +1811,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 }
 
 // SearchValidPreparationInstrumentsByPreparation implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) {
+func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1791,11 +1828,11 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparation instruments by preparation")
 	}
 
-	return validPreparationInstruments.Data, nil
+	return validPreparationInstruments, nil
 }
 
 // SearchValidPreparationInstrumentsByInstrument implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) {
+func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1812,11 +1849,11 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparation instruments by instrument")
 	}
 
-	return validPreparationInstruments.Data, nil
+	return validPreparationInstruments, nil
 }
 
 // SearchValidPreparations implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) {
+func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparation], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1830,7 +1867,7 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		results []*types.ValidPreparation
+		results *filtering.QueryFilteredResult[types.ValidPreparation]
 		err     error
 	)
 	if !useSearchService {
@@ -1847,7 +1884,14 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 			ids = append(ids, validPreparationSubset.ID)
 		}
 
-		results, err = m.db.GetValidPreparationsWithIDs(ctx, ids)
+		searchResults, searchErr := m.db.GetValidPreparationsWithIDs(ctx, ids)
+		if searchErr != nil {
+			return nil, observability.PrepareAndLogError(searchErr, logger, span, "fetching valid preparations from database")
+		}
+
+		results = filtering.NewQueryFilteredResult(searchResults, uint64(len(searchResults)), uint64(len(searchResults)), func(v *types.ValidPreparation) string {
+			return v.ID
+		}, filter)
 	}
 
 	if err != nil {
@@ -2104,7 +2148,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 }
 
 // SearchValidPreparationVesselsByPreparation implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) {
+func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -2121,11 +2165,11 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparation vessels by preparation")
 	}
 
-	return validPreparationVessels.Data, nil
+	return validPreparationVessels, nil
 }
 
 // SearchValidPreparationVesselsByVessel implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) {
+func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -2142,11 +2186,11 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx cont
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparation vessels by vessel")
 	}
 
-	return validPreparationVessels.Data, nil
+	return validPreparationVessels, nil
 }
 
 // SearchValidVessels implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
+func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -2160,7 +2204,7 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
-		validVessels []*types.ValidVessel
+		validVessels *filtering.QueryFilteredResult[types.ValidVessel]
 		err          error
 	)
 	if !useSearchService {
@@ -2177,7 +2221,14 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 			ids = append(ids, validVesselSubset.ID)
 		}
 
-		validVessels, err = m.db.GetValidVesselsWithIDs(ctx, ids)
+		searchResults, searchErr := m.db.GetValidVesselsWithIDs(ctx, ids)
+		if searchErr != nil {
+			return nil, observability.PrepareAndLogError(searchErr, logger, span, "searching database for valid vessels")
+		}
+
+		validVessels = filtering.NewQueryFilteredResult(searchResults, uint64(len(searchResults)), uint64(len(searchResults)), func(v *types.ValidVessel) string {
+			return v.ID
+		}, filter)
 	}
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid vessels")

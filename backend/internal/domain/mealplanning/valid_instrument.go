@@ -112,7 +112,7 @@ type (
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
 		GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidInstrument], error)
-		SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidInstrument, error) // TODO: QueryFilterize
+		SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidInstrument], error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error

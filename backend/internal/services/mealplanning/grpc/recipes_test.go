@@ -1160,7 +1160,7 @@ func TestServiceImpl_SearchForRecipes(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("SearchRecipes", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mrm.On("SearchRecipes", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.SearchForRecipes(ctx, exampleRequest)

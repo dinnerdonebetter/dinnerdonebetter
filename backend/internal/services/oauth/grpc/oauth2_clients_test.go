@@ -162,7 +162,7 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 			Limit: &pageSize,
 		}
 
-		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeClients, nil)
+		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(fakeClients, nil)
 
 		grpcPageSize := uint32(*filter.Limit)
 		request := &oauthsvc.GetOAuth2ClientsRequest{
@@ -192,7 +192,7 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 			Limit: &pageSize,
 		}
 
-		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return((*filtering.QueryFilteredResult[oauth.OAuth2Client])(nil), errors.New("manager error"))
+		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[oauth.OAuth2Client])(nil), errors.New("manager error"))
 
 		grpcPageSize := uint32(*filter.Limit)
 		request := &oauthsvc.GetOAuth2ClientsRequest{

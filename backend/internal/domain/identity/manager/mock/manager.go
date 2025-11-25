@@ -78,21 +78,21 @@ func (m *IdentityDataManager) GetAccountInvitation(ctx context.Context, accountI
 }
 
 // GetAccounts is a mock function.
-func (m *IdentityDataManager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
+func (m *IdentityDataManager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.Account], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).([]*identity.Account), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.Account]), returnValues.Error(1)
 }
 
 // GetReceivedAccountInvitations is a mock function.
-func (m *IdentityDataManager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (m *IdentityDataManager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).([]*identity.AccountInvitation), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.AccountInvitation]), returnValues.Error(1)
 }
 
 // GetSentAccountInvitations is a mock function.
-func (m *IdentityDataManager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (m *IdentityDataManager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).([]*identity.AccountInvitation), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.AccountInvitation]), returnValues.Error(1)
 }
 
 // GetUser is a mock function.
@@ -102,21 +102,21 @@ func (m *IdentityDataManager) GetUser(ctx context.Context, userID string) (*iden
 }
 
 // GetUsers is a mock function.
-func (m *IdentityDataManager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *IdentityDataManager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).([]*identity.User), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 
 // GetUsersForAccount is a mock function.
-func (m *IdentityDataManager) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *IdentityDataManager) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	returnValues := m.Called(ctx, accountID, filter)
-	return returnValues.Get(0).([]*identity.User), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 
 // SearchForUsers is a mock function.
-func (m *IdentityDataManager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *IdentityDataManager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	returnValues := m.Called(ctx, query, useSearchService, filter)
-	return returnValues.Get(0).([]*identity.User), returnValues.String(1), returnValues.Error(2)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 
 // SetDefaultAccount is a mock function.

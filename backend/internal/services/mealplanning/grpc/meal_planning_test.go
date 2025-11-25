@@ -727,7 +727,7 @@ func TestServiceImpl_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("ListMealPlanGroceryListItemsByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mmpm.On("ListMealPlanGroceryListItemsByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanID: exampleMealPlanID})
@@ -899,7 +899,7 @@ func TestServiceImpl_GetMealPlanTasks(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("ListMealPlanTasksByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		mmpm.On("ListMealPlanTasksByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanID: exampleMealPlanID})
@@ -1056,7 +1056,7 @@ func TestServiceImpl_SearchForMeals(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("SearchMeals", testutils.ContextMatcher, exampleRequest.Query, !exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mmpm.On("SearchMeals", testutils.ContextMatcher, exampleRequest.Query, !exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
 		result, err := s.SearchForMeals(ctx, exampleRequest)

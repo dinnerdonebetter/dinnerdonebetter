@@ -85,13 +85,13 @@ func TestValidEnumerationManager_SearchValidIngredientGroups(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientGroups), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientGroups), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidIngredientGroups(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -398,7 +398,7 @@ func TestValidEnumerationManager_SearchValidIngredientMeasurementUnitsByIngredie
 
 		actual, err := vem.SearchValidIngredientMeasurementUnitsByIngredient(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -425,7 +425,7 @@ func TestValidEnumerationManager_SearchValidIngredientMeasurementUnitsByMeasurem
 
 		actual, err := vem.SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -646,7 +646,7 @@ func TestValidEnumerationManager_SearchValidIngredients(T *testing.T) {
 
 		actual, err := vem.SearchValidIngredients(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -840,7 +840,7 @@ func TestValidEnumerationManager_SearchValidIngredientsByPreparationAndIngredien
 
 		actual, err := vem.SearchValidIngredientsByPreparationAndIngredientName(ctx, preparationID, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1007,7 +1007,7 @@ func TestValidEnumerationManager_SearchValidIngredientStateIngredientsByIngredie
 
 		actual, err := vem.SearchValidIngredientStateIngredientsByIngredient(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1034,7 +1034,7 @@ func TestValidEnumerationManager_SearchValidIngredientStateIngredientsByIngredie
 
 		actual, err := vem.SearchValidIngredientStateIngredientsByIngredientState(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1055,13 +1055,13 @@ func TestValidEnumerationManager_SearchValidIngredientStates(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidIngredientStates(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1222,13 +1222,13 @@ func TestValidEnumerationManager_SearchValidMeasurementUnits(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidMeasurementUnits(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1255,7 +1255,7 @@ func TestValidEnumerationManager_SearchValidMeasurementUnitsByIngredientID(T *te
 
 		actual, err := vem.SearchValidMeasurementUnitsByIngredientID(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1416,13 +1416,13 @@ func TestValidEnumerationManager_SearchValidInstruments(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidInstruments(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1896,7 +1896,7 @@ func TestValidEnumerationManager_SearchValidPreparationInstrumentsByPreparation(
 
 		actual, err := vem.SearchValidPreparationInstrumentsByPreparation(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1923,7 +1923,7 @@ func TestValidEnumerationManager_SearchValidPreparationInstrumentsByInstrument(T
 
 		actual, err := vem.SearchValidPreparationInstrumentsByInstrument(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1944,13 +1944,13 @@ func TestValidEnumerationManager_SearchValidPreparations(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidPreparations), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidPreparations), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidPreparations(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2283,7 +2283,7 @@ func TestValidEnumerationManager_SearchValidPreparationVesselsByPreparation(T *t
 
 		actual, err := vem.SearchValidPreparationVesselsByPreparation(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2310,7 +2310,7 @@ func TestValidEnumerationManager_SearchValidPreparationVesselsByVessel(T *testin
 
 		actual, err := vem.SearchValidPreparationVesselsByVessel(ctx, exampleQuery, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2331,13 +2331,13 @@ func TestValidEnumerationManager_SearchValidVessels(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
+				db.On(reflection.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
 		actual, err := vem.SearchValidVessels(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

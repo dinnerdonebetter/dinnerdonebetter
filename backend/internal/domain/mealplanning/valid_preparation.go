@@ -123,7 +123,7 @@ type (
 		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
 		GetRandomValidPreparation(ctx context.Context) (*ValidPreparation, error)
 		GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparation], error)
-		SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidPreparation, error) // TODO: QueryFilterize
+		SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparation], error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
 		MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error

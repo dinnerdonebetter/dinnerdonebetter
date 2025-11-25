@@ -8,6 +8,7 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -207,12 +208,14 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		exampleUsers := []*identity.User{
-			identityfakes.BuildFakeUser(),
-			identityfakes.BuildFakeUser(),
+		exampleUsers := &filtering.QueryFilteredResult[identity.User]{
+			Data: []*identity.User{
+				identityfakes.BuildFakeUser(),
+				identityfakes.BuildFakeUser(),
+			},
 		}
 
-		identityDataManager.On("GetUsers", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("GetUsers", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleUsers, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
@@ -226,17 +229,19 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Result, len(exampleUsers))
-		assert.Equal(t, exampleUsers[0].ID, result.Result[0].ID)
-		assert.Equal(t, exampleUsers[1].ID, result.Result[1].ID)
+		assert.Equal(t, len(exampleUsers.Data), len(result.Result))
+		for i := range result.Result {
+			assert.Equal(t, result.Result[i].ID, exampleUsers.Data[i].ID)
+		}
 	})
 
 	t.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetUsers", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.User)(nil), "", errors.New("database error"))
+		identityDataManager.On("GetUsers", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.User])(nil), errors.New("database error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
@@ -245,7 +250,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetUsers(t.Context(), request)
+		result, err := service.GetUsers(ctx, request)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -262,15 +267,18 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		exampleUsers := []*identity.User{
-			identityfakes.BuildFakeUser(),
-			identityfakes.BuildFakeUser(),
+		exampleUsers := &filtering.QueryFilteredResult[identity.User]{
+			Data: []*identity.User{
+				identityfakes.BuildFakeUser(),
+				identityfakes.BuildFakeUser(),
+			},
 		}
 		exampleQuery := "test search"
 
-		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, testutils.QueryFilterMatcher).Return(exampleUsers, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{
@@ -281,14 +289,15 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 			},
 		}
 
-		result, err := service.SearchForUsers(t.Context(), request)
+		result, err := service.SearchForUsers(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Results, len(exampleUsers))
-		assert.Equal(t, exampleUsers[0].ID, result.Results[0].ID)
-		assert.Equal(t, exampleUsers[1].ID, result.Results[1].ID)
+		assert.Equal(t, len(exampleUsers.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleUsers.Data[i].ID)
+		}
 	})
 
 	t.Run("with search service enabled", func(t *testing.T) {
@@ -296,12 +305,14 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		exampleUsers := []*identity.User{
-			identityfakes.BuildFakeUser(),
+		exampleUsers := &filtering.QueryFilteredResult[identity.User]{
+			Data: []*identity.User{
+				identityfakes.BuildFakeUser(),
+			},
 		}
 		exampleQuery := "search query"
 
-		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, true, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, true, testutils.QueryFilterMatcher).Return(exampleUsers, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{
@@ -317,7 +328,10 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Results, len(exampleUsers))
+		assert.Equal(t, len(exampleUsers.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleUsers.Data[i].ID)
+		}
 	})
 
 	t.Run("with error from data manager", func(t *testing.T) {
@@ -327,7 +341,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 
 		exampleQuery := "test search"
 
-		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.User)(nil), "", errors.New("search error"))
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.User])(nil), errors.New("search error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{

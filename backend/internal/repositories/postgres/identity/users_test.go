@@ -302,8 +302,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 
 		actual, err := c.SearchForUsersByUsername(ctx, "", nil)
 		assert.Error(t, err)
-		assert.NotNil(t, actual)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 	})
 }
 

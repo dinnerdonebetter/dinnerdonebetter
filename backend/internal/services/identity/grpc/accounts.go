@@ -117,7 +117,7 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	accounts, _, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
+	accounts, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
@@ -126,7 +126,7 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, account := range accounts {
+	for _, account := range accounts.Data {
 		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
 	}
 
@@ -138,7 +138,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 	defer span.End()
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
-	accounts, _, err := s.identityDataManager.GetAccounts(ctx, request.UserID, filter)
+	accounts, err := s.identityDataManager.GetAccounts(ctx, request.UserID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
@@ -147,7 +147,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, account := range accounts {
+	for _, account := range accounts.Data {
 		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
 	}
 
@@ -246,7 +246,7 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	}
 
 	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
-	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, request.UserID, sessionContextData.GetActiveAccountID(), input); err != nil {
+	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, sessionContextData.GetActiveAccountID(), request.UserID, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
 	}
 

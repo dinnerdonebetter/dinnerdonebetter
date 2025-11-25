@@ -136,7 +136,7 @@ func (q *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanni
 }
 
 // SearchForValidPreparations fetches a valid preparation from the database.
-func (q *repository) SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparation, error) {
+func (q *repository) SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidPreparation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,9 +168,13 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparations search")
 	}
 
-	x := []*mealplanning.ValidPreparation{}
+	var (
+		data                      = []*mealplanning.ValidPreparation{}
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
-		x = append(x, &mealplanning.ValidPreparation{
+		data = append(data, &mealplanning.ValidPreparation{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -200,7 +204,11 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 			OnlyForVessels:              result.OnlyForVessels,
 			YieldsNothing:               result.YieldsNothing,
 		})
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vp *mealplanning.ValidPreparation) string { return vp.ID }, filter)
 
 	return x, nil
 }

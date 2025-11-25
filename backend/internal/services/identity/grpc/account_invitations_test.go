@@ -8,6 +8,7 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -318,14 +319,17 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		exampleInvitations := []*identity.AccountInvitation{
-			identityfakes.BuildFakeAccountInvitation(),
-			identityfakes.BuildFakeAccountInvitation(),
+		exampleInvitations := &filtering.QueryFilteredResult[identity.AccountInvitation]{
+			Data: []*identity.AccountInvitation{
+				identityfakes.BuildFakeAccountInvitation(),
+				identityfakes.BuildFakeAccountInvitation(),
+			},
 		}
 
-		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleInvitations, "", nil)
+		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
@@ -334,14 +338,15 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetReceivedAccountInvitations(t.Context(), request)
+		result, err := service.GetReceivedAccountInvitations(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Result, len(exampleInvitations))
-		assert.Equal(t, exampleInvitations[0].ID, result.Result[0].ID)
-		assert.Equal(t, exampleInvitations[1].ID, result.Result[1].ID)
+		assert.Equal(t, len(exampleInvitations.Data), len(result.Result))
+		for i := range result.Result {
+			assert.Equal(t, result.Result[i].ID, exampleInvitations.Data[i].ID)
+		}
 	})
 
 	t.Run("with session error", func(t *testing.T) {
@@ -369,9 +374,10 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 	t.Run("with error from data manager", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.AccountInvitation)(nil), "", errors.New("get error"))
+		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
@@ -380,7 +386,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetReceivedAccountInvitations(t.Context(), request)
+		result, err := service.GetReceivedAccountInvitations(ctx, request)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -397,14 +403,18 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		exampleInvitations := []*identity.AccountInvitation{
-			identityfakes.BuildFakeAccountInvitation(),
-			identityfakes.BuildFakeAccountInvitation(),
+		exampleInvitations := &filtering.QueryFilteredResult[identity.AccountInvitation]{
+			Data: []*identity.AccountInvitation{
+				identityfakes.BuildFakeAccountInvitation(),
+				identityfakes.BuildFakeAccountInvitation(),
+			},
 		}
 
-		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleInvitations, "", nil)
+		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations,
+			nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{
@@ -413,14 +423,15 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetSentAccountInvitations(t.Context(), request)
+		result, err := service.GetSentAccountInvitations(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Result, len(exampleInvitations))
-		assert.Equal(t, exampleInvitations[0].ID, result.Result[0].ID)
-		assert.Equal(t, exampleInvitations[1].ID, result.Result[1].ID)
+		assert.Equal(t, len(exampleInvitations.Data), len(result.Result))
+		for i := range result.Result {
+			assert.Equal(t, result.Result[i].ID, exampleInvitations.Data[i].ID)
+		}
 	})
 
 	t.Run("with session error", func(t *testing.T) {
@@ -450,7 +461,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.AccountInvitation)(nil), "", errors.New("get error"))
+		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{

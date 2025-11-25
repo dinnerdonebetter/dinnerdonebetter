@@ -97,7 +97,7 @@ func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidIngredientGroups(ctx, updatedValidIngredientGroup.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validIngredientGroups.Data, byName)
+	assert.Equal(t, validIngredientGroups, byName)
 
 	// delete
 	for _, validIngredientGroup := range createdValidIngredientGroups {

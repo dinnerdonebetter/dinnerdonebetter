@@ -75,7 +75,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.GetUsers(ctx, filter)
+	users, err := s.identityDataManager.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
@@ -84,7 +84,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, user := range users {
+	for _, user := range users.Data {
 		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
 	}
 
@@ -99,7 +99,7 @@ func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitys
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountID, filter)
+	users, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
@@ -108,7 +108,7 @@ func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitys
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, user := range users {
+	for _, user := range users.Data {
 		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
 	}
 
@@ -125,7 +125,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
+	users, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
 	}
@@ -134,7 +134,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, user := range users {
+	for _, user := range users.Data {
 		x.Results = append(x.Results, converters.ConvertUserToGRPCUser(user))
 	}
 

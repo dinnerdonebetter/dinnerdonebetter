@@ -144,7 +144,7 @@ func (q *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVess
 }
 
 // SearchForValidVessels fetches a valid vessel from the database.
-func (q *repository) SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
+func (q *repository) SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -176,7 +176,11 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 		return nil, observability.PrepareError(err, span, "querying for valid vessel")
 	}
 
-	validVessels := []*types.ValidVessel{}
+	var (
+		data                      = []*types.ValidVessel{}
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
 		validVessel := &types.ValidVessel{
 			CreatedAt:                      result.CreatedAt,
@@ -205,14 +209,18 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 			}
 		}
 
-		validVessels = append(validVessels, validVessel)
+		data = append(data, validVessel)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
 
-	if len(validVessels) == 0 {
+	if len(data) == 0 {
 		return nil, sql.ErrNoRows
 	}
 
-	return validVessels, nil
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vv *types.ValidVessel) string { return vv.ID }, filter)
+
+	return x, nil
 }
 
 // GetValidVessels fetches a list of valid vessels from the database that meet a particular filter.

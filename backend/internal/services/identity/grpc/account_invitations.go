@@ -120,7 +120,7 @@ func (s *serviceImpl) GetReceivedAccountInvitations(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	invites, _, err := s.identityDataManager.GetReceivedAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
+	invites, err := s.identityDataManager.GetReceivedAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get received account invitations")
 	}
@@ -129,7 +129,7 @@ func (s *serviceImpl) GetReceivedAccountInvitations(ctx context.Context, request
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, invite := range invites {
+	for _, invite := range invites.Data {
 		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
@@ -148,7 +148,7 @@ func (s *serviceImpl) GetSentAccountInvitations(ctx context.Context, request *id
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	invites, _, err := s.identityDataManager.GetSentAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
+	invites, err := s.identityDataManager.GetSentAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get received account invitations")
 	}
@@ -157,7 +157,7 @@ func (s *serviceImpl) GetSentAccountInvitations(ctx context.Context, request *id
 		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
-	for _, invite := range invites {
+	for _, invite := range invites.Data {
 		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
