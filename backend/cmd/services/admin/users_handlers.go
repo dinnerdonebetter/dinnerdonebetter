@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -319,10 +318,19 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 		return page("Users", s.renderUsersError("Error: No API client available")), nil
 	}
 
-	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{})
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
+
+	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return page("Users", s.renderUsersError(fmt.Sprintf("Error loading users: %v", err))), nil
 	}
+
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(usersRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/users", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.User]{
@@ -366,6 +374,9 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 				"LastUpdatedAt":             renderTimestamp,
 				"ArchivedAt":                renderTimestamp,
 			},
+			Pagination:             pagination,
+			PaginationURLGenerator: paginationURLGenerator,
+			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.User) string {
 			return fmt.Sprintf("/users/%s", data.ID)
@@ -402,10 +413,12 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		), nil
 	}
 
-	// Get search query from request
-	searchQuery := req.URL.Query().Get("search")
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
-	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{})
+	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
@@ -416,26 +429,13 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		), nil
 	}
 
-	// Filter users based on search query
-	var filteredUsers []*identitysvc.User
-	if searchQuery == "" {
-		// No search query, return all users
-		filteredUsers = usersRes.Results
-	} else {
-		// Filter users by search query (case insensitive)
-		searchQueryLower := strings.ToLower(searchQuery)
-		for _, user := range usersRes.Results {
-			if strings.Contains(strings.ToLower(user.Username), searchQueryLower) ||
-				strings.Contains(strings.ToLower(user.FirstName), searchQueryLower) ||
-				strings.Contains(strings.ToLower(user.LastName), searchQueryLower) ||
-				strings.Contains(strings.ToLower(user.EmailAddress), searchQueryLower) {
-				filteredUsers = append(filteredUsers, user)
-			}
-		}
-	}
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(usersRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/users/search", queryFilter)
 
 	// Generate just the table (not the full page)
-	if len(filteredUsers) == 0 {
+	if len(usersRes.Results) == 0 {
+		searchQuery := req.URL.Query().Get("search")
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
 			components.EmptyState(
@@ -449,7 +449,7 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		), nil
 	}
 
-	table, err := components.Table(filteredUsers, &components.TableOptions[*identitysvc.User]{
+	table, err := components.Table(usersRes.Results, &components.TableOptions[*identitysvc.User]{
 		TableID: "users-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -481,6 +481,9 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 			"LastUpdatedAt":             renderTimestamp,
 			"ArchivedAt":                renderTimestamp,
 		},
+		Pagination:             pagination,
+		PaginationURLGenerator: paginationURLGenerator,
+		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.User) string {
 			return fmt.Sprintf("/users/%s", data.ID)
 		},

@@ -278,7 +278,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 	}
 
 	// Extract QueryFilter and convert to gRPC filter
-	_, grpcFilter := buildQueryFilterFromRequest(req)
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
 	validIngredientStatesRes, err := c.GetValidIngredientStates(ctx, &mealplanningsvc.GetValidIngredientStatesRequest{
 		Filter: grpcFilter,
@@ -288,6 +288,8 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 	}
 
 	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validIngredientStatesRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredient_states", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredientState]{
@@ -319,6 +321,9 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 			FieldRenderers: map[string]components.FieldRenderer{
 				"CreatedAt": renderTimestamp,
 			},
+			Pagination:             pagination,
+			PaginationURLGenerator: paginationURLGenerator,
+			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
 			return fmt.Sprintf("/valid_ingredient_states/%s", data.ID)
@@ -358,7 +363,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 	}
 
 	// Extract QueryFilter and convert to gRPC filter
-	_, grpcFilter := buildQueryFilterFromRequest(req)
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
 	validIngredientStatesRes, err := c.GetValidIngredientStates(ctx, &mealplanningsvc.GetValidIngredientStatesRequest{
 		Filter: grpcFilter,
@@ -373,6 +378,10 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 		), nil
 	}
 
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validIngredientStatesRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredient_states/search", queryFilter)
+
 	// Generate just the table (not the full page)
 	if len(validIngredientStatesRes.Results) == 0 {
 		searchQuery := req.URL.Query().Get("search")
@@ -386,8 +395,6 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 			),
 		), nil
 	}
-
-	// Build pagination from response
 
 	table, err := components.Table(validIngredientStatesRes.Results, &components.TableOptions[*mealplanningsvc.ValidIngredientState]{
 		TableID: "valid-ingredient-states-table",
@@ -407,6 +414,9 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 		FieldRenderers: map[string]components.FieldRenderer{
 			"CreatedAt": renderTimestamp,
 		},
+		Pagination:             pagination,
+		PaginationURLGenerator: paginationURLGenerator,
+		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
 			return fmt.Sprintf("/valid_ingredient_states/%s", data.ID)
 		},

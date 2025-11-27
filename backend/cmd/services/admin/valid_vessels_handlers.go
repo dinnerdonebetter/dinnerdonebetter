@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -298,10 +297,19 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 		return page("Valid Vessels", s.renderValidVesselsError("Error: No API client available")), nil
 	}
 
-	validVesselsRes, err := c.GetValidVessels(ctx, &mealplanningsvc.GetValidVesselsRequest{})
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
+
+	validVesselsRes, err := c.GetValidVessels(ctx, &mealplanningsvc.GetValidVesselsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return page("Valid Vessels", s.renderValidVesselsError(fmt.Sprintf("Error loading valid vessels: %v", err))), nil
 	}
+
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validVesselsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/valid_vessels", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidVessel]{
@@ -340,6 +348,9 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 					return g.Text("No")
 				},
 			},
+			Pagination:             pagination,
+			PaginationURLGenerator: paginationURLGenerator,
+			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
 			return fmt.Sprintf("/valid_vessels/%s", data.ID)
@@ -378,10 +389,12 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		), nil
 	}
 
-	// Get search query from request
-	searchQuery := req.URL.Query().Get("search")
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
-	validVesselsRes, err := c.GetValidVessels(ctx, &mealplanningsvc.GetValidVesselsRequest{})
+	validVesselsRes, err := c.GetValidVessels(ctx, &mealplanningsvc.GetValidVesselsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
@@ -392,25 +405,13 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		), nil
 	}
 
-	// Filter vessels based on search query
-	var filteredVessels []*mealplanningsvc.ValidVessel
-	if searchQuery == "" {
-		filteredVessels = validVesselsRes.Results
-	} else {
-		// Filter vessels by search query (case insensitive)
-		searchQueryLower := strings.ToLower(searchQuery)
-		for _, vessel := range validVesselsRes.Results {
-			if strings.Contains(strings.ToLower(vessel.Name), searchQueryLower) ||
-				strings.Contains(strings.ToLower(vessel.PluralName), searchQueryLower) ||
-				strings.Contains(strings.ToLower(vessel.Description), searchQueryLower) ||
-				strings.Contains(strings.ToLower(vessel.Shape), searchQueryLower) {
-				filteredVessels = append(filteredVessels, vessel)
-			}
-		}
-	}
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validVesselsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_vessels/search", queryFilter)
 
 	// Generate just the table (not the full page)
-	if len(filteredVessels) == 0 {
+	if len(validVesselsRes.Results) == 0 {
+		searchQuery := req.URL.Query().Get("search")
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
 			components.EmptyState(
@@ -422,7 +423,7 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		), nil
 	}
 
-	table, err := components.Table(filteredVessels, &components.TableOptions[*mealplanningsvc.ValidVessel]{
+	table, err := components.Table(validVesselsRes.Results, &components.TableOptions[*mealplanningsvc.ValidVessel]{
 		TableID: "valid-vessels-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -447,6 +448,9 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 				return g.Text("No")
 			},
 		},
+		Pagination:             pagination,
+		PaginationURLGenerator: paginationURLGenerator,
+		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
 			return fmt.Sprintf("/valid_vessels/%s", data.ID)
 		},

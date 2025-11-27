@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -323,10 +322,19 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 		return page("Accounts", s.renderAccountsError("Error: No API client available")), nil
 	}
 
-	accountsRes, err := c.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
+
+	accountsRes, err := c.GetAccounts(ctx, &identitysvc.GetAccountsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return page("Accounts", s.renderAccountsError(fmt.Sprintf("Error loading accounts: %v", err))), nil
 	}
+
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(accountsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/accounts", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.Account]{
@@ -361,6 +369,9 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 				"LastUpdatedAt": renderTimestamp,
 				"ArchivedAt":    renderTimestamp,
 			},
+			Pagination:             pagination,
+			PaginationURLGenerator: paginationURLGenerator,
+			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.Account) string {
 			return fmt.Sprintf("/accounts/%s", data.ID)
@@ -397,10 +408,12 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		), nil
 	}
 
-	// Get search query from request
-	searchQuery := req.URL.Query().Get("search")
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
-	accountsRes, err := c.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+	accountsRes, err := c.GetAccounts(ctx, &identitysvc.GetAccountsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
@@ -411,23 +424,13 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		), nil
 	}
 
-	// Filter accounts based on search query
-	var filteredAccounts []*identitysvc.Account
-	if searchQuery == "" {
-		// No search query, return all accounts
-		filteredAccounts = accountsRes.Results
-	} else {
-		// Filter accounts by search query (case insensitive)
-		searchQueryLower := strings.ToLower(searchQuery)
-		for _, account := range accountsRes.Results {
-			if strings.Contains(strings.ToLower(account.Name), searchQueryLower) {
-				filteredAccounts = append(filteredAccounts, account)
-			}
-		}
-	}
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(accountsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/accounts/search", queryFilter)
 
 	// Generate just the table (not the full page)
-	if len(filteredAccounts) == 0 {
+	if len(accountsRes.Results) == 0 {
+		searchQuery := req.URL.Query().Get("search")
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
 			components.EmptyState(
@@ -441,7 +444,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		), nil
 	}
 
-	table, err := components.Table(filteredAccounts, &components.TableOptions[*identitysvc.Account]{
+	table, err := components.Table(accountsRes.Results, &components.TableOptions[*identitysvc.Account]{
 		TableID: "accounts-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -464,6 +467,9 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 			"LastUpdatedAt": renderTimestamp,
 			"ArchivedAt":    renderTimestamp,
 		},
+		Pagination:             pagination,
+		PaginationURLGenerator: paginationURLGenerator,
+		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.Account) string {
 			return fmt.Sprintf("/accounts/%s", data.ID)
 		},

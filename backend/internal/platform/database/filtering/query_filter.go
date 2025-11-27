@@ -60,6 +60,7 @@ type (
 		_                  struct{}     `json:"-"`
 		AppliedQueryFilter *QueryFilter `json:"appliedQueryFilter"`
 		Cursor             string       `json:"cursor"`
+		PreviousCursor     string       `json:"previousCursor"`
 		FilteredCount      uint64       `json:"filteredCount"`
 		TotalCount         uint64       `json:"totalCount"`
 		MaxResponseSize    uint8        `json:"maxResponseSize"`

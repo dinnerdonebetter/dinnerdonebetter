@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -387,12 +386,21 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 		return page("Valid Ingredients", s.renderValidIngredientsError("Error: No API client available")), nil
 	}
 
-	validIngredientsRes, err := c.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{})
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
+
+	validIngredientsRes, err := c.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return page("Valid Ingredients", s.renderValidIngredientsError(fmt.Sprintf("Error loading valid ingredients: %v", err))), nil
 	}
 
 	logger.WithValue("filter", validIngredientsRes.Pagination).Info("Valid ingredients retrieved")
+
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validIngredientsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredients", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredient]{
@@ -430,6 +438,9 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 					return g.Text("No")
 				},
 			},
+			Pagination:             pagination,
+			PaginationURLGenerator: paginationURLGenerator,
+			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
 			return fmt.Sprintf("/valid_ingredients/%s", data.ID)
@@ -468,10 +479,12 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		), nil
 	}
 
-	// Get search query from request
-	searchQuery := req.URL.Query().Get("search")
+	// Extract QueryFilter and convert to gRPC filter
+	queryFilter, grpcFilter := buildQueryFilterFromRequest(req)
 
-	validIngredientsRes, err := c.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{})
+	validIngredientsRes, err := c.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{
+		Filter: grpcFilter,
+	})
 	if err != nil {
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
@@ -482,24 +495,13 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		), nil
 	}
 
-	// Filter ingredients based on search query
-	var filteredIngredients []*mealplanningsvc.ValidIngredient
-	if searchQuery == "" {
-		filteredIngredients = validIngredientsRes.Results
-	} else {
-		// Filter ingredients by search query (case insensitive)
-		searchQueryLower := strings.ToLower(searchQuery)
-		for _, ingredient := range validIngredientsRes.Results {
-			if strings.Contains(strings.ToLower(ingredient.Name), searchQueryLower) ||
-				strings.Contains(strings.ToLower(ingredient.PluralName), searchQueryLower) ||
-				strings.Contains(strings.ToLower(ingredient.Description), searchQueryLower) {
-				filteredIngredients = append(filteredIngredients, ingredient)
-			}
-		}
-	}
+	// Build pagination from response
+	pagination := buildPaginationFromGRPCResponse(validIngredientsRes.Pagination)
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredients/search", queryFilter)
 
 	// Generate just the table (not the full page)
-	if len(filteredIngredients) == 0 {
+	if len(validIngredientsRes.Results) == 0 {
+		searchQuery := req.URL.Query().Get("search")
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
 			components.EmptyState(
@@ -511,7 +513,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		), nil
 	}
 
-	table, err := components.Table(filteredIngredients, &components.TableOptions[*mealplanningsvc.ValidIngredient]{
+	table, err := components.Table(validIngredientsRes.Results, &components.TableOptions[*mealplanningsvc.ValidIngredient]{
 		TableID: "valid-ingredients-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
@@ -535,6 +537,9 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 				return g.Text("No")
 			},
 		},
+		Pagination:             pagination,
+		PaginationURLGenerator: paginationURLGenerator,
+		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
 			return fmt.Sprintf("/valid_ingredients/%s", data.ID)
 		},

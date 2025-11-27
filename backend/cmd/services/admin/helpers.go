@@ -81,40 +81,18 @@ func buildQueryFilterFromRequest(req *http.Request) (*filtering.QueryFilter, *gr
 	return queryFilter, grpcFilter
 }
 
-// buildPaginationFromGRPCResponse constructs a Pagination object from a gRPC response Filter.
-// It extracts cursor and limit, and estimates counts based on result length.
-// Note: FilteredCount and TotalCount should ideally come from the service layer response.
-func buildPaginationFromGRPCResponse(grpcFilter *grpcfiltering.QueryFilter, resultCount int) *filtering.Pagination {
-	if grpcFilter == nil {
+// buildPaginationFromGRPCResponse constructs a Pagination object from a gRPC Pagination response.
+// It extracts cursor, counts, and max response size from the service response.
+func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *filtering.Pagination {
+	if grpcPagination == nil {
 		return nil
 	}
 
-	responseFilter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(grpcFilter)
 	pagination := &filtering.Pagination{
-		Cursor:          "",
-		MaxResponseSize: 0,
-		FilteredCount:   0,
-		TotalCount:      0,
-	}
-
-	if responseFilter.Cursor != nil {
-		pagination.Cursor = *responseFilter.Cursor
-	}
-	if responseFilter.Limit != nil {
-		pagination.MaxResponseSize = *responseFilter.Limit
-	}
-
-	// Estimate counts based on results
-	// TODO: These should come from the service response when available
-	if resultCount > 0 {
-		if pagination.Cursor != "" {
-			// If there's a cursor, we got a full page, so there's likely more
-			pagination.FilteredCount = uint64(resultCount)
-		} else {
-			// No cursor means this is likely the last page
-			pagination.FilteredCount = uint64(resultCount)
-			pagination.TotalCount = uint64(resultCount)
-		}
+		Cursor:          grpcPagination.Cursor,
+		MaxResponseSize: uint8(grpcPagination.MaxResponseSize),
+		FilteredCount:   grpcPagination.FilteredCount,
+		TotalCount:      grpcPagination.TotalCount,
 	}
 
 	return pagination
