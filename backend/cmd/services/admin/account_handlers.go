@@ -334,7 +334,8 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(accountsRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/accounts", queryFilter)
+	// Use search endpoint for pagination to return just the table, not the full page
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/accounts/search", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.Account]{

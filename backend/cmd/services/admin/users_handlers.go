@@ -330,7 +330,8 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(usersRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/users", queryFilter)
+	// Use search endpoint for pagination to return just the table, not the full page
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/users/search", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.User]{

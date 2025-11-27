@@ -536,6 +536,9 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 
 	pagination := options.Pagination
 	hasMore := pagination.Cursor != ""
+	// Only show Previous button if PreviousCursor is explicitly set and non-empty
+	// On the first page, PreviousCursor should be empty string, so this will be false
+	hasPrevious := strings.TrimSpace(pagination.PreviousCursor) != ""
 
 	// Build pagination info text
 	var infoText string
@@ -549,33 +552,68 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 		}
 	}
 
-	// If there's no more data and no counts to show, don't render pagination
-	if !hasMore && infoText == "" {
+	// If there's no more data, no previous, and no counts to show, don't render pagination
+	if !hasMore && !hasPrevious && infoText == "" {
 		return nil
 	}
 
-	var children []g.Node
-
-	// Add info text
-	if infoText != "" {
-		children = append(children,
-			ghtml.Div(
-				ghtml.Class("text-sm text-gray-600"),
-				g.Text(infoText),
-			),
-		)
+	// Determine HTMX target
+	htmxTarget := options.PaginationHTMXTarget
+	if htmxTarget == "" {
+		htmxTarget = "#search-results"
 	}
 
-	// Add "Load More" button if there's a cursor
+	var leftButtons []g.Node
+	var rightButtons []g.Node
+
+	// Add "Previous" button if there's a previous cursor
+	// Only show if PreviousCursor is non-empty (not on first page)
+	if hasPrevious && pagination.PreviousCursor != "" && options.PaginationURLGenerator != nil {
+		prevURL := options.PaginationURLGenerator(pagination.PreviousCursor)
+		if prevURL != "" && pagination.PreviousCursor != "" {
+			// Ensure cursor is in the URL
+			parsedURL, parseErr := url.Parse(prevURL)
+			if parseErr == nil {
+				query := parsedURL.Query()
+				// Only add cursor if it's not already present
+				if query.Get("cursor") == "" {
+					query.Set("cursor", pagination.PreviousCursor)
+					parsedURL.RawQuery = query.Encode()
+					prevURL = parsedURL.String()
+				}
+			} else {
+				// If URL parsing fails, append cursor as query param only if not already present
+				if !strings.Contains(prevURL, "cursor=") {
+					if strings.Contains(prevURL, "?") {
+						prevURL += "&cursor=" + url.QueryEscape(pagination.PreviousCursor)
+					} else {
+						prevURL += "?cursor=" + url.QueryEscape(pagination.PreviousCursor)
+					}
+				}
+			}
+
+			leftButtons = append(leftButtons,
+				ghtml.Button(
+					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
+						design.TextColor(design.Color{Value: "white"}),
+						design.Background(palette.Primary),
+						design.Background(design.Color{Value: palette.Primary.Value + "-700"}),
+						palette.Primary.Value,
+					)),
+					g.Attr("hx-get", prevURL),
+					g.Attr("hx-target", htmxTarget),
+					g.Attr("hx-swap", "innerHTML"),
+					g.Attr("hx-push-url", "false"),
+					g.Text("Previous"),
+				),
+			)
+		}
+	}
+
+	// Add "Load More" button if there's a next cursor
 	if hasMore && options.PaginationURLGenerator != nil {
 		nextURL := options.PaginationURLGenerator(pagination.Cursor)
 		if nextURL != "" {
-			// Determine HTMX target
-			htmxTarget := options.PaginationHTMXTarget
-			if htmxTarget == "" {
-				htmxTarget = "#search-results"
-			}
-
 			// Ensure cursor is in the URL (the generator should handle this, but we'll add it if missing)
 			parsedURL, parseErr := url.Parse(nextURL)
 			if parseErr == nil {
@@ -597,7 +635,7 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 				}
 			}
 
-			children = append(children,
+			rightButtons = append(rightButtons,
 				ghtml.Button(
 					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
 						design.TextColor(design.Color{Value: "white"}),
@@ -615,12 +653,47 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 		}
 	}
 
+	// Build children array with left buttons, info text, and right buttons
+	var children []g.Node
+
+	// Add left buttons (Previous)
+	if len(leftButtons) > 0 {
+		children = append(children, ghtml.Div(
+			ghtml.Class("flex items-center gap-2"),
+			g.Group(leftButtons),
+		))
+	} else {
+		// Add empty div to maintain spacing
+		children = append(children, ghtml.Div())
+	}
+
+	// Add info text in the center
+	if infoText != "" {
+		children = append(children,
+			ghtml.Div(
+				ghtml.Class("text-sm text-gray-600"),
+				g.Text(infoText),
+			),
+		)
+	}
+
+	// Add right buttons (Load More)
+	if len(rightButtons) > 0 {
+		children = append(children, ghtml.Div(
+			ghtml.Class("flex items-center gap-2"),
+			g.Group(rightButtons),
+		))
+	} else {
+		// Add empty div to maintain spacing
+		children = append(children, ghtml.Div())
+	}
+
 	// If there are no children, don't render anything
 	if len(children) == 0 {
 		return nil
 	}
 
-	// Create pagination container
+	// Create pagination container with three sections: left buttons, info, right buttons
 	return ghtml.Div(
 		ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
 		g.Group(children),

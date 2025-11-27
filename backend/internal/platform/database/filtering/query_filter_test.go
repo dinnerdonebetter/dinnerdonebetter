@@ -263,6 +263,7 @@ func TestNewQueryFilteredResult(T *testing.T) {
 			Data: data,
 			Pagination: Pagination{
 				Cursor:             *data[1],
+				PreviousCursor:     *qf.Cursor,
 				MaxResponseSize:    *qf.Limit,
 				FilteredCount:      filteredCount,
 				TotalCount:         totalCount,
@@ -291,6 +292,35 @@ func TestNewQueryFilteredResult(T *testing.T) {
 			Data: data,
 			Pagination: Pagination{
 				Cursor:             "",
+				PreviousCursor:     *qf.Cursor,
+				MaxResponseSize:    *qf.Limit,
+				FilteredCount:      filteredCount,
+				TotalCount:         totalCount,
+				AppliedQueryFilter: qf,
+			},
+		}
+
+		actual := NewQueryFilteredResult(data, filteredCount, totalCount, idExtractor, qf)
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with no cursor", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Limit: pointer.To(uint8(MaxQueryFilterLimit)),
+		}
+
+		data := []*string{pointer.To("a"), pointer.To("b")}
+		filteredCount := uint64(len(data))
+		totalCount := uint64(len(data))
+		idExtractor := func(s *string) string { return *s }
+
+		expected := &QueryFilteredResult[string]{
+			Data: data,
+			Pagination: Pagination{
+				Cursor:             *data[1],
+				PreviousCursor:     "",
 				MaxResponseSize:    *qf.Limit,
 				FilteredCount:      filteredCount,
 				TotalCount:         totalCount,

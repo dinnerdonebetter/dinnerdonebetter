@@ -272,6 +272,11 @@ func NewQueryFilteredResult[T any](
 	x.TotalCount = totalCount
 	x.AppliedQueryFilter = filter
 
+	// Preserve the input cursor as PreviousCursor before overwriting with next cursor
+	if filter != nil && filter.Cursor != nil {
+		x.PreviousCursor = *filter.Cursor
+	}
+
 	if len(data) > 0 {
 		x.Cursor = idExtractor(data[len(data)-1])
 	} else {

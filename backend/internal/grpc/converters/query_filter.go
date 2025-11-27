@@ -66,6 +66,7 @@ func ConvertPaginationToGRPCPagination(pagination filtering.Pagination, qf *filt
 		FilteredCount:      pagination.FilteredCount,
 		TotalCount:         pagination.TotalCount,
 		MaxResponseSize:    uint32(pagination.MaxResponseSize),
+		PreviousCursor:     pagination.PreviousCursor,
 	}
 
 	return f

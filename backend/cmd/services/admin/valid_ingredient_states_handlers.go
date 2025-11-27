@@ -289,7 +289,8 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validIngredientStatesRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredient_states", queryFilter)
+	// Use search endpoint for pagination to return just the table, not the full page
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredient_states/search", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredientState]{

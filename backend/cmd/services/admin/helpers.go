@@ -82,7 +82,7 @@ func buildQueryFilterFromRequest(req *http.Request) (*filtering.QueryFilter, *gr
 }
 
 // buildPaginationFromGRPCResponse constructs a Pagination object from a gRPC Pagination response.
-// It extracts cursor, counts, and max response size from the service response.
+// It extracts cursor, counts, max response size, and previous cursor from the service response.
 func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *filtering.Pagination {
 	if grpcPagination == nil {
 		return nil
@@ -93,6 +93,33 @@ func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *
 		MaxResponseSize: uint8(grpcPagination.MaxResponseSize),
 		FilteredCount:   grpcPagination.FilteredCount,
 		TotalCount:      grpcPagination.TotalCount,
+	}
+
+	// Use PreviousCursor directly from the gRPC response if available
+	// The backend service layer correctly sets PreviousCursor based on the input filter
+	if grpcPagination.PreviousCursor != "" {
+		pagination.PreviousCursor = grpcPagination.PreviousCursor
+	} else {
+		// If PreviousCursor is not set in the response, it means we're on the first page
+		// or the backend didn't set it. In this case, we should not derive it from
+		// AppliedQueryFilter.Cursor because that represents the cursor used to GET to this page,
+		// not necessarily the previous cursor for navigation.
+		// Only use AppliedQueryFilter.Cursor as a fallback if it's explicitly different from Cursor
+		// and PreviousCursor is empty (indicating backend didn't set it properly)
+		if grpcPagination.AppliedQueryFilter != nil &&
+			grpcPagination.AppliedQueryFilter.Cursor != nil {
+			appliedCursor := *grpcPagination.AppliedQueryFilter.Cursor
+			// Only use AppliedQueryFilter.Cursor if it's different from the current Cursor
+			// and non-empty (meaning we navigated here with a cursor)
+			if appliedCursor != "" && appliedCursor != grpcPagination.Cursor {
+				pagination.PreviousCursor = appliedCursor
+			} else {
+				pagination.PreviousCursor = ""
+			}
+		} else {
+			// No cursor in AppliedQueryFilter means first page
+			pagination.PreviousCursor = ""
+		}
 	}
 
 	return pagination

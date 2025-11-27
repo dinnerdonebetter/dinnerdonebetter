@@ -309,7 +309,8 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validVesselsRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/valid_vessels", queryFilter)
+	// Use search endpoint for pagination to return just the table, not the full page
+	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_vessels/search", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidVessel]{
