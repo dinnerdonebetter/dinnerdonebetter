@@ -87,29 +87,129 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	var firstValidVessel *mealplanning.ValidVessel
 	var firstValidIngredientState *mealplanning.ValidIngredientState
 
-	// Create 75 ValidIngredients
-	for i := 1; i <= count; i++ {
+	// Create 75 ValidIngredients - diverse list of real ingredients
+	ingredients := []struct {
+		name                   string
+		description            string
+		pluralName             string
+		storageInstructions    string
+		slug                   string
+		containsShellfish      bool
+		containsDairy          bool
+		containsPeanut         bool
+		containsTreeNut        bool
+		containsEgg            bool
+		containsWheat          bool
+		containsSoy            bool
+		animalDerived          bool
+		restrictToPreparations bool
+	}{
+		{"garlic", "Fresh garlic cloves", "garlic cloves", "Store in a cool, dry place", "garlic", false, false, false, false, false, false, false, false, false},
+		{"onion", "Yellow cooking onion", "onions", "Store in a cool, dry, well-ventilated place", "onion", false, false, false, false, false, false, false, false, false},
+		{"carrot", "Fresh orange carrots", "carrots", "Store in the refrigerator crisper drawer", "carrot", false, false, false, false, false, false, false, false, false},
+		{"tomato", "Ripe red tomatoes", "tomatoes", "Store at room temperature until ripe, then refrigerate", "tomato", false, false, false, false, false, false, false, false, false},
+		{"bell pepper", "Red bell pepper", "bell peppers", "Store in the refrigerator crisper drawer", "bell-pepper", false, false, false, false, false, false, false, false, false},
+		{"broccoli", "Fresh broccoli florets", "broccoli", "Store in the refrigerator crisper drawer", "broccoli", false, false, false, false, false, false, false, false, false},
+		{"chicken breast", "Boneless, skinless chicken breast", "chicken breasts", "Keep refrigerated at or below 40°F", "chicken-breast", false, false, false, false, false, false, false, true, false},
+		{"ground beef", "Lean ground beef", "ground beef", "Keep refrigerated at or below 40°F", "ground-beef", false, false, false, false, false, false, false, true, false},
+		{"salmon fillet", "Fresh Atlantic salmon fillet", "salmon fillets", "Keep refrigerated at or below 40°F", "salmon-fillet", false, false, false, false, false, false, false, true, false},
+		{"milk", "Whole milk", "milk", "Keep refrigerated at or below 40°F", "milk", false, true, false, false, false, false, false, true, false},
+		{"butter", "Unsalted butter", "butter", "Keep refrigerated, can be kept at room temperature for short periods", "butter", false, true, false, false, false, false, false, true, false},
+		{"cheddar cheese", "Sharp cheddar cheese", "cheddar cheese", "Keep refrigerated, wrap tightly", "cheddar-cheese", false, true, false, false, false, false, false, true, false},
+		{"eggs", "Large chicken eggs", "eggs", "Keep refrigerated in original carton", "eggs", false, false, false, false, true, false, false, true, false},
+		{"rice", "Long-grain white rice", "rice", "Store in a cool, dry place in an airtight container", "rice", false, false, false, false, false, false, false, false, false},
+		{"pasta", "Dried spaghetti pasta", "pasta", "Store in a cool, dry place in an airtight container", "pasta", false, false, false, false, false, true, false, false, false},
+		{"bread", "White sandwich bread", "bread", "Store at room temperature in a bread box or sealed bag", "bread", false, false, false, false, false, true, false, false, false},
+		{"olive oil", "Extra virgin olive oil", "olive oil", "Store in a cool, dark place away from light", "olive-oil", false, false, false, false, false, false, false, false, false},
+		{"salt", "Fine sea salt", "salt", "Store in a cool, dry place in an airtight container", "salt", false, false, false, false, false, false, false, false, false},
+		{"black pepper", "Ground black pepper", "black pepper", "Store in a cool, dry place in an airtight container", "black-pepper", false, false, false, false, false, false, false, false, false},
+		{"basil", "Fresh basil leaves", "basil", "Store in the refrigerator, stems in water", "basil", false, false, false, false, false, false, false, false, false},
+		{"oregano", "Dried oregano", "oregano", "Store in a cool, dry place in an airtight container", "oregano", false, false, false, false, false, false, false, false, false},
+		{"thyme", "Fresh thyme sprigs", "thyme", "Store in the refrigerator, wrapped in damp paper towel", "thyme", false, false, false, false, false, false, false, false, false},
+		{"parsley", "Fresh flat-leaf parsley", "parsley", "Store in the refrigerator, stems in water", "parsley", false, false, false, false, false, false, false, false, false},
+		{"cilantro", "Fresh cilantro leaves", "cilantro", "Store in the refrigerator, stems in water", "cilantro", false, false, false, false, false, false, false, false, false},
+		{"lemon", "Fresh lemons", "lemons", "Store at room temperature or in the refrigerator", "lemon", false, false, false, false, false, false, false, false, false},
+		{"lime", "Fresh limes", "limes", "Store at room temperature or in the refrigerator", "lime", false, false, false, false, false, false, false, false, false},
+		{"potato", "Russet potatoes", "potatoes", "Store in a cool, dark, well-ventilated place", "potato", false, false, false, false, false, false, false, false, false},
+		{"sweet potato", "Orange sweet potatoes", "sweet potatoes", "Store in a cool, dark, well-ventilated place", "sweet-potato", false, false, false, false, false, false, false, false, false},
+		{"spinach", "Fresh baby spinach leaves", "spinach", "Store in the refrigerator crisper drawer", "spinach", false, false, false, false, false, false, false, false, false},
+		{"lettuce", "Romaine lettuce", "lettuce", "Store in the refrigerator crisper drawer", "lettuce", false, false, false, false, false, false, false, false, false},
+		{"cucumber", "English cucumber", "cucumbers", "Store in the refrigerator crisper drawer", "cucumber", false, false, false, false, false, false, false, false, false},
+		{"zucchini", "Fresh zucchini", "zucchini", "Store in the refrigerator crisper drawer", "zucchini", false, false, false, false, false, false, false, false, false},
+		{"mushroom", "White button mushrooms", "mushrooms", "Store in the refrigerator in original packaging or paper bag", "mushroom", false, false, false, false, false, false, false, false, false},
+		{"avocado", "Hass avocado", "avocados", "Store at room temperature until ripe, then refrigerate", "avocado", false, false, false, false, false, false, false, false, false},
+		{"apple", "Red delicious apples", "apples", "Store in the refrigerator crisper drawer", "apple", false, false, false, false, false, false, false, false, false},
+		{"banana", "Yellow bananas", "bananas", "Store at room temperature", "banana", false, false, false, false, false, false, false, false, false},
+		{"strawberry", "Fresh strawberries", "strawberries", "Store in the refrigerator, do not wash until ready to use", "strawberry", false, false, false, false, false, false, false, false, false},
+		{"blueberry", "Fresh blueberries", "blueberries", "Store in the refrigerator, do not wash until ready to use", "blueberry", false, false, false, false, false, false, false, false, false},
+		{"almond", "Raw almonds", "almonds", "Store in a cool, dry place in an airtight container", "almond", false, false, false, true, false, false, false, false, false},
+		{"walnut", "Raw walnut halves", "walnuts", "Store in the refrigerator or freezer to prevent rancidity", "walnut", false, false, false, true, false, false, false, false, false},
+		{"peanut", "Raw peanuts", "peanuts", "Store in a cool, dry place in an airtight container", "peanut", false, false, true, false, false, false, false, false, false},
+		{"tofu", "Firm tofu", "tofu", "Keep refrigerated, store in water and change daily", "tofu", false, false, false, false, false, false, true, false, false},
+		{"black beans", "Canned black beans", "black beans", "Store in a cool, dry place, refrigerate after opening", "black-beans", false, false, false, false, false, false, false, false, false},
+		{"chickpeas", "Canned chickpeas", "chickpeas", "Store in a cool, dry place, refrigerate after opening", "chickpeas", false, false, false, false, false, false, false, false, false},
+		{"lentils", "Dried brown lentils", "lentils", "Store in a cool, dry place in an airtight container", "lentils", false, false, false, false, false, false, false, false, false},
+		{"quinoa", "White quinoa", "quinoa", "Store in a cool, dry place in an airtight container", "quinoa", false, false, false, false, false, false, false, false, false},
+		{"oats", "Rolled oats", "oats", "Store in a cool, dry place in an airtight container", "oats", false, false, false, false, false, false, false, false, false},
+		{"flour", "All-purpose flour", "flour", "Store in a cool, dry place in an airtight container", "flour", false, false, false, false, false, true, false, false, false},
+		{"sugar", "Granulated white sugar", "sugar", "Store in a cool, dry place in an airtight container", "sugar", false, false, false, false, false, false, false, false, false},
+		{"honey", "Raw honey", "honey", "Store at room temperature in a sealed container", "honey", false, false, false, false, false, false, false, false, false},
+		{"vinegar", "White wine vinegar", "vinegar", "Store in a cool, dark place", "vinegar", false, false, false, false, false, false, false, false, false},
+		{"soy sauce", "Low-sodium soy sauce", "soy sauce", "Store in a cool, dark place", "soy-sauce", false, false, false, false, false, false, true, false, false},
+		{"ginger", "Fresh ginger root", "ginger", "Store in the refrigerator, wrapped in paper towel", "ginger", false, false, false, false, false, false, false, false, false},
+		{"turmeric", "Ground turmeric", "turmeric", "Store in a cool, dry place in an airtight container", "turmeric", false, false, false, false, false, false, false, false, false},
+		{"cumin", "Ground cumin", "cumin", "Store in a cool, dry place in an airtight container", "cumin", false, false, false, false, false, false, false, false, false},
+		{"cinnamon", "Ground cinnamon", "cinnamon", "Store in a cool, dry place in an airtight container", "cinnamon", false, false, false, false, false, false, false, false, false},
+		{"paprika", "Sweet paprika", "paprika", "Store in a cool, dry place in an airtight container", "paprika", false, false, false, false, false, false, false, false, false},
+		{"chili powder", "Mild chili powder", "chili powder", "Store in a cool, dry place in an airtight container", "chili-powder", false, false, false, false, false, false, false, false, false},
+		{"cayenne pepper", "Ground cayenne pepper", "cayenne pepper", "Store in a cool, dry place in an airtight container", "cayenne-pepper", false, false, false, false, false, false, false, false, false},
+		{"bay leaf", "Dried bay leaves", "bay leaves", "Store in a cool, dry place in an airtight container", "bay-leaf", false, false, false, false, false, false, false, false, false},
+		{"rosemary", "Fresh rosemary sprigs", "rosemary", "Store in the refrigerator, wrapped in damp paper towel", "rosemary", false, false, false, false, false, false, false, false, false},
+		{"sage", "Fresh sage leaves", "sage", "Store in the refrigerator, wrapped in damp paper towel", "sage", false, false, false, false, false, false, false, false, false},
+		{"dill", "Fresh dill weed", "dill", "Store in the refrigerator, stems in water", "dill", false, false, false, false, false, false, false, false, false},
+		{"mint", "Fresh mint leaves", "mint", "Store in the refrigerator, stems in water", "mint", false, false, false, false, false, false, false, false, false},
+		{"corn", "Fresh corn on the cob", "corn", "Store in the refrigerator, keep husks on", "corn", false, false, false, false, false, false, false, false, false},
+		{"peas", "Frozen green peas", "peas", "Keep frozen until ready to use", "peas", false, false, false, false, false, false, false, false, false},
+		{"green beans", "Fresh green beans", "green beans", "Store in the refrigerator crisper drawer", "green-beans", false, false, false, false, false, false, false, false, false},
+		{"asparagus", "Fresh asparagus spears", "asparagus", "Store in the refrigerator, stems in water", "asparagus", false, false, false, false, false, false, false, false, false},
+		{"cauliflower", "Fresh cauliflower head", "cauliflower", "Store in the refrigerator crisper drawer", "cauliflower", false, false, false, false, false, false, false, false, false},
+		{"cabbage", "Green cabbage", "cabbage", "Store in the refrigerator crisper drawer", "cabbage", false, false, false, false, false, false, false, false, false},
+		{"celery", "Fresh celery stalks", "celery", "Store in the refrigerator crisper drawer", "celery", false, false, false, false, false, false, false, false, false},
+		{"shrimp", "Raw large shrimp", "shrimp", "Keep refrigerated at or below 40°F", "shrimp", true, false, false, false, false, false, false, true, false},
+		{"cod", "Fresh cod fillet", "cod", "Keep refrigerated at or below 40°F", "cod", false, false, false, false, false, false, false, true, false},
+		{"tuna", "Fresh tuna steak", "tuna", "Keep refrigerated at or below 40°F", "tuna", false, false, false, false, false, false, false, true, false},
+		{"yogurt", "Plain Greek yogurt", "yogurt", "Keep refrigerated at or below 40°F", "yogurt", false, true, false, false, false, false, false, true, false},
+		{"sour cream", "Full-fat sour cream", "sour cream", "Keep refrigerated at or below 40°F", "sour-cream", false, true, false, false, false, false, false, true, false},
+		{"cream cheese", "Plain cream cheese", "cream cheese", "Keep refrigerated at or below 40°F", "cream-cheese", false, true, false, false, false, false, false, true, false},
+		{"parmesan cheese", "Grated Parmesan cheese", "Parmesan cheese", "Keep refrigerated, wrap tightly", "parmesan-cheese", false, true, false, false, false, false, false, true, false},
+		{"mozzarella cheese", "Fresh mozzarella cheese", "mozzarella cheese", "Keep refrigerated in brine or wrap tightly", "mozzarella-cheese", false, true, false, false, false, false, false, true, false},
+		{"chicken thigh", "Bone-in chicken thighs", "chicken thighs", "Keep refrigerated at or below 40°F", "chicken-thigh", false, false, false, false, false, false, false, true, false},
+		{"pork chop", "Bone-in pork chops", "pork chops", "Keep refrigerated at or below 40°F", "pork-chop", false, false, false, false, false, false, false, true, false},
+		{"ground turkey", "Lean ground turkey", "ground turkey", "Keep refrigerated at or below 40°F", "ground-turkey", false, false, false, false, false, false, false, true, false},
+	}
+
+	for i, ing := range ingredients {
 		validIngredient, err := repo.CreateValidIngredient(ctx, &mealplanning.ValidIngredientDatabaseCreationInput{
 			ID:                     identifiers.New(),
-			Name:                   fmt.Sprintf("garlic %d", i),
-			Description:            "Fresh garlic cloves",
-			PluralName:             "garlic cloves",
-			StorageInstructions:    "Store in a cool, dry place",
-			Slug:                   fmt.Sprintf("garlic-%d", i),
-			ContainsShellfish:      false,
-			ContainsDairy:          false,
-			ContainsPeanut:         false,
-			ContainsTreeNut:        false,
-			ContainsEgg:            false,
-			ContainsWheat:          false,
-			ContainsSoy:            false,
-			AnimalDerived:          false,
-			RestrictToPreparations: false,
+			Name:                   ing.name,
+			Description:            ing.description,
+			PluralName:             ing.pluralName,
+			StorageInstructions:    ing.storageInstructions,
+			Slug:                   ing.slug,
+			ContainsShellfish:      ing.containsShellfish,
+			ContainsDairy:          ing.containsDairy,
+			ContainsPeanut:         ing.containsPeanut,
+			ContainsTreeNut:        ing.containsTreeNut,
+			ContainsEgg:            ing.containsEgg,
+			ContainsWheat:          ing.containsWheat,
+			ContainsSoy:            ing.containsSoy,
+			AnimalDerived:          ing.animalDerived,
+			RestrictToPreparations: ing.restrictToPreparations,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid ingredient %d: %w", i, err)
+			return fmt.Errorf("failed to create valid ingredient %d: %w", i+1, err)
 		}
-		if i == 1 {
+		if i == 0 {
 			firstValidIngredient = validIngredient
 		}
 		logger.Info("Created ValidIngredient: " + validIngredient.Name)

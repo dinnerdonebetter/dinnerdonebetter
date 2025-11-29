@@ -330,8 +330,10 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(usersRes.Pagination)
-	// Use search endpoint for pagination to return just the table, not the full page
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/users/search", queryFilter)
+	// Use search endpoint for pagination buttons to return just the table content
+	// The main page URL is still used for deep linking via hx-push-url
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/users/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/users", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.User]{
@@ -377,6 +379,7 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
+			DeepLinkURLGenerator:   deepLinkURLGenerator,
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.User) string {
@@ -432,7 +435,10 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(usersRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/users/search", queryFilter)
+	// Use search endpoint for pagination buttons to return just the table content
+	// The main page URL is still used for deep linking via hx-push-url
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/users/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/users", queryFilter)
 
 	// Generate just the table (not the full page)
 	if len(usersRes.Results) == 0 {
@@ -484,6 +490,7 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,
+		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.User) string {
 			return fmt.Sprintf("/users/%s", data.ID)

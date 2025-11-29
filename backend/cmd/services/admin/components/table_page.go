@@ -83,6 +83,17 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 	// Generate dynamic subtitle
 	subtitle := generateSubtitle(props, metadata)
 
+	// Generate page size selector if pagination is available and search is enabled
+	var pageSizeSelector g.Node
+	if props.ShowSearch && props.TableOptions != nil && props.TableOptions.Pagination != nil && props.HTMXSearchTarget != "" {
+		pageSizeSelector = CreatePageSizeSelector(
+			props.HTMXSearchTarget,
+			props.TableOptions.Pagination.MaxResponseSize,
+			props.TableOptions.TableID,
+			props.Palette,
+		)
+	}
+
 	// Create the complete page
 	node := ContentContainer(&ContentContainerProps{
 		Title:             props.Title,
@@ -93,6 +104,7 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 		HTMXSearchTarget:  props.HTMXSearchTarget,
 		HTMXSearchTrigger: props.HTMXSearchTrigger,
 		Actions:           props.Actions,
+		PageSizeSelector:  pageSizeSelector,
 	},
 		// Wrap table in horizontally scrollable container for HTMX targeting
 		g.El("div",

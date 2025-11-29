@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -400,8 +401,11 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validIngredientsRes.Pagination)
-	// Use search endpoint for pagination to return just the table, not the full page
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredients/search", queryFilter)
+
+	// Use search endpoint for pagination buttons to return just the table content
+	// The main page URL is used for deep linking via hx-push-url
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_ingredients/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredients", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredient]{
@@ -441,6 +445,7 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
+			DeepLinkURLGenerator:   deepLinkURLGenerator,
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
@@ -498,11 +503,61 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validIngredientsRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredients/search", queryFilter)
+
+	// Diagnostic logging for pagination passed to table
+	var appliedCursorStr string
+	if pagination != nil && pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor != nil {
+		appliedCursorStr = *pagination.AppliedQueryFilter.Cursor
+	}
+	logger := s.logger.WithSpan(span)
+	logger.WithValue("table_pagination", map[string]interface{}{
+		"cursor":                   pagination.Cursor,
+		"previousCursor":           pagination.PreviousCursor,
+		"appliedCursor":            appliedCursorStr,
+		"hasAppliedFilter":         pagination.AppliedQueryFilter != nil,
+		"appliedFilterCursorIsNil": pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor == nil,
+		"appliedFilterCursorValue": appliedCursorStr,
+	}).Info("Pagination object being passed to table component (search)")
+
+	// Use search endpoint for pagination buttons to return just the table content
+	// The main page URL is used for deep linking via hx-push-url
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_ingredients/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredients", queryFilter)
 
 	// Generate just the table (not the full page)
 	if len(validIngredientsRes.Results) == 0 {
 		searchQuery := req.URL.Query().Get("search")
+
+		// Check if we're on a paginated page (not page 1) - if so, we need to show pagination controls
+		var isOnPage2Plus bool
+		if pagination != nil && pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor != nil {
+			cursorValue := strings.TrimSpace(*pagination.AppliedQueryFilter.Cursor)
+			isOnPage2Plus = cursorValue != ""
+		}
+		hasPrevious := (pagination != nil && strings.TrimSpace(pagination.PreviousCursor) != "") || isOnPage2Plus
+
+		// If we're on a paginated page, include pagination controls
+		if hasPrevious && pagination != nil {
+			paginationControls := components.CreatePaginationControls(&components.TableOptions[*mealplanningsvc.ValidIngredient]{
+				Pagination:             pagination,
+				PaginationURLGenerator: paginationURLGenerator,
+				DeepLinkURLGenerator:   deepLinkURLGenerator,
+				PaginationHTMXTarget:   "#search-results",
+			}, &design.StandardPalette)
+
+			return g.El("div",
+				g.Attr("class", "overflow-x-auto"),
+				components.EmptyState(
+					"No valid ingredients found",
+					fmt.Sprintf("No valid ingredients match the search term '%s'.", searchQuery),
+					&design.StandardPalette,
+					[]g.Node{},
+				),
+				paginationControls,
+			), nil
+		}
+
+		// Otherwise, just show empty state (we're on page 1)
 		return g.El("div",
 			g.Attr("class", "overflow-x-auto"),
 			components.EmptyState(
@@ -540,6 +595,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,
+		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
 			return fmt.Sprintf("/valid_ingredients/%s", data.ID)

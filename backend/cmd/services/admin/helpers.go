@@ -88,38 +88,67 @@ func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *
 		return nil
 	}
 
-	pagination := &filtering.Pagination{
-		Cursor:          grpcPagination.Cursor,
-		MaxResponseSize: uint8(grpcPagination.MaxResponseSize),
-		FilteredCount:   grpcPagination.FilteredCount,
-		TotalCount:      grpcPagination.TotalCount,
+	// Convert AppliedQueryFilter from gRPC to internal format
+	var appliedQueryFilter *filtering.QueryFilter
+	if grpcPagination.AppliedQueryFilter != nil {
+		appliedQueryFilter = grpcconverters.ConvertGRPCQueryFilterToQueryFilter(grpcPagination.AppliedQueryFilter)
 	}
 
-	// Use PreviousCursor directly from the gRPC response if available
-	// The backend service layer correctly sets PreviousCursor based on the input filter
-	if grpcPagination.PreviousCursor != "" {
-		pagination.PreviousCursor = grpcPagination.PreviousCursor
-	} else {
-		// If PreviousCursor is not set in the response, it means we're on the first page
-		// or the backend didn't set it. In this case, we should not derive it from
-		// AppliedQueryFilter.Cursor because that represents the cursor used to GET to this page,
-		// not necessarily the previous cursor for navigation.
-		// Only use AppliedQueryFilter.Cursor as a fallback if it's explicitly different from Cursor
-		// and PreviousCursor is empty (indicating backend didn't set it properly)
-		if grpcPagination.AppliedQueryFilter != nil &&
-			grpcPagination.AppliedQueryFilter.Cursor != nil {
-			appliedCursor := *grpcPagination.AppliedQueryFilter.Cursor
-			// Only use AppliedQueryFilter.Cursor if it's different from the current Cursor
-			// and non-empty (meaning we navigated here with a cursor)
-			if appliedCursor != "" && appliedCursor != grpcPagination.Cursor {
-				pagination.PreviousCursor = appliedCursor
+	pagination := &filtering.Pagination{
+		Cursor:             grpcPagination.Cursor,
+		MaxResponseSize:    uint8(grpcPagination.MaxResponseSize),
+		FilteredCount:      grpcPagination.FilteredCount,
+		TotalCount:         grpcPagination.TotalCount,
+		AppliedQueryFilter: appliedQueryFilter,
+	}
+
+	// Diagnostic logging
+	var appliedCursorStr string
+	if appliedQueryFilter != nil && appliedQueryFilter.Cursor != nil {
+		appliedCursorStr = *appliedQueryFilter.Cursor
+	}
+	fmt.Printf("[PAGINATION BUILD DEBUG] grpcPreviousCursor='%s', appliedCursor='%s', grpcCursor='%s'\n",
+		grpcPagination.PreviousCursor, appliedCursorStr, grpcPagination.Cursor)
+
+	// Determine PreviousCursor for navigation:
+	// Cursor-based pagination limitation: We can only go back one page without cursor history.
+	//
+	// The backend's PreviousCursor is set to the input filter's cursor (the cursor used to get to this page),
+	// which is the same as AppliedCursor. This means:
+	// - On page 2: AppliedCursor = cursor from page 1, PreviousCursor = cursor from page 1
+	// - On page 3: AppliedCursor = cursor from page 2, PreviousCursor = cursor from page 2
+	//
+	// To go back:
+	// - From page 2 to page 1: need empty cursor (we can detect this: if AppliedCursor exists, we're on page 2+)
+	// - From page 3 to page 2: need cursor from page 1 (but we don't have it - this is the limitation)
+	//
+	// Current workaround: Only support going back from page 2 to page 1.
+	// For page 3+, backward navigation is disabled (PreviousCursor is empty).
+	//
+	// TODO: Backend should provide cursor history or a way to get the previous page's cursor.
+	if appliedQueryFilter != nil && appliedQueryFilter.Cursor != nil {
+		appliedCursor := *appliedQueryFilter.Cursor
+		if appliedCursor != "" {
+			// We're on page 2+ (navigated here with a cursor)
+			// Only support going back from page 2 to page 1.
+			// We detect page 2 by checking if PreviousCursor equals AppliedCursor (both are cursor from page 1).
+			// For page 3+, PreviousCursor equals AppliedCursor (both are cursor from page 2),
+			// but we can't go back because we don't have the cursor from page 1.
+			if grpcPagination.PreviousCursor != "" && grpcPagination.PreviousCursor == appliedCursor {
+				// Likely page 2: can go back to page 1 with empty cursor
+				pagination.PreviousCursor = ""
 			} else {
+				// Page 3+: Can't determine previous page cursor, disable backward navigation
+				// TODO: Backend should provide cursor history
 				pagination.PreviousCursor = ""
 			}
 		} else {
-			// No cursor in AppliedQueryFilter means first page
+			// No cursor was used, so we're on the first page
 			pagination.PreviousCursor = ""
 		}
+	} else {
+		// No AppliedQueryFilter means we're on the first page
+		pagination.PreviousCursor = ""
 	}
 
 	return pagination
@@ -127,13 +156,14 @@ func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *
 
 // buildPaginationURLGenerator creates a reusable PaginationURLGenerator function that preserves
 // query parameters (like search) and adds the cursor for pagination.
+// This uses the main page URL for deep linking.
 func buildPaginationURLGenerator(req *http.Request, baseURL string, queryFilter *filtering.QueryFilter) components.PaginationURLGenerator {
 	return func(cursor string) string {
 		queryParams := url.Values{}
 
 		// Preserve existing query parameters from the request
 		for key, values := range req.URL.Query() {
-			// Skip cursor as we'll set it fresh
+			// Skip cursor as we'll set it fresh (or omit it if empty)
 			if key == "cursor" {
 				continue
 			}
@@ -143,8 +173,10 @@ func buildPaginationURLGenerator(req *http.Request, baseURL string, queryFilter 
 			}
 		}
 
-		// Add cursor
-		queryParams.Set("cursor", cursor)
+		// Only add cursor if it's non-empty (empty cursor means go to first page)
+		if cursor != "" {
+			queryParams.Set("cursor", cursor)
+		}
 
 		// Ensure limit is included if it was in the original filter
 		if queryFilter != nil && queryFilter.Limit != nil {
@@ -152,5 +184,37 @@ func buildPaginationURLGenerator(req *http.Request, baseURL string, queryFilter 
 		}
 
 		return baseURL + "?" + queryParams.Encode()
+	}
+}
+
+// buildPaginationURLGeneratorForSearch creates a PaginationURLGenerator that uses the search endpoint.
+// This is used for HTMX pagination buttons to return just the table content.
+func buildPaginationURLGeneratorForSearch(req *http.Request, searchEndpoint string, queryFilter *filtering.QueryFilter) components.PaginationURLGenerator {
+	return func(cursor string) string {
+		queryParams := url.Values{}
+
+		// Preserve existing query parameters from the request
+		for key, values := range req.URL.Query() {
+			// Skip cursor as we'll set it fresh (or omit it if empty)
+			if key == "cursor" {
+				continue
+			}
+			// Preserve all other params (search, limit, etc.)
+			for _, value := range values {
+				queryParams.Add(key, value)
+			}
+		}
+
+		// Only add cursor if it's non-empty (empty cursor means go to first page)
+		if cursor != "" {
+			queryParams.Set("cursor", cursor)
+		}
+
+		// Ensure limit is included if it was in the original filter
+		if queryFilter != nil && queryFilter.Limit != nil {
+			queryParams.Set("limit", fmt.Sprintf("%d", *queryFilter.Limit))
+		}
+
+		return searchEndpoint + "?" + queryParams.Encode()
 	}
 }

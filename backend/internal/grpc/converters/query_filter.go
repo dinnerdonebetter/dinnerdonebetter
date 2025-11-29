@@ -33,10 +33,15 @@ func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagina
 		qf = filtering.DefaultQueryFilter()
 	}
 
-	// Use the cursor from the result pagination if available (for next page), otherwise use the filter's cursor
+	// For AppliedQueryFilter, we should use the filter's cursor (the cursor that was used to get to this page),
+	// NOT the result pagination's cursor (which is the next page cursor).
+	// The resultPagination parameter is only used for other purposes, not for setting AppliedQueryFilter.Cursor.
 	cursor := qf.Cursor
-	if resultPagination.Cursor != "" {
-		cursor = pointer.To(resultPagination.Cursor)
+	
+	// Safeguard: If the filter's cursor matches the result pagination's cursor (both pointing to next page),
+	// it means we're on page 1 (no cursor was used to get here), so set cursor to nil.
+	if cursor != nil && resultPagination.Cursor != "" && *cursor == resultPagination.Cursor {
+		cursor = nil
 	}
 
 	f := &grpcfiltering.QueryFilter{
@@ -56,12 +61,19 @@ func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagina
 }
 
 func ConvertPaginationToGRPCPagination(pagination filtering.Pagination, qf *filtering.QueryFilter) *grpcfiltering.Pagination {
-	if qf == nil {
-		qf = filtering.DefaultQueryFilter()
+	// Use AppliedQueryFilter from pagination if it exists (it's what was actually applied),
+	// otherwise fall back to the qf parameter
+	appliedFilter := pagination.AppliedQueryFilter
+	if appliedFilter == nil {
+		if qf == nil {
+			appliedFilter = filtering.DefaultQueryFilter()
+		} else {
+			appliedFilter = qf
+		}
 	}
 
 	f := &grpcfiltering.Pagination{
-		AppliedQueryFilter: ConvertQueryFilterToGRPCQueryFilter(qf, pagination),
+		AppliedQueryFilter: ConvertQueryFilterToGRPCQueryFilter(appliedFilter, pagination),
 		Cursor:             pagination.Cursor,
 		FilteredCount:      pagination.FilteredCount,
 		TotalCount:         pagination.TotalCount,

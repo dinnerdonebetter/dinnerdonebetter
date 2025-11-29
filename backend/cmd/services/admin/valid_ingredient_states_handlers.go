@@ -289,8 +289,10 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validIngredientStatesRes.Pagination)
-	// Use search endpoint for pagination to return just the table, not the full page
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredient_states/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_ingredient_states/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredient_states", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredientState]{
@@ -324,6 +326,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
+			DeepLinkURLGenerator:   deepLinkURLGenerator,
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
@@ -381,7 +384,10 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validIngredientStatesRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_ingredient_states/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_ingredient_states/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_ingredient_states", queryFilter)
 
 	// Generate just the table (not the full page)
 	if len(validIngredientStatesRes.Results) == 0 {
@@ -417,6 +423,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,
+		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
 			return fmt.Sprintf("/valid_ingredient_states/%s", data.ID)

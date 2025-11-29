@@ -309,8 +309,10 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validVesselsRes.Pagination)
-	// Use search endpoint for pagination to return just the table, not the full page
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_vessels/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_vessels/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_vessels", queryFilter)
 
 	// Use the integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidVessel]{
@@ -351,6 +353,7 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
+			DeepLinkURLGenerator:   deepLinkURLGenerator,
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
@@ -408,7 +411,10 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(validVesselsRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/valid_vessels/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/valid_vessels/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/valid_vessels", queryFilter)
 
 	// Generate just the table (not the full page)
 	if len(validVesselsRes.Results) == 0 {
@@ -451,6 +457,7 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,
+		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
 			return fmt.Sprintf("/valid_vessels/%s", data.ID)

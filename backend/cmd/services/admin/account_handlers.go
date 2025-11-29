@@ -334,8 +334,10 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(accountsRes.Pagination)
-	// Use search endpoint for pagination to return just the table, not the full page
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/accounts/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/accounts/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/accounts", queryFilter)
 
 	// Use the new integrated TablePage component
 	tablePageResult, err := components.TablePage(&components.TablePageProps[*identitysvc.Account]{
@@ -372,6 +374,7 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
+			DeepLinkURLGenerator:   deepLinkURLGenerator,
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.Account) string {
@@ -427,7 +430,10 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 
 	// Build pagination from response
 	pagination := buildPaginationFromGRPCResponse(accountsRes.Pagination)
-	paginationURLGenerator := buildPaginationURLGenerator(req, "/api/accounts/search", queryFilter)
+	// Use main page URL for pagination to enable deep linking
+	// HTMX will handle partial updates via the target selector
+	paginationURLGenerator := buildPaginationURLGeneratorForSearch(req, "/api/accounts/search", queryFilter)
+	deepLinkURLGenerator := buildPaginationURLGenerator(req, "/accounts", queryFilter)
 
 	// Generate just the table (not the full page)
 	if len(accountsRes.Results) == 0 {
@@ -470,6 +476,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,
+		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.Account) string {
 			return fmt.Sprintf("/accounts/%s", data.ID)

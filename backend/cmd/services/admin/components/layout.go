@@ -19,6 +19,7 @@ type ContentContainerProps struct {
 	HTMXSearchTrigger string
 	Actions           []g.Node
 	ShowSearch        bool
+	PageSizeSelector  g.Node // Optional page size selector to show between search and actions
 }
 
 // ContentContainer creates a responsive content container with optional search
@@ -61,6 +62,11 @@ func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 			}),
 		)
 		headerContent = append(headerContent, searchSection)
+	}
+
+	// Page size selector (if provided) - between search and actions
+	if props.PageSizeSelector != nil {
+		headerContent = append(headerContent, props.PageSizeSelector)
 	}
 
 	// Actions section - takes only needed space

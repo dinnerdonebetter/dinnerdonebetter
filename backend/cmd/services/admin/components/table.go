@@ -25,6 +25,50 @@ type RowLinkGenerator[T any] func(item T) string
 // PaginationURLGenerator is a function type that generates a URL for pagination with the given cursor
 type PaginationURLGenerator func(cursor string) string
 
+// CreatePageSizeSelector creates a page size selector dropdown that uses the search endpoint
+func CreatePageSizeSelector(searchEndpoint string, currentLimit uint8, tableID string, palette *design.Palette) g.Node {
+	if palette == nil {
+		palette = &design.StandardPalette
+	}
+
+	pageSizeOptions := []uint8{25, 50, 100, 250}
+
+	var optionNodes []g.Node
+	for _, size := range pageSizeOptions {
+		optionNodes = append(optionNodes,
+			ghtml.Option(
+				g.If(size == currentLimit, ghtml.Selected()),
+				g.Attr("value", fmt.Sprintf("%d", size)),
+				g.Text(fmt.Sprintf("%d", size)),
+			),
+		)
+	}
+
+	selectID := fmt.Sprintf("%s-page-size", tableID)
+
+	return ghtml.Div(
+		ghtml.Class("flex items-center gap-2 mr-4"),
+		ghtml.Label(
+			ghtml.Class("text-sm text-gray-600 whitespace-nowrap"),
+			g.Text("Show:"),
+		),
+		ghtml.Select(
+			ghtml.Class("px-2 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"),
+			g.Attr("name", "limit"),
+			g.Attr("id", selectID),
+			g.Attr("hx-get", searchEndpoint),
+			g.Attr("hx-target", "#search-results"),
+			g.Attr("hx-swap", "innerHTML"),
+			g.Attr("hx-push-url", "true"),
+			g.Attr("hx-trigger", "change"),
+			// Include the search input value to preserve search query
+			g.Attr("hx-include", "#search"),
+			g.Attr("hx-vals", "js:{limit: this.value}"),
+			g.Group(optionNodes),
+		),
+	)
+}
+
 // TableOptions holds configuration options for the table
 type TableOptions[T any] struct {
 	FieldRenderers         map[string]FieldRenderer
@@ -33,6 +77,7 @@ type TableOptions[T any] struct {
 	RowLinkGenerator       RowLinkGenerator[T]
 	Pagination             *filtering.Pagination
 	PaginationURLGenerator PaginationURLGenerator
+	DeepLinkURLGenerator   PaginationURLGenerator // Optional: generates main page URL for deep linking (hx-push-url)
 	TableID                string
 	CSSClasses             string
 	PaginationHTMXTarget   string
@@ -221,7 +266,7 @@ func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 	}
 
 	// Create pagination controls if pagination info is provided
-	paginationNode := createPaginationControls(options, palette)
+	paginationNode := CreatePaginationControls(options, palette)
 
 	// If there's pagination, wrap both table and pagination in a container
 	if paginationNode != nil {
@@ -528,27 +573,42 @@ func camelCaseToTitleCase(s string) string {
 	return result.String()
 }
 
-// createPaginationControls creates pagination controls if pagination information is available
-func createPaginationControls[T any](options *TableOptions[T], palette *design.Palette) g.Node {
+// CreatePaginationControls creates pagination controls if pagination information is available
+func CreatePaginationControls[T any](options *TableOptions[T], palette *design.Palette) g.Node {
 	if options.Pagination == nil {
 		return nil
 	}
 
 	pagination := options.Pagination
 	hasMore := pagination.Cursor != ""
-	// Only show Previous button if PreviousCursor is explicitly set and non-empty
-	// On the first page, PreviousCursor should be empty string, so this will be false
-	hasPrevious := strings.TrimSpace(pagination.PreviousCursor) != ""
+	// Determine if we're on page 2+:
+	// On page 1, AppliedQueryFilter.Cursor should be nil (no cursor was used to get here).
+	// On page 2+, AppliedQueryFilter.Cursor should be non-empty (the cursor used to get here).
+	var isOnPage2Plus bool
+	var appliedCursorValue string
+	if pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor != nil {
+		appliedCursorValue = *pagination.AppliedQueryFilter.Cursor
+		cursorValue := strings.TrimSpace(appliedCursorValue)
+		// If AppliedQueryFilter.Cursor is non-empty, we navigated here with a cursor (page 2+)
+		isOnPage2Plus = cursorValue != ""
+	}
+	hasPrevious := strings.TrimSpace(pagination.PreviousCursor) != "" || isOnPage2Plus
+
+	// Diagnostic logging
+	fmt.Printf("[PAGINATION DEBUG] PreviousCursor='%s', AppliedCursor='%s', Cursor='%s', isOnPage2Plus=%v, hasPrevious=%v, hasMore=%v\n",
+		pagination.PreviousCursor, appliedCursorValue, pagination.Cursor, isOnPage2Plus, hasPrevious, hasMore)
 
 	// Build pagination info text
+	// Show the page size (MaxResponseSize) as the number being shown, not the total filtered count
 	var infoText string
 	if pagination.FilteredCount > 0 || pagination.TotalCount > 0 {
+		pageSize := int(pagination.MaxResponseSize)
 		if pagination.FilteredCount == pagination.TotalCount {
-			// No filters applied, show total count
-			infoText = fmt.Sprintf("Showing %d of %d total", pagination.FilteredCount, pagination.TotalCount)
+			// No filters applied, show page size and total count
+			infoText = fmt.Sprintf("Showing %d of %d total", pageSize, pagination.TotalCount)
 		} else {
-			// Filters applied, show both filtered and total
-			infoText = fmt.Sprintf("Showing %d filtered of %d total", pagination.FilteredCount, pagination.TotalCount)
+			// Filters applied, show page size, filtered count, and total count
+			infoText = fmt.Sprintf("Showing %d of %d filtered (of %d total)", pageSize, pagination.FilteredCount, pagination.TotalCount)
 		}
 	}
 
@@ -566,47 +626,50 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 	var leftButtons []g.Node
 	var rightButtons []g.Node
 
-	// Add "Previous" button if there's a previous cursor
-	// Only show if PreviousCursor is non-empty (not on first page)
-	if hasPrevious && pagination.PreviousCursor != "" && options.PaginationURLGenerator != nil {
-		prevURL := options.PaginationURLGenerator(pagination.PreviousCursor)
-		if prevURL != "" && pagination.PreviousCursor != "" {
-			// Ensure cursor is in the URL
-			parsedURL, parseErr := url.Parse(prevURL)
-			if parseErr == nil {
-				query := parsedURL.Query()
-				// Only add cursor if it's not already present
-				if query.Get("cursor") == "" {
-					query.Set("cursor", pagination.PreviousCursor)
-					parsedURL.RawQuery = query.Encode()
-					prevURL = parsedURL.String()
-				}
-			} else {
-				// If URL parsing fails, append cursor as query param only if not already present
-				if !strings.Contains(prevURL, "cursor=") {
-					if strings.Contains(prevURL, "?") {
-						prevURL += "&cursor=" + url.QueryEscape(pagination.PreviousCursor)
-					} else {
-						prevURL += "?cursor=" + url.QueryEscape(pagination.PreviousCursor)
-					}
-				}
-			}
+	// Add "Previous" button if we can go back
+	// Only show if we're actually on page 2+ (isOnPage2Plus is true) OR PreviousCursor is non-empty
+	// Don't show on page 1 (where both PreviousCursor is empty AND isOnPage2Plus is false)
+	if hasPrevious && options.PaginationURLGenerator != nil {
+		// Double-check: if we don't have a PreviousCursor and we're not on page 2+, don't show the button
+		if pagination.PreviousCursor == "" && !isOnPage2Plus {
+			// We're on page 1, don't show Previous button - skip rendering
+			fmt.Printf("[PAGINATION DEBUG] Skipping Previous button - on page 1 (PreviousCursor='%s', isOnPage2Plus=%v)\n",
+				pagination.PreviousCursor, isOnPage2Plus)
+		} else {
+			fmt.Printf("[PAGINATION DEBUG] Rendering Previous button (PreviousCursor='%s', isOnPage2Plus=%v)\n",
+				pagination.PreviousCursor, isOnPage2Plus)
+			// Use PreviousCursor directly - it's already set correctly by buildPaginationFromGRPCResponse
+			// - Empty string means go to page 1
+			// - Non-empty means go to the previous page using that cursor
+			prevCursor := pagination.PreviousCursor
+			prevURL := options.PaginationURLGenerator(prevCursor)
+			if prevURL != "" {
+				// The URL generator already handles empty cursors correctly (omits the parameter),
+				// so we don't need to add it here. The generator will create a URL without cursor
+				// when prevCursor is empty, which is what we want to go back to page 1.
 
-			leftButtons = append(leftButtons,
-				ghtml.Button(
-					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
-						design.TextColor(design.Color{Value: "white"}),
-						design.Background(palette.Primary),
-						design.Background(design.Color{Value: palette.Primary.Value + "-700"}),
-						palette.Primary.Value,
-					)),
-					g.Attr("hx-get", prevURL),
-					g.Attr("hx-target", htmxTarget),
-					g.Attr("hx-swap", "innerHTML"),
-					g.Attr("hx-push-url", "false"),
-					g.Text("Previous"),
-				),
-			)
+				// Use deep link URL for hx-push-url if available, otherwise use the request URL
+				pushURL := prevURL
+				if options.DeepLinkURLGenerator != nil {
+					pushURL = options.DeepLinkURLGenerator(prevCursor)
+				}
+
+				leftButtons = append(leftButtons,
+					ghtml.Button(
+						ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
+							design.TextColor(design.Color{Value: "white"}),
+							design.Background(palette.Primary),
+							design.Background(design.Color{Value: palette.Primary.Value + "-700"}),
+							palette.Primary.Value,
+						)),
+						g.Attr("hx-get", prevURL),
+						g.Attr("hx-target", htmxTarget),
+						g.Attr("hx-swap", "innerHTML"),
+						g.Attr("hx-push-url", pushURL),
+						g.Text("Previous"),
+					),
+				)
+			}
 		}
 	}
 
@@ -635,6 +698,12 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 				}
 			}
 
+			// Use deep link URL for hx-push-url if available, otherwise use the request URL
+			pushURL := nextURL
+			if options.DeepLinkURLGenerator != nil {
+				pushURL = options.DeepLinkURLGenerator(pagination.Cursor)
+			}
+
 			rightButtons = append(rightButtons,
 				ghtml.Button(
 					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
@@ -646,7 +715,7 @@ func createPaginationControls[T any](options *TableOptions[T], palette *design.P
 					g.Attr("hx-get", nextURL),
 					g.Attr("hx-target", htmxTarget),
 					g.Attr("hx-swap", "innerHTML"),
-					g.Attr("hx-push-url", "false"),
+					g.Attr("hx-push-url", pushURL),
 					g.Text("Load More"),
 				),
 			)
