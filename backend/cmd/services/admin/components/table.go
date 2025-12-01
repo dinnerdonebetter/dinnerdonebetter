@@ -581,22 +581,6 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 
 	pagination := options.Pagination
 	hasMore := pagination.Cursor != ""
-	// Determine if we're on page 2+:
-	// On page 1, AppliedQueryFilter.Cursor should be nil (no cursor was used to get here).
-	// On page 2+, AppliedQueryFilter.Cursor should be non-empty (the cursor used to get here).
-	var isOnPage2Plus bool
-	var appliedCursorValue string
-	if pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor != nil {
-		appliedCursorValue = *pagination.AppliedQueryFilter.Cursor
-		cursorValue := strings.TrimSpace(appliedCursorValue)
-		// If AppliedQueryFilter.Cursor is non-empty, we navigated here with a cursor (page 2+)
-		isOnPage2Plus = cursorValue != ""
-	}
-	hasPrevious := strings.TrimSpace(pagination.PreviousCursor) != "" || isOnPage2Plus
-
-	// Diagnostic logging
-	fmt.Printf("[PAGINATION DEBUG] PreviousCursor='%s', AppliedCursor='%s', Cursor='%s', isOnPage2Plus=%v, hasPrevious=%v, hasMore=%v\n",
-		pagination.PreviousCursor, appliedCursorValue, pagination.Cursor, isOnPage2Plus, hasPrevious, hasMore)
 
 	// Build pagination info text
 	// Show the page size (MaxResponseSize) as the number being shown, not the total filtered count
@@ -612,8 +596,8 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 		}
 	}
 
-	// If there's no more data, no previous, and no counts to show, don't render pagination
-	if !hasMore && !hasPrevious && infoText == "" {
+	// If there's no more data and no counts to show, don't render pagination
+	if !hasMore && infoText == "" {
 		return nil
 	}
 
@@ -623,55 +607,7 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 		htmxTarget = "#search-results"
 	}
 
-	var leftButtons []g.Node
 	var rightButtons []g.Node
-
-	// Add "Previous" button if we can go back
-	// Only show if we're actually on page 2+ (isOnPage2Plus is true) OR PreviousCursor is non-empty
-	// Don't show on page 1 (where both PreviousCursor is empty AND isOnPage2Plus is false)
-	if hasPrevious && options.PaginationURLGenerator != nil {
-		// Double-check: if we don't have a PreviousCursor and we're not on page 2+, don't show the button
-		if pagination.PreviousCursor == "" && !isOnPage2Plus {
-			// We're on page 1, don't show Previous button - skip rendering
-			fmt.Printf("[PAGINATION DEBUG] Skipping Previous button - on page 1 (PreviousCursor='%s', isOnPage2Plus=%v)\n",
-				pagination.PreviousCursor, isOnPage2Plus)
-		} else {
-			fmt.Printf("[PAGINATION DEBUG] Rendering Previous button (PreviousCursor='%s', isOnPage2Plus=%v)\n",
-				pagination.PreviousCursor, isOnPage2Plus)
-			// Use PreviousCursor directly - it's already set correctly by buildPaginationFromGRPCResponse
-			// - Empty string means go to page 1
-			// - Non-empty means go to the previous page using that cursor
-			prevCursor := pagination.PreviousCursor
-			prevURL := options.PaginationURLGenerator(prevCursor)
-			if prevURL != "" {
-				// The URL generator already handles empty cursors correctly (omits the parameter),
-				// so we don't need to add it here. The generator will create a URL without cursor
-				// when prevCursor is empty, which is what we want to go back to page 1.
-
-				// Use deep link URL for hx-push-url if available, otherwise use the request URL
-				pushURL := prevURL
-				if options.DeepLinkURLGenerator != nil {
-					pushURL = options.DeepLinkURLGenerator(prevCursor)
-				}
-
-				leftButtons = append(leftButtons,
-					ghtml.Button(
-						ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-%s transition-colors",
-							design.TextColor(design.Color{Value: "white"}),
-							design.Background(palette.Primary),
-							design.Background(design.Color{Value: palette.Primary.Value + "-700"}),
-							palette.Primary.Value,
-						)),
-						g.Attr("hx-get", prevURL),
-						g.Attr("hx-target", htmxTarget),
-						g.Attr("hx-swap", "innerHTML"),
-						g.Attr("hx-push-url", pushURL),
-						g.Text("Previous"),
-					),
-				)
-			}
-		}
-	}
 
 	// Add "Load More" button if there's a next cursor
 	if hasMore && options.PaginationURLGenerator != nil {
@@ -684,11 +620,11 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 				// Only add cursor if it's not already present
 				if query.Get("cursor") == "" {
 					query.Set("cursor", pagination.Cursor)
-					parsedURL.RawQuery = query.Encode()
-					nextURL = parsedURL.String()
 				}
+				parsedURL.RawQuery = query.Encode()
+				nextURL = parsedURL.String()
 			} else {
-				// If URL parsing fails, append cursor as query param only if not already present
+				// If URL parsing fails, append cursor as query param
 				if !strings.Contains(nextURL, "cursor=") {
 					if strings.Contains(nextURL, "?") {
 						nextURL += "&cursor=" + url.QueryEscape(pagination.Cursor)
@@ -722,21 +658,10 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 		}
 	}
 
-	// Build children array with left buttons, info text, and right buttons
+	// Build children array with info text and right buttons
 	var children []g.Node
 
-	// Add left buttons (Previous)
-	if len(leftButtons) > 0 {
-		children = append(children, ghtml.Div(
-			ghtml.Class("flex items-center gap-2"),
-			g.Group(leftButtons),
-		))
-	} else {
-		// Add empty div to maintain spacing
-		children = append(children, ghtml.Div())
-	}
-
-	// Add info text in the center
+	// Add info text
 	if infoText != "" {
 		children = append(children,
 			ghtml.Div(
@@ -752,9 +677,6 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 			ghtml.Class("flex items-center gap-2"),
 			g.Group(rightButtons),
 		))
-	} else {
-		// Add empty div to maintain spacing
-		children = append(children, ghtml.Div())
 	}
 
 	// If there are no children, don't render anything
@@ -762,7 +684,7 @@ func CreatePaginationControls[T any](options *TableOptions[T], palette *design.P
 		return nil
 	}
 
-	// Create pagination container with three sections: left buttons, info, right buttons
+	// Create pagination container with info and right buttons
 	return ghtml.Div(
 		ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
 		g.Group(children),

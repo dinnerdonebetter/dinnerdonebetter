@@ -43,6 +43,15 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 
 	account := accountsRes.Result
 
+	// Build billing status options with IsDefault set based on account's current status
+	currentBillingStatus := account.BillingStatus
+	billingStatusOptions := []components.SelectOption{
+		{Value: identity.UnpaidAccountBillingStatus, Label: "Unpaid", IsDefault: currentBillingStatus == identity.UnpaidAccountBillingStatus || currentBillingStatus == ""},
+		{Value: identity.PaidAccountBillingStatus, Label: "Paid", IsDefault: currentBillingStatus == identity.PaidAccountBillingStatus},
+		{Value: identity.TrialAccountBillingStatus, Label: "Trial", IsDefault: currentBillingStatus == identity.TrialAccountBillingStatus},
+		{Value: identity.SuspendedAccountBillingStatus, Label: "Suspended", IsDefault: currentBillingStatus == identity.SuspendedAccountBillingStatus},
+	}
+
 	// Use the new FormPage component for editing account data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*identitysvc.Account]{
 		Title:        "Account Details",
@@ -58,7 +67,8 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 			// that should be editable even when they already have a value.
 			// Empty/zero-value fields are automatically editable.
 			EnabledFields: []string{
-				"Name", // Always editable, even if it has a value
+				"Name",
+				"BillingStatus",
 			},
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -71,12 +81,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 					Placeholder: "Enter contact phone number...",
 				},
 				"BillingStatus": {
-					Options: []components.SelectOption{
-						{Value: identity.UnpaidAccountBillingStatus, Label: "Unpaid", IsDefault: true},
-						{Value: identity.PaidAccountBillingStatus, Label: "Paid"},
-						{Value: identity.TrialAccountBillingStatus, Label: "Trial"},
-						{Value: identity.SuspendedAccountBillingStatus, Label: "Suspended"},
-					},
+					Options:     billingStatusOptions,
 					Placeholder: "Select billing status...",
 					Validation: &components.FieldValidation{
 						Required:      true,

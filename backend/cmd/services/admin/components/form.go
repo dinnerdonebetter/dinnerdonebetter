@@ -579,7 +579,7 @@ func buildSelectClasses(palette *design.Palette) string {
 		p := design.StandardPalette
 		palette = &p
 	}
-	return fmt.Sprintf("block w-full px-3 py-2 border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
+	return fmt.Sprintf("block w-full px-3 py-2 bg-white border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
 		design.BorderColor(palette.Background),
 		palette.Primary.Value,
 		palette.Primary.Value,
@@ -715,7 +715,7 @@ func buildInputClasses(palette *design.Palette) string {
 		p := design.StandardPalette
 		palette = &p
 	}
-	return fmt.Sprintf("block w-full px-3 py-2 border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
+	return fmt.Sprintf("block w-full px-3 py-2 bg-white border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
 		design.BorderColor(palette.Background),
 		palette.Primary.Value,
 		palette.Primary.Value,

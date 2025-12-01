@@ -82,7 +82,7 @@ func buildQueryFilterFromRequest(req *http.Request) (*filtering.QueryFilter, *gr
 }
 
 // buildPaginationFromGRPCResponse constructs a Pagination object from a gRPC Pagination response.
-// It extracts cursor, counts, max response size, and previous cursor from the service response.
+// It extracts cursor, counts, and max response size from the service response.
 func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *filtering.Pagination {
 	if grpcPagination == nil {
 		return nil
@@ -102,55 +102,6 @@ func buildPaginationFromGRPCResponse(grpcPagination *grpcfiltering.Pagination) *
 		AppliedQueryFilter: appliedQueryFilter,
 	}
 
-	// Diagnostic logging
-	var appliedCursorStr string
-	if appliedQueryFilter != nil && appliedQueryFilter.Cursor != nil {
-		appliedCursorStr = *appliedQueryFilter.Cursor
-	}
-	fmt.Printf("[PAGINATION BUILD DEBUG] grpcPreviousCursor='%s', appliedCursor='%s', grpcCursor='%s'\n",
-		grpcPagination.PreviousCursor, appliedCursorStr, grpcPagination.Cursor)
-
-	// Determine PreviousCursor for navigation:
-	// Cursor-based pagination limitation: We can only go back one page without cursor history.
-	//
-	// The backend's PreviousCursor is set to the input filter's cursor (the cursor used to get to this page),
-	// which is the same as AppliedCursor. This means:
-	// - On page 2: AppliedCursor = cursor from page 1, PreviousCursor = cursor from page 1
-	// - On page 3: AppliedCursor = cursor from page 2, PreviousCursor = cursor from page 2
-	//
-	// To go back:
-	// - From page 2 to page 1: need empty cursor (we can detect this: if AppliedCursor exists, we're on page 2+)
-	// - From page 3 to page 2: need cursor from page 1 (but we don't have it - this is the limitation)
-	//
-	// Current workaround: Only support going back from page 2 to page 1.
-	// For page 3+, backward navigation is disabled (PreviousCursor is empty).
-	//
-	// TODO: Backend should provide cursor history or a way to get the previous page's cursor.
-	if appliedQueryFilter != nil && appliedQueryFilter.Cursor != nil {
-		appliedCursor := *appliedQueryFilter.Cursor
-		if appliedCursor != "" {
-			// We're on page 2+ (navigated here with a cursor)
-			// Only support going back from page 2 to page 1.
-			// We detect page 2 by checking if PreviousCursor equals AppliedCursor (both are cursor from page 1).
-			// For page 3+, PreviousCursor equals AppliedCursor (both are cursor from page 2),
-			// but we can't go back because we don't have the cursor from page 1.
-			if grpcPagination.PreviousCursor != "" && grpcPagination.PreviousCursor == appliedCursor {
-				// Likely page 2: can go back to page 1 with empty cursor
-				pagination.PreviousCursor = ""
-			} else {
-				// Page 3+: Can't determine previous page cursor, disable backward navigation
-				// TODO: Backend should provide cursor history
-				pagination.PreviousCursor = ""
-			}
-		} else {
-			// No cursor was used, so we're on the first page
-			pagination.PreviousCursor = ""
-		}
-	} else {
-		// No AppliedQueryFilter means we're on the first page
-		pagination.PreviousCursor = ""
-	}
-
 	return pagination
 }
 
@@ -163,7 +114,7 @@ func buildPaginationURLGenerator(req *http.Request, baseURL string, queryFilter 
 
 		// Preserve existing query parameters from the request
 		for key, values := range req.URL.Query() {
-			// Skip cursor as we'll set it fresh (or omit it if empty)
+			// Skip cursor as we'll set it fresh
 			if key == "cursor" {
 				continue
 			}
@@ -195,7 +146,7 @@ func buildPaginationURLGeneratorForSearch(req *http.Request, searchEndpoint stri
 
 		// Preserve existing query parameters from the request
 		for key, values := range req.URL.Query() {
-			// Skip cursor as we'll set it fresh (or omit it if empty)
+			// Skip cursor as we'll set it fresh
 			if key == "cursor" {
 				continue
 			}

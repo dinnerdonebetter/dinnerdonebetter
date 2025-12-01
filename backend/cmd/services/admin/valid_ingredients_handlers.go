@@ -512,7 +512,6 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 	logger := s.logger.WithSpan(span)
 	logger.WithValue("table_pagination", map[string]interface{}{
 		"cursor":                   pagination.Cursor,
-		"previousCursor":           pagination.PreviousCursor,
 		"appliedCursor":            appliedCursorStr,
 		"hasAppliedFilter":         pagination.AppliedQueryFilter != nil,
 		"appliedFilterCursorIsNil": pagination.AppliedQueryFilter != nil && pagination.AppliedQueryFilter.Cursor == nil,
@@ -534,10 +533,9 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 			cursorValue := strings.TrimSpace(*pagination.AppliedQueryFilter.Cursor)
 			isOnPage2Plus = cursorValue != ""
 		}
-		hasPrevious := (pagination != nil && strings.TrimSpace(pagination.PreviousCursor) != "") || isOnPage2Plus
 
 		// If we're on a paginated page, include pagination controls
-		if hasPrevious && pagination != nil {
+		if isOnPage2Plus && pagination != nil {
 			paginationControls := components.CreatePaginationControls(&components.TableOptions[*mealplanningsvc.ValidIngredient]{
 				Pagination:             pagination,
 				PaginationURLGenerator: paginationURLGenerator,
