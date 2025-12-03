@@ -186,7 +186,7 @@ lint: lint_containers queries_lint golang_lint
 
 .PHONY: configs
 configs:
-	$(CONTAINED_GO) run $(THIS)/cmd/tools/codegen/configs
+	go run $(THIS)/cmd/tools/codegen/configs
 
 .PHONY: queries
 queries:
