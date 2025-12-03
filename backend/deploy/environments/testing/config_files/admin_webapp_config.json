@@ -1,8 +1,11 @@
 {
 	"cookies": {
+		"domain": "",
 		"cookieName": " ",
 		"base64EncodedHashKey": " ",
-		"base64EncodedBlockKey": " "
+		"base64EncodedBlockKey": " ",
+		"lifetime": 0,
+		"secureOnly": false
 	},
 	"apiServiceConfig": {
 		"httpAPIServerURL": "",

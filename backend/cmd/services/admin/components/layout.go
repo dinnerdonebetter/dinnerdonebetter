@@ -11,6 +11,7 @@ import (
 
 // ContentContainerProps holds configuration for content containers
 type ContentContainerProps struct {
+	PageSizeSelector  g.Node
 	Palette           *design.Palette
 	Title             string
 	Subtitle          string
@@ -19,7 +20,6 @@ type ContentContainerProps struct {
 	HTMXSearchTrigger string
 	Actions           []g.Node
 	ShowSearch        bool
-	PageSizeSelector  g.Node // Optional page size selector to show between search and actions
 }
 
 // ContentContainer creates a responsive content container with optional search

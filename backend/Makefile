@@ -39,7 +39,7 @@ RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --w
 RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
 LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
 SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
-CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) $(GO_IMAGE) go
+CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) --env HOME=/home/gouser --volume $(HOME)/.cache/go:/home/gouser $(GO_IMAGE) go
 
 ## non-PHONY folders/files
 
