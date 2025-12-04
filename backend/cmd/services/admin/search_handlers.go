@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// SearchValidMeasurementUnits handles searching for valid measurement units
+// SearchValidMeasurementUnits handles searching for valid measurement units.
 func (s *AdminFrontendServer) SearchValidMeasurementUnits(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -43,7 +43,7 @@ func (s *AdminFrontendServer) SearchValidMeasurementUnits(_ http.ResponseWriter,
 		), nil
 	}
 
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, unit := range searchRes.Results {
 		extraInfo := ""
 		if unit.Metric {
@@ -58,7 +58,7 @@ func (s *AdminFrontendServer) SearchValidMeasurementUnits(_ http.ResponseWriter,
 			extraInfo += "Volumetric"
 		}
 
-		results = append(results, components.SearchResultItem{
+		results = append(results, &components.SearchResultItem{
 			ID:          unit.ID,
 			Name:        unit.Name,
 			Description: unit.Description,
@@ -89,7 +89,7 @@ func (s *AdminFrontendServer) SearchValidMeasurementUnits(_ http.ResponseWriter,
 	return components.SearchInputWithResults(searchBoxID, "/admin/search/valid_measurement_units", query, results, onSelectJS, &design.StandardPalette), nil
 }
 
-// SearchValidIngredients handles searching for valid ingredients
+// SearchValidIngredients handles searching for valid ingredients.
 func (s *AdminFrontendServer) SearchValidIngredients(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -120,9 +120,9 @@ func (s *AdminFrontendServer) SearchValidIngredients(_ http.ResponseWriter, req 
 		), nil
 	}
 
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, ingredient := range searchRes.Results {
-		results = append(results, components.SearchResultItem{
+		results = append(results, &components.SearchResultItem{
 			ID:          ingredient.ID,
 			Name:        ingredient.Name,
 			Description: ingredient.Description,

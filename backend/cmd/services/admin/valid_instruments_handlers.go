@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) ValidInstrumentCreate(res http.ResponseWriter, req
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidInstrumentCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Instrument", s.renderValidInstrumentsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -48,7 +48,7 @@ func (s *AdminFrontendServer) ValidInstrumentCreate(res http.ResponseWriter, req
 	instrumentID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_instruments/%s", instrumentID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidInstrumentNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -204,7 +204,7 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 				"UsableForStorage":               {InputType: "checkbox"},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PluralName"},
 					Columns: 2,
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Instruments", URL: "/valid_instruments"},
@@ -434,7 +434,7 @@ func (s *AdminFrontendServer) ValidInstrumentsSearch(_ http.ResponseWriter, req 
 	), nil
 }
 
-// renderValidInstrumentsError creates a consistent error display for the valid instruments page
+// renderValidInstrumentsError creates a consistent error display for the valid instruments page.
 func (s *AdminFrontendServer) renderValidInstrumentsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Instruments",

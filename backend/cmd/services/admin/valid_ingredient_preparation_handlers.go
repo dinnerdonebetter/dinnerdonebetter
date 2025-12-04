@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ValidIngredientPreparationsForIngredient lists all preparations associated with an ingredient
+// ValidIngredientPreparationsForIngredient lists all preparations associated with an ingredient.
 func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -22,7 +22,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No preparations associated with this ingredient.",
 		}), nil
 	}
@@ -32,7 +32,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -45,16 +45,16 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
@@ -77,7 +77,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 	}), nil
 }
 
-// ValidIngredientPreparationsForPreparation lists all ingredients associated with a preparation
+// ValidIngredientPreparationsForPreparation lists all ingredients associated with a preparation.
 func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -87,7 +87,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No ingredients associated with this preparation.",
 		}), nil
 	}
@@ -97,7 +97,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -110,16 +110,16 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Ingredient != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Ingredient.Name,
 				Description: assoc.Ingredient.Description,
@@ -142,7 +142,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 	}), nil
 }
 
-// SearchPreparationsForIngredient searches for preparations to add to an ingredient
+// SearchPreparationsForIngredient searches for preparations to add to an ingredient.
 func (s *AdminFrontendServer) SearchPreparationsForIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -174,10 +174,10 @@ func (s *AdminFrontendServer) SearchPreparationsForIngredient(_ http.ResponseWri
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          preparation.ID,
 				Name:        preparation.Name,
 				Description: preparation.Description,
@@ -194,7 +194,7 @@ func (s *AdminFrontendServer) SearchPreparationsForIngredient(_ http.ResponseWri
 	}), nil
 }
 
-// SearchIngredientsForPreparation searches for ingredients to add to a preparation
+// SearchIngredientsForPreparation searches for ingredients to add to a preparation.
 func (s *AdminFrontendServer) SearchIngredientsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -226,10 +226,10 @@ func (s *AdminFrontendServer) SearchIngredientsForPreparation(_ http.ResponseWri
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, ingredient := range searchRes.Results {
 		if contains(ingredient.Name, query) || contains(ingredient.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          ingredient.ID,
 				Name:        ingredient.Name,
 				Description: ingredient.Description,
@@ -246,7 +246,7 @@ func (s *AdminFrontendServer) SearchIngredientsForPreparation(_ http.ResponseWri
 	}), nil
 }
 
-// CreateIngredientPreparationFromIngredient creates an association from the ingredient side
+// CreateIngredientPreparationFromIngredient creates an association from the ingredient side.
 func (s *AdminFrontendServer) CreateIngredientPreparationFromIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -265,7 +265,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromIngredient(_ http.R
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -290,7 +290,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromIngredient(_ http.R
 	return s.ValidIngredientPreparationsForIngredient(nil, req)
 }
 
-// CreateIngredientPreparationFromPreparation creates an association from the preparation side
+// CreateIngredientPreparationFromPreparation creates an association from the preparation side.
 func (s *AdminFrontendServer) CreateIngredientPreparationFromPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -309,7 +309,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromPreparation(_ http.
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -334,7 +334,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromPreparation(_ http.
 	return s.ValidIngredientPreparationsForPreparation(nil, req)
 }
 
-// DeleteIngredientPreparation deletes an association
+// DeleteIngredientPreparation deletes an association.
 func (s *AdminFrontendServer) DeleteIngredientPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

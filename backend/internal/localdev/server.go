@@ -228,7 +228,7 @@ func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, initFuncs ...Da
 
 	// Run all database initialization functions
 	for i, initFunc := range initFuncs {
-		if err := initFunc(ctx, databaseClient, dbCfg, logger, tracerProvider); err != nil {
+		if err = initFunc(ctx, databaseClient, dbCfg, logger, tracerProvider); err != nil {
 			return nil, fmt.Errorf("running database init function %d: %w", i, err)
 		}
 	}

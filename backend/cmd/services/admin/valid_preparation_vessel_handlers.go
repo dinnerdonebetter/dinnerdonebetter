@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ValidPreparationVesselsForPreparation lists all vessels associated with a preparation
+// ValidPreparationVesselsForPreparation lists all vessels associated with a preparation.
 func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -22,7 +22,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Vessels",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No vessels associated with this preparation.",
 		}), nil
 	}
@@ -32,7 +32,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Vessels",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -45,16 +45,16 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Vessels",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Vessel != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Vessel.Name,
 				Description: assoc.Vessel.Description,
@@ -77,7 +77,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 	}), nil
 }
 
-// ValidPreparationVesselsForVessel lists all preparations associated with a vessel
+// ValidPreparationVesselsForVessel lists all preparations associated with a vessel.
 func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -87,7 +87,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No preparations associated with this vessel.",
 		}), nil
 	}
@@ -97,7 +97,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -110,16 +110,16 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
@@ -142,7 +142,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 	}), nil
 }
 
-// SearchVesselsForPreparation searches for vessels to add to a preparation
+// SearchVesselsForPreparation searches for vessels to add to a preparation.
 func (s *AdminFrontendServer) SearchVesselsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -174,10 +174,10 @@ func (s *AdminFrontendServer) SearchVesselsForPreparation(_ http.ResponseWriter,
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, vessel := range searchRes.Results {
 		if contains(vessel.Name, query) || contains(vessel.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          vessel.ID,
 				Name:        vessel.Name,
 				Description: vessel.Description,
@@ -194,7 +194,7 @@ func (s *AdminFrontendServer) SearchVesselsForPreparation(_ http.ResponseWriter,
 	}), nil
 }
 
-// SearchPreparationsForVessel searches for preparations to add to a vessel
+// SearchPreparationsForVessel searches for preparations to add to a vessel.
 func (s *AdminFrontendServer) SearchPreparationsForVessel(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -226,10 +226,10 @@ func (s *AdminFrontendServer) SearchPreparationsForVessel(_ http.ResponseWriter,
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          preparation.ID,
 				Name:        preparation.Name,
 				Description: preparation.Description,
@@ -246,7 +246,7 @@ func (s *AdminFrontendServer) SearchPreparationsForVessel(_ http.ResponseWriter,
 	}), nil
 }
 
-// CreatePreparationVesselFromPreparation creates an association from the preparation side
+// CreatePreparationVesselFromPreparation creates an association from the preparation side.
 func (s *AdminFrontendServer) CreatePreparationVesselFromPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -265,7 +265,7 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromPreparation(_ http.Resp
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -290,7 +290,7 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromPreparation(_ http.Resp
 	return s.ValidPreparationVesselsForPreparation(nil, req)
 }
 
-// CreatePreparationVesselFromVessel creates an association from the vessel side
+// CreatePreparationVesselFromVessel creates an association from the vessel side.
 func (s *AdminFrontendServer) CreatePreparationVesselFromVessel(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -309,7 +309,7 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromVessel(_ http.ResponseW
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -334,7 +334,7 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromVessel(_ http.ResponseW
 	return s.ValidPreparationVesselsForVessel(nil, req)
 }
 
-// DeletePreparationVessel deletes an association
+// DeletePreparationVessel deletes an association.
 func (s *AdminFrontendServer) DeletePreparationVessel(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

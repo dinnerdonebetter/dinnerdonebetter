@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ValidMeasurementUnitConversionsForUnit displays conversions for a measurement unit
+// ValidMeasurementUnitConversionsForUnit displays conversions for a measurement unit.
 func (s *AdminFrontendServer) ValidMeasurementUnitConversionsForUnit(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -43,7 +43,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitConversionsForUnit(_ http.Resp
 	return renderMeasurementUnitConversions(measurementUnitID, fromRes.Results, &design.StandardPalette), nil
 }
 
-// renderMeasurementUnitConversions creates a custom display for unit conversions
+// renderMeasurementUnitConversions creates a custom display for unit conversions.
 func renderMeasurementUnitConversions(measurementUnitID string, conversions []*mealplanningsvc.ValidMeasurementUnitConversion, palette *design.Palette) g.Node {
 	return ghtml.Div(
 		ghtml.Class("space-y-4"),
@@ -185,17 +185,15 @@ func renderMeasurementUnitConversions(measurementUnitID string, conversions []*m
 			len(conversions) > 0,
 			ghtml.Div(
 				ghtml.Class("space-y-2"),
-				g.Group(
-					g.Map(conversions, func(conv *mealplanningsvc.ValidMeasurementUnitConversion) g.Node {
-						return renderConversionItem(conv, measurementUnitID, palette)
-					}),
-				),
+				g.Map(conversions, func(conv *mealplanningsvc.ValidMeasurementUnitConversion) g.Node {
+					return renderConversionItem(conv, measurementUnitID)
+				}),
 			),
 		),
 	)
 }
 
-// pluralizeUnit returns the appropriate form of the unit name based on quantity
+// pluralizeUnit returns the appropriate form of the unit name based on quantity.
 func pluralizeUnit(singular, plural string, quantity float32) string {
 	if quantity == 1.0 {
 		return singular
@@ -206,8 +204,8 @@ func pluralizeUnit(singular, plural string, quantity float32) string {
 	return singular
 }
 
-// renderConversionItem renders a single conversion item
-func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, currentUnitID string, palette *design.Palette) g.Node {
+// renderConversionItem renders a single conversion item.
+func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, currentUnitID string) g.Node {
 	// Safely extract ingredient name if available
 	var ingredientName string
 	if conv.OnlyForIngredient != nil {
@@ -314,7 +312,7 @@ func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, 
 	)
 }
 
-// SearchMeasurementUnitsForConversion searches for measurement units to create conversions
+// SearchMeasurementUnitsForConversion searches for measurement units to create conversions.
 func (s *AdminFrontendServer) SearchMeasurementUnitsForConversion(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -371,50 +369,48 @@ func (s *AdminFrontendServer) SearchMeasurementUnitsForConversion(_ http.Respons
 
 	return ghtml.Div(
 		ghtml.Class("max-h-60 overflow-y-auto space-y-1 border border-gray-200 rounded-md bg-white"),
-		g.Group(
-			g.Map(results, func(item searchResult) g.Node {
-				return ghtml.Div(
-					ghtml.Class("px-3 py-2 border-b border-gray-100 last:border-b-0"),
+		g.Map(results, func(item searchResult) g.Node {
+			return ghtml.Div(
+				ghtml.Class("px-3 py-2 border-b border-gray-100 last:border-b-0"),
+				ghtml.Div(
+					ghtml.Class("font-medium text-gray-900"),
+					g.Text(item.Name),
+				),
+				g.If(
+					item.Description != "",
 					ghtml.Div(
-						ghtml.Class("font-medium text-gray-900"),
-						g.Text(item.Name),
+						ghtml.Class("text-sm text-gray-600 mb-2"),
+						g.Text(item.Description),
 					),
-					g.If(
-						item.Description != "",
-						ghtml.Div(
-							ghtml.Class("text-sm text-gray-600 mb-2"),
-							g.Text(item.Description),
-						),
+				),
+				// Two buttons for choosing direction
+				ghtml.Div(
+					ghtml.Class("flex gap-2 mt-2"),
+					ghtml.Button(
+						ghtml.Type("button"),
+						ghtml.Class("flex-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors"),
+						g.Attr("hx-post", fmt.Sprintf("/api/valid_measurement_units/%s/conversions?direction=from", measurementUnitID)),
+						g.Attr("hx-target", "#conversions-container"),
+						g.Attr("hx-swap", "outerHTML"),
+						g.Attr("hx-vals", fmt.Sprintf(`{"id": %q}`, item.ID)),
+						g.Text("Current → "+item.Name),
 					),
-					// Two buttons for choosing direction
-					ghtml.Div(
-						ghtml.Class("flex gap-2 mt-2"),
-						ghtml.Button(
-							ghtml.Type("button"),
-							ghtml.Class("flex-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors"),
-							g.Attr("hx-post", fmt.Sprintf("/api/valid_measurement_units/%s/conversions?direction=from", measurementUnitID)),
-							g.Attr("hx-target", "#conversions-container"),
-							g.Attr("hx-swap", "outerHTML"),
-							g.Attr("hx-vals", fmt.Sprintf(`{"id": "%s"}`, item.ID)),
-							g.Text("Current → "+item.Name),
-						),
-						ghtml.Button(
-							ghtml.Type("button"),
-							ghtml.Class("flex-1 px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"),
-							g.Attr("hx-post", fmt.Sprintf("/api/valid_measurement_units/%s/conversions?direction=to", measurementUnitID)),
-							g.Attr("hx-target", "#conversions-container"),
-							g.Attr("hx-swap", "outerHTML"),
-							g.Attr("hx-vals", fmt.Sprintf(`{"id": "%s"}`, item.ID)),
-							g.Text(item.Name+" → Current"),
-						),
+					ghtml.Button(
+						ghtml.Type("button"),
+						ghtml.Class("flex-1 px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"),
+						g.Attr("hx-post", fmt.Sprintf("/api/valid_measurement_units/%s/conversions?direction=to", measurementUnitID)),
+						g.Attr("hx-target", "#conversions-container"),
+						g.Attr("hx-swap", "outerHTML"),
+						g.Attr("hx-vals", fmt.Sprintf(`{"id": %q}`, item.ID)),
+						g.Text(item.Name+" → Current"),
 					),
-				)
-			}),
-		),
+				),
+			)
+		}),
 	), nil
 }
 
-// CreateMeasurementUnitConversion creates a new conversion
+// CreateMeasurementUnitConversion creates a new conversion.
 func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -428,7 +424,7 @@ func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWri
 	}
 
 	// Parse form data
-	if err := req.ParseForm(); err != nil {
+	if err = req.ParseForm(); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error parsing form: %v", err)),
@@ -452,7 +448,7 @@ func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWri
 
 	// Parse modifier as float32
 	var modifier float32
-	if _, err := fmt.Sscanf(modifierStr, "%f", &modifier); err != nil {
+	if _, err = fmt.Sscanf(modifierStr, "%f", &modifier); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error: Invalid modifier value: %v", err)),
@@ -492,7 +488,7 @@ func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWri
 	return s.ValidMeasurementUnitConversionsForUnit(nil, updatedReq)
 }
 
-// DeleteMeasurementUnitConversion deletes a conversion
+// DeleteMeasurementUnitConversion deletes a conversion.
 func (s *AdminFrontendServer) DeleteMeasurementUnitConversion(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

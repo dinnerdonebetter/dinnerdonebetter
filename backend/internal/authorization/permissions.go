@@ -21,22 +21,6 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 	return p.ID() == perm.ID()
 }
 
-func getAllPermissions() []gorbac.Permission {
-	var allPermissions []gorbac.Permission
-
-	allPermissions = append(allPermissions, AdminPermissions...)
-	allPermissions = append(allPermissions, AuditPermissions...)
-	allPermissions = append(allPermissions, AuthPermissions...)
-	allPermissions = append(allPermissions, IdentityPermissions...)
-	allPermissions = append(allPermissions, MealPlanningPermissions...)
-	allPermissions = append(allPermissions, NotificationsPermissions...)
-	allPermissions = append(allPermissions, OAuthPermissions...)
-	allPermissions = append(allPermissions, SettingsPermissions...)
-	allPermissions = append(allPermissions, WebhooksPermissions...)
-
-	return allPermissions
-}
-
 var (
 	// ServiceAdminPermissions is every service admin permission.
 	ServiceAdminPermissions = []gorbac.Permission{

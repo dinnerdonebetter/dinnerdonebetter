@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ValidIngredientMeasurementUnitsForIngredient lists all measurement units associated with an ingredient
+// ValidIngredientMeasurementUnitsForIngredient lists all measurement units associated with an ingredient.
 func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -22,7 +22,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Measurement Units",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No measurement units associated with this ingredient.",
 		}), nil
 	}
@@ -32,7 +32,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Measurement Units",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -45,16 +45,16 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Measurement Units",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.MeasurementUnit != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.MeasurementUnit.Name,
 				Description: assoc.MeasurementUnit.Description,
@@ -77,7 +77,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 	}), nil
 }
 
-// ValidIngredientMeasurementUnitsForMeasurementUnit lists all ingredients associated with a measurement unit
+// ValidIngredientMeasurementUnitsForMeasurementUnit lists all ingredients associated with a measurement unit.
 func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -87,7 +87,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No ingredients associated with this measurement unit.",
 		}), nil
 	}
@@ -97,7 +97,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -110,16 +110,16 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Ingredients",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Ingredient != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Ingredient.Name,
 				Description: assoc.Ingredient.Description,
@@ -142,7 +142,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 	}), nil
 }
 
-// SearchMeasurementUnitsForIngredient searches for measurement units to add to an ingredient
+// SearchMeasurementUnitsForIngredient searches for measurement units to add to an ingredient.
 func (s *AdminFrontendServer) SearchMeasurementUnitsForIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -174,10 +174,10 @@ func (s *AdminFrontendServer) SearchMeasurementUnitsForIngredient(_ http.Respons
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, unit := range searchRes.Results {
 		if contains(unit.Name, query) || contains(unit.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          unit.ID,
 				Name:        unit.Name,
 				Description: unit.Description,
@@ -194,7 +194,7 @@ func (s *AdminFrontendServer) SearchMeasurementUnitsForIngredient(_ http.Respons
 	}), nil
 }
 
-// SearchIngredientsForMeasurementUnit searches for ingredients to add to a measurement unit
+// SearchIngredientsForMeasurementUnit searches for ingredients to add to a measurement unit.
 func (s *AdminFrontendServer) SearchIngredientsForMeasurementUnit(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -226,10 +226,10 @@ func (s *AdminFrontendServer) SearchIngredientsForMeasurementUnit(_ http.Respons
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, ingredient := range searchRes.Results {
 		if contains(ingredient.Name, query) || contains(ingredient.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          ingredient.ID,
 				Name:        ingredient.Name,
 				Description: ingredient.Description,
@@ -246,7 +246,7 @@ func (s *AdminFrontendServer) SearchIngredientsForMeasurementUnit(_ http.Respons
 	}), nil
 }
 
-// CreateIngredientMeasurementUnitFromIngredient creates an association from the ingredient side
+// CreateIngredientMeasurementUnitFromIngredient creates an association from the ingredient side.
 func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromIngredient(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -265,7 +265,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromIngredient(_ ht
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -290,7 +290,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromIngredient(_ ht
 	return s.ValidIngredientMeasurementUnitsForIngredient(nil, req)
 }
 
-// CreateIngredientMeasurementUnitFromMeasurementUnit creates an association from the measurement unit side
+// CreateIngredientMeasurementUnitFromMeasurementUnit creates an association from the measurement unit side.
 func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromMeasurementUnit(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -309,7 +309,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromMeasurementUnit
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -334,7 +334,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromMeasurementUnit
 	return s.ValidIngredientMeasurementUnitsForMeasurementUnit(nil, req)
 }
 
-// DeleteIngredientMeasurementUnit deletes an association
+// DeleteIngredientMeasurementUnit deletes an association.
 func (s *AdminFrontendServer) DeleteIngredientMeasurementUnit(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

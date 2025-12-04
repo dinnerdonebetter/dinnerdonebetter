@@ -82,5 +82,5 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 	res.Header().Set("HX-Redirect", "/")
 	res.WriteHeader(http.StatusOK)
 
-	return nil, nil
+	return g.El("div"), nil
 }

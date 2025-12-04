@@ -13,7 +13,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// SelectOption represents a single option in a select dropdown
+// SelectOption represents a single option in a select dropdown.
 type SelectOption struct {
 	Value     string
 	Label     string
@@ -21,19 +21,19 @@ type SelectOption struct {
 	IsDefault bool
 }
 
-// FieldConfig holds configuration for a single form field
+// FieldConfig holds configuration for a single form field.
 type FieldConfig struct {
 	Validation     *FieldValidation
-	CustomRenderer func(fieldName string, value any, config FieldConfig, palette *design.Palette) g.Node
+	CustomRenderer func(fieldName string, value any, config *FieldConfig, palette *design.Palette) g.Node
 	Name           string
 	DisplayName    string
 	InputType      string
 	Placeholder    string
-	Options        []SelectOption
+	Options        []*SelectOption
 	Enabled        bool
 }
 
-// FieldValidation holds HTMX-compatible validation rules
+// FieldValidation holds HTMX-compatible validation rules.
 type FieldValidation struct {
 	Min           *float64
 	Max           *float64
@@ -45,14 +45,14 @@ type FieldValidation struct {
 	Required      bool
 }
 
-// FormRow represents a row of fields in the form
+// FormRow represents a row of fields in the form.
 type FormRow struct {
 	Fields      []string
 	ColumnSpans []int
 	Columns     int
 }
 
-// FormOptions holds configuration options for the form
+// FormOptions holds configuration options for the form.
 type FormOptions[T any] struct {
 	FieldConfigs                map[string]*FieldConfig
 	Palette                     *design.Palette
@@ -65,7 +65,7 @@ type FormOptions[T any] struct {
 	HTMXTarget                  string
 	Method                      string
 	SubmitButtonText            string
-	FormRows                    []FormRow
+	FormRows                    []*FormRow
 	AdditionalButtons           []g.Node
 	EnabledFields               []string
 	ShowCancelButton            bool
@@ -73,7 +73,7 @@ type FormOptions[T any] struct {
 	DisableAutoEnableZeroValues bool // If true, disables automatic enabling of zero-value fields
 }
 
-// Form creates a generic HTML form from a struct with HTMX support
+// Form creates a generic HTML form from a struct with HTMX support.
 func Form[T any](data T, options *FormOptions[T]) (g.Node, error) {
 	if options == nil {
 		options = &FormOptions[T]{}
@@ -115,9 +115,9 @@ func Form[T any](data T, options *FormOptions[T]) (g.Node, error) {
 	), nil
 }
 
-// extractFieldsAndValues uses reflection to get field information and values from a struct
-func extractFieldsAndValues(item any) ([]fieldInfo, map[string]any, error) {
-	var fields []fieldInfo
+// extractFieldsAndValues uses reflection to get field information and values from a struct.
+func extractFieldsAndValues(item any) ([]*fieldInfo, map[string]any, error) {
+	var fields []*fieldInfo
 	values := make(map[string]any)
 
 	v := reflect.ValueOf(item)
@@ -163,7 +163,7 @@ func extractFieldsAndValues(item any) ([]fieldInfo, map[string]any, error) {
 		// Create a display name
 		displayName := camelCaseToTitleCase(field.Name)
 
-		fields = append(fields, fieldInfo{
+		fields = append(fields, &fieldInfo{
 			Name:        jsonName,   // Use JSON tag name
 			GoFieldName: field.Name, // Keep Go struct field name
 			DisplayName: displayName,
@@ -180,8 +180,8 @@ func extractFieldsAndValues(item any) ([]fieldInfo, map[string]any, error) {
 	return fields, values, nil
 }
 
-// applyFieldConfigs applies field configurations and enabled fields list
-func applyFieldConfigs[T any](fields []fieldInfo, options *FormOptions[T]) []fieldInfo {
+// applyFieldConfigs applies field configurations and enabled fields list.
+func applyFieldConfigs[T any](fields []*fieldInfo, options *FormOptions[T]) []*fieldInfo {
 	// Create a set of enabled fields for quick lookup
 	enabledSet := make(map[string]bool)
 	for _, name := range options.EnabledFields {
@@ -200,7 +200,7 @@ func applyFieldConfigs[T any](fields []fieldInfo, options *FormOptions[T]) []fie
 	return fields
 }
 
-// buildFormAttributes constructs the form HTML attributes
+// buildFormAttributes constructs the form HTML attributes.
 func buildFormAttributes[T any](options *FormOptions[T]) []g.Node {
 	attrs := []g.Node{}
 
@@ -240,8 +240,8 @@ func buildFormAttributes[T any](options *FormOptions[T]) []g.Node {
 	return attrs
 }
 
-// generateFormRows generates the form field rows based on layout configuration
-func generateFormRows[T any](fields []fieldInfo, values map[string]any, options *FormOptions[T], palette *design.Palette) []g.Node {
+// generateFormRows generates the form field rows based on layout configuration.
+func generateFormRows[T any](fields []*fieldInfo, values map[string]any, options *FormOptions[T], palette *design.Palette) []g.Node {
 	if palette == nil {
 		p := design.StandardPalette
 		palette = &p
@@ -263,7 +263,7 @@ func generateFormRows[T any](fields []fieldInfo, values map[string]any, options 
 	}
 
 	// Create a map for quick field lookup
-	fieldMap := make(map[string]fieldInfo)
+	fieldMap := make(map[string]*fieldInfo)
 	for _, field := range fields {
 		fieldMap[field.Name] = field
 	}
@@ -279,7 +279,9 @@ func generateFormRows[T any](fields []fieldInfo, values map[string]any, options 
 		// If ColumnSpans are specified, use a 12-column grid with col-span classes
 		if len(formRow.ColumnSpans) > 0 {
 			for i, fieldName := range formRow.Fields {
-				if field, exists := fieldMap[fieldName]; exists {
+				if field, exists := fieldMap[fieldName]; !exists {
+					continue
+				} else {
 					config := getFieldConfig(fieldName, values[fieldName], options)
 					fieldNode := generateFormField(field, values[fieldName], config, palette)
 
@@ -368,9 +370,9 @@ func isZeroValue(value any) bool {
 	}
 }
 
-// getFieldConfig retrieves the field configuration or returns defaults
-// It automatically enables fields with zero values unless explicitly disabled via DisableAutoEnableZeroValues
-func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOptions[T]) FieldConfig {
+// getFieldConfig retrieves the field configuration or returns defaults.
+// It automatically enables fields with zero values unless explicitly disabled via DisableAutoEnableZeroValues.
+func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOptions[T]) *FieldConfig {
 	// Check if field is explicitly in enabled list
 	explicitlyEnabled := false
 	for _, name := range options.EnabledFields {
@@ -381,10 +383,10 @@ func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOption
 	}
 
 	// Get or create config
-	var config FieldConfig
+	var config *FieldConfig
 	if options.FieldConfigs != nil {
 		if c, exists := options.FieldConfigs[fieldName]; exists {
-			config = *c
+			config = c
 		}
 	}
 
@@ -403,8 +405,8 @@ func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOption
 	return config
 }
 
-// generateFormField generates a single form field
-func generateFormField(field fieldInfo, value any, config FieldConfig, palette *design.Palette) g.Node {
+// generateFormField generates a single form field.
+func generateFormField(field *fieldInfo, value any, config *FieldConfig, palette *design.Palette) g.Node {
 	// Ensure palette is not nil
 	if palette == nil {
 		p := design.StandardPalette
@@ -461,8 +463,8 @@ func generateFormField(field fieldInfo, value any, config FieldConfig, palette *
 	return ghtml.Div(fieldContent...)
 }
 
-// buildInputElement creates an HTML input element
-func buildInputElement(fieldName string, fieldType reflect.Type, value any, config FieldConfig, palette *design.Palette) g.Node {
+// buildInputElement creates an HTML input element.
+func buildInputElement(fieldName string, fieldType reflect.Type, value any, config *FieldConfig, palette *design.Palette) g.Node {
 	inputType := config.InputType
 	if inputType == "" {
 		if fieldType != nil {
@@ -489,11 +491,8 @@ func buildInputElement(fieldName string, fieldType reflect.Type, value any, conf
 				inputAttrs = append(inputAttrs, ghtml.Checked())
 			}
 		}
-	} else {
-		// Add value for non-checkbox inputs
-		if value != nil {
-			inputAttrs = append(inputAttrs, ghtml.Value(formatValue(value)))
-		}
+	} else if value != nil {
+		inputAttrs = append(inputAttrs, ghtml.Value(formatValue(value)))
 	}
 
 	// Add disabled attribute if not enabled
@@ -514,8 +513,8 @@ func buildInputElement(fieldName string, fieldType reflect.Type, value any, conf
 	return ghtml.Input(inputAttrs...)
 }
 
-// buildSelectElement creates an HTML select element with options
-func buildSelectElement(fieldName string, value any, config FieldConfig, palette *design.Palette) g.Node {
+// buildSelectElement creates an HTML select element with options.
+func buildSelectElement(fieldName string, value any, config *FieldConfig, palette *design.Palette) g.Node {
 	// Build select attributes
 	selectAttrs := []g.Node{
 		ghtml.ID(fieldName),
@@ -573,7 +572,7 @@ func buildSelectElement(fieldName string, value any, config FieldConfig, palette
 	return ghtml.Select(append(selectAttrs, g.Group(options))...)
 }
 
-// buildSelectClasses constructs the CSS classes for select fields
+// buildSelectClasses constructs the CSS classes for select fields.
 func buildSelectClasses(palette *design.Palette) string {
 	if palette == nil {
 		p := design.StandardPalette
@@ -586,7 +585,7 @@ func buildSelectClasses(palette *design.Palette) string {
 	)
 }
 
-// inferInputType infers the HTML input type from the Go type
+// inferInputType infers the HTML input type from the Go type.
 func inferInputType(t reflect.Type) string {
 	// Handle pointers
 	if t.Kind() == reflect.Ptr {
@@ -610,7 +609,7 @@ func inferInputType(t reflect.Type) string {
 	}
 }
 
-// formatValue formats a value for display in an input field
+// formatValue formats a value for display in an input field.
 func formatValue(value any) string {
 	if value == nil {
 		return ""
@@ -670,7 +669,7 @@ func formatValue(value any) string {
 	}
 }
 
-// buildValidationAttributes constructs HTML5 and HTMX validation attributes
+// buildValidationAttributes constructs HTML5 and HTMX validation attributes.
 func buildValidationAttributes(validation *FieldValidation) []g.Node {
 	var attrs []g.Node
 
@@ -709,7 +708,7 @@ func buildValidationAttributes(validation *FieldValidation) []g.Node {
 	return attrs
 }
 
-// buildInputClasses constructs the CSS classes for input fields
+// buildInputClasses constructs the CSS classes for input fields.
 func buildInputClasses(palette *design.Palette) string {
 	if palette == nil {
 		p := design.StandardPalette
@@ -722,7 +721,7 @@ func buildInputClasses(palette *design.Palette) string {
 	)
 }
 
-// generateFormButtons generates the form buttons section
+// generateFormButtons generates the form buttons section.
 func generateFormButtons[T any](options *FormOptions[T], palette *design.Palette) g.Node {
 	if palette == nil {
 		p := design.StandardPalette
@@ -788,7 +787,7 @@ func generateFormButtons[T any](options *FormOptions[T], palette *design.Palette
 	)
 }
 
-// buildFormClasses constructs the CSS classes for the form
+// buildFormClasses constructs the CSS classes for the form.
 func buildFormClasses(customClasses string) string {
 	baseClasses := "bg-white shadow rounded-lg p-6"
 	if customClasses != "" {

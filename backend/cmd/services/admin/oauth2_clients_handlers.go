@@ -75,7 +75,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 				},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name"},
 					Columns: 1,
@@ -105,7 +105,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "OAuth2 Clients", URL: "/oauth2_clients"},
 			{Text: oauth2Client.Name, URL: ""},
@@ -285,7 +285,7 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 	), nil
 }
 
-// renderOAuth2ClientsError creates a consistent error display for the OAuth2 clients page
+// renderOAuth2ClientsError creates a consistent error display for the OAuth2 clients page.
 func (s *AdminFrontendServer) renderOAuth2ClientsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "OAuth2 Clients",

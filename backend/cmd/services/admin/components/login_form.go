@@ -134,7 +134,7 @@ type LoginFormProps struct {
 }
 
 var (
-	// TODO: remove this
+	// TODO: remove this.
 	premadeAdminUser = &identity.User{
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 	}

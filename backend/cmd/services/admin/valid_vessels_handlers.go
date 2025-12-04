@@ -27,7 +27,7 @@ func (s *AdminFrontendServer) ValidVesselCreate(res http.ResponseWriter, req *ht
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidVesselCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Vessel", s.renderValidVesselsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -47,7 +47,7 @@ func (s *AdminFrontendServer) ValidVesselCreate(res http.ResponseWriter, req *ht
 	vesselID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_vessels/%s", vesselID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidVesselNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 				"UsableForStorage":               {InputType: "checkbox"},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PluralName"},
 					Columns: 2,
@@ -260,7 +260,7 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Vessels", URL: "/valid_vessels"},
@@ -480,7 +480,7 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 	), nil
 }
 
-// renderValidVesselsError creates a consistent error display for the valid vessels page
+// renderValidVesselsError creates a consistent error display for the valid vessels page.
 func (s *AdminFrontendServer) renderValidVesselsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Vessels",
@@ -492,50 +492,6 @@ func (s *AdminFrontendServer) renderValidVesselsError(errorMsg string) g.Node {
 				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
 				g.Text(errorMsg),
 			),
-		),
-	)
-}
-
-// dimensionInfo creates an info display for a dimension value
-func dimensionInfo(label string, value float32, unit string, palette *design.Palette) g.Node {
-	valueText := "-"
-	if value > 0 {
-		valueText = fmt.Sprintf("%.1f %s", value, unit)
-	}
-
-	return ghtml.Div(
-		ghtml.Class(fmt.Sprintf("flex flex-col p-3 rounded-lg %s", design.Background(design.Color{Value: "gray-50"}))),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("text-xs font-medium %s opacity-75", design.TextColor(palette.Text))),
-			g.Text(label),
-		),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("mt-1 text-sm font-semibold %s", design.TextColor(palette.Primary))),
-			g.Text(valueText),
-		),
-	)
-}
-
-// capacityInfo creates an info display for capacity with unit
-func capacityInfo(label string, value float32, unit *mealplanningsvc.ValidMeasurementUnit, palette *design.Palette) g.Node {
-	valueText := "-"
-	if value > 0 {
-		if unit != nil {
-			valueText = fmt.Sprintf("%.2f %s", value, unit.Name)
-		} else {
-			valueText = fmt.Sprintf("%.2f", value)
-		}
-	}
-
-	return ghtml.Div(
-		ghtml.Class(fmt.Sprintf("flex flex-col p-3 rounded-lg %s", design.Background(design.Color{Value: "gray-50"}))),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("text-xs font-medium %s opacity-75", design.TextColor(palette.Text))),
-			g.Text(label),
-		),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("mt-1 text-sm font-semibold %s", design.TextColor(palette.Primary))),
-			g.Text(valueText),
 		),
 	)
 }

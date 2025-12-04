@@ -57,7 +57,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 			// Configure field validation
 			FieldConfigs: map[string]*components.FieldConfig{
 				"AccountStatus": {
-					Options: []components.SelectOption{
+					Options: []*components.SelectOption{
 						{Value: "good", Label: "Good Standing"},
 						{Value: "unverified", Label: "Unverified"},
 						{Value: "banned", Label: "Banned"},
@@ -102,7 +102,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 			},
 
 			// Layout configuration: FirstName and LastName together, others separate
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"FirstName", "LastName"},
 					Columns: 2,
@@ -133,7 +133,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Users", URL: "/users"},
 			{Text: user.Username, URL: ""},
@@ -513,7 +513,7 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 	), nil
 }
 
-// renderUsersError creates a consistent error display for the users page
+// renderUsersError creates a consistent error display for the users page.
 func (s *AdminFrontendServer) renderUsersError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Users",

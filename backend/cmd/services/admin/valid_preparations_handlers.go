@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -29,7 +28,7 @@ func (s *AdminFrontendServer) ValidPreparationCreate(res http.ResponseWriter, re
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidPreparationCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Preparation", s.renderValidPreparationsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -49,7 +48,7 @@ func (s *AdminFrontendServer) ValidPreparationCreate(res http.ResponseWriter, re
 	preparationID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_preparations/%s", preparationID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidPreparationNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -224,7 +223,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 				"YieldsNothing":               {InputType: "checkbox"},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PastTense"},
 					Columns: 2,
@@ -258,7 +257,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Preparations", URL: "/valid_preparations"},
@@ -475,7 +474,7 @@ func (s *AdminFrontendServer) ValidPreparationsSearch(_ http.ResponseWriter, req
 	), nil
 }
 
-// renderValidPreparationsError creates a consistent error display for the valid preparations page
+// renderValidPreparationsError creates a consistent error display for the valid preparations page.
 func (s *AdminFrontendServer) renderValidPreparationsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Preparations",
@@ -487,30 +486,6 @@ func (s *AdminFrontendServer) renderValidPreparationsError(errorMsg string) g.No
 				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
 				g.Text(errorMsg),
 			),
-		),
-	)
-}
-
-// rangeInfo creates an info display for count range requirements
-func rangeInfo(label string, rangeData *types.Uint16RangeWithOptionalMax, palette *design.Palette) g.Node {
-	valueText := "-"
-	if rangeData != nil {
-		if rangeData.Max != nil && *rangeData.Max > 0 {
-			valueText = fmt.Sprintf("%d - %d", rangeData.Min, *rangeData.Max)
-		} else {
-			valueText = fmt.Sprintf("%d+", rangeData.Min)
-		}
-	}
-
-	return ghtml.Div(
-		ghtml.Class(fmt.Sprintf("flex flex-col p-3 rounded-lg %s", design.Background(design.Color{Value: "gray-50"}))),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("text-xs font-medium %s opacity-75", design.TextColor(palette.Text))),
-			g.Text(label),
-		),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("mt-1 text-sm font-semibold %s", design.TextColor(palette.Primary))),
-			g.Text(valueText),
 		),
 	)
 }

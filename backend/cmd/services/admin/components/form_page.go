@@ -8,7 +8,7 @@ import (
 	g "maragu.dev/gomponents"
 )
 
-// FormPageProps holds the configuration for a complete form page
+// FormPageProps holds the configuration for a complete form page.
 type FormPageProps[T any] struct {
 	Data              T
 	SubtitleGenerator func(data T) string
@@ -17,24 +17,24 @@ type FormPageProps[T any] struct {
 	Title             string
 	BaseSubtitle      string
 	Actions           []g.Node
-	Breadcrumbs       []Breadcrumb
+	Breadcrumbs       []*Breadcrumb
 	AdditionalContent []g.Node
 	ShowBreadcrumbs   bool
 }
 
-// Breadcrumb represents a breadcrumb navigation item
+// Breadcrumb represents a breadcrumb navigation item.
 type Breadcrumb struct {
 	Text string
 	URL  string
 }
 
-// FormPageResult contains the rendered form page and metadata
+// FormPageResult contains the rendered form page and metadata.
 type FormPageResult struct {
 	Node g.Node
 	// Add any metadata as needed
 }
 
-// FormPage creates a complete page with form, header, and optional breadcrumbs
+// FormPage creates a complete page with form, header, and optional breadcrumbs.
 func FormPage[T any](props *FormPageProps[T]) (*FormPageResult, error) {
 	if props.Palette == nil {
 		props.Palette = &design.StandardPalette
@@ -93,8 +93,8 @@ func FormPage[T any](props *FormPageProps[T]) (*FormPageResult, error) {
 	}, nil
 }
 
-// renderBreadcrumbs creates a breadcrumb navigation component
-func renderBreadcrumbs(breadcrumbs []Breadcrumb, palette *design.Palette) g.Node {
+// renderBreadcrumbs creates a breadcrumb navigation component.
+func renderBreadcrumbs(breadcrumbs []*Breadcrumb, palette *design.Palette) g.Node {
 	if len(breadcrumbs) == 0 {
 		return g.Group(nil)
 	}

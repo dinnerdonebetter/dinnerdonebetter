@@ -30,7 +30,7 @@ func (s *AdminFrontendServer) ValidIngredientStateCreate(res http.ResponseWriter
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidIngredientStateCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Ingredient State", s.renderValidIngredientStatesError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -50,7 +50,7 @@ func (s *AdminFrontendServer) ValidIngredientStateCreate(res http.ResponseWriter
 	ingredientStateID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_ingredient_states/%s", ingredientStateID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidIngredientStateNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -218,7 +218,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 				},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PastTense"},
 					Columns: 2,
@@ -244,7 +244,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Ingredient States", URL: "/valid_ingredient_states"},
@@ -258,7 +258,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 
 		// Additional info section showing ingredients in a paginated table
 		AdditionalContent: []g.Node{
-			renderIngredientsTableForState(validIngredientStateID, stateIngredients, ingredientsRes, &design.StandardPalette),
+			renderIngredientsTableForState(validIngredientStateID, stateIngredients, &design.StandardPalette),
 		},
 	})
 	if err != nil {
@@ -446,7 +446,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 	), nil
 }
 
-// renderValidIngredientStatesError creates a consistent error display for the valid ingredient states page
+// renderValidIngredientStatesError creates a consistent error display for the valid ingredient states page.
 func (s *AdminFrontendServer) renderValidIngredientStatesError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Ingredient States",
@@ -462,11 +462,10 @@ func (s *AdminFrontendServer) renderValidIngredientStatesError(errorMsg string) 
 	)
 }
 
-// renderIngredientsTableForState creates a paginated table displaying the ingredients that this state is valid for
+// renderIngredientsTableForState creates a paginated table displaying the ingredients that this state is valid for.
 func renderIngredientsTableForState(
 	ingredientStateID string,
 	stateIngredients []*mealplanningsvc.ValidIngredientStateIngredient,
-	response *mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateResponse,
 	palette *design.Palette,
 ) g.Node {
 	// Build search URL for this ingredient state

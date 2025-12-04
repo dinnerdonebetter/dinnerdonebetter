@@ -75,9 +75,9 @@ func (s *AdminFrontendServer) buildCookie(ctx context.Context, value string) *ht
 
 // buildQueryFilterFromRequest extracts a QueryFilter from the HTTP request and converts it to a gRPC filter.
 // This is a reusable helper for handlers that need to process pagination and filtering.
-func buildQueryFilterFromRequest(req *http.Request) (*filtering.QueryFilter, *grpcfiltering.QueryFilter) {
-	queryFilter := filtering.ExtractQueryFilterFromRequest(req)
-	grpcFilter := grpcconverters.ConvertQueryFilterToGRPCQueryFilter(queryFilter, filtering.Pagination{})
+func buildQueryFilterFromRequest(req *http.Request) (queryFilter *filtering.QueryFilter, grpcFilter *grpcfiltering.QueryFilter) {
+	queryFilter = filtering.ExtractQueryFilterFromRequest(req)
+	grpcFilter = grpcconverters.ConvertQueryFilterToGRPCQueryFilter(queryFilter, filtering.Pagination{})
 	return queryFilter, grpcFilter
 }
 

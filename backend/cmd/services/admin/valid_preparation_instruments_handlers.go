@@ -12,7 +12,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ValidPreparationInstrumentsForPreparation lists all instruments associated with a preparation
+// ValidPreparationInstrumentsForPreparation lists all instruments associated with a preparation.
 func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -22,7 +22,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Instruments",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No instruments associated with this preparation.",
 		}), nil
 	}
@@ -32,7 +32,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Instruments",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -45,16 +45,16 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Instruments",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Instrument != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Instrument.Name,
 				Description: assoc.Instrument.Description,
@@ -77,7 +77,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 	}), nil
 }
 
-// ValidPreparationInstrumentsForInstrument lists all preparations associated with an instrument
+// ValidPreparationInstrumentsForInstrument lists all preparations associated with an instrument.
 func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -87,7 +87,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "No preparations associated with this instrument.",
 		}), nil
 	}
@@ -97,7 +97,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: "Error: No API client available",
 		}), nil
 	}
@@ -110,16 +110,16 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 		return components.AssociationList(&components.AssociationListProps{
 			Title:          "Associated Preparations",
 			Palette:        &design.StandardPalette,
-			Items:          []components.AssociationItem{},
+			Items:          []*components.AssociationItem{},
 			NoItemsMessage: fmt.Sprintf("Error loading associations: %v", err),
 		}), nil
 	}
 
 	// Convert to AssociationItems
-	items := make([]components.AssociationItem, 0, len(res.Results))
+	items := make([]*components.AssociationItem, 0, len(res.Results))
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
-			items = append(items, components.AssociationItem{
+			items = append(items, &components.AssociationItem{
 				ID:          assoc.ID,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
@@ -142,7 +142,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 	}), nil
 }
 
-// SearchInstrumentsForPreparation searches for instruments to add to a preparation
+// SearchInstrumentsForPreparation searches for instruments to add to a preparation.
 func (s *AdminFrontendServer) SearchInstrumentsForPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -174,10 +174,10 @@ func (s *AdminFrontendServer) SearchInstrumentsForPreparation(_ http.ResponseWri
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, instrument := range searchRes.Results {
 		if contains(instrument.Name, query) || contains(instrument.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          instrument.ID,
 				Name:        instrument.Name,
 				Description: instrument.Description,
@@ -194,7 +194,7 @@ func (s *AdminFrontendServer) SearchInstrumentsForPreparation(_ http.ResponseWri
 	}), nil
 }
 
-// SearchPreparationsForInstrument searches for preparations to add to an instrument
+// SearchPreparationsForInstrument searches for preparations to add to an instrument.
 func (s *AdminFrontendServer) SearchPreparationsForInstrument(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -226,10 +226,10 @@ func (s *AdminFrontendServer) SearchPreparationsForInstrument(_ http.ResponseWri
 	}
 
 	// Filter results by query (simple substring match)
-	var results []components.SearchResultItem
+	var results []*components.SearchResultItem
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
-			results = append(results, components.SearchResultItem{
+			results = append(results, &components.SearchResultItem{
 				ID:          preparation.ID,
 				Name:        preparation.Name,
 				Description: preparation.Description,
@@ -246,7 +246,7 @@ func (s *AdminFrontendServer) SearchPreparationsForInstrument(_ http.ResponseWri
 	}), nil
 }
 
-// CreatePreparationInstrumentFromPreparation creates an association from the preparation side
+// CreatePreparationInstrumentFromPreparation creates an association from the preparation side.
 func (s *AdminFrontendServer) CreatePreparationInstrumentFromPreparation(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -265,7 +265,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromPreparation(_ http.
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -290,7 +290,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromPreparation(_ http.
 	return s.ValidPreparationInstrumentsForPreparation(nil, req)
 }
 
-// CreatePreparationInstrumentFromInstrument creates an association from the instrument side
+// CreatePreparationInstrumentFromInstrument creates an association from the instrument side.
 func (s *AdminFrontendServer) CreatePreparationInstrumentFromInstrument(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -309,7 +309,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromInstrument(_ http.R
 	var input struct {
 		ID string `json:"id"`
 	}
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
 			g.Text(fmt.Sprintf("Error decoding request: %v", err)),
@@ -334,7 +334,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromInstrument(_ http.R
 	return s.ValidPreparationInstrumentsForInstrument(nil, req)
 }
 
-// DeletePreparationInstrument deletes an association
+// DeletePreparationInstrument deletes an association.
 func (s *AdminFrontendServer) DeletePreparationInstrument(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -381,7 +381,7 @@ func (s *AdminFrontendServer) DeletePreparationInstrument(_ http.ResponseWriter,
 	), nil
 }
 
-// Helper function for case-insensitive substring match
+// Helper function for case-insensitive substring match.
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) &&
 		(s == substr ||

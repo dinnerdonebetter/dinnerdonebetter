@@ -8,16 +8,16 @@ import (
 	g "maragu.dev/gomponents"
 )
 
-// TablePageMetadata holds information about the processed table data
+// TablePageMetadata holds information about the processed table data.
 type TablePageMetadata struct {
-	Fields        []fieldInfo
+	Fields        []*fieldInfo
 	TotalCount    int
 	FilteredCount int
 	EmptyState    bool
 	HasData       bool
 }
 
-// TablePageProps holds configuration for a complete table-based page
+// TablePageProps holds configuration for a complete table-based page.
 type TablePageProps[T any] struct {
 	TableOptions          *TableOptions[T]
 	SubtitleGenerator     func(metadata TablePageMetadata) string
@@ -36,13 +36,13 @@ type TablePageProps[T any] struct {
 	ShowSearch            bool
 }
 
-// TablePageResult contains both the rendered page and metadata about the table
+// TablePageResult contains both the rendered page and metadata about the table.
 type TablePageResult struct {
 	Node     g.Node
 	Metadata TablePageMetadata
 }
 
-// TablePage creates a complete page with integrated table and context-aware layout
+// TablePage creates a complete page with integrated table and context-aware layout.
 func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 	if props == nil {
 		return nil, fmt.Errorf("props cannot be nil")
@@ -69,7 +69,7 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 	// Handle empty state
 	if metadata.EmptyState {
 		return &TablePageResult{
-			Node:     createEmptyTablePage(props, metadata),
+			Node:     createEmptyTablePage(props),
 			Metadata: metadata,
 		}, nil
 	}
@@ -90,7 +90,6 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 			props.HTMXSearchTarget,
 			props.TableOptions.Pagination.MaxResponseSize,
 			props.TableOptions.TableID,
-			props.Palette,
 		)
 	}
 
@@ -120,7 +119,7 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 	}, nil
 }
 
-// generateMetadata extracts metadata from the data and table options
+// generateMetadata extracts metadata from the data and table options.
 func generateMetadata[T any](data []T, options *TableOptions[T]) TablePageMetadata {
 	metadata := TablePageMetadata{
 		TotalCount:    len(data),
@@ -139,7 +138,7 @@ func generateMetadata[T any](data []T, options *TableOptions[T]) TablePageMetada
 	return metadata
 }
 
-// generateSubtitle creates a dynamic subtitle based on the data
+// generateSubtitle creates a dynamic subtitle based on the data.
 func generateSubtitle[T any](props *TablePageProps[T], metadata TablePageMetadata) string {
 	// Use custom generator if provided
 	if props.SubtitleGenerator != nil {
@@ -167,8 +166,8 @@ func generateSubtitle[T any](props *TablePageProps[T], metadata TablePageMetadat
 	return countText
 }
 
-// createEmptyTablePage creates the page for when there's no data
-func createEmptyTablePage[T any](props *TablePageProps[T], metadata TablePageMetadata) g.Node {
+// createEmptyTablePage creates the page for when there's no data.
+func createEmptyTablePage[T any](props *TablePageProps[T]) g.Node {
 	emptyActions := props.EmptyStateActions
 	if len(emptyActions) == 0 && len(props.Actions) > 0 {
 		// Use the first action as the empty state primary action
@@ -198,7 +197,7 @@ func createEmptyTablePage[T any](props *TablePageProps[T], metadata TablePageMet
 	)
 }
 
-// Helper functions for empty state
+// Helper functions for empty state.
 func getEmptyStateTitle[T any](props *TablePageProps[T]) string {
 	if props.EmptyStateTitle != "" {
 		return props.EmptyStateTitle
@@ -213,7 +212,7 @@ func getEmptyStateDescription[T any](props *TablePageProps[T]) string {
 	return fmt.Sprintf("Get started by creating your first %s.", props.Title)
 }
 
-// TablePageWithCustomStats creates a table page with custom statistics
+// TablePageWithCustomStats creates a table page with custom statistics.
 func TablePageWithCustomStats[T any](props *TablePageProps[T], customStats []g.Node) (*TablePageResult, error) {
 	result, err := TablePage(props)
 	if err != nil {
@@ -223,7 +222,8 @@ func TablePageWithCustomStats[T any](props *TablePageProps[T], customStats []g.N
 	// If we have data, replace the default stats with custom ones
 	if result.Metadata.HasData && len(customStats) > 0 {
 		// Generate table
-		table, err := Table(props.Data, props.TableOptions)
+		var table g.Node
+		table, err = Table(props.Data, props.TableOptions)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate table: %w", err)
 		}

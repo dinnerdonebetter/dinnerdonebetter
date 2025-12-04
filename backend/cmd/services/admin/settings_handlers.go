@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) SettingCreate(res http.ResponseWriter, req *http.R
 
 	// Decode JSON request body
 	var input *settingssvc.ServiceSettingCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Setting", s.renderSettingsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -48,15 +48,14 @@ func (s *AdminFrontendServer) SettingCreate(res http.ResponseWriter, req *http.R
 	settingID := createRes.Created.ID
 	http.Redirect(res, req, fmt.Sprintf("/settings/%s", settingID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	_, err := fetchClientFromContext(ctx)
-	if err != nil {
+	if _, err := fetchClientFromContext(ctx); err != nil {
 		return page("New Setting", s.renderSettingsError("Error: No API client available")), nil
 	}
 
@@ -93,7 +92,7 @@ func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Re
 					},
 				},
 				"Type": {
-					Options: []components.SelectOption{
+					Options: []*components.SelectOption{
 						{Value: "string", Label: "String", IsDefault: true},
 						{Value: "number", Label: "Number"},
 						{Value: "boolean", Label: "Boolean"},
@@ -126,7 +125,7 @@ func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Re
 			},
 
 			// Layout configuration
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:      []string{"Name", "AdminsOnly"},
 					Columns:     2,
@@ -162,7 +161,7 @@ func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Re
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Settings", URL: "/settings"},
 			{Text: "New Setting", URL: ""},
@@ -227,7 +226,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 					},
 				},
 				"Type": {
-					Options: []components.SelectOption{
+					Options: []*components.SelectOption{
 						{Value: "string", Label: "String"},
 						{Value: "number", Label: "Number"},
 						{Value: "boolean", Label: "Boolean"},
@@ -263,7 +262,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 			},
 
 			// Layout configuration
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:      []string{"Name", "AdminsOnly"},
 					Columns:     2,
@@ -299,7 +298,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Settings", URL: "/settings"},
 			{Text: setting.Name, URL: ""},
@@ -542,7 +541,7 @@ func (s *AdminFrontendServer) SettingsSearch(_ http.ResponseWriter, req *http.Re
 	), nil
 }
 
-// renderSettingsError creates a consistent error display for the settings page
+// renderSettingsError creates a consistent error display for the settings page.
 func (s *AdminFrontendServer) renderSettingsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Settings",

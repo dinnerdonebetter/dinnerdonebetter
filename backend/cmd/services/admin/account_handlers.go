@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 
 	// Build billing status options with IsDefault set based on account's current status
 	currentBillingStatus := account.BillingStatus
-	billingStatusOptions := []components.SelectOption{
+	billingStatusOptions := []*components.SelectOption{
 		{Value: identity.UnpaidAccountBillingStatus, Label: "Unpaid", IsDefault: currentBillingStatus == identity.UnpaidAccountBillingStatus || currentBillingStatus == ""},
 		{Value: identity.PaidAccountBillingStatus, Label: "Paid", IsDefault: currentBillingStatus == identity.PaidAccountBillingStatus},
 		{Value: identity.TrialAccountBillingStatus, Label: "Trial", IsDefault: currentBillingStatus == identity.TrialAccountBillingStatus},
@@ -115,7 +115,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 					Placeholder: "Enter country...",
 				},
 			},
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name"},
 					Columns: 1,
@@ -153,7 +153,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Accounts", URL: "/accounts"},
 			{Text: account.Name, URL: ""},
@@ -504,7 +504,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 	), nil
 }
 
-// renderAccountsError creates a consistent error display for the accounts page
+// renderAccountsError creates a consistent error display for the accounts page.
 func (s *AdminFrontendServer) renderAccountsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Accounts",

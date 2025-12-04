@@ -9,7 +9,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// ContentContainerProps holds configuration for content containers
+// ContentContainerProps holds configuration for content containers.
 type ContentContainerProps struct {
 	PageSizeSelector  g.Node
 	Palette           *design.Palette
@@ -22,7 +22,7 @@ type ContentContainerProps struct {
 	ShowSearch        bool
 }
 
-// ContentContainer creates a responsive content container with optional search
+// ContentContainer creates a responsive content container with optional search.
 func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 	if props.Palette == nil {
 		props.Palette = &design.StandardPalette
@@ -92,7 +92,7 @@ func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 	)
 }
 
-// SearchInputProps holds configuration for search inputs
+// SearchInputProps holds configuration for search inputs.
 type SearchInputProps struct {
 	Placeholder string
 	Palette     *design.Palette
@@ -102,7 +102,7 @@ type SearchInputProps struct {
 	HTMXTrigger string // HTMX trigger event
 }
 
-// SearchInput creates a styled search input with optional HTMX integration
+// SearchInput creates a styled search input with optional HTMX integration.
 func SearchInput(props *SearchInputProps) g.Node {
 	if props.Palette == nil {
 		props.Palette = &design.StandardPalette
@@ -140,9 +140,11 @@ func SearchInput(props *SearchInputProps) g.Node {
 
 	// Add HTMX attributes if specified
 	if props.HTMXTarget != "" {
-		inputAttrs = append(inputAttrs, g.Attr("hx-get", props.HTMXTarget))
-		inputAttrs = append(inputAttrs, g.Attr("hx-target", "#search-results"))
-		inputAttrs = append(inputAttrs, g.Attr("hx-swap", "innerHTML"))
+		inputAttrs = append(inputAttrs,
+			g.Attr("hx-get", props.HTMXTarget),
+			g.Attr("hx-target", "#search-results"),
+			g.Attr("hx-swap", "innerHTML"),
+		)
 
 		trigger := props.HTMXTrigger
 		if trigger == "" {
@@ -167,7 +169,7 @@ func SearchInput(props *SearchInputProps) g.Node {
 	)
 }
 
-// ActionButton creates a styled action button
+// ActionButton creates a styled action button.
 func ActionButton(text, href string, palette *design.Palette, isPrimary bool) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
@@ -198,7 +200,7 @@ func ActionButton(text, href string, palette *design.Palette, isPrimary bool) g.
 	)
 }
 
-// Card creates a styled card container
+// Card creates a styled card container.
 func Card(palette *design.Palette, children ...g.Node) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
@@ -216,7 +218,7 @@ func Card(palette *design.Palette, children ...g.Node) g.Node {
 	)
 }
 
-// CardWithHeader creates a card with a distinct header section
+// CardWithHeader creates a card with a distinct header section.
 func CardWithHeader(title string, palette *design.Palette, headerActions []g.Node, children ...g.Node) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
@@ -262,7 +264,7 @@ func CardWithHeader(title string, palette *design.Palette, headerActions []g.Nod
 	)
 }
 
-// EmptyState creates an empty state component
+// EmptyState creates an empty state component.
 func EmptyState(title, description string, palette *design.Palette, actions []g.Node) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
@@ -292,7 +294,7 @@ func EmptyState(title, description string, palette *design.Palette, actions []g.
 	)
 }
 
-// LoadingSpinner creates a loading spinner component
+// LoadingSpinner creates a loading spinner component.
 func LoadingSpinner(palette *design.Palette) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette

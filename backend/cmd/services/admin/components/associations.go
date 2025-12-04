@@ -7,7 +7,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// AssociationItem represents a single association between two entities
+// AssociationItem represents a single association between two entities.
 type AssociationItem struct {
 	ID          string
 	Name        string
@@ -15,7 +15,7 @@ type AssociationItem struct {
 	Notes       string
 }
 
-// AssociationListProps defines the properties for displaying associations
+// AssociationListProps defines the properties for displaying associations.
 type AssociationListProps struct {
 	Palette              *design.Palette
 	Title                string
@@ -26,10 +26,10 @@ type AssociationListProps struct {
 	DeleteEndpoint       string
 	NoItemsMessage       string
 	HTMXTarget           string
-	Items                []AssociationItem
+	Items                []*AssociationItem
 }
 
-// AssociationList renders a list of associations with add/remove functionality
+// AssociationList renders a list of associations with add/remove functionality.
 func AssociationList(props *AssociationListProps) g.Node {
 	if props.Palette == nil {
 		props.Palette = &design.StandardPalette
@@ -109,31 +109,29 @@ func AssociationList(props *AssociationListProps) g.Node {
 				len(props.Items) > 0,
 				ghtml.Div(
 					ghtml.Class("space-y-2"),
-					g.Group(
-						g.Map(props.Items, func(item AssociationItem) g.Node {
-							return AssociationListItem(&AssociationListItemProps{
-								Item:           item,
-								DeleteEndpoint: props.DeleteEndpoint,
-								HTMXTarget:     props.HTMXTarget,
-								Palette:        props.Palette,
-							})
-						}),
-					),
+					g.Map(props.Items, func(item *AssociationItem) g.Node {
+						return AssociationListItem(&AssociationListItemProps{
+							Item:           item,
+							DeleteEndpoint: props.DeleteEndpoint,
+							HTMXTarget:     props.HTMXTarget,
+							Palette:        props.Palette,
+						})
+					}),
 				),
 			),
 		),
 	)
 }
 
-// AssociationListItemProps defines the properties for a single association item
+// AssociationListItemProps defines the properties for a single association item.
 type AssociationListItemProps struct {
 	Palette        *design.Palette
-	Item           AssociationItem
+	Item           *AssociationItem
 	DeleteEndpoint string
 	HTMXTarget     string
 }
 
-// AssociationListItem renders a single association item with delete button
+// AssociationListItem renders a single association item with delete button.
 func AssociationListItem(props *AssociationListItemProps) g.Node {
 	return ghtml.Div(
 		ghtml.Class("flex items-start justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"),
@@ -178,7 +176,7 @@ func AssociationListItem(props *AssociationListItemProps) g.Node {
 	)
 }
 
-// SearchResultItem represents a search result for adding associations
+// SearchResultItem represents a search result for adding associations.
 type SearchResultItem struct {
 	ID          string
 	Name        string
@@ -186,16 +184,16 @@ type SearchResultItem struct {
 	ExtraInfo   string // optional extra information to display
 }
 
-// AssociationSearchResultsProps defines the properties for search results
+// AssociationSearchResultsProps defines the properties for search results.
 type AssociationSearchResultsProps struct {
 	CreateEndpoint string
 	HTMXTarget     string
 	EntityID       string
 	NoResultsText  string
-	Results        []SearchResultItem
+	Results        []*SearchResultItem
 }
 
-// AssociationSearchResults renders search results for adding associations
+// AssociationSearchResults renders search results for adding associations.
 func AssociationSearchResults(props *AssociationSearchResultsProps) g.Node {
 	if props.NoResultsText == "" {
 		props.NoResultsText = "No results found."
@@ -210,28 +208,26 @@ func AssociationSearchResults(props *AssociationSearchResultsProps) g.Node {
 
 	return ghtml.Div(
 		ghtml.Class("max-h-60 overflow-y-auto space-y-1 border border-gray-200 rounded-md bg-white"),
-		g.Group(
-			g.Map(props.Results, func(item SearchResultItem) g.Node {
-				return ghtml.Button(
-					ghtml.Type("button"),
-					ghtml.Class("w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"),
-					g.Attr("hx-post", props.CreateEndpoint),
-					g.Attr("hx-target", props.HTMXTarget),
-					g.Attr("hx-swap", "outerHTML"),
-					g.Attr("hx-vals", `{"id": "`+item.ID+`"}`),
+		g.Map(props.Results, func(item *SearchResultItem) g.Node {
+			return ghtml.Button(
+				ghtml.Type("button"),
+				ghtml.Class("w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"),
+				g.Attr("hx-post", props.CreateEndpoint),
+				g.Attr("hx-target", props.HTMXTarget),
+				g.Attr("hx-swap", "outerHTML"),
+				g.Attr("hx-vals", `{"id": "`+item.ID+`"}`),
+				ghtml.Div(
+					ghtml.Class("font-medium text-gray-900"),
+					g.Text(item.Name),
+				),
+				g.If(
+					item.Description != "",
 					ghtml.Div(
-						ghtml.Class("font-medium text-gray-900"),
-						g.Text(item.Name),
+						ghtml.Class("text-sm text-gray-600 mt-0.5"),
+						g.Text(item.Description),
 					),
-					g.If(
-						item.Description != "",
-						ghtml.Div(
-							ghtml.Class("text-sm text-gray-600 mt-0.5"),
-							g.Text(item.Description),
-						),
-					),
-				)
-			}),
-		),
+				),
+			)
+		}),
 	)
 }

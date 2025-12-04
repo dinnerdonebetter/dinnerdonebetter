@@ -9,7 +9,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// LayoutConfig holds configuration for the admin layout
+// LayoutConfig holds configuration for the admin layout.
 type LayoutConfig struct {
 	Palette     *design.Palette
 	AppName     string
@@ -18,7 +18,7 @@ type LayoutConfig struct {
 	ShowSidebar bool
 }
 
-// DefaultLayoutConfig provides sensible defaults for the admin layout
+// DefaultLayoutConfig provides sensible defaults for the admin layout.
 func DefaultLayoutConfig() *LayoutConfig {
 	return &LayoutConfig{
 		Palette:     &design.StandardPalette,
@@ -60,7 +60,7 @@ func header(config *LayoutConfig) g.Node {
 						navLink("Accounts", "/accounts", config.Palette),
 						navLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 						navLink("Settings", "/settings", config.Palette),
-						navDropdown("Enumerations", config.Palette, []dropdownItem{
+						navDropdown("Enumerations", config.Palette, []*dropdownItem{
 							{Text: "Ingredients", Href: "/valid_ingredients"},
 							{Text: "Instruments", Href: "/valid_instruments"},
 							{Text: "Preparations", Href: "/valid_preparations"},
@@ -103,7 +103,7 @@ func header(config *LayoutConfig) g.Node {
 					mobileNavLink("Accounts", "/accounts", config.Palette),
 					mobileNavLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 					mobileNavLink("Settings", "/settings", config.Palette),
-					mobileNavDropdown("Enumerations", config.Palette, []dropdownItem{
+					mobileNavDropdown("Enumerations", config.Palette, []*dropdownItem{
 						{Text: "Ingredients", Href: "/valid_ingredients"},
 						{Text: "Instruments", Href: "/valid_instruments"},
 						{Text: "Preparations", Href: "/valid_preparations"},
@@ -141,14 +141,14 @@ func mobileNavLink(text, href string, palette *design.Palette) g.Node {
 	)
 }
 
-// dropdownItem represents a single item in a dropdown menu
+// dropdownItem represents a single item in a dropdown menu.
 type dropdownItem struct {
 	Text string
 	Href string
 }
 
-// navDropdown creates a dropdown menu for desktop navigation
-func navDropdown(text string, palette *design.Palette, items []dropdownItem) g.Node {
+// navDropdown creates a dropdown menu for desktop navigation.
+func navDropdown(text string, palette *design.Palette, items []*dropdownItem) g.Node {
 	dropdownItems := make([]g.Node, len(items))
 	for i, item := range items {
 		dropdownItems[i] = ghtml.A(
@@ -199,8 +199,8 @@ func navDropdown(text string, palette *design.Palette, items []dropdownItem) g.N
 	)
 }
 
-// mobileNavDropdown creates an expanded list of menu items for mobile navigation (CSS-only, no JavaScript)
-func mobileNavDropdown(text string, palette *design.Palette, items []dropdownItem) g.Node {
+// mobileNavDropdown creates an expanded list of menu items for mobile navigation (CSS-only, no JavaScript).
+func mobileNavDropdown(text string, palette *design.Palette, items []*dropdownItem) g.Node {
 	dropdownItems := make([]g.Node, len(items))
 	for i, item := range items {
 		dropdownItems[i] = ghtml.A(
@@ -248,7 +248,7 @@ var (
 		),
 	}
 
-	// JavaScript for mobile menu toggle
+	// JavaScript for mobile menu toggle.
 	mobileMenuScript = ghtml.Script(
 		g.Raw(`function toggleMobileMenu() {
 				const menu = document.getElementById('mobile-menu');

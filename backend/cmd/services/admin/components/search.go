@@ -9,7 +9,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-// SearchBoxProps defines the properties for a search box component
+// SearchBoxProps defines the properties for a search box component.
 type SearchBoxProps struct {
 	Palette            *design.Palette
 	ID                 string
@@ -21,7 +21,7 @@ type SearchBoxProps struct {
 	InitialDisplayText string
 }
 
-// SearchBox creates a search box with HTMX-powered autocomplete
+// SearchBox creates a search box with HTMX-powered autocomplete.
 func SearchBox(props *SearchBoxProps) g.Node {
 	if props.Palette == nil {
 		props.Palette = &design.StandardPalette
@@ -84,15 +84,15 @@ func SearchBox(props *SearchBoxProps) g.Node {
 				g.Attr("hx-target", "#"+searchInputID),
 				g.Attr("hx-swap", "outerHTML"),
 				g.Attr("hx-include", "this"),
-				g.Attr("hx-vals", fmt.Sprintf(`{"search_box_id": "%s"}`, props.ID)),
+				g.Attr("hx-vals", fmt.Sprintf(`{"search_box_id": %q}`, props.ID)),
 				g.Attr("autocomplete", "off"),
 			),
 		),
 	)
 }
 
-// SearchInputWithResults renders the search input (with preserved query) and results dropdown
-func SearchInputWithResults(searchBoxID string, searchEndpoint string, query string, results []SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
+// SearchInputWithResults renders the search input (with preserved query) and results dropdown.
+func SearchInputWithResults(searchBoxID, searchEndpoint, query string, results []*SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
 	}
@@ -125,7 +125,7 @@ func SearchInputWithResults(searchBoxID string, searchEndpoint string, query str
 			g.Attr("hx-target", "#"+searchInputID),
 			g.Attr("hx-swap", "outerHTML"),
 			g.Attr("hx-include", "this"),
-			g.Attr("hx-vals", fmt.Sprintf(`{"search_box_id": "%s"}`, searchBoxID)),
+			g.Attr("hx-vals", fmt.Sprintf(`{"search_box_id": %q}`, searchBoxID)),
 			g.Attr("autocomplete", "off"),
 		),
 		// Results dropdown
@@ -139,8 +139,8 @@ func SearchInputWithResults(searchBoxID string, searchEndpoint string, query str
 	)
 }
 
-// SearchResults creates a list of search results and manages visibility
-func SearchResults(results []SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
+// SearchResults creates a list of search results and manages visibility.
+func SearchResults(results []*SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
 	}
@@ -164,8 +164,8 @@ func SearchResults(results []SearchResultItem, onSelectJS string, palette *desig
 	)
 }
 
-// SearchResultItem_ creates a single search result item
-func SearchResultItem_(item SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
+// SearchResultItem_ creates a single search result item.
+func SearchResultItem_(item *SearchResultItem, onSelectJS string, palette *design.Palette) g.Node {
 	if palette == nil {
 		palette = &design.StandardPalette
 	}

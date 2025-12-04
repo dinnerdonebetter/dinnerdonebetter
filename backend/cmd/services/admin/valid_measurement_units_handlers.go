@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitCreate(res http.ResponseWriter
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidMeasurementUnitCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Measurement Unit", s.renderValidMeasurementUnitsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -48,7 +48,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitCreate(res http.ResponseWriter
 	measurementUnitID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_measurement_units/%s", measurementUnitID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidMeasurementUnitNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -217,7 +217,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 				},
 				"Metric": {
 					DisplayName: "Measurement System",
-					CustomRenderer: func(fieldName string, value any, config components.FieldConfig, palette *design.Palette) g.Node {
+					CustomRenderer: func(fieldName string, value any, config *components.FieldConfig, palette *design.Palette) g.Node {
 						// Build the select element for measurement system
 						// This select will update hidden Metric and Imperial fields via JavaScript
 						selectAttrs := []g.Node{
@@ -242,18 +242,16 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 						}
 
 						// Build options - only Metric and Imperial (no "Neither")
-						var options []g.Node
-						options = append(options, ghtml.Option(
+						options := []g.Node{ghtml.Option(
 							ghtml.Value("metric"),
 							g.Text("Metric"),
 							g.If(measurementSystem == "metric" || measurementSystem == "", ghtml.Selected()), // Default to Metric if neither is set
-						))
-						options = append(options, ghtml.Option(
+						), ghtml.Option(
 							ghtml.Value("imperial"),
 							g.Text("Imperial"),
 							g.If(measurementSystem == "imperial", ghtml.Selected()),
-						))
-
+						),
+						}
 						return ghtml.Div(
 							ghtml.Class("flex flex-col"),
 							ghtml.Label(
@@ -297,7 +295,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 				},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PluralName"},
 					Columns: 2,
@@ -323,7 +321,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Measurement Units", URL: "/valid_measurement_units"},
@@ -573,7 +571,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsSearch(_ http.ResponseWriter,
 	), nil
 }
 
-// renderValidMeasurementUnitsError creates a consistent error display for the valid measurement units page
+// renderValidMeasurementUnitsError creates a consistent error display for the valid measurement units page.
 func (s *AdminFrontendServer) renderValidMeasurementUnitsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Measurement Units",

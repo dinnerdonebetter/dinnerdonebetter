@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) ValidIngredientCreate(res http.ResponseWriter, req
 
 	// Decode JSON request body
 	var input *mealplanningsvc.ValidIngredientCreationRequestInput
-	if err := s.encoder.DecodeRequest(ctx, req, &input); err != nil {
+	if err = s.encoder.DecodeRequest(ctx, req, &input); err != nil {
 		return page("New Valid Ingredient", s.renderValidIngredientsError(fmt.Sprintf("Error decoding request: %v", err))), nil
 	}
 
@@ -48,7 +48,7 @@ func (s *AdminFrontendServer) ValidIngredientCreate(res http.ResponseWriter, req
 	ingredientID := createRes.Result.ID
 	http.Redirect(res, req, fmt.Sprintf("/valid_ingredients/%s", ingredientID), http.StatusSeeOther)
 
-	return nil, nil
+	return g.El("div"), nil
 }
 
 func (s *AdminFrontendServer) ValidIngredientNewPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -278,7 +278,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 				"IsHeat":        {InputType: "checkbox"},
 			},
 
-			FormRows: []components.FormRow{
+			FormRows: []*components.FormRow{
 				{
 					Fields:  []string{"Name", "PluralName"},
 					Columns: 2,
@@ -340,7 +340,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 		},
 
 		ShowBreadcrumbs: true,
-		Breadcrumbs: []components.Breadcrumb{
+		Breadcrumbs: []*components.Breadcrumb{
 			{Text: "Dashboard", URL: "/"},
 			{Text: "Enumerations", URL: ""},
 			{Text: "Valid Ingredients", URL: "/valid_ingredients"},
@@ -616,7 +616,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 	), nil
 }
 
-// renderValidIngredientsError creates a consistent error display for the valid ingredients page
+// renderValidIngredientsError creates a consistent error display for the valid ingredients page.
 func (s *AdminFrontendServer) renderValidIngredientsError(errorMsg string) g.Node {
 	return components.ContentContainer(&components.ContentContainerProps{
 		Title:    "Valid Ingredients",
@@ -628,31 +628,6 @@ func (s *AdminFrontendServer) renderValidIngredientsError(errorMsg string) g.Nod
 				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
 				g.Text(errorMsg),
 			),
-		),
-	)
-}
-
-// propertyBadge creates a badge showing whether a boolean property is true or false
-func propertyBadge(label string, value bool, palette *design.Palette) g.Node {
-	bgColor := "bg-gray-100"
-	textColor := design.TextColor(palette.Text)
-	valueText := "No"
-
-	if value {
-		bgColor = design.Background(design.Color{Value: "green-100"})
-		textColor = design.TextColor(design.Color{Value: "green-800"})
-		valueText = "Yes"
-	}
-
-	return ghtml.Div(
-		ghtml.Class(fmt.Sprintf("flex flex-col p-3 rounded-lg %s", bgColor)),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("text-xs font-medium %s opacity-75", textColor)),
-			g.Text(label),
-		),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("mt-1 text-sm font-semibold %s", textColor)),
-			g.Text(valueText),
 		),
 	)
 }
