@@ -25,16 +25,6 @@ spec:
                 name: dinner-done-better-api-svc
                 port:
                   number: 8000
-    - host: "admin.dinnerdonebetter.dev"
-      http:
-        paths:
-          - pathType: Prefix
-            path: "/"
-            backend:
-              service:
-                name: dinner-done-better-admin-app-svc
-                port:
-                  number: 7000
     - host: "app.dinnerdonebetter.dev"
       http:
         paths:
@@ -45,14 +35,4 @@ spec:
                 name: dinner-done-better-webapp-svc
                 port:
                   number: 9000
-    - host: "www.dinnerdonebetter.dev"
-      http:
-        paths:
-          - pathType: Prefix
-            path: "/"
-            backend:
-              service:
-                name: dinner-done-better-landing-svc
-                port:
-                  number: 10000
 ---

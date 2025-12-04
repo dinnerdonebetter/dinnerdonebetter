@@ -14,8 +14,6 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-      frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-      frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
@@ -27,14 +25,6 @@ jobs:
               - frontend/apps/web/**
               - frontend/packages/**
               - frontend/environments/dev/webapp/**
-            frontend_landing:
-              - frontend/apps/landing/**
-              - frontend/packages/**
-              - frontend/environments/dev/landing/**
-            frontend_admin:
-              - frontend/apps/admin/**
-              - frontend/packages/**
-              - frontend/environments/dev/admin/**
 
   backend:
     needs: [changes]
@@ -81,53 +71,3 @@ jobs:
           NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
           NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
         working-directory: frontend/apps/web
-
-  admin_webapp:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        configs:
-          - node: 'lts/*'
-    name: admin webapp on ${{ matrix.configs.node }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend/
-
-      - run: yarn run build
-        env:
-          NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-          NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
-        working-directory: frontend/apps/admin
-
-  landing_webapp:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        configs:
-          - node: 'lts/*'
-    name: landing on ${{ matrix.configs.node }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend/
-
-      - run: yarn run build
-        working-directory: frontend/apps/landing
-

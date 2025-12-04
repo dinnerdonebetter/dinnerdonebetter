@@ -20,16 +20,6 @@ profiles:
             buildArgs:
               NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
 
-        - image: dinner-done-better-admin-app
-          docker:
-            dockerfile: ./apps/admin/Dockerfile
-            buildArgs:
-              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
-
-        - image: dinner-done-better-landing
-          docker:
-            dockerfile: ./apps/landing/Dockerfile
-
     manifests:
       kustomize:
         paths:
@@ -42,17 +32,9 @@ profiles:
 
     portForward:
       - resourceType: Service
-        resourceName: dinner-done-better-admin-app-svc
-        namespace: localdev
-        port: 7000
-      - resourceType: Service
         resourceName: dinner-done-better-webapp-svc
         namespace: localdev
         port: 9000
-      - resourceType: Service
-        resourceName: dinner-done-better-landing-svc
-        namespace: localdev
-        port: 10000
 
   - name: dev
     build:
@@ -65,16 +47,6 @@ profiles:
             dockerfile: ./apps/web/Dockerfile
             buildArgs:
               NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
-
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app
-          docker:
-            dockerfile: ./apps/admin/Dockerfile
-            buildArgs:
-              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
-
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
-          docker:
-            dockerfile: ./apps/landing/Dockerfile
 
     manifests:
       kustomize:

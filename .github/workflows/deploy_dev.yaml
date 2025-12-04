@@ -17,8 +17,6 @@ jobs:
       infra: ${{ steps.filter.outputs.infra }}
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-      frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-      frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
     steps:
       - name: disabled
         run: echo "disabled"
@@ -38,14 +36,6 @@ jobs:
 #              - frontend/apps/web/**
 #              - frontend/packages/**
 #              - frontend/environments/dev/webapp/**
-#            frontend_landing:
-#              - frontend/apps/landing/**
-#              - frontend/packages/**
-#              - frontend/environments/dev/landing/**
-#            frontend_admin:
-#              - frontend/apps/admin/**
-#              - frontend/packages/**
-#              - frontend/environments/dev/admin/**
 #
 #  baseline-infra:
 #    needs: [changes]
@@ -111,14 +101,6 @@ jobs:
 #              - frontend/apps/web/**
 #              - frontend/packages/**
 #              - frontend/environments/dev/webapp/**
-#            frontend_landing:
-#              - frontend/apps/landing/**
-#              - frontend/packages/**
-#              - frontend/environments/dev/landing/**
-#            frontend_admin:
-#              - frontend/apps/admin/**
-#              - frontend/packages/**
-#              - frontend/environments/dev/admin/**
 #
 #  backend-infra:
 #    needs:
@@ -190,120 +172,6 @@ jobs:
 #        working-directory: backend/deploy/environments/dev
 #        run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 #
-#  admin-webapp-infra:
-#    needs:
-#      - changes
-#      - baseline-infra
-#    runs-on: ubuntu-latest
-#    if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
-#    strategy:
-#      matrix:
-#        configs:
-#          - gcp-region: 'us-central1'
-#            gcp-project: 'dinner-done-better-dev'
-#            container-name: 'admin_app_server'
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v5
-#
-#      - id: auth
-#        uses: google-github-actions/auth@v2
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      # Setup gcloud CLI
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v2
-#
-#      - name: get GKE credentials
-#        uses: 'google-github-actions/get-gke-credentials@v2'
-#        with:
-#          cluster_name: 'dev'
-#          context_name: 'dev_context'
-#          location: 'us-central1'
-#
-#      - name: copy kubeconfig
-#        working-directory: frontend/deploy/environments/dev/admin
-#        run: |
-#          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
-#
-#      - name: Setup Terraform
-#        uses: hashicorp/setup-terraform@v3
-#        with:
-#          terraform_version: 1.9.5
-#          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-#
-#      - name: Terraform Init
-#        working-directory: frontend/deploy/environments/dev/admin/terraform
-#        id: init
-#        run: terraform init
-#
-#      # validate backend workspace terraform
-#
-#      - name: Terraform Format
-#        working-directory: frontend/deploy/environments/dev/admin/terraform
-#        id: fmt
-#        run: terraform fmt -check
-#
-#      - name: Terraform Validate
-#        working-directory: frontend/deploy/environments/dev/admin/terraform
-#        id: validate
-#        run: terraform validate -no-color
-#
-#      - name: Terraform Apply
-#        run: terraform apply -auto-approve
-#        working-directory: frontend/deploy/environments/dev/admin/terraform
-#
-#  landing-infra:
-#    needs:
-#      - changes
-#      - baseline-infra
-#    runs-on: ubuntu-latest
-#    if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
-#    strategy:
-#      matrix:
-#        configs:
-#          - gcp-region: 'us-central1'
-#            gcp-project: 'dinner-done-better-dev'
-#            container-name: 'landing_server'
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v5
-#
-#      - id: auth
-#        uses: google-github-actions/auth@v2
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      # Setup gcloud CLI
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v2
-#
-#      - name: Setup Terraform
-#        uses: hashicorp/setup-terraform@v3
-#        with:
-#          terraform_version: 1.9.5
-#          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-#
-#      - name: Terraform Init
-#        working-directory: frontend/deploy/environments/dev/landing/terraform
-#        id: init
-#        run: terraform init
-#
-#      - name: Terraform Format
-#        working-directory: frontend/deploy/environments/dev/landing/terraform
-#        id: fmt
-#        run: terraform fmt -check
-#
-#      - name: Terraform Validate
-#        working-directory: frontend/deploy/environments/dev/landing/terraform
-#        id: validate
-#        run: terraform validate -no-color
-#
-#      - name: Terraform Apply
-#        run: terraform apply -auto-approve
-#        working-directory: frontend/deploy/environments/dev/landing/terraform
-#
 #  webapp-infra:
 #    needs:
 #      - changes
@@ -371,8 +239,6 @@ jobs:
 #    needs:
 #      - backend-infra
 #      - webapp-infra
-#      - admin-webapp-infra
-#      - landing-infra
 #    timeout-minutes: 90
 #    runs-on: ubuntu-latest
 #    strategy:

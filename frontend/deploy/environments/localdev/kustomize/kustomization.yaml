@@ -7,8 +7,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ../../../kustomize/components/webapp
-  - ../../../kustomize/components/admin
-  - ../../../kustomize/components/landing
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []
