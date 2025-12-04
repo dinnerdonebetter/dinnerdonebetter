@@ -25,7 +25,7 @@ func BuildFakeValidVessel() *types.ValidVessel {
 		WidthInMillimeters:             float32(buildFakeNumber()),
 		LengthInMillimeters:            float32(buildFakeNumber()),
 		HeightInMillimeters:            float32(buildFakeNumber()),
-		Shape:                          "other",
+		Shape:                          types.VesselShapeOther,
 		CreatedAt:                      BuildFakeTime(),
 	}
 }
@@ -39,10 +39,10 @@ func BuildFakeValidVesselsList() *filtering.QueryFilteredResult[types.ValidVesse
 
 	return &filtering.QueryFilteredResult[types.ValidVessel]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

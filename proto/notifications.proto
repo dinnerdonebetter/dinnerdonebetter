@@ -25,7 +25,7 @@ message GetUserNotificationsRequest {
 
 message GetUserNotificationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated UserNotification Results = 3;
 }
 

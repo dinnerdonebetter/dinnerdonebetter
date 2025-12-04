@@ -32,10 +32,10 @@ func BuildFakeRecipeMediaList() *filtering.QueryFilteredResult[types.RecipeMedia
 
 	return &filtering.QueryFilteredResult[types.RecipeMedia]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

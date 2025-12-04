@@ -47,8 +47,8 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	input := converters.ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(request.Input)
-	input.BelongsToUser = sessionContextData.GetUserID()
+	belongsToUser := sessionContextData.GetUserID()
+	input := converters.ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(request.Input, belongsToUser)
 
 	created, err := s.identityDataManager.CreateAccount(ctx, input)
 	if err != nil {
@@ -117,17 +117,40 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	accounts, _, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
+	accounts, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
 
 	x := &identitysvc.GetAccountsResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(accounts.Pagination, filter),
 	}
 
-	for _, account := range accounts {
-		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
+	for _, account := range accounts.Data {
+		x.Results = append(x.Results, converters.ConvertAccountToGRPCAccount(account))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitysvc.GetAccountsForUserRequest) (*identitysvc.GetAccountsForUserResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	accounts, err := s.identityDataManager.GetAccounts(ctx, request.UserID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+	}
+
+	x := &identitysvc.GetAccountsForUserResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(accounts.Pagination, filter),
+	}
+
+	for _, account := range accounts.Data {
+		x.Results = append(x.Results, converters.ConvertAccountToGRPCAccount(account))
 	}
 
 	return x, nil
@@ -225,7 +248,7 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	}
 
 	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
-	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, request.UserID, sessionContextData.GetActiveAccountID(), input); err != nil {
+	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, sessionContextData.GetActiveAccountID(), request.UserID, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
 	}
 

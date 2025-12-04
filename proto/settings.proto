@@ -69,7 +69,7 @@ message GetServiceSettingConfigurationByNameRequest {
 
 message GetServiceSettingConfigurationByNameResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   ServiceSettingConfiguration Result = 3;
 }
 
@@ -80,7 +80,7 @@ message GetServiceSettingConfigurationsForAccountRequest {
 
 message GetServiceSettingConfigurationsForAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ServiceSettingConfiguration Results = 3;
 }
 
@@ -91,7 +91,7 @@ message GetServiceSettingConfigurationsForUserRequest {
 
 message GetServiceSettingConfigurationsForUserResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ServiceSettingConfiguration Results = 3;
 }
 
@@ -102,7 +102,7 @@ message GetServiceSettingsRequest {
 
 message GetServiceSettingsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ServiceSetting Results = 3;
 }
 
@@ -114,7 +114,7 @@ message SearchForServiceSettingsRequest {
 
 message SearchForServiceSettingsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated ServiceSetting Results = 3;
 }
 

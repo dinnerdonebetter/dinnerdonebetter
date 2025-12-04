@@ -14,8 +14,7 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filteri
 	filter := &filtering.QueryFilter{
 		Limit:           pointer.To[uint8](50),
 		IncludeArchived: qf.IncludeArchived,
-		Cursor:          qf.NextCursor,
-		Query:           qf.Query,
+		Cursor:          qf.Cursor,
 		SortBy:          qf.SortBy,
 		CreatedAfter:    ConvertPBTimestampToTimePointer(qf.CreatedAfter),
 		CreatedBefore:   ConvertPBTimestampToTimePointer(qf.CreatedBefore),
@@ -34,18 +33,52 @@ func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagina
 		qf = filtering.DefaultQueryFilter()
 	}
 
+	// For AppliedQueryFilter, we should use the filter's cursor (the cursor that was used to get to this page),
+	// NOT the result pagination's cursor (which is the next page cursor).
+	// The resultPagination parameter is only used for other purposes, not for setting AppliedQueryFilter.Cursor.
+	cursor := qf.Cursor
+
+	// Safeguard: If the filter's cursor matches the result pagination's cursor (both pointing to next page),
+	// it means we're on page 1 (no cursor was used to get here), so set cursor to nil.
+	if cursor != nil && resultPagination.Cursor != "" && *cursor == resultPagination.Cursor {
+		cursor = nil
+	}
+
 	f := &grpcfiltering.QueryFilter{
 		IncludeArchived: qf.IncludeArchived,
-		NextCursor:      qf.Cursor,
+		Cursor:          cursor,
 		SortBy:          qf.SortBy,
 		CreatedAfter:    ConvertTimePointerToPBTimestamp(qf.CreatedAfter),
 		CreatedBefore:   ConvertTimePointerToPBTimestamp(qf.CreatedBefore),
 		UpdatedAfter:    ConvertTimePointerToPBTimestamp(qf.UpdatedAfter),
 		UpdatedBefore:   ConvertTimePointerToPBTimestamp(qf.UpdatedBefore),
-		Query:           qf.Query,
 	}
 	if qf.Limit != nil {
 		f.PageSize = pointer.To(uint32(*qf.Limit))
+	}
+
+	return f
+}
+
+func ConvertPaginationToGRPCPagination(pagination filtering.Pagination, qf *filtering.QueryFilter) *grpcfiltering.Pagination {
+	// Use AppliedQueryFilter from pagination if it exists (it's what was actually applied),
+	// otherwise fall back to the qf parameter
+	appliedFilter := pagination.AppliedQueryFilter
+	if appliedFilter == nil {
+		if qf == nil {
+			appliedFilter = filtering.DefaultQueryFilter()
+		} else {
+			appliedFilter = qf
+		}
+	}
+
+	f := &grpcfiltering.Pagination{
+		AppliedQueryFilter: ConvertQueryFilterToGRPCQueryFilter(appliedFilter, pagination),
+		Cursor:             pagination.Cursor,
+		FilteredCount:      pagination.FilteredCount,
+		TotalCount:         pagination.TotalCount,
+		MaxResponseSize:    uint32(pagination.MaxResponseSize),
+		PreviousCursor:     pagination.PreviousCursor,
 	}
 
 	return f

@@ -45,7 +45,7 @@ message GetOAuth2ClientsRequest {
 
 message GetOAuth2ClientsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated OAuth2Client Results = 3;
 }
 

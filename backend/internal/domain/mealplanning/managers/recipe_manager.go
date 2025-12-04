@@ -33,7 +33,7 @@ type (
 		ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
-		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error)
+		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)
@@ -214,7 +214,7 @@ func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*mealp
 	return x, nil
 }
 
-func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) {
+func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -239,7 +239,7 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSear
 		var recipeSubsets []*eatingindexing.RecipeSearchSubset
 		recipeSubsets, err = m.recipeSearchIndex.Search(ctx, query)
 		if err != nil {
-			return nil, "", observability.PrepareAndLogError(err, logger, span, "failed to search external service for recipes")
+			return nil, observability.PrepareAndLogError(err, logger, span, "failed to search external service for recipes")
 		}
 
 		ids := []string{}
@@ -250,10 +250,10 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSear
 		recipes.Data, err = m.db.GetRecipesWithIDs(ctx, ids)
 	}
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "failed to search for recipes")
+		return nil, observability.PrepareAndLogError(err, logger, span, "failed to search for recipes")
 	}
 
-	return recipes.Data, "", nil
+	return recipes, nil
 }
 
 func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error {

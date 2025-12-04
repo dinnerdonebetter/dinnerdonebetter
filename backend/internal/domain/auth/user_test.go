@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"errors"
 	"testing"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -60,7 +62,13 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 			TOTPToken: "not_real",
 		}
 
-		assert.Error(t, x.ValidateWithContext(ctx))
+		err := x.ValidateWithContext(ctx)
+		var validationErr validation.Errors
+		if errors.As(err, &validationErr) {
+			assert.NotNil(t, validationErr["totpToken"])
+		}
+
+		assert.Error(t, err)
 	})
 }
 

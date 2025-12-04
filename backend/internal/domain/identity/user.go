@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/pquerna/otp/totp"
 )
 
 const (
@@ -163,9 +165,10 @@ type (
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
+		GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		GetUsersWithIDs(ctx context.Context, ids []string) ([]*User, error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*User, error)
+		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
@@ -271,6 +274,15 @@ func (i *AvatarUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Base64EncodedData, validation.Required),
 	)
+}
+
+func (u *User) GenerateTOTPCode() (string, error) {
+	code, err := totp.GenerateCode(strings.ToUpper(u.TwoFactorSecret), time.Now().UTC())
+	if err != nil {
+		return "", fmt.Errorf("generating totp code: %w", err)
+	}
+
+	return code, nil
 }
 
 // begin obligatory getter implementations

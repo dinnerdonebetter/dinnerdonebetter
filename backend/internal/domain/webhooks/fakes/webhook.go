@@ -40,10 +40,10 @@ func BuildFakeWebhooksList() *filtering.QueryFilteredResult[types.Webhook] {
 
 	return &filtering.QueryFilteredResult[types.Webhook]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}
@@ -69,10 +69,10 @@ func BuildFakeWebhookTriggerEventList() *filtering.QueryFilteredResult[types.Web
 
 	return &filtering.QueryFilteredResult[types.WebhookTriggerEvent]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

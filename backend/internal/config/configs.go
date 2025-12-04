@@ -19,6 +19,8 @@ import (
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
@@ -151,7 +153,8 @@ type (
 	APIServiceOAuth2ConnectionConfig struct {
 		_ struct{} `json:"-"`
 
-		APIServerURL          string `env:"API_SERVER_URL"           json:"apiServerURL"`
+		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"      json:"httpAPIServerURL"`
+		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"      json:"grpcAPIServerURL"`
 		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
@@ -167,14 +170,13 @@ type (
 	AdminWebappConfig struct {
 		_ struct{} `json:"-"`
 
-		Cookies              cookies.Config                   `env:"init"                    envPrefix:"COOKIES_"    json:"cookies"`
-		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"      json:"apiServiceConfig"`
-		Routing              routingcfg.Config                `envPrefix:"ROUTING_"          json:"routing"`
-		Encoding             encoding.Config                  `envPrefix:"ENCODING_"         json:"encoding"`
-		Observability        observability.Config             `envPrefix:"OBSERVABILITY_"    json:"observability"`
-		Meta                 MetaSettings                     `envPrefix:"META_"             json:"meta"`
-		HTTPServer           http.Config                      `envPrefix:"SERVER_"           json:"server"`
-		APIClientCache       NamedCacheConfig                 `envPrefix:"API_CLIENT_CACHE_" json:"apiClientCache"`
+		Cookies              cookies.Config                   `env:"init"                 envPrefix:"COOKIES_"    json:"cookies"`
+		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
+		Routing              routingcfg.Config                `envPrefix:"ROUTING_"       json:"routing"`
+		Encoding             encoding.Config                  `envPrefix:"ENCODING_"      json:"encoding"`
+		Observability        observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta                 MetaSettings                     `envPrefix:"META_"          json:"meta"`
+		HTTPServer           http.Config                      `envPrefix:"SERVER_"        json:"server"`
 	}
 )
 
@@ -411,4 +413,24 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	}
 
 	return cfg, nil
+}
+
+func LoadConfigFromPath[T configurations](ctx context.Context, configurationFilepath string) (*T, error) {
+	content, err := os.ReadFile(configurationFilepath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
+	}
+
+	decoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+	var x *T
+	if err = decoder.DecodeBytes(ctx, content, &x); err != nil {
+		return nil, fmt.Errorf("failed to decode api configuration file: %w", err)
+	}
+
+	if err = ApplyEnvironmentVariables(x); err != nil {
+		return nil, fmt.Errorf("applying environment variables: %w", err)
+	}
+
+	return x, nil
 }

@@ -12,11 +12,11 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		HTTPSCertificateFile    string        `env:"HTTPS_CERTIFICATE_FILEPATH"     json:"httpsCertificate,omitempty"`
-		HTTPSCertificateKeyFile string        `env:"HTTPS_CERTIFICATE_KEY_FILEPATH" json:"httpsCertificateKey,omitempty"`
-		StartupDeadline         time.Duration `env:"STARTUP_DEADLINE"               json:"startupDeadline,omitempty"`
-		HTTPPort                uint16        `env:"HTTP_PORT"                      json:"httpPort"`
-		Debug                   bool          `env:"DEBUG"                          json:"debug"`
+		SSLCertificateFile    string        `env:"SSL_CERTIFICATE_FILEPATH"     json:"sslsCertificate,omitempty"`
+		SSLCertificateKeyFile string        `env:"SSL_CERTIFICATE_KEY_FILEPATH" json:"sslsCertificateKey,omitempty"`
+		StartupDeadline       time.Duration `env:"STARTUP_DEADLINE"             json:"startupDeadline,omitempty"`
+		Port                  uint16        `env:"PORT"                         json:"port"`
+		Debug                 bool          `env:"DEBUG"                        json:"debug"`
 	}
 )
 
@@ -27,7 +27,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
-		validation.Field(&cfg.HTTPPort, validation.Required),
+		validation.Field(&cfg.Port, validation.Required),
 		validation.Field(&cfg.StartupDeadline, validation.Required),
 	)
 }

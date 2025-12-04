@@ -49,5 +49,5 @@ artifacts/
 
 deploy/environments/localdev/generated
 
-
 cmd/services/demo
+main

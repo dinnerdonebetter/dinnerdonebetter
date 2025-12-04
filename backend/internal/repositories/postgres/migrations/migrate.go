@@ -28,35 +28,35 @@ func fetchMigration(name string) string {
 func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB, config *databasecfg.Config) *pgmigrations.Migrator {
 	migrations := []*databasecfg.MigrationSpec{
 		{
-			Description: "basic infrastructural tables",
+			Description: "identity tables",
 			RawQuery:    fetchMigration("00001_identity"),
 		},
 		{
-			Description: "service types and tables",
+			Description: "audit log entries tables",
 			RawQuery:    fetchMigration("00002_auditlogentries"),
 		},
 		{
-			Description: "user notifications table",
+			Description: "auth tables",
 			RawQuery:    fetchMigration("00003_auth"),
 		},
 		{
-			Description: "audit log table",
+			Description: "oauth tables",
 			RawQuery:    fetchMigration("00004_oauth"),
 		},
 		{
-			Description: "audit log table",
+			Description: "settings tables",
 			RawQuery:    fetchMigration("00005_settings"),
 		},
 		{
-			Description: "audit log table",
+			Description: "user notifications table",
 			RawQuery:    fetchMigration("00006_notifications"),
 		},
 		{
-			Description: "audit log table",
+			Description: "webhooks tables",
 			RawQuery:    fetchMigration("00007_webhooks"),
 		},
 		{
-			Description: "audit log table",
+			Description: "meal planning tables",
 			RawQuery:    fetchMigration("00008_mealplanning"),
 		},
 	}

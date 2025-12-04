@@ -93,7 +93,7 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidMeasurementUnits(ctx, updatedValidMeasurementUnit.Name, nil)
 	assert.NoError(t, err)
-	assert.Subset(t, validMeasurementUnits.Data, byName)
+	assert.Subset(t, validMeasurementUnits.Data, byName.Data)
 
 	random, err := dbc.GetRandomValidMeasurementUnit(ctx)
 	assert.NoError(t, err)

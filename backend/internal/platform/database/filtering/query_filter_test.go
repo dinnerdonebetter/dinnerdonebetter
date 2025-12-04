@@ -24,7 +24,6 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
-			Query:           t.Name(),
 			Cursor:          pointer.To(t.Name()),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
@@ -58,7 +57,6 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Query:           t.Name(),
 			Cursor:          pointer.To(t.Name()),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
@@ -116,7 +114,6 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
-			Query:           t.Name(),
 			Cursor:          pointer.To(t.Name()),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
@@ -128,15 +125,14 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		}
 
 		expected := url.Values{
-			textsearch.QueryKeySearch: []string{t.Name()},
-			QueryKeyCursor:            []string{*qf.Cursor},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.Limit))},
-			QueryKeyCreatedBefore:     []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyCreatedAfter:      []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedBefore:     []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedAfter:      []string{qf.UpdatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyIncludeArchived:   []string{strconv.FormatBool(*qf.IncludeArchived)},
-			QueryKeySortBy:            []string{*qf.SortBy},
+			QueryKeyCursor:          []string{*qf.Cursor},
+			QueryKeyLimit:           []string{strconv.Itoa(int(*qf.Limit))},
+			QueryKeyCreatedBefore:   []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyCreatedAfter:    []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedBefore:   []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedAfter:    []string{qf.UpdatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyIncludeArchived: []string{strconv.FormatBool(*qf.IncludeArchived)},
+			QueryKeySortBy:          []string{*qf.SortBy},
 		}
 
 		actual := qf.ToValues()
@@ -164,7 +160,6 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Query:         t.Name(),
 			Cursor:        pointer.To(t.Name()),
 			Limit:         pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:  pointer.To(tt),
@@ -230,8 +225,8 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		}
 
 		expected := Pagination{
-			Cursor: *qf.Cursor,
-			Limit:  *qf.Limit,
+			Cursor:          *qf.Cursor,
+			MaxResponseSize: *qf.Limit,
 		}
 
 		actual := qf.ToPagination()
@@ -267,10 +262,12 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		expected := &QueryFilteredResult[string]{
 			Data: data,
 			Pagination: Pagination{
-				Cursor:        *data[1],
-				Limit:         *qf.Limit,
-				FilteredCount: filteredCount,
-				TotalCount:    totalCount,
+				Cursor:             *data[1],
+				PreviousCursor:     *qf.Cursor,
+				MaxResponseSize:    *qf.Limit,
+				FilteredCount:      filteredCount,
+				TotalCount:         totalCount,
+				AppliedQueryFilter: qf,
 			},
 		}
 
@@ -294,10 +291,40 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		expected := &QueryFilteredResult[string]{
 			Data: data,
 			Pagination: Pagination{
-				Cursor:        "",
-				Limit:         *qf.Limit,
-				FilteredCount: filteredCount,
-				TotalCount:    totalCount,
+				Cursor:             "",
+				PreviousCursor:     *qf.Cursor,
+				MaxResponseSize:    *qf.Limit,
+				FilteredCount:      filteredCount,
+				TotalCount:         totalCount,
+				AppliedQueryFilter: qf,
+			},
+		}
+
+		actual := NewQueryFilteredResult(data, filteredCount, totalCount, idExtractor, qf)
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with no cursor", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Limit: pointer.To(uint8(MaxQueryFilterLimit)),
+		}
+
+		data := []*string{pointer.To("a"), pointer.To("b")}
+		filteredCount := uint64(len(data))
+		totalCount := uint64(len(data))
+		idExtractor := func(s *string) string { return *s }
+
+		expected := &QueryFilteredResult[string]{
+			Data: data,
+			Pagination: Pagination{
+				Cursor:             *data[1],
+				PreviousCursor:     "",
+				MaxResponseSize:    *qf.Limit,
+				FilteredCount:      filteredCount,
+				TotalCount:         totalCount,
+				AppliedQueryFilter: qf,
 			},
 		}
 

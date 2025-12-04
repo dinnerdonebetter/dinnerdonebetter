@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -102,7 +103,7 @@ func TestRecipeManager_ListRecipes(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -130,8 +131,8 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.RecipeDatabaseCreationInput]()).Return(expected, nil)
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.RecipeDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeCreatedServiceEventType: {
@@ -162,7 +163,7 @@ func TestRecipeManager_ReadRecipe(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -189,14 +190,13 @@ func TestRecipeManager_SearchRecipes(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.SearchForRecipes), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.SearchForRecipes), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
-		actual, cursor, err := rm.SearchRecipes(ctx, exampleQuery, false, nil)
+		actual, err := rm.SearchRecipes(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -217,8 +217,8 @@ func TestRecipeManager_UpdateRecipe(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.Recipe]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.Recipe]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeUpdatedServiceEventType: {
@@ -248,7 +248,7 @@ func TestRecipeManager_ArchiveRecipe(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipe), testutils.ContextMatcher, expected.ID, exampleOwnerID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipe), testutils.ContextMatcher, expected.ID, exampleOwnerID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeArchivedServiceEventType: {
@@ -278,7 +278,7 @@ func TestRecipeManager_RecipeEstimatedPrepSteps(T *testing.T) {
 		expectations := setupExpectationsForRecipeManagerWithAnalyzer(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
 			},
 			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
 				analyzer.On("GenerateMealPlanTasksForRecipe", testutils.ContextMatcher, "", testutils.MatchType[*types.Recipe]()).Return(expectedResults, nil)
@@ -319,7 +319,7 @@ func TestRecipeManager_RecipeMermaid(T *testing.T) {
 		expectations := setupExpectationsForRecipeManagerWithAnalyzer(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
 			},
 			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
 				analyzer.On("RenderMermaidDiagramForRecipe", testutils.ContextMatcher, testutils.MatchType[*types.Recipe]()).Return(expectedResult, nil)
@@ -350,8 +350,8 @@ func TestRecipeManager_CloneRecipe(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
-				db.On(testutils.GetMethodName(rm.db.CreateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.RecipeDatabaseCreationInput]()).Return(cloned, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.RecipeDatabaseCreationInput]()).Return(cloned, nil)
 			},
 			map[string][]string{
 				types.RecipeClonedServiceEventType: {
@@ -383,7 +383,7 @@ func TestRecipeManager_ListRecipeSteps(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeSteps), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeSteps), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -411,7 +411,7 @@ func TestRecipeManager_CreateRecipeStep(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStep), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStep), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepCreatedServiceEventType: {
@@ -444,7 +444,7 @@ func TestRecipeManager_ReadRecipeStep(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStep), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStep), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -472,8 +472,8 @@ func TestRecipeManager_UpdateRecipeStep(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStep), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStep.ID).Return(exampleRecipeStep, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStep), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStep]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStep), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStep.ID).Return(exampleRecipeStep, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStep), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStep]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepUpdatedServiceEventType: {
@@ -504,7 +504,7 @@ func TestRecipeManager_ArchiveRecipeStep(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStep), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStep), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepArchivedServiceEventType: {
@@ -546,7 +546,7 @@ func TestRecipeManager_ListRecipeStepProducts(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepProducts), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepProducts), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -575,7 +575,7 @@ func TestRecipeManager_CreateRecipeStepProduct(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStepProduct), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepProductDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepProduct), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepProductDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepProductCreatedServiceEventType: {
@@ -610,7 +610,7 @@ func TestRecipeManager_ReadRecipeStepProduct(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -639,8 +639,8 @@ func TestRecipeManager_UpdateRecipeStepProduct(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepProduct.ID).Return(exampleRecipeStepProduct, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStepProduct), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepProduct]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepProduct.ID).Return(exampleRecipeStepProduct, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStepProduct), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepProduct]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepProductUpdatedServiceEventType: {
@@ -673,7 +673,7 @@ func TestRecipeManager_ArchiveRecipeStepProduct(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStepProduct), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStepProduct), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepProductArchivedServiceEventType: {
@@ -706,7 +706,7 @@ func TestRecipeManager_ListRecipeStepInstruments(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepInstruments), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepInstruments), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -735,7 +735,7 @@ func TestRecipeManager_CreateRecipeStepInstrument(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStepInstrument), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepInstrumentDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepInstrument), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentCreatedServiceEventType: {
@@ -770,7 +770,7 @@ func TestRecipeManager_ReadRecipeStepInstrument(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -799,8 +799,8 @@ func TestRecipeManager_UpdateRecipeStepInstrument(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepInstrument.ID).Return(exampleRecipeStepInstrument, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStepInstrument), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepInstrument]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepInstrument.ID).Return(exampleRecipeStepInstrument, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStepInstrument), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepInstrument]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentUpdatedServiceEventType: {
@@ -833,7 +833,7 @@ func TestRecipeManager_ArchiveRecipeStepInstrument(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepInstrumentArchivedServiceEventType: {
@@ -866,7 +866,7 @@ func TestRecipeManager_ListRecipeStepIngredients(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepIngredients), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepIngredients), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -895,7 +895,7 @@ func TestRecipeManager_CreateRecipeStepIngredient(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStepIngredient), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepIngredientDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepIngredient), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepIngredientCreatedServiceEventType: {
@@ -930,7 +930,7 @@ func TestRecipeManager_ReadRecipeStepIngredient(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -959,8 +959,8 @@ func TestRecipeManager_UpdateRecipeStepIngredient(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID).Return(exampleRecipeStepIngredient, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStepIngredient), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepIngredient]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID).Return(exampleRecipeStepIngredient, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStepIngredient), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepIngredient]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepIngredientUpdatedServiceEventType: {
@@ -993,7 +993,7 @@ func TestRecipeManager_ArchiveRecipeStepIngredient(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepIngredientArchivedServiceEventType: {
@@ -1025,7 +1025,7 @@ func TestRecipeManager_ListRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipePrepTasks), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipePrepTasks), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1053,7 +1053,7 @@ func TestRecipeManager_CreateRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipePrepTask), testutils.ContextMatcher, testutils.MatchType[*types.RecipePrepTaskDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipePrepTask), testutils.ContextMatcher, testutils.MatchType[*types.RecipePrepTaskDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipePrepTaskCreatedServiceEventType: {
@@ -1086,7 +1086,7 @@ func TestRecipeManager_ReadRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1114,8 +1114,8 @@ func TestRecipeManager_UpdateRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, exampleRecipePrepTask.ID).Return(exampleRecipePrepTask, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipePrepTask), testutils.ContextMatcher, testutils.MatchType[*types.RecipePrepTask]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, exampleRecipePrepTask.ID).Return(exampleRecipePrepTask, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipePrepTask), testutils.ContextMatcher, testutils.MatchType[*types.RecipePrepTask]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipePrepTaskUpdatedServiceEventType: {
@@ -1146,7 +1146,7 @@ func TestRecipeManager_ArchiveRecipePrepTask(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipePrepTaskArchivedServiceEventType: {
@@ -1178,7 +1178,7 @@ func TestRecipeManager_ListRecipeStepCompletionConditions(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepCompletionConditions), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepCompletionConditions), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1207,7 +1207,7 @@ func TestRecipeManager_CreateRecipeStepCompletionCondition(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStepCompletionCondition), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepCompletionConditionDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepCompletionCondition), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepCompletionConditionDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionCreatedServiceEventType: {
@@ -1242,7 +1242,7 @@ func TestRecipeManager_ReadRecipeStepCompletionCondition(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1271,8 +1271,8 @@ func TestRecipeManager_UpdateRecipeStepCompletionCondition(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID).Return(exampleRecipeStepCompletionCondition, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStepCompletionCondition), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepCompletionCondition]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID).Return(exampleRecipeStepCompletionCondition, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStepCompletionCondition), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepCompletionCondition]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionUpdatedServiceEventType: {
@@ -1305,7 +1305,7 @@ func TestRecipeManager_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepCompletionConditionArchivedServiceEventType: {
@@ -1338,7 +1338,7 @@ func TestRecipeManager_ListRecipeStepVessels(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepVessels), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepVessels), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1367,7 +1367,7 @@ func TestRecipeManager_CreateRecipeStepVessel(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeStepVessel), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepVesselDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepVessel), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeStepVesselCreatedServiceEventType: {
@@ -1402,7 +1402,7 @@ func TestRecipeManager_ReadRecipeStepVessel(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1431,8 +1431,8 @@ func TestRecipeManager_UpdateRecipeStepVessel(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVessel.ID).Return(exampleRecipeStepVessel, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeStepVessel), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepVessel]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVessel.ID).Return(exampleRecipeStepVessel, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeStepVessel), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepVessel]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepVesselUpdatedServiceEventType: {
@@ -1465,7 +1465,7 @@ func TestRecipeManager_ArchiveRecipeStepVessel(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeStepVessel), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeStepVessel), testutils.ContextMatcher, exampleRecipeStepID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeStepVesselArchivedServiceEventType: {
@@ -1497,7 +1497,7 @@ func TestRecipeManager_ListRecipeRatings(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeRatingsForRecipe), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeRatingsForRecipe), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
@@ -1524,7 +1524,7 @@ func TestRecipeManager_ReadRecipeRating(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeRating), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeRating), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(expected, nil)
 			},
 		)
 
@@ -1552,7 +1552,7 @@ func TestRecipeManager_CreateRecipeRating(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.CreateRecipeRating), testutils.ContextMatcher, testutils.MatchType[*types.RecipeRatingDatabaseCreationInput]()).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeRating), testutils.ContextMatcher, testutils.MatchType[*types.RecipeRatingDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeRatingCreatedServiceEventType: {
@@ -1586,8 +1586,8 @@ func TestRecipeManager_UpdateRecipeRating(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.GetRecipeRating), testutils.ContextMatcher, exampleRecipeID, exampleRecipeRating.ID).Return(exampleRecipeRating, nil)
-				db.On(testutils.GetMethodName(rm.db.UpdateRecipeRating), testutils.ContextMatcher, testutils.MatchType[*types.RecipeRating]()).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipeRating), testutils.ContextMatcher, exampleRecipeID, exampleRecipeRating.ID).Return(exampleRecipeRating, nil)
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeRating), testutils.ContextMatcher, testutils.MatchType[*types.RecipeRating]()).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeRatingUpdatedServiceEventType: {
@@ -1618,7 +1618,7 @@ func TestRecipeManager_ArchiveRecipeRating(T *testing.T) {
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(rm.db.ArchiveRecipeRating), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeRating), testutils.ContextMatcher, exampleRecipeID, expected.ID).Return(nil)
 			},
 			map[string][]string{
 				types.RecipeRatingArchivedServiceEventType: {

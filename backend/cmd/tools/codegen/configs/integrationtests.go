@@ -71,7 +71,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           false,
-			HTTPPort:        defaultHTTPPort,
+			Port:            defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		GRPCServer: grpc.Config{

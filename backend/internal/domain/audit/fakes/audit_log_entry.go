@@ -28,10 +28,10 @@ func BuildFakeAuditLogEntriesList() *filtering.QueryFilteredResult[types.AuditLo
 
 	return &filtering.QueryFilteredResult[types.AuditLogEntry]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

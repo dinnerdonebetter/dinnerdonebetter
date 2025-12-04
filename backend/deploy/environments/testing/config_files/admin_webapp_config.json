@@ -1,11 +1,15 @@
 {
 	"cookies": {
+		"domain": "",
 		"cookieName": " ",
 		"base64EncodedHashKey": " ",
-		"base64EncodedBlockKey": " "
+		"base64EncodedBlockKey": " ",
+		"lifetime": 0,
+		"secureOnly": false
 	},
 	"apiServiceConfig": {
-		"apiServerURL": "",
+		"httpAPIServerURL": "",
+		"grpcAPIServerURL": "",
 		"oauth2APIClientID": "",
 		"oauth2APIClientSecret": ""
 	},
@@ -43,11 +47,7 @@
 	},
 	"server": {
 		"startupDeadline": 60000000000,
-		"httpPort": 8000,
+		"port": 8000,
 		"debug": false
-	},
-	"apiClientCache": {
-		"cacheCapacity": 0,
-		"cacheTTL": 0
 	}
 }

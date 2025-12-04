@@ -220,7 +220,7 @@ GROUP BY %s.%s
 					strings.Join(applyToEach(validIngredientGroupsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientGroupsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validIngredientGroupsTableName, true, true, []string{}),
+					buildFilterCountSelect(validIngredientGroupsTableName, true, true, []string{}, fmt.Sprintf("%s.%s %s", validIngredientGroupsTableName, nameColumn, buildILIKEForArgument("name"))),
 					buildTotalCountSelect(validIngredientGroupsTableName, true, []string{}),
 					validIngredientGroupsTableName,
 					validIngredientGroupsTableName,

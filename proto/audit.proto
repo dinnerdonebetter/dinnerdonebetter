@@ -36,7 +36,7 @@ message GetAuditLogEntriesForAccountRequest {
 
 message GetAuditLogEntriesForAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated AuditLogEntry Results = 3;
 }
 
@@ -47,7 +47,7 @@ message GetAuditLogEntriesForUserRequest {
 
 message GetAuditLogEntriesForUserResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated AuditLogEntry Results = 3;
 }
 

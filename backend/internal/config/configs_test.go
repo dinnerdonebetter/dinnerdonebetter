@@ -27,7 +27,7 @@ func TestAPIServiceConfig_EncodeToFile(T *testing.T) {
 
 		cfg := &APIServiceConfig{
 			HTTPServer: http.Config{
-				HTTPPort:        1234,
+				Port:            1234,
 				Debug:           false,
 				StartupDeadline: time.Minute,
 			},
@@ -160,7 +160,7 @@ func TestLoadConfigFromEnvironment(T *testing.T) {
 
 		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 		// Set an invalid environment variable that would cause parsing to fail
-		t.Setenv("DINNER_DONE_BETTER_HTTP_HTTP_PORT", "invalid_port")
+		t.Setenv(envvars.HTTPPortEnvVarKey, "invalid_port")
 
 		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
 		assert.Error(t, err)
@@ -197,7 +197,7 @@ func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
 			},
 			Observability: observability.Config{},
 			HTTPServer: http.Config{
-				HTTPPort:        8080,
+				Port:            8080,
 				StartupDeadline: time.Minute,
 			},
 			Queues: msgconfig.QueuesConfig{
@@ -236,7 +236,7 @@ func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
 			},
 			Observability: observability.Config{},
 			HTTPServer: http.Config{
-				HTTPPort:        8080,
+				Port:            8080,
 				StartupDeadline: time.Minute,
 			},
 			Queues: msgconfig.QueuesConfig{

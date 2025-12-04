@@ -79,9 +79,9 @@ func ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequ
 	return x
 }
 
-func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *identitysvc.AccountCreationRequestInput) *identity.AccountCreationRequestInput {
+func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *identitysvc.AccountCreationRequestInput, belongsToUser string) *identity.AccountCreationRequestInput {
 	return &identity.AccountCreationRequestInput{
-		BelongsToUser: input.BelongsToUser,
+		BelongsToUser: belongsToUser,
 		Latitude:      pointer.To(float64(pointer.Dereference(input.Latitude))),
 		Longitude:     pointer.To(float64(pointer.Dereference(input.Longitude))),
 		Name:          input.Name,
@@ -97,7 +97,6 @@ func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *
 
 func ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(input *identity.AccountCreationRequestInput) *identitysvc.AccountCreationRequestInput {
 	return &identitysvc.AccountCreationRequestInput{
-		BelongsToUser: input.BelongsToUser,
 		Latitude:      pointer.To(float32(pointer.Dereference(input.Latitude))),
 		Longitude:     pointer.To(float32(pointer.Dereference(input.Longitude))),
 		Name:          input.Name,
@@ -108,6 +107,7 @@ func ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(input *
 		State:         input.State,
 		ZipCode:       input.ZipCode,
 		Country:       input.Country,
+		BelongsToUser: input.BelongsToUser,
 	}
 }
 

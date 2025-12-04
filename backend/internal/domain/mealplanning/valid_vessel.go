@@ -18,6 +18,23 @@ const (
 	ValidVesselUpdatedServiceEventType = "valid_vessel_updated"
 	// ValidVesselArchivedServiceEventType indicates a valid vessel was archived.
 	ValidVesselArchivedServiceEventType = "valid_vessel_archived"
+
+	// VesselShapeHemisphere represents a hemisphere-shaped vessel.
+	VesselShapeHemisphere = "hemisphere"
+	// VesselShapeRectangle represents a rectangular-shaped vessel.
+	VesselShapeRectangle = "rectangle"
+	// VesselShapeCone represents a cone-shaped vessel.
+	VesselShapeCone = "cone"
+	// VesselShapePyramid represents a pyramid-shaped vessel.
+	VesselShapePyramid = "pyramid"
+	// VesselShapeCylinder represents a cylindrical vessel.
+	VesselShapeCylinder = "cylinder"
+	// VesselShapeSphere represents a spherical vessel.
+	VesselShapeSphere = "sphere"
+	// VesselShapeCube represents a cubic vessel.
+	VesselShapeCube = "cube"
+	// VesselShapeOther represents any other vessel shape.
+	VesselShapeOther = "other"
 )
 
 func init() {
@@ -142,7 +159,7 @@ type (
 		GetValidVessel(ctx context.Context, validVesselID string) (*ValidVessel, error)
 		GetRandomValidVessel(ctx context.Context) (*ValidVessel, error)
 		GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
-		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidVessel, error)
+		SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
 		CreateValidVessel(ctx context.Context, input *ValidVesselDatabaseCreationInput) (*ValidVessel, error)
 		UpdateValidVessel(ctx context.Context, updated *ValidVessel) error
 		MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error
@@ -163,7 +180,7 @@ type (
 	}
 )
 
-// Update merges an ValidVesselUpdateRequestInput with a valid vessel.
+// Update merges a ValidVesselUpdateRequestInput with a valid vessel.
 func (x *ValidVessel) Update(input *ValidVesselUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
@@ -232,14 +249,14 @@ func (x *ValidVesselCreationRequestInput) ValidateWithContext(ctx context.Contex
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Capacity, validation.When(x.CapacityUnitID != nil, validation.Required)),
 		validation.Field(&x.Shape, validation.In(
-			"hemisphere",
-			"rectangle",
-			"cone",
-			"pyramid",
-			"cylinder",
-			"sphere",
-			"cube",
-			"other",
+			VesselShapeHemisphere,
+			VesselShapeRectangle,
+			VesselShapeCone,
+			VesselShapePyramid,
+			VesselShapeCylinder,
+			VesselShapeSphere,
+			VesselShapeCube,
+			VesselShapeOther,
 		)),
 	)
 }

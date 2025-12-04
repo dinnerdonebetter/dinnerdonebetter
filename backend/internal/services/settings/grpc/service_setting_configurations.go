@@ -24,9 +24,9 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
-	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input, sessionContextData.GetUserID(), sessionContextData.GetActiveAccountID())
-	input.BelongsToUser = sessionContextData.GetUserID()
-	input.BelongsToAccount = sessionContextData.GetActiveAccountID()
+	belongsToUser := sessionContextData.GetUserID()
+	belongsToAccount := sessionContextData.GetActiveAccountID()
+	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input, belongsToUser, belongsToAccount)
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting configuration")
@@ -97,6 +97,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettingConfigs.Pagination, filter),
 	}
 
 	for _, cfg := range serviceSettingConfigs.Data {
@@ -118,7 +119,8 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 	}
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
-	serviceSettingConfigs, err := s.serviceSettingsRepository.GetServiceSettingConfigurationsForUser(ctx, sessionContextData.GetUserID(), grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	serviceSettingConfigs, err := s.serviceSettingsRepository.GetServiceSettingConfigurationsForUser(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configurations for user")
 	}
@@ -127,6 +129,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettingConfigs.Pagination, filter),
 	}
 
 	for _, cfg := range serviceSettingConfigs.Data {

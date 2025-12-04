@@ -517,12 +517,12 @@ func (m *manager) GetAccountInvitation(ctx context.Context, accountID, accountIn
 	return invitation, nil
 }
 
-func (m *manager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
+func (m *manager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.Account], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
-		return nil, "", ErrInvalidIDProvided
+		return nil, ErrInvalidIDProvided
 	}
 
 	if filter == nil {
@@ -535,18 +535,18 @@ func (m *manager) GetAccounts(ctx context.Context, userID string, filter *filter
 
 	accounts, err := m.identityRepo.GetAccounts(ctx, userID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching accounts")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching accounts")
 	}
 
-	return accounts.Data, todoRes, nil
+	return accounts, nil
 }
 
-func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
-		return nil, "", ErrInvalidIDProvided
+		return nil, ErrInvalidIDProvided
 	}
 
 	if filter == nil {
@@ -559,18 +559,18 @@ func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID stri
 
 	invites, err := m.identityRepo.GetPendingAccountInvitationsForUser(ctx, userID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
 
-	return invites.Data, todoRes, nil
+	return invites, nil
 }
 
-func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
-		return nil, "", ErrInvalidIDProvided
+		return nil, ErrInvalidIDProvided
 	}
 
 	if filter == nil {
@@ -583,10 +583,10 @@ func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, 
 
 	invites, err := m.identityRepo.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
 
-	return invites.Data, todoRes, nil
+	return invites, nil
 }
 
 func (m *manager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
@@ -609,7 +609,7 @@ func (m *manager) GetUser(ctx context.Context, userID string) (*identity.User, e
 	return user, nil
 }
 
-func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -621,18 +621,36 @@ func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 
 	users, err := m.identityRepo.GetUsers(ctx, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching users")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching users")
 	}
 
-	return users.Data, "", nil
+	return users, nil
 }
 
-func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *manager) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := m.logger.WithSpan(span)
+
+	users, err := m.identityRepo.GetUsersForAccount(ctx, accountID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching users")
+	}
+
+	return users, nil
+}
+
+func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if query == "" {
-		return nil, "", errors.New("query cannot be empty")
+		return nil, errors.New("query cannot be empty")
 	}
 
 	if filter == nil {
@@ -647,16 +665,16 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 		users, err := m.identityRepo.SearchForUsersByUsername(ctx, query, filter)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return nil, "", observability.PrepareError(err, span, "no users found")
+				return nil, observability.PrepareError(err, span, "no users found")
 			}
-			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
-		return users, todoRes, nil
+		return users, nil
 	} else {
 		uss, err := m.userSearchIndex.Search(ctx, query)
 		if err != nil {
-			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
 		userIDs := []string{}
@@ -666,10 +684,14 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 
 		users, err := m.identityRepo.GetUsersWithIDs(ctx, userIDs)
 		if err != nil {
-			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
-		return users, todoRes, nil
+		result := filtering.NewQueryFilteredResult(users, uint64(len(users)), uint64(len(users)), func(u *identity.User) string {
+			return u.ID
+		}, filter)
+
+		return result, nil
 	}
 }
 
@@ -775,7 +797,7 @@ func (m *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 	return nil
 }
 
-func (m *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error {
+func (m *manager) UpdateAccountMemberPermissions(ctx context.Context, accountID, userID string, input *identity.ModifyUserPermissionsInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -795,7 +817,6 @@ func (m *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, ac
 		return observability.PrepareError(err, span, "invalid input attached to request")
 	}
 
-	// create account in database.
 	if err := m.identityRepo.ModifyUserPermissions(ctx, accountID, userID, input); err != nil {
 		return observability.PrepareError(err, span, "modifying user permissions")
 	}

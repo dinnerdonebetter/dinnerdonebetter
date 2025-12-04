@@ -29,6 +29,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v2.4.0
+GO_IMAGE               := golang:1.25-trixie
 
 # COMMANDS
 GO_FORMAT             := gofmt -s -w
@@ -38,6 +39,7 @@ RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --w
 RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
 LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
 SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
+CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) --env HOME=/home/gouser --volume $(HOME)/.cache/go:/home/gouser $(GO_IMAGE) go
 
 ## non-PHONY folders/files
 
@@ -76,12 +78,6 @@ ifeq (, $(shell which gci))
 	$(shell go install github.com/daixiang0/gci@v0.13.5)
 endif
 
-.PHONY: ensure_air_installed
-ensure_air_installed:
-ifeq (, $(shell which air))
-	$(shell go install github.com/air-verse/air@v1.61.5)
-endif
-
 .PHONY: ensure_goimports_installed
 ensure_goimports_installed:
 ifeq (, $(shell which goimports))
@@ -98,6 +94,12 @@ endif
 ensure_protoc-gen-go-grpc_installed:
 ifeq (, $(shell which protoc-gen-go-grpc))
 	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
+endif
+
+.PHONY: ensure_air_installed
+ensure_air_installed:
+ifeq (, $(shell which air))
+	$(shell go install github.com/air-verse/air@v1.63.0)
 endif
 
 .PHONY: setup
@@ -169,7 +171,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: sqlc_struct_check
+golang_lint: struct_usage_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 30m ./...
 
@@ -179,11 +181,6 @@ lint_terraform: terraformat
 
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
-
-.PHONY: check_lib_for_types
-check_lib_for_types:
-	@! grep -r 'pkg/types"' internal/lib/
-	@! grep -r 'pkg/types/fakes"' internal/lib/
 
 ## GENERATED FILES
 
@@ -200,9 +197,9 @@ querier: queries queries_lint
 	rm -rf internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
-.PHONY: sqlc_struct_check
-sqlc_struct_check:
-	go run $(THIS)/cmd/tools/sqlc_struct_checker
+.PHONY: struct_usage_check
+struct_usage_check:
+	go run $(THIS)/cmd/tools/struct_usage_checker
 
 .PHONY: env_vars
 env_vars:
@@ -215,24 +212,11 @@ env_vars:
 integration-tests: integration_tests
 
 .PHONY: integration_tests
-integration_tests:
-	go test -v -count=1 $(THIS)/tests_integration/apiserver
+integration_tests: integration_tests_postgres
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
-	$(CONTAINER_RUNNER) compose \
-	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml build
-	$(CONTAINER_RUNNER) compose \
-	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
-	--build \
-	--quiet-pull \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from tests) \
-	--attach api_server \
-	--attach tests
+	go test -v -count=1 $(THIS)/tests_integration/apiserver
 
 ## EXECUTION
 
@@ -246,27 +230,13 @@ test: $(ARTIFACTS_DIR) vendor build
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)
-	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml build
-	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml up \
-	--no-attach loki \
-	--no-attach redis \
-	--no-attach jaeger \
-	--no-attach grafana \
-	--no-attach postgres \
-	--no-attach prometheus \
-	--build \
-	--quiet-pull \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
+	go run $(THIS)/cmd/localdev/server
 
-.PHONY: run_admin_app
-run_admin_app: ensure_air_installed
-	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
+AIR_PORT := 9999
+
+.PHONY: admin
+admin: $(ARTIFACTS_DIR) ensure_air_installed
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
 
 # OPERATIONS
 

@@ -64,6 +64,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(notifs.Pagination, filter),
 	}
 	for _, notif := range notifs.Data {
 		x.Results = append(x.Results, converters.ConvertUserNotificationToGRPCUserNotification(notif))

@@ -126,7 +126,7 @@
 	},
 	"http": {
 		"startupDeadline": 60000000000,
-		"httpPort": 8000,
+		"port": 8000,
 		"debug": false
 	},
 	"grpc": {

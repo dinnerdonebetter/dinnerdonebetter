@@ -93,7 +93,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidInstruments(ctx, updatedValidInstrument.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validInstruments.Data, byName)
+	assert.Equal(t, validInstruments, byName)
 
 	random, err := dbc.GetRandomValidInstrument(ctx)
 	assert.NoError(t, err)

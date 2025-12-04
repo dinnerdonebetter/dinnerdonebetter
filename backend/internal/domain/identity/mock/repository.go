@@ -218,9 +218,9 @@ func (m *RepositoryMock) GetAdminUserByUsername(ctx context.Context, username st
 }
 
 // SearchForUsersByUsername is a mock function.
-func (m *RepositoryMock) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*identity.User, error) {
+func (m *RepositoryMock) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	returnValues := m.Called(ctx, usernameQuery, filter)
-	return returnValues.Get(0).([]*identity.User), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 
 // GetUsersWithIDs is a mock function.
@@ -232,6 +232,12 @@ func (m *RepositoryMock) GetUsersWithIDs(ctx context.Context, ids []string) ([]*
 // GetUsers is a mock function.
 func (m *RepositoryMock) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
 	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
+}
+
+// GetUsersForAccount is a mock function.
+func (m *RepositoryMock) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
+	returnValues := m.Called(ctx, accountID, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 

@@ -513,6 +513,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+			AND valid_ingredient_groups.name ILIKE '%' || $6::text || '%'
 	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredient_groups.id)

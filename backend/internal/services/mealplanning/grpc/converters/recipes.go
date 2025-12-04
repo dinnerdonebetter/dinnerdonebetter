@@ -21,8 +21,8 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 	}
 
 	var media []*mealplanning.RecipeMediaCreationRequestInput
-	for _, mediaItem := range input.Media {
-		media = append(media, ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(mediaItem))
+	for _, m := range input.Media {
+		media = append(media, ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(m))
 	}
 
 	return &mealplanning.RecipeCreationRequestInput{
@@ -59,8 +59,8 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 	}
 
 	var media []*mealplanningsvc.RecipeMediaCreationRequestInput
-	for _, mediaItem := range input.Media {
-		media = append(media, ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(mediaItem))
+	for _, m := range input.Media {
+		media = append(media, ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(m))
 	}
 
 	return &mealplanningsvc.RecipeCreationRequestInput{
@@ -1090,11 +1090,11 @@ func ConvertGRPCRecipeMediaToRecipeMedia(input *mealplanningsvc.RecipeMedia) *me
 
 func ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(input *mealplanningsvc.RecipeMediaCreationRequestInput) *mealplanning.RecipeMediaCreationRequestInput {
 	x := &mealplanning.RecipeMediaCreationRequestInput{
-		BelongsToRecipe:     pointer.To(input.BelongsToRecipe),
-		BelongsToRecipeStep: pointer.To(input.BelongsToRecipeStep),
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
+		BelongsToRecipe:     pointer.To(input.BelongsToRecipe),
+		BelongsToRecipeStep: pointer.To(input.BelongsToRecipeStep),
 		Index:               uint16(input.Index),
 	}
 
@@ -1103,11 +1103,11 @@ func ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput
 
 func ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(input *mealplanning.RecipeMediaCreationRequestInput) *mealplanningsvc.RecipeMediaCreationRequestInput {
 	x := &mealplanningsvc.RecipeMediaCreationRequestInput{
-		BelongsToRecipe:     pointer.Dereference(input.BelongsToRecipe),
-		BelongsToRecipeStep: pointer.Dereference(input.BelongsToRecipeStep),
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
+		BelongsToRecipe:     pointer.Dereference(input.BelongsToRecipe),
+		BelongsToRecipeStep: pointer.Dereference(input.BelongsToRecipeStep),
 		Index:               uint32(input.Index),
 	}
 

@@ -596,7 +596,7 @@ func (s *serviceImpl) GetValidIngredientGroups(ctx context.Context, request *mea
 	}
 
 	res := &mealplanning.GetValidIngredientGroupsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
@@ -638,7 +638,7 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, re
 	}
 
 	res := &mealplanning.GetValidIngredientMeasurementUnitsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
@@ -662,10 +662,10 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context
 	}
 
 	res := &mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
@@ -686,10 +686,10 @@ func (s *serviceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx co
 	}
 
 	res := &mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
@@ -729,7 +729,7 @@ func (s *serviceImpl) GetValidIngredientPreparations(ctx context.Context, reques
 	}
 
 	res := &mealplanning.GetValidIngredientPreparationsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -754,10 +754,10 @@ func (s *serviceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Con
 	}
 
 	res := &mealplanning.GetValidIngredientPreparationsByIngredientResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
@@ -779,10 +779,10 @@ func (s *serviceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Co
 	}
 
 	res := &mealplanning.GetValidIngredientPreparationsByPreparationResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
@@ -841,7 +841,7 @@ func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 	}
 
 	res := &mealplanning.GetValidIngredientStateIngredientsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -866,10 +866,10 @@ func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context
 	}
 
 	res := &mealplanning.GetValidIngredientStateIngredientsByIngredientResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
@@ -891,10 +891,10 @@ func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx co
 	}
 
 	res := &mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
@@ -915,7 +915,7 @@ func (s *serviceImpl) GetValidIngredientStates(ctx context.Context, request *mea
 	}
 
 	res := &mealplanning.GetValidIngredientStatesResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -938,8 +938,10 @@ func (s *serviceImpl) GetValidIngredients(ctx context.Context, request *mealplan
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredients")
 	}
 
+	logger.WithValue("pagination", x.Pagination).Info("Valid ingredients retrieved")
+
 	res := &mealplanning.GetValidIngredientsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -982,7 +984,7 @@ func (s *serviceImpl) GetValidInstruments(ctx context.Context, request *mealplan
 	}
 
 	res := &mealplanning.GetValidInstrumentsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1030,41 +1032,25 @@ func (s *serviceImpl) GetValidMeasurementUnitConversion(ctx context.Context, req
 	return res, nil
 }
 
-func (s *serviceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsFromUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnitConversionsForUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsForUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsForUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 
-	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsFromMeasurementUnit(ctx, request.ValidMeasurementUnitID)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions from unit")
-	}
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	res := &mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse{}
-
-	for _, y := range x {
-		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
-	}
-
-	return res, nil
-}
-
-func (s *serviceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsToUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsToUnitResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
-
-	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsToMeasurementUnit(ctx, request.ValidMeasurementUnitID)
+	x, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsForMeasurementUnit(ctx, request.ValidMeasurementUnitID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions to unit")
 	}
 
-	res := &mealplanning.GetValidMeasurementUnitConversionsToUnitResponse{}
-	for _, y := range x {
+	res := &mealplanning.GetValidMeasurementUnitConversionsForUnitResponse{
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
 	}
 
@@ -1085,7 +1071,7 @@ func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *mea
 	}
 
 	res := &mealplanning.GetValidMeasurementUnitsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1147,7 +1133,7 @@ func (s *serviceImpl) GetValidPreparationInstruments(ctx context.Context, reques
 	}
 
 	res := &mealplanning.GetValidPreparationInstrumentsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1172,10 +1158,10 @@ func (s *serviceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Con
 	}
 
 	res := &mealplanning.GetValidPreparationInstrumentsByInstrumentResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
@@ -1197,10 +1183,10 @@ func (s *serviceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Co
 	}
 
 	res := &mealplanning.GetValidPreparationInstrumentsByPreparationResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
@@ -1240,7 +1226,7 @@ func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 	}
 
 	res := &mealplanning.GetValidPreparationVesselsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1265,10 +1251,10 @@ func (s *serviceImpl) GetValidPreparationVesselsByPreparation(ctx context.Contex
 	}
 
 	res := &mealplanning.GetValidPreparationVesselsByPreparationResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
@@ -1290,10 +1276,10 @@ func (s *serviceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, re
 	}
 
 	res := &mealplanning.GetValidPreparationVesselsByVesselResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
@@ -1314,7 +1300,7 @@ func (s *serviceImpl) GetValidPreparations(ctx context.Context, request *mealpla
 	}
 
 	res := &mealplanning.GetValidPreparationsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1357,7 +1343,7 @@ func (s *serviceImpl) GetValidVessels(ctx context.Context, request *mealplanning
 	}
 
 	res := &mealplanning.GetValidVesselsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
 	for _, y := range x.Data {
@@ -1381,10 +1367,10 @@ func (s *serviceImpl) SearchForValidIngredientGroups(ctx context.Context, reques
 	}
 
 	res := &mealplanning.SearchForValidIngredientGroupsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
 	}
 
@@ -1405,10 +1391,10 @@ func (s *serviceImpl) SearchForValidIngredientStates(ctx context.Context, reques
 	}
 
 	res := &mealplanning.SearchForValidIngredientStatesResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
 	}
 
@@ -1429,10 +1415,10 @@ func (s *serviceImpl) SearchForValidIngredients(ctx context.Context, request *me
 	}
 
 	res := &mealplanning.SearchForValidIngredientsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
@@ -1453,10 +1439,10 @@ func (s *serviceImpl) SearchForValidInstruments(ctx context.Context, request *me
 	}
 
 	res := &mealplanning.SearchForValidInstrumentsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
 	}
 
@@ -1477,10 +1463,10 @@ func (s *serviceImpl) SearchForValidMeasurementUnits(ctx context.Context, reques
 	}
 
 	res := &mealplanning.SearchForValidMeasurementUnitsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 
@@ -1501,10 +1487,10 @@ func (s *serviceImpl) SearchForValidPreparations(ctx context.Context, request *m
 	}
 
 	res := &mealplanning.SearchForValidPreparationsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidPreparationToGRPCValidPreparation(y))
 	}
 
@@ -1525,10 +1511,10 @@ func (s *serviceImpl) SearchForValidVessels(ctx context.Context, request *mealpl
 	}
 
 	res := &mealplanning.SearchForValidVesselsResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidVesselToGRPCValidVessel(y))
 	}
 
@@ -1550,10 +1536,10 @@ func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, r
 	}
 
 	res := &mealplanning.SearchValidIngredientsByPreparationResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
@@ -1575,10 +1561,10 @@ func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Contex
 	}
 
 	res := &mealplanning.SearchValidMeasurementUnitsByIngredientResponse{
-		Filter: request.Filter,
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
 	}
 
-	for _, y := range x {
+	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 

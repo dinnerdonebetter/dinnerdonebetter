@@ -103,7 +103,7 @@ func (q *repository) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 }
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (q *repository) SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
+func (q *repository) SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -135,7 +135,10 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
-	validInstruments := []*types.ValidInstrument{}
+	var (
+		data                      = []*types.ValidInstrument{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
 		validInstrument := &types.ValidInstrument{
 			CreatedAt:                      result.CreatedAt,
@@ -151,10 +154,15 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 			IncludeInGeneratedInstructions: result.IncludeInGeneratedInstructions,
 			UsableForStorage:               result.UsableForStorage,
 		}
-		validInstruments = append(validInstruments, validInstrument)
+		data = append(data, validInstrument)
+
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
 
-	return validInstruments, nil
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vi *types.ValidInstrument) string { return vi.ID }, filter)
+
+	return x, nil
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.

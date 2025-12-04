@@ -291,10 +291,7 @@ var (
 		mealPlanningPerm("GetValidMeasurementUnitConversion"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
-		mealPlanningPerm("GetValidMeasurementUnitConversionsFromUnit"): {
-			authorization.ReadValidMeasurementUnitConversionsPermission,
-		},
-		mealPlanningPerm("GetValidMeasurementUnitConversionsToUnit"): {
+		mealPlanningPerm("GetValidMeasurementUnitConversionsForUnit"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
 		mealPlanningPerm("CreateUserIngredientPreference"): {
@@ -325,6 +322,9 @@ var (
 			authorization.CreateRecipesPermission,
 		},
 		mealPlanningPerm("GetRecipe"): {
+			authorization.ReadRecipesPermission,
+		},
+		mealPlanningPerm("GetRecipes"): {
 			authorization.ReadRecipesPermission,
 		},
 		mealPlanningPerm("UpdateRecipe"): {
@@ -657,11 +657,20 @@ var (
 		identityServicePerm("GetUser"): {
 			authorization.ReadUserPermission,
 		},
+		identityServicePerm("GetUsers"): {
+			authorization.ReadUserPermission,
+		},
 		identityServicePerm("SearchForUsers"): {
 			authorization.ReadUserPermission,
 		},
 		identityServicePerm("ArchiveUser"): {
 			authorization.ArchiveUserPermission,
+		},
+		identityServicePerm("GetAccountsForUser"): {
+			authorization.ReadUserDataPermission,
+		},
+		identityServicePerm("GetUsersForAccount"): {
+			authorization.ReadUserDataPermission,
 		},
 		identityServicePerm("RejectAccountInvitation"):       noPerms,
 		identityServicePerm("AcceptAccountInvitation"):       noPerms,

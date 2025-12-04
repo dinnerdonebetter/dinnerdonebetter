@@ -8,6 +8,7 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -27,7 +28,7 @@ func TestServiceImpl_ArchiveAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveAccount(testutils.ContextMatcher, exampleAccountID, mock.AnythingOfType("string")).Return(nil)
+		identityDataManager.On("ArchiveAccount", testutils.ContextMatcher, exampleAccountID, mock.AnythingOfType("string")).Return(nil)
 
 		request := &identitysvc.ArchiveAccountRequest{
 			AccountID: exampleAccountID,
@@ -66,7 +67,7 @@ func TestServiceImpl_ArchiveAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveAccount(testutils.ContextMatcher, exampleAccountID, mock.AnythingOfType("string")).Return(errors.New("database error"))
+		identityDataManager.On("ArchiveAccount", testutils.ContextMatcher, exampleAccountID, mock.AnythingOfType("string")).Return(errors.New("database error"))
 
 		request := &identitysvc.ArchiveAccountRequest{
 			AccountID: exampleAccountID,
@@ -93,7 +94,7 @@ func TestServiceImpl_CreateAccount(t *testing.T) {
 
 		exampleAccount := identityfakes.BuildFakeAccount()
 
-		identityDataManager.EXPECT().CreateAccount(testutils.ContextMatcher, mock.MatchedBy(func(input *identity.AccountCreationRequestInput) bool {
+		identityDataManager.On("CreateAccount", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.AccountCreationRequestInput) bool {
 			return input.Name == exampleAccount.Name &&
 				input.BelongsToUser != ""
 		})).Return(exampleAccount, nil)
@@ -146,7 +147,7 @@ func TestServiceImpl_CreateAccount(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().CreateAccount(testutils.ContextMatcher, mock.AnythingOfType("*identity.AccountCreationRequestInput")).Return(nil, errors.New("creation error"))
+		identityDataManager.On("CreateAccount", testutils.ContextMatcher, mock.AnythingOfType("*identity.AccountCreationRequestInput")).Return((*identity.Account)(nil), errors.New("creation error"))
 
 		request := &identitysvc.CreateAccountRequest{
 			Input: &identitysvc.AccountCreationRequestInput{
@@ -175,7 +176,7 @@ func TestServiceImpl_CreateAccountInvitation(t *testing.T) {
 
 		exampleInvitation := identityfakes.BuildFakeAccountInvitation()
 
-		identityDataManager.EXPECT().CreateAccountInvitation(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.MatchedBy(func(input *identity.AccountInvitationCreationRequestInput) bool {
+		identityDataManager.On("CreateAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.MatchedBy(func(input *identity.AccountInvitationCreationRequestInput) bool {
 			return input.ToEmail == exampleInvitation.ToEmail &&
 				input.ToName == exampleInvitation.ToName
 		})).Return(exampleInvitation, nil)
@@ -224,7 +225,7 @@ func TestServiceImpl_CreateAccountInvitation(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().CreateAccountInvitation(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountInvitationCreationRequestInput")).Return(nil, errors.New("creation error"))
+		identityDataManager.On("CreateAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountInvitationCreationRequestInput")).Return((*identity.AccountInvitation)(nil), errors.New("creation error"))
 
 		request := &identitysvc.CreateAccountInvitationRequest{
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
@@ -253,7 +254,7 @@ func TestServiceImpl_GetAccount(t *testing.T) {
 
 		exampleAccount := identityfakes.BuildFakeAccount()
 
-		identityDataManager.EXPECT().GetAccount(testutils.ContextMatcher, exampleAccount.ID).Return(exampleAccount, nil)
+		identityDataManager.On("GetAccount", testutils.ContextMatcher, exampleAccount.ID).Return(exampleAccount, nil)
 
 		request := &identitysvc.GetAccountRequest{
 			AccountID: exampleAccount.ID,
@@ -276,7 +277,7 @@ func TestServiceImpl_GetAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().GetAccount(testutils.ContextMatcher, exampleAccountID).Return(nil, errors.New("database error"))
+		identityDataManager.On("GetAccount", testutils.ContextMatcher, exampleAccountID).Return((*identity.Account)(nil), errors.New("database error"))
 
 		request := &identitysvc.GetAccountRequest{
 			AccountID: exampleAccountID,
@@ -299,14 +300,17 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 	t.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		exampleAccounts := []*identity.Account{
-			identityfakes.BuildFakeAccount(),
-			identityfakes.BuildFakeAccount(),
+		exampleAccounts := &filtering.QueryFilteredResult[identity.Account]{
+			Data: []*identity.Account{
+				identityfakes.BuildFakeAccount(),
+				identityfakes.BuildFakeAccount(),
+			},
 		}
 
-		identityDataManager.EXPECT().GetAccounts(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleAccounts, "", nil)
+		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleAccounts, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
@@ -315,14 +319,15 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 			},
 		}
 
-		result, err := service.GetAccounts(t.Context(), request)
+		result, err := service.GetAccounts(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
-		assert.Len(t, result.Result, len(exampleAccounts))
-		assert.Equal(t, exampleAccounts[0].ID, result.Result[0].ID)
-		assert.Equal(t, exampleAccounts[1].ID, result.Result[1].ID)
+		assert.Equal(t, len(exampleAccounts.Data), len(result.Results))
+		for i := range result.Results {
+			assert.Equal(t, result.Results[i].ID, exampleAccounts.Data[i].ID)
+		}
 	})
 
 	t.Run("with session error", func(t *testing.T) {
@@ -352,7 +357,7 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().GetAccounts(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, "", errors.New("database error"))
+		identityDataManager.On("GetAccounts", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.Account])(nil), errors.New("database error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
@@ -382,7 +387,7 @@ func TestServiceImpl_SetDefaultAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().SetDefaultAccount(testutils.ContextMatcher, mock.AnythingOfType("string"), exampleAccountID).Return(nil)
+		identityDataManager.On("SetDefaultAccount", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleAccountID).Return(nil)
 
 		request := &identitysvc.SetDefaultAccountRequest{
 			AccountID: exampleAccountID,
@@ -422,7 +427,7 @@ func TestServiceImpl_SetDefaultAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().SetDefaultAccount(testutils.ContextMatcher, mock.AnythingOfType("string"), exampleAccountID).Return(errors.New("update error"))
+		identityDataManager.On("SetDefaultAccount", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleAccountID).Return(errors.New("update error"))
 
 		request := &identitysvc.SetDefaultAccountRequest{
 			AccountID: exampleAccountID,
@@ -449,7 +454,7 @@ func TestServiceImpl_TransferAccountOwnership(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().TransferAccountOwnership(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountOwnershipTransferInput")).Return(nil)
+		identityDataManager.On("TransferAccountOwnership", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountOwnershipTransferInput")).Return(nil)
 
 		request := &identitysvc.TransferAccountOwnershipRequest{
 			AccountID: exampleAccountID,
@@ -496,7 +501,7 @@ func TestServiceImpl_TransferAccountOwnership(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().TransferAccountOwnership(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountOwnershipTransferInput")).Return(errors.New("transfer error"))
+		identityDataManager.On("TransferAccountOwnership", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountOwnershipTransferInput")).Return(errors.New("transfer error"))
 
 		request := &identitysvc.TransferAccountOwnershipRequest{
 			AccountID: identityfakes.BuildFakeID(),
@@ -527,7 +532,7 @@ func TestServiceImpl_UpdateAccount(t *testing.T) {
 
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().UpdateAccount(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountUpdateRequestInput")).Return(nil)
+		identityDataManager.On("UpdateAccount", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.UpdateAccountRequest{
 			AccountID: exampleAccountID,
@@ -571,7 +576,7 @@ func TestServiceImpl_UpdateAccount(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateAccount(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountUpdateRequestInput")).Return(errors.New("update error"))
+		identityDataManager.On("UpdateAccount", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.AccountUpdateRequestInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.UpdateAccountRequest{
 			AccountID: identityfakes.BuildFakeID(),
@@ -601,7 +606,7 @@ func TestServiceImpl_UpdateAccountMemberPermissions(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().UpdateAccountMemberPermissions(testutils.ContextMatcher, exampleUserID, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(nil)
+		identityDataManager.On("UpdateAccountMemberPermissions", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleUserID, mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(nil)
 
 		request := &identitysvc.UpdateAccountMemberPermissionsRequest{
 			UserID: exampleUserID,
@@ -645,7 +650,7 @@ func TestServiceImpl_UpdateAccountMemberPermissions(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateAccountMemberPermissions(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(errors.New("update error"))
+		identityDataManager.On("UpdateAccountMemberPermissions", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("*identity.ModifyUserPermissionsInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.UpdateAccountMemberPermissionsRequest{
 			UserID: identityfakes.BuildFakeID(),
@@ -676,7 +681,7 @@ func TestServiceImpl_ArchiveUserMembership(t *testing.T) {
 		exampleUserID := identityfakes.BuildFakeID()
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveUserMembership(testutils.ContextMatcher, exampleUserID, exampleAccountID).Return(nil)
+		identityDataManager.On("ArchiveUserMembership", testutils.ContextMatcher, exampleUserID, exampleAccountID).Return(nil)
 
 		request := &identitysvc.ArchiveUserMembershipRequest{
 			UserID:    exampleUserID,
@@ -698,7 +703,7 @@ func TestServiceImpl_ArchiveUserMembership(t *testing.T) {
 		exampleUserID := identityfakes.BuildFakeID()
 		exampleAccountID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveUserMembership(testutils.ContextMatcher, exampleUserID, exampleAccountID).Return(errors.New("archive error"))
+		identityDataManager.On("ArchiveUserMembership", testutils.ContextMatcher, exampleUserID, exampleAccountID).Return(errors.New("archive error"))
 
 		request := &identitysvc.ArchiveUserMembershipRequest{
 			UserID:    exampleUserID,

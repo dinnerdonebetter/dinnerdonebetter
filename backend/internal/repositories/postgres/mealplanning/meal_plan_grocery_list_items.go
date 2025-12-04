@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -201,7 +202,7 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 }
 
 // GetMealPlanGroceryListItemsForMealPlan fetches a list of meal plan grocery lists from the database that meet a particular filter.
-func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanGroceryListItem], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -213,12 +214,31 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := q.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, q.db, mealPlanID)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, q.db, &generated.GetMealPlanGroceryListItemsForMealPlanParams{
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		MealPlanID:      mealPlanID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan grocery list items list retrieval query")
 	}
 
-	x := []*mealplanning.MealPlanGroceryListItem{}
+	var (
+		x                         = []*mealplanning.MealPlanGroceryListItem{}
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
 		mealPlanGroceryListItem := &mealplanning.MealPlanGroceryListItem{
 			CreatedAt:         result.CreatedAt,
@@ -307,6 +327,9 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 			mealPlanGroceryListItem.PurchasedMeasurementUnit = purchasedMeasurementUnit
 		}
 
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+
 		x = append(x, mealPlanGroceryListItem)
 	}
 
@@ -317,7 +340,9 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 		}
 	}
 
-	return x, nil
+	y := filtering.NewQueryFilteredResult(x, filteredCount, totalCount, func(m *mealplanning.MealPlanGroceryListItem) string { return m.ID }, filter)
+
+	return y, nil
 }
 
 // createMealPlanGroceryListItem creates a meal plan grocery list in the database.

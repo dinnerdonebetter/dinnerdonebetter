@@ -73,7 +73,7 @@ func (q *repository) GetValidIngredientState(ctx context.Context, validIngredien
 }
 
 // SearchForValidIngredientStates fetches a valid ingredient state from the database.
-func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
+func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,9 +105,13 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
 
-	x := []*types.ValidIngredientState{}
+	var (
+		data                      []*types.ValidIngredientState
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
-		x = append(x, &types.ValidIngredientState{
+		data = append(data, &types.ValidIngredientState{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -119,7 +123,11 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 			AttributeType: string(result.AttributeType),
 			Slug:          result.Slug,
 		})
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vis *types.ValidIngredientState) string { return vis.ID }, filter)
 
 	return x, nil
 }

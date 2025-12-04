@@ -112,7 +112,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidVessels(ctx, updatedValidVessel.Name, nil)
 
-	for i, v := range byName {
+	for i, v := range byName.Data {
 		validVessels.Data[i].CreatedAt = v.CreatedAt
 		validVessels.Data[i].LastUpdatedAt = v.LastUpdatedAt
 		validVessels.Data[i].CapacityUnit.CreatedAt = v.CapacityUnit.CreatedAt
@@ -120,7 +120,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	}
 
 	assert.NoError(t, err)
-	assert.Equal(t, validVessels.Data, byName)
+	assert.Equal(t, validVessels, byName)
 
 	random, err := dbc.GetRandomValidVessel(ctx)
 	assert.NoError(t, err)

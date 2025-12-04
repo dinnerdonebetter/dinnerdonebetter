@@ -105,7 +105,7 @@ func (q *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.
 }
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
+func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -137,9 +137,12 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
-	x := []*types.ValidMeasurementUnit{}
+	var (
+		data                      = []*types.ValidMeasurementUnit{}
+		filteredCount, totalCount uint64
+	)
 	for _, result := range results {
-		x = append(x, &types.ValidMeasurementUnit{
+		data = append(data, &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -154,7 +157,12 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
 		})
+
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(vmu *types.ValidMeasurementUnit) string { return vmu.ID }, filter)
 
 	return x, nil
 }

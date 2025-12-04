@@ -75,17 +75,43 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.GetUsers(ctx, filter)
+	users, err := s.identityDataManager.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
 
 	x := &identitysvc.GetUsersResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
 	}
 
-	for _, user := range users {
-		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
+	for _, user := range users.Data {
+		x.Results = append(x.Results, converters.ConvertUserToGRPCUser(user))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitysvc.GetUsersForAccountRequest) (*identitysvc.GetUsersForAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	users, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
+	}
+
+	x := &identitysvc.GetUsersForAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
+	}
+
+	for _, user := range users.Data {
+		x.Results = append(x.Results, converters.ConvertUserToGRPCUser(user))
 	}
 
 	return x, nil
@@ -101,16 +127,17 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
+	users, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
 	}
 
 	x := &identitysvc.SearchForUsersResponse{
 		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(users.Pagination, filter),
 	}
 
-	for _, user := range users {
+	for _, user := range users.Data {
 		x.Results = append(x.Results, converters.ConvertUserToGRPCUser(user))
 	}
 

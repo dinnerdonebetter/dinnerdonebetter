@@ -113,41 +113,67 @@ func buildMealPlanGroceryListItemsQueries(database string) []*Query {
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
 	JOIN %s ON %s.%s=%s.%s
 	JOIN %s ON %s.%s=%s.%s
 WHERE %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s)
-	AND %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s)
+	%s
 GROUP BY %s.%s,
 	%s.%s,
 	%s.%s,
 	%s.%s
-ORDER BY %s.%s;`,
+%s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(
+						mealPlanGroceryListItemsTableName,
+						true,
+						true,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s IS NULL", validMeasurementUnitsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validIngredientsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", mealPlansTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn),
+					),
+					buildTotalCountSelect(
+						mealPlanGroceryListItemsTableName,
+						true,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s IS NULL", validMeasurementUnitsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validIngredientsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", mealPlansTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn),
+					),
 					mealPlanGroceryListItemsTableName,
 					mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
 					validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
 					validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn,
 					mealPlanGroceryListItemsTableName, archivedAtColumn,
-					validMeasurementUnitsTableName, archivedAtColumn,
-					validIngredientsTableName, archivedAtColumn,
-
-					mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
-					mealPlansTableName, archivedAtColumn,
-					mealPlansTableName, idColumn, mealPlanIDColumn,
-
+					buildFilterConditions(
+						mealPlanGroceryListItemsTableName,
+						true,
+						true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn),
+						fmt.Sprintf("%s.%s IS NULL", validMeasurementUnitsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", validIngredientsTableName, archivedAtColumn),
+						fmt.Sprintf("%s.%s IS NULL", mealPlansTableName, archivedAtColumn),
+					),
 					mealPlanGroceryListItemsTableName, idColumn,
 					validIngredientsTableName, idColumn,
 					validMeasurementUnitsTableName, idColumn,
 					mealPlansTableName, idColumn,
-
-					mealPlanGroceryListItemsTableName, idColumn,
+					buildCursorLimitClause(mealPlanGroceryListItemsTableName),
 				)),
 			},
 			{

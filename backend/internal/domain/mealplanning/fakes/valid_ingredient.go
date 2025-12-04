@@ -57,10 +57,10 @@ func BuildFakeValidIngredientsList() *filtering.QueryFilteredResult[types.ValidI
 
 	return &filtering.QueryFilteredResult[types.ValidIngredient]{
 		Pagination: filtering.Pagination{
-			Cursor:        BuildFakeID(),
-			Limit:         50,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			Cursor:          BuildFakeID(),
+			MaxResponseSize: 50,
+			FilteredCount:   exampleQuantity / 2,
+			TotalCount:      exampleQuantity,
 		},
 		Data: examples,
 	}

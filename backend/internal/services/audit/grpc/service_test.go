@@ -89,7 +89,6 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, request.Filter, response.Filter)
 		assert.Len(t, response.Results, len(fakeAuditLogEntries.Data))
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
@@ -154,7 +153,6 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, request.Filter, response.Filter)
 		assert.Len(t, response.Results, len(fakeAuditLogEntries.Data))
 
 		mock.AssertExpectationsForObjects(t, mockRepo)

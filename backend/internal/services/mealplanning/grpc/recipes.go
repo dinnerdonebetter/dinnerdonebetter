@@ -605,7 +605,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Filter: grpcconverters.ConvertQueryFilterToGRPCQueryFilter(filter, recipePrepTasks.Pagination),
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(recipePrepTasks.Pagination, filter),
 	}
 
 	for _, recipePrepTask := range recipePrepTasks.Data {
@@ -1034,7 +1034,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
+	recipes, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
 	}
@@ -1045,7 +1045,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 		},
 	}
 
-	for _, recipe := range recipes {
+	for _, recipe := range recipes.Data {
 		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
 	}
 

@@ -120,8 +120,20 @@ message GetAccountsRequest {
 
 message GetAccountsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated Account Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated Account Results = 3;
+}
+
+// GetAccountsForUser
+message GetAccountsForUserRequest {
+  filtering.QueryFilter Filter = 1;
+  string UserID = 2;
+}
+
+message GetAccountsForUserResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.Pagination Pagination = 2;
+  repeated Account Results = 3;
 }
 
 // GetReceivedAccountInvitations
@@ -131,8 +143,8 @@ message GetReceivedAccountInvitationsRequest {
 
 message GetReceivedAccountInvitationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated AccountInvitation Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetSentAccountInvitations
@@ -142,8 +154,8 @@ message GetSentAccountInvitationsRequest {
 
 message GetSentAccountInvitationsResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated AccountInvitation Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetUser
@@ -163,8 +175,20 @@ message GetUsersRequest {
 
 message GetUsersResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated User Result = 3;
+  filtering.Pagination Pagination = 2;
+  repeated User Results = 3;
+}
+
+// GetUsersForAccount
+message GetUsersForAccountRequest {
+  filtering.QueryFilter Filter = 1;
+  string AccountID = 2;
+}
+
+message GetUsersForAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.Pagination Pagination = 2;
+  repeated User Results = 3;
 }
 
 // RejectAccountInvitation
@@ -186,7 +210,7 @@ message SearchForUsersRequest {
 
 message SearchForUsersResponse {
   common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
+  filtering.Pagination Pagination = 2;
   repeated User Results = 3;
 }
 
@@ -491,11 +515,13 @@ service IdentityService {
   rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
   rpc GetAccountInvitation(GetAccountInvitationRequest) returns (GetAccountInvitationResponse);
   rpc GetAccounts(GetAccountsRequest) returns (GetAccountsResponse);
+  rpc GetAccountsForUser(GetAccountsForUserRequest) returns (GetAccountsForUserResponse);
   rpc GetReceivedAccountInvitations(GetReceivedAccountInvitationsRequest) returns (GetReceivedAccountInvitationsResponse);
   rpc GetSentAccountInvitations(GetSentAccountInvitationsRequest) returns (GetSentAccountInvitationsResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc RejectAccountInvitation(RejectAccountInvitationRequest) returns (RejectAccountInvitationResponse);
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc GetUsersForAccount(GetUsersForAccountRequest) returns (GetUsersForAccountResponse);
   rpc SearchForUsers(SearchForUsersRequest) returns (SearchForUsersResponse);
   rpc SetDefaultAccount(SetDefaultAccountRequest) returns (SetDefaultAccountResponse);
   rpc TransferAccountOwnership(TransferAccountOwnershipRequest) returns (TransferAccountOwnershipResponse);

@@ -16,7 +16,7 @@ func TestConfig_Validate(T *testing.T) {
 		ctx := t.Context()
 		cfg := &Config{
 			StartupDeadline: time.Second,
-			HTTPPort:        8080,
+			Port:            8080,
 			Debug:           true,
 		}
 

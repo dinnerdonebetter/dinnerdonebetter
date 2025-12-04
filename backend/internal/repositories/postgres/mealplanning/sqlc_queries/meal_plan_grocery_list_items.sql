@@ -105,22 +105,70 @@ SELECT
 	meal_plan_grocery_list_items.status,
 	meal_plan_grocery_list_items.created_at,
 	meal_plan_grocery_list_items.last_updated_at,
-	meal_plan_grocery_list_items.archived_at
+	meal_plan_grocery_list_items.archived_at,
+	(
+		SELECT COUNT(meal_plan_grocery_list_items.id)
+		FROM meal_plan_grocery_list_items
+		JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan = meal_plans.id
+	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit = valid_measurement_units.id
+		WHERE meal_plan_grocery_list_items.archived_at IS NULL
+			AND
+			meal_plan_grocery_list_items.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_grocery_list_items.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_grocery_list_items.last_updated_at IS NULL
+				OR meal_plan_grocery_list_items.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_grocery_list_items.last_updated_at IS NULL
+				OR meal_plan_grocery_list_items.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plan_grocery_list_items.archived_at = NULL)
+			AND valid_measurement_units.archived_at IS NULL
+			AND valid_ingredients.archived_at IS NULL
+			AND meal_plans.archived_at IS NULL
+			AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
+	) AS filtered_count,
+	(
+		SELECT COUNT(meal_plan_grocery_list_items.id)
+		FROM meal_plan_grocery_list_items
+		JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan = meal_plans.id
+	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit = valid_measurement_units.id
+		WHERE meal_plan_grocery_list_items.archived_at IS NULL
+			AND valid_measurement_units.archived_at IS NULL
+			AND valid_ingredients.archived_at IS NULL
+			AND meal_plans.archived_at IS NULL
+			AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
+	) AS total_count
 FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
 	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
 	JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit=valid_measurement_units.id
 WHERE meal_plan_grocery_list_items.archived_at IS NULL
+	AND meal_plan_grocery_list_items.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_grocery_list_items.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meal_plan_grocery_list_items.last_updated_at IS NULL
+		OR meal_plan_grocery_list_items.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meal_plan_grocery_list_items.last_updated_at IS NULL
+		OR meal_plan_grocery_list_items.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plan_grocery_list_items.archived_at = NULL)
+	AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-	AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = sqlc.arg(meal_plan_id)
+	AND meal_plan_grocery_list_items.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY meal_plan_grocery_list_items.id,
 	valid_ingredients.id,
 	valid_measurement_units.id,
 	meal_plans.id
-ORDER BY meal_plan_grocery_list_items.id;
+ORDER BY meal_plan_grocery_list_items.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetMealPlanGroceryListItem :one
 SELECT

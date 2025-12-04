@@ -18,7 +18,7 @@ const (
 
 func ConditionallyCease() {
 	if ShouldCeaseOperation() {
-		slog.Info("CEASE_OPERATION is set to true, exiting")
+		slog.Info(fmt.Sprintf("%s is set to true, exiting", CeaseOperationEnvVarKey))
 		os.Exit(0)
 	}
 }
@@ -37,7 +37,7 @@ func ApplyEnvironmentVariables(cfg any) error {
 	return env.ParseWithOptions(cfg, env.Options{
 		Prefix: EnvVarPrefix,
 		OnSet: func(tag string, value any, isDefault bool) {
-			slog.Info("env var set",
+			slog.Debug("env var set",
 				slog.String("tag", tag),
 				slog.String("value", fmt.Sprintf("%+v", value)),
 				slog.Bool("isDefault", isDefault),

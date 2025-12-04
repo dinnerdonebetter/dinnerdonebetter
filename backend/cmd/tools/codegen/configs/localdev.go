@@ -48,18 +48,51 @@ var (
 		Port:       5432,
 		DisableSSL: true,
 	}
+
+	localObservabilityConfig = observability.Config{
+		Logging: loggingcfg.Config{
+			ServiceName: otelServiceName,
+			Level:       logging.DebugLevel,
+			Provider:    loggingcfg.ProviderOtelSlog,
+			OtelSlog: &logotelgrpc.Config{
+				CollectorEndpoint: "otel_collector:4317",
+				Insecure:          true,
+				Timeout:           time.Second * 3,
+			},
+		},
+		Metrics: metricscfg.Config{
+			ServiceName: otelServiceName,
+			Otel: &otelgrpc.Config{
+				Insecure:           true,
+				CollectorEndpoint:  "otel_collector:4317",
+				CollectionInterval: time.Second,
+			},
+			Provider: metricscfg.ProviderOtel,
+		},
+		Tracing: tracingcfg.Config{
+			Provider:                  tracingcfg.ProviderOtel,
+			ServiceName:               otelServiceName,
+			SpanCollectionProbability: 1,
+			Otel: &oteltrace.Config{
+				Insecure:          true,
+				CollectorEndpoint: "otel_collector:4317",
+			},
+		},
+	}
+
+	localRoutingConfig = routingcfg.Config{
+		Provider: routingcfg.ProviderChi,
+		Chi: &chi.Config{
+			ServiceName:            otelServiceName,
+			EnableCORSForLocalhost: true,
+			SilenceRouteLogging:    false,
+		},
+	}
 )
 
 func buildLocalDevConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
-		Routing: routingcfg.Config{
-			Provider: routingcfg.ProviderChi,
-			Chi: &chi.Config{
-				ServiceName:            otelServiceName,
-				EnableCORSForLocalhost: true,
-				SilenceRouteLogging:    false,
-			},
-		},
+		Routing: localRoutingConfig,
 		Queues: msgconfig.QueuesConfig{
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
@@ -115,7 +148,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           true,
-			HTTPPort:        defaultHTTPPort,
+			Port:            defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		Database: databasecfg.Config{
@@ -127,36 +160,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			PingWaitPeriod:           time.Second,
 			ConnectionDetails:        localdevPostgresDBConnectionDetails,
 		},
-		Observability: observability.Config{
-			Logging: loggingcfg.Config{
-				ServiceName: otelServiceName,
-				Level:       logging.DebugLevel,
-				Provider:    loggingcfg.ProviderOtelSlog,
-				OtelSlog: &logotelgrpc.Config{
-					CollectorEndpoint: "otel_collector:4317",
-					Insecure:          true,
-					Timeout:           time.Second * 3,
-				},
-			},
-			Metrics: metricscfg.Config{
-				ServiceName: otelServiceName,
-				Otel: &otelgrpc.Config{
-					Insecure:           true,
-					CollectorEndpoint:  "otel_collector:4317",
-					CollectionInterval: time.Second,
-				},
-				Provider: metricscfg.ProviderOtel,
-			},
-			Tracing: tracingcfg.Config{
-				Provider:                  tracingcfg.ProviderOtel,
-				ServiceName:               otelServiceName,
-				SpanCollectionProbability: 1,
-				Otel: &oteltrace.Config{
-					Insecure:          true,
-					CollectorEndpoint: "otel_collector:4317",
-				},
-			},
-		},
+		Observability: localObservabilityConfig,
 		Services: config.ServicesConfig{
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
