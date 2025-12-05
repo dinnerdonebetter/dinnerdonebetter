@@ -9,6 +9,18 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
+func Decode(data []byte, ct *contentType, dest any) error {
+	if ct == nil {
+		ct = ContentTypeJSON
+	}
+
+	if err := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct).DecodeBytes(context.Background(), data, &dest); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // MustEncode encodes a given piece of data to a given encoding.
 func MustEncode(data any, ct *contentType) []byte {
 	if ct == nil {
@@ -29,7 +41,7 @@ func MustDecode(data []byte, ct *contentType, dest any) {
 		ct = ContentTypeJSON
 	}
 
-	if err := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct).DecodeBytes(context.Background(), data, &dest); err != nil {
+	if err := Decode(data, ct, &dest); err != nil {
 		panic(err)
 	}
 }
@@ -37,6 +49,10 @@ func MustDecode(data []byte, ct *contentType, dest any) {
 // MustEncodeJSON JSON encodes a piece of data.
 func MustEncodeJSON(data any) []byte {
 	return MustEncode(data, ContentTypeJSON)
+}
+
+func DecodeJSON(data []byte, dest any) error {
+	return Decode(data, ContentTypeJSON, dest)
 }
 
 // MustDecodeJSON JSON encodes a piece of data.

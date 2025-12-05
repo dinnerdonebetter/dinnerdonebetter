@@ -35,8 +35,8 @@ GO_IMAGE               := golang:1.25-trixie
 GO_FORMAT             := gofmt -s -w
 GO_TEST               := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
 CONTAINER_RUNNER      := docker
-RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD)
-RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
+RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --network=host
+RUN_CONTAINER_AS_USER := $(RUN_CONTAINER) --user $(MYSELF):$(MY_GROUP)
 LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
 SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
 CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) --env HOME=/home/gouser --volume $(HOME)/.cache/go:/home/gouser $(GO_IMAGE) go
@@ -237,6 +237,15 @@ AIR_PORT := 9999
 .PHONY: admin
 admin: $(ARTIFACTS_DIR) ensure_air_installed
 	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
+
+
+.PHONY: mcp
+mcp: $(ARTIFACTS_DIR) ensure_air_installed
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/mcp" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
+
+.PHONY: mcp
+mcp_inspector:
+	$(CONTAINER_RUNNER) run --rm --network host -p 6274:6274 -p 6277:6277 ghcr.io/modelcontextprotocol/inspector:latest
 
 # OPERATIONS
 

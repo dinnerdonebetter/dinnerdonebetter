@@ -177,14 +177,14 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, &generated.SearchForValidIngredientsParams{
-		CreatedAfter:    sql.NullTime{},
-		CreatedBefore:   sql.NullTime{},
-		UpdatedBefore:   sql.NullTime{},
-		UpdatedAfter:    sql.NullTime{},
-		IncludeArchived: sql.NullBool{},
-		NameQuery:       "",
-		Cursor:          sql.NullString{},
-		ResultLimit:     nil,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		NameQuery:       query,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
