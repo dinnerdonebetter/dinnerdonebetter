@@ -13,9 +13,9 @@ import (
 
 type (
 	SearchValidIngredientsInvocation struct {
-		Query            string
+		Query            string `jsonschema_description:"The ingredient name query"`
 		Filter           *filtering.QueryFilter
-		UseSearchService bool
+		UseSearchService bool `jsonschema_description:"Whether or not to use a search index or just a database search"`
 	}
 
 	SearchValidIngredientsResult struct {
