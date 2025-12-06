@@ -20,8 +20,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/client"
+
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pquerna/otp/totp"
+	"github.com/spf13/pflag"
 )
 
 const (
@@ -31,6 +33,11 @@ const (
 	tempUsername     = "admin_user"
 	tempPassword     = "admin_pass"
 	tempTOTPTokenKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+
+	// Transport method constants
+	transportStdio = "stdio"
+	transportSSE   = "sse"
+	transportHTTP  = "http"
 )
 
 func must(err error) {
@@ -40,6 +47,16 @@ func must(err error) {
 }
 
 func main() {
+	// Parse command-line flags
+	transport := pflag.String("transport", transportHTTP, fmt.Sprintf("Transport method: %s, %s, or %s", transportStdio, transportSSE, transportHTTP))
+	pflag.Parse()
+
+	// Validate transport flag
+	validTransports := map[string]bool{transportStdio: true, transportSSE: true, transportHTTP: true}
+	if !validTransports[*transport] {
+		log.Fatalf("Invalid transport method: %s. Allowed values are: %s, %s, %s", *transport, transportStdio, transportSSE, transportHTTP)
+	}
+
 	ctx := context.Background()
 
 	// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
@@ -99,6 +116,9 @@ func main() {
 		grpcAddr,
 		tokenRes.Result.AccessToken,
 	)
+	if err != nil {
+		log.Fatalf("failed to build authenticated gRPC client: %v", err)
+	}
 
 	helper := &mcpToolManager{
 		logger: logger,
@@ -107,7 +127,7 @@ func main() {
 	}
 	server := helper.setupServer()
 
-	log.Println("serving now")
+	log.Printf("serving now with transport: %s", *transport)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
@@ -118,30 +138,44 @@ func main() {
 		syscall.SIGTERM,
 	)
 
-	handlerOpts := &mcp.StreamableHTTPOptions{
-		Stateless:      true,
-		JSONResponse:   true,
-		Logger:         slog.New(&slog.JSONHandler{}),
-		EventStore:     mcp.NewMemoryEventStore(nil),
-		SessionTimeout: 0,
-	}
-	handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
-		return server
-	}, handlerOpts)
-
 	go func() {
-		if err = http.ListenAndServe(fmt.Sprintf(":%d", 8888), handler); err != nil {
-			logger.Error("starting MCP server", err)
-		}
-	}()
-
-	// os.Interrupt
-	<-signalChan
-
-	go func() {
-		// os.Kill
 		<-signalChan
+		os.Exit(0)
 	}()
+
+	switch *transport {
+	case transportStdio:
+		// Serve using stdio transport
+		if err := server.Run(ctx, &mcp.StdioTransport{}); err != nil {
+			logger.Error("serving MCP server via stdio", err)
+			log.Fatal(err)
+		}
+	case transportSSE:
+		// Serve using SSE transport
+		handler := mcp.NewSSEHandler(func(request *http.Request) *mcp.Server {
+			return server
+		}, &mcp.SSEOptions{})
+
+		if err = http.ListenAndServe(fmt.Sprintf(":%d", 8888), handler); err != nil {
+			logger.Error("starting MCP server via SSE", err)
+		}
+	case transportHTTP:
+		// Serve using HTTP transport
+		handlerOpts := &mcp.StreamableHTTPOptions{
+			Stateless:      true,
+			JSONResponse:   true,
+			Logger:         slog.New(&slog.JSONHandler{}),
+			EventStore:     mcp.NewMemoryEventStore(nil),
+			SessionTimeout: 0,
+		}
+		handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server {
+			return server
+		}, handlerOpts)
+
+		if err = http.ListenAndServe(fmt.Sprintf(":%d", 8888), handler); err != nil {
+			logger.Error("starting MCP server via HTTP", err)
+		}
+	}
 }
 
 type mcpToolManager struct {
@@ -153,8 +187,8 @@ type mcpToolManager struct {
 func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcpServer := mcp.NewServer(&mcp.Implementation{Name: "dinnerdonebetter-mcp", Version: "v1.0.0"}, nil)
 
-	validIngredientSearchTool, validIngredientSearchFunc := h.SearchForValidIngredients()
-	mcp.AddTool(mcpServer, validIngredientSearchTool, validIngredientSearchFunc)
+	mcp.AddTool(mcpServer, searchForValidIngredientsTool, h.SearchForValidIngredients())
+	// mcp.AddTool(mcpServer, validIngredientCreationTool, h.CreateValidIngredient())
 
 	return mcpServer
 }

@@ -236,16 +236,16 @@ AIR_PORT := 9999
 
 .PHONY: admin
 admin: $(ARTIFACTS_DIR) ensure_air_installed
-	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/admin-build-errors.log"
 
 
 .PHONY: mcp
 mcp: $(ARTIFACTS_DIR) ensure_air_installed
-	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/mcp" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/mcp_tmp $(THIS)/cmd/services/mcp" --build.bin "./$(ARTIFACTS_DIR)/mcp_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/mcp-build-errors.log"
 
-.PHONY: mcp
+.PHONY: mcp_inspector
 mcp_inspector:
-	$(CONTAINER_RUNNER) run --rm --network host -p 6274:6274 -p 6277:6277 ghcr.io/modelcontextprotocol/inspector:latest
+	npx @modelcontextprotocol/inspector --config mcp-server-config.json
 
 # OPERATIONS
 
