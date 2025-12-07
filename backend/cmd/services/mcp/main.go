@@ -149,7 +149,15 @@ func main() {
 			return server
 		}, &mcp.SSEOptions{})
 
-		if err = http.ListenAndServe(fmt.Sprintf(":%d", 8888), handler); err != nil {
+		srv := &http.Server{
+			Addr:              fmt.Sprintf(":%d", 8888),
+			Handler:           handler,
+			ReadTimeout:       15 * time.Second,
+			WriteTimeout:      15 * time.Second,
+			IdleTimeout:       60 * time.Second,
+			ReadHeaderTimeout: 5 * time.Second,
+		}
+		if err = srv.ListenAndServe(); err != nil {
 			logger.Error("starting MCP server via SSE", err)
 		}
 	case transportHTTP:
@@ -165,7 +173,15 @@ func main() {
 			return server
 		}, handlerOpts)
 
-		if err = http.ListenAndServe(fmt.Sprintf(":%d", 8888), handler); err != nil {
+		srv := &http.Server{
+			Addr:              fmt.Sprintf(":%d", 8888),
+			Handler:           handler,
+			ReadTimeout:       15 * time.Second,
+			WriteTimeout:      15 * time.Second,
+			IdleTimeout:       60 * time.Second,
+			ReadHeaderTimeout: 5 * time.Second,
+		}
+		if err = srv.ListenAndServe(); err != nil {
 			logger.Error("starting MCP server via HTTP", err)
 		}
 	}
