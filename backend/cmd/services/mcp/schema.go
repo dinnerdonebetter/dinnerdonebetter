@@ -13,7 +13,7 @@ const (
 	dtFmt = "date-time"
 )
 
-// queryFilterSchema returns the JSON schema for a QueryFilter object
+// queryFilterSchema returns the JSON schema for a QueryFilter object.
 func queryFilterSchema() map[string]any {
 	return objectType(map[string]any{
 		"SortBy":          stringField("Field to sort by"),
@@ -32,6 +32,20 @@ func optionalFloatRangeSchema() map[string]any {
 		"Min": floatField("Minimum value"),
 		"Max": floatField("Maximum value"),
 	})
+}
+
+func uint16RangeWithOptionalMaxSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": uintField("Minimum value (required)"),
+		"Max": uintField("Maximum value (optional)"),
+	}, "Min")
+}
+
+func float32RangeWithOptionalMaxSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": floatField("Minimum value (required)"),
+		"Max": floatField("Maximum value (optional)"),
+	}, "Min")
 }
 
 func schemaObject(properties map[string]any) map[string]any {

@@ -17,8 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -29,12 +27,11 @@ import (
 const (
 	adminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 
-	// TODO: get these values another way
+	// TODO: get these values another way.
 	tempUsername     = "admin_user"
 	tempPassword     = "admin_pass"
 	tempTOTPTokenKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
-	// Transport method constants
 	transportStdio = "stdio"
 	transportSSE   = "sse"
 	transportHTTP  = "http"
@@ -120,11 +117,7 @@ func main() {
 		log.Fatalf("failed to build authenticated gRPC client: %v", err)
 	}
 
-	helper := &mcpToolManager{
-		logger: logger,
-		tracer: tracing.NewTracer(tracerProvider.Tracer("mcp-server")),
-		client: c,
-	}
+	helper := &mcpToolManager{client: c}
 	server := helper.setupServer()
 
 	log.Printf("serving now with transport: %s", *transport)
@@ -146,7 +139,7 @@ func main() {
 	switch *transport {
 	case transportStdio:
 		// Serve using stdio transport
-		if err := server.Run(ctx, &mcp.StdioTransport{}); err != nil {
+		if err = server.Run(ctx, &mcp.StdioTransport{}); err != nil {
 			logger.Error("serving MCP server via stdio", err)
 			log.Fatal(err)
 		}
@@ -179,8 +172,6 @@ func main() {
 }
 
 type mcpToolManager struct {
-	logger logging.Logger
-	tracer tracing.Tracer
 	client client.Client
 }
 
@@ -191,6 +182,61 @@ func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcp.AddTool(mcpServer, searchForValidIngredientsTool, h.SearchForValidIngredients())
 	mcp.AddTool(mcpServer, validIngredientCreationTool, h.CreateValidIngredient())
 	mcp.AddTool(mcpServer, validIngredientUpdateTool, h.UpdateValidIngredient())
+
+	mcp.AddTool(mcpServer, getValidPreparationTool, h.GetValidPreparation())
+	mcp.AddTool(mcpServer, searchForValidPreparationsTool, h.SearchForValidPreparations())
+	mcp.AddTool(mcpServer, validPreparationCreationTool, h.CreateValidPreparation())
+	mcp.AddTool(mcpServer, validPreparationUpdateTool, h.UpdateValidPreparation())
+
+	mcp.AddTool(mcpServer, getValidMeasurementUnitTool, h.GetValidMeasurementUnit())
+	mcp.AddTool(mcpServer, searchForValidMeasurementUnitsTool, h.SearchForValidMeasurementUnits())
+	mcp.AddTool(mcpServer, validMeasurementUnitCreationTool, h.CreateValidMeasurementUnit())
+	mcp.AddTool(mcpServer, validMeasurementUnitUpdateTool, h.UpdateValidMeasurementUnit())
+
+	mcp.AddTool(mcpServer, getValidIngredientPreparationTool, h.GetValidIngredientPreparation())
+	mcp.AddTool(mcpServer, getValidIngredientPreparationsTool, h.GetValidIngredientPreparations())
+	mcp.AddTool(mcpServer, validIngredientPreparationCreationTool, h.CreateValidIngredientPreparation())
+	mcp.AddTool(mcpServer, validIngredientPreparationUpdateTool, h.UpdateValidIngredientPreparation())
+
+	mcp.AddTool(mcpServer, getValidIngredientMeasurementUnitTool, h.GetValidIngredientMeasurementUnit())
+	mcp.AddTool(mcpServer, getValidIngredientMeasurementUnitsTool, h.GetValidIngredientMeasurementUnits())
+	mcp.AddTool(mcpServer, validIngredientMeasurementUnitCreationTool, h.CreateValidIngredientMeasurementUnit())
+	mcp.AddTool(mcpServer, validIngredientMeasurementUnitUpdateTool, h.UpdateValidIngredientMeasurementUnit())
+
+	mcp.AddTool(mcpServer, getValidVesselTool, h.GetValidVessel())
+	mcp.AddTool(mcpServer, searchForValidVesselsTool, h.SearchForValidVessels())
+	mcp.AddTool(mcpServer, validVesselCreationTool, h.CreateValidVessel())
+	mcp.AddTool(mcpServer, validVesselUpdateTool, h.UpdateValidVessel())
+
+	mcp.AddTool(mcpServer, getValidMeasurementUnitConversionTool, h.GetValidMeasurementUnitConversion())
+	mcp.AddTool(mcpServer, getValidMeasurementUnitConversionsForUnitTool, h.GetValidMeasurementUnitConversionsForUnit())
+	mcp.AddTool(mcpServer, validMeasurementUnitConversionCreationTool, h.CreateValidMeasurementUnitConversion())
+	mcp.AddTool(mcpServer, validMeasurementUnitConversionUpdateTool, h.UpdateValidMeasurementUnitConversion())
+
+	mcp.AddTool(mcpServer, getValidIngredientStateTool, h.GetValidIngredientState())
+	mcp.AddTool(mcpServer, searchForValidIngredientStatesTool, h.SearchForValidIngredientStates())
+	mcp.AddTool(mcpServer, validIngredientStateCreationTool, h.CreateValidIngredientState())
+	mcp.AddTool(mcpServer, validIngredientStateUpdateTool, h.UpdateValidIngredientState())
+
+	mcp.AddTool(mcpServer, getValidIngredientStateIngredientTool, h.GetValidIngredientStateIngredient())
+	mcp.AddTool(mcpServer, getValidIngredientStateIngredientsTool, h.GetValidIngredientStateIngredients())
+	mcp.AddTool(mcpServer, validIngredientStateIngredientCreationTool, h.CreateValidIngredientStateIngredient())
+	mcp.AddTool(mcpServer, validIngredientStateIngredientUpdateTool, h.UpdateValidIngredientStateIngredient())
+
+	mcp.AddTool(mcpServer, getValidInstrumentTool, h.GetValidInstrument())
+	mcp.AddTool(mcpServer, searchForValidInstrumentsTool, h.SearchForValidInstruments())
+	mcp.AddTool(mcpServer, validInstrumentCreationTool, h.CreateValidInstrument())
+	mcp.AddTool(mcpServer, validInstrumentUpdateTool, h.UpdateValidInstrument())
+
+	mcp.AddTool(mcpServer, getValidPreparationInstrumentTool, h.GetValidPreparationInstrument())
+	mcp.AddTool(mcpServer, getValidPreparationInstrumentsTool, h.GetValidPreparationInstruments())
+	mcp.AddTool(mcpServer, validPreparationInstrumentCreationTool, h.CreateValidPreparationInstrument())
+	mcp.AddTool(mcpServer, validPreparationInstrumentUpdateTool, h.UpdateValidPreparationInstrument())
+
+	mcp.AddTool(mcpServer, getValidPreparationVesselTool, h.GetValidPreparationVessel())
+	mcp.AddTool(mcpServer, getValidPreparationVesselsTool, h.GetValidPreparationVessels())
+	mcp.AddTool(mcpServer, validPreparationVesselCreationTool, h.CreateValidPreparationVessel())
+	mcp.AddTool(mcpServer, validPreparationVesselUpdateTool, h.UpdateValidPreparationVessel())
 
 	return mcpServer
 }
