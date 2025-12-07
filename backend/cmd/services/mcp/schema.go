@@ -48,6 +48,27 @@ func float32RangeWithOptionalMaxSchema() map[string]any {
 	}, "Min")
 }
 
+func uint32RangeWithOptionalMaxSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": uintField("Minimum value (required)"),
+		"Max": uintField("Maximum value (optional)"),
+	}, "Min")
+}
+
+func optionalUint32RangeSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": uintField("Minimum value"),
+		"Max": uintField("Maximum value"),
+	})
+}
+
+func optionalFloat32RangeSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": floatField("Minimum value"),
+		"Max": floatField("Maximum value"),
+	})
+}
+
 func schemaObject(properties map[string]any) map[string]any {
 	return map[string]any{
 		"$schema":    jsonSchemaVersion,
@@ -71,8 +92,8 @@ func objectType(fieldSchema map[string]any, requiredFields ...string) map[string
 
 func arrayType(fieldSchema map[string]any) map[string]any {
 	return map[string]any{
-		"type":       arrType,
-		"properties": fieldSchema,
+		"type":  arrType,
+		"items": fieldSchema,
 	}
 }
 

@@ -254,5 +254,46 @@ func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcp.AddTool(mcpServer, validPreparationVesselCreationTool, h.CreateValidPreparationVessel())
 	mcp.AddTool(mcpServer, validPreparationVesselUpdateTool, h.UpdateValidPreparationVessel())
 
+	mcp.AddTool(mcpServer, getRecipeStepInstrumentTool, h.GetRecipeStepInstrument())
+	mcp.AddTool(mcpServer, getRecipeStepInstrumentsTool, h.GetRecipeStepInstruments())
+	mcp.AddTool(mcpServer, recipeStepInstrumentCreationTool, h.CreateRecipeStepInstrument())
+	mcp.AddTool(mcpServer, recipeStepInstrumentUpdateTool, h.UpdateRecipeStepInstrument())
+
+	mcp.AddTool(mcpServer, getRecipeStepProductTool, h.GetRecipeStepProduct())
+	mcp.AddTool(mcpServer, getRecipeStepProductsTool, h.GetRecipeStepProducts())
+	mcp.AddTool(mcpServer, recipeStepProductCreationTool, h.CreateRecipeStepProduct())
+	mcp.AddTool(mcpServer, recipeStepProductUpdateTool, h.UpdateRecipeStepProduct())
+
+	mcp.AddTool(mcpServer, getRecipeStepIngredientTool, h.GetRecipeStepIngredient())
+	mcp.AddTool(mcpServer, getRecipeStepIngredientsTool, h.GetRecipeStepIngredients())
+	mcp.AddTool(mcpServer, recipeStepIngredientCreationTool, h.CreateRecipeStepIngredient())
+	mcp.AddTool(mcpServer, recipeStepIngredientUpdateTool, h.UpdateRecipeStepIngredient())
+
+	mcp.AddTool(mcpServer, getRecipePrepTaskTool, h.GetRecipePrepTask())
+	mcp.AddTool(mcpServer, getRecipePrepTasksTool, h.GetRecipePrepTasks())
+	mcp.AddTool(mcpServer, recipePrepTaskCreationTool, h.CreateRecipePrepTask())
+	mcp.AddTool(mcpServer, recipePrepTaskUpdateTool, h.UpdateRecipePrepTask())
+
+	mcp.AddTool(mcpServer, getRecipeStepVesselTool, h.GetRecipeStepVessel())
+	mcp.AddTool(mcpServer, getRecipeStepVesselsTool, h.GetRecipeStepVessels())
+	mcp.AddTool(mcpServer, recipeStepVesselCreationTool, h.CreateRecipeStepVessel())
+	mcp.AddTool(mcpServer, recipeStepVesselUpdateTool, h.UpdateRecipeStepVessel())
+
+	mcp.AddTool(mcpServer, getRecipeStepCompletionConditionTool, h.GetRecipeStepCompletionCondition())
+	mcp.AddTool(mcpServer, getRecipeStepCompletionConditionsTool, h.GetRecipeStepCompletionConditions())
+	mcp.AddTool(mcpServer, recipeStepCompletionConditionCreationTool, h.CreateRecipeStepCompletionCondition())
+	mcp.AddTool(mcpServer, recipeStepCompletionConditionUpdateTool, h.UpdateRecipeStepCompletionCondition())
+
+	mcp.AddTool(mcpServer, getRecipeStepTool, h.GetRecipeStep())
+	mcp.AddTool(mcpServer, getRecipeStepsTool, h.GetRecipeSteps())
+	mcp.AddTool(mcpServer, recipeStepCreationTool, h.CreateRecipeStep())
+	mcp.AddTool(mcpServer, recipeStepUpdateTool, h.UpdateRecipeStep())
+
+	mcp.AddTool(mcpServer, getRecipeTool, h.GetRecipe())
+	mcp.AddTool(mcpServer, getRecipesTool, h.GetRecipes())
+	mcp.AddTool(mcpServer, searchForRecipesTool, h.SearchForRecipes())
+	mcp.AddTool(mcpServer, recipeCreationTool, h.CreateRecipe())
+	mcp.AddTool(mcpServer, recipeUpdateTool, h.UpdateRecipe())
+
 	return mcpServer
 }
