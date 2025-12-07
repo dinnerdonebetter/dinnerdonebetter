@@ -71,7 +71,7 @@ var getValidMeasurementUnitConversionsForUnitTool = &mcp.Tool{
 		"ValidMeasurementUnitID": stringField("The ID of the valid measurement unit"),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validMeasurementUnitConversionsSchema),
+		"Results": arrayType(schemaObject(validMeasurementUnitConversionsSchema)),
 	}),
 }
 

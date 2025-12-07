@@ -40,7 +40,7 @@ var recipePrepTasksSchema = map[string]any{
 	"StorageTemperatureInCelsius":    optionalFloatRangeSchema(),
 	"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
 	"Optional":                      boolField("Whether this prep task is optional"),
-	"TaskSteps":                     arrayType(recipePrepTaskStepSchema),
+	"TaskSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
 }
 
 var getRecipePrepTaskTool = &mcp.Tool{
@@ -86,7 +86,7 @@ var getRecipePrepTasksTool = &mcp.Tool{
 		"Filter":   queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipePrepTasksSchema),
+		"Results": arrayType(schemaObject(recipePrepTasksSchema)),
 	}),
 }
 
@@ -129,7 +129,7 @@ var recipePrepTaskCreationTool = &mcp.Tool{
 		"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
 		"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
 		"Optional":                        boolField("Whether this prep task is optional"),
-		"RecipeSteps":                     arrayType(recipePrepTaskStepSchema),
+		"RecipeSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
 	}),
 	OutputSchema: schemaObject(recipePrepTasksSchema),
 }
@@ -170,7 +170,7 @@ var recipePrepTaskUpdateTool = &mcp.Tool{
 		"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
 		"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
 		"Optional":                        boolField("Whether this prep task is optional"),
-		"RecipeSteps":                     arrayType(recipePrepTaskStepSchema),
+		"RecipeSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
 	}),
 	OutputSchema: schemaObject(recipePrepTasksSchema),
 }

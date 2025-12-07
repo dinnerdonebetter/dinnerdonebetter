@@ -82,7 +82,7 @@ var getRecipeStepVesselsTool = &mcp.Tool{
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipeStepVesselsSchema),
+		"Results": arrayType(schemaObject(recipeStepVesselsSchema)),
 	}),
 }
 

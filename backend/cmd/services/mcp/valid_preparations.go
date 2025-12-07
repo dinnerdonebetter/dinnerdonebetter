@@ -89,7 +89,7 @@ var searchForValidPreparationsTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validPreparationsSchema),
+		"Results": arrayType(schemaObject(validPreparationsSchema)),
 	}),
 }
 

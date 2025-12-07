@@ -80,7 +80,7 @@ var searchForValidIngredientStatesTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validIngredientStatesSchema),
+		"Results": arrayType(schemaObject(validIngredientStatesSchema)),
 	}),
 }
 

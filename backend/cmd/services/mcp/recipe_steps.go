@@ -41,12 +41,12 @@ var recipeStepsSchema = map[string]any{
 	"ConditionExpression":   stringField("The condition expression for this step"),
 	"Notes":                 stringField("Notes about the step"),
 	"ExplicitInstructions":  stringField("Explicit instructions for this step"),
-	"Media":                 arrayType(recipeMediaSchema),
-	"Products":              arrayType(recipeStepProductsSchema),
-	"Instruments":           arrayType(recipeStepInstrumentsSchema),
-	"Vessels":               arrayType(recipeStepVesselsSchema),
-	"CompletionConditions": arrayType(recipeStepCompletionConditionsSchema),
-	"Ingredients":          arrayType(recipeStepIngredientsSchema),
+	"Media":                 arrayType(schemaObject(recipeMediaSchema)),
+	"Products":              arrayType(schemaObject(recipeStepProductsSchema)),
+	"Instruments":           arrayType(schemaObject(recipeStepInstrumentsSchema)),
+	"Vessels":               arrayType(schemaObject(recipeStepVesselsSchema)),
+	"CompletionConditions": arrayType(schemaObject(recipeStepCompletionConditionsSchema)),
+	"Ingredients":          arrayType(schemaObject(recipeStepIngredientsSchema)),
 	"Preparation":           objectType(validPreparationsSchema),
 	"Index":                 uintField("The index of the step within the recipe"),
 	"Optional":              boolField("Whether this step is optional"),
@@ -98,7 +98,7 @@ var getRecipeStepsTool = &mcp.Tool{
 		"Filter":    queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipeStepsSchema),
+		"Results": arrayType(schemaObject(recipeStepsSchema)),
 	}),
 }
 

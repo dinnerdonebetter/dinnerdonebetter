@@ -67,7 +67,7 @@ var getValidPreparationInstrumentsTool = &mcp.Tool{
 		"Filter": queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validPreparationInstrumentsSchema),
+		"Results": arrayType(schemaObject(validPreparationInstrumentsSchema)),
 	}),
 }
 

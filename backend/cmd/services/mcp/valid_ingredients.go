@@ -106,7 +106,7 @@ var searchForValidIngredientsTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validIngredientsSchema),
+		"Results": arrayType(schemaObject(validIngredientsSchema)),
 	}),
 }
 
@@ -242,5 +242,3 @@ func (h *mcpToolManager) UpdateValidIngredient() mcp.ToolHandlerFor[*UpdateValid
 		return nil, mealplanningconverters.ConvertGRPCValidIngredientToValidIngredient(result.Result), nil
 	}
 }
-
-//

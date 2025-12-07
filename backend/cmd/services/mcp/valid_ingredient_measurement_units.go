@@ -68,7 +68,7 @@ var getValidIngredientMeasurementUnitsTool = &mcp.Tool{
 		"Filter": queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validIngredientMeasurementUnitsSchema),
+		"Results": arrayType(schemaObject(validIngredientMeasurementUnitsSchema)),
 	}),
 }
 

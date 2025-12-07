@@ -88,7 +88,7 @@ var getRecipeStepIngredientsTool = &mcp.Tool{
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipeStepIngredientsSchema),
+		"Results": arrayType(schemaObject(recipeStepIngredientsSchema)),
 	}),
 }
 

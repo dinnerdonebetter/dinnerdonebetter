@@ -82,7 +82,7 @@ var searchForValidInstrumentsTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validInstrumentsSchema),
+		"Results": arrayType(schemaObject(validInstrumentsSchema)),
 	}),
 }
 

@@ -88,7 +88,7 @@ var searchForValidVesselsTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validVesselsSchema),
+		"Results": arrayType(schemaObject(validVesselsSchema)),
 	}),
 }
 

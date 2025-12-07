@@ -67,7 +67,7 @@ var getValidPreparationVesselsTool = &mcp.Tool{
 		"Filter": queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validPreparationVesselsSchema),
+		"Results": arrayType(schemaObject(validPreparationVesselsSchema)),
 	}),
 }
 

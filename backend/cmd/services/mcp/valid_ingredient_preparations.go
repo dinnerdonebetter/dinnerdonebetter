@@ -67,7 +67,7 @@ var getValidIngredientPreparationsTool = &mcp.Tool{
 		"Filter": queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validIngredientPreparationsSchema),
+		"Results": arrayType(schemaObject(validIngredientPreparationsSchema)),
 	}),
 }
 

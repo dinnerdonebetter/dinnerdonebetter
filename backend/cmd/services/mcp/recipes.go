@@ -35,9 +35,9 @@ var recipesSchema = map[string]any{
 	"EstimatedPortions":   float32RangeWithOptionalMaxSchema(),
 	"SealOfApproval":      boolField("Whether this recipe has the seal of approval"),
 	"EligibleForMeals":    boolField("Whether this recipe is eligible for meals"),
-	"PrepTasks":           arrayType(recipePrepTasksSchema),
-	"Steps":               arrayType(recipeStepsSchema),
-	"Media":               arrayType(recipeMediaSchema),
+	"PrepTasks":           arrayType(schemaObject(recipePrepTasksSchema)),
+	"Steps":               arrayType(schemaObject(recipeStepsSchema)),
+	"Media":               arrayType(schemaObject(recipeMediaSchema)),
 }
 
 var getRecipeTool = &mcp.Tool{
@@ -79,7 +79,7 @@ var getRecipesTool = &mcp.Tool{
 		"Filter": queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipesSchema),
+		"Results": arrayType(schemaObject(recipesSchema)),
 	}),
 }
 
@@ -122,7 +122,7 @@ var searchForRecipesTool = &mcp.Tool{
 		"Filter":           queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipesSchema),
+		"Results": arrayType(schemaObject(recipesSchema)),
 	}),
 }
 

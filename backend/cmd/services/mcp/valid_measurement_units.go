@@ -83,7 +83,7 @@ var searchForValidMeasurementUnitsTool = &mcp.Tool{
 		},
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(validMeasurementUnitsSchema),
+		"Results": arrayType(schemaObject(validMeasurementUnitsSchema)),
 	}),
 }
 

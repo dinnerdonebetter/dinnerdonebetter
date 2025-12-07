@@ -37,7 +37,7 @@ var recipeStepCompletionConditionsSchema = map[string]any{
 	"BelongsToRecipeStep": stringField("The ID of the recipe step this completion condition belongs to"),
 	"IngredientState":     objectType(validIngredientStatesSchema),
 	"Notes":               stringField("Notes about the completion condition"),
-	"Ingredients":         arrayType(recipeStepCompletionConditionIngredientSchema),
+	"Ingredients":         arrayType(schemaObject(recipeStepCompletionConditionIngredientSchema)),
 	"Optional":            boolField("Whether this completion condition is optional"),
 }
 
@@ -88,7 +88,7 @@ var getRecipeStepCompletionConditionsTool = &mcp.Tool{
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
-		"Results": arrayType(recipeStepCompletionConditionsSchema),
+		"Results": arrayType(schemaObject(recipeStepCompletionConditionsSchema)),
 	}),
 }
 
