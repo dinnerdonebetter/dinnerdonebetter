@@ -187,8 +187,10 @@ type mcpToolManager struct {
 func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcpServer := mcp.NewServer(&mcp.Implementation{Name: "dinnerdonebetter-mcp", Version: "v1.0.0"}, nil)
 
+	mcp.AddTool(mcpServer, getValidIngredientTool, h.GetValidIngredient())
 	mcp.AddTool(mcpServer, searchForValidIngredientsTool, h.SearchForValidIngredients())
-	// mcp.AddTool(mcpServer, validIngredientCreationTool, h.CreateValidIngredient())
+	mcp.AddTool(mcpServer, validIngredientCreationTool, h.CreateValidIngredient())
+	mcp.AddTool(mcpServer, validIngredientUpdateTool, h.UpdateValidIngredient())
 
 	return mcpServer
 }

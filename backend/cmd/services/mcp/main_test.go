@@ -19,11 +19,11 @@ func Test_schemaFromType(T *testing.T) {
 				"Filter": queryFilterSchema(),
 				"Query": map[string]any{
 					"type":        strType,
-					"description": "Search query string to match ingredient names or descriptions",
+					"description": "The ingredient name query",
 				},
 				"UseSearchService": map[string]any{
 					"type":        boolType,
-					"description": "Whether to use the search service for more advanced search capabilities",
+					"description": "Whether or not to use a search index or just a database search",
 				},
 			},
 		}
@@ -167,5 +167,45 @@ func Test_schemaFromType(T *testing.T) {
 		actual := schemaForType(SearchValidIngredientsResult{})
 
 		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("UpdateValidIngredientInvocation", func(t *testing.T) {
+		t.Parallel()
+
+		// Test with pointer (as used in actual code)
+		actual := schemaForType(&UpdateValidIngredientInvocation{})
+		assert.NotNil(t, actual)
+		assert.Equal(t, jsonSchemaVersion, actual["$schema"])
+		assert.Equal(t, objType, actual["type"])
+
+		// Check that Input property is properly resolved (not just a $ref)
+		props, ok := actual["properties"].(map[string]any)
+		assert.True(t, ok, "should have properties")
+		inputProp, ok := props["Input"].(map[string]any)
+		assert.True(t, ok, "should have Input property")
+		
+		// Input should be an object type with properties, not just a $ref
+		// Check that it doesn't have a $ref (which would make it a JSON blob)
+		_, hasRef := inputProp["$ref"]
+		assert.False(t, hasRef, "Input should not have a $ref, it should be expanded")
+		
+		// Check that it doesn't have allOf/oneOf (which would make it a JSON blob)
+		_, hasAllOf := inputProp["allOf"]
+		assert.False(t, hasAllOf, "Input should not have allOf")
+		_, hasOneOf := inputProp["oneOf"]
+		assert.False(t, hasOneOf, "Input should not have oneOf")
+		
+		// Check that it has properties expanded
+		inputProps, ok := inputProp["properties"].(map[string]any)
+		assert.True(t, ok, "Input should have properties map")
+		assert.Greater(t, len(inputProps), 0, "Input should have at least one property")
+		
+		// Verify some expected properties exist
+		_, hasName := inputProps["name"]
+		_, hasDescription := inputProps["description"]
+		assert.True(t, hasName || hasDescription, "Input should have name or description property")
+		
+		// Debug: print the actual schema to see what we're generating
+		t.Logf("Input property schema: %+v", inputProp)
 	})
 }

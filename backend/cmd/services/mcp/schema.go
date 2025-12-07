@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+
 	"github.com/invopop/jsonschema"
 )
 
@@ -64,11 +65,60 @@ func queryFilterSchema() map[string]any {
 
 func schemaForType(x any) map[string]any {
 	var y map[string]any
-	encoding.MustDecodeJSON(encoding.MustEncodeJSON(jsonschema.Reflect(x)), &y)
+	schema := jsonschema.Reflect(x)
+	encoded := encoding.MustEncodeJSON(schema)
+	encoding.MustDecodeJSON(encoded, &y)
 
 	// Transform the schema to match the expected format
 	result := transformSchema(y)
 	return result
+}
+
+// extractRefFromPropertyWithNullable extracts a $ref from a property schema and detects if it's nullable.
+// It handles:
+// - Direct $ref: {"$ref": "..."}
+// - allOf with $ref: {"allOf": [{"$ref": "..."}]}
+// - oneOf with $ref: {"oneOf": [{"type": "null"}, {"$ref": "..."}]} (returns ref and isNullable=true)
+func extractRefFromPropertyWithNullable(prop map[string]any, defs map[string]any, hasDefs bool) (string, bool) {
+	// Check for direct $ref
+	if ref, ok := prop["$ref"].(string); ok {
+		return ref, false
+	}
+
+	// Check for allOf with $ref
+	if allOf, ok := prop["allOf"].([]any); ok && len(allOf) > 0 {
+		for _, item := range allOf {
+			if itemMap, ok := item.(map[string]any); ok {
+				if ref, ok := itemMap["$ref"].(string); ok {
+					return ref, false
+				}
+			}
+		}
+	}
+
+	// Check for oneOf with $ref (pointer types often use this)
+	// oneOf typically has [{"type": "null"}, {"$ref": "..."}]
+	if oneOf, ok := prop["oneOf"].([]any); ok && len(oneOf) > 0 {
+		hasNull := false
+		var ref string
+		for _, item := range oneOf {
+			if itemMap, ok := item.(map[string]any); ok {
+				// Check if this is the null type
+				if itemType, ok := itemMap["type"].(string); ok && itemType == "null" {
+					hasNull = true
+				}
+				// Check if this has a $ref
+				if r, ok := itemMap["$ref"].(string); ok {
+					ref = r
+				}
+			}
+		}
+		if ref != "" {
+			return ref, hasNull
+		}
+	}
+
+	return "", false
 }
 
 func transformSchema(schema map[string]any) map[string]any {
@@ -124,11 +174,82 @@ func transformSchema(schema map[string]any) map[string]any {
 			continue
 		}
 
-		// Handle $ref in properties (for nested types like QueryFilter)
-		if ref, ok := prop["$ref"].(string); ok && hasDefs {
+		// Handle $ref in properties (for nested types like QueryFilter or ValidIngredientCreationRequestInput)
+		// This handles direct $ref, nullable pointer types with $ref, and allOf/oneOf with $ref
+		ref, isNullable := extractRefFromPropertyWithNullable(prop, defs, hasDefs)
+		if ref != "" {
 			if refName := strings.TrimPrefix(ref, "#/$defs/"); refName != ref {
 				if def, ok := defs[refName].(map[string]any); ok {
-					prop = transformQueryFilterSchema(def)
+					var transformed map[string]any
+					// Special case for QueryFilter
+					if refName == "QueryFilter" || strings.Contains(refName, "QueryFilter") {
+						transformed = transformQueryFilterSchema(def)
+					} else {
+						// For other types, recursively transform the schema
+						transformed = transformNestedSchema(def, defs, hasDefs)
+					}
+					// Handle nullable types (from oneOf with null)
+					// Note: For MCP inspector compatibility, we may want to avoid nullable complex objects
+					// as they can render as JSON blobs. Only mark as nullable if it's a simple type.
+					if isNullable {
+						if currentType, ok := transformed["type"].(string); ok {
+							// Only make nullable if it's not a complex object (objects should be required)
+							// This helps MCP inspector render the form properly
+							if currentType != "object" {
+								transformed["type"] = []any{currentType, "null"}
+							}
+							// For objects, we keep them as required (non-nullable) for better MCP inspector UX
+						}
+					}
+					// Completely replace prop with transformed schema to remove any allOf/oneOf/$ref
+					// Also ensure no allOf/oneOf/$ref remain, and explicitly set type for objects
+					delete(transformed, "allOf")
+					delete(transformed, "oneOf")
+					delete(transformed, "$ref")
+					delete(transformed, "additionalProperties")
+					// Ensure type is explicitly set for objects (helps MCP inspector render properly)
+					if _, hasProps := transformed["properties"]; hasProps {
+						if _, hasType := transformed["type"]; !hasType {
+							transformed["type"] = "object"
+						}
+					}
+					prop = transformed
+				}
+			}
+		} else {
+			// Even if no $ref, check if prop has allOf/oneOf that should be cleaned up
+			if _, hasAllOf := prop["allOf"]; hasAllOf {
+				// If we have allOf but couldn't extract a ref, try to flatten it
+				if allOf, ok := prop["allOf"].([]any); ok && len(allOf) == 1 {
+					if itemMap, ok := allOf[0].(map[string]any); ok {
+						// If allOf has only one item, use that item
+						prop = itemMap
+					}
+				}
+			}
+			if _, hasOneOf := prop["oneOf"]; hasOneOf {
+				// If we have oneOf, try to extract the non-null item
+				if oneOf, ok := prop["oneOf"].([]any); ok {
+					for _, item := range oneOf {
+						if itemMap, ok := item.(map[string]any); ok {
+							// Skip null type, use the other one
+							if itemType, ok := itemMap["type"].(string); ok && itemType != "null" {
+								prop = itemMap
+								break
+							} else if _, hasRef := itemMap["$ref"]; hasRef {
+								// If it has a $ref, we should have caught it above, but try again
+								if ref, ok := itemMap["$ref"].(string); ok && hasDefs {
+									if refName := strings.TrimPrefix(ref, "#/$defs/"); refName != ref {
+										if def, ok := defs[refName].(map[string]any); ok {
+											transformed := transformNestedSchema(def, defs, hasDefs)
+											prop = transformed
+											break
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -148,6 +269,129 @@ func transformSchema(schema map[string]any) map[string]any {
 		}
 
 		transformedProps[pascalKey] = propCopy
+	}
+
+	result["properties"] = transformedProps
+	
+	// For UpdateValidIngredientInvocation and similar tools, ensure complex Input fields are required
+	// This helps MCP inspector render them as forms instead of JSON blobs
+	if props, ok := result["properties"].(map[string]any); ok {
+		if inputProp, ok := props["Input"].(map[string]any); ok {
+			// If Input is a complex object with properties, ensure it's explicitly typed as object
+			// and doesn't have any nullable/optional markers that confuse MCP inspector
+			if inputProps, ok := inputProp["properties"].(map[string]any); ok && len(inputProps) > 0 {
+				// Ensure type is explicitly "object" (not nullable)
+				// Remove any nullable type markers
+				if inputType, ok := inputProp["type"]; ok {
+					if typeArray, ok := inputType.([]any); ok {
+						// If it's an array like ["object", "null"], extract just "object"
+						for _, t := range typeArray {
+							if tStr, ok := t.(string); ok && tStr == "object" {
+								inputProp["type"] = "object"
+								break
+							}
+						}
+					} else if inputTypeStr, ok := inputType.(string); ok && inputTypeStr == "object" {
+						// Already correct
+						inputProp["type"] = "object"
+					}
+				} else {
+					// Type not set, set it explicitly
+					inputProp["type"] = "object"
+				}
+				// Remove any nullable markers
+				delete(inputProp, "nullable")
+				
+				// Mark Input as required to force MCP inspector to render it as a form field
+				// Some inspectors only render required complex objects as forms
+				if required, ok := result["required"].([]string); ok {
+					// Check if "Input" is already in required
+					found := false
+					for _, r := range required {
+						if r == "Input" {
+							found = true
+							break
+						}
+					}
+					if !found {
+						result["required"] = append(required, "Input")
+					}
+				} else {
+					// Create required array with Input
+					result["required"] = []string{"Input"}
+				}
+			}
+		}
+	}
+	
+	return result
+}
+
+func transformNestedSchema(schema map[string]any, defs map[string]any, hasDefs bool) map[string]any {
+	result := map[string]any{
+		"type": objType,
+	}
+
+	props, ok := schema["properties"].(map[string]any)
+	if !ok {
+		return result
+	}
+
+	transformedProps := make(map[string]any)
+	for key, value := range props {
+		prop, ok := value.(map[string]any)
+		if !ok {
+			transformedProps[key] = value
+			continue
+		}
+
+		propCopy := make(map[string]any)
+		for k, v := range prop {
+			propCopy[k] = v
+		}
+
+		// Handle $ref in nested properties (e.g., OptionalFloat32Range)
+		if ref, ok := propCopy["$ref"].(string); ok && hasDefs {
+			if refName := strings.TrimPrefix(ref, "#/$defs/"); refName != ref {
+				if def, ok := defs[refName].(map[string]any); ok {
+					// Replace $ref with the actual schema
+					for k, v := range def {
+						propCopy[k] = v
+					}
+					delete(propCopy, "$ref")
+				}
+			}
+		}
+
+		// Handle nested objects with nullable number fields (e.g., OptionalFloat32Range)
+		if propType, ok := propCopy["type"].(string); ok && propType == objType {
+			// Remove additionalProperties if present
+			delete(propCopy, "additionalProperties")
+			if nestedProps, ok := propCopy["properties"].(map[string]any); ok {
+				transformedNestedProps := make(map[string]any)
+				for nestedKey, nestedValue := range nestedProps {
+					nestedProp, ok := nestedValue.(map[string]any)
+					if !ok {
+						transformedNestedProps[nestedKey] = nestedValue
+						continue
+					}
+					nestedPropCopy := make(map[string]any)
+					for k, v := range nestedProp {
+						nestedPropCopy[k] = v
+					}
+					// Make min and max nullable for OptionalFloat32Range
+					if nestedKey == "min" || nestedKey == "max" {
+						if nestedType, ok := nestedPropCopy["type"].(string); ok && nestedType == "number" {
+							nestedPropCopy["type"] = []any{"number", "null"}
+						}
+					}
+					transformedNestedProps[nestedKey] = nestedPropCopy
+				}
+				propCopy["properties"] = transformedNestedProps
+			}
+		}
+
+		transformedProps[key] = propCopy
 	}
 
 	result["properties"] = transformedProps
