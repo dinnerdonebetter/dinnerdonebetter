@@ -103,7 +103,7 @@ func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.Que
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

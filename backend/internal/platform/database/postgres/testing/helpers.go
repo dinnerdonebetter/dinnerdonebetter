@@ -317,12 +317,12 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 	for {
 		pageCount++
 		filter := &filtering.QueryFilter{
-			Limit:  filtering.DefaultQueryFilter().Limit,
-			Cursor: cursor,
+			MaxResponseSize: filtering.DefaultQueryFilter().MaxResponseSize,
+			Cursor:          cursor,
 		}
 		// Override the default page size with our test page size
 		customPageSize := uint8(config.PageSize)
-		filter.Limit = &customPageSize
+		filter.MaxResponseSize = &customPageSize
 
 		result, err := config.FetchPage(ctx, filter)
 		require.NoError(t, err, "failed to fetch page %d", pageCount)

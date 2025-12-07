@@ -128,7 +128,7 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -184,7 +184,7 @@ func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

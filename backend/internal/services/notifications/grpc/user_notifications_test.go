@@ -148,15 +148,15 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 		userID := "test-user-id"
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Limit: &pageSize,
+			MaxResponseSize: &pageSize,
 		}
 
 		mockRepo.On("GetUserNotifications", testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return(fakeNotifications, nil)
 
-		grpcPageSize := uint32(*filter.Limit)
+		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 
@@ -179,7 +179,7 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 		grpcPageSize := uint32(20)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 
@@ -203,7 +203,7 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 		grpcPageSize := uint32(20)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 

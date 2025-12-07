@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-
 	"github.com/invopop/jsonschema"
 )
 
@@ -15,52 +14,103 @@ const (
 	strType           = "string"
 	boolType          = "boolean"
 	intType           = "integer"
-	dtFmt             = "date-time"
+	numberType        = "number"
+
+	dtFmt = "date-time"
 )
 
 // queryFilterSchema returns the JSON schema for a QueryFilter object
 func queryFilterSchema() map[string]any {
+	return objectType(map[string]any{
+		"SortBy":          stringField("Field to sort by"),
+		"CreatedAfter":    timestampField("Filter results created after this timestamp (ISO 8601)"),
+		"CreatedBefore":   timestampField("Filter results created before this timestamp (ISO 8601)"),
+		"UpdatedAfter":    timestampField("Filter results updated after this timestamp (ISO 8601)"),
+		"UpdatedBefore":   timestampField("Filter results updated before this timestamp (ISO 8601)"),
+		"MaxResponseSize": intField("Maximum number of results to return"),
+		"IncludeArchived": boolField("Whether to include archived items"),
+		"Cursor":          stringField("Pagination cursor for fetching next page"),
+	})
+}
+
+func optionalFloatRangeSchema() map[string]any {
+	return objectType(map[string]any{
+		"Min": floatField("Minimum value"),
+		"Max": floatField("Maximum value"),
+	})
+}
+
+func schemaObject(properties map[string]any) map[string]any {
 	return map[string]any{
-		"type": objType,
-		"properties": map[string]any{
-			"SortBy": map[string]any{
-				"type":        strType,
-				"description": "Field to sort by",
-			},
-			"CreatedAfter": map[string]any{
-				"type":        strType,
-				"format":      dtFmt,
-				"description": "Filter results created after this timestamp (ISO 8601)",
-			},
-			"CreatedBefore": map[string]any{
-				"type":        strType,
-				"format":      dtFmt,
-				"description": "Filter results created before this timestamp (ISO 8601)",
-			},
-			"UpdatedAfter": map[string]any{
-				"type":        strType,
-				"format":      dtFmt,
-				"description": "Filter results updated after this timestamp (ISO 8601)",
-			},
-			"UpdatedBefore": map[string]any{
-				"type":        strType,
-				"format":      dtFmt,
-				"description": "Filter results updated before this timestamp (ISO 8601)",
-			},
-			"PageSize": map[string]any{
-				"type":        intType,
-				"description": "Maximum number of results to return",
-			},
-			"IncludeArchived": map[string]any{
-				"type":        boolType,
-				"description": "Whether to include archived items",
-			},
-			"Cursor": map[string]any{
-				"type":        strType,
-				"description": "Pagination cursor for fetching next page",
-			},
-		},
+		"$schema":    jsonSchemaVersion,
+		"type":       objType,
+		"properties": properties,
 	}
+}
+
+func objectType(fieldSchema map[string]any, requiredFields ...string) map[string]any {
+	x := map[string]any{
+		"type":       objType,
+		"properties": fieldSchema,
+	}
+
+	if len(requiredFields) > 0 {
+		x["required"] = requiredFields
+	}
+
+	return x
+}
+
+func floatField(description string) map[string]any {
+	return map[string]any{
+		"type":        numberType,
+		"description": description,
+	}
+}
+
+func uintField(description string) map[string]any {
+	return map[string]any{
+		"type":        intType,
+		"description": description,
+		"minimum":     0,
+	}
+}
+
+func intField(description string) map[string]any {
+	return map[string]any{
+		"type":        intType,
+		"description": description,
+	}
+}
+
+func boolField(description string) map[string]any {
+	return map[string]any{
+		"type":        boolType,
+		"description": description,
+	}
+}
+
+func stringField(description string) map[string]any {
+	x := map[string]any{
+		"type":        strType,
+		"description": description,
+	}
+
+	return x
+}
+
+func timestampField(description string) map[string]any {
+	return stringFieldWithFormat(description, dtFmt)
+}
+
+func stringFieldWithFormat(description, format string) map[string]any {
+	x := map[string]any{
+		"type":        strType,
+		"description": description,
+		"format":      format,
+	}
+
+	return x
 }
 
 func schemaForType(x any) map[string]any {
@@ -272,7 +322,7 @@ func transformSchema(schema map[string]any) map[string]any {
 	}
 
 	result["properties"] = transformedProps
-	
+
 	// For UpdateValidIngredientInvocation and similar tools, ensure complex Input fields are required
 	// This helps MCP inspector render them as forms instead of JSON blobs
 	if props, ok := result["properties"].(map[string]any); ok {
@@ -301,7 +351,7 @@ func transformSchema(schema map[string]any) map[string]any {
 				}
 				// Remove any nullable markers
 				delete(inputProp, "nullable")
-				
+
 				// Mark Input as required to force MCP inspector to render it as a form field
 				// Some inspectors only render required complex objects as forms
 				if required, ok := result["required"].([]string); ok {
@@ -323,7 +373,7 @@ func transformSchema(schema map[string]any) map[string]any {
 			}
 		}
 	}
-	
+
 	return result
 }
 
@@ -418,9 +468,9 @@ func transformQueryFilterSchema(schema map[string]any) map[string]any {
 		// Convert camelCase to PascalCase
 		pascalKey := toPascalCase(key)
 
-		// Special case: limit -> PageSize
+		// Special case: limit -> MaxResponseSize
 		if key == "limit" {
-			pascalKey = "PageSize"
+			pascalKey = "MaxResponseSize"
 		}
 
 		// Add descriptions based on field name
@@ -564,7 +614,7 @@ func getFieldDescription(fieldName string) string {
 		"CreatedBefore":    "Filter results created before this timestamp (ISO 8601)",
 		"UpdatedAfter":     "Filter results updated after this timestamp (ISO 8601)",
 		"UpdatedBefore":    "Filter results updated before this timestamp (ISO 8601)",
-		"PageSize":         "Maximum number of results to return",
+		"MaxResponseSize":  "Maximum number of results to return",
 		"IncludeArchived":  "Whether to include archived items",
 		"Cursor":           "Pagination cursor for fetching next page",
 		"Query":            "Search query string to match ingredient names or descriptions",

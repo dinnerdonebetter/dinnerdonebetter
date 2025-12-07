@@ -158,7 +158,7 @@ func (q *repository) GetValidIngredientPreparations(ctx context.Context, filter 
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -293,7 +293,7 @@ func (q *repository) GetValidIngredientPreparationsForPreparation(ctx context.Co
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -428,7 +428,7 @@ func (q *repository) GetValidIngredientPreparationsForIngredient(ctx context.Con
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

@@ -118,7 +118,7 @@ func (q *repository) SearchForServiceSettings(ctx context.Context, query string,
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -189,7 +189,7 @@ func (q *repository) GetServiceSettings(ctx context.Context, filter *filtering.Q
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

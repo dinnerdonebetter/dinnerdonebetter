@@ -242,7 +242,7 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -328,7 +328,7 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

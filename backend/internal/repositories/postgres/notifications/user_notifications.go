@@ -117,7 +117,7 @@ func (q *repository) GetUserNotifications(ctx context.Context, userID string, fi
 		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user notifications list retrieval query")

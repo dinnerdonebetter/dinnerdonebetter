@@ -72,15 +72,15 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Limit: &pageSize,
+			MaxResponseSize: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForAccount", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
-		grpcPageSize := uint32(*filter.Limit)
+		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 
@@ -102,15 +102,15 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Limit: &pageSize,
+			MaxResponseSize: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForAccount", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
-		grpcPageSize := uint32(*filter.Limit)
+		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 
@@ -136,15 +136,15 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Limit: &pageSize,
+			MaxResponseSize: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForUser", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
-		grpcPageSize := uint32(*filter.Limit)
+		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 
@@ -166,15 +166,15 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Limit: &pageSize,
+			MaxResponseSize: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForUser", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
-		grpcPageSize := uint32(*filter.Limit)
+		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &grpcPageSize,
+				MaxResponseSize: &grpcPageSize,
 			},
 		}
 

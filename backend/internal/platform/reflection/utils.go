@@ -91,3 +91,69 @@ func GetMethodName(method any) string {
 	}
 	return ""
 }
+
+// GetFieldTypes returns a map of field names to their types. For nested structs,
+// the value is a map[string]any containing the nested struct's fields.
+func GetFieldTypes(strukt any) (map[string]any, error) {
+	var t reflect.Type
+
+	switch v := strukt.(type) {
+	case reflect.Type:
+		t = v
+	default:
+		rv := reflect.ValueOf(strukt)
+		if !rv.IsValid() {
+			return nil, fmt.Errorf("nil value")
+		}
+
+		if rv.Kind() == reflect.Ptr {
+			if rv.IsNil() {
+				// For nil pointer, try to get the type from the pointer type
+				t = rv.Type().Elem()
+			} else {
+				t = rv.Elem().Type()
+			}
+		} else {
+			t = rv.Type()
+		}
+	}
+
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+
+	if t.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("GetFieldTypes: expected struct or pointer to struct, got %v", t.Kind())
+	}
+
+	result := make(map[string]any)
+
+	for i := 0; i < t.NumField(); i++ {
+		sf := t.Field(i)
+		fieldType := sf.Type
+
+		// Skip unexported fields
+		if !sf.IsExported() {
+			continue
+		}
+
+		// Check if it's a pointer type
+		if fieldType.Kind() == reflect.Ptr {
+			fieldType = fieldType.Elem()
+		}
+
+		// If it's a struct, recursively get its fields
+		if fieldType.Kind() == reflect.Struct {
+			nestedMap, err := GetFieldTypes(fieldType)
+			if err != nil {
+				return nil, fmt.Errorf("error processing nested struct field %s: %w", sf.Name, err)
+			}
+			result[sf.Name] = nestedMap
+		} else {
+			// For non-struct fields, store the type string
+			result[sf.Name] = fieldType.String()
+		}
+	}
+
+	return result, nil
+}
