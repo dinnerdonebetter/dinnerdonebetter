@@ -69,9 +69,9 @@ func (h *mcpToolManager) GetRecipeStepCompletionCondition() mcp.ToolHandlerFor[*
 
 type (
 	GetRecipeStepCompletionConditionsInvocation struct {
+		Filter       *filtering.QueryFilter
 		RecipeID     string
 		RecipeStepID string
-		Filter       *filtering.QueryFilter
 	}
 
 	GetRecipeStepCompletionConditionsResult struct {

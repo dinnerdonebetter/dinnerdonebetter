@@ -69,9 +69,9 @@ func (h *mcpToolManager) GetRecipeStepProduct() mcp.ToolHandlerFor[*GetRecipeSte
 
 type (
 	GetRecipeStepProductsInvocation struct {
+		Filter       *filtering.QueryFilter
 		RecipeID     string
 		RecipeStepID string
-		Filter       *filtering.QueryFilter
 	}
 
 	GetRecipeStepProductsResult struct {
@@ -126,19 +126,19 @@ var recipeStepProductCreationTool = &mcp.Tool{
 	InputSchema: schemaObject(map[string]any{
 		"RecipeID":                    stringField("The ID of the recipe"),
 		"RecipeStepID":                stringField("The ID of the recipe step"),
-		"Name":                         stringField("Name of the product"),
-		"Type":                         stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
+		"Name":                        stringField("Name of the product"),
+		"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
 		"MeasurementUnitID":           stringField("The ID of the measurement unit, if any"),
-		"QuantityNotes":                stringField("Notes about the quantity"),
-		"StorageInstructions":          stringField("Storage instructions for the product"),
-		"Quantity":                     optionalFloatRangeSchema(),
+		"QuantityNotes":               stringField("Notes about the quantity"),
+		"StorageInstructions":         stringField("Storage instructions for the product"),
+		"Quantity":                    optionalFloatRangeSchema(),
 		"StorageTemperatureInCelsius": optionalFloatRangeSchema(),
-		"StorageDurationInSeconds":     optionalUint32RangeSchema(),
-		"ContainedInVesselIndex":       uintField("The index of the vessel this product is contained in, if any"),
-		"Index":                        uintField("The display index/order of this product"),
-		"IsWaste":                      boolField("Whether this product is waste"),
-		"IsLiquid":                     boolField("Whether this product is a liquid"),
-		"Compostable":                  boolField("Whether this product is compostable"),
+		"StorageDurationInSeconds":    optionalUint32RangeSchema(),
+		"ContainedInVesselIndex":      uintField("The index of the vessel this product is contained in, if any"),
+		"Index":                       uintField("The display index/order of this product"),
+		"IsWaste":                     boolField("Whether this product is waste"),
+		"IsLiquid":                    boolField("Whether this product is a liquid"),
+		"Compostable":                 boolField("Whether this product is compostable"),
 	}),
 	OutputSchema: schemaObject(recipeStepProductsSchema),
 }
@@ -177,16 +177,16 @@ var recipeStepProductUpdateTool = &mcp.Tool{
 		"Name":                        stringField("Name of the product"),
 		"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
 		"MeasurementUnitID":           stringField("The ID of the measurement unit, if any"),
-		"QuantityNotes":                stringField("Notes about the quantity"),
-		"StorageInstructions":          stringField("Storage instructions for the product"),
-		"Quantity":                     optionalFloatRangeSchema(),
+		"QuantityNotes":               stringField("Notes about the quantity"),
+		"StorageInstructions":         stringField("Storage instructions for the product"),
+		"Quantity":                    optionalFloatRangeSchema(),
 		"StorageTemperatureInCelsius": optionalFloatRangeSchema(),
-		"StorageDurationInSeconds":     optionalUint32RangeSchema(),
-		"ContainedInVesselIndex":       uintField("The index of the vessel this product is contained in, if any"),
-		"Index":                        uintField("The display index/order of this product"),
-		"IsWaste":                      boolField("Whether this product is waste"),
-		"IsLiquid":                     boolField("Whether this product is a liquid"),
-		"Compostable":                  boolField("Whether this product is compostable"),
+		"StorageDurationInSeconds":    optionalUint32RangeSchema(),
+		"ContainedInVesselIndex":      uintField("The index of the vessel this product is contained in, if any"),
+		"Index":                       uintField("The display index/order of this product"),
+		"IsWaste":                     boolField("Whether this product is waste"),
+		"IsLiquid":                    boolField("Whether this product is a liquid"),
+		"Compostable":                 boolField("Whether this product is compostable"),
 	}),
 	OutputSchema: schemaObject(recipeStepProductsSchema),
 }

@@ -27,20 +27,20 @@ var recipePrepTaskStepSchema = map[string]any{
 }
 
 var recipePrepTasksSchema = map[string]any{
-	"ID":                            stringField("The ID of the recipe prep task"),
-	"CreatedAt":                     timestampField("When the recipe prep task was created"),
-	"LastUpdatedAt":                 timestampField("When the recipe prep task was last updated"),
-	"ArchivedAt":                    timestampField("When the recipe prep task was soft deleted"),
-	"BelongsToRecipe":               stringField("The ID of the recipe this prep task belongs to"),
-	"Name":                          stringField("Name of the prep task"),
-	"Description":                   stringField("Description of the prep task"),
-	"Notes":                         stringField("Notes about the prep task"),
-	"StorageType":                   stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
-	"ExplicitStorageInstructions":   stringField("Explicit storage instructions for the prep task"),
-	"StorageTemperatureInCelsius":    optionalFloatRangeSchema(),
+	"ID":                              stringField("The ID of the recipe prep task"),
+	"CreatedAt":                       timestampField("When the recipe prep task was created"),
+	"LastUpdatedAt":                   timestampField("When the recipe prep task was last updated"),
+	"ArchivedAt":                      timestampField("When the recipe prep task was soft deleted"),
+	"BelongsToRecipe":                 stringField("The ID of the recipe this prep task belongs to"),
+	"Name":                            stringField("Name of the prep task"),
+	"Description":                     stringField("Description of the prep task"),
+	"Notes":                           stringField("Notes about the prep task"),
+	"StorageType":                     stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
+	"ExplicitStorageInstructions":     stringField("Explicit storage instructions for the prep task"),
+	"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
 	"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
-	"Optional":                      boolField("Whether this prep task is optional"),
-	"TaskSteps":                     arrayType(schemaObject(recipePrepTaskStepSchema)),
+	"Optional":                        boolField("Whether this prep task is optional"),
+	"TaskSteps":                       arrayType(schemaObject(recipePrepTaskStepSchema)),
 }
 
 var getRecipePrepTaskTool = &mcp.Tool{
@@ -69,8 +69,8 @@ func (h *mcpToolManager) GetRecipePrepTask() mcp.ToolHandlerFor[*GetRecipePrepTa
 
 type (
 	GetRecipePrepTasksInvocation struct {
-		RecipeID string
 		Filter   *filtering.QueryFilter
+		RecipeID string
 	}
 
 	GetRecipePrepTasksResult struct {
@@ -124,7 +124,7 @@ var recipePrepTaskCreationTool = &mcp.Tool{
 		"Name":                            stringField("Name of the prep task"),
 		"Description":                     stringField("Description of the prep task"),
 		"Notes":                           stringField("Notes about the prep task"),
-		"StorageType":                      stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
+		"StorageType":                     stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
 		"ExplicitStorageInstructions":     stringField("Explicit storage instructions for the prep task"),
 		"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
 		"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
@@ -180,7 +180,7 @@ func (h *mcpToolManager) UpdateRecipePrepTask() mcp.ToolHandlerFor[*UpdateRecipe
 		result, err := h.client.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
 			RecipeID:         x.RecipeID,
 			RecipePrepTaskID: x.RecipePrepTaskID,
-			Input:           mealplanningconverters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(x.RecipePrepTaskUpdateRequestInput),
+			Input:            mealplanningconverters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(x.RecipePrepTaskUpdateRequestInput),
 		})
 		if err != nil {
 			return nil, nil, err

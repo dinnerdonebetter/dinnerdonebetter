@@ -64,9 +64,9 @@ func (h *mcpToolManager) GetRecipeStepInstrument() mcp.ToolHandlerFor[*GetRecipe
 
 type (
 	GetRecipeStepInstrumentsInvocation struct {
+		Filter       *filtering.QueryFilter
 		RecipeID     string
 		RecipeStepID string
-		Filter       *filtering.QueryFilter
 	}
 
 	GetRecipeStepInstrumentsResult struct {

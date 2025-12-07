@@ -103,9 +103,9 @@ func (h *mcpToolManager) GetRecipes() mcp.ToolHandlerFor[*GetRecipesInvocation, 
 
 type (
 	SearchForRecipesInvocation struct {
+		Filter           *filtering.QueryFilter
 		Query            string
 		UseSearchService bool
-		Filter           *filtering.QueryFilter
 	}
 
 	SearchForRecipesResult struct {
