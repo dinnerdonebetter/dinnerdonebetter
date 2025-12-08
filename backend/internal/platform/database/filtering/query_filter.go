@@ -63,7 +63,7 @@ type (
 		PreviousCursor     string       `json:"previousCursor"`
 		FilteredCount      uint64       `json:"filteredCount"`
 		TotalCount         uint64       `json:"totalCount"`
-		MaxResponseSize    uint8        `json:"maxResponseSize"`
+		MaxResponseSize    uint8        `json:"maxResponseSize"` // TODO: deprecate
 	}
 
 	// QueryFilter represents all the filters a User could apply to a list query.
@@ -75,7 +75,7 @@ type (
 		CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
 		UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
 		UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
-		Limit           *uint8     `json:"limit,omitempty"`
+		MaxResponseSize *uint8     `json:"maxResponseSize,omitempty"`
 		IncludeArchived *bool      `json:"includeArchived,omitempty"`
 		Cursor          *string    `json:"cursor,omitempty"`
 	}
@@ -90,8 +90,8 @@ type (
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
-		SortBy: SortAscending,
+		MaxResponseSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+		SortBy:          SortAscending,
 	}
 }
 
@@ -107,8 +107,8 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 		l = l.WithValue(QueryKeyCursor, qf.Cursor)
 	}
 
-	if qf.Limit != nil {
-		l = l.WithValue(QueryKeyLimit, qf.Limit)
+	if qf.MaxResponseSize != nil {
+		l = l.WithValue(QueryKeyLimit, qf.MaxResponseSize)
 	}
 
 	if qf.SortBy != nil {
@@ -141,7 +141,7 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 
 	if i, err := strconv.ParseUint(params.Get(QueryKeyLimit), 10, 64); err == nil {
-		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
+		qf.MaxResponseSize = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedBefore)); err == nil {
@@ -191,8 +191,8 @@ func (qf *QueryFilter) ToValues() url.Values {
 		v.Set(QueryKeyCursor, *qf.Cursor)
 	}
 
-	if qf.Limit != nil {
-		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.Limit), 10))
+	if qf.MaxResponseSize != nil {
+		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.MaxResponseSize), 10))
 	}
 
 	if qf.SortBy != nil {
@@ -234,8 +234,8 @@ func (qf *QueryFilter) ToPagination() Pagination {
 		x.Cursor = *qf.Cursor
 	}
 
-	if qf.Limit != nil {
-		x.MaxResponseSize = *qf.Limit
+	if qf.MaxResponseSize != nil {
+		x.MaxResponseSize = *qf.MaxResponseSize
 	}
 
 	return x
@@ -246,9 +246,9 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	qf := DefaultQueryFilter()
 	qf.FromParams(req.URL.Query())
 
-	if qf.Limit != nil {
-		if *qf.Limit == 0 {
-			qf.Limit = pointer.To(uint8(DefaultQueryFilterLimit))
+	if qf.MaxResponseSize != nil {
+		if *qf.MaxResponseSize == 0 {
+			qf.MaxResponseSize = pointer.To(uint8(DefaultQueryFilterLimit))
 		}
 	}
 

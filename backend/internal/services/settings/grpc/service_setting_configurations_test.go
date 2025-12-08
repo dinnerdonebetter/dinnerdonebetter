@@ -214,7 +214,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForAccount(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -242,7 +242,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForAccount(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -265,7 +265,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForAccount(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -297,7 +297,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForUser(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -325,7 +325,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForUser(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -348,7 +348,7 @@ func TestServiceImpl_GetServiceSettingConfigurationsForUser(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingConfigurationsForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 

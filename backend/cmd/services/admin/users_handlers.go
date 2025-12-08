@@ -210,8 +210,8 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 	accountsRes, err := c.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
 		UserID: userID,
 		Filter: &filtering.QueryFilter{
-			PageSize: &pageSize,
-			Cursor:   nextCursor,
+			MaxResponseSize: &pageSize,
+			Cursor:          nextCursor,
 		},
 	})
 	if err != nil {

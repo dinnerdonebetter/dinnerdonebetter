@@ -315,7 +315,7 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -338,7 +338,7 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -362,7 +362,7 @@ func TestServiceImpl_GetAccounts(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetAccountsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 

@@ -12,7 +12,7 @@ message QueryFilter {
   optional google.protobuf.Timestamp CreatedBefore = 4;
   optional google.protobuf.Timestamp UpdatedAfter = 5;
   optional google.protobuf.Timestamp UpdatedBefore = 6;
-  optional uint32 PageSize = 7;
+  optional uint32 MaxResponseSize = 7;
   optional bool IncludeArchived = 8;
   optional string Cursor = 9;
 }

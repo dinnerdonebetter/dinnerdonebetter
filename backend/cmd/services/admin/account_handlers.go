@@ -224,7 +224,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	usersRes, err := c.GetUsersForAccount(ctx, &identitysvc.GetUsersForAccountRequest{
 		AccountID: accountID,
 		Filter: &filtering.QueryFilter{
-			PageSize: &pageSize,
+			MaxResponseSize: &pageSize,
 		},
 	})
 	if err != nil {

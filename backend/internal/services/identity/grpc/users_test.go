@@ -220,7 +220,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -246,7 +246,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -285,7 +285,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 			Query:            exampleQuery,
 			UseSearchService: false,
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -319,7 +319,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 			Query:            exampleQuery,
 			UseSearchService: true,
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -348,7 +348,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 			Query:            exampleQuery,
 			UseSearchService: false,
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 

@@ -224,7 +224,7 @@ func TestServiceImpl_GetServiceSettings(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -252,7 +252,7 @@ func TestServiceImpl_GetServiceSettings(t *testing.T) {
 		pageSize := uint32(50)
 		request := &settingssvc.GetServiceSettingsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 

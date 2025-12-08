@@ -54,21 +54,18 @@ func (s *Server) Run() {
 	go s.httpServer.Serve()
 	go s.grpcServer.Serve()
 
-	// os.Interrupt
-	<-signalChan
-
-	go func() {
-		// os.Kill
-		<-signalChan
-	}()
+	// Wait for shutdown signal
+	sig := <-signalChan
+	s.logger.WithValue("signal", sig.String()).Info("received shutdown signal")
 
 	cancelCtx, cancelShutdown := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelShutdown()
 
 	s.logger.Info("shutting down")
 
-	// Gracefully shutdown the server by waiting on existing requests (except websockets).
 	if err := s.httpServer.Shutdown(cancelCtx); err != nil {
-		s.logger.Error("shutting down server", err)
+		s.logger.Error("shutting down HTTP server", err)
 	}
+
+	s.grpcServer.Shutdown()
 }

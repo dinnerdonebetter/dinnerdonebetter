@@ -26,7 +26,7 @@ func (r *repository) CollectUserData(ctx context.Context, accountIDs []string) (
 			UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
 			UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
 			Cursor:           database.NullStringFromStringPointer(filter.Cursor),
-			ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+			ResultLimit:      database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 			IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 			BelongsToAccount: accountID,
 		})

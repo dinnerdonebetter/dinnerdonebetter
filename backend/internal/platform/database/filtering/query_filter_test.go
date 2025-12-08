@@ -25,7 +25,7 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 
 		qf := &QueryFilter{
 			Cursor:          pointer.To(t.Name()),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
@@ -58,7 +58,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
 			Cursor:          pointer.To(t.Name()),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -70,7 +70,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
 			QueryKeyCursor:            []string{*expected.Cursor},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.MaxResponseSize))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -115,7 +115,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 
 		qf := &QueryFilter{
 			Cursor:          pointer.To(t.Name()),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -126,7 +126,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 
 		expected := url.Values{
 			QueryKeyCursor:          []string{*qf.Cursor},
-			QueryKeyLimit:           []string{strconv.Itoa(int(*qf.Limit))},
+			QueryKeyLimit:           []string{strconv.Itoa(int(*qf.MaxResponseSize))},
 			QueryKeyCreatedBefore:   []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:    []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:   []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -160,18 +160,18 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Cursor:        pointer.To(t.Name()),
-			Limit:         pointer.To(uint8(MaxQueryFilterLimit)),
-			CreatedAfter:  pointer.To(tt),
-			CreatedBefore: pointer.To(tt),
-			UpdatedAfter:  pointer.To(tt),
-			UpdatedBefore: pointer.To(tt),
-			SortBy:        SortDescending,
+			Cursor:          pointer.To(t.Name()),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			CreatedAfter:    pointer.To(tt),
+			CreatedBefore:   pointer.To(tt),
+			UpdatedAfter:    pointer.To(tt),
+			UpdatedBefore:   pointer.To(tt),
+			SortBy:          SortDescending,
 		}
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
 			QueryKeyCursor:            []string{*expected.Cursor},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.MaxResponseSize))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -194,9 +194,9 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := t.Context()
 
 		expected := &QueryFilter{
-			Cursor: pointer.To(t.Name()),
-			Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
-			SortBy: SortAscending,
+			Cursor:          pointer.To(t.Name()),
+			MaxResponseSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+			SortBy:          SortAscending,
 		}
 		exampleInput := url.Values{
 			QueryKeyCursor: []string{*expected.Cursor},
@@ -220,13 +220,13 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor: pointer.To(t.Name()),
-			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		expected := Pagination{
 			Cursor:          *qf.Cursor,
-			MaxResponseSize: *qf.Limit,
+			MaxResponseSize: *qf.MaxResponseSize,
 		}
 
 		actual := qf.ToPagination()
@@ -250,8 +250,8 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor: pointer.To(t.Name()),
-			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		data := []*string{pointer.To("a"), pointer.To("b")}
@@ -264,7 +264,7 @@ func TestNewQueryFilteredResult(T *testing.T) {
 			Pagination: Pagination{
 				Cursor:             *data[1],
 				PreviousCursor:     *qf.Cursor,
-				MaxResponseSize:    *qf.Limit,
+				MaxResponseSize:    *qf.MaxResponseSize,
 				FilteredCount:      filteredCount,
 				TotalCount:         totalCount,
 				AppliedQueryFilter: qf,
@@ -279,8 +279,8 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor: pointer.To(t.Name()),
-			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		data := []*string{}
@@ -293,7 +293,7 @@ func TestNewQueryFilteredResult(T *testing.T) {
 			Pagination: Pagination{
 				Cursor:             "",
 				PreviousCursor:     *qf.Cursor,
-				MaxResponseSize:    *qf.Limit,
+				MaxResponseSize:    *qf.MaxResponseSize,
 				FilteredCount:      filteredCount,
 				TotalCount:         totalCount,
 				AppliedQueryFilter: qf,
@@ -308,7 +308,7 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Limit: pointer.To(uint8(MaxQueryFilterLimit)),
+			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		data := []*string{pointer.To("a"), pointer.To("b")}
@@ -321,7 +321,7 @@ func TestNewQueryFilteredResult(T *testing.T) {
 			Pagination: Pagination{
 				Cursor:             *data[1],
 				PreviousCursor:     "",
-				MaxResponseSize:    *qf.Limit,
+				MaxResponseSize:    *qf.MaxResponseSize,
 				FilteredCount:      filteredCount,
 				TotalCount:         totalCount,
 				AppliedQueryFilter: qf,

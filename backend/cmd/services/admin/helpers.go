@@ -130,8 +130,8 @@ func buildPaginationURLGenerator(req *http.Request, baseURL string, queryFilter 
 		}
 
 		// Ensure limit is included if it was in the original filter
-		if queryFilter != nil && queryFilter.Limit != nil {
-			queryParams.Set("limit", fmt.Sprintf("%d", *queryFilter.Limit))
+		if queryFilter != nil && queryFilter.MaxResponseSize != nil {
+			queryParams.Set("limit", fmt.Sprintf("%d", *queryFilter.MaxResponseSize))
 		}
 
 		return baseURL + "?" + queryParams.Encode()
@@ -162,8 +162,8 @@ func buildPaginationURLGeneratorForSearch(req *http.Request, searchEndpoint stri
 		}
 
 		// Ensure limit is included if it was in the original filter
-		if queryFilter != nil && queryFilter.Limit != nil {
-			queryParams.Set("limit", fmt.Sprintf("%d", *queryFilter.Limit))
+		if queryFilter != nil && queryFilter.MaxResponseSize != nil {
+			queryParams.Set("limit", fmt.Sprintf("%d", *queryFilter.MaxResponseSize))
 		}
 
 		return searchEndpoint + "?" + queryParams.Encode()

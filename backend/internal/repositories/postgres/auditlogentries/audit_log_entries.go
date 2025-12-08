@@ -78,7 +78,7 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -152,7 +152,7 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -219,7 +219,7 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -293,7 +293,7 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
-		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")

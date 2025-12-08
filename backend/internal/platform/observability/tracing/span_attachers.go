@@ -123,8 +123,8 @@ func AttachErrorToSpan(span trace.Span, description string, err error) {
 // AttachQueryFilterToSpan attaches a given query filter to a span.
 func AttachQueryFilterToSpan(span trace.Span, filter *filtering.QueryFilter) {
 	if filter != nil {
-		if filter.Limit != nil {
-			AttachToSpan(span, keys.FilterLimitKey, *filter.Limit)
+		if filter.MaxResponseSize != nil {
+			AttachToSpan(span, keys.FilterLimitKey, *filter.MaxResponseSize)
 		}
 
 		if filter.Cursor != nil {

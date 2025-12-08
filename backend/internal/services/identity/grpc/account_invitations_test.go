@@ -334,7 +334,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -357,7 +357,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -382,7 +382,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -419,7 +419,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -442,7 +442,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
@@ -466,7 +466,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: &pageSize,
+				MaxResponseSize: &pageSize,
 			},
 		}
 
