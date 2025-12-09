@@ -1,15 +1,6 @@
 {
-  "originHash" : "4580dbfcf2410e622807c8bf099939d33016da736b95d0c297db62a7588bfd7c",
+  "originHash" : "4462cf0f77927d3e6adaca76d66d297fc66a1b04f94c1b02ada5ee723d47d5da",
   "pins" : [
-    {
-      "identity" : "grpc-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/grpc/grpc-swift.git",
-      "state" : {
-        "revision" : "adc18c3e1c55027d0ce43893897ac448e3f27ebe",
-        "version" : "2.2.3"
-      }
-    },
     {
       "identity" : "grpc-swift-2",
       "kind" : "remoteSourceControl",
@@ -141,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-extras.git",
       "state" : {
-        "revision" : "a46134557b0aec5e94e2de13a9dfc6474caf4c18",
-        "version" : "1.31.1"
+        "revision" : "1c90641b02b6ab47c6d0db2063a12198b04e83e2",
+        "version" : "1.31.2"
       }
     },
     {

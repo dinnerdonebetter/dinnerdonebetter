@@ -123,7 +123,8 @@ proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_inst
 	mkdir -p $(PROTO_OUTPUT_IOS_PATH)
 	protoc --swift_out=$(PROTO_OUTPUT_IOS_PATH) \
 		--grpc-swift-2_out=$(PROTO_OUTPUT_IOS_PATH) \
-		--grpc-swift-2_opt=Client=true \
+      	--grpc-swift_opt=Client=true,Server=false \
+      	--swift_opt=Visibility=Public \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH)
 

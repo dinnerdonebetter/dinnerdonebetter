@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00D1655D2EE790260033A550 /* GRPCProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 00D1655C2EE790260033A550 /* GRPCProtobuf */; };
-		00D165602EE790680033A550 /* GRPCNIOTransportHTTP2 in Frameworks */ = {isa = PBXBuildFile; productRef = 00D1655F2EE790680033A550 /* GRPCNIOTransportHTTP2 */; };
-		00D165632EE790AB0033A550 /* GRPCCore in Frameworks */ = {isa = PBXBuildFile; productRef = 00D165622EE790AB0033A550 /* GRPCCore */; };
+		002AAC222EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2 in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC212EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2 */; };
+		002AAC242EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC232EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix */; };
+		002AAC262EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC252EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices */; };
+		002AAC292EE8AB7900BEA5A7 /* GRPCProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 002AAC282EE8AB7900BEA5A7 /* GRPCProtobuf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,9 +36,22 @@
 		00D165102EE78B520033A550 /* iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		002AAC1F2EE8AADA00BEA5A7 /* Exceptions for "ios" folder in "ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 00D164F32EE78B510033A550 /* ios */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		00D164F62EE78B510033A550 /* ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				002AAC1F2EE8AADA00BEA5A7 /* Exceptions for "ios" folder in "ios" target */,
+			);
 			path = ios;
 			sourceTree = "<group>";
 		};
@@ -58,9 +72,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00D165602EE790680033A550 /* GRPCNIOTransportHTTP2 in Frameworks */,
-				00D165632EE790AB0033A550 /* GRPCCore in Frameworks */,
-				00D1655D2EE790260033A550 /* GRPCProtobuf in Frameworks */,
+				002AAC242EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix in Frameworks */,
+				002AAC292EE8AB7900BEA5A7 /* GRPCProtobuf in Frameworks */,
+				002AAC262EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */,
+				002AAC222EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,12 +96,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		002AABC42EE8A8F900BEA5A7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		00D164EB2EE78B510033A550 = {
 			isa = PBXGroup;
 			children = (
 				00D164F62EE78B510033A550 /* ios */,
 				00D165092EE78B520033A550 /* iosTests */,
 				00D165132EE78B520033A550 /* iosUITests */,
+				002AABC42EE8A8F900BEA5A7 /* Frameworks */,
 				00D164F52EE78B510033A550 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,9 +144,10 @@
 			);
 			name = ios;
 			packageProductDependencies = (
-				00D1655C2EE790260033A550 /* GRPCProtobuf */,
-				00D1655F2EE790680033A550 /* GRPCNIOTransportHTTP2 */,
-				00D165622EE790AB0033A550 /* GRPCCore */,
+				002AAC212EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2 */,
+				002AAC232EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix */,
+				002AAC252EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices */,
+				002AAC282EE8AB7900BEA5A7 /* GRPCProtobuf */,
 			);
 			productName = ios;
 			productReference = 00D164F42EE78B510033A550 /* ios.app */;
@@ -208,9 +232,8 @@
 			mainGroup = 00D164EB2EE78B510033A550;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				00D1655B2EE790260033A550 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
-				00D1655E2EE790680033A550 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
-				00D165612EE790AB0033A550 /* XCRemoteSwiftPackageReference "grpc-swift" */,
+				002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
+				002AAC272EE8AB7900BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 00D164F52EE78B510033A550 /* Products */;
@@ -410,11 +433,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Preview Content\"";
+				DEVELOPMENT_TEAM = K8R2Q5UWQS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Dinner Done Better";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -427,6 +455,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dinnerdonebetter.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -438,11 +471,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Preview Content\"";
+				DEVELOPMENT_TEAM = K8R2Q5UWQS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Dinner Done Better";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -455,6 +493,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dinnerdonebetter.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -571,15 +614,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		00D1655B2EE790260033A550 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/grpc/grpc-swift-protobuf.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.1;
-			};
-		};
-		00D1655E2EE790680033A550 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */ = {
+		002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/grpc/grpc-swift-nio-transport.git";
 			requirement = {
@@ -587,31 +622,36 @@
 				minimumVersion = 2.4.0;
 			};
 		};
-		00D165612EE790AB0033A550 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
+		002AAC272EE8AB7900BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/grpc/grpc-swift.git";
+			repositoryURL = "https://github.com/grpc/grpc-swift-protobuf.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.3;
+				minimumVersion = 2.1.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		00D1655C2EE790260033A550 /* GRPCProtobuf */ = {
+		002AAC212EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00D1655B2EE790260033A550 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */;
-			productName = GRPCProtobuf;
-		};
-		00D1655F2EE790680033A550 /* GRPCNIOTransportHTTP2 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 00D1655E2EE790680033A550 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			package = 002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
 			productName = GRPCNIOTransportHTTP2;
 		};
-		00D165622EE790AB0033A550 /* GRPCCore */ = {
+		002AAC232EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2Posix */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00D165612EE790AB0033A550 /* XCRemoteSwiftPackageReference "grpc-swift" */;
-			productName = GRPCCore;
+			package = 002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			productName = GRPCNIOTransportHTTP2Posix;
+		};
+		002AAC252EE8AB5F00BEA5A7 /* GRPCNIOTransportHTTP2TransportServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 002AAC202EE8AB5F00BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			productName = GRPCNIOTransportHTTP2TransportServices;
+		};
+		002AAC282EE8AB7900BEA5A7 /* GRPCProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 002AAC272EE8AB7900BEA5A7 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */;
+			productName = GRPCProtobuf;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
