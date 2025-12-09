@@ -21,7 +21,7 @@ endif
 .PHONY: ensure_protoc_installed
 ensure_protoc_installed:
 ifeq (, $(shell which protoc-gen-go-grpc))
-	$(shell brew installl protobuf)
+	$(shell brew install protobuf)
 endif
 
 .PHONY: ensure_protoc-gen-go_installed
@@ -34,6 +34,18 @@ endif
 ensure_protoc-gen-go-grpc_installed: ensure_protoc_installed
 ifeq (, $(shell which protoc-gen-go-grpc))
 	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
+endif
+
+.PHONY: ensure_protoc-gen-swift_installed
+ensure_protoc-gen-swift_installed: ensure_protoc_installed
+ifeq (, $(shell which protoc-gen-swift))
+	$(shell brew install swift-protobuf)
+endif
+
+.PHONY: ensure_protoc-gen-grpc-swift_installed
+ensure_protoc-gen-grpc-swift_installed: ensure_protoc_installed
+ifeq (, $(shell which protoc-gen-grpc-swift-2))
+	$(shell brew install protoc-gen-grpc-swift)
 endif
 
 .PHONY: setup
@@ -92,10 +104,11 @@ format_proto:
 PROTO_FILES_PATH          := proto/*.proto
 PROTO_GO_OUTPUT_PATH      := backend
 PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
+PROTO_OUTPUT_IOS_PATH     := ios/ios/Generated
 BACKEND_REPO_NAME         := github.com/dinnerdonebetter/backend
 
-.PHONY: backend_proto
-backend_proto: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed format_proto
+.PHONY: proto_golang
+proto_golang: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
 	mkdir -p $(PROTO_OUTPUT_BACKEND_PATH)
 	protoc --go_out=$(PROTO_GO_OUTPUT_PATH) \
 		--go-grpc_out=$(PROTO_GO_OUTPUT_PATH) \
@@ -105,5 +118,14 @@ backend_proto: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_pro
 		$(PROTO_FILES_PATH);
 	(cd backend && $(MAKE) format_golang)
 
+.PHONY: proto_swift
+proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_installed
+	mkdir -p $(PROTO_OUTPUT_IOS_PATH)
+	protoc --swift_out=$(PROTO_OUTPUT_IOS_PATH) \
+		--grpc-swift-2_out=$(PROTO_OUTPUT_IOS_PATH) \
+		--grpc-swift-2_opt=Client=true \
+		--proto_path proto/ \
+		$(PROTO_FILES_PATH)
+
 .PHONY: proto
-proto: backend_proto
+proto: format_proto proto_golang proto_swift
