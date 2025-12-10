@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
@@ -220,6 +221,8 @@ func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, initFuncs ...Da
 	if err != nil {
 		return nil, fmt.Errorf("building in-process server: %w", err)
 	}
+
+	log.Printf("%sDATABASE CONNECTION URL: %s%s", strings.Repeat("\n", 10), dbCfg.ConnectionDetails.URI(), strings.Repeat("\n", 10))
 
 	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {

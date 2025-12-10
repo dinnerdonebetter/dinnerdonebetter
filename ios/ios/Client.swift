@@ -189,6 +189,14 @@ internal class ClientManager<Transport: GRPCCore.ClientTransport> {
         
         return merged
     }
+    
+    /// Get authenticated metadata with authorization header.
+    ///
+    /// - Parameter accessToken: The access token to include in the authorization header
+    /// - Returns: Metadata dictionary with authorization header
+    internal func authenticatedMetadata(accessToken: String) -> GRPCCore.Metadata {
+        return ["authorization": "Bearer \(accessToken)"]
+    }
 }
 
 // MARK: - Factory Methods

@@ -33,7 +33,7 @@ class AuthenticationManager {
     
     /// Get or create the client manager, following the grpc-swift issue #2211 pattern.
     /// This ensures we reuse a single GRPCClient instance across all requests.
-    private func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices> {
+    func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices> {
         if let existing = clientManager {
             return existing
         }
