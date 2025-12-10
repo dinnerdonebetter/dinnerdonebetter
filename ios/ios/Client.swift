@@ -8,9 +8,16 @@
 import Foundation
 import GRPCCore
 import GRPCNIOTransportHTTP2TransportServices
+import GRPCNIOTransportHTTP2
 
 /// A unified gRPC client that provides access to all service clients.
 /// This is the Swift analog of the Go client in backend/pkg/client/client.go
+/// 
+/// This implementation follows the pattern from grpc-swift issue #2211:
+/// https://github.com/grpc/grpc-swift/issues/2211
+/// 
+/// A single GRPCClient instance is reused across all service clients for efficient
+/// connection management.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
     /// Auth service client
@@ -43,7 +50,7 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
     /// Webhooks service client
     internal let webhooks: Webhooks_WebhooksService.Client<Transport>
     
-    /// Internal gRPC client
+    /// Internal gRPC client - shared across all service clients
     private let grpcClient: GRPCCore.GRPCClient<Transport>
     
     /// Initialize a new client with a gRPC client.
@@ -53,6 +60,8 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
         self.grpcClient = grpcClient
         
         // Initialize all service clients with the same underlying gRPC client
+        // This follows the best practice of reusing a single GRPCClient instance
+        // across multiple service clients (see grpc-swift issue #2211)
         self.auth = Auth_AuthService.Client(wrapping: grpcClient)
         self.identity = Identity_IdentityService.Client(wrapping: grpcClient)
         self.audit = Audit_AuditService.Client(wrapping: grpcClient)
@@ -64,6 +73,122 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
         self.settings = Settings_SettingsService.Client(wrapping: grpcClient)
         self.webhooks = Webhooks_WebhooksService.Client(wrapping: grpcClient)
     }
+    
+    /// Start the connection for this client.
+    /// This should be called after creating the client to establish the connection.
+    ///
+    /// - Note: This method starts the connection asynchronously. The connection
+    ///   will be established in the background.
+    internal func startConnections() {
+        Task {
+            do {
+                try await grpcClient.runConnections()
+            } catch {
+                print("❌ Failed to start gRPC client connections: \(error)")
+            }
+        }
+    }
+}
+
+// MARK: - Class-based Client Manager (following grpc-swift issue #2211 pattern)
+
+/// A class-based client manager that follows the pattern from grpc-swift issue #2211.
+/// This provides explicit lifecycle management for the gRPC client and connections.
+///
+/// Example usage:
+/// ```swift
+/// let clientManager = try ClientManager(host: "127.0.0.1", port: 8001)
+/// // Connections are automatically started
+/// let response = try await clientManager.client.auth.loginForToken(request)
+/// ```
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+internal class ClientManager<Transport: GRPCCore.ClientTransport> {
+    /// The underlying gRPC transport client
+    private let grpcTransportClient: GRPCCore.GRPCClient<Transport>
+    
+    /// The unified client providing access to all service clients
+    internal let client: Client<Transport>
+    
+    /// Default call options to use for all RPC calls.
+    /// These can be overridden on a per-call basis.
+    internal var defaultCallOptions: GRPCCore.CallOptions
+    
+    /// Initialize a new client manager with a transport.
+    ///
+    /// - Parameters:
+    ///   - transport: The transport to use for the gRPC client
+    ///   - defaultCallOptions: Default call options to use for all RPC calls (default: 5 second timeout)
+    /// - Throws: An error if the client cannot be created
+    internal init(
+        transport: Transport,
+        defaultCallOptions: GRPCCore.CallOptions = {
+            var options = GRPCCore.CallOptions.defaults
+            options.timeout = .seconds(5)
+            return options
+        }()
+    ) throws {
+        // Create a single GRPCClient instance
+        self.grpcTransportClient = GRPCCore.GRPCClient(transport: transport)
+        
+        // Create the unified client wrapper
+        self.client = Client(grpcClient: grpcTransportClient)
+        
+        // Store default call options
+        self.defaultCallOptions = defaultCallOptions
+        
+        // Start the connection asynchronously (following issue #2211 pattern)
+        Task {
+            do {
+                try await grpcTransportClient.runConnections()
+            } catch {
+                print("❌ Failed to start gRPC client connections: \(error)")
+            }
+        }
+    }
+    
+    /// Initialize a new client manager with HTTP2ClientTransport.
+    ///
+    /// - Parameters:
+    ///   - host: The server host (e.g., "127.0.0.1" or "localhost")
+    ///   - port: The server port (default: 8001)
+    ///   - defaultCallOptions: Default call options to use for all RPC calls (default: 5 second timeout)
+    /// - Throws: An error if the transport cannot be created
+    internal convenience init(
+        host: String = "127.0.0.1",
+        port: Int = 8001,
+        defaultCallOptions: GRPCCore.CallOptions = {
+            var options = GRPCCore.CallOptions.defaults
+            options.timeout = .seconds(5)
+            return options
+        }()
+    ) throws where Transport == HTTP2ClientTransport.TransportServices {
+        let transport = try HTTP2ClientTransport.TransportServices(
+            target: .dns(host: host, port: port),
+            transportSecurity: .plaintext
+        )
+        try self.init(transport: transport, defaultCallOptions: defaultCallOptions)
+    }
+    
+    /// Get call options by merging default options with any overrides.
+    /// Properties in `overrides` will take precedence over defaults.
+    ///
+    /// - Parameter overrides: Call options that override the defaults
+    /// - Returns: Merged call options
+    internal func callOptions(overriding overrides: GRPCCore.CallOptions = .defaults) -> GRPCCore.CallOptions {
+        var merged = defaultCallOptions
+        
+        // Override timeout if specified in overrides
+        if overrides.timeout != nil {
+            merged.timeout = overrides.timeout
+        }
+        
+        // Override compression if specified
+        if overrides.compression != nil {
+            merged.compression = overrides.compression
+        }
+        
+        return merged
+    }
 }
 
 // MARK: - Factory Methods
@@ -71,15 +196,19 @@ internal struct Client<Transport> where Transport: GRPCCore.ClientTransport {
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 internal func buildClient<Transport: GRPCCore.ClientTransport>(transport: Transport) -> Client<Transport> {
     let grpcClient = GRPCCore.GRPCClient(transport: transport)
-    return Client(grpcClient: grpcClient)
+    let client = Client(grpcClient: grpcClient)
+    // Start connections following the issue #2211 pattern
+    client.startConnections()
+    return client
 }
 
 /// Build an unauthenticated gRPC client using TransportServices with plaintext security.
+/// Connections are automatically started following the pattern from grpc-swift issue #2211.
 ///
 /// - Parameters:
 ///   - host: The server host (e.g., "127.0.0.1" or "localhost")
 ///   - port: The server port (default: 8001)
-/// - Returns: A new client instance
+/// - Returns: A new client instance with connections started
 /// - Throws: An error if the transport cannot be created
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 internal func buildUnauthenticatedClient(
@@ -131,4 +260,29 @@ internal func buildUnauthenticatedClientWithFallback(
             return buildClient(transport: transport)
         }
     }
+}
+
+/// Execute a closure with a gRPC client, ensuring proper lifecycle management.
+/// This is similar to `withGRPCClient` but uses the unified Client wrapper.
+///
+/// - Parameters:
+///   - host: The server host (e.g., "127.0.0.1" or "localhost")
+///   - port: The server port (default: 8001)
+///   - body: A closure that receives the Client and returns a result
+/// - Returns: The result from the closure
+/// - Throws: Any error thrown by the transport creation or the closure
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+internal func withClient<Result>(
+    host: String = "127.0.0.1",
+    port: Int = 8001,
+    body: @Sendable @escaping (Client<HTTP2ClientTransport.TransportServices>) async throws -> Result
+) async throws -> Result {
+    let transport = try HTTP2ClientTransport.TransportServices(
+        target: .dns(host: host, port: port),
+        transportSecurity: .plaintext
+    )
+    let grpcClient = GRPCCore.GRPCClient(transport: transport)
+    let client = Client(grpcClient: grpcClient)
+    client.startConnections()
+    return try await body(client)
 }

@@ -12,6 +12,8 @@ struct LoginView: View {
     
     @State private var username: String = "admin_user"
     @State private var password: String = "admin_pass"
+    @State private var totpCode: String = ""
+    @State private var requiresTOTP: Bool = false
     @State private var errorMessage: String = ""
     @State private var isLoading: Bool = false
     @State private var loginTask: Task<Void, Never>?
@@ -43,6 +45,13 @@ struct LoginView: View {
                     .textFieldStyle(.roundedBorder)
                     .disabled(isLoading)
                 
+                if requiresTOTP {
+                    TextField("2FA Code", text: $totpCode)
+                        .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numberPad)
+                        .disabled(isLoading)
+                }
+                
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .font(.caption)
@@ -71,10 +80,11 @@ struct LoginView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
                 }
-                .disabled(isLoading || username.isEmpty || password.isEmpty)
+                .disabled(isLoading || username.isEmpty || password.isEmpty || (requiresTOTP && totpCode.isEmpty))
                 .padding(.top, 8)
             }
             .padding(.horizontal, 32)
+            .animation(.easeInOut(duration: 0.3), value: requiresTOTP)
             
             Spacer()
             Spacer()
@@ -91,7 +101,9 @@ struct LoginView: View {
             isLoading = true
         }
         
-        let result = await authManager.login(username: username, password: password)
+        // Use TOTP code if it's been entered, otherwise pass nil
+        let totpToken = totpCode.isEmpty ? nil : totpCode
+        let result = await authManager.login(username: username, password: password, totpToken: totpToken)
         
         // Check for cancellation before updating UI
         guard !Task.isCancelled else { return }
@@ -103,8 +115,18 @@ struct LoginView: View {
                 // Login successful, state change will trigger view update
                 username = ""
                 password = ""
+                totpCode = ""
+                requiresTOTP = false
             } else {
-                errorMessage = result.error ?? "Unknown error occurred"
+                // Check if TOTP is required
+                if result.requiresTOTP {
+                    requiresTOTP = true
+                    errorMessage = result.error ?? "Please enter your 2FA code."
+                } else {
+                    // If TOTP was required but login failed, keep the TOTP field visible
+                    // but show the error message
+                    errorMessage = result.error ?? "Unknown error occurred"
+                }
             }
         }
     }
