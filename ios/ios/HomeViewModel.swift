@@ -120,7 +120,12 @@ class HomeViewModel {
             throw NSError(domain: "HomeViewModel", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
         }
         
-        let metadata = clientManager.authenticatedMetadata(accessToken: authManager.accessToken)
+        // Get OAuth2 token (will refresh if needed)
+        guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+            throw NSError(domain: "HomeViewModel", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+        }
+        
+        let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
         
         let response = try await clientManager.client.mealPlanning.getMealPlansForAccount(
             Mealplanning_GetMealPlansForAccountRequest(),
@@ -136,7 +141,12 @@ class HomeViewModel {
             throw NSError(domain: "HomeViewModel", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
         }
         
-        let metadata = clientManager.authenticatedMetadata(accessToken: authManager.accessToken)
+        // Get OAuth2 token (will refresh if needed)
+        guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+            throw NSError(domain: "HomeViewModel", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+        }
+        
+        let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
         
         // We need to get tasks for all meal plans and filter by user
         // For now, let's get tasks from all finalized meal plans
@@ -175,7 +185,13 @@ class HomeViewModel {
             return
         }
         
-        let metadata = clientManager.authenticatedMetadata(accessToken: authManager.accessToken)
+        // Get OAuth2 token (will refresh if needed)
+        guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+            print("⚠️ Failed to get OAuth2 access token for grocery lists")
+            return
+        }
+        
+        let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
         
         for mealPlan in mealPlans {
             var request = Mealplanning_GetMealPlanGroceryListItemsForMealPlanRequest()

@@ -64,7 +64,7 @@ func ConvertGRPCCheckPermissionsRequestToUserPermissionsRequestInput(request *au
 	}
 }
 
-func ConvertGRPCAdminLoginForTokenRequestToUserLoginInput(request *authsvc.UserLoginInput) *auth.UserLoginInput {
+func ConvertGRPCUserLoginInputToUserLoginInput(request *authsvc.UserLoginInput) *auth.UserLoginInput {
 	return &auth.UserLoginInput{
 		Username:  request.Username,
 		Password:  request.Password,
