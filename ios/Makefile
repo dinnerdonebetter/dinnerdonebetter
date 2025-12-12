@@ -6,7 +6,8 @@ PROJECT := ios.xcodeproj
 SCHEME := ios
 # DESTINATION can be overridden via environment variable (e.g., in CI)
 # Default to iPhone 16 Pro with OS 18.2 for local development
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2"
+# Note: Don't include quotes in the value - they're added in the command
+DESTINATION ?= platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2
 TEST_TARGET := iosTests
 UI_TEST_TARGET := iosUITests
 
@@ -23,7 +24,7 @@ unit-test:
 	$(XCODEBUILD) test \
 		-project $(PROJECT) \
 		-scheme $(SCHEME) \
-		-destination $(DESTINATION) \
+		-destination '$(DESTINATION)' \
 		-only-testing:$(TEST_TARGET) \
 		-derivedDataPath $(DERIVED_DATA) \
 		-quiet
@@ -33,7 +34,7 @@ ui-test:
 	$(XCODEBUILD) test \
 		-project $(PROJECT) \
 		-scheme $(SCHEME) \
-		-destination $(DESTINATION) \
+		-destination '$(DESTINATION)' \
 		-only-testing:$(UI_TEST_TARGET) \
 		-derivedDataPath $(DERIVED_DATA) \
 		-quiet
@@ -43,7 +44,7 @@ build:
 	$(XCODEBUILD) build \
 		-project $(PROJECT) \
 		-scheme $(SCHEME) \
-		-destination $(DESTINATION) \
+		-destination '$(DESTINATION)' \
 		-derivedDataPath $(DERIVED_DATA) \
 		-quiet
 
