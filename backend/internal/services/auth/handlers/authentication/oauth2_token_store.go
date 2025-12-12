@@ -7,6 +7,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -52,6 +53,8 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 	if _, err := s.dataManager.CreateOAuth2ClientToken(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating oauth2 client token")
 	}
+
+	logger.WithValue(keys.OAuth2ClientTokenAccessKey, input.Access).Info("Created access token")
 
 	return nil
 }

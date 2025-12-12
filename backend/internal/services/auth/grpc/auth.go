@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -74,37 +75,28 @@ func (s *serviceImpl) LoginForToken(ctx context.Context, request *authsvc.LoginF
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span)
-
-	input := converters.ConvertGRPCAdminLoginForTokenRequestToUserLoginInput(request.Input)
-	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, false, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to process login request")
-	}
-
-	x := &authsvc.LoginForTokenResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Result: converters.ConvertTokenResponseToGRPCTokenResponse(tokenResponse),
-	}
-
-	return x, nil
+	return s.loginForToken(ctx, false, converters.ConvertGRPCUserLoginInputToUserLoginInput(request.Input))
 }
 
-func (s *serviceImpl) AdminLoginForToken(ctx context.Context, request *authsvc.AdminLoginForTokenRequest) (*authsvc.AdminLoginForTokenResponse, error) {
+func (s *serviceImpl) AdminLoginForToken(ctx context.Context, request *authsvc.AdminLoginForTokenRequest) (*authsvc.LoginForTokenResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return s.loginForToken(ctx, true, converters.ConvertGRPCUserLoginInputToUserLoginInput(request.Input))
+}
+
+func (s *serviceImpl) loginForToken(ctx context.Context, admin bool, input *auth.UserLoginInput) (*authsvc.LoginForTokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	input := converters.ConvertGRPCAdminLoginForTokenRequestToUserLoginInput(request.Input)
-	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, true, input)
+	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, admin, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to process login request")
 	}
 
-	x := &authsvc.AdminLoginForTokenResponse{
+	x := &authsvc.LoginForTokenResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},

@@ -36,6 +36,7 @@ func ProvideOAuth2ClientManager(
 	manager.SetValidateURIHandler(func(_, _ string) error {
 		return nil
 	})
+
 	manager.MapAuthorizeGenerate(generates.NewAuthorizeGenerate())
 	manager.MapAccessGenerate(generates.NewAccessGenerate())
 	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracer, dataManager))

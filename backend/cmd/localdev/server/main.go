@@ -58,7 +58,7 @@ func main() {
 			})
 			return err
 		}),
-		// Create valid enumerations and bridge types
+		//// Create valid enumerations and bridge types
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			return createTestEnumerations(ctx, repo, logger)
 		}),
@@ -181,7 +181,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 0 {
 			firstValidIngredient = validIngredient
 		}
-		logger.Info("Created ValidIngredient: " + validIngredient.Name)
+		logger.Debug("Created ValidIngredient: " + validIngredient.Name)
 	}
 
 	// Create 75 ValidInstruments
@@ -201,7 +201,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidInstrument = validInstrument
 		}
-		logger.Info("Created ValidInstrument: " + validInstrument.Name)
+		logger.Debug("Created ValidInstrument: " + validInstrument.Name)
 	}
 
 	// Create 75 ValidPreparations
@@ -226,7 +226,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidPreparation = validPreparation
 		}
-		logger.Info("Created ValidPreparation: " + validPreparation.Name)
+		logger.Debug("Created ValidPreparation: " + validPreparation.Name)
 	}
 
 	// Create 75 ValidMeasurementUnits (Gram)
@@ -248,7 +248,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidMeasurementUnitGram = validMeasurementUnitGram
 		}
-		logger.Info("Created ValidMeasurementUnit: " + validMeasurementUnitGram.Name)
+		logger.Debug("Created ValidMeasurementUnit: " + validMeasurementUnitGram.Name)
 	}
 
 	// Create 75 ValidMeasurementUnits (Kilogram)
@@ -270,7 +270,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidMeasurementUnitKilogram = validMeasurementUnitKilogram
 		}
-		logger.Info("Created ValidMeasurementUnit: " + validMeasurementUnitKilogram.Name)
+		logger.Debug("Created ValidMeasurementUnit: " + validMeasurementUnitKilogram.Name)
 	}
 
 	// Create 75 ValidVessels
@@ -296,7 +296,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidVessel = validVessel
 		}
-		logger.Info("Created ValidVessel: " + validVessel.Name)
+		logger.Debug("Created ValidVessel: " + validVessel.Name)
 	}
 
 	// Create 75 ValidIngredientStates
@@ -315,7 +315,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		if i == 1 {
 			firstValidIngredientState = validIngredientState
 		}
-		logger.Info("Created ValidIngredientState: " + validIngredientState.Name)
+		logger.Debug("Created ValidIngredientState: " + validIngredientState.Name)
 	}
 
 	// Create bridge types using first instances
@@ -330,7 +330,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid preparation instrument: %w", err)
 	}
-	logger.Info("Created ValidPreparationInstrument: slicing + chef's knife")
+	logger.Debug("Created ValidPreparationInstrument: slicing + chef's knife")
 
 	// ValidIngredientMeasurementUnit (Garlic can be measured in Grams)
 	_, err = repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
@@ -341,7 +341,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
 	}
-	logger.Info("Created ValidIngredientMeasurementUnit: garlic + gram")
+	logger.Debug("Created ValidIngredientMeasurementUnit: garlic + gram")
 
 	// ValidIngredientStateIngredient (Garlic can be in Whole state)
 	_, err = repo.CreateValidIngredientStateIngredient(ctx, &mealplanning.ValidIngredientStateIngredientDatabaseCreationInput{
@@ -353,7 +353,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid ingredient state ingredient: %w", err)
 	}
-	logger.Info("Created ValidIngredientStateIngredient: garlic + whole")
+	logger.Debug("Created ValidIngredientStateIngredient: garlic + whole")
 
 	// ValidPreparationVessel (Slicing can be done on a Cutting Board)
 	_, err = repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
@@ -365,7 +365,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid preparation vessel: %w", err)
 	}
-	logger.Info("Created ValidPreparationVessel: slicing + cutting board")
+	logger.Debug("Created ValidPreparationVessel: slicing + cutting board")
 
 	// ValidMeasurementUnitConversion (Gram to Kilogram)
 	_, err = repo.CreateValidMeasurementUnitConversion(ctx, &mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput{
@@ -378,7 +378,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid measurement unit conversion: %w", err)
 	}
-	logger.Info("Created ValidMeasurementUnitConversion: gram -> kilogram")
+	logger.Debug("Created ValidMeasurementUnitConversion: gram -> kilogram")
 
 	_, err = repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 		ID:                 identifiers.New(),
@@ -389,7 +389,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return fmt.Errorf("failed to create valid ingredient preparation: %w", err)
 	}
-	logger.Info("Created CreateValidIngredientPreparation: garlic -> slice")
+	logger.Debug("Created CreateValidIngredientPreparation: garlic -> slice")
 
 	return nil
 }
@@ -408,7 +408,7 @@ func createExampleServiceSettings(ctx context.Context, repo settings.Repository,
 	if err != nil {
 		return fmt.Errorf("failed to create theme preference setting: %w", err)
 	}
-	logger.Info("Created ServiceSetting: user_theme_preference (enumerated with default)")
+	logger.Debug("Created ServiceSetting: user_theme_preference (enumerated with default)")
 
 	defaultNotificationFreq := "daily"
 	_, err = repo.CreateServiceSetting(ctx, &settings.ServiceSettingDatabaseCreationInput{
@@ -423,7 +423,7 @@ func createExampleServiceSettings(ctx context.Context, repo settings.Repository,
 	if err != nil {
 		return fmt.Errorf("failed to create notification frequency setting: %w", err)
 	}
-	logger.Info("Created ServiceSetting: membership_notification_frequency (enumerated with default)")
+	logger.Debug("Created ServiceSetting: membership_notification_frequency (enumerated with default)")
 
 	defaultLanguage := "en"
 	_, err = repo.CreateServiceSetting(ctx, &settings.ServiceSettingDatabaseCreationInput{
@@ -438,7 +438,7 @@ func createExampleServiceSettings(ctx context.Context, repo settings.Repository,
 	if err != nil {
 		return fmt.Errorf("failed to create language setting: %w", err)
 	}
-	logger.Info("Created ServiceSetting: user_language (enumerated, non-admin)")
+	logger.Debug("Created ServiceSetting: user_language (enumerated, non-admin)")
 
 	return nil
 }

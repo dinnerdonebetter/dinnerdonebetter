@@ -15,6 +15,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -86,6 +87,8 @@ func NewGRPCServer(
 		rf(grpcServer)
 	}
 
+	reflection.Register(grpcServer)
+
 	return &Server{
 		logger:     logging.EnsureLogger(logger).WithName(serviceName),
 		config:     cfg,
@@ -106,7 +109,7 @@ func (s *Server) Serve() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s.logger.WithValue("port", s.config.Port).Info("listener established, serving")
+	s.logger.WithValue("port", s.config.Port).Info("Listening for GRPC requests")
 	if err = s.grpcServer.Serve(lis); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			// NOTE: there is a chance that next line won't have tim  e to run,

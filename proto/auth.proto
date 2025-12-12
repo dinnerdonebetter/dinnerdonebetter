@@ -244,7 +244,7 @@ message GetSelfResponse {
 service AuthService {
   rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);
   rpc ExchangeToken(ExchangeTokenRequest) returns (ExchangeTokenResponse);
-  rpc AdminLoginForToken(AdminLoginForTokenRequest) returns (AdminLoginForTokenResponse);
+  rpc AdminLoginForToken(AdminLoginForTokenRequest) returns (LoginForTokenResponse);
   rpc CheckPermissions(UserPermissionsRequestInput) returns (UserPermissionsResponse);
   rpc GetActiveAccount(GetActiveAccountRequest) returns (GetActiveAccountResponse);
   rpc GetSelf(GetSelfRequest) returns (GetSelfResponse);
