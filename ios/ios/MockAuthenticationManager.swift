@@ -1,0 +1,172 @@
+//
+//  MockAuthenticationManager.swift
+//  ios
+//
+//  Created by Auto on 12/8/25.
+//
+
+import Foundation
+import SwiftUI
+import GRPCCore
+import GRPCNIOTransportHTTP2TransportServices
+
+/// Mock AuthenticationManager for testing purposes
+/// Can simulate various login scenarios including TOTP requirements
+/// This is a standalone class that mimics AuthenticationManager's interface
+@Observable
+class MockAuthenticationManager: AuthenticationManaging {
+    
+    // Configuration for mock behavior
+    enum MockBehavior {
+        case success
+        case requiresTOTP
+        case requiresTOTPThenSuccess
+        case invalidCredentials
+        case serverError
+    }
+    
+    // Public properties matching AuthenticationManager
+    var isAuthenticated: Bool = false
+    var username: String = ""
+    var accessToken: String = ""
+    var refreshToken: String = ""
+    var oauth2AccessToken: String = ""
+    var oauth2RefreshToken: String = ""
+    var oauth2TokenExpiresAt: Date? = nil
+    var userID: String = ""
+    var accountID: String = ""
+    
+    // Mock configuration
+    private var mockBehavior: MockBehavior = .requiresTOTP
+    private var loginAttemptCount: Int = 0
+    private var totpCodeProvided: Bool = false
+    
+    init() {
+        print("🎭 MockAuthenticationManager: Initialized")
+    }
+    
+    /// Configure the mock behavior
+    func configure(behavior: MockBehavior) {
+        self.mockBehavior = behavior
+        self.loginAttemptCount = 0
+        self.totpCodeProvided = false
+    }
+    
+    func login(username: String, password: String, totpToken: String? = nil) async -> (success: Bool, error: String?, requiresTOTP: Bool) {
+        print("🎭 MockAuthenticationManager: Login attempt for user: \(username)")
+        
+        loginAttemptCount += 1
+        
+        // Simulate network delay
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        
+        switch mockBehavior {
+        case .success:
+            // Simulate successful login
+            await MainActor.run {
+                self.isAuthenticated = true
+                self.username = username
+                self.accessToken = "mock-access-token-\(UUID().uuidString)"
+                self.refreshToken = "mock-refresh-token-\(UUID().uuidString)"
+                self.userID = "mock-user-123"
+                self.accountID = "mock-account-456"
+            }
+            return (true, nil, false)
+            
+        case .requiresTOTP:
+            // First attempt: require TOTP
+            // Second attempt with TOTP: success
+            if let totpToken = totpToken, !totpToken.isEmpty {
+                // TOTP provided, simulate success
+                totpCodeProvided = true
+                await MainActor.run {
+                    self.isAuthenticated = true
+                    self.username = username
+                    self.accessToken = "mock-access-token-\(UUID().uuidString)"
+                    self.refreshToken = "mock-refresh-token-\(UUID().uuidString)"
+                    self.userID = "mock-user-123"
+                    self.accountID = "mock-account-456"
+                }
+                return (true, nil, false)
+            } else {
+                // No TOTP provided, require it
+                return (false, "Please enter your 2FA code.", true)
+            }
+            
+        case .requiresTOTPThenSuccess:
+            // Similar to requiresTOTP but explicitly tracks the flow
+            if loginAttemptCount == 1 {
+                // First attempt without TOTP
+                return (false, "Please enter your 2FA code.", true)
+            } else {
+                // Second attempt with TOTP
+                if let totpToken = totpToken, !totpToken.isEmpty {
+                    totpCodeProvided = true
+                    await MainActor.run {
+                        self.isAuthenticated = true
+                        self.username = username
+                        self.accessToken = "mock-access-token-\(UUID().uuidString)"
+                        self.refreshToken = "mock-refresh-token-\(UUID().uuidString)"
+                        self.userID = "mock-user-123"
+                        self.accountID = "mock-account-456"
+                    }
+                    return (true, nil, false)
+                } else {
+                    return (false, "TOTP code is required.", true)
+                }
+            }
+            
+        case .invalidCredentials:
+            return (false, "Invalid username or password.", false)
+            
+        case .serverError:
+            return (false, "Server is unavailable. Please try again later.", false)
+        }
+    }
+    
+    func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices> {
+        // For mock, we throw an error since UI tests focused on login shouldn't need the real client
+        // If you need getClientManager in UI tests, consider creating a full mock client manager
+        throw NSError(
+            domain: "MockAuthenticationManager",
+            code: 1,
+            userInfo: [
+                NSLocalizedDescriptionKey: "MockAuthenticationManager does not support getClientManager. " +
+                                         "This is expected for UI tests that only test authentication flow. " +
+                                         "If you need client functionality, extend MockAuthenticationManager to provide a mock client."
+            ]
+        )
+    }
+    
+    func getOAuth2AccessToken() async -> String? {
+        // Return a mock OAuth2 token if authenticated
+        if isAuthenticated {
+            return "mock-oauth2-token-\(UUID().uuidString)"
+        }
+        return nil
+    }
+    
+    func refreshOAuth2Token() async -> Bool {
+        // Mock refresh - always succeeds if authenticated
+        if isAuthenticated {
+            await MainActor.run {
+                self.oauth2AccessToken = "mock-oauth2-token-refreshed-\(UUID().uuidString)"
+                self.oauth2TokenExpiresAt = Date().addingTimeInterval(3600) // 1 hour from now
+            }
+            return true
+        }
+        return false
+    }
+    
+    func logout() {
+        self.isAuthenticated = false
+        self.username = ""
+        self.accessToken = ""
+        self.refreshToken = ""
+        self.oauth2AccessToken = ""
+        self.oauth2RefreshToken = ""
+        self.oauth2TokenExpiresAt = nil
+        self.userID = ""
+        self.accountID = ""
+    }
+}

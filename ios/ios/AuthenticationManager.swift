@@ -13,7 +13,7 @@ private class NoRedirectDelegate: NSObject, URLSessionTaskDelegate {
 }
 
 @Observable
-class AuthenticationManager {
+class AuthenticationManager: AuthenticationManaging {
     var isAuthenticated: Bool = false
     var username: String = ""
     var accessToken: String = ""  // JWT token from login
@@ -33,18 +33,46 @@ class AuthenticationManager {
     // Reuses a single GRPCClient instance across all service clients
     private var clientManager: ClientManager<HTTP2ClientTransport.TransportServices>?
     
+    // Mock support for UI tests
+    private var mockManager: MockAuthenticationManager?
+    private var isUsingMock: Bool {
+        ProcessInfo.processInfo.arguments.contains("--use-mock-auth")
+    }
+    
     init() {
         print("🔧 AuthenticationManager: Initialized")
-        if let host = serverHost {
-            print("🔧 Using custom server host: \(host)")
+        
+        // Check if we should use mock behavior (for UI tests)
+        if isUsingMock {
+            let mock = MockAuthenticationManager()
+            let launchArguments = ProcessInfo.processInfo.arguments
+            if launchArguments.contains("--mock-requires-totp") {
+                mock.configure(behavior: .requiresTOTP)
+            } else if launchArguments.contains("--mock-success") {
+                mock.configure(behavior: .success)
+            } else {
+                // Default to requires TOTP for UI tests
+                mock.configure(behavior: .requiresTOTP)
+            }
+            self.mockManager = mock
+            print("🎭 AuthenticationManager: Using mock mode")
         } else {
-            print("🔧 Using localhost for server connection")
+            if let host = serverHost {
+                print("🔧 Using custom server host: \(host)")
+            } else {
+                print("🔧 Using localhost for server connection")
+            }
         }
     }
     
     /// Get or create the client manager, following the grpc-swift issue #2211 pattern.
     /// This ensures we reuse a single GRPCClient instance across all requests.
     func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices> {
+        // If using mock, delegate to mock manager
+        if let mock = mockManager {
+            return try mock.getClientManager()
+        }
+        
         if let existing = clientManager {
             return existing
         }
@@ -57,6 +85,21 @@ class AuthenticationManager {
     }
     
     func login(username: String, password: String, totpToken: String? = nil) async -> (success: Bool, error: String?, requiresTOTP: Bool) {
+        // If using mock, delegate to mock manager
+        if let mock = mockManager {
+            let result = await mock.login(username: username, password: password, totpToken: totpToken)
+            // Sync state from mock to self
+            await MainActor.run {
+                self.isAuthenticated = mock.isAuthenticated
+                self.username = mock.username
+                self.accessToken = mock.accessToken
+                self.refreshToken = mock.refreshToken
+                self.userID = mock.userID
+                self.accountID = mock.accountID
+            }
+            return result
+        }
+        
         print("🔐 Login attempt for user: \(username)")
         
         // Create the login request message
@@ -296,6 +339,18 @@ class AuthenticationManager {
     
     /// Refresh OAuth2 access token using refresh token
     func refreshOAuth2Token() async -> Bool {
+        // If using mock, delegate to mock manager
+        if let mock = mockManager {
+            let result = await mock.refreshOAuth2Token()
+            // Sync state
+            await MainActor.run {
+                self.oauth2AccessToken = mock.oauth2AccessToken
+                self.oauth2RefreshToken = mock.oauth2RefreshToken
+                self.oauth2TokenExpiresAt = mock.oauth2TokenExpiresAt
+            }
+            return result
+        }
+        
         guard !oauth2RefreshToken.isEmpty else {
             print("⚠️ No OAuth2 refresh token available")
             return false
@@ -358,6 +413,11 @@ class AuthenticationManager {
     
     /// Get OAuth2 access token, refreshing if needed
     func getOAuth2AccessToken() async -> String? {
+        // If using mock, delegate to mock manager
+        if let mock = mockManager {
+            return await mock.getOAuth2AccessToken()
+        }
+        
         // Check if token is expired or will expire soon (within 5 minutes)
         if let expiresAt = oauth2TokenExpiresAt,
            expiresAt.timeIntervalSinceNow < 300 {

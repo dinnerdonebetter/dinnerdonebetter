@@ -40,16 +40,19 @@ struct LoginView: View {
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .disabled(isLoading)
+                    .accessibilityIdentifier("usernameTextField")
                 
                 SecureField("Password", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .disabled(isLoading)
+                    .accessibilityIdentifier("passwordTextField")
                 
                 if requiresTOTP {
                     TextField("2FA Code", text: $totpCode)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.numberPad)
                         .disabled(isLoading)
+                        .accessibilityIdentifier("totpTextField")
                 }
                 
                 if !errorMessage.isEmpty {
@@ -57,6 +60,7 @@ struct LoginView: View {
                         .font(.caption)
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
+                        .accessibilityIdentifier("errorMessage")
                 }
                 
                 Button(action: { 
@@ -81,6 +85,7 @@ struct LoginView: View {
                     .cornerRadius(10)
                 }
                 .disabled(isLoading || username.isEmpty || password.isEmpty || (requiresTOTP && totpCode.isEmpty))
+                .accessibilityIdentifier("signInButton")
                 .padding(.top, 8)
             }
             .padding(.horizontal, 32)
