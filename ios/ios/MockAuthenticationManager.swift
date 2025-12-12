@@ -6,16 +6,15 @@
 //
 
 import Foundation
-import SwiftUI
 import GRPCCore
 import GRPCNIOTransportHTTP2TransportServices
+import SwiftUI
 
 /// Mock AuthenticationManager for testing purposes
 /// Can simulate various login scenarios including TOTP requirements
 /// This is a standalone class that mimics AuthenticationManager's interface
 @Observable
 class MockAuthenticationManager: AuthenticationManaging {
-    
     // Configuration for mock behavior
     enum MockBehavior {
         case success
@@ -32,7 +31,7 @@ class MockAuthenticationManager: AuthenticationManaging {
     var refreshToken: String = ""
     var oauth2AccessToken: String = ""
     var oauth2RefreshToken: String = ""
-    var oauth2TokenExpiresAt: Date? = nil
+    var oauth2TokenExpiresAt: Date?
     var userID: String = ""
     var accountID: String = ""
     

@@ -1,8 +1,8 @@
 import Foundation
-import SwiftUI
 import GRPCCore
-import GRPCNIOTransportHTTP2TransportServices
 import GRPCNIOTransportHTTP2
+import GRPCNIOTransportHTTP2TransportServices
+import SwiftUI
 
 /// URLSessionDelegate that prevents automatic redirect following
 private class NoRedirectDelegate: NSObject, URLSessionTaskDelegate {
@@ -20,7 +20,7 @@ class AuthenticationManager: AuthenticationManaging {
     var refreshToken: String = ""  // JWT refresh token
     var oauth2AccessToken: String = ""  // OAuth2 access token for API calls
     var oauth2RefreshToken: String = ""  // OAuth2 refresh token
-    var oauth2TokenExpiresAt: Date? = nil  // OAuth2 token expiration
+    var oauth2TokenExpiresAt: Date?  // OAuth2 token expiration
     var userID: String = ""
     var accountID: String = ""
     
@@ -162,7 +162,6 @@ class AuthenticationManager: AuthenticationManaging {
                 print("⚠️ Response received but no token result")
                 return (false, "No token received from server", false)
             }
-                
         } catch let error as GRPCCore.RPCError {
             print("❌ RPC error code: \(error.code)")
             print("❌ RPC error message: \(error.message)")
@@ -191,7 +190,6 @@ class AuthenticationManager: AuthenticationManaging {
             print("❌ CancellationError details: \(String(describing: error))")
             print("⏱️ Error occurred at: \(Date())")
         
-            
             // Try to get underlying error information
             let nsError = error as NSError
             print("❌ NSError: \(nsError)")
@@ -228,7 +226,7 @@ class AuthenticationManager: AuthenticationManaging {
             URLQueryItem(name: "client_id", value: APIConfiguration.oauth2ClientID),
             URLQueryItem(name: "redirect_uri", value: APIConfiguration.serverURL),
             URLQueryItem(name: "state", value: state),
-            URLQueryItem(name: "code_challenge_method", value: "plain"),
+            URLQueryItem(name: "code_challenge_method", value: "plain")
         ]
         
         guard let authURL = components.url else {
@@ -268,7 +266,6 @@ class AuthenticationManager: AuthenticationManaging {
             
             // Step 2: Exchange code for access token
             return await exchangeCodeForToken(code: code)
-            
         } catch {
             print("❌ Error getting authorization code: \(error)")
             return (false, "Failed to get authorization code: \(error.localizedDescription)")
@@ -291,7 +288,7 @@ class AuthenticationManager: AuthenticationManaging {
             "code": code,
             "redirect_uri": APIConfiguration.serverURL,
             "client_id": APIConfiguration.oauth2ClientID,
-            "client_secret": APIConfiguration.oauth2ClientSecret,
+            "client_secret": APIConfiguration.oauth2ClientSecret
         ]
         
         // Encode form data
@@ -330,7 +327,6 @@ class AuthenticationManager: AuthenticationManaging {
             }
             
             return (true, nil)
-            
         } catch {
             print("❌ Error exchanging code for token: \(error)")
             return (false, "Failed to exchange code: \(error.localizedDescription)")
@@ -370,7 +366,7 @@ class AuthenticationManager: AuthenticationManaging {
             "grant_type": "refresh_token",
             "refresh_token": oauth2RefreshToken,
             "client_id": APIConfiguration.oauth2ClientID,
-            "client_secret": APIConfiguration.oauth2ClientSecret,
+            "client_secret": APIConfiguration.oauth2ClientSecret
         ]
         
         let formString = formData.map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? $0.value)" }
@@ -404,7 +400,6 @@ class AuthenticationManager: AuthenticationManaging {
             
             print("✅ OAuth2 token refreshed successfully")
             return true
-            
         } catch {
             print("❌ Error refreshing token: \(error)")
             return false

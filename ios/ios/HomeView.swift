@@ -5,8 +5,8 @@
 //  Created by Jeffrey Dorrycott on 12/8/25.
 //
 
-import SwiftUI
 import SwiftProtobuf
+import SwiftUI
 
 struct HomeView: View {
     @Environment(AuthenticationManager.self) private var authManager

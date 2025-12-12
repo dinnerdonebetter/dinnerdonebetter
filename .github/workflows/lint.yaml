@@ -14,6 +14,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      ios: ${{ steps.filter.outputs.ios }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
@@ -25,6 +26,10 @@ jobs:
             frontend:
               - frontend/**/*.ts
               - frontend/**/*.tsx
+            ios:
+              - ios/**/*.swift
+              - ios/.swiftlint.yml
+              - ios/Makefile
   golang:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.backend == 'true' }}
@@ -66,3 +71,19 @@ jobs:
 
       - run: yarn run lint
         working-directory: frontend
+
+  swift:
+    needs: [ changes ]
+    if: ${{ needs.changes.outputs.ios == 'true' }}
+    timeout-minutes: 10
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        working-directory: ios
+        run: make lint

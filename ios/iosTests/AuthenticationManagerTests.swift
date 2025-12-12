@@ -5,12 +5,11 @@
 //  Created by Auto on 12/8/25.
 //
 
-import Testing
 import Foundation
 @testable import ios
+import Testing
 
 struct AuthenticationManagerTests {
-    
     // MARK: - Initialization Tests
     
     @Test("AuthenticationManager initializes with default state")
@@ -323,7 +322,7 @@ struct AuthenticationManagerTests {
         let manager = AuthenticationManager()
         
         // Attempt login (will likely fail without server, but tests state management)
-        let _ = await manager.login(username: "test", password: "test")
+        _ = await manager.login(username: "test", password: "test")
         
         // State should be false if login failed, or true if it succeeded
         // This test documents the state management behavior

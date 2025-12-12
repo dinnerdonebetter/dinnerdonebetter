@@ -7,8 +7,8 @@
 
 import Foundation
 import GRPCCore
-import GRPCNIOTransportHTTP2TransportServices
 import GRPCNIOTransportHTTP2
+import GRPCNIOTransportHTTP2TransportServices
 
 /// A unified gRPC client that provides access to all service clients.
 /// This is the Swift analog of the Go client in backend/pkg/client/client.go

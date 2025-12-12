@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import SwiftUI
 import GRPCCore
 import SwiftProtobuf
+import SwiftUI
 
 @Observable
 @MainActor
@@ -67,7 +67,7 @@ class HomeViewModel {
     }
     
     var activeGroceryLists: [(mealPlanID: String, items: [Mealplanning_MealPlanGroceryListItem])] {
-        return groceryLists.compactMap { (mealPlanID, items) in
+        return groceryLists.compactMap { mealPlanID, items in
             // Only show grocery lists for finalized meal plans with unacquired items
             let mealPlan = allMealPlans.first { $0.id == mealPlanID }
             guard let mealPlan = mealPlan,
@@ -106,7 +106,6 @@ class HomeViewModel {
             
             // Fetch grocery lists for finalized meal plans
             await fetchGroceryLists(for: mealPlans.filter { $0.status.lowercased() == "finalized" && $0.groceryListInitialized })
-            
         } catch {
             errorMessage = "Failed to load data: \(error.localizedDescription)"
             print("❌ Error loading home data: \(error)")

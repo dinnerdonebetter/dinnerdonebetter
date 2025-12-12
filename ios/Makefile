@@ -54,6 +54,22 @@ clean:
 		-derivedDataPath $(DERIVED_DATA) \
 		-quiet
 
+.PHONY: lint
+lint:
+	@if ! command -v swiftlint >/dev/null 2>&1; then \
+		echo "⚠️  SwiftLint not found. Installing via Homebrew..."; \
+		brew install swiftlint || echo "❌ Failed to install SwiftLint. Please install manually: brew install swiftlint"; \
+	fi
+	swiftlint lint --strict
+
+.PHONY: lint-autocorrect
+lint-autocorrect:
+	@if ! command -v swiftlint >/dev/null 2>&1; then \
+		echo "⚠️  SwiftLint not found. Installing via Homebrew..."; \
+		brew install swiftlint || echo "❌ Failed to install SwiftLint. Please install manually: brew install swiftlint"; \
+	fi
+	swiftlint lint --fix
+
 .PHONY: list-destinations
 list-destinations: ## List available iOS Simulator destinations
 	xcrun simctl list devices available | grep -E "iPhone|iPad" || echo "No simulators found. Run 'xcrun simctl list devices' for more details."
