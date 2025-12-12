@@ -59,9 +59,9 @@ func main() {
 			return err
 		}),
 		//// Create valid enumerations and bridge types
-		//localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-		//	return createTestEnumerations(ctx, repo, logger)
-		//}),
+		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			return createTestEnumerations(ctx, repo, logger)
+		}),
 		// Create example service settings
 		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			return createExampleServiceSettings(ctx, repo, logger)

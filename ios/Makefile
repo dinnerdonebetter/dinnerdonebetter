@@ -4,7 +4,9 @@
 # Project configuration
 PROJECT := ios.xcodeproj
 SCHEME := ios
-DESTINATION := "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2"
+# DESTINATION can be overridden via environment variable (e.g., in CI)
+# Default to iPhone 16 Pro with OS 18.2 for local development
+DESTINATION ?= "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2"
 TEST_TARGET := iosTests
 UI_TEST_TARGET := iosUITests
 
