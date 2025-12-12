@@ -3,7 +3,10 @@
 
 # Paths to include/exclude
 included:
-  - ios
+  - ios/App
+  - ios/Views
+  - ios/ViewModels
+  - ios/Services
   - iosTests
   - iosUITests
 
