@@ -13,6 +13,7 @@ private class NoRedirectDelegate: NSObject, URLSessionTaskDelegate {
 }
 
 @Observable
+// swiftlint:disable:next type_body_length
 class AuthenticationManager: AuthenticationManaging {
     var isAuthenticated: Bool = false
     var username: String = ""
@@ -84,7 +85,8 @@ class AuthenticationManager: AuthenticationManaging {
         return manager
     }
     
-    func login(username: String, password: String, totpToken: String? = nil) async -> (success: Bool, error: String?, requiresTOTP: Bool) {
+    // swiftlint:disable:next cyclomatic_complexity
+    func login(username: String, password: String, totpToken: String? = nil) async -> LoginResult {
         // If using mock, delegate to mock manager
         if let mock = mockManager {
             let result = await mock.login(username: username, password: password, totpToken: totpToken)
@@ -157,10 +159,10 @@ class AuthenticationManager: AuthenticationManaging {
                     print("✅ OAuth2 token obtained successfully")
                 }
                 
-                return (true, nil, false)
+                return LoginResult(success: true, error: nil, requiresTOTP: false)
             } else {
                 print("⚠️ Response received but no token result")
-                return (false, "No token received from server", false)
+                return LoginResult(success: false, error: "No token received from server", requiresTOTP: false)
             }
         } catch let error as GRPCCore.RPCError {
             print("❌ RPC error code: \(error.code)")
@@ -172,19 +174,19 @@ class AuthenticationManager: AuthenticationManaging {
             // Provide user-friendly error messages
             switch error.code {
             case .deadlineExceeded:
-                return (false, "Request timed out. Please check your connection.", false)
+                return LoginResult(success: false, error: "Request timed out. Please check your connection.", requiresTOTP: false)
             case .unavailable:
-                return (false, "Server is unavailable. Please try again later.", false)
+                return LoginResult(success: false, error: "Server is unavailable. Please try again later.", requiresTOTP: false)
             case .unauthenticated:
                 if requiresTOTP {
-                    return (false, "Please enter your 2FA code.", true)
+                    return LoginResult(success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
                 }
-                return (false, "Invalid username or password.", false)
+                return LoginResult(success: false, error: "Invalid username or password.", requiresTOTP: false)
             default:
                 if requiresTOTP {
-                    return (false, "Please enter your 2FA code.", true)
+                    return LoginResult(success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
                 }
-                return (false, "Login failed: \(error.message)", false)
+                return LoginResult(success: false, error: "Login failed: \(error.message)", requiresTOTP: false)
             }
         } catch let error as CancellationError {
             print("❌ CancellationError details: \(String(describing: error))")
@@ -198,9 +200,9 @@ class AuthenticationManager: AuthenticationManaging {
             if nsError.domain == NSPOSIXErrorDomain {
                 switch nsError.code {
                 case 61: // ECONNREFUSED
-                    return (false, "Connection refused. Is the server running on 127.0.0.1:8001?", false)
+                    return LoginResult(success: false, error: "Connection refused. Is the server running on 127.0.0.1:8001?", requiresTOTP: false)
                 case 64: // EHOSTDOWN
-                    return (false, "Host is down. Check that the server is running.", false)
+                    return LoginResult(success: false, error: "Host is down. Check that the server is running.", requiresTOTP: false)
                 default:
                     break
                 }
@@ -208,10 +210,10 @@ class AuthenticationManager: AuthenticationManaging {
         } catch {
             print("❌ Error details: \(String(describing: error))")
             
-            return (false, "Login failed: \(error.localizedDescription)", false)
+            return LoginResult(success: false, error: "Login failed: \(error.localizedDescription)", requiresTOTP: false)
         }
         
-        return (false, "Unknown login error", false)
+        return LoginResult(success: false, error: "Unknown login error", requiresTOTP: false)
     }
     
     /// Exchange JWT token for OAuth2 access token
@@ -220,7 +222,9 @@ class AuthenticationManager: AuthenticationManaging {
         let state = UUID().uuidString
         
         // Build authorization URL
-        var components = URLComponents(string: APIConfiguration.oauth2AuthorizeURL)!
+        guard var components = URLComponents(string: APIConfiguration.oauth2AuthorizeURL) else {
+            return (false, "Failed to build authorization URL")
+        }
         components.queryItems = [
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "client_id", value: APIConfiguration.oauth2ClientID),

@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct iosApp: App {
+struct IOSApp: App {
     @State private var authManager = AuthenticationManager()
     
     var body: some Scene {

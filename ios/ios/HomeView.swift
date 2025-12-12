@@ -112,9 +112,10 @@ struct HomeView: View {
                 .fontWeight(.bold)
             
             Button(action: {
-                // TODO: Navigate to create meal plan view
+                // swiftlint:disable:next todo
+                // FIXME: Navigate to create meal plan view
                 print("Create Meal Plan tapped")
-            }) {
+            }, label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
                     Text("Create New Meal Plan")
@@ -125,7 +126,7 @@ struct HomeView: View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-            }
+            })
         }
     }
     
@@ -143,7 +144,8 @@ struct HomeView: View {
                     hasVoted: viewModel.hasUserVoted(on: mealPlan),
                     timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
                 ) {
-                    // TODO: Navigate to voting view
+                    // swiftlint:disable:next todo
+                    // FIXME: Navigate to voting view
                     print("Vote on meal plan \(mealPlan.id)")
                 }
             }
@@ -160,7 +162,8 @@ struct HomeView: View {
             
             ForEach(viewModel.upcomingMealPlans, id: \.id) { mealPlan in
                 UpcomingMealCard(mealPlan: mealPlan) {
-                    // TODO: Navigate to meal plan detail view
+                    // swiftlint:disable:next todo
+                    // FIXME: Navigate to meal plan detail view
                     print("View meal plan \(mealPlan.id)")
                 }
             }
@@ -210,7 +213,8 @@ struct HomeView: View {
                         mealPlan: mealPlan,
                         items: groceryList.items
                     ) {
-                        // TODO: Navigate to grocery list detail view
+                        // swiftlint:disable:next todo
+                        // FIXME: Navigate to grocery list detail view
                         print("View grocery list for meal plan \(mealPlan.id)")
                     }
                 }

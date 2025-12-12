@@ -51,7 +51,7 @@ class MockAuthenticationManager: AuthenticationManaging {
         self.totpCodeProvided = false
     }
     
-    func login(username: String, password: String, totpToken: String? = nil) async -> (success: Bool, error: String?, requiresTOTP: Bool) {
+    func login(username: String, password: String, totpToken: String? = nil) async -> LoginResult {
         print("🎭 MockAuthenticationManager: Login attempt for user: \(username)")
         
         loginAttemptCount += 1
@@ -70,7 +70,7 @@ class MockAuthenticationManager: AuthenticationManaging {
                 self.userID = "mock-user-123"
                 self.accountID = "mock-account-456"
             }
-            return (true, nil, false)
+            return LoginResult(success: true, error: nil, requiresTOTP: false)
             
         case .requiresTOTP:
             // First attempt: require TOTP
@@ -86,17 +86,17 @@ class MockAuthenticationManager: AuthenticationManaging {
                     self.userID = "mock-user-123"
                     self.accountID = "mock-account-456"
                 }
-                return (true, nil, false)
+                return LoginResult(success: true, error: nil, requiresTOTP: false)
             } else {
                 // No TOTP provided, require it
-                return (false, "Please enter your 2FA code.", true)
+                return LoginResult(success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
             }
             
         case .requiresTOTPThenSuccess:
             // Similar to requiresTOTP but explicitly tracks the flow
             if loginAttemptCount == 1 {
                 // First attempt without TOTP
-                return (false, "Please enter your 2FA code.", true)
+                return LoginResult(success: false, error: "Please enter your 2FA code.", requiresTOTP: true)
             } else {
                 // Second attempt with TOTP
                 if let totpToken = totpToken, !totpToken.isEmpty {
@@ -109,17 +109,17 @@ class MockAuthenticationManager: AuthenticationManaging {
                         self.userID = "mock-user-123"
                         self.accountID = "mock-account-456"
                     }
-                    return (true, nil, false)
+                    return LoginResult(success: true, error: nil, requiresTOTP: false)
                 } else {
-                    return (false, "TOTP code is required.", true)
+                    return LoginResult(success: false, error: "TOTP code is required.", requiresTOTP: true)
                 }
             }
             
         case .invalidCredentials:
-            return (false, "Invalid username or password.", false)
+            return LoginResult(success: false, error: "Invalid username or password.", requiresTOTP: false)
             
         case .serverError:
-            return (false, "Server is unavailable. Please try again later.", false)
+            return LoginResult(success: false, error: "Server is unavailable. Please try again later.", requiresTOTP: false)
         }
     }
     

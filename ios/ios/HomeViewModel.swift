@@ -220,10 +220,8 @@ class HomeViewModel {
     // Check if user has voted on a meal plan
     func hasUserVoted(on mealPlan: Mealplanning_MealPlan) -> Bool {
         for event in mealPlan.events {
-            for option in event.options {
-                if option.votes.contains(where: { $0.byUser == authManager.userID && !$0.abstain }) {
-                    return true
-                }
+            for option in event.options where option.votes.contains(where: { $0.byUser == authManager.userID && !$0.abstain }) {
+                return true
             }
         }
         return false

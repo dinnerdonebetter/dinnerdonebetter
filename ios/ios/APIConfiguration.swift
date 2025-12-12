@@ -8,11 +8,13 @@
 import Foundation
 
 struct APIConfiguration {
-    // TODO: Update this with your actual server URL
+    // swiftlint:disable:next todo
+    // FIXME: Update this with your actual server URL
     static let serverURL = "http://localhost:8000"
     
     // OAuth2 Configuration
-    // TODO: Find some way to configure these
+    // swiftlint:disable:next todo
+    // FIXME: Find some way to configure these
     static let oauth2ClientID = "AAAAAAAAAAAAAAAA"
     static let oauth2ClientSecret = "AAAAAAAAAAAAAAAA"
     

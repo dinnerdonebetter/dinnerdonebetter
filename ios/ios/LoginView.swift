@@ -68,7 +68,7 @@ struct LoginView: View {
                     loginTask?.cancel()
                     // Create new task and store reference
                     loginTask = Task { await handleLogin() }
-                }) {
+                }, label: {
                     HStack {
                         if isLoading {
                             ProgressView()
@@ -83,7 +83,7 @@ struct LoginView: View {
                     .background(isLoading ? Color.gray : Color.accentColor)
                     .foregroundColor(.white)
                     .cornerRadius(10)
-                }
+                })
                 .disabled(isLoading || username.isEmpty || password.isEmpty || (requiresTOTP && totpCode.isEmpty))
                 .accessibilityIdentifier("signInButton")
                 .padding(.top, 8)
