@@ -14,6 +14,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
+      ios: ${{ steps.filter.outputs.ios }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
@@ -25,6 +26,11 @@ jobs:
               - frontend/apps/web/**
               - frontend/packages/**
               - frontend/environments/dev/webapp/**
+            ios:
+              - ios/**/*.swift
+              - ios/**/*.xcodeproj
+              - ios/**/*.xcworkspace
+              - ios/Makefile
 
   backend:
     needs: [changes]
@@ -71,3 +77,22 @@ jobs:
           NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
           NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
         working-directory: frontend/apps/web
+
+  ios:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.ios == 'true' }}
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build iOS app
+        working-directory: ios
+        run: make build
