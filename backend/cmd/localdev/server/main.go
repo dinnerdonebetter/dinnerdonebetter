@@ -16,6 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 const (
@@ -60,7 +62,15 @@ func main() {
 		}),
 		//// Create valid enumerations and bridge types
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			return createTestEnumerations(ctx, repo, logger)
+			enums, err := createTestEnumerations(ctx, repo, logger)
+			if err != nil {
+				return err
+			}
+			recipeIDs, err := createTestRecipes(ctx, repo, logger, premadeAdminUser.ID, enums)
+			if err != nil {
+				return err
+			}
+			return createTestMeals(ctx, repo, logger, premadeAdminUser.ID, recipeIDs)
 		}),
 		// Create example service settings
 		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
@@ -75,8 +85,24 @@ func main() {
 	server.Run()
 }
 
-func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, logger logging.Logger) error {
+type testEnumerations struct {
+	Ingredients      map[string]*mealplanning.ValidIngredient
+	Preparations     map[string]*mealplanning.ValidPreparation
+	MeasurementUnits map[string]*mealplanning.ValidMeasurementUnit
+	Instruments      map[string]*mealplanning.ValidInstrument
+	Vessels          map[string]*mealplanning.ValidVessel
+}
+
+func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, logger logging.Logger) (*testEnumerations, error) {
 	const count = 75
+
+	enums := &testEnumerations{
+		Ingredients:      make(map[string]*mealplanning.ValidIngredient),
+		Preparations:     make(map[string]*mealplanning.ValidPreparation),
+		MeasurementUnits: make(map[string]*mealplanning.ValidMeasurementUnit),
+		Instruments:      make(map[string]*mealplanning.ValidInstrument),
+		Vessels:          make(map[string]*mealplanning.ValidVessel),
+	}
 
 	// Store first instances for bridge relationships
 	var firstValidIngredient *mealplanning.ValidIngredient
@@ -176,11 +202,13 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	for i, ing := range ingredients {
 		validIngredient, err := repo.CreateValidIngredient(ctx, ing)
 		if err != nil {
-			return fmt.Errorf("failed to create valid ingredient %d: %w", i+1, err)
+			return nil, fmt.Errorf("failed to create valid ingredient %d: %w", i+1, err)
 		}
 		if i == 0 {
 			firstValidIngredient = validIngredient
 		}
+		// Store ingredients we'll need for recipes
+		enums.Ingredients[validIngredient.Name] = validIngredient
 		logger.Debug("Created ValidIngredient: " + validIngredient.Name)
 	}
 
@@ -196,10 +224,14 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			IncludeInGeneratedInstructions: true,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid instrument %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid instrument %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidInstrument = validInstrument
+		}
+		// Store first instrument as "knife" for recipes
+		if i == 1 {
+			enums.Instruments["knife"] = validInstrument
 		}
 		logger.Debug("Created ValidInstrument: " + validInstrument.Name)
 	}
@@ -221,7 +253,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			OnlyForVessels:              false,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid preparation %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid preparation %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidPreparation = validPreparation
@@ -243,10 +275,11 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			Imperial:    false,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid measurement unit (gram) %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid measurement unit (gram) %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidMeasurementUnitGram = validMeasurementUnitGram
+			enums.MeasurementUnits["gram"] = validMeasurementUnitGram
 		}
 		logger.Debug("Created ValidMeasurementUnit: " + validMeasurementUnitGram.Name)
 	}
@@ -265,7 +298,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			Imperial:    false,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid measurement unit (kilogram) %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid measurement unit (kilogram) %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidMeasurementUnitKilogram = validMeasurementUnitKilogram
@@ -291,10 +324,11 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			UsableForStorage:               true,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid vessel %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidVessel = validVessel
+			enums.Vessels["cutting board"] = validVessel
 		}
 		logger.Debug("Created ValidVessel: " + validVessel.Name)
 	}
@@ -310,7 +344,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			Slug:          fmt.Sprintf("slice-%d", i),
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create valid ingredient state %d: %w", i, err)
+			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err)
 		}
 		if i == 1 {
 			firstValidIngredientState = validIngredientState
@@ -328,7 +362,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		Notes:              "A chef's knife is commonly used for slicing",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid preparation instrument: %w", err)
+		return nil, fmt.Errorf("failed to create valid preparation instrument: %w", err)
 	}
 	logger.Debug("Created ValidPreparationInstrument: slicing + chef's knife")
 
@@ -339,7 +373,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		ValidMeasurementUnitID: firstValidMeasurementUnitGram.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
+		return nil, fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
 	}
 	logger.Debug("Created ValidIngredientMeasurementUnit: garlic + gram")
 
@@ -351,7 +385,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		Notes:                  "Whole garlic cloves",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid ingredient state ingredient: %w", err)
+		return nil, fmt.Errorf("failed to create valid ingredient state ingredient: %w", err)
 	}
 	logger.Debug("Created ValidIngredientStateIngredient: garlic + whole")
 
@@ -363,7 +397,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		Notes:              "Slicing is typically done on a cutting board",
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid preparation vessel: %w", err)
+		return nil, fmt.Errorf("failed to create valid preparation vessel: %w", err)
 	}
 	logger.Debug("Created ValidPreparationVessel: slicing + cutting board")
 
@@ -376,7 +410,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		Modifier: 0.001, // 1 gram = 0.001 kilograms
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid measurement unit conversion: %w", err)
+		return nil, fmt.Errorf("failed to create valid measurement unit conversion: %w", err)
 	}
 	logger.Debug("Created ValidMeasurementUnitConversion: gram -> kilogram")
 
@@ -387,11 +421,140 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		ValidIngredientID:  firstValidIngredient.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to create valid ingredient preparation: %w", err)
+		return nil, fmt.Errorf("failed to create valid ingredient preparation: %w", err)
 	}
 	logger.Debug("Created CreateValidIngredientPreparation: garlic -> slice")
 
-	return nil
+	// Create additional vessels needed for recipes
+	pan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "pan",
+		Description:                    "A frying pan for cooking",
+		PluralName:                     "pans",
+		Slug:                           "pan",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            50,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pan vessel: %w", err)
+	}
+	enums.Vessels["pan"] = pan
+
+	pot, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "pot",
+		Description:                    "A cooking pot",
+		PluralName:                     "pots",
+		Slug:                           "pot",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            150,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pot vessel: %w", err)
+	}
+	enums.Vessels["pot"] = pot
+
+	bakingSheet, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "baking sheet",
+		Description:                    "A flat baking sheet for the oven",
+		PluralName:                     "baking sheets",
+		Slug:                           "baking-sheet",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             300,
+		LengthInMillimeters:            450,
+		HeightInMillimeters:            5,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create baking sheet vessel: %w", err)
+	}
+	enums.Vessels["baking sheet"] = bakingSheet
+
+	steamer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "steamer",
+		Description:                    "A steamer basket for steaming food",
+		PluralName:                     "steamers",
+		Slug:                           "steamer",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            80,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create steamer vessel: %w", err)
+	}
+	enums.Vessels["steamer"] = steamer
+
+	// Create real preparations that we'll use for recipes
+	prepInputs := []struct {
+		name        string
+		description string
+		pastTense   string
+		slug        string
+		tempReq     bool
+		timeReq     bool
+	}{
+		{"grill", "Cook over direct heat on a grill", "grilled", "grill", true, true},
+		{"steam", "Cook with steam", "steamed", "steam", false, true},
+		{"roast", "Cook in an oven with dry heat", "roasted", "roast", true, true},
+		{"sauté", "Cook quickly in a small amount of fat", "sautéed", "saute", false, true},
+		{"boil", "Cook in boiling liquid", "boiled", "boil", false, true},
+		{"simmer", "Cook in liquid just below boiling", "simmered", "simmer", false, true},
+		{"bake", "Cook in an oven", "baked", "bake", true, true},
+		{"season", "Add salt, pepper, and other seasonings", "seasoned", "season", false, false},
+		{"chop", "Cut into rough pieces", "chopped", "chop", false, false},
+		{"dice", "Cut into small cubes", "diced", "dice", false, false},
+		{"mince", "Cut into very small pieces", "minced", "mince", false, false},
+		{"slice", "Cut into thin, flat pieces", "sliced", "slice", false, false},
+		{"cook", "Prepare food by heating", "cooked", "cook", false, true},
+		{"stir", "Mix ingredients together", "stirred", "stir", false, false},
+		{"mix", "Combine ingredients together", "mixed", "mix", false, false},
+	}
+
+	for _, prep := range prepInputs {
+		validPrep, err := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
+			ID:                          identifiers.New(),
+			Name:                        prep.name,
+			Description:                 prep.description,
+			Slug:                        prep.slug,
+			PastTense:                   prep.pastTense,
+			YieldsNothing:               false,
+			RestrictToIngredients:       false,
+			TemperatureRequired:         prep.tempReq,
+			TimeEstimateRequired:        prep.timeReq,
+			ConditionExpressionRequired: false,
+			ConsumesVessel:              false,
+			OnlyForVessels:              false,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create preparation %s: %w", prep.name, err)
+		}
+		enums.Preparations[prep.name] = validPrep
+		logger.Debug("Created ValidPreparation: " + validPrep.Name)
+	}
+
+	return enums, nil
 }
 
 func createExampleServiceSettings(ctx context.Context, repo settings.Repository, logger logging.Logger) error {
@@ -439,6 +602,468 @@ func createExampleServiceSettings(ctx context.Context, repo settings.Repository,
 		return fmt.Errorf("failed to create language setting: %w", err)
 	}
 	logger.Debug("Created ServiceSetting: user_language (enumerated, non-admin)")
+
+	return nil
+}
+
+func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, userID string, enums *testEnumerations) (map[string]string, error) {
+	// Use the enumerations passed in
+	preparations := enums.Preparations
+	ingredientMap := enums.Ingredients
+	vessels := enums.Vessels
+	defaultUnit := enums.MeasurementUnits["gram"]
+
+	if defaultUnit == nil {
+		return nil, fmt.Errorf("gram measurement unit not found in enumerations")
+	}
+
+	recipeIDs := make(map[string]string)
+
+	// Helper function to create a recipe
+	createRecipe := func(name, description, slug, componentType, portionName, pluralPortionName string, minPortions float32, maxPortions *float32, steps []*mealplanning.RecipeStepDatabaseCreationInput) (string, error) {
+		recipeID := identifiers.New()
+
+		recipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  recipeID,
+			Name:                name,
+			Description:         description,
+			Slug:                slug,
+			Source:              "Local Dev Test Recipes",
+			CreatedByUser:       userID,
+			PortionName:         portionName,
+			PluralPortionName:   pluralPortionName,
+			YieldsComponentType: componentType,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: minPortions,
+				Max: maxPortions,
+			},
+			SealOfApproval:   false,
+			EligibleForMeals: true,
+			Steps:            steps,
+			PrepTasks:        []*mealplanning.RecipePrepTaskDatabaseCreationInput{},
+			Media:            []*mealplanning.RecipeMediaDatabaseCreationInput{},
+		}
+
+		recipe, err := repo.CreateRecipe(ctx, recipeInput)
+		if err != nil {
+			return "", fmt.Errorf("failed to create recipe %s: %w", name, err)
+		}
+		logger.Debug(fmt.Sprintf("Created recipe: %s (ID: %s)", recipe.Name, recipe.ID))
+		return recipe.ID, nil
+	}
+
+	// Recipe 1: Grilled Chicken Breast
+	if prep := preparations["grill"]; prep != nil {
+		if chicken := ingredientMap["chicken breast"]; chicken != nil {
+			steps := []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:                   identifiers.New(),
+					Index:                0,
+					PreparationID:        preparations["season"].ID,
+					ExplicitInstructions: "Season the chicken breast with salt and black pepper on both sides",
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), IngredientID: &chicken.ID, Name: "chicken breast", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["salt"].ID), Name: "salt", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}, ToTaste: true},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["black pepper"].ID), Name: "black pepper", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}, ToTaste: true},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "seasoned chicken breast", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					ID:                     identifiers.New(),
+					Index:                  1,
+					PreparationID:          prep.ID,
+					ExplicitInstructions:   "Grill the chicken breast over medium-high heat for 6-8 minutes per side until internal temperature reaches 165°F",
+					TemperatureInCelsius:   types.OptionalFloat32Range{Min: pointer.To(float32(190))},
+					EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(720))},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), RecipeStepProductID: pointer.To("seasoned chicken breast from step 0"), Name: "seasoned chicken breast", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "grilled chicken breast", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["pan"].ID), Name: "grill pan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+			}
+			// Fix the product reference
+			if len(steps) > 1 && len(steps[0].Products) > 0 {
+				steps[1].Ingredients[0].RecipeStepProductID = &steps[0].Products[0].ID
+			}
+			recipeID, err := createRecipe("Grilled Chicken Breast", "Tender, juicy grilled chicken breast", "grilled-chicken-breast", "main", "breast", "breasts", 1, nil, steps)
+			if err != nil {
+				logger.Debug(fmt.Sprintf("Error creating grilled chicken: %v", err))
+			} else {
+				recipeIDs["grilled-chicken-breast"] = recipeID
+			}
+		}
+	}
+
+	// Recipe 2: Steamed Broccoli Florets
+	if prep := preparations["steam"]; prep != nil {
+		if broccoli := ingredientMap["broccoli"]; broccoli != nil {
+			steps := []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:                   identifiers.New(),
+					Index:                0,
+					PreparationID:        preparations["chop"].ID,
+					ExplicitInstructions: "Cut the broccoli into florets",
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), IngredientID: &broccoli.ID, Name: "broccoli", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "broccoli florets", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					ID:                     identifiers.New(),
+					Index:                  1,
+					PreparationID:          prep.ID,
+					ExplicitInstructions:   "Steam the broccoli florets for 5-7 minutes until tender but still crisp",
+					EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(300)), Max: pointer.To(uint32(420))},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "broccoli florets", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "steamed broccoli florets", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["steamer"].ID), Name: "steamer", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+			}
+			if len(steps) > 1 && len(steps[0].Products) > 0 {
+				steps[1].Ingredients[0].RecipeStepProductID = &steps[0].Products[0].ID
+			}
+			recipeID, err := createRecipe("Steamed Broccoli Florets", "Tender steamed broccoli", "steamed-broccoli-florets", "side", "serving", "servings", 2, nil, steps)
+			if err != nil {
+				logger.Debug(fmt.Sprintf("Error creating steamed broccoli: %v", err))
+			} else {
+				recipeIDs["steamed-broccoli-florets"] = recipeID
+			}
+		}
+	}
+
+	// Recipe 3: Spanish Rice
+	if prep := preparations["sauté"]; prep != nil {
+		if rice := ingredientMap["rice"]; rice != nil {
+			onion := ingredientMap["onion"]
+			garlic := ingredientMap["garlic"]
+			steps := []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:                   identifiers.New(),
+					Index:                0,
+					PreparationID:        preparations["dice"].ID,
+					ExplicitInstructions: "Dice the onion and mince the garlic",
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), IngredientID: &onion.ID, Name: "onion", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 100}},
+						{ID: identifiers.New(), IngredientID: &garlic.ID, Name: "garlic", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 5}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "diced onion and minced garlic", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					ID:                     identifiers.New(),
+					Index:                  1,
+					PreparationID:          prep.ID,
+					ExplicitInstructions:   "Sauté the onion and garlic in olive oil until translucent, then add rice and toast for 2 minutes",
+					EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(180))},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "diced onion and minced garlic", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 105}},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["olive oil"].ID), Name: "olive oil", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 15}},
+						{ID: identifiers.New(), IngredientID: &rice.ID, Name: "rice", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "toasted rice mixture", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["pot"].ID), Name: "pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					ID:                     identifiers.New(),
+					Index:                  2,
+					PreparationID:          preparations["simmer"].ID,
+					ExplicitInstructions:   "Add water or broth, bring to a boil, then reduce heat and simmer covered for 18-20 minutes until liquid is absorbed",
+					EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(1080)), Max: pointer.To(uint32(1200))},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "toasted rice mixture", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 320}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "spanish rice", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["pot"].ID), Name: "pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+			}
+			if len(steps) > 1 && len(steps[0].Products) > 0 {
+				steps[1].Ingredients[0].RecipeStepProductID = &steps[0].Products[0].ID
+			}
+			if len(steps) > 2 && len(steps[1].Products) > 0 {
+				steps[2].Ingredients[0].RecipeStepProductID = &steps[1].Products[0].ID
+			}
+			recipeID, err := createRecipe("Spanish Rice", "Flavorful rice dish with sautéed onions and garlic", "spanish-rice", "side", "serving", "servings", 4, nil, steps)
+			if err != nil {
+				logger.Debug(fmt.Sprintf("Error creating spanish rice: %v", err))
+			} else {
+				recipeIDs["spanish-rice"] = recipeID
+			}
+		}
+	}
+
+	// Recipe 4: Roasted Asparagus
+	if prep := preparations["roast"]; prep != nil {
+		if asparagus := ingredientMap["asparagus"]; asparagus != nil {
+			steps := []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:                   identifiers.New(),
+					Index:                0,
+					PreparationID:        preparations["season"].ID,
+					ExplicitInstructions: "Trim the asparagus ends and season with olive oil, salt, and pepper",
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), IngredientID: &asparagus.ID, Name: "asparagus", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 300}},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["olive oil"].ID), Name: "olive oil", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 15}},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["salt"].ID), Name: "salt", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 2}, ToTaste: true},
+						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["black pepper"].ID), Name: "black pepper", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 1}, ToTaste: true},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "seasoned asparagus", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					ID:                     identifiers.New(),
+					Index:                  1,
+					PreparationID:          prep.ID,
+					ExplicitInstructions:   "Roast in a 400°F oven for 12-15 minutes until tender and slightly browned",
+					TemperatureInCelsius:   types.OptionalFloat32Range{Min: pointer.To(float32(200))},
+					EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(720)), Max: pointer.To(uint32(900))},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "seasoned asparagus", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 300}},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{ID: identifiers.New(), Name: "roasted asparagus", Type: "ingredient", Index: 0},
+					},
+					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+						{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+					},
+				},
+			}
+			if len(steps) > 1 && len(steps[0].Products) > 0 {
+				steps[1].Ingredients[0].RecipeStepProductID = &steps[0].Products[0].ID
+			}
+			recipeID, err := createRecipe("Roasted Asparagus", "Tender roasted asparagus spears", "roasted-asparagus", "side", "serving", "servings", 2, nil, steps)
+			if err != nil {
+				logger.Debug(fmt.Sprintf("Error creating roasted asparagus: %v", err))
+			} else {
+				recipeIDs["roasted-asparagus"] = recipeID
+			}
+		}
+	}
+
+	// Recipe 5: Baked Potatoes
+	if prep := preparations["bake"]; prep != nil {
+		if potato := ingredientMap["potato"]; potato != nil {
+			oliveOil := ingredientMap["olive oil"]
+			salt := ingredientMap["salt"]
+			if oliveOil != nil && salt != nil {
+				steps := []*mealplanning.RecipeStepDatabaseCreationInput{
+					{
+						ID:                   identifiers.New(),
+						Index:                0,
+						PreparationID:        preparations["season"].ID,
+						ExplicitInstructions: "Wash and dry potatoes, then rub with olive oil and season with salt",
+						Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+							{ID: identifiers.New(), IngredientID: &potato.ID, Name: "potato", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
+							{ID: identifiers.New(), IngredientID: pointer.To(oliveOil.ID), Name: "olive oil", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 10}},
+							{ID: identifiers.New(), IngredientID: pointer.To(salt.ID), Name: "salt", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 2}, ToTaste: true},
+						},
+						Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+							{ID: identifiers.New(), Name: "seasoned potatoes", Type: "ingredient", Index: 0},
+						},
+						Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+							{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+						},
+					},
+					{
+						ID:                     identifiers.New(),
+						Index:                  1,
+						PreparationID:          prep.ID,
+						ExplicitInstructions:   "Bake at 400°F for 45-60 minutes until tender when pierced with a fork",
+						TemperatureInCelsius:   types.OptionalFloat32Range{Min: pointer.To(float32(200))},
+						EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To(uint32(2700)), Max: pointer.To(uint32(3600))},
+						Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+							{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "seasoned potatoes", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
+						},
+						Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+							{ID: identifiers.New(), Name: "baked potatoes", Type: "ingredient", Index: 0},
+						},
+						Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+							{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
+						},
+					},
+				}
+				if len(steps) > 1 && len(steps[0].Products) > 0 {
+					steps[1].Ingredients[0].RecipeStepProductID = &steps[0].Products[0].ID
+				}
+				recipeID, err := createRecipe("Baked Potatoes", "Classic baked potatoes with crispy skin", "baked-potatoes", "side", "potato", "potatoes", 2, nil, steps)
+				if err != nil {
+					logger.Debug(fmt.Sprintf("Error creating baked potatoes: %v", err))
+				} else {
+					recipeIDs["baked-potatoes"] = recipeID
+				}
+			}
+		}
+	}
+
+	return recipeIDs, nil
+}
+
+func createTestMeals(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, userID string, recipeIDs map[string]string) error {
+	// Helper function to create a meal
+	createMeal := func(name, description string, minPortions float32, maxPortions *float32, components []*mealplanning.MealComponentDatabaseCreationInput) error {
+		mealID := identifiers.New()
+
+		mealInput := &mealplanning.MealDatabaseCreationInput{
+			ID:            mealID,
+			Name:          name,
+			Description:   description,
+			CreatedByUser: userID,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: minPortions,
+				Max: maxPortions,
+			},
+			EligibleForMealPlans: true,
+			Components:           components,
+		}
+
+		meal, err := repo.CreateMeal(ctx, mealInput)
+		if err != nil {
+			return fmt.Errorf("failed to create meal %s: %w", name, err)
+		}
+		logger.Debug(fmt.Sprintf("Created meal: %s (ID: %s)", meal.Name, meal.ID))
+		return nil
+	}
+
+	// Meal 1: Grilled Chicken with Steamed Broccoli
+	chickenID := recipeIDs["grilled-chicken-breast"]
+	broccoliID := recipeIDs["steamed-broccoli-florets"]
+	if chickenID != "" && broccoliID != "" {
+		components := []*mealplanning.MealComponentDatabaseCreationInput{
+			{
+				RecipeID:      chickenID,
+				ComponentType: mealplanning.MealComponentTypesMain,
+				RecipeScale:   1.0,
+			},
+			{
+				RecipeID:      broccoliID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   1.0,
+			},
+		}
+		if err := createMeal("Grilled Chicken with Steamed Broccoli", "A healthy meal with grilled chicken and steamed broccoli", 1, nil, components); err != nil {
+			logger.Debug(fmt.Sprintf("Error creating grilled chicken meal: %v", err))
+		}
+	}
+
+	// Meal 2: Grilled Chicken with Spanish Rice
+	riceID := recipeIDs["spanish-rice"]
+	if chickenID != "" && riceID != "" {
+		components := []*mealplanning.MealComponentDatabaseCreationInput{
+			{
+				RecipeID:      chickenID,
+				ComponentType: mealplanning.MealComponentTypesMain,
+				RecipeScale:   1.0,
+			},
+			{
+				RecipeID:      riceID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   0.5, // Spanish rice serves 4, scale down to 2 for 1-2 person meal
+			},
+		}
+		if err := createMeal("Grilled Chicken with Spanish Rice", "Grilled chicken served with flavorful Spanish rice", 1, pointer.To(float32(2)), components); err != nil {
+			logger.Debug(fmt.Sprintf("Error creating chicken and rice meal: %v", err))
+		}
+	}
+
+	// Meal 3: Grilled Chicken with Roasted Asparagus
+	asparagusID := recipeIDs["roasted-asparagus"]
+	if chickenID != "" && asparagusID != "" {
+		components := []*mealplanning.MealComponentDatabaseCreationInput{
+			{
+				RecipeID:      chickenID,
+				ComponentType: mealplanning.MealComponentTypesMain,
+				RecipeScale:   1.0,
+			},
+			{
+				RecipeID:      asparagusID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   1.0,
+			},
+		}
+		if err := createMeal("Grilled Chicken with Roasted Asparagus", "Grilled chicken with tender roasted asparagus", 1, pointer.To(float32(2)), components); err != nil {
+			logger.Debug(fmt.Sprintf("Error creating chicken and asparagus meal: %v", err))
+		}
+	}
+
+	// Meal 4: Grilled Chicken with Baked Potatoes
+	potatoID := recipeIDs["baked-potatoes"]
+	if chickenID != "" && potatoID != "" {
+		components := []*mealplanning.MealComponentDatabaseCreationInput{
+			{
+				RecipeID:      chickenID,
+				ComponentType: mealplanning.MealComponentTypesMain,
+				RecipeScale:   1.0,
+			},
+			{
+				RecipeID:      potatoID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   1.0,
+			},
+		}
+		if err := createMeal("Grilled Chicken with Baked Potatoes", "Classic grilled chicken with baked potatoes", 1, pointer.To(float32(2)), components); err != nil {
+			logger.Debug(fmt.Sprintf("Error creating chicken and potatoes meal: %v", err))
+		}
+	}
+
+	// Meal 5: Complete Dinner - Chicken, Rice, and Broccoli
+	if chickenID != "" && riceID != "" && broccoliID != "" {
+		components := []*mealplanning.MealComponentDatabaseCreationInput{
+			{
+				RecipeID:      chickenID,
+				ComponentType: mealplanning.MealComponentTypesMain,
+				RecipeScale:   1.0,
+			},
+			{
+				RecipeID:      riceID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   0.5, // Scale down rice for smaller portions
+			},
+			{
+				RecipeID:      broccoliID,
+				ComponentType: mealplanning.MealComponentTypesSide,
+				RecipeScale:   0.5, // Scale down broccoli for smaller portions
+			},
+		}
+		if err := createMeal("Complete Chicken Dinner", "A complete meal with grilled chicken, Spanish rice, and steamed broccoli", 1, pointer.To(float32(2)), components); err != nil {
+			logger.Debug(fmt.Sprintf("Error creating complete dinner meal: %v", err))
+		}
+	}
 
 	return nil
 }
