@@ -51,12 +51,12 @@ INSERT INTO recipes (
 	slug,
 	source,
 	description,
+	status,
 	inspired_by_recipe_id,
 	min_estimated_portions,
 	max_estimated_portions,
 	portion_name,
 	plural_portion_name,
-	seal_of_approval,
 	eligible_for_meals,
 	yields_component_type,
 	created_by_user
@@ -79,19 +79,19 @@ INSERT INTO recipes (
 `
 
 type CreateRecipeParams struct {
-	MinEstimatedPortions string
+	PortionName          string
 	YieldsComponentType  ComponentType
 	Slug                 string
 	Source               string
 	Description          string
+	Status               RecipeStatus
 	CreatedByUser        string
-	PortionName          string
-	ID                   string
+	MinEstimatedPortions string
 	Name                 string
+	ID                   string
 	PluralPortionName    string
-	MaxEstimatedPortions sql.NullString
 	InspiredByRecipeID   sql.NullString
-	SealOfApproval       bool
+	MaxEstimatedPortions sql.NullString
 	EligibleForMeals     bool
 }
 
@@ -102,12 +102,12 @@ func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipePa
 		arg.Slug,
 		arg.Source,
 		arg.Description,
+		arg.Status,
 		arg.InspiredByRecipeID,
 		arg.MinEstimatedPortions,
 		arg.MaxEstimatedPortions,
 		arg.PortionName,
 		arg.PluralPortionName,
-		arg.SealOfApproval,
 		arg.EligibleForMeals,
 		arg.YieldsComponentType,
 		arg.CreatedByUser,
@@ -122,12 +122,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -195,50 +195,50 @@ type GetRecipeByIDRow struct {
 	LastUpdatedAt                                    sql.NullTime
 	LastValidatedAt                                  sql.NullTime
 	LastIndexedAt                                    sql.NullTime
-	Slug                                             string
-	ID                                               string
-	Source                                           string
-	Name                                             string
-	PluralPortionName                                string
-	PortionName                                      string
-	CreatedByUser                                    string
 	MinEstimatedPortions                             string
-	Description                                      string
+	ID                                               string
+	PluralPortionName                                string
+	Name                                             string
+	PortionName                                      string
 	YieldsComponentType                              ComponentType
+	CreatedByUser                                    string
+	Slug                                             string
+	Source                                           string
+	Status                                           RecipeStatus
+	Description                                      string
 	RecipeStepPreparationIconPath                    sql.NullString
-	RecipeStepExplicitInstructions                   sql.NullString
-	MaxEstimatedPortions                             sql.NullString
-	InspiredByRecipeID                               sql.NullString
 	RecipeStepConditionExpression                    sql.NullString
 	RecipeStepPreparationName                        sql.NullString
+	RecipeStepPreparationID                          sql.NullString
+	RecipeStepID                                     sql.NullString
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
+	RecipeStepExplicitInstructions                   sql.NullString
 	RecipeStepPreparationDescription                 sql.NullString
 	RecipeStepNotes                                  sql.NullString
 	RecipeStepMaximumTemperatureInCelsius            sql.NullString
+	MaxEstimatedPortions                             sql.NullString
 	RecipeStepPreparationSlug                        sql.NullString
-	RecipeStepPreparationID                          sql.NullString
-	RecipeStepID                                     sql.NullString
+	InspiredByRecipeID                               sql.NullString
 	RecipeStepBelongsToRecipe                        sql.NullString
 	RecipeStepPreparationPastTense                   sql.NullString
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
+	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
 	RecipeStepIndex                                  sql.NullInt32
 	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
-	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
-	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
 	RecipeStepPreparationMinimumInstrumentCount      sql.NullInt32
+	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
 	RecipeStepPreparationConditionExpressionRequired sql.NullBool
 	RecipeStepPreparationOnlyForVessels              sql.NullBool
-	RecipeStepPreparationTemperatureRequired         sql.NullBool
 	RecipeStepPreparationRestrictToIngredients       sql.NullBool
-	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
+	RecipeStepPreparationTemperatureRequired         sql.NullBool
 	RecipeStepOptional                               sql.NullBool
 	RecipeStepStartTimerAutomatically                sql.NullBool
+	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
 	RecipeStepPreparationYieldsNothing               sql.NullBool
 	RecipeStepPreparationConsumesVessel              sql.NullBool
-	SealOfApproval                                   bool
 	EligibleForMeals                                 bool
 }
 
@@ -257,12 +257,12 @@ func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, recipeID string) (
 			&i.Slug,
 			&i.Source,
 			&i.Description,
+			&i.Status,
 			&i.InspiredByRecipeID,
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.PortionName,
 			&i.PluralPortionName,
-			&i.SealOfApproval,
 			&i.EligibleForMeals,
 			&i.YieldsComponentType,
 			&i.LastIndexedAt,
@@ -330,12 +330,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -412,47 +412,47 @@ type GetRecipeByIDAndAuthorIDRow struct {
 	RecipeStepPreparationSlug                        sql.NullString
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
 	RecipeStepBelongsToRecipe                        sql.NullString
-	Slug                                             sql.NullString
 	PluralPortionName                                sql.NullString
 	PortionName                                      sql.NullString
+	MaxEstimatedPortions                             sql.NullString
 	CreatedByUser                                    sql.NullString
 	RecipeStepID                                     sql.NullString
-	Source                                           sql.NullString
+	Slug                                             sql.NullString
 	RecipeStepPreparationID                          sql.NullString
 	RecipeStepPreparationName                        sql.NullString
 	RecipeStepPreparationDescription                 sql.NullString
 	RecipeStepPreparationIconPath                    sql.NullString
+	Source                                           sql.NullString
 	Description                                      sql.NullString
-	RecipeStepConditionExpression                    sql.NullString
 	RecipeStepPreparationPastTense                   sql.NullString
 	Name                                             sql.NullString
+	RecipeStepConditionExpression                    sql.NullString
 	RecipeStepExplicitInstructions                   sql.NullString
 	RecipeStepNotes                                  sql.NullString
 	RecipeStepMaximumTemperatureInCelsius            sql.NullString
 	YieldsComponentType                              NullComponentType
-	InspiredByRecipeID                               sql.NullString
+	Status                                           NullRecipeStatus
 	ID                                               sql.NullString
+	InspiredByRecipeID                               sql.NullString
 	MinEstimatedPortions                             sql.NullString
-	MaxEstimatedPortions                             sql.NullString
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
 	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
 	RecipeStepIndex                                  sql.NullInt32
 	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
-	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
 	RecipeStepPreparationMinimumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
+	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
 	RecipeStepPreparationTemperatureRequired         sql.NullBool
+	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
 	RecipeStepPreparationConditionExpressionRequired sql.NullBool
 	RecipeStepPreparationOnlyForVessels              sql.NullBool
-	RecipeStepPreparationRestrictToIngredients       sql.NullBool
 	RecipeStepOptional                               sql.NullBool
 	RecipeStepStartTimerAutomatically                sql.NullBool
+	RecipeStepPreparationRestrictToIngredients       sql.NullBool
 	RecipeStepPreparationYieldsNothing               sql.NullBool
 	RecipeStepPreparationConsumesVessel              sql.NullBool
-	SealOfApproval                                   sql.NullBool
 	EligibleForMeals                                 sql.NullBool
 }
 
@@ -471,12 +471,12 @@ func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *Ge
 			&i.Slug,
 			&i.Source,
 			&i.Description,
+			&i.Status,
 			&i.InspiredByRecipeID,
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.PortionName,
 			&i.PluralPortionName,
-			&i.SealOfApproval,
 			&i.EligibleForMeals,
 			&i.YieldsComponentType,
 			&i.LastIndexedAt,
@@ -579,12 +579,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -644,26 +644,26 @@ type GetRecipesParams struct {
 
 type GetRecipesRow struct {
 	CreatedAt            time.Time
-	LastValidatedAt      sql.NullTime
 	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
 	ArchivedAt           sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	LastValidatedAt      sql.NullTime
+	Status               RecipeStatus
+	YieldsComponentType  ComponentType
 	MinEstimatedPortions string
-	ID                   string
 	CreatedByUser        string
 	PortionName          string
 	PluralPortionName    string
+	Name                 string
+	Slug                 string
+	ID                   string
 	Description          string
 	Source               string
-	YieldsComponentType  ComponentType
-	Slug                 string
-	Name                 string
 	InspiredByRecipeID   sql.NullString
 	MaxEstimatedPortions sql.NullString
 	FilteredCount        int64
 	TotalCount           int64
 	EligibleForMeals     bool
-	SealOfApproval       bool
 }
 
 func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams) ([]*GetRecipesRow, error) {
@@ -689,12 +689,12 @@ func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams
 			&i.Slug,
 			&i.Source,
 			&i.Description,
+			&i.Status,
 			&i.InspiredByRecipeID,
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.PortionName,
 			&i.PluralPortionName,
-			&i.SealOfApproval,
 			&i.EligibleForMeals,
 			&i.YieldsComponentType,
 			&i.LastIndexedAt,
@@ -726,12 +726,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -796,26 +796,26 @@ type GetRecipesCreatedByUserParams struct {
 
 type GetRecipesCreatedByUserRow struct {
 	CreatedAt            time.Time
-	LastValidatedAt      sql.NullTime
 	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
 	ArchivedAt           sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	LastValidatedAt      sql.NullTime
+	Status               RecipeStatus
+	YieldsComponentType  ComponentType
 	MinEstimatedPortions string
-	ID                   string
 	CreatedByUser        string
 	PortionName          string
 	PluralPortionName    string
+	Name                 string
+	Slug                 string
+	ID                   string
 	Description          string
 	Source               string
-	YieldsComponentType  ComponentType
-	Slug                 string
-	Name                 string
 	InspiredByRecipeID   sql.NullString
 	MaxEstimatedPortions sql.NullString
 	FilteredCount        int64
 	TotalCount           int64
 	EligibleForMeals     bool
-	SealOfApproval       bool
 }
 
 func (q *Queries) GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error) {
@@ -842,12 +842,12 @@ func (q *Queries) GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *Get
 			&i.Slug,
 			&i.Source,
 			&i.Description,
+			&i.Status,
 			&i.InspiredByRecipeID,
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.PortionName,
 			&i.PluralPortionName,
-			&i.SealOfApproval,
 			&i.EligibleForMeals,
 			&i.YieldsComponentType,
 			&i.LastIndexedAt,
@@ -912,12 +912,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -979,26 +979,26 @@ type RecipeSearchParams struct {
 
 type RecipeSearchRow struct {
 	CreatedAt            time.Time
-	LastValidatedAt      sql.NullTime
 	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
 	ArchivedAt           sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	LastValidatedAt      sql.NullTime
+	Status               RecipeStatus
+	YieldsComponentType  ComponentType
 	MinEstimatedPortions string
-	ID                   string
 	CreatedByUser        string
 	PortionName          string
 	PluralPortionName    string
+	Name                 string
+	Slug                 string
+	ID                   string
 	Description          string
 	Source               string
-	YieldsComponentType  ComponentType
-	Slug                 string
-	Name                 string
 	InspiredByRecipeID   sql.NullString
 	MaxEstimatedPortions sql.NullString
 	FilteredCount        int64
 	TotalCount           int64
 	EligibleForMeals     bool
-	SealOfApproval       bool
 }
 
 func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error) {
@@ -1025,12 +1025,12 @@ func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchPa
 			&i.Slug,
 			&i.Source,
 			&i.Description,
+			&i.Status,
 			&i.InspiredByRecipeID,
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.PortionName,
 			&i.PluralPortionName,
-			&i.SealOfApproval,
 			&i.EligibleForMeals,
 			&i.YieldsComponentType,
 			&i.LastIndexedAt,
@@ -1061,12 +1061,12 @@ UPDATE recipes SET
 	slug = $2,
 	source = $3,
 	description = $4,
-	inspired_by_recipe_id = $5,
-	min_estimated_portions = $6,
-	max_estimated_portions = $7,
-	portion_name = $8,
-	plural_portion_name = $9,
-	seal_of_approval = $10,
+	status = $5,
+	inspired_by_recipe_id = $6,
+	min_estimated_portions = $7,
+	max_estimated_portions = $8,
+	portion_name = $9,
+	plural_portion_name = $10,
 	eligible_for_meals = $11,
 	yields_component_type = $12,
 	last_updated_at = NOW()
@@ -1076,20 +1076,20 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeParams struct {
-	YieldsComponentType  ComponentType
-	Slug                 string
+	MinEstimatedPortions string
+	CreatedByUser        string
 	Source               string
 	Description          string
+	Status               RecipeStatus
 	ID                   string
-	MinEstimatedPortions string
-	Name                 string
 	PortionName          string
+	Name                 string
+	Slug                 string
 	PluralPortionName    string
-	CreatedByUser        string
+	YieldsComponentType  ComponentType
 	MaxEstimatedPortions sql.NullString
 	InspiredByRecipeID   sql.NullString
 	EligibleForMeals     bool
-	SealOfApproval       bool
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) (int64, error) {
@@ -1098,12 +1098,12 @@ func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipePa
 		arg.Slug,
 		arg.Source,
 		arg.Description,
+		arg.Status,
 		arg.InspiredByRecipeID,
 		arg.MinEstimatedPortions,
 		arg.MaxEstimatedPortions,
 		arg.PortionName,
 		arg.PluralPortionName,
-		arg.SealOfApproval,
 		arg.EligibleForMeals,
 		arg.YieldsComponentType,
 		arg.CreatedByUser,

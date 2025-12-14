@@ -20,253 +20,253 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Common_NamedID: Sendable {
+public struct Common_NamedID: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var id: String = String()
+  public var id: String = String()
 
-  var name: String = String()
+  public var name: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Common_ResponseDetails: Sendable {
+public struct Common_ResponseDetails: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var currentAccountID: String = String()
+  public var currentAccountID: String = String()
 
-  var traceID: String = String()
+  public var traceID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Common_OptionalFloat32Range: Sendable {
+public struct Common_OptionalFloat32Range: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var max: Float {
+  public var max: Float {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var min: Float {
+  public var min: Float {
     get {return _min ?? 0}
     set {_min = newValue}
   }
   /// Returns true if `min` has been explicitly set.
-  var hasMin: Bool {return self._min != nil}
+  public var hasMin: Bool {return self._min != nil}
   /// Clears the value of `min`. Subsequent reads from it will return its default value.
-  mutating func clearMin() {self._min = nil}
+  public mutating func clearMin() {self._min = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _max: Float? = nil
   fileprivate var _min: Float? = nil
 }
 
-struct Common_OptionalUint32Range: Sendable {
+public struct Common_OptionalUint32Range: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var max: UInt32 {
+  public var max: UInt32 {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var min: UInt32 {
+  public var min: UInt32 {
     get {return _min ?? 0}
     set {_min = newValue}
   }
   /// Returns true if `min` has been explicitly set.
-  var hasMin: Bool {return self._min != nil}
+  public var hasMin: Bool {return self._min != nil}
   /// Clears the value of `min`. Subsequent reads from it will return its default value.
-  mutating func clearMin() {self._min = nil}
+  public mutating func clearMin() {self._min = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _max: UInt32? = nil
   fileprivate var _min: UInt32? = nil
 }
 
-struct Common_Float32RangeWithOptionalMax: Sendable {
+public struct Common_Float32RangeWithOptionalMax: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var max: Float {
+  public var max: Float {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var min: Float = 0
+  public var min: Float = 0
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _max: Float? = nil
 }
 
-struct Common_Float32RangeWithOptionalMaxUpdateRequestInput: Sendable {
+public struct Common_Float32RangeWithOptionalMaxUpdateRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var min: Float {
+  public var min: Float {
     get {return _min ?? 0}
     set {_min = newValue}
   }
   /// Returns true if `min` has been explicitly set.
-  var hasMin: Bool {return self._min != nil}
+  public var hasMin: Bool {return self._min != nil}
   /// Clears the value of `min`. Subsequent reads from it will return its default value.
-  mutating func clearMin() {self._min = nil}
+  public mutating func clearMin() {self._min = nil}
 
-  var max: Float {
+  public var max: Float {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _min: Float? = nil
   fileprivate var _max: Float? = nil
 }
 
-struct Common_Uint16RangeWithOptionalMax: Sendable {
+public struct Common_Uint16RangeWithOptionalMax: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var max: UInt32 {
+  public var max: UInt32 {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var min: UInt32 = 0
+  public var min: UInt32 = 0
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _max: UInt32? = nil
 }
 
-struct Common_Uint16RangeWithOptionalMaxUpdateRequestInput: Sendable {
+public struct Common_Uint16RangeWithOptionalMaxUpdateRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var min: UInt32 {
+  public var min: UInt32 {
     get {return _min ?? 0}
     set {_min = newValue}
   }
   /// Returns true if `min` has been explicitly set.
-  var hasMin: Bool {return self._min != nil}
+  public var hasMin: Bool {return self._min != nil}
   /// Clears the value of `min`. Subsequent reads from it will return its default value.
-  mutating func clearMin() {self._min = nil}
+  public mutating func clearMin() {self._min = nil}
 
-  var max: UInt32 {
+  public var max: UInt32 {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _min: UInt32? = nil
   fileprivate var _max: UInt32? = nil
 }
 
-struct Common_Uint32RangeWithOptionalMax: Sendable {
+public struct Common_Uint32RangeWithOptionalMax: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var max: UInt32 {
+  public var max: UInt32 {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var min: UInt32 = 0
+  public var min: UInt32 = 0
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _max: UInt32? = nil
 }
 
-struct Common_Uint32RangeWithOptionalMaxUpdateRequestInput: Sendable {
+public struct Common_Uint32RangeWithOptionalMaxUpdateRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var min: UInt32 {
+  public var min: UInt32 {
     get {return _min ?? 0}
     set {_min = newValue}
   }
   /// Returns true if `min` has been explicitly set.
-  var hasMin: Bool {return self._min != nil}
+  public var hasMin: Bool {return self._min != nil}
   /// Clears the value of `min`. Subsequent reads from it will return its default value.
-  mutating func clearMin() {self._min = nil}
+  public mutating func clearMin() {self._min = nil}
 
-  var max: UInt32 {
+  public var max: UInt32 {
     get {return _max ?? 0}
     set {_max = newValue}
   }
   /// Returns true if `max` has been explicitly set.
-  var hasMax: Bool {return self._max != nil}
+  public var hasMax: Bool {return self._max != nil}
   /// Clears the value of `max`. Subsequent reads from it will return its default value.
-  mutating func clearMax() {self._max = nil}
+  public mutating func clearMax() {self._max = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _min: UInt32? = nil
   fileprivate var _max: UInt32? = nil
@@ -277,10 +277,10 @@ struct Common_Uint32RangeWithOptionalMaxUpdateRequestInput: Sendable {
 fileprivate let _protobuf_package = "common"
 
 extension Common_NamedID: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NamedID"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ID\0\u{1}Name\0")
+  public static let protoMessageName: String = _protobuf_package + ".NamedID"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ID\0\u{1}Name\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -293,7 +293,7 @@ extension Common_NamedID: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
     }
@@ -303,7 +303,7 @@ extension Common_NamedID: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_NamedID, rhs: Common_NamedID) -> Bool {
+  public static func ==(lhs: Common_NamedID, rhs: Common_NamedID) -> Bool {
     if lhs.id != rhs.id {return false}
     if lhs.name != rhs.name {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -312,10 +312,10 @@ extension Common_NamedID: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
 }
 
 extension Common_ResponseDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ResponseDetails"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentAccountID\0\u{1}TraceID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ResponseDetails"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentAccountID\0\u{1}TraceID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -328,7 +328,7 @@ extension Common_ResponseDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.currentAccountID.isEmpty {
       try visitor.visitSingularStringField(value: self.currentAccountID, fieldNumber: 1)
     }
@@ -338,7 +338,7 @@ extension Common_ResponseDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_ResponseDetails, rhs: Common_ResponseDetails) -> Bool {
+  public static func ==(lhs: Common_ResponseDetails, rhs: Common_ResponseDetails) -> Bool {
     if lhs.currentAccountID != rhs.currentAccountID {return false}
     if lhs.traceID != rhs.traceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -347,10 +347,10 @@ extension Common_ResponseDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 }
 
 extension Common_OptionalFloat32Range: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OptionalFloat32Range"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
+  public static let protoMessageName: String = _protobuf_package + ".OptionalFloat32Range"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -363,7 +363,7 @@ extension Common_OptionalFloat32Range: SwiftProtobuf.Message, SwiftProtobuf._Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -377,7 +377,7 @@ extension Common_OptionalFloat32Range: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_OptionalFloat32Range, rhs: Common_OptionalFloat32Range) -> Bool {
+  public static func ==(lhs: Common_OptionalFloat32Range, rhs: Common_OptionalFloat32Range) -> Bool {
     if lhs._max != rhs._max {return false}
     if lhs._min != rhs._min {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -386,10 +386,10 @@ extension Common_OptionalFloat32Range: SwiftProtobuf.Message, SwiftProtobuf._Mes
 }
 
 extension Common_OptionalUint32Range: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OptionalUint32Range"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
+  public static let protoMessageName: String = _protobuf_package + ".OptionalUint32Range"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -402,7 +402,7 @@ extension Common_OptionalUint32Range: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -416,7 +416,7 @@ extension Common_OptionalUint32Range: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_OptionalUint32Range, rhs: Common_OptionalUint32Range) -> Bool {
+  public static func ==(lhs: Common_OptionalUint32Range, rhs: Common_OptionalUint32Range) -> Bool {
     if lhs._max != rhs._max {return false}
     if lhs._min != rhs._min {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -425,10 +425,10 @@ extension Common_OptionalUint32Range: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Common_Float32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Float32RangeWithOptionalMax"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
+  public static let protoMessageName: String = _protobuf_package + ".Float32RangeWithOptionalMax"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -441,7 +441,7 @@ extension Common_Float32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -455,7 +455,7 @@ extension Common_Float32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Float32RangeWithOptionalMax, rhs: Common_Float32RangeWithOptionalMax) -> Bool {
+  public static func ==(lhs: Common_Float32RangeWithOptionalMax, rhs: Common_Float32RangeWithOptionalMax) -> Bool {
     if lhs._max != rhs._max {return false}
     if lhs.min != rhs.min {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -464,10 +464,10 @@ extension Common_Float32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Common_Float32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Float32RangeWithOptionalMaxUpdateRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
+  public static let protoMessageName: String = _protobuf_package + ".Float32RangeWithOptionalMaxUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -480,7 +480,7 @@ extension Common_Float32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Me
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -494,7 +494,7 @@ extension Common_Float32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Me
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Float32RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Float32RangeWithOptionalMaxUpdateRequestInput) -> Bool {
+  public static func ==(lhs: Common_Float32RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Float32RangeWithOptionalMaxUpdateRequestInput) -> Bool {
     if lhs._min != rhs._min {return false}
     if lhs._max != rhs._max {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -503,10 +503,10 @@ extension Common_Float32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Me
 }
 
 extension Common_Uint16RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Uint16RangeWithOptionalMax"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
+  public static let protoMessageName: String = _protobuf_package + ".Uint16RangeWithOptionalMax"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -519,7 +519,7 @@ extension Common_Uint16RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -533,7 +533,7 @@ extension Common_Uint16RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Uint16RangeWithOptionalMax, rhs: Common_Uint16RangeWithOptionalMax) -> Bool {
+  public static func ==(lhs: Common_Uint16RangeWithOptionalMax, rhs: Common_Uint16RangeWithOptionalMax) -> Bool {
     if lhs._max != rhs._max {return false}
     if lhs.min != rhs.min {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -542,10 +542,10 @@ extension Common_Uint16RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Common_Uint16RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Uint16RangeWithOptionalMaxUpdateRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
+  public static let protoMessageName: String = _protobuf_package + ".Uint16RangeWithOptionalMaxUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -558,7 +558,7 @@ extension Common_Uint16RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -572,7 +572,7 @@ extension Common_Uint16RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Uint16RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Uint16RangeWithOptionalMaxUpdateRequestInput) -> Bool {
+  public static func ==(lhs: Common_Uint16RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Uint16RangeWithOptionalMaxUpdateRequestInput) -> Bool {
     if lhs._min != rhs._min {return false}
     if lhs._max != rhs._max {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -581,10 +581,10 @@ extension Common_Uint16RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Mes
 }
 
 extension Common_Uint32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Uint32RangeWithOptionalMax"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
+  public static let protoMessageName: String = _protobuf_package + ".Uint32RangeWithOptionalMax"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Max\0\u{1}Min\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -597,7 +597,7 @@ extension Common_Uint32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -611,7 +611,7 @@ extension Common_Uint32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Uint32RangeWithOptionalMax, rhs: Common_Uint32RangeWithOptionalMax) -> Bool {
+  public static func ==(lhs: Common_Uint32RangeWithOptionalMax, rhs: Common_Uint32RangeWithOptionalMax) -> Bool {
     if lhs._max != rhs._max {return false}
     if lhs.min != rhs.min {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -620,10 +620,10 @@ extension Common_Uint32RangeWithOptionalMax: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Common_Uint32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Uint32RangeWithOptionalMaxUpdateRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
+  public static let protoMessageName: String = _protobuf_package + ".Uint32RangeWithOptionalMaxUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Min\0\u{1}Max\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -636,7 +636,7 @@ extension Common_Uint32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -650,7 +650,7 @@ extension Common_Uint32RangeWithOptionalMaxUpdateRequestInput: SwiftProtobuf.Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Common_Uint32RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Uint32RangeWithOptionalMaxUpdateRequestInput) -> Bool {
+  public static func ==(lhs: Common_Uint32RangeWithOptionalMaxUpdateRequestInput, rhs: Common_Uint32RangeWithOptionalMaxUpdateRequestInput) -> Bool {
     if lhs._min != rhs._min {return false}
     if lhs._max != rhs._max {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

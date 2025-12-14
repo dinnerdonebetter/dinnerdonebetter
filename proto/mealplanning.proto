@@ -1557,7 +1557,7 @@ message Recipe {
   repeated RecipePrepTask PrepTasks = 15;
   repeated RecipeStep Steps = 16;
   repeated RecipeMedia Media = 17;
-  bool SealOfApproval = 19;
+  string Status = 19;
   bool EligibleForMeals = 20;
 }
 
@@ -1574,9 +1574,8 @@ message RecipeCreationRequestInput {
   repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
   repeated RecipeStepCreationRequestInput Steps = 11;
   bool AlsoCreateMeal = 12;
-  bool SealOfApproval = 13;
-  bool EligibleForMeals = 14;
-  repeated RecipeMediaCreationRequestInput Media = 15;
+  bool EligibleForMeals = 13;
+  repeated RecipeMediaCreationRequestInput Media = 14;
 }
 
 message RecipeMedia {
@@ -2021,7 +2020,6 @@ message RecipeUpdateRequestInput {
   optional string Source = 3;
   optional string Description = 4;
   optional string InspiredByRecipeID = 5;
-  optional bool SealOfApproval = 6;
   optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
   optional string PortionName = 8;
   optional string PluralPortionName = 9;

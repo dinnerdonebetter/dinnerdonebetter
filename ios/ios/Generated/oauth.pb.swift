@@ -21,378 +21,378 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// CreateOAuth2Client
-struct Oauth_CreateOAuth2ClientRequest: Sendable {
+public struct Oauth_CreateOAuth2ClientRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var input: Oauth_OAuth2ClientCreationRequestInput {
+  public var input: Oauth_OAuth2ClientCreationRequestInput {
     get {return _input ?? Oauth_OAuth2ClientCreationRequestInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Oauth_OAuth2ClientCreationRequestInput? = nil
 }
 
-struct Oauth_CreateOAuth2ClientResponse: Sendable {
+public struct Oauth_CreateOAuth2ClientResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var created: Oauth_OAuth2Client {
+  public var created: Oauth_OAuth2Client {
     get {return _created ?? Oauth_OAuth2Client()}
     set {_created = newValue}
   }
   /// Returns true if `created` has been explicitly set.
-  var hasCreated: Bool {return self._created != nil}
+  public var hasCreated: Bool {return self._created != nil}
   /// Clears the value of `created`. Subsequent reads from it will return its default value.
-  mutating func clearCreated() {self._created = nil}
+  public mutating func clearCreated() {self._created = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _created: Oauth_OAuth2Client? = nil
 }
 
 /// ArchiveOAuth2Client
-struct Oauth_ArchiveOAuth2ClientRequest: Sendable {
+public struct Oauth_ArchiveOAuth2ClientRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var oauth2ClientID: String = String()
+  public var oauth2ClientID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Oauth_ArchiveOAuth2ClientResponse: Sendable {
+public struct Oauth_ArchiveOAuth2ClientResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// GetOAuth2Client
-struct Oauth_GetOAuth2ClientRequest: Sendable {
+public struct Oauth_GetOAuth2ClientRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var oauth2ClientID: String = String()
+  public var oauth2ClientID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Oauth_GetOAuth2ClientResponse: Sendable {
+public struct Oauth_GetOAuth2ClientResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Oauth_OAuth2Client {
+  public var result: Oauth_OAuth2Client {
     get {return _result ?? Oauth_OAuth2Client()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Oauth_OAuth2Client? = nil
 }
 
 /// GetOAuth2Clients
-struct Oauth_GetOAuth2ClientsRequest: Sendable {
+public struct Oauth_GetOAuth2ClientsRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Oauth_GetOAuth2ClientsResponse: Sendable {
+public struct Oauth_GetOAuth2ClientsResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Oauth_OAuth2Client] = []
+  public var results: [Oauth_OAuth2Client] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
-struct Oauth_OAuth2Client: Sendable {
+public struct Oauth_OAuth2Client: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  var hasCreatedAt: Bool {return self._createdAt != nil}
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAt() {self._createdAt = nil}
+  public mutating func clearCreatedAt() {self._createdAt = nil}
 
-  var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_archivedAt = newValue}
   }
   /// Returns true if `archivedAt` has been explicitly set.
-  var hasArchivedAt: Bool {return self._archivedAt != nil}
+  public var hasArchivedAt: Bool {return self._archivedAt != nil}
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
-  mutating func clearArchivedAt() {self._archivedAt = nil}
+  public mutating func clearArchivedAt() {self._archivedAt = nil}
 
-  var name: String = String()
+  public var name: String = String()
 
-  var description_p: String = String()
+  public var description_p: String = String()
 
-  var clientID: String = String()
+  public var clientID: String = String()
 
-  var id: String = String()
+  public var id: String = String()
 
-  var clientSecret: String = String()
+  public var clientSecret: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct Oauth_OAuth2ClientCreationRequestInput: Sendable {
+public struct Oauth_OAuth2ClientCreationRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var name: String = String()
+  public var name: String = String()
 
-  var description_p: String = String()
+  public var description_p: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Oauth_OAuth2ClientCreationResponse: Sendable {
+public struct Oauth_OAuth2ClientCreationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var clientID: String = String()
+  public var clientID: String = String()
 
-  var clientSecret: String = String()
+  public var clientSecret: String = String()
 
-  var name: String = String()
+  public var name: String = String()
 
-  var description_p: String = String()
+  public var description_p: String = String()
 
-  var id: String = String()
+  public var id: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Oauth_OAuth2ClientToken: @unchecked Sendable {
+public struct Oauth_OAuth2ClientToken: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var refreshCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var refreshCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._refreshCreatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._refreshCreatedAt = newValue}
   }
   /// Returns true if `refreshCreatedAt` has been explicitly set.
-  var hasRefreshCreatedAt: Bool {return _storage._refreshCreatedAt != nil}
+  public var hasRefreshCreatedAt: Bool {return _storage._refreshCreatedAt != nil}
   /// Clears the value of `refreshCreatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearRefreshCreatedAt() {_uniqueStorage()._refreshCreatedAt = nil}
+  public mutating func clearRefreshCreatedAt() {_uniqueStorage()._refreshCreatedAt = nil}
 
-  var accessCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var accessCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._accessCreatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._accessCreatedAt = newValue}
   }
   /// Returns true if `accessCreatedAt` has been explicitly set.
-  var hasAccessCreatedAt: Bool {return _storage._accessCreatedAt != nil}
+  public var hasAccessCreatedAt: Bool {return _storage._accessCreatedAt != nil}
   /// Clears the value of `accessCreatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearAccessCreatedAt() {_uniqueStorage()._accessCreatedAt = nil}
+  public mutating func clearAccessCreatedAt() {_uniqueStorage()._accessCreatedAt = nil}
 
-  var codeCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var codeCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._codeCreatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._codeCreatedAt = newValue}
   }
   /// Returns true if `codeCreatedAt` has been explicitly set.
-  var hasCodeCreatedAt: Bool {return _storage._codeCreatedAt != nil}
+  public var hasCodeCreatedAt: Bool {return _storage._codeCreatedAt != nil}
   /// Clears the value of `codeCreatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearCodeCreatedAt() {_uniqueStorage()._codeCreatedAt = nil}
+  public mutating func clearCodeCreatedAt() {_uniqueStorage()._codeCreatedAt = nil}
 
-  var redirectUri: String {
+  public var redirectUri: String {
     get {return _storage._redirectUri}
     set {_uniqueStorage()._redirectUri = newValue}
   }
 
-  var scope: String {
+  public var scope: String {
     get {return _storage._scope}
     set {_uniqueStorage()._scope = newValue}
   }
 
-  var code: String {
+  public var code: String {
     get {return _storage._code}
     set {_uniqueStorage()._code = newValue}
   }
 
-  var codeChallenge: String {
+  public var codeChallenge: String {
     get {return _storage._codeChallenge}
     set {_uniqueStorage()._codeChallenge = newValue}
   }
 
-  var codeChallengeMethod: String {
+  public var codeChallengeMethod: String {
     get {return _storage._codeChallengeMethod}
     set {_uniqueStorage()._codeChallengeMethod = newValue}
   }
 
-  var belongsToUser: String {
+  public var belongsToUser: String {
     get {return _storage._belongsToUser}
     set {_uniqueStorage()._belongsToUser = newValue}
   }
 
-  var access: String {
+  public var access: String {
     get {return _storage._access}
     set {_uniqueStorage()._access = newValue}
   }
 
-  var clientID: String {
+  public var clientID: String {
     get {return _storage._clientID}
     set {_uniqueStorage()._clientID = newValue}
   }
 
-  var refresh: String {
+  public var refresh: String {
     get {return _storage._refresh}
     set {_uniqueStorage()._refresh = newValue}
   }
 
-  var id: String {
+  public var id: String {
     get {return _storage._id}
     set {_uniqueStorage()._id = newValue}
   }
 
-  var codeExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
+  public var codeExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
     get {return _storage._codeExpiresAt ?? SwiftProtobuf.Google_Protobuf_Duration()}
     set {_uniqueStorage()._codeExpiresAt = newValue}
   }
   /// Returns true if `codeExpiresAt` has been explicitly set.
-  var hasCodeExpiresAt: Bool {return _storage._codeExpiresAt != nil}
+  public var hasCodeExpiresAt: Bool {return _storage._codeExpiresAt != nil}
   /// Clears the value of `codeExpiresAt`. Subsequent reads from it will return its default value.
-  mutating func clearCodeExpiresAt() {_uniqueStorage()._codeExpiresAt = nil}
+  public mutating func clearCodeExpiresAt() {_uniqueStorage()._codeExpiresAt = nil}
 
-  var accessExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
+  public var accessExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
     get {return _storage._accessExpiresAt ?? SwiftProtobuf.Google_Protobuf_Duration()}
     set {_uniqueStorage()._accessExpiresAt = newValue}
   }
   /// Returns true if `accessExpiresAt` has been explicitly set.
-  var hasAccessExpiresAt: Bool {return _storage._accessExpiresAt != nil}
+  public var hasAccessExpiresAt: Bool {return _storage._accessExpiresAt != nil}
   /// Clears the value of `accessExpiresAt`. Subsequent reads from it will return its default value.
-  mutating func clearAccessExpiresAt() {_uniqueStorage()._accessExpiresAt = nil}
+  public mutating func clearAccessExpiresAt() {_uniqueStorage()._accessExpiresAt = nil}
 
-  var refreshExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
+  public var refreshExpiresAt: SwiftProtobuf.Google_Protobuf_Duration {
     get {return _storage._refreshExpiresAt ?? SwiftProtobuf.Google_Protobuf_Duration()}
     set {_uniqueStorage()._refreshExpiresAt = newValue}
   }
   /// Returns true if `refreshExpiresAt` has been explicitly set.
-  var hasRefreshExpiresAt: Bool {return _storage._refreshExpiresAt != nil}
+  public var hasRefreshExpiresAt: Bool {return _storage._refreshExpiresAt != nil}
   /// Clears the value of `refreshExpiresAt`. Subsequent reads from it will return its default value.
-  mutating func clearRefreshExpiresAt() {_uniqueStorage()._refreshExpiresAt = nil}
+  public mutating func clearRefreshExpiresAt() {_uniqueStorage()._refreshExpiresAt = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
@@ -402,10 +402,10 @@ struct Oauth_OAuth2ClientToken: @unchecked Sendable {
 fileprivate let _protobuf_package = "oauth"
 
 extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -417,7 +417,7 @@ extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -428,7 +428,7 @@ extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_CreateOAuth2ClientRequest, rhs: Oauth_CreateOAuth2ClientRequest) -> Bool {
+  public static func ==(lhs: Oauth_CreateOAuth2ClientRequest, rhs: Oauth_CreateOAuth2ClientRequest) -> Bool {
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -436,10 +436,10 @@ extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -452,7 +452,7 @@ extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -466,7 +466,7 @@ extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_CreateOAuth2ClientResponse, rhs: Oauth_CreateOAuth2ClientResponse) -> Bool {
+  public static func ==(lhs: Oauth_CreateOAuth2ClientResponse, rhs: Oauth_CreateOAuth2ClientResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._created != rhs._created {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -475,10 +475,10 @@ extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf
 }
 
 extension Oauth_ArchiveOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -490,14 +490,14 @@ extension Oauth_ArchiveOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.oauth2ClientID.isEmpty {
       try visitor.visitSingularStringField(value: self.oauth2ClientID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_ArchiveOAuth2ClientRequest, rhs: Oauth_ArchiveOAuth2ClientRequest) -> Bool {
+  public static func ==(lhs: Oauth_ArchiveOAuth2ClientRequest, rhs: Oauth_ArchiveOAuth2ClientRequest) -> Bool {
     if lhs.oauth2ClientID != rhs.oauth2ClientID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -505,10 +505,10 @@ extension Oauth_ArchiveOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf
 }
 
 extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -520,7 +520,7 @@ extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -531,7 +531,7 @@ extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_ArchiveOAuth2ClientResponse, rhs: Oauth_ArchiveOAuth2ClientResponse) -> Bool {
+  public static func ==(lhs: Oauth_ArchiveOAuth2ClientResponse, rhs: Oauth_ArchiveOAuth2ClientResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -539,10 +539,10 @@ extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Oauth_GetOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -554,14 +554,14 @@ extension Oauth_GetOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.oauth2ClientID.isEmpty {
       try visitor.visitSingularStringField(value: self.oauth2ClientID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_GetOAuth2ClientRequest, rhs: Oauth_GetOAuth2ClientRequest) -> Bool {
+  public static func ==(lhs: Oauth_GetOAuth2ClientRequest, rhs: Oauth_GetOAuth2ClientRequest) -> Bool {
     if lhs.oauth2ClientID != rhs.oauth2ClientID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -569,10 +569,10 @@ extension Oauth_GetOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 }
 
 extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -585,7 +585,7 @@ extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -599,7 +599,7 @@ extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_GetOAuth2ClientResponse, rhs: Oauth_GetOAuth2ClientResponse) -> Bool {
+  public static func ==(lhs: Oauth_GetOAuth2ClientResponse, rhs: Oauth_GetOAuth2ClientResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -608,10 +608,10 @@ extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -623,7 +623,7 @@ extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -634,7 +634,7 @@ extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_GetOAuth2ClientsRequest, rhs: Oauth_GetOAuth2ClientsRequest) -> Bool {
+  public static func ==(lhs: Oauth_GetOAuth2ClientsRequest, rhs: Oauth_GetOAuth2ClientsRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -642,10 +642,10 @@ extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -659,7 +659,7 @@ extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -676,7 +676,7 @@ extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_GetOAuth2ClientsResponse, rhs: Oauth_GetOAuth2ClientsResponse) -> Bool {
+  public static func ==(lhs: Oauth_GetOAuth2ClientsResponse, rhs: Oauth_GetOAuth2ClientsResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -686,10 +686,10 @@ extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OAuth2Client"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}Name\0\u{1}Description\0\u{1}ClientID\0\u{1}ID\0\u{1}ClientSecret\0")
+  public static let protoMessageName: String = _protobuf_package + ".OAuth2Client"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}Name\0\u{1}Description\0\u{1}ClientID\0\u{1}ID\0\u{1}ClientSecret\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -707,7 +707,7 @@ extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -736,7 +736,7 @@ extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_OAuth2Client, rhs: Oauth_OAuth2Client) -> Bool {
+  public static func ==(lhs: Oauth_OAuth2Client, rhs: Oauth_OAuth2Client) -> Bool {
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._archivedAt != rhs._archivedAt {return false}
     if lhs.name != rhs.name {return false}
@@ -750,10 +750,10 @@ extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 }
 
 extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0")
+  public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -766,7 +766,7 @@ extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
     }
@@ -776,7 +776,7 @@ extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_OAuth2ClientCreationRequestInput, rhs: Oauth_OAuth2ClientCreationRequestInput) -> Bool {
+  public static func ==(lhs: Oauth_OAuth2ClientCreationRequestInput, rhs: Oauth_OAuth2ClientCreationRequestInput) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.description_p != rhs.description_p {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -785,10 +785,10 @@ extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftPr
 }
 
 extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ClientID\0\u{1}ClientSecret\0\u{1}Name\0\u{1}Description\0\u{1}ID\0")
+  public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ClientID\0\u{1}ClientSecret\0\u{1}Name\0\u{1}Description\0\u{1}ID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -804,7 +804,7 @@ extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.clientID.isEmpty {
       try visitor.visitSingularStringField(value: self.clientID, fieldNumber: 1)
     }
@@ -823,7 +823,7 @@ extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_OAuth2ClientCreationResponse, rhs: Oauth_OAuth2ClientCreationResponse) -> Bool {
+  public static func ==(lhs: Oauth_OAuth2ClientCreationResponse, rhs: Oauth_OAuth2ClientCreationResponse) -> Bool {
     if lhs.clientID != rhs.clientID {return false}
     if lhs.clientSecret != rhs.clientSecret {return false}
     if lhs.name != rhs.name {return false}
@@ -835,8 +835,8 @@ extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Oauth_OAuth2ClientToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OAuth2ClientToken"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshCreatedAt\0\u{1}AccessCreatedAt\0\u{1}CodeCreatedAt\0\u{1}RedirectURI\0\u{1}Scope\0\u{1}Code\0\u{1}CodeChallenge\0\u{1}CodeChallengeMethod\0\u{1}BelongsToUser\0\u{1}Access\0\u{1}ClientID\0\u{1}Refresh\0\u{1}ID\0\u{1}CodeExpiresAt\0\u{1}AccessExpiresAt\0\u{1}RefreshExpiresAt\0")
+  public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientToken"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshCreatedAt\0\u{1}AccessCreatedAt\0\u{1}CodeCreatedAt\0\u{1}RedirectURI\0\u{1}Scope\0\u{1}Code\0\u{1}CodeChallenge\0\u{1}CodeChallengeMethod\0\u{1}BelongsToUser\0\u{1}Access\0\u{1}ClientID\0\u{1}Refresh\0\u{1}ID\0\u{1}CodeExpiresAt\0\u{1}AccessExpiresAt\0\u{1}RefreshExpiresAt\0")
 
   fileprivate class _StorageClass {
     var _refreshCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -891,7 +891,7 @@ extension Oauth_OAuth2ClientToken: SwiftProtobuf.Message, SwiftProtobuf._Message
     return _storage
   }
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
@@ -921,7 +921,7 @@ extension Oauth_OAuth2ClientToken: SwiftProtobuf.Message, SwiftProtobuf._Message
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every if/case branch local when no optimizations
@@ -979,7 +979,7 @@ extension Oauth_OAuth2ClientToken: SwiftProtobuf.Message, SwiftProtobuf._Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Oauth_OAuth2ClientToken, rhs: Oauth_OAuth2ClientToken) -> Bool {
+  public static func ==(lhs: Oauth_OAuth2ClientToken, rhs: Oauth_OAuth2ClientToken) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0

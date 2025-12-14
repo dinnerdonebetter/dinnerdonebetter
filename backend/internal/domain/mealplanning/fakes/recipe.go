@@ -41,7 +41,7 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 		CreatedByUser:      BuildFakeID(),
 		Steps:              steps,
 		PrepTasks:          prepTasks,
-		SealOfApproval:     false,
+		Status:             mealplanning.RecipeStatusSubmitted,
 		Media:              recipeMedia,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
 			Max: pointer.To(float32(buildFakeNumber())),

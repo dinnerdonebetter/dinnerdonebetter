@@ -20,86 +20,86 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Filtering_QueryFilter: Sendable {
+public struct Filtering_QueryFilter: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var sortBy: String {
+  public var sortBy: String {
     get {return _sortBy ?? String()}
     set {_sortBy = newValue}
   }
   /// Returns true if `sortBy` has been explicitly set.
-  var hasSortBy: Bool {return self._sortBy != nil}
+  public var hasSortBy: Bool {return self._sortBy != nil}
   /// Clears the value of `sortBy`. Subsequent reads from it will return its default value.
-  mutating func clearSortBy() {self._sortBy = nil}
+  public mutating func clearSortBy() {self._sortBy = nil}
 
-  var createdAfter: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAfter: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdAfter ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdAfter = newValue}
   }
   /// Returns true if `createdAfter` has been explicitly set.
-  var hasCreatedAfter: Bool {return self._createdAfter != nil}
+  public var hasCreatedAfter: Bool {return self._createdAfter != nil}
   /// Clears the value of `createdAfter`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAfter() {self._createdAfter = nil}
+  public mutating func clearCreatedAfter() {self._createdAfter = nil}
 
-  var createdBefore: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdBefore: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdBefore ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdBefore = newValue}
   }
   /// Returns true if `createdBefore` has been explicitly set.
-  var hasCreatedBefore: Bool {return self._createdBefore != nil}
+  public var hasCreatedBefore: Bool {return self._createdBefore != nil}
   /// Clears the value of `createdBefore`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedBefore() {self._createdBefore = nil}
+  public mutating func clearCreatedBefore() {self._createdBefore = nil}
 
-  var updatedAfter: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var updatedAfter: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _updatedAfter ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_updatedAfter = newValue}
   }
   /// Returns true if `updatedAfter` has been explicitly set.
-  var hasUpdatedAfter: Bool {return self._updatedAfter != nil}
+  public var hasUpdatedAfter: Bool {return self._updatedAfter != nil}
   /// Clears the value of `updatedAfter`. Subsequent reads from it will return its default value.
-  mutating func clearUpdatedAfter() {self._updatedAfter = nil}
+  public mutating func clearUpdatedAfter() {self._updatedAfter = nil}
 
-  var updatedBefore: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var updatedBefore: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _updatedBefore ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_updatedBefore = newValue}
   }
   /// Returns true if `updatedBefore` has been explicitly set.
-  var hasUpdatedBefore: Bool {return self._updatedBefore != nil}
+  public var hasUpdatedBefore: Bool {return self._updatedBefore != nil}
   /// Clears the value of `updatedBefore`. Subsequent reads from it will return its default value.
-  mutating func clearUpdatedBefore() {self._updatedBefore = nil}
+  public mutating func clearUpdatedBefore() {self._updatedBefore = nil}
 
-  var maxResponseSize: UInt32 {
+  public var maxResponseSize: UInt32 {
     get {return _maxResponseSize ?? 0}
     set {_maxResponseSize = newValue}
   }
   /// Returns true if `maxResponseSize` has been explicitly set.
-  var hasMaxResponseSize: Bool {return self._maxResponseSize != nil}
+  public var hasMaxResponseSize: Bool {return self._maxResponseSize != nil}
   /// Clears the value of `maxResponseSize`. Subsequent reads from it will return its default value.
-  mutating func clearMaxResponseSize() {self._maxResponseSize = nil}
+  public mutating func clearMaxResponseSize() {self._maxResponseSize = nil}
 
-  var includeArchived: Bool {
+  public var includeArchived: Bool {
     get {return _includeArchived ?? false}
     set {_includeArchived = newValue}
   }
   /// Returns true if `includeArchived` has been explicitly set.
-  var hasIncludeArchived: Bool {return self._includeArchived != nil}
+  public var hasIncludeArchived: Bool {return self._includeArchived != nil}
   /// Clears the value of `includeArchived`. Subsequent reads from it will return its default value.
-  mutating func clearIncludeArchived() {self._includeArchived = nil}
+  public mutating func clearIncludeArchived() {self._includeArchived = nil}
 
-  var cursor: String {
+  public var cursor: String {
     get {return _cursor ?? String()}
     set {_cursor = newValue}
   }
   /// Returns true if `cursor` has been explicitly set.
-  var hasCursor: Bool {return self._cursor != nil}
+  public var hasCursor: Bool {return self._cursor != nil}
   /// Clears the value of `cursor`. Subsequent reads from it will return its default value.
-  mutating func clearCursor() {self._cursor = nil}
+  public mutating func clearCursor() {self._cursor = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _sortBy: String? = nil
   fileprivate var _createdAfter: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -111,48 +111,48 @@ struct Filtering_QueryFilter: Sendable {
   fileprivate var _cursor: String? = nil
 }
 
-struct Filtering_Pagination: @unchecked Sendable {
+public struct Filtering_Pagination: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var maxResponseSize: UInt32 {
+  public var maxResponseSize: UInt32 {
     get {return _storage._maxResponseSize}
     set {_uniqueStorage()._maxResponseSize = newValue}
   }
 
-  var filteredCount: UInt64 {
+  public var filteredCount: UInt64 {
     get {return _storage._filteredCount}
     set {_uniqueStorage()._filteredCount = newValue}
   }
 
-  var totalCount: UInt64 {
+  public var totalCount: UInt64 {
     get {return _storage._totalCount}
     set {_uniqueStorage()._totalCount = newValue}
   }
 
-  var cursor: String {
+  public var cursor: String {
     get {return _storage._cursor}
     set {_uniqueStorage()._cursor = newValue}
   }
 
-  var previousCursor: String {
+  public var previousCursor: String {
     get {return _storage._previousCursor}
     set {_uniqueStorage()._previousCursor = newValue}
   }
 
-  var appliedQueryFilter: Filtering_QueryFilter {
+  public var appliedQueryFilter: Filtering_QueryFilter {
     get {return _storage._appliedQueryFilter ?? Filtering_QueryFilter()}
     set {_uniqueStorage()._appliedQueryFilter = newValue}
   }
   /// Returns true if `appliedQueryFilter` has been explicitly set.
-  var hasAppliedQueryFilter: Bool {return _storage._appliedQueryFilter != nil}
+  public var hasAppliedQueryFilter: Bool {return _storage._appliedQueryFilter != nil}
   /// Clears the value of `appliedQueryFilter`. Subsequent reads from it will return its default value.
-  mutating func clearAppliedQueryFilter() {_uniqueStorage()._appliedQueryFilter = nil}
+  public mutating func clearAppliedQueryFilter() {_uniqueStorage()._appliedQueryFilter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
@@ -162,10 +162,10 @@ struct Filtering_Pagination: @unchecked Sendable {
 fileprivate let _protobuf_package = "filtering"
 
 extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".QueryFilter"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SortBy\0\u{2}\u{2}CreatedAfter\0\u{1}CreatedBefore\0\u{1}UpdatedAfter\0\u{1}UpdatedBefore\0\u{1}MaxResponseSize\0\u{1}IncludeArchived\0\u{1}Cursor\0")
+  public static let protoMessageName: String = _protobuf_package + ".QueryFilter"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SortBy\0\u{2}\u{2}CreatedAfter\0\u{1}CreatedBefore\0\u{1}UpdatedAfter\0\u{1}UpdatedBefore\0\u{1}MaxResponseSize\0\u{1}IncludeArchived\0\u{1}Cursor\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -184,7 +184,7 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -216,7 +216,7 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Filtering_QueryFilter, rhs: Filtering_QueryFilter) -> Bool {
+  public static func ==(lhs: Filtering_QueryFilter, rhs: Filtering_QueryFilter) -> Bool {
     if lhs._sortBy != rhs._sortBy {return false}
     if lhs._createdAfter != rhs._createdAfter {return false}
     if lhs._createdBefore != rhs._createdBefore {return false}
@@ -231,8 +231,8 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 }
 
 extension Filtering_Pagination: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Pagination"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MaxResponseSize\0\u{1}FilteredCount\0\u{1}TotalCount\0\u{1}Cursor\0\u{1}PreviousCursor\0\u{1}AppliedQueryFilter\0")
+  public static let protoMessageName: String = _protobuf_package + ".Pagination"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MaxResponseSize\0\u{1}FilteredCount\0\u{1}TotalCount\0\u{1}Cursor\0\u{1}PreviousCursor\0\u{1}AppliedQueryFilter\0")
 
   fileprivate class _StorageClass {
     var _maxResponseSize: UInt32 = 0
@@ -267,7 +267,7 @@ extension Filtering_Pagination: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     return _storage
   }
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
@@ -287,7 +287,7 @@ extension Filtering_Pagination: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every if/case branch local when no optimizations
@@ -315,7 +315,7 @@ extension Filtering_Pagination: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Filtering_Pagination, rhs: Filtering_Pagination) -> Bool {
+  public static func ==(lhs: Filtering_Pagination, rhs: Filtering_Pagination) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0

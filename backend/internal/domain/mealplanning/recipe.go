@@ -23,6 +23,10 @@ const (
 	RecipeArchivedServiceEventType = "recipe_archived"
 	// RecipeClonedServiceEventType indicates a recipe was cloned.
 	RecipeClonedServiceEventType = "recipe_cloned"
+
+	RecipeStatusSubmitted     = "submitted"
+	RecipeStatusApproved      = "approved"
+	RecipeStatusNeedsRevision = "needs_revision"
 )
 
 func init() {
@@ -34,25 +38,25 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{} `json:"-"`
-
+		_                   struct{}                          `json:"-"`
 		CreatedAt           time.Time                         `json:"createdAt"`
 		InspiredByRecipeID  *string                           `json:"inspiredByRecipeID"`
 		LastUpdatedAt       *time.Time                        `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time                        `json:"archivedAt"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
-		PluralPortionName   string                            `json:"pluralPortionName"`
+		ID                  string                            `json:"id"`
+		Source              string                            `json:"source"`
 		Description         string                            `json:"description"`
 		Name                string                            `json:"name"`
 		PortionName         string                            `json:"portionName"`
-		ID                  string                            `json:"id"`
+		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
 		CreatedByUser       string                            `json:"createdByUser"`
-		Source              string                            `json:"source"`
+		PluralPortionName   string                            `json:"pluralPortionName"`
 		Slug                string                            `json:"slug"`
 		YieldsComponentType string                            `json:"yieldsComponentType"`
-		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
+		Status              string                            `json:"status"`
 		Steps               []*RecipeStep                     `json:"steps"`
 		Media               []*RecipeMedia                    `json:"media"`
+		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
 		SealOfApproval      bool                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                              `json:"eligibleForMeals"`
 	}
@@ -74,7 +78,6 @@ type (
 		Steps               []*RecipeStepCreationRequestInput                 `json:"steps"`
 		Media               []*RecipeMediaCreationRequestInput                `json:"media"`
 		AlsoCreateMeal      bool                                              `json:"alsoCreateMeal"`
-		SealOfApproval      bool                                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                                              `json:"eligibleForMeals"`
 	}
 
@@ -97,7 +100,6 @@ type (
 		Steps               []*RecipeStepDatabaseCreationInput     `json:"-"`
 		Media               []*RecipeMediaDatabaseCreationInput    `json:"-"`
 		AlsoCreateMeal      bool                                   `json:"-"`
-		SealOfApproval      bool                                   `json:"-"`
 		EligibleForMeals    bool                                   `json:"-"`
 	}
 
@@ -110,7 +112,6 @@ type (
 		Source              *string                                             `json:"source,omitempty"`
 		Description         *string                                             `json:"description,omitempty"`
 		InspiredByRecipeID  *string                                             `json:"inspiredByRecipeID,omitempty"`
-		SealOfApproval      *bool                                               `json:"sealOfApproval,omitempty"`
 		EstimatedPortions   types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
 		PortionName         *string                                             `json:"portionName"`
 		PluralPortionName   *string                                             `json:"pluralPortionName"`
@@ -220,10 +221,6 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 
 	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != "" && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {
 		x.InspiredByRecipeID = input.InspiredByRecipeID
-	}
-
-	if input.SealOfApproval != nil && *input.SealOfApproval != x.SealOfApproval {
-		x.SealOfApproval = *input.SealOfApproval
 	}
 
 	if input.EstimatedPortions.Min != nil && *input.EstimatedPortions.Min != x.EstimatedPortions.Min {

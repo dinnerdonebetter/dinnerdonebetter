@@ -94,6 +94,12 @@ CREATE TYPE vessel_shape AS ENUM (
     'other'
 );
 
+CREATE TYPE recipe_status AS ENUM (
+    'submitted',
+    'approved',
+    'needs revision'
+);
+
 -- =============================================================================
 -- VALID ENTITY TABLES
 -- =============================================================================
@@ -361,18 +367,20 @@ CREATE TABLE IF NOT EXISTS account_instrument_ownerships (
 -- RECIPE TABLES
 -- =============================================================================
 
+
+
 CREATE TABLE IF NOT EXISTS recipes (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     source TEXT NOT NULL,
     description TEXT NOT NULL,
+    status recipe_status NOT NULL DEFAULT 'submitted',
     inspired_by_recipe_id TEXT REFERENCES recipes("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
     created_by_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
     min_estimated_portions NUMERIC(14,2) DEFAULT 1 NOT NULL,
-    seal_of_approval BOOLEAN DEFAULT FALSE NOT NULL,
     slug TEXT DEFAULT ''::TEXT NOT NULL,
     portion_name TEXT DEFAULT 'portion'::TEXT NOT NULL,
     plural_portion_name TEXT DEFAULT 'portions'::TEXT NOT NULL,
@@ -777,7 +785,6 @@ CREATE INDEX idx_recipes_created_by_user ON recipes (created_by_user) WHERE arch
 CREATE INDEX idx_recipes_name ON recipes (name) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipes_slug ON recipes (slug) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipes_inspired_by ON recipes (inspired_by_recipe_id) WHERE archived_at IS NULL;
-CREATE INDEX idx_recipes_seal_approval ON recipes (seal_of_approval) WHERE archived_at IS NULL AND seal_of_approval = TRUE;
 CREATE INDEX idx_recipes_eligible_meals ON recipes (eligible_for_meals) WHERE archived_at IS NULL AND eligible_for_meals = TRUE;
 CREATE INDEX idx_recipes_component_type ON recipes (yields_component_type) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipes_indexing ON recipes (last_indexed_at) WHERE archived_at IS NULL;

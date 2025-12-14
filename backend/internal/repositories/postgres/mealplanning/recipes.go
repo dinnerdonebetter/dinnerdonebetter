@@ -75,7 +75,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 				},
-				SealOfApproval:   result.SealOfApproval,
+				Status:           string(result.Status),
 				EligibleForMeals: result.EligibleForMeals,
 			}
 		}
@@ -278,7 +278,7 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -354,7 +354,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -457,7 +457,7 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -505,7 +505,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		PluralPortionName:    input.PluralPortionName,
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
 		InspiredByRecipeID:   database.NullStringFromStringPointer(input.InspiredByRecipeID),
-		SealOfApproval:       input.SealOfApproval,
+		Status:               mealplanning.RecipeStatusSubmitted,
 		EligibleForMeals:     input.EligibleForMeals,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -524,7 +524,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
-		SealOfApproval:      input.SealOfApproval,
+		Status:              mealplanning.RecipeStatusSubmitted,
 		EligibleForMeals:    input.EligibleForMeals,
 		PortionName:         input.PortionName,
 		PluralPortionName:   input.PluralPortionName,
@@ -688,7 +688,7 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(updated.EstimatedPortions.Max),
 		PortionName:          updated.PortionName,
 		PluralPortionName:    updated.PluralPortionName,
-		SealOfApproval:       updated.SealOfApproval,
+		Status:               generated.RecipeStatus(updated.Status),
 		EligibleForMeals:     updated.EligibleForMeals,
 		YieldsComponentType:  generated.ComponentType(updated.YieldsComponentType),
 		CreatedByUser:        updated.CreatedByUser,
