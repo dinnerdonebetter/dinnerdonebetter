@@ -194,7 +194,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	}
 
 	// fetch as list
-	recipes, err := dbc.GetRecipes(ctx, nil)
+	recipes, err := dbc.GetRecipes(ctx, mealplanning.RecipeStatusSubmitted, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, recipes.Data)
 	assert.Equal(t, len(createdRecipes), len(recipes.Data))
@@ -637,7 +637,7 @@ func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
 			return createRecipeForTest(t, ctx, recipe, dbc, false)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-			return dbc.GetRecipes(ctx, filter)
+			return dbc.GetRecipes(ctx, mealplanning.RecipeStatusSubmitted, filter)
 		},
 		GetID: func(recipe *mealplanning.Recipe) string {
 			return recipe.ID

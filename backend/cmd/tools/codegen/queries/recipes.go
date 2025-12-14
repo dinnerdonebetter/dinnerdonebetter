@@ -13,6 +13,7 @@ const (
 	belongsToRecipeColumn = "belongs_to_recipe"
 	recipeIDColumn        = "recipe_id"
 	lastValidatedAtColumn = "last_validated_at"
+	statusColumn          = "status"
 )
 
 func init() {
@@ -25,7 +26,7 @@ var recipesColumns = []string{
 	slugColumn,
 	"source",
 	descriptionColumn,
-	"status",
+	statusColumn,
 	"inspired_by_recipe_id",
 	"min_estimated_portions",
 	"max_estimated_portions",
@@ -170,6 +171,7 @@ ORDER BY %s.%s;`,
 	%s
 FROM %s
 	WHERE %s.%s IS NULL
+	AND %s.%s = COALESCE(sqlc.narg(%s), 'approved')
 	%s
 %s;`,
 					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
@@ -179,6 +181,7 @@ FROM %s
 					buildTotalCountSelect(recipesTableName, true, []string{}),
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
+					recipesTableName, statusColumn, statusColumn,
 					buildFilterConditions(recipesTableName, true, false),
 					buildCursorLimitClause(recipesTableName),
 				)),
@@ -290,12 +293,29 @@ WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 					recipesTableName,
-					strings.Join(applyToEach(filterForUpdate(recipesColumns, lastValidatedAtColumn, createdByUserColumn), func(i int, s string) string {
+					strings.Join(applyToEach(filterForUpdate(recipesColumns, statusColumn, lastValidatedAtColumn, createdByUserColumn), func(i int, s string) string {
 						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 					}), ",\n\t"),
 					lastUpdatedAtColumn, currentTimeExpression,
 					archivedAtColumn,
 					createdByUserColumn, createdByUserColumn,
+					idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateRecipeStatus",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = sqlc.arg(%s),
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+					recipesTableName,
+					statusColumn, statusColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
 					idColumn, idColumn,
 				)),
 			},

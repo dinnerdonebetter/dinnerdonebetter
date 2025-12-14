@@ -1005,7 +1005,7 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, err := s.recipeManager.ListRecipes(ctx, filter)
+	recipes, err := s.recipeManager.ListRecipes(ctx, request.Status, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching list of recipes")
 	}
@@ -1072,6 +1072,33 @@ func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 	}
 
 	x := &mealplanning.UpdateRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeToGRPCRecipe(updated),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateRecipeStatus(ctx context.Context, request *mealplanning.UpdateRecipeStatusRequest) (*mealplanning.UpdateRecipeStatusResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeIDKey: request.RecipeID,
+	}, span, s.logger)
+
+	if err := s.recipeManager.UpdateRecipeStatus(ctx, request.RecipeID, request.NewStatus); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe")
+	}
+
+	updated, err := s.recipeManager.ReadRecipe(ctx, request.RecipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe")
+	}
+
+	x := &mealplanning.UpdateRecipeStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},

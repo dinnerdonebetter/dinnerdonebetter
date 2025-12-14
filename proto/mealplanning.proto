@@ -2461,6 +2461,7 @@ message GetRecipeStepsResponse {
 // GetRecipes
 message GetRecipesRequest {
   filtering.QueryFilter Filter = 1;
+  string status = 2;
 }
 
 message GetRecipesResponse {
@@ -2489,6 +2490,17 @@ message UpdateRecipeRequest {
 }
 
 message UpdateRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  Recipe Updated = 2;
+}
+
+// UpdateRecipeStatus
+message UpdateRecipeStatusRequest {
+  string recipeID = 1;
+  string newStatus = 2;
+}
+
+message UpdateRecipeStatusResponse {
   common.ResponseDetails ResponseDetails = 1;
   Recipe Updated = 2;
 }
@@ -3518,6 +3530,7 @@ service MealPlanningService {
   rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);
   rpc UpdateMealPlanTaskStatus(UpdateMealPlanTaskStatusRequest) returns (UpdateMealPlanTaskStatusResponse);
   rpc UpdateRecipe(UpdateRecipeRequest) returns (UpdateRecipeResponse);
+  rpc UpdateRecipeStatus(UpdateRecipeStatusRequest) returns (UpdateRecipeStatusResponse);
   rpc UpdateRecipePrepTask(UpdateRecipePrepTaskRequest) returns (UpdateRecipePrepTaskResponse);
   rpc UpdateRecipeRating(UpdateRecipeRatingRequest) returns (UpdateRecipeRatingResponse);
   rpc UpdateRecipeStep(UpdateRecipeStepRequest) returns (UpdateRecipeStepResponse);

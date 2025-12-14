@@ -174,6 +174,7 @@ const (
 	MealPlanningService_UpdateMealPlanOptionVote_FullMethodName                            = "/mealplanning.MealPlanningService/UpdateMealPlanOptionVote"
 	MealPlanningService_UpdateMealPlanTaskStatus_FullMethodName                            = "/mealplanning.MealPlanningService/UpdateMealPlanTaskStatus"
 	MealPlanningService_UpdateRecipe_FullMethodName                                        = "/mealplanning.MealPlanningService/UpdateRecipe"
+	MealPlanningService_UpdateRecipeStatus_FullMethodName                                  = "/mealplanning.MealPlanningService/UpdateRecipeStatus"
 	MealPlanningService_UpdateRecipePrepTask_FullMethodName                                = "/mealplanning.MealPlanningService/UpdateRecipePrepTask"
 	MealPlanningService_UpdateRecipeRating_FullMethodName                                  = "/mealplanning.MealPlanningService/UpdateRecipeRating"
 	MealPlanningService_UpdateRecipeStep_FullMethodName                                    = "/mealplanning.MealPlanningService/UpdateRecipeStep"
@@ -365,6 +366,7 @@ type MealPlanningServiceClient interface {
 	UpdateMealPlanOptionVote(ctx context.Context, in *UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*UpdateMealPlanOptionVoteResponse, error)
 	UpdateMealPlanTaskStatus(ctx context.Context, in *UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*UpdateMealPlanTaskStatusResponse, error)
 	UpdateRecipe(ctx context.Context, in *UpdateRecipeRequest, opts ...grpc.CallOption) (*UpdateRecipeResponse, error)
+	UpdateRecipeStatus(ctx context.Context, in *UpdateRecipeStatusRequest, opts ...grpc.CallOption) (*UpdateRecipeStatusResponse, error)
 	UpdateRecipePrepTask(ctx context.Context, in *UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*UpdateRecipePrepTaskResponse, error)
 	UpdateRecipeRating(ctx context.Context, in *UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*UpdateRecipeRatingResponse, error)
 	UpdateRecipeStep(ctx context.Context, in *UpdateRecipeStepRequest, opts ...grpc.CallOption) (*UpdateRecipeStepResponse, error)
@@ -1946,6 +1948,16 @@ func (c *mealPlanningServiceClient) UpdateRecipe(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) UpdateRecipeStatus(ctx context.Context, in *UpdateRecipeStatusRequest, opts ...grpc.CallOption) (*UpdateRecipeStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateRecipeStatusResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateRecipeStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) UpdateRecipePrepTask(ctx context.Context, in *UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*UpdateRecipePrepTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateRecipePrepTaskResponse)
@@ -2414,6 +2426,7 @@ type MealPlanningServiceServer interface {
 	UpdateMealPlanOptionVote(context.Context, *UpdateMealPlanOptionVoteRequest) (*UpdateMealPlanOptionVoteResponse, error)
 	UpdateMealPlanTaskStatus(context.Context, *UpdateMealPlanTaskStatusRequest) (*UpdateMealPlanTaskStatusResponse, error)
 	UpdateRecipe(context.Context, *UpdateRecipeRequest) (*UpdateRecipeResponse, error)
+	UpdateRecipeStatus(context.Context, *UpdateRecipeStatusRequest) (*UpdateRecipeStatusResponse, error)
 	UpdateRecipePrepTask(context.Context, *UpdateRecipePrepTaskRequest) (*UpdateRecipePrepTaskResponse, error)
 	UpdateRecipeRating(context.Context, *UpdateRecipeRatingRequest) (*UpdateRecipeRatingResponse, error)
 	UpdateRecipeStep(context.Context, *UpdateRecipeStepRequest) (*UpdateRecipeStepResponse, error)
@@ -2916,6 +2929,9 @@ func (UnimplementedMealPlanningServiceServer) UpdateMealPlanTaskStatus(context.C
 }
 func (UnimplementedMealPlanningServiceServer) UpdateRecipe(context.Context, *UpdateRecipeRequest) (*UpdateRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipe not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UpdateRecipeStatus(context.Context, *UpdateRecipeStatusRequest) (*UpdateRecipeStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStatus not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) UpdateRecipePrepTask(context.Context, *UpdateRecipePrepTaskRequest) (*UpdateRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipePrepTask not implemented")
@@ -5803,6 +5819,24 @@ func _MealPlanningService_UpdateRecipe_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_UpdateRecipeStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRecipeStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateRecipeStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateRecipeStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateRecipeStatus(ctx, req.(*UpdateRecipeStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_UpdateRecipePrepTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRecipePrepTaskRequest)
 	if err := dec(in); err != nil {
@@ -6983,6 +7017,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateRecipe",
 			Handler:    _MealPlanningService_UpdateRecipe_Handler,
+		},
+		{
+			MethodName: "UpdateRecipeStatus",
+			Handler:    _MealPlanningService_UpdateRecipeStatus_Handler,
 		},
 		{
 			MethodName: "UpdateRecipePrepTask",

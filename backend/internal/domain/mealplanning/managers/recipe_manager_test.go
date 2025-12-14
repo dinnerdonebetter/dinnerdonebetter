@@ -107,7 +107,7 @@ func TestRecipeManager_ListRecipes(T *testing.T) {
 			},
 		)
 
-		actual, err := rm.ListRecipes(ctx, nil)
+		actual, err := rm.ListRecipes(ctx, "", nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 

@@ -123,11 +123,12 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
+		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)

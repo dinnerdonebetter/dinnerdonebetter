@@ -617,6 +617,7 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
+	AND recipes.status = COALESCE($6, 'approved')
 	AND recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -627,9 +628,9 @@ FROM recipes
 		recipes.last_updated_at IS NULL
 		OR recipes.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	AND recipes.id > COALESCE($6, '')
+	AND recipes.id > COALESCE($7, '')
 ORDER BY recipes.id ASC
-LIMIT COALESCE($7, 50)
+LIMIT COALESCE($8, 50)
 `
 
 type GetRecipesParams struct {
@@ -638,6 +639,7 @@ type GetRecipesParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	Status          NullRecipeStatus
 	Cursor          sql.NullString
 	IncludeArchived sql.NullBool
 }
@@ -673,6 +675,7 @@ func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
+		arg.Status,
 		arg.Cursor,
 		arg.ResultLimit,
 	)
@@ -1061,32 +1064,30 @@ UPDATE recipes SET
 	slug = $2,
 	source = $3,
 	description = $4,
-	status = $5,
-	inspired_by_recipe_id = $6,
-	min_estimated_portions = $7,
-	max_estimated_portions = $8,
-	portion_name = $9,
-	plural_portion_name = $10,
-	eligible_for_meals = $11,
-	yields_component_type = $12,
+	inspired_by_recipe_id = $5,
+	min_estimated_portions = $6,
+	max_estimated_portions = $7,
+	portion_name = $8,
+	plural_portion_name = $9,
+	eligible_for_meals = $10,
+	yields_component_type = $11,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND created_by_user = $13
-	AND id = $14
+	AND created_by_user = $12
+	AND id = $13
 `
 
 type UpdateRecipeParams struct {
-	MinEstimatedPortions string
-	CreatedByUser        string
+	YieldsComponentType  ComponentType
+	Slug                 string
 	Source               string
 	Description          string
-	Status               RecipeStatus
 	ID                   string
-	PortionName          string
+	MinEstimatedPortions string
 	Name                 string
-	Slug                 string
+	PortionName          string
 	PluralPortionName    string
-	YieldsComponentType  ComponentType
+	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
 	InspiredByRecipeID   sql.NullString
 	EligibleForMeals     bool
@@ -1098,7 +1099,6 @@ func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipePa
 		arg.Slug,
 		arg.Source,
 		arg.Description,
-		arg.Status,
 		arg.InspiredByRecipeID,
 		arg.MinEstimatedPortions,
 		arg.MaxEstimatedPortions,
@@ -1121,6 +1121,27 @@ UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 
 func (q *Queries) UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
 	result, err := db.ExecContext(ctx, updateRecipeLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const updateRecipeStatus = `-- name: UpdateRecipeStatus :execrows
+UPDATE recipes SET
+	status = $1,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $2
+`
+
+type UpdateRecipeStatusParams struct {
+	Status RecipeStatus
+	ID     string
+}
+
+func (q *Queries) UpdateRecipeStatus(ctx context.Context, db DBTX, arg *UpdateRecipeStatusParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeStatus, arg.Status, arg.ID)
 	if err != nil {
 		return 0, err
 	}

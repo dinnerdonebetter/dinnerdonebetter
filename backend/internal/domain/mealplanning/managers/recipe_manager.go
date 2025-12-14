@@ -30,11 +30,12 @@ const (
 
 type (
 	RecipeManager interface {
-		ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
+		ListRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
 		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
+		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*mealplanning.MealPlanTaskDatabaseCreationEstimate, error)
 		RecipeMermaid(ctx context.Context, recipeID string) (string, error)
@@ -134,7 +135,7 @@ func NewRecipeManager(
 	return m, nil
 }
 
-func (m *recipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+func (m *recipeManager) ListRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -146,7 +147,11 @@ func (m *recipeManager) ListRecipes(ctx context.Context, filter *filtering.Query
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	results, err := m.db.GetRecipes(ctx, filter)
+	if status == "" {
+		status = mealplanning.RecipeStatusApproved
+	}
+
+	results, err := m.db.GetRecipes(ctx, status, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching list of recipes")
 	}
@@ -275,6 +280,25 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 	existingRecipe.Update(input)
 	if err = m.db.UpdateRecipe(ctx, existingRecipe); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
+	return nil
+}
+
+func (m *recipeManager) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID).WithValue("new_status", newStatus)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, "new_status", newStatus)
+
+	if err := m.db.UpdateRecipeStatus(ctx, recipeID, newStatus); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe status")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{

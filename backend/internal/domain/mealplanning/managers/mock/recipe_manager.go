@@ -13,8 +13,8 @@ type MockRecipeManager struct {
 	mock.Mock
 }
 
-func (m *MockRecipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-	returnValues := m.Called(ctx, filter)
+func (m *MockRecipeManager) ListRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, status, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
@@ -39,6 +39,12 @@ func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, use
 
 func (m *MockRecipeManager) UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error {
 	returnValues := m.Called(ctx, recipeID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error {
+	returnValues := m.Called(ctx, recipeID, newStatus)
 
 	return returnValues.Error(0)
 }

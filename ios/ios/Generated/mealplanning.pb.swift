@@ -12341,6 +12341,8 @@ public struct Mealplanning_GetRecipesRequest: Sendable {
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
   public mutating func clearFilter() {self._filter = nil}
 
+  public var status: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -12465,6 +12467,52 @@ public struct Mealplanning_UpdateRecipeRequest: Sendable {
 }
 
 public struct Mealplanning_UpdateRecipeResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var updated: Mealplanning_Recipe {
+    get {return _updated ?? Mealplanning_Recipe()}
+    set {_updated = newValue}
+  }
+  /// Returns true if `updated` has been explicitly set.
+  public var hasUpdated: Bool {return self._updated != nil}
+  /// Clears the value of `updated`. Subsequent reads from it will return its default value.
+  public mutating func clearUpdated() {self._updated = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _updated: Mealplanning_Recipe? = nil
+}
+
+/// UpdateRecipeStatus
+public struct Mealplanning_UpdateRecipeStatusRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var recipeID: String = String()
+
+  public var newStatus: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Mealplanning_UpdateRecipeStatusResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -34572,7 +34620,7 @@ extension Mealplanning_GetRecipeStepsResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}status\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34581,6 +34629,7 @@ extension Mealplanning_GetRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.status) }()
       default: break
       }
     }
@@ -34594,11 +34643,15 @@ extension Mealplanning_GetRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._
     try { if let v = self._filter {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    if !self.status.isEmpty {
+      try visitor.visitSingularStringField(value: self.status, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_GetRecipesRequest, rhs: Mealplanning_GetRecipesRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
+    if lhs.status != rhs.status {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -34807,6 +34860,80 @@ extension Mealplanning_UpdateRecipeResponse: SwiftProtobuf.Message, SwiftProtobu
   }
 
   public static func ==(lhs: Mealplanning_UpdateRecipeResponse, rhs: Mealplanning_UpdateRecipeResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._updated != rhs._updated {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UpdateRecipeStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStatusRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}newStatus\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipeID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.newStatus) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.recipeID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeID, fieldNumber: 1)
+    }
+    if !self.newStatus.isEmpty {
+      try visitor.visitSingularStringField(value: self.newStatus, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UpdateRecipeStatusRequest, rhs: Mealplanning_UpdateRecipeStatusRequest) -> Bool {
+    if lhs.recipeID != rhs.recipeID {return false}
+    if lhs.newStatus != rhs.newStatus {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UpdateRecipeStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStatusResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._updated) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._updated {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UpdateRecipeStatusResponse, rhs: Mealplanning_UpdateRecipeStatusResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._updated != rhs._updated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

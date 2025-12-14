@@ -357,6 +357,14 @@ func TestRecipes_Creating(T *testing.T) {
 		require.NoError(t, err)
 		created = converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
 
+		assert.Equal(t, created.Status, mealplanning.RecipeStatusSubmitted)
+		updateRes, err := adminClient.UpdateRecipeStatus(ctx, &mealplanninggrpc.UpdateRecipeStatusRequest{
+			RecipeID:  createdRes.Created.ID,
+			NewStatus: mealplanning.RecipeStatusApproved,
+		})
+		require.NoError(t, err)
+		assert.Equal(t, updateRes.Updated.Status, mealplanning.RecipeStatusApproved)
+
 		recipeStepProductIndex := -1
 		for i, ingredient := range created.Steps[1].Ingredients {
 			if ingredient.RecipeStepProductID != nil {

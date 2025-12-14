@@ -220,6 +220,7 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
+	AND recipes.status = COALESCE(sqlc.narg(status), 'approved')
 	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -383,7 +384,6 @@ UPDATE recipes SET
 	slug = sqlc.arg(slug),
 	source = sqlc.arg(source),
 	description = sqlc.arg(description),
-	status = sqlc.arg(status),
 	inspired_by_recipe_id = sqlc.arg(inspired_by_recipe_id),
 	min_estimated_portions = sqlc.arg(min_estimated_portions),
 	max_estimated_portions = sqlc.arg(max_estimated_portions),
@@ -394,6 +394,13 @@ UPDATE recipes SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND created_by_user = sqlc.arg(created_by_user)
+	AND id = sqlc.arg(id);
+
+-- name: UpdateRecipeStatus :execrows
+UPDATE recipes SET
+	status = sqlc.arg(status),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
 
 -- name: UpdateRecipeLastIndexedAt :execrows

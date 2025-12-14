@@ -330,6 +330,9 @@ var (
 		mealPlanningPerm("UpdateRecipe"): {
 			authorization.UpdateRecipesPermission,
 		},
+		mealPlanningPerm("UpdateRecipeStatus"): {
+			authorization.UpdateRecipesStatusPermission,
+		},
 		mealPlanningPerm("ArchiveRecipe"): {
 			authorization.ArchiveRecipesPermission,
 		},

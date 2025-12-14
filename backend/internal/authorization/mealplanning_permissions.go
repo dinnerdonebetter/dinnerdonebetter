@@ -163,6 +163,8 @@ const (
 	SearchRecipesPermission Permission = "search.recipes"
 	// UpdateRecipesPermission is a permission.
 	UpdateRecipesPermission Permission = "update.recipes"
+	// UpdateRecipesStatusPermission is a permission.
+	UpdateRecipesStatusPermission Permission = "update.recipe_status"
 	// ArchiveRecipesPermission is a permission.
 	ArchiveRecipesPermission Permission = "archive.recipes"
 
