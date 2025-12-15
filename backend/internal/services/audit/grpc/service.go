@@ -103,8 +103,8 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryID)
-	auditLogEntry, err := s.auditRepository.GetAuditLogEntry(ctx, request.AuditLogEntryID)
+	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryId)
+	auditLogEntry, err := s.auditRepository.GetAuditLogEntry(ctx, request.AuditLogEntryId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}

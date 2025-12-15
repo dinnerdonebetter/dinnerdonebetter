@@ -9,56 +9,56 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit";
 
 message DataCollection {
-  map<string, AuditLogEntry> AccountAuditLogEntries = 5;
-  repeated AuditLogEntry UserAuditLogEntries = 9;
+  map<string, AuditLogEntry> account_audit_log_entries = 5;
+  repeated AuditLogEntry user_audit_log_entries = 9;
 }
 
 message ChangeLog {
-  string OldValue = 1;
-  string NewValue = 2;
+  string old_value = 1;
+  string new_value = 2;
 }
 
 message AuditLogEntry {
-  google.protobuf.Timestamp CreatedAt = 1;
-  map<string, ChangeLog> Changes = 2;
-  string BelongsToAccount = 3;
-  string ID = 4;
-  string ResourceType = 5;
-  string RelevantID = 6;
-  string EventType = 7;
-  string BelongsToUser = 8;
+  google.protobuf.Timestamp created_at = 1;
+  map<string, ChangeLog> changes = 2;
+  string belongs_to_account = 3;
+  string id = 4;
+  string resource_type = 5;
+  string relevant_id = 6;
+  string event_type = 7;
+  string belongs_to_user = 8;
 }
 
 // GetAuditLogEntriesForAccount
 message GetAuditLogEntriesForAccountRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetAuditLogEntriesForAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated AuditLogEntry Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated AuditLogEntry results = 3;
 }
 
 // GetAuditLogEntriesForUser
 message GetAuditLogEntriesForUserRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetAuditLogEntriesForUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated AuditLogEntry Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated AuditLogEntry results = 3;
 }
 
 // GetAuditLogEntryByID
 message GetAuditLogEntryByIDRequest {
-  string AuditLogEntryID = 1;
+  string audit_log_entry_id = 1;
 }
 
 message GetAuditLogEntryByIDResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AuditLogEntry Result = 2;
+  common.ResponseDetails response_details = 1;
+  AuditLogEntry result = 2;
 }
 
 service AuditService {
