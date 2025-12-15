@@ -17,7 +17,7 @@ func (s *serviceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := s.oauthDataManager.ArchiveOAuth2Client(ctx, request.OAuth2ClientID); err != nil {
+	if err := s.oauthDataManager.ArchiveOAuth2Client(ctx, request.Oauth2ClientId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "archiving oauth2 client")
 	}
 
@@ -57,9 +57,9 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.OAuth2ClientID)
+	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.Oauth2ClientId)
 
-	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.OAuth2ClientID)
+	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.Oauth2ClientId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}

@@ -31,7 +31,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 		return page("OAuth2 Clients", s.renderOAuth2ClientsError("Error: No OAuth2 client ID provided")), nil
 	}
 
-	oauth2ClientRes, err := c.GetOAuth2Client(ctx, &oauthsvc.GetOAuth2ClientRequest{OAuth2ClientID: oauth2ClientID})
+	oauth2ClientRes, err := c.GetOAuth2Client(ctx, &oauthsvc.GetOAuth2ClientRequest{Oauth2ClientId: oauth2ClientID})
 	if err != nil {
 		return page("OAuth2 Clients", s.renderOAuth2ClientsError(fmt.Sprintf("Error loading OAuth2 client: %v", err))), nil
 	}
@@ -51,7 +51,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 		FormOptions: &components.FormOptions[*oauthsvc.OAuth2Client]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-oauth2-client-form",
-			Action:  fmt.Sprintf("/api/oauth2_clients/%s", oauth2Client.ID),
+			Action:  fmt.Sprintf("/api/oauth2_clients/%s", oauth2Client.Id),
 			Method:  "PUT",
 
 			// All fields are read-only for OAuth2 clients
@@ -168,7 +168,7 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 			},
 		},
 		RowLinkGenerator: func(data *oauthsvc.OAuth2Client) string {
-			return fmt.Sprintf("/oauth2_clients/%s", data.ID)
+			return fmt.Sprintf("/oauth2_clients/%s", data.Id)
 		},
 		EmptyStateTitle:       "No OAuth2 clients found",
 		EmptyStateDescription: "No OAuth2 clients have been created yet.",
@@ -227,7 +227,7 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 		for _, oauth2Client := range oauth2ClientsRes.Results {
 			if strings.Contains(strings.ToLower(oauth2Client.Name), searchQueryLower) ||
 				strings.Contains(strings.ToLower(oauth2Client.Description), searchQueryLower) ||
-				strings.Contains(strings.ToLower(oauth2Client.ClientID), searchQueryLower) {
+				strings.Contains(strings.ToLower(oauth2Client.ClientId), searchQueryLower) {
 				filteredOAuth2Clients = append(filteredOAuth2Clients, oauth2Client)
 			}
 		}
@@ -265,7 +265,7 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 			"ArchivedAt": renderTimestamp,
 		},
 		RowLinkGenerator: func(data *oauthsvc.OAuth2Client) string {
-			return fmt.Sprintf("/oauth2_clients/%s", data.ID)
+			return fmt.Sprintf("/oauth2_clients/%s", data.Id)
 		},
 	})
 	if err != nil {

@@ -26,8 +26,8 @@ func ConvertOAuth2ClientToGRPCOAuth2Client(client *oauth.OAuth2Client) *oauthsvc
 		ArchivedAt:   grpcconverters.ConvertTimePointerToPBTimestamp(client.ArchivedAt),
 		Name:         client.Name,
 		Description:  client.Description,
-		ClientID:     client.ClientID,
-		ID:           client.ID,
+		ClientId:     client.ClientID,
+		Id:           client.ID,
 		ClientSecret: client.ClientSecret,
 	}
 }
@@ -38,8 +38,8 @@ func ConvertGRPCOAuth2ClientToOAuth2Client(client *oauthsvc.OAuth2Client) *oauth
 		ArchivedAt:   grpcconverters.ConvertPBTimestampToTimePointer(client.ArchivedAt),
 		Name:         client.Name,
 		Description:  client.Description,
-		ClientID:     client.ClientID,
-		ID:           client.ID,
+		ClientID:     client.ClientId,
+		ID:           client.Id,
 		ClientSecret: client.ClientSecret,
 	}
 }
