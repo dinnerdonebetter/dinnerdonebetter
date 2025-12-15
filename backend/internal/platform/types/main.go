@@ -43,73 +43,44 @@ type (
 		Name string `json:"name,omitempty"`
 	}
 
-	Range[T comparable] struct {
-		Min T `json:"min"`
-		Max T `json:"max"`
-	}
-
 	RangeWithOptionalUpperBound[T comparable] struct {
 		Min T  `json:"min"`
-		Max *T `json:"max"`
-	}
-
-	RangeUpdateRequestInput[T comparable] struct {
-		Min *T `json:"min"`
-		Max *T `json:"max"`
+		Max *T `json:"max,omitempty"`
 	}
 
 	OptionalRange[T comparable] struct {
-		Min *T `json:"min"`
-		Max *T `json:"max"`
+		Min *T `json:"min,omitempty"`
+		Max *T `json:"max,omitempty"`
+	}
+
+	OptionalRangeUpdateRequestInput[T comparable] struct {
+		Min *T `json:"min,omitempty"`
+		Max *T `json:"max,omitempty"`
 	}
 
 	// OptionalFloat32Range should be replaced with a generic Range type.
-	OptionalFloat32Range struct {
-		Max *float32 `json:"max,omitempty"`
-		Min *float32 `json:"min,omitempty"`
-	}
+	OptionalFloat32Range OptionalRange[float32]
 
 	// Float32RangeWithOptionalMax should be replaced with a generic Range type.
-	Float32RangeWithOptionalMax struct {
-		Max *float32 `json:"max,omitempty"`
-		Min float32  `json:"min"`
-	}
+	Float32RangeWithOptionalMax RangeWithOptionalUpperBound[float32]
 
 	// Float32RangeWithOptionalMaxUpdateRequestInput should be replaced with a generic Range type.
-	Float32RangeWithOptionalMaxUpdateRequestInput struct {
-		Min *float32 `json:"min,omitempty"`
-		Max *float32 `json:"max,omitempty"`
-	}
+	Float32RangeWithOptionalMaxUpdateRequestInput OptionalRangeUpdateRequestInput[float32]
 
 	// Uint16RangeWithOptionalMax should be replaced with a generic Range type.
-	Uint16RangeWithOptionalMax struct {
-		Max *uint16 `json:"max,omitempty"`
-		Min uint16  `json:"min"`
-	}
+	Uint16RangeWithOptionalMax RangeWithOptionalUpperBound[uint16]
 
 	// Uint16RangeWithOptionalMaxUpdateRequestInput should be replaced with a generic Range type.
-	Uint16RangeWithOptionalMaxUpdateRequestInput struct {
-		Min *uint16 `json:"min,omitempty"`
-		Max *uint16 `json:"max,omitempty"`
-	}
+	Uint16RangeWithOptionalMaxUpdateRequestInput OptionalRangeUpdateRequestInput[uint16]
 
 	// OptionalUint32Range should be replaced with a generic Range type.
-	OptionalUint32Range struct {
-		Max *uint32 `json:"max,omitempty"`
-		Min *uint32 `json:"min,omitempty"`
-	}
+	OptionalUint32Range OptionalRange[uint32]
 
 	// Uint32RangeWithOptionalMax should be replaced with a generic Range type.
-	Uint32RangeWithOptionalMax struct {
-		Max *uint32 `json:"max,omitempty"`
-		Min uint32  `json:"min"`
-	}
+	Uint32RangeWithOptionalMax RangeWithOptionalUpperBound[uint32]
 
 	// Uint32RangeWithOptionalMaxUpdateRequestInput should be replaced with a generic Range type.
-	Uint32RangeWithOptionalMaxUpdateRequestInput struct {
-		Min *uint32 `json:"min,omitempty"`
-		Max *uint32 `json:"max,omitempty"`
-	}
+	Uint32RangeWithOptionalMaxUpdateRequestInput OptionalRangeUpdateRequestInput[uint32]
 )
 
 // Error returns the error message.
@@ -163,17 +134,6 @@ func (x *Uint32RangeWithOptionalMax) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Min, validation.Required),
-	)
-}
-
-var _ validation.ValidatableWithContext = (*Range[string])(nil)
-
-func (x *Range[T]) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
-		ctx,
-		x,
-		validation.Field(&x.Min, validation.Required),
-		validation.Field(&x.Max, validation.Required),
 	)
 }
 

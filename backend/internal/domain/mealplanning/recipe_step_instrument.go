@@ -36,18 +36,17 @@ func init() {
 type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
-		_ struct{} `json:"-"`
-
+		_                   struct{}                         `json:"-"`
 		CreatedAt           time.Time                        `json:"createdAt"`
+		Quantity            types.Uint32RangeWithOptionalMax `json:"quantity"`
 		Instrument          *ValidInstrument                 `json:"instrument"`
 		LastUpdatedAt       *time.Time                       `json:"lastUpdatedAt"`
 		RecipeStepProductID *string                          `json:"recipeStepProductID"`
 		ArchivedAt          *time.Time                       `json:"archivedAt"`
 		Notes               string                           `json:"notes"`
-		Name                string                           `json:"name"`
 		BelongsToRecipeStep string                           `json:"belongsToRecipeStep"`
 		ID                  string                           `json:"id"`
-		Quantity            types.Uint32RangeWithOptionalMax `json:"quantity"`
+		Name                string                           `json:"name"`
 		OptionIndex         uint16                           `json:"optionIndex"`
 		PreferenceRank      uint8                            `json:"preferenceRank"`
 		Optional            bool                             `json:"optional"`
@@ -71,17 +70,16 @@ type (
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_ struct{} `json:"-"`
-
-		InstrumentID                    *string                          `json:"-"`
-		RecipeStepProductID             *string                          `json:"-"`
+		_                               struct{}                         `json:"-"`
+		Quantity                        types.Uint32RangeWithOptionalMax `json:"-"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"-"`
+		RecipeStepProductID             *string                          `json:"-"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"-"`
+		InstrumentID                    *string                          `json:"-"`
 		BelongsToRecipeStep             string                           `json:"-"`
 		Name                            string                           `json:"-"`
 		ID                              string                           `json:"-"`
 		Notes                           string                           `json:"-"`
-		Quantity                        types.Uint32RangeWithOptionalMax `json:"-"`
 		OptionIndex                     uint16                           `json:"-"`
 		Optional                        bool                             `json:"-"`
 		PreferenceRank                  uint8                            `json:"-"`
