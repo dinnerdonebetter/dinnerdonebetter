@@ -163,7 +163,7 @@ fileprivate let _protobuf_package = "filtering"
 
 extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".QueryFilter"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SortBy\0\u{2}\u{2}CreatedAfter\0\u{1}CreatedBefore\0\u{1}UpdatedAfter\0\u{1}UpdatedBefore\0\u{1}MaxResponseSize\0\u{1}IncludeArchived\0\u{1}Cursor\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}sort_by\0\u{4}\u{2}created_after\0\u{3}created_before\0\u{3}updated_after\0\u{3}updated_before\0\u{3}max_response_size\0\u{3}include_archived\0\u{1}cursor\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -232,7 +232,7 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension Filtering_Pagination: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Pagination"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MaxResponseSize\0\u{1}FilteredCount\0\u{1}TotalCount\0\u{1}Cursor\0\u{1}PreviousCursor\0\u{1}AppliedQueryFilter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}max_response_size\0\u{3}filtered_count\0\u{3}total_count\0\u{1}cursor\0\u{3}previous_cursor\0\u{3}applied_query_filter\0")
 
   fileprivate class _StorageClass {
     var _maxResponseSize: UInt32 = 0
