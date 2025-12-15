@@ -236,6 +236,7 @@ type Querier interface {
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
+	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error)
@@ -259,6 +260,7 @@ type Querier interface {
 	UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error)
 	UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) (int64, error)
 	UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error)
+	UpdateRecipeStatus(ctx context.Context, db DBTX, arg *UpdateRecipeStatusParams) (int64, error)
 	UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) (int64, error)
 	UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) (int64, error)
 	UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) (int64, error)

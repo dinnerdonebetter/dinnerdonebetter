@@ -8,12 +8,12 @@ INSERT INTO recipes (
 	slug,
 	source,
 	description,
+	status,
 	inspired_by_recipe_id,
 	min_estimated_portions,
 	max_estimated_portions,
 	portion_name,
 	plural_portion_name,
-	seal_of_approval,
 	eligible_for_meals,
 	yields_component_type,
 	created_by_user
@@ -23,12 +23,12 @@ INSERT INTO recipes (
 	sqlc.arg(slug),
 	sqlc.arg(source),
 	sqlc.arg(description),
+	sqlc.arg(status),
 	sqlc.arg(inspired_by_recipe_id),
 	sqlc.arg(min_estimated_portions),
 	sqlc.arg(max_estimated_portions),
 	sqlc.arg(portion_name),
 	sqlc.arg(plural_portion_name),
-	sqlc.arg(seal_of_approval),
 	sqlc.arg(eligible_for_meals),
 	sqlc.arg(yields_component_type),
 	sqlc.arg(created_by_user)
@@ -49,12 +49,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -115,12 +115,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -182,12 +182,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -220,6 +220,7 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
+	AND recipes.status = COALESCE(sqlc.narg(status), 'approved')::recipe_status
 	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -241,12 +242,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -304,12 +305,12 @@ SELECT
 	recipes.slug,
 	recipes.source,
 	recipes.description,
+	recipes.status,
 	recipes.inspired_by_recipe_id,
 	recipes.min_estimated_portions,
 	recipes.max_estimated_portions,
 	recipes.portion_name,
 	recipes.plural_portion_name,
-	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
 	recipes.last_indexed_at,
@@ -357,6 +358,68 @@ WHERE recipes.archived_at IS NULL
 ORDER BY recipes.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
+-- name: SearchForMealEligibleRecipes :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.status,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND
+			recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipes.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
+FROM recipes
+WHERE recipes.archived_at IS NULL
+	AND recipes.eligible_for_meals = true
+	AND recipes.status = 'approved'
+	AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipes.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipes.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
+
 -- name: GetRecipesNeedingIndexing :many
 SELECT recipes.id
 FROM recipes
@@ -388,12 +451,18 @@ UPDATE recipes SET
 	max_estimated_portions = sqlc.arg(max_estimated_portions),
 	portion_name = sqlc.arg(portion_name),
 	plural_portion_name = sqlc.arg(plural_portion_name),
-	seal_of_approval = sqlc.arg(seal_of_approval),
 	eligible_for_meals = sqlc.arg(eligible_for_meals),
 	yields_component_type = sqlc.arg(yields_component_type),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND created_by_user = sqlc.arg(created_by_user)
+	AND id = sqlc.arg(id);
+
+-- name: UpdateRecipeStatus :execrows
+UPDATE recipes SET
+	status = sqlc.arg(status),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
 
 -- name: UpdateRecipeLastIndexedAt :execrows

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -23,6 +22,10 @@ const (
 	RecipeArchivedServiceEventType = "recipe_archived"
 	// RecipeClonedServiceEventType indicates a recipe was cloned.
 	RecipeClonedServiceEventType = "recipe_cloned"
+
+	RecipeStatusSubmitted     = "submitted"
+	RecipeStatusApproved      = "approved"
+	RecipeStatusNeedsRevision = "needs_revision"
 )
 
 func init() {
@@ -34,25 +37,25 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{} `json:"-"`
-
+		_                   struct{}                          `json:"-"`
 		CreatedAt           time.Time                         `json:"createdAt"`
 		InspiredByRecipeID  *string                           `json:"inspiredByRecipeID"`
 		LastUpdatedAt       *time.Time                        `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time                        `json:"archivedAt"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
-		PluralPortionName   string                            `json:"pluralPortionName"`
+		ID                  string                            `json:"id"`
+		Source              string                            `json:"source"`
 		Description         string                            `json:"description"`
 		Name                string                            `json:"name"`
 		PortionName         string                            `json:"portionName"`
-		ID                  string                            `json:"id"`
+		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
 		CreatedByUser       string                            `json:"createdByUser"`
-		Source              string                            `json:"source"`
+		PluralPortionName   string                            `json:"pluralPortionName"`
 		Slug                string                            `json:"slug"`
 		YieldsComponentType string                            `json:"yieldsComponentType"`
-		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
+		Status              string                            `json:"status"`
 		Steps               []*RecipeStep                     `json:"steps"`
 		Media               []*RecipeMedia                    `json:"media"`
+		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
 		SealOfApproval      bool                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                              `json:"eligibleForMeals"`
 	}
@@ -74,7 +77,6 @@ type (
 		Steps               []*RecipeStepCreationRequestInput                 `json:"steps"`
 		Media               []*RecipeMediaCreationRequestInput                `json:"media"`
 		AlsoCreateMeal      bool                                              `json:"alsoCreateMeal"`
-		SealOfApproval      bool                                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                                              `json:"eligibleForMeals"`
 	}
 
@@ -97,7 +99,6 @@ type (
 		Steps               []*RecipeStepDatabaseCreationInput     `json:"-"`
 		Media               []*RecipeMediaDatabaseCreationInput    `json:"-"`
 		AlsoCreateMeal      bool                                   `json:"-"`
-		SealOfApproval      bool                                   `json:"-"`
 		EligibleForMeals    bool                                   `json:"-"`
 	}
 
@@ -110,7 +111,6 @@ type (
 		Source              *string                                             `json:"source,omitempty"`
 		Description         *string                                             `json:"description,omitempty"`
 		InspiredByRecipeID  *string                                             `json:"inspiredByRecipeID,omitempty"`
-		SealOfApproval      *bool                                               `json:"sealOfApproval,omitempty"`
 		EstimatedPortions   types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
 		PortionName         *string                                             `json:"portionName"`
 		PluralPortionName   *string                                             `json:"pluralPortionName"`
@@ -122,29 +122,17 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
+		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
 		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetRecipesWithIDs(ctx context.Context, ids []string) ([]*Recipe, error)
-	}
-
-	// RecipeDataService describes a structure capable of serving traffic related to recipes.
-	RecipeDataService interface {
-		ListRecipesHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeHandler(http.ResponseWriter, *http.Request)
-		SearchRecipesHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeHandler(http.ResponseWriter, *http.Request)
-		RecipeEstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
-		RecipeImageUploadHandler(http.ResponseWriter, *http.Request)
-		RecipeMermaidHandler(http.ResponseWriter, *http.Request)
-		CloneRecipeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -220,10 +208,6 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 
 	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != "" && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {
 		x.InspiredByRecipeID = input.InspiredByRecipeID
-	}
-
-	if input.SealOfApproval != nil && *input.SealOfApproval != x.SealOfApproval {
-		x.SealOfApproval = *input.SealOfApproval
 	}
 
 	if input.EstimatedPortions.Min != nil && *input.EstimatedPortions.Min != x.EstimatedPortions.Min {

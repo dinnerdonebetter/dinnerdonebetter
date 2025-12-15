@@ -243,6 +243,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		require.NoError(t, err)
 
 		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
+		expected.Status = created.Status
 		checkRecipeEquality(t, expected, created)
 
 		retrievedRes, err := userClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: created.ID})

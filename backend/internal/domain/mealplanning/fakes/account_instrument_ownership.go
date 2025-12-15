@@ -4,13 +4,14 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 )
 
 // BuildFakeAccountInstrumentOwnership builds a faked valid ingredient.
 func BuildFakeAccountInstrumentOwnership() *types.AccountInstrumentOwnership {
 	return &types.AccountInstrumentOwnership{
 		CreatedAt:        BuildFakeTime(),
-		ID:               buildUniqueString(),
+		ID:               identifiers.New(),
 		Notes:            buildUniqueString(),
 		BelongsToAccount: buildUniqueString(),
 		Instrument:       *BuildFakeValidInstrument(),

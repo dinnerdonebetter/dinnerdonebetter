@@ -21,231 +21,231 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// GetUserNotification
-struct Notifications_GetUserNotificationRequest: Sendable {
+public struct Notifications_GetUserNotificationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var userNotificationID: String = String()
+  public var userNotificationID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Notifications_GetUserNotificationResponse: Sendable {
+public struct Notifications_GetUserNotificationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Notifications_UserNotification {
+  public var result: Notifications_UserNotification {
     get {return _result ?? Notifications_UserNotification()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Notifications_UserNotification? = nil
 }
 
 /// GetUserNotifications
-struct Notifications_GetUserNotificationsRequest: Sendable {
+public struct Notifications_GetUserNotificationsRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Notifications_GetUserNotificationsResponse: Sendable {
+public struct Notifications_GetUserNotificationsResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Notifications_UserNotification] = []
+  public var results: [Notifications_UserNotification] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
 /// UpdateUserNotification
-struct Notifications_UpdateUserNotificationRequest: Sendable {
+public struct Notifications_UpdateUserNotificationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var userNotificationID: String = String()
+  public var userNotificationID: String = String()
 
-  var input: Notifications_UserNotificationUpdateRequestInput {
+  public var input: Notifications_UserNotificationUpdateRequestInput {
     get {return _input ?? Notifications_UserNotificationUpdateRequestInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Notifications_UserNotificationUpdateRequestInput? = nil
 }
 
-struct Notifications_UpdateUserNotificationResponse: Sendable {
+public struct Notifications_UpdateUserNotificationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var updated: Notifications_UserNotification {
+  public var updated: Notifications_UserNotification {
     get {return _updated ?? Notifications_UserNotification()}
     set {_updated = newValue}
   }
   /// Returns true if `updated` has been explicitly set.
-  var hasUpdated: Bool {return self._updated != nil}
+  public var hasUpdated: Bool {return self._updated != nil}
   /// Clears the value of `updated`. Subsequent reads from it will return its default value.
-  mutating func clearUpdated() {self._updated = nil}
+  public mutating func clearUpdated() {self._updated = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _updated: Notifications_UserNotification? = nil
 }
 
-struct Notifications_UserNotification: Sendable {
+public struct Notifications_UserNotification: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  var hasCreatedAt: Bool {return self._createdAt != nil}
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAt() {self._createdAt = nil}
+  public mutating func clearCreatedAt() {self._createdAt = nil}
 
-  var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_lastUpdatedAt = newValue}
   }
   /// Returns true if `lastUpdatedAt` has been explicitly set.
-  var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
 
-  var id: String = String()
+  public var id: String = String()
 
-  var content: String = String()
+  public var content: String = String()
 
-  var status: String = String()
+  public var status: String = String()
 
-  var belongsToUser: String = String()
+  public var belongsToUser: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct Notifications_UserNotificationCreationRequestInput: Sendable {
+public struct Notifications_UserNotificationCreationRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var content: String = String()
+  public var content: String = String()
 
-  var status: String = String()
+  public var status: String = String()
 
-  var belongsToUser: String = String()
+  public var belongsToUser: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Notifications_UserNotificationUpdateRequestInput: Sendable {
+public struct Notifications_UserNotificationUpdateRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var status: String {
+  public var status: String {
     get {return _status ?? String()}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
-  var hasStatus: Bool {return self._status != nil}
+  public var hasStatus: Bool {return self._status != nil}
   /// Clears the value of `status`. Subsequent reads from it will return its default value.
-  mutating func clearStatus() {self._status = nil}
+  public mutating func clearStatus() {self._status = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _status: String? = nil
 }
@@ -255,10 +255,10 @@ struct Notifications_UserNotificationUpdateRequestInput: Sendable {
 fileprivate let _protobuf_package = "notifications"
 
 extension Notifications_GetUserNotificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetUserNotificationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userNotificationID\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetUserNotificationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userNotificationID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -270,14 +270,14 @@ extension Notifications_GetUserNotificationRequest: SwiftProtobuf.Message, Swift
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.userNotificationID.isEmpty {
       try visitor.visitSingularStringField(value: self.userNotificationID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_GetUserNotificationRequest, rhs: Notifications_GetUserNotificationRequest) -> Bool {
+  public static func ==(lhs: Notifications_GetUserNotificationRequest, rhs: Notifications_GetUserNotificationRequest) -> Bool {
     if lhs.userNotificationID != rhs.userNotificationID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -285,10 +285,10 @@ extension Notifications_GetUserNotificationRequest: SwiftProtobuf.Message, Swift
 }
 
 extension Notifications_GetUserNotificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetUserNotificationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetUserNotificationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -301,7 +301,7 @@ extension Notifications_GetUserNotificationResponse: SwiftProtobuf.Message, Swif
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -315,7 +315,7 @@ extension Notifications_GetUserNotificationResponse: SwiftProtobuf.Message, Swif
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_GetUserNotificationResponse, rhs: Notifications_GetUserNotificationResponse) -> Bool {
+  public static func ==(lhs: Notifications_GetUserNotificationResponse, rhs: Notifications_GetUserNotificationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -324,10 +324,10 @@ extension Notifications_GetUserNotificationResponse: SwiftProtobuf.Message, Swif
 }
 
 extension Notifications_GetUserNotificationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetUserNotificationsRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetUserNotificationsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -339,7 +339,7 @@ extension Notifications_GetUserNotificationsRequest: SwiftProtobuf.Message, Swif
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -350,7 +350,7 @@ extension Notifications_GetUserNotificationsRequest: SwiftProtobuf.Message, Swif
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_GetUserNotificationsRequest, rhs: Notifications_GetUserNotificationsRequest) -> Bool {
+  public static func ==(lhs: Notifications_GetUserNotificationsRequest, rhs: Notifications_GetUserNotificationsRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -358,10 +358,10 @@ extension Notifications_GetUserNotificationsRequest: SwiftProtobuf.Message, Swif
 }
 
 extension Notifications_GetUserNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetUserNotificationsResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetUserNotificationsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -375,7 +375,7 @@ extension Notifications_GetUserNotificationsResponse: SwiftProtobuf.Message, Swi
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -392,7 +392,7 @@ extension Notifications_GetUserNotificationsResponse: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_GetUserNotificationsResponse, rhs: Notifications_GetUserNotificationsResponse) -> Bool {
+  public static func ==(lhs: Notifications_GetUserNotificationsResponse, rhs: Notifications_GetUserNotificationsResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -402,10 +402,10 @@ extension Notifications_GetUserNotificationsResponse: SwiftProtobuf.Message, Swi
 }
 
 extension Notifications_UpdateUserNotificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdateUserNotificationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userNotificationID\0\u{1}input\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdateUserNotificationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userNotificationID\0\u{1}input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -418,7 +418,7 @@ extension Notifications_UpdateUserNotificationRequest: SwiftProtobuf.Message, Sw
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -432,7 +432,7 @@ extension Notifications_UpdateUserNotificationRequest: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_UpdateUserNotificationRequest, rhs: Notifications_UpdateUserNotificationRequest) -> Bool {
+  public static func ==(lhs: Notifications_UpdateUserNotificationRequest, rhs: Notifications_UpdateUserNotificationRequest) -> Bool {
     if lhs.userNotificationID != rhs.userNotificationID {return false}
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -441,10 +441,10 @@ extension Notifications_UpdateUserNotificationRequest: SwiftProtobuf.Message, Sw
 }
 
 extension Notifications_UpdateUserNotificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdateUserNotificationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdateUserNotificationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -457,7 +457,7 @@ extension Notifications_UpdateUserNotificationResponse: SwiftProtobuf.Message, S
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -471,7 +471,7 @@ extension Notifications_UpdateUserNotificationResponse: SwiftProtobuf.Message, S
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_UpdateUserNotificationResponse, rhs: Notifications_UpdateUserNotificationResponse) -> Bool {
+  public static func ==(lhs: Notifications_UpdateUserNotificationResponse, rhs: Notifications_UpdateUserNotificationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._updated != rhs._updated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -480,10 +480,10 @@ extension Notifications_UpdateUserNotificationResponse: SwiftProtobuf.Message, S
 }
 
 extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserNotification"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Content\0\u{1}Status\0\u{1}BelongsToUser\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserNotification"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Content\0\u{1}Status\0\u{1}BelongsToUser\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -500,7 +500,7 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -526,7 +526,7 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_UserNotification, rhs: Notifications_UserNotification) -> Bool {
+  public static func ==(lhs: Notifications_UserNotification, rhs: Notifications_UserNotification) -> Bool {
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
     if lhs.id != rhs.id {return false}
@@ -539,10 +539,10 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserNotificationCreationRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Content\0\u{1}Status\0\u{1}BelongsToUser\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserNotificationCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Content\0\u{1}Status\0\u{1}BelongsToUser\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -556,7 +556,7 @@ extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.content.isEmpty {
       try visitor.visitSingularStringField(value: self.content, fieldNumber: 1)
     }
@@ -569,7 +569,7 @@ extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_UserNotificationCreationRequestInput, rhs: Notifications_UserNotificationCreationRequestInput) -> Bool {
+  public static func ==(lhs: Notifications_UserNotificationCreationRequestInput, rhs: Notifications_UserNotificationCreationRequestInput) -> Bool {
     if lhs.content != rhs.content {return false}
     if lhs.status != rhs.status {return false}
     if lhs.belongsToUser != rhs.belongsToUser {return false}
@@ -579,10 +579,10 @@ extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Mess
 }
 
 extension Notifications_UserNotificationUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserNotificationUpdateRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Status\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserNotificationUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Status\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -594,7 +594,7 @@ extension Notifications_UserNotificationUpdateRequestInput: SwiftProtobuf.Messag
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -605,7 +605,7 @@ extension Notifications_UserNotificationUpdateRequestInput: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Notifications_UserNotificationUpdateRequestInput, rhs: Notifications_UserNotificationUpdateRequestInput) -> Bool {
+  public static func ==(lhs: Notifications_UserNotificationUpdateRequestInput, rhs: Notifications_UserNotificationUpdateRequestInput) -> Bool {
     if lhs._status != rhs._status {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

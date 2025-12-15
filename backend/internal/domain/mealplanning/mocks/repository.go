@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var _ mealplanning.Repository = (*Repository)(nil)
+
 type Repository struct {
 	mock.Mock
 }
@@ -391,9 +393,15 @@ func (m *Repository) SearchForRecipes(ctx context.Context, query string, filter 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
+// SearchForMealEligibleRecipes is a mock function.
+func (m *Repository) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
 // GetRecipes is a mock function.
-func (m *Repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-	returnValues := m.Called(ctx, filter)
+func (m *Repository) GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, status, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
@@ -412,6 +420,10 @@ func (m *Repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 // UpdateRecipe is a mock function.
 func (m *Repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Recipe) error {
 	return m.Called(ctx, updated).Error(0)
+}
+
+func (m *Repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error {
+	return m.Called(ctx, recipeID, newStatus).Error(0)
 }
 
 // ArchiveRecipe is a mock function.

@@ -33,7 +33,6 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
 	checkRecipePrepTaskSliceEquality(t, expected.PrepTasks, actual.PrepTasks)
 	checkRecipeLevelMediaSliceEquality(t, expected.Media, actual.Media)
-	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
 	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
 
 	for i, step := range expected.Steps {
@@ -358,6 +357,14 @@ func TestRecipes_Creating(T *testing.T) {
 		require.NoError(t, err)
 		created = converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
 
+		assert.Equal(t, created.Status, mealplanning.RecipeStatusSubmitted)
+		updateRes, err := adminClient.UpdateRecipeStatus(ctx, &mealplanninggrpc.UpdateRecipeStatusRequest{
+			RecipeID:  createdRes.Created.ID,
+			NewStatus: mealplanning.RecipeStatusApproved,
+		})
+		require.NoError(t, err)
+		assert.Equal(t, updateRes.Updated.Status, mealplanning.RecipeStatusApproved)
+
 		recipeStepProductIndex := -1
 		for i, ingredient := range created.Steps[1].Ingredients {
 			if ingredient.RecipeStepProductID != nil {
@@ -444,7 +451,6 @@ func TestRecipes_Updating(T *testing.T) {
 		assert.Equal(t, newRecipe.Source, actualRecipe.Source, "recipe source should be updated")
 		assert.Equal(t, newRecipe.Description, actualRecipe.Description, "recipe description should be updated")
 		assert.Equal(t, newRecipe.InspiredByRecipeID, actualRecipe.InspiredByRecipeID, "recipe inspired by recipe ID should be updated")
-		assert.Equal(t, newRecipe.SealOfApproval, actualRecipe.SealOfApproval, "recipe seal of approval should be updated")
 		assert.Equal(t, newRecipe.EstimatedPortions, actualRecipe.EstimatedPortions, "recipe estimated portions should be updated")
 		assert.Equal(t, newRecipe.PortionName, actualRecipe.PortionName, "recipe portion name should be updated")
 		assert.Equal(t, newRecipe.PluralPortionName, actualRecipe.PluralPortionName, "recipe plural portion name should be updated")

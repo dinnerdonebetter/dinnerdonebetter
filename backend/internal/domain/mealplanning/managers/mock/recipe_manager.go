@@ -4,17 +4,20 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )
 
+var _ managers.RecipeManager = (*MockRecipeManager)(nil)
+
 type MockRecipeManager struct {
 	mock.Mock
 }
 
-func (m *MockRecipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-	returnValues := m.Called(ctx, filter)
+func (m *MockRecipeManager) ListRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, status, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
@@ -37,8 +40,20 @@ func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, use
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
 
+func (m *MockRecipeManager) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, query, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
 func (m *MockRecipeManager) UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error {
 	returnValues := m.Called(ctx, recipeID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error {
+	returnValues := m.Called(ctx, recipeID, newStatus)
 
 	return returnValues.Error(0)
 }

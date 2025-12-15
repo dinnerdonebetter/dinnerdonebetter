@@ -13,16 +13,4 @@ type (
 		RecipeRatingDataManager
 		RecipePrepTaskDataManager
 	}
-
-	RecipeManagementDataService interface {
-		RecipeDataService
-		RecipeStepCompletionConditionDataService
-		RecipeStepIngredientDataService
-		RecipeStepInstrumentDataService
-		RecipeStepProductDataService
-		RecipeStepDataService
-		RecipeStepVesselDataService
-		RecipeRatingDataService
-		RecipePrepTaskDataService
-	}
 )

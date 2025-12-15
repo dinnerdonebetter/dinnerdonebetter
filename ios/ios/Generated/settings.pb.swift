@@ -20,297 +20,297 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Settings_DataCollection: Sendable {
+public struct Settings_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceSettingConfigurations: Dictionary<String,Settings_ServiceSettingConfiguration> = [:]
+  public var serviceSettingConfigurations: Dictionary<String,Settings_ServiceSettingConfiguration> = [:]
 
-  var userServiceSettingConfigurations: [Settings_ServiceSettingConfiguration] = []
+  public var userServiceSettingConfigurations: [Settings_ServiceSettingConfiguration] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
 /// CreateServiceSetting
-struct Settings_CreateServiceSettingRequest: Sendable {
+public struct Settings_CreateServiceSettingRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var input: Settings_ServiceSettingCreationRequestInput {
+  public var input: Settings_ServiceSettingCreationRequestInput {
     get {return _input ?? Settings_ServiceSettingCreationRequestInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Settings_ServiceSettingCreationRequestInput? = nil
 }
 
-struct Settings_CreateServiceSettingResponse: Sendable {
+public struct Settings_CreateServiceSettingResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var created: Settings_ServiceSetting {
+  public var created: Settings_ServiceSetting {
     get {return _created ?? Settings_ServiceSetting()}
     set {_created = newValue}
   }
   /// Returns true if `created` has been explicitly set.
-  var hasCreated: Bool {return self._created != nil}
+  public var hasCreated: Bool {return self._created != nil}
   /// Clears the value of `created`. Subsequent reads from it will return its default value.
-  mutating func clearCreated() {self._created = nil}
+  public mutating func clearCreated() {self._created = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _created: Settings_ServiceSetting? = nil
 }
 
 /// CreateServiceSettingConfiguration
-struct Settings_CreateServiceSettingConfigurationRequest: Sendable {
+public struct Settings_CreateServiceSettingConfigurationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var input: Settings_ServiceSettingConfigurationCreationRequestInput {
+  public var input: Settings_ServiceSettingConfigurationCreationRequestInput {
     get {return _input ?? Settings_ServiceSettingConfigurationCreationRequestInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Settings_ServiceSettingConfigurationCreationRequestInput? = nil
 }
 
-struct Settings_CreateServiceSettingConfigurationResponse: Sendable {
+public struct Settings_CreateServiceSettingConfigurationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var created: Settings_ServiceSettingConfiguration {
+  public var created: Settings_ServiceSettingConfiguration {
     get {return _created ?? Settings_ServiceSettingConfiguration()}
     set {_created = newValue}
   }
   /// Returns true if `created` has been explicitly set.
-  var hasCreated: Bool {return self._created != nil}
+  public var hasCreated: Bool {return self._created != nil}
   /// Clears the value of `created`. Subsequent reads from it will return its default value.
-  mutating func clearCreated() {self._created = nil}
+  public mutating func clearCreated() {self._created = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _created: Settings_ServiceSettingConfiguration? = nil
 }
 
 /// ArchiveServiceSetting
-struct Settings_ArchiveServiceSettingRequest: Sendable {
+public struct Settings_ArchiveServiceSettingRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceSettingID: String = String()
+  public var serviceSettingID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Settings_ArchiveServiceSettingResponse: Sendable {
+public struct Settings_ArchiveServiceSettingResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// ArchiveServiceSettingConfiguration
-struct Settings_ArchiveServiceSettingConfigurationRequest: Sendable {
+public struct Settings_ArchiveServiceSettingConfigurationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceSettingConfigurationID: String = String()
+  public var serviceSettingConfigurationID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Settings_ArchiveServiceSettingConfigurationResponse: Sendable {
+public struct Settings_ArchiveServiceSettingConfigurationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// GetServiceSetting
-struct Settings_GetServiceSettingRequest: Sendable {
+public struct Settings_GetServiceSettingRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceSettingID: String = String()
+  public var serviceSettingID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Settings_GetServiceSettingResponse: Sendable {
+public struct Settings_GetServiceSettingResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Settings_ServiceSetting {
+  public var result: Settings_ServiceSetting {
     get {return _result ?? Settings_ServiceSetting()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Settings_ServiceSetting? = nil
 }
 
 /// GetServiceSettingConfigurationByName
-struct Settings_GetServiceSettingConfigurationByNameRequest: Sendable {
+public struct Settings_GetServiceSettingConfigurationByNameRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var serviceSettingConfigurationName: String = String()
+  public var serviceSettingConfigurationName: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Settings_GetServiceSettingConfigurationByNameResponse: Sendable {
+public struct Settings_GetServiceSettingConfigurationByNameResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var result: Settings_ServiceSettingConfiguration {
+  public var result: Settings_ServiceSettingConfiguration {
     get {return _result ?? Settings_ServiceSettingConfiguration()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
@@ -318,338 +318,338 @@ struct Settings_GetServiceSettingConfigurationByNameResponse: Sendable {
 }
 
 /// GetServiceSettingConfigurationsForAccount
-struct Settings_GetServiceSettingConfigurationsForAccountRequest: Sendable {
+public struct Settings_GetServiceSettingConfigurationsForAccountRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Settings_GetServiceSettingConfigurationsForAccountResponse: Sendable {
+public struct Settings_GetServiceSettingConfigurationsForAccountResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Settings_ServiceSettingConfiguration] = []
+  public var results: [Settings_ServiceSettingConfiguration] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
 /// GetServiceSettingConfigurationsForUser
-struct Settings_GetServiceSettingConfigurationsForUserRequest: Sendable {
+public struct Settings_GetServiceSettingConfigurationsForUserRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Settings_GetServiceSettingConfigurationsForUserResponse: Sendable {
+public struct Settings_GetServiceSettingConfigurationsForUserResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Settings_ServiceSettingConfiguration] = []
+  public var results: [Settings_ServiceSettingConfiguration] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
 /// GetServiceSettings
-struct Settings_GetServiceSettingsRequest: Sendable {
+public struct Settings_GetServiceSettingsRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Settings_GetServiceSettingsResponse: Sendable {
+public struct Settings_GetServiceSettingsResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Settings_ServiceSetting] = []
+  public var results: [Settings_ServiceSetting] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
 /// SearchForServiceSettings
-struct Settings_SearchForServiceSettingsRequest: Sendable {
+public struct Settings_SearchForServiceSettingsRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var filter: Filtering_QueryFilter {
+  public var filter: Filtering_QueryFilter {
     get {return _filter ?? Filtering_QueryFilter()}
     set {_filter = newValue}
   }
   /// Returns true if `filter` has been explicitly set.
-  var hasFilter: Bool {return self._filter != nil}
+  public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
-  mutating func clearFilter() {self._filter = nil}
+  public mutating func clearFilter() {self._filter = nil}
 
-  var query: String = String()
+  public var query: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _filter: Filtering_QueryFilter? = nil
 }
 
-struct Settings_SearchForServiceSettingsResponse: Sendable {
+public struct Settings_SearchForServiceSettingsResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var pagination: Filtering_Pagination {
+  public var pagination: Filtering_Pagination {
     get {return _pagination ?? Filtering_Pagination()}
     set {_pagination = newValue}
   }
   /// Returns true if `pagination` has been explicitly set.
-  var hasPagination: Bool {return self._pagination != nil}
+  public var hasPagination: Bool {return self._pagination != nil}
   /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
-  mutating func clearPagination() {self._pagination = nil}
+  public mutating func clearPagination() {self._pagination = nil}
 
-  var results: [Settings_ServiceSetting] = []
+  public var results: [Settings_ServiceSetting] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _pagination: Filtering_Pagination? = nil
 }
 
 /// UpdateServiceSettingConfiguration
-struct Settings_UpdateServiceSettingConfigurationRequest: Sendable {
+public struct Settings_UpdateServiceSettingConfigurationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceSettingConfigurationID: String = String()
+  public var serviceSettingConfigurationID: String = String()
 
-  var input: Settings_ServiceSettingConfigurationUpdateRequestInput {
+  public var input: Settings_ServiceSettingConfigurationUpdateRequestInput {
     get {return _input ?? Settings_ServiceSettingConfigurationUpdateRequestInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Settings_ServiceSettingConfigurationUpdateRequestInput? = nil
 }
 
-struct Settings_UpdateServiceSettingConfigurationResponse: Sendable {
+public struct Settings_UpdateServiceSettingConfigurationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var updated: Settings_ServiceSettingConfiguration {
+  public var updated: Settings_ServiceSettingConfiguration {
     get {return _updated ?? Settings_ServiceSettingConfiguration()}
     set {_updated = newValue}
   }
   /// Returns true if `updated` has been explicitly set.
-  var hasUpdated: Bool {return self._updated != nil}
+  public var hasUpdated: Bool {return self._updated != nil}
   /// Clears the value of `updated`. Subsequent reads from it will return its default value.
-  mutating func clearUpdated() {self._updated = nil}
+  public mutating func clearUpdated() {self._updated = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _updated: Settings_ServiceSettingConfiguration? = nil
 }
 
-struct Settings_ServiceSetting: Sendable {
+public struct Settings_ServiceSetting: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  var hasCreatedAt: Bool {return self._createdAt != nil}
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAt() {self._createdAt = nil}
+  public mutating func clearCreatedAt() {self._createdAt = nil}
 
-  var defaultValue: String {
+  public var defaultValue: String {
     get {return _defaultValue ?? String()}
     set {_defaultValue = newValue}
   }
   /// Returns true if `defaultValue` has been explicitly set.
-  var hasDefaultValue: Bool {return self._defaultValue != nil}
+  public var hasDefaultValue: Bool {return self._defaultValue != nil}
   /// Clears the value of `defaultValue`. Subsequent reads from it will return its default value.
-  mutating func clearDefaultValue() {self._defaultValue = nil}
+  public mutating func clearDefaultValue() {self._defaultValue = nil}
 
-  var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_lastUpdatedAt = newValue}
   }
   /// Returns true if `lastUpdatedAt` has been explicitly set.
-  var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
 
-  var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_archivedAt = newValue}
   }
   /// Returns true if `archivedAt` has been explicitly set.
-  var hasArchivedAt: Bool {return self._archivedAt != nil}
+  public var hasArchivedAt: Bool {return self._archivedAt != nil}
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
-  mutating func clearArchivedAt() {self._archivedAt = nil}
+  public mutating func clearArchivedAt() {self._archivedAt = nil}
 
-  var id: String = String()
+  public var id: String = String()
 
-  var name: String = String()
+  public var name: String = String()
 
-  var type: String = String()
+  public var type: String = String()
 
-  var description_p: String = String()
+  public var description_p: String = String()
 
-  var enumeration: [String] = []
+  public var enumeration: [String] = []
 
-  var adminsOnly: Bool = false
+  public var adminsOnly: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _defaultValue: String? = nil
@@ -657,163 +657,163 @@ struct Settings_ServiceSetting: Sendable {
   fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct Settings_ServiceSettingConfiguration: @unchecked Sendable {
+public struct Settings_ServiceSettingConfiguration: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  var hasCreatedAt: Bool {return _storage._createdAt != nil}
+  public var hasCreatedAt: Bool {return _storage._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
+  public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._lastUpdatedAt = newValue}
   }
   /// Returns true if `lastUpdatedAt` has been explicitly set.
-  var hasLastUpdatedAt: Bool {return _storage._lastUpdatedAt != nil}
+  public var hasLastUpdatedAt: Bool {return _storage._lastUpdatedAt != nil}
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearLastUpdatedAt() {_uniqueStorage()._lastUpdatedAt = nil}
+  public mutating func clearLastUpdatedAt() {_uniqueStorage()._lastUpdatedAt = nil}
 
-  var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._archivedAt = newValue}
   }
   /// Returns true if `archivedAt` has been explicitly set.
-  var hasArchivedAt: Bool {return _storage._archivedAt != nil}
+  public var hasArchivedAt: Bool {return _storage._archivedAt != nil}
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
-  mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
+  public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
 
-  var id: String {
+  public var id: String {
     get {return _storage._id}
     set {_uniqueStorage()._id = newValue}
   }
 
-  var value: String {
+  public var value: String {
     get {return _storage._value}
     set {_uniqueStorage()._value = newValue}
   }
 
-  var notes: String {
+  public var notes: String {
     get {return _storage._notes}
     set {_uniqueStorage()._notes = newValue}
   }
 
-  var belongsToUser: String {
+  public var belongsToUser: String {
     get {return _storage._belongsToUser}
     set {_uniqueStorage()._belongsToUser = newValue}
   }
 
-  var belongsToAccount: String {
+  public var belongsToAccount: String {
     get {return _storage._belongsToAccount}
     set {_uniqueStorage()._belongsToAccount = newValue}
   }
 
-  var serviceSetting: Settings_ServiceSetting {
+  public var serviceSetting: Settings_ServiceSetting {
     get {return _storage._serviceSetting ?? Settings_ServiceSetting()}
     set {_uniqueStorage()._serviceSetting = newValue}
   }
   /// Returns true if `serviceSetting` has been explicitly set.
-  var hasServiceSetting: Bool {return _storage._serviceSetting != nil}
+  public var hasServiceSetting: Bool {return _storage._serviceSetting != nil}
   /// Clears the value of `serviceSetting`. Subsequent reads from it will return its default value.
-  mutating func clearServiceSetting() {_uniqueStorage()._serviceSetting = nil}
+  public mutating func clearServiceSetting() {_uniqueStorage()._serviceSetting = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct Settings_ServiceSettingConfigurationCreationRequestInput: Sendable {
+public struct Settings_ServiceSettingConfigurationCreationRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var value: String = String()
+  public var value: String = String()
 
-  var notes: String = String()
+  public var notes: String = String()
 
-  var serviceSettingID: String = String()
+  public var serviceSettingID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Settings_ServiceSettingConfigurationUpdateRequestInput: Sendable {
+public struct Settings_ServiceSettingConfigurationUpdateRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var value: String {
+  public var value: String {
     get {return _value ?? String()}
     set {_value = newValue}
   }
   /// Returns true if `value` has been explicitly set.
-  var hasValue: Bool {return self._value != nil}
+  public var hasValue: Bool {return self._value != nil}
   /// Clears the value of `value`. Subsequent reads from it will return its default value.
-  mutating func clearValue() {self._value = nil}
+  public mutating func clearValue() {self._value = nil}
 
-  var notes: String {
+  public var notes: String {
     get {return _notes ?? String()}
     set {_notes = newValue}
   }
   /// Returns true if `notes` has been explicitly set.
-  var hasNotes: Bool {return self._notes != nil}
+  public var hasNotes: Bool {return self._notes != nil}
   /// Clears the value of `notes`. Subsequent reads from it will return its default value.
-  mutating func clearNotes() {self._notes = nil}
+  public mutating func clearNotes() {self._notes = nil}
 
-  var serviceSettingID: String {
+  public var serviceSettingID: String {
     get {return _serviceSettingID ?? String()}
     set {_serviceSettingID = newValue}
   }
   /// Returns true if `serviceSettingID` has been explicitly set.
-  var hasServiceSettingID: Bool {return self._serviceSettingID != nil}
+  public var hasServiceSettingID: Bool {return self._serviceSettingID != nil}
   /// Clears the value of `serviceSettingID`. Subsequent reads from it will return its default value.
-  mutating func clearServiceSettingID() {self._serviceSettingID = nil}
+  public mutating func clearServiceSettingID() {self._serviceSettingID = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _value: String? = nil
   fileprivate var _notes: String? = nil
   fileprivate var _serviceSettingID: String? = nil
 }
 
-struct Settings_ServiceSettingCreationRequestInput: Sendable {
+public struct Settings_ServiceSettingCreationRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var defaultValue: String {
+  public var defaultValue: String {
     get {return _defaultValue ?? String()}
     set {_defaultValue = newValue}
   }
   /// Returns true if `defaultValue` has been explicitly set.
-  var hasDefaultValue: Bool {return self._defaultValue != nil}
+  public var hasDefaultValue: Bool {return self._defaultValue != nil}
   /// Clears the value of `defaultValue`. Subsequent reads from it will return its default value.
-  mutating func clearDefaultValue() {self._defaultValue = nil}
+  public mutating func clearDefaultValue() {self._defaultValue = nil}
 
-  var name: String = String()
+  public var name: String = String()
 
-  var type: String = String()
+  public var type: String = String()
 
-  var description_p: String = String()
+  public var description_p: String = String()
 
-  var enumeration: [String] = []
+  public var enumeration: [String] = []
 
-  var adminsOnly: Bool = false
+  public var adminsOnly: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _defaultValue: String? = nil
 }
@@ -823,10 +823,10 @@ struct Settings_ServiceSettingCreationRequestInput: Sendable {
 fileprivate let _protobuf_package = "settings"
 
 extension Settings_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ServiceSettingConfigurations\0\u{1}UserServiceSettingConfigurations\0")
+  public static let protoMessageName: String = _protobuf_package + ".DataCollection"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ServiceSettingConfigurations\0\u{1}UserServiceSettingConfigurations\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -839,7 +839,7 @@ extension Settings_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.serviceSettingConfigurations.isEmpty {
       try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Settings_ServiceSettingConfiguration>.self, value: self.serviceSettingConfigurations, fieldNumber: 1)
     }
@@ -849,7 +849,7 @@ extension Settings_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_DataCollection, rhs: Settings_DataCollection) -> Bool {
+  public static func ==(lhs: Settings_DataCollection, rhs: Settings_DataCollection) -> Bool {
     if lhs.serviceSettingConfigurations != rhs.serviceSettingConfigurations {return false}
     if lhs.userServiceSettingConfigurations != rhs.userServiceSettingConfigurations {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -858,10 +858,10 @@ extension Settings_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
 }
 
 extension Settings_CreateServiceSettingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -873,7 +873,7 @@ extension Settings_CreateServiceSettingRequest: SwiftProtobuf.Message, SwiftProt
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -884,7 +884,7 @@ extension Settings_CreateServiceSettingRequest: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_CreateServiceSettingRequest, rhs: Settings_CreateServiceSettingRequest) -> Bool {
+  public static func ==(lhs: Settings_CreateServiceSettingRequest, rhs: Settings_CreateServiceSettingRequest) -> Bool {
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -892,10 +892,10 @@ extension Settings_CreateServiceSettingRequest: SwiftProtobuf.Message, SwiftProt
 }
 
 extension Settings_CreateServiceSettingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -908,7 +908,7 @@ extension Settings_CreateServiceSettingResponse: SwiftProtobuf.Message, SwiftPro
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -922,7 +922,7 @@ extension Settings_CreateServiceSettingResponse: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_CreateServiceSettingResponse, rhs: Settings_CreateServiceSettingResponse) -> Bool {
+  public static func ==(lhs: Settings_CreateServiceSettingResponse, rhs: Settings_CreateServiceSettingResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._created != rhs._created {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -931,10 +931,10 @@ extension Settings_CreateServiceSettingResponse: SwiftProtobuf.Message, SwiftPro
 }
 
 extension Settings_CreateServiceSettingConfigurationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingConfigurationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingConfigurationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -946,7 +946,7 @@ extension Settings_CreateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -957,7 +957,7 @@ extension Settings_CreateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_CreateServiceSettingConfigurationRequest, rhs: Settings_CreateServiceSettingConfigurationRequest) -> Bool {
+  public static func ==(lhs: Settings_CreateServiceSettingConfigurationRequest, rhs: Settings_CreateServiceSettingConfigurationRequest) -> Bool {
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -965,10 +965,10 @@ extension Settings_CreateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
 }
 
 extension Settings_CreateServiceSettingConfigurationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingConfigurationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let protoMessageName: String = _protobuf_package + ".CreateServiceSettingConfigurationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -981,7 +981,7 @@ extension Settings_CreateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -995,7 +995,7 @@ extension Settings_CreateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_CreateServiceSettingConfigurationResponse, rhs: Settings_CreateServiceSettingConfigurationResponse) -> Bool {
+  public static func ==(lhs: Settings_CreateServiceSettingConfigurationResponse, rhs: Settings_CreateServiceSettingConfigurationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._created != rhs._created {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1004,10 +1004,10 @@ extension Settings_CreateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
 }
 
 extension Settings_ArchiveServiceSettingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1019,14 +1019,14 @@ extension Settings_ArchiveServiceSettingRequest: SwiftProtobuf.Message, SwiftPro
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.serviceSettingID.isEmpty {
       try visitor.visitSingularStringField(value: self.serviceSettingID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ArchiveServiceSettingRequest, rhs: Settings_ArchiveServiceSettingRequest) -> Bool {
+  public static func ==(lhs: Settings_ArchiveServiceSettingRequest, rhs: Settings_ArchiveServiceSettingRequest) -> Bool {
     if lhs.serviceSettingID != rhs.serviceSettingID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1034,10 +1034,10 @@ extension Settings_ArchiveServiceSettingRequest: SwiftProtobuf.Message, SwiftPro
 }
 
 extension Settings_ArchiveServiceSettingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1049,7 +1049,7 @@ extension Settings_ArchiveServiceSettingResponse: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1060,7 +1060,7 @@ extension Settings_ArchiveServiceSettingResponse: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ArchiveServiceSettingResponse, rhs: Settings_ArchiveServiceSettingResponse) -> Bool {
+  public static func ==(lhs: Settings_ArchiveServiceSettingResponse, rhs: Settings_ArchiveServiceSettingResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1068,10 +1068,10 @@ extension Settings_ArchiveServiceSettingResponse: SwiftProtobuf.Message, SwiftPr
 }
 
 extension Settings_ArchiveServiceSettingConfigurationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingConfigurationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingConfigurationID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingConfigurationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingConfigurationID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1083,14 +1083,14 @@ extension Settings_ArchiveServiceSettingConfigurationRequest: SwiftProtobuf.Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.serviceSettingConfigurationID.isEmpty {
       try visitor.visitSingularStringField(value: self.serviceSettingConfigurationID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ArchiveServiceSettingConfigurationRequest, rhs: Settings_ArchiveServiceSettingConfigurationRequest) -> Bool {
+  public static func ==(lhs: Settings_ArchiveServiceSettingConfigurationRequest, rhs: Settings_ArchiveServiceSettingConfigurationRequest) -> Bool {
     if lhs.serviceSettingConfigurationID != rhs.serviceSettingConfigurationID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1098,10 +1098,10 @@ extension Settings_ArchiveServiceSettingConfigurationRequest: SwiftProtobuf.Mess
 }
 
 extension Settings_ArchiveServiceSettingConfigurationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingConfigurationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveServiceSettingConfigurationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1113,7 +1113,7 @@ extension Settings_ArchiveServiceSettingConfigurationResponse: SwiftProtobuf.Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1124,7 +1124,7 @@ extension Settings_ArchiveServiceSettingConfigurationResponse: SwiftProtobuf.Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ArchiveServiceSettingConfigurationResponse, rhs: Settings_ArchiveServiceSettingConfigurationResponse) -> Bool {
+  public static func ==(lhs: Settings_ArchiveServiceSettingConfigurationResponse, rhs: Settings_ArchiveServiceSettingConfigurationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1132,10 +1132,10 @@ extension Settings_ArchiveServiceSettingConfigurationResponse: SwiftProtobuf.Mes
 }
 
 extension Settings_GetServiceSettingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingID\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1147,14 +1147,14 @@ extension Settings_GetServiceSettingRequest: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.serviceSettingID.isEmpty {
       try visitor.visitSingularStringField(value: self.serviceSettingID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingRequest, rhs: Settings_GetServiceSettingRequest) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingRequest, rhs: Settings_GetServiceSettingRequest) -> Bool {
     if lhs.serviceSettingID != rhs.serviceSettingID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1162,10 +1162,10 @@ extension Settings_GetServiceSettingRequest: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Settings_GetServiceSettingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1178,7 +1178,7 @@ extension Settings_GetServiceSettingResponse: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1192,7 +1192,7 @@ extension Settings_GetServiceSettingResponse: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingResponse, rhs: Settings_GetServiceSettingResponse) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingResponse, rhs: Settings_GetServiceSettingResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1201,10 +1201,10 @@ extension Settings_GetServiceSettingResponse: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Settings_GetServiceSettingConfigurationByNameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationByNameRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}serviceSettingConfigurationName\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationByNameRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}serviceSettingConfigurationName\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1217,7 +1217,7 @@ extension Settings_GetServiceSettingConfigurationByNameRequest: SwiftProtobuf.Me
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1231,7 +1231,7 @@ extension Settings_GetServiceSettingConfigurationByNameRequest: SwiftProtobuf.Me
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationByNameRequest, rhs: Settings_GetServiceSettingConfigurationByNameRequest) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationByNameRequest, rhs: Settings_GetServiceSettingConfigurationByNameRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.serviceSettingConfigurationName != rhs.serviceSettingConfigurationName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1240,10 +1240,10 @@ extension Settings_GetServiceSettingConfigurationByNameRequest: SwiftProtobuf.Me
 }
 
 extension Settings_GetServiceSettingConfigurationByNameResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationByNameResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationByNameResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1257,7 +1257,7 @@ extension Settings_GetServiceSettingConfigurationByNameResponse: SwiftProtobuf.M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1274,7 +1274,7 @@ extension Settings_GetServiceSettingConfigurationByNameResponse: SwiftProtobuf.M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationByNameResponse, rhs: Settings_GetServiceSettingConfigurationByNameResponse) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationByNameResponse, rhs: Settings_GetServiceSettingConfigurationByNameResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs._result != rhs._result {return false}
@@ -1284,10 +1284,10 @@ extension Settings_GetServiceSettingConfigurationByNameResponse: SwiftProtobuf.M
 }
 
 extension Settings_GetServiceSettingConfigurationsForAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForAccountRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForAccountRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1299,7 +1299,7 @@ extension Settings_GetServiceSettingConfigurationsForAccountRequest: SwiftProtob
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1310,7 +1310,7 @@ extension Settings_GetServiceSettingConfigurationsForAccountRequest: SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationsForAccountRequest, rhs: Settings_GetServiceSettingConfigurationsForAccountRequest) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationsForAccountRequest, rhs: Settings_GetServiceSettingConfigurationsForAccountRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1318,10 +1318,10 @@ extension Settings_GetServiceSettingConfigurationsForAccountRequest: SwiftProtob
 }
 
 extension Settings_GetServiceSettingConfigurationsForAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForAccountResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForAccountResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1335,7 +1335,7 @@ extension Settings_GetServiceSettingConfigurationsForAccountResponse: SwiftProto
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1352,7 +1352,7 @@ extension Settings_GetServiceSettingConfigurationsForAccountResponse: SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationsForAccountResponse, rhs: Settings_GetServiceSettingConfigurationsForAccountResponse) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationsForAccountResponse, rhs: Settings_GetServiceSettingConfigurationsForAccountResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -1362,10 +1362,10 @@ extension Settings_GetServiceSettingConfigurationsForAccountResponse: SwiftProto
 }
 
 extension Settings_GetServiceSettingConfigurationsForUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForUserRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForUserRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1377,7 +1377,7 @@ extension Settings_GetServiceSettingConfigurationsForUserRequest: SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1388,7 +1388,7 @@ extension Settings_GetServiceSettingConfigurationsForUserRequest: SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationsForUserRequest, rhs: Settings_GetServiceSettingConfigurationsForUserRequest) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationsForUserRequest, rhs: Settings_GetServiceSettingConfigurationsForUserRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1396,10 +1396,10 @@ extension Settings_GetServiceSettingConfigurationsForUserRequest: SwiftProtobuf.
 }
 
 extension Settings_GetServiceSettingConfigurationsForUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForUserResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingConfigurationsForUserResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1413,7 +1413,7 @@ extension Settings_GetServiceSettingConfigurationsForUserResponse: SwiftProtobuf
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1430,7 +1430,7 @@ extension Settings_GetServiceSettingConfigurationsForUserResponse: SwiftProtobuf
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingConfigurationsForUserResponse, rhs: Settings_GetServiceSettingConfigurationsForUserResponse) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingConfigurationsForUserResponse, rhs: Settings_GetServiceSettingConfigurationsForUserResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -1440,10 +1440,10 @@ extension Settings_GetServiceSettingConfigurationsForUserResponse: SwiftProtobuf
 }
 
 extension Settings_GetServiceSettingsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingsRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1455,7 +1455,7 @@ extension Settings_GetServiceSettingsRequest: SwiftProtobuf.Message, SwiftProtob
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1466,7 +1466,7 @@ extension Settings_GetServiceSettingsRequest: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingsRequest, rhs: Settings_GetServiceSettingsRequest) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingsRequest, rhs: Settings_GetServiceSettingsRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1474,10 +1474,10 @@ extension Settings_GetServiceSettingsRequest: SwiftProtobuf.Message, SwiftProtob
 }
 
 extension Settings_GetServiceSettingsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetServiceSettingsResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetServiceSettingsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1491,7 +1491,7 @@ extension Settings_GetServiceSettingsResponse: SwiftProtobuf.Message, SwiftProto
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1508,7 +1508,7 @@ extension Settings_GetServiceSettingsResponse: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_GetServiceSettingsResponse, rhs: Settings_GetServiceSettingsResponse) -> Bool {
+  public static func ==(lhs: Settings_GetServiceSettingsResponse, rhs: Settings_GetServiceSettingsResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -1518,10 +1518,10 @@ extension Settings_GetServiceSettingsResponse: SwiftProtobuf.Message, SwiftProto
 }
 
 extension Settings_SearchForServiceSettingsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SearchForServiceSettingsRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0")
+  public static let protoMessageName: String = _protobuf_package + ".SearchForServiceSettingsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1534,7 +1534,7 @@ extension Settings_SearchForServiceSettingsRequest: SwiftProtobuf.Message, Swift
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1548,7 +1548,7 @@ extension Settings_SearchForServiceSettingsRequest: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_SearchForServiceSettingsRequest, rhs: Settings_SearchForServiceSettingsRequest) -> Bool {
+  public static func ==(lhs: Settings_SearchForServiceSettingsRequest, rhs: Settings_SearchForServiceSettingsRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
     if lhs.query != rhs.query {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1557,10 +1557,10 @@ extension Settings_SearchForServiceSettingsRequest: SwiftProtobuf.Message, Swift
 }
 
 extension Settings_SearchForServiceSettingsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SearchForServiceSettingsResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let protoMessageName: String = _protobuf_package + ".SearchForServiceSettingsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1574,7 +1574,7 @@ extension Settings_SearchForServiceSettingsResponse: SwiftProtobuf.Message, Swif
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1591,7 +1591,7 @@ extension Settings_SearchForServiceSettingsResponse: SwiftProtobuf.Message, Swif
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_SearchForServiceSettingsResponse, rhs: Settings_SearchForServiceSettingsResponse) -> Bool {
+  public static func ==(lhs: Settings_SearchForServiceSettingsResponse, rhs: Settings_SearchForServiceSettingsResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -1601,10 +1601,10 @@ extension Settings_SearchForServiceSettingsResponse: SwiftProtobuf.Message, Swif
 }
 
 extension Settings_UpdateServiceSettingConfigurationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdateServiceSettingConfigurationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingConfigurationID\0\u{1}input\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdateServiceSettingConfigurationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceSettingConfigurationID\0\u{1}input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1617,7 +1617,7 @@ extension Settings_UpdateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1631,7 +1631,7 @@ extension Settings_UpdateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_UpdateServiceSettingConfigurationRequest, rhs: Settings_UpdateServiceSettingConfigurationRequest) -> Bool {
+  public static func ==(lhs: Settings_UpdateServiceSettingConfigurationRequest, rhs: Settings_UpdateServiceSettingConfigurationRequest) -> Bool {
     if lhs.serviceSettingConfigurationID != rhs.serviceSettingConfigurationID {return false}
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1640,10 +1640,10 @@ extension Settings_UpdateServiceSettingConfigurationRequest: SwiftProtobuf.Messa
 }
 
 extension Settings_UpdateServiceSettingConfigurationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdateServiceSettingConfigurationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdateServiceSettingConfigurationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1656,7 +1656,7 @@ extension Settings_UpdateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1670,7 +1670,7 @@ extension Settings_UpdateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_UpdateServiceSettingConfigurationResponse, rhs: Settings_UpdateServiceSettingConfigurationResponse) -> Bool {
+  public static func ==(lhs: Settings_UpdateServiceSettingConfigurationResponse, rhs: Settings_UpdateServiceSettingConfigurationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._updated != rhs._updated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1679,10 +1679,10 @@ extension Settings_UpdateServiceSettingConfigurationResponse: SwiftProtobuf.Mess
 }
 
 extension Settings_ServiceSetting: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ServiceSetting"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}DefaultValue\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Name\0\u{1}Type\0\u{1}Description\0\u{1}Enumeration\0\u{1}AdminsOnly\0")
+  public static let protoMessageName: String = _protobuf_package + ".ServiceSetting"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}DefaultValue\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Name\0\u{1}Type\0\u{1}Description\0\u{1}Enumeration\0\u{1}AdminsOnly\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1703,7 +1703,7 @@ extension Settings_ServiceSetting: SwiftProtobuf.Message, SwiftProtobuf._Message
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1741,7 +1741,7 @@ extension Settings_ServiceSetting: SwiftProtobuf.Message, SwiftProtobuf._Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ServiceSetting, rhs: Settings_ServiceSetting) -> Bool {
+  public static func ==(lhs: Settings_ServiceSetting, rhs: Settings_ServiceSetting) -> Bool {
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._defaultValue != rhs._defaultValue {return false}
     if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
@@ -1758,8 +1758,8 @@ extension Settings_ServiceSetting: SwiftProtobuf.Message, SwiftProtobuf._Message
 }
 
 extension Settings_ServiceSettingConfiguration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfiguration"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Value\0\u{1}Notes\0\u{1}BelongsToUser\0\u{1}BelongsToAccount\0\u{1}ServiceSetting\0")
+  public static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfiguration"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Value\0\u{1}Notes\0\u{1}BelongsToUser\0\u{1}BelongsToAccount\0\u{1}ServiceSetting\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -1800,7 +1800,7 @@ extension Settings_ServiceSettingConfiguration: SwiftProtobuf.Message, SwiftProt
     return _storage
   }
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1823,7 +1823,7 @@ extension Settings_ServiceSettingConfiguration: SwiftProtobuf.Message, SwiftProt
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every if/case branch local when no optimizations
@@ -1860,7 +1860,7 @@ extension Settings_ServiceSettingConfiguration: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ServiceSettingConfiguration, rhs: Settings_ServiceSettingConfiguration) -> Bool {
+  public static func ==(lhs: Settings_ServiceSettingConfiguration, rhs: Settings_ServiceSettingConfiguration) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
@@ -1884,10 +1884,10 @@ extension Settings_ServiceSettingConfiguration: SwiftProtobuf.Message, SwiftProt
 }
 
 extension Settings_ServiceSettingConfigurationCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfigurationCreationRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Value\0\u{1}Notes\0\u{1}ServiceSettingID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfigurationCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Value\0\u{1}Notes\0\u{1}ServiceSettingID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1901,7 +1901,7 @@ extension Settings_ServiceSettingConfigurationCreationRequestInput: SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.value.isEmpty {
       try visitor.visitSingularStringField(value: self.value, fieldNumber: 1)
     }
@@ -1914,7 +1914,7 @@ extension Settings_ServiceSettingConfigurationCreationRequestInput: SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ServiceSettingConfigurationCreationRequestInput, rhs: Settings_ServiceSettingConfigurationCreationRequestInput) -> Bool {
+  public static func ==(lhs: Settings_ServiceSettingConfigurationCreationRequestInput, rhs: Settings_ServiceSettingConfigurationCreationRequestInput) -> Bool {
     if lhs.value != rhs.value {return false}
     if lhs.notes != rhs.notes {return false}
     if lhs.serviceSettingID != rhs.serviceSettingID {return false}
@@ -1924,10 +1924,10 @@ extension Settings_ServiceSettingConfigurationCreationRequestInput: SwiftProtobu
 }
 
 extension Settings_ServiceSettingConfigurationUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfigurationUpdateRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Value\0\u{1}Notes\0\u{1}ServiceSettingID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ServiceSettingConfigurationUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Value\0\u{1}Notes\0\u{1}ServiceSettingID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1941,7 +1941,7 @@ extension Settings_ServiceSettingConfigurationUpdateRequestInput: SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1958,7 +1958,7 @@ extension Settings_ServiceSettingConfigurationUpdateRequestInput: SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ServiceSettingConfigurationUpdateRequestInput, rhs: Settings_ServiceSettingConfigurationUpdateRequestInput) -> Bool {
+  public static func ==(lhs: Settings_ServiceSettingConfigurationUpdateRequestInput, rhs: Settings_ServiceSettingConfigurationUpdateRequestInput) -> Bool {
     if lhs._value != rhs._value {return false}
     if lhs._notes != rhs._notes {return false}
     if lhs._serviceSettingID != rhs._serviceSettingID {return false}
@@ -1968,10 +1968,10 @@ extension Settings_ServiceSettingConfigurationUpdateRequestInput: SwiftProtobuf.
 }
 
 extension Settings_ServiceSettingCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ServiceSettingCreationRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}DefaultValue\0\u{1}Name\0\u{1}Type\0\u{1}Description\0\u{1}Enumeration\0\u{1}AdminsOnly\0")
+  public static let protoMessageName: String = _protobuf_package + ".ServiceSettingCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}DefaultValue\0\u{1}Name\0\u{1}Type\0\u{1}Description\0\u{1}Enumeration\0\u{1}AdminsOnly\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1988,7 +1988,7 @@ extension Settings_ServiceSettingCreationRequestInput: SwiftProtobuf.Message, Sw
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2014,7 +2014,7 @@ extension Settings_ServiceSettingCreationRequestInput: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Settings_ServiceSettingCreationRequestInput, rhs: Settings_ServiceSettingCreationRequestInput) -> Bool {
+  public static func ==(lhs: Settings_ServiceSettingCreationRequestInput, rhs: Settings_ServiceSettingCreationRequestInput) -> Bool {
     if lhs._defaultValue != rhs._defaultValue {return false}
     if lhs.name != rhs.name {return false}
     if lhs.type != rhs.type {return false}

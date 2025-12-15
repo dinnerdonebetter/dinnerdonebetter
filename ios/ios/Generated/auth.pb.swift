@@ -21,665 +21,665 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// LoginForToken
-struct Auth_LoginForTokenRequest: Sendable {
+public struct Auth_LoginForTokenRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var input: Auth_UserLoginInput {
+  public var input: Auth_UserLoginInput {
     get {return _input ?? Auth_UserLoginInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Auth_UserLoginInput? = nil
 }
 
-struct Auth_LoginForTokenResponse: Sendable {
+public struct Auth_LoginForTokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Auth_TokenResponse {
+  public var result: Auth_TokenResponse {
     get {return _result ?? Auth_TokenResponse()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Auth_TokenResponse? = nil
 }
 
 /// AdminLoginForToken
-struct Auth_AdminLoginForTokenRequest: Sendable {
+public struct Auth_AdminLoginForTokenRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var input: Auth_UserLoginInput {
+  public var input: Auth_UserLoginInput {
     get {return _input ?? Auth_UserLoginInput()}
     set {_input = newValue}
   }
   /// Returns true if `input` has been explicitly set.
-  var hasInput: Bool {return self._input != nil}
+  public var hasInput: Bool {return self._input != nil}
   /// Clears the value of `input`. Subsequent reads from it will return its default value.
-  mutating func clearInput() {self._input = nil}
+  public mutating func clearInput() {self._input = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _input: Auth_UserLoginInput? = nil
 }
 
-struct Auth_AdminLoginForTokenResponse: Sendable {
+public struct Auth_AdminLoginForTokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Auth_TokenResponse {
+  public var result: Auth_TokenResponse {
     get {return _result ?? Auth_TokenResponse()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Auth_TokenResponse? = nil
 }
 
 /// ExchangeToken
-struct Auth_ExchangeTokenRequest: Sendable {
+public struct Auth_ExchangeTokenRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var refreshToken: String = String()
+  public var refreshToken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_ExchangeTokenResponse: Sendable {
+public struct Auth_ExchangeTokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var userID: String = String()
+  public var userID: String = String()
 
-  var accountID: String = String()
+  public var accountID: String = String()
 
-  var accessToken: String = String()
+  public var accessToken: String = String()
 
-  var refreshToken: String = String()
+  public var refreshToken: String = String()
 
-  var expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _expiresUtc ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_expiresUtc = newValue}
   }
   /// Returns true if `expiresUtc` has been explicitly set.
-  var hasExpiresUtc: Bool {return self._expiresUtc != nil}
+  public var hasExpiresUtc: Bool {return self._expiresUtc != nil}
   /// Clears the value of `expiresUtc`. Subsequent reads from it will return its default value.
-  mutating func clearExpiresUtc() {self._expiresUtc = nil}
+  public mutating func clearExpiresUtc() {self._expiresUtc = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
 /// GetActiveAccount
-struct Auth_GetActiveAccountRequest: Sendable {
+public struct Auth_GetActiveAccountRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_GetActiveAccountResponse: Sendable {
+public struct Auth_GetActiveAccountResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Identity_Account {
+  public var result: Identity_Account {
     get {return _result ?? Identity_Account()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Identity_Account? = nil
 }
 
 /// GetAuthStatus
-struct Auth_GetAuthStatusRequest: Sendable {
+public struct Auth_GetAuthStatusRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_GetAuthStatusResponse: Sendable {
+public struct Auth_GetAuthStatusResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var userID: String = String()
+  public var userID: String = String()
 
-  var accountStatus: String = String()
+  public var accountStatus: String = String()
 
-  var accountStatusExplanation: String = String()
+  public var accountStatusExplanation: String = String()
 
-  var activeAccount: String = String()
+  public var activeAccount: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// RedeemPasswordResetToken
-struct Auth_RedeemPasswordResetTokenRequest: Sendable {
+public struct Auth_RedeemPasswordResetTokenRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var token: String = String()
+  public var token: String = String()
 
-  var newPassword: String = String()
+  public var newPassword: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_RedeemPasswordResetTokenResponse: Sendable {
+public struct Auth_RedeemPasswordResetTokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// RefreshTOTPSecret
-struct Auth_RefreshTOTPSecretRequest: Sendable {
+public struct Auth_RefreshTOTPSecretRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var currentPassword: String = String()
+  public var currentPassword: String = String()
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_RefreshTOTPSecretResponse: Sendable {
+public struct Auth_RefreshTOTPSecretResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Auth_TOTPSecretRefreshResponse {
+  public var result: Auth_TOTPSecretRefreshResponse {
     get {return _result ?? Auth_TOTPSecretRefreshResponse()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Auth_TOTPSecretRefreshResponse? = nil
 }
 
 /// RequestEmailVerificationEmail
-struct Auth_RequestEmailVerificationEmailRequest: Sendable {
+public struct Auth_RequestEmailVerificationEmailRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var emailAddress: String = String()
+  public var emailAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_RequestEmailVerificationEmailResponse: Sendable {
+public struct Auth_RequestEmailVerificationEmailResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var submitted: Bool = false
+  public var submitted: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// RequestPasswordResetToken
-struct Auth_RequestPasswordResetTokenRequest: Sendable {
+public struct Auth_RequestPasswordResetTokenRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var emailAddress: String = String()
+  public var emailAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_RequestPasswordResetTokenResponse: Sendable {
+public struct Auth_RequestPasswordResetTokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var accepted: Bool = false
+  public var accepted: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// RequestUsernameReminder
-struct Auth_RequestUsernameReminderRequest: Sendable {
+public struct Auth_RequestUsernameReminderRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var emailAddress: String = String()
+  public var emailAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_RequestUsernameReminderResponse: Sendable {
+public struct Auth_RequestUsernameReminderResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var submitted: Bool = false
+  public var submitted: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// UpdatePassword
-struct Auth_UpdatePasswordRequest: Sendable {
+public struct Auth_UpdatePasswordRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var newPassword: String = String()
+  public var newPassword: String = String()
 
-  var currentPassword: String = String()
+  public var currentPassword: String = String()
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_UpdatePasswordResponse: Sendable {
+public struct Auth_UpdatePasswordResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// VerifyEmailAddress
-struct Auth_VerifyEmailAddressRequest: Sendable {
+public struct Auth_VerifyEmailAddressRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var token: String = String()
+  public var token: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_VerifyEmailAddressResponse: Sendable {
+public struct Auth_VerifyEmailAddressResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var verified: Bool = false
+  public var verified: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// VerifyTOTPSecret
-struct Auth_VerifyTOTPSecretRequest: Sendable {
+public struct Auth_VerifyTOTPSecretRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var userID: String = String()
+  public var userID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_VerifyTOTPSecretResponse: Sendable {
+public struct Auth_VerifyTOTPSecretResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var accepted: Bool = false
+  public var accepted: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-struct Auth_ChangeActiveAccountInput: Sendable {
+public struct Auth_ChangeActiveAccountInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var accountID: String = String()
+  public var accountID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_EmailAddressVerificationRequest: Sendable {
+public struct Auth_EmailAddressVerificationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var token: String = String()
+  public var token: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_EmailAddressVerificationResponse: Sendable {
+public struct Auth_EmailAddressVerificationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-struct Auth_PasswordResetResponse: Sendable {
+public struct Auth_PasswordResetResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var successful: Bool = false
+  public var successful: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-struct Auth_PasswordResetToken: Sendable {
+public struct Auth_PasswordResetToken: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  var hasCreatedAt: Bool {return self._createdAt != nil}
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  mutating func clearCreatedAt() {self._createdAt = nil}
+  public mutating func clearCreatedAt() {self._createdAt = nil}
 
-  var expiresAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var expiresAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _expiresAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_expiresAt = newValue}
   }
   /// Returns true if `expiresAt` has been explicitly set.
-  var hasExpiresAt: Bool {return self._expiresAt != nil}
+  public var hasExpiresAt: Bool {return self._expiresAt != nil}
   /// Clears the value of `expiresAt`. Subsequent reads from it will return its default value.
-  mutating func clearExpiresAt() {self._expiresAt = nil}
+  public mutating func clearExpiresAt() {self._expiresAt = nil}
 
-  var redeemedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var redeemedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _redeemedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_redeemedAt = newValue}
   }
   /// Returns true if `redeemedAt` has been explicitly set.
-  var hasRedeemedAt: Bool {return self._redeemedAt != nil}
+  public var hasRedeemedAt: Bool {return self._redeemedAt != nil}
   /// Clears the value of `redeemedAt`. Subsequent reads from it will return its default value.
-  mutating func clearRedeemedAt() {self._redeemedAt = nil}
+  public mutating func clearRedeemedAt() {self._redeemedAt = nil}
 
-  var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_lastUpdatedAt = newValue}
   }
   /// Returns true if `lastUpdatedAt` has been explicitly set.
-  var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
-  mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
 
-  var id: String = String()
+  public var id: String = String()
 
-  var token: String = String()
+  public var token: String = String()
 
-  var belongsToUser: String = String()
+  public var belongsToUser: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _expiresAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -687,242 +687,242 @@ struct Auth_PasswordResetToken: Sendable {
   fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct Auth_PasswordResetTokenCreationRequestInput: Sendable {
+public struct Auth_PasswordResetTokenCreationRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var emailAddress: String = String()
+  public var emailAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_PasswordResetTokenRedemptionRequestInput: Sendable {
+public struct Auth_PasswordResetTokenRedemptionRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var token: String = String()
+  public var token: String = String()
 
-  var newPassword: String = String()
+  public var newPassword: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_PasswordUpdateInput: Sendable {
+public struct Auth_PasswordUpdateInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var newPassword: String = String()
+  public var newPassword: String = String()
 
-  var currentPassword: String = String()
+  public var currentPassword: String = String()
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_TOTPSecretRefreshInput: Sendable {
+public struct Auth_TOTPSecretRefreshInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var currentPassword: String = String()
+  public var currentPassword: String = String()
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_TOTPSecretRefreshResponse: Sendable {
+public struct Auth_TOTPSecretRefreshResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var twoFactorQrcode: String = String()
+  public var twoFactorQrcode: String = String()
 
-  var twoFactorSecret: String = String()
+  public var twoFactorSecret: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_TOTPSecretVerificationInput: Sendable {
+public struct Auth_TOTPSecretVerificationInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var userID: String = String()
+  public var userID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_TOTPSecretVerificationResponse: Sendable {
+public struct Auth_TOTPSecretVerificationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var accepted: Bool = false
+  public var accepted: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-struct Auth_TokenResponse: Sendable {
+public struct Auth_TokenResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var userID: String = String()
+  public var userID: String = String()
 
-  var accountID: String = String()
+  public var accountID: String = String()
 
-  var accessToken: String = String()
+  public var accessToken: String = String()
 
-  var refreshToken: String = String()
+  public var refreshToken: String = String()
 
-  var expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp {
+  public var expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _expiresUtc ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_expiresUtc = newValue}
   }
   /// Returns true if `expiresUtc` has been explicitly set.
-  var hasExpiresUtc: Bool {return self._expiresUtc != nil}
+  public var hasExpiresUtc: Bool {return self._expiresUtc != nil}
   /// Clears the value of `expiresUtc`. Subsequent reads from it will return its default value.
-  mutating func clearExpiresUtc() {self._expiresUtc = nil}
+  public mutating func clearExpiresUtc() {self._expiresUtc = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _expiresUtc: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct Auth_UserLoginInput: Sendable {
+public struct Auth_UserLoginInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var username: String = String()
+  public var username: String = String()
 
-  var password: String = String()
+  public var password: String = String()
 
-  var totptoken: String = String()
+  public var totptoken: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_UserPermissionsRequestInput: Sendable {
+public struct Auth_UserPermissionsRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var permissions: [String] = []
+  public var permissions: [String] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_UserPermissionsResponse: Sendable {
+public struct Auth_UserPermissionsResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var permissions: Dictionary<String,Bool> = [:]
+  public var permissions: Dictionary<String,Bool> = [:]
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
-struct Auth_UsernameReminderRequestInput: Sendable {
+public struct Auth_UsernameReminderRequestInput: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var emailAddress: String = String()
+  public var emailAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
 /// GetSelf
-struct Auth_GetSelfRequest: Sendable {
+public struct Auth_GetSelfRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Auth_GetSelfResponse: Sendable {
+public struct Auth_GetSelfResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var result: Identity_User {
+  public var result: Identity_User {
     get {return _result ?? Identity_User()}
     set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  var hasResult: Bool {return self._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  mutating func clearResult() {self._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Identity_User? = nil
@@ -933,10 +933,10 @@ struct Auth_GetSelfResponse: Sendable {
 fileprivate let _protobuf_package = "auth"
 
 extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".LoginForTokenRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let protoMessageName: String = _protobuf_package + ".LoginForTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -948,7 +948,7 @@ extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -959,7 +959,7 @@ extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_LoginForTokenRequest, rhs: Auth_LoginForTokenRequest) -> Bool {
+  public static func ==(lhs: Auth_LoginForTokenRequest, rhs: Auth_LoginForTokenRequest) -> Bool {
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -967,10 +967,10 @@ extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 }
 
 extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".LoginForTokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".LoginForTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -983,7 +983,7 @@ extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -997,7 +997,7 @@ extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_LoginForTokenResponse, rhs: Auth_LoginForTokenResponse) -> Bool {
+  public static func ==(lhs: Auth_LoginForTokenResponse, rhs: Auth_LoginForTokenResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1006,10 +1006,10 @@ extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1021,7 +1021,7 @@ extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1032,7 +1032,7 @@ extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_AdminLoginForTokenRequest, rhs: Auth_AdminLoginForTokenRequest) -> Bool {
+  public static func ==(lhs: Auth_AdminLoginForTokenRequest, rhs: Auth_AdminLoginForTokenRequest) -> Bool {
     if lhs._input != rhs._input {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1040,10 +1040,10 @@ extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1056,7 +1056,7 @@ extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1070,7 +1070,7 @@ extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_AdminLoginForTokenResponse, rhs: Auth_AdminLoginForTokenResponse) -> Bool {
+  public static func ==(lhs: Auth_AdminLoginForTokenResponse, rhs: Auth_AdminLoginForTokenResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1079,10 +1079,10 @@ extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ExchangeTokenRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".ExchangeTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1094,14 +1094,14 @@ extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.refreshToken.isEmpty {
       try visitor.visitSingularStringField(value: self.refreshToken, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_ExchangeTokenRequest, rhs: Auth_ExchangeTokenRequest) -> Bool {
+  public static func ==(lhs: Auth_ExchangeTokenRequest, rhs: Auth_ExchangeTokenRequest) -> Bool {
     if lhs.refreshToken != rhs.refreshToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1109,10 +1109,10 @@ extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 }
 
 extension Auth_ExchangeTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ExchangeTokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
+  public static let protoMessageName: String = _protobuf_package + ".ExchangeTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1129,7 +1129,7 @@ extension Auth_ExchangeTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1155,7 +1155,7 @@ extension Auth_ExchangeTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_ExchangeTokenResponse, rhs: Auth_ExchangeTokenResponse) -> Bool {
+  public static func ==(lhs: Auth_ExchangeTokenResponse, rhs: Auth_ExchangeTokenResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.accountID != rhs.accountID {return false}
@@ -1168,29 +1168,29 @@ extension Auth_ExchangeTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Auth_GetActiveAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetActiveAccountRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let protoMessageName: String = _protobuf_package + ".GetActiveAccountRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     // Load everything into unknown fields
     while try decoder.nextFieldNumber() != nil {}
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetActiveAccountRequest, rhs: Auth_GetActiveAccountRequest) -> Bool {
+  public static func ==(lhs: Auth_GetActiveAccountRequest, rhs: Auth_GetActiveAccountRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
 extension Auth_GetActiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetActiveAccountResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetActiveAccountResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1203,7 +1203,7 @@ extension Auth_GetActiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1217,7 +1217,7 @@ extension Auth_GetActiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetActiveAccountResponse, rhs: Auth_GetActiveAccountResponse) -> Bool {
+  public static func ==(lhs: Auth_GetActiveAccountResponse, rhs: Auth_GetActiveAccountResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1226,29 +1226,29 @@ extension Auth_GetActiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Auth_GetAuthStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetAuthStatusRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let protoMessageName: String = _protobuf_package + ".GetAuthStatusRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     // Load everything into unknown fields
     while try decoder.nextFieldNumber() != nil {}
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetAuthStatusRequest, rhs: Auth_GetAuthStatusRequest) -> Bool {
+  public static func ==(lhs: Auth_GetAuthStatusRequest, rhs: Auth_GetAuthStatusRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
 extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetAuthStatusResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountStatus\0\u{1}AccountStatusExplanation\0\u{1}ActiveAccount\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetAuthStatusResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountStatus\0\u{1}AccountStatusExplanation\0\u{1}ActiveAccount\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1264,7 +1264,7 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1287,7 +1287,7 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetAuthStatusResponse, rhs: Auth_GetAuthStatusResponse) -> Bool {
+  public static func ==(lhs: Auth_GetAuthStatusResponse, rhs: Auth_GetAuthStatusResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.accountStatus != rhs.accountStatus {return false}
@@ -1299,10 +1299,10 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
+  public static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1315,7 +1315,7 @@ extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProt
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.token.isEmpty {
       try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
     }
@@ -1325,7 +1325,7 @@ extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RedeemPasswordResetTokenRequest, rhs: Auth_RedeemPasswordResetTokenRequest) -> Bool {
+  public static func ==(lhs: Auth_RedeemPasswordResetTokenRequest, rhs: Auth_RedeemPasswordResetTokenRequest) -> Bool {
     if lhs.token != rhs.token {return false}
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1334,10 +1334,10 @@ extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProt
 }
 
 extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1349,7 +1349,7 @@ extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPro
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1360,7 +1360,7 @@ extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RedeemPasswordResetTokenResponse, rhs: Auth_RedeemPasswordResetTokenResponse) -> Bool {
+  public static func ==(lhs: Auth_RedeemPasswordResetTokenResponse, rhs: Auth_RedeemPasswordResetTokenResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1368,10 +1368,10 @@ extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPro
 }
 
 extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1384,7 +1384,7 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 1)
     }
@@ -1394,7 +1394,7 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RefreshTOTPSecretRequest, rhs: Auth_RefreshTOTPSecretRequest) -> Bool {
+  public static func ==(lhs: Auth_RefreshTOTPSecretRequest, rhs: Auth_RefreshTOTPSecretRequest) -> Bool {
     if lhs.currentPassword != rhs.currentPassword {return false}
     if lhs.totptoken != rhs.totptoken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1403,10 +1403,10 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1419,7 +1419,7 @@ extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1433,7 +1433,7 @@ extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RefreshTOTPSecretResponse, rhs: Auth_RefreshTOTPSecretResponse) -> Bool {
+  public static func ==(lhs: Auth_RefreshTOTPSecretResponse, rhs: Auth_RefreshTOTPSecretResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1442,10 +1442,10 @@ extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Auth_RequestEmailVerificationEmailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1457,14 +1457,14 @@ extension Auth_RequestEmailVerificationEmailRequest: SwiftProtobuf.Message, Swif
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestEmailVerificationEmailRequest, rhs: Auth_RequestEmailVerificationEmailRequest) -> Bool {
+  public static func ==(lhs: Auth_RequestEmailVerificationEmailRequest, rhs: Auth_RequestEmailVerificationEmailRequest) -> Bool {
     if lhs.emailAddress != rhs.emailAddress {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1472,10 +1472,10 @@ extension Auth_RequestEmailVerificationEmailRequest: SwiftProtobuf.Message, Swif
 }
 
 extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1488,7 +1488,7 @@ extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, Swi
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1502,7 +1502,7 @@ extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestEmailVerificationEmailResponse, rhs: Auth_RequestEmailVerificationEmailResponse) -> Bool {
+  public static func ==(lhs: Auth_RequestEmailVerificationEmailResponse, rhs: Auth_RequestEmailVerificationEmailResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.submitted != rhs.submitted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1511,10 +1511,10 @@ extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, Swi
 }
 
 extension Auth_RequestPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1526,14 +1526,14 @@ extension Auth_RequestPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftPro
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestPasswordResetTokenRequest, rhs: Auth_RequestPasswordResetTokenRequest) -> Bool {
+  public static func ==(lhs: Auth_RequestPasswordResetTokenRequest, rhs: Auth_RequestPasswordResetTokenRequest) -> Bool {
     if lhs.emailAddress != rhs.emailAddress {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1541,10 +1541,10 @@ extension Auth_RequestPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftPro
 }
 
 extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1557,7 +1557,7 @@ extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1571,7 +1571,7 @@ extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestPasswordResetTokenResponse, rhs: Auth_RequestPasswordResetTokenResponse) -> Bool {
+  public static func ==(lhs: Auth_RequestPasswordResetTokenResponse, rhs: Auth_RequestPasswordResetTokenResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.accepted != rhs.accepted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1580,10 +1580,10 @@ extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPr
 }
 
 extension Auth_RequestUsernameReminderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1595,14 +1595,14 @@ extension Auth_RequestUsernameReminderRequest: SwiftProtobuf.Message, SwiftProto
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestUsernameReminderRequest, rhs: Auth_RequestUsernameReminderRequest) -> Bool {
+  public static func ==(lhs: Auth_RequestUsernameReminderRequest, rhs: Auth_RequestUsernameReminderRequest) -> Bool {
     if lhs.emailAddress != rhs.emailAddress {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1610,10 +1610,10 @@ extension Auth_RequestUsernameReminderRequest: SwiftProtobuf.Message, SwiftProto
 }
 
 extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
+  public static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1626,7 +1626,7 @@ extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProt
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1640,7 +1640,7 @@ extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_RequestUsernameReminderResponse, rhs: Auth_RequestUsernameReminderResponse) -> Bool {
+  public static func ==(lhs: Auth_RequestUsernameReminderResponse, rhs: Auth_RequestUsernameReminderResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.submitted != rhs.submitted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1649,10 +1649,10 @@ extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProt
 }
 
 extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdatePasswordRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdatePasswordRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1666,7 +1666,7 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.newPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.newPassword, fieldNumber: 1)
     }
@@ -1679,7 +1679,7 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UpdatePasswordRequest, rhs: Auth_UpdatePasswordRequest) -> Bool {
+  public static func ==(lhs: Auth_UpdatePasswordRequest, rhs: Auth_UpdatePasswordRequest) -> Bool {
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
     if lhs.totptoken != rhs.totptoken {return false}
@@ -1689,10 +1689,10 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdatePasswordResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".UpdatePasswordResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1704,7 +1704,7 @@ extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1715,7 +1715,7 @@ extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UpdatePasswordResponse, rhs: Auth_UpdatePasswordResponse) -> Bool {
+  public static func ==(lhs: Auth_UpdatePasswordResponse, rhs: Auth_UpdatePasswordResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1723,10 +1723,10 @@ extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
 }
 
 extension Auth_VerifyEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
+  public static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1738,14 +1738,14 @@ extension Auth_VerifyEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.token.isEmpty {
       try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_VerifyEmailAddressRequest, rhs: Auth_VerifyEmailAddressRequest) -> Bool {
+  public static func ==(lhs: Auth_VerifyEmailAddressRequest, rhs: Auth_VerifyEmailAddressRequest) -> Bool {
     if lhs.token != rhs.token {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1753,10 +1753,10 @@ extension Auth_VerifyEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Verified\0")
+  public static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Verified\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1769,7 +1769,7 @@ extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1783,7 +1783,7 @@ extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_VerifyEmailAddressResponse, rhs: Auth_VerifyEmailAddressResponse) -> Bool {
+  public static func ==(lhs: Auth_VerifyEmailAddressResponse, rhs: Auth_VerifyEmailAddressResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.verified != rhs.verified {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1792,10 +1792,10 @@ extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
+  public static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1808,7 +1808,7 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.totptoken.isEmpty {
       try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 1)
     }
@@ -1818,7 +1818,7 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_VerifyTOTPSecretRequest, rhs: Auth_VerifyTOTPSecretRequest) -> Bool {
+  public static func ==(lhs: Auth_VerifyTOTPSecretRequest, rhs: Auth_VerifyTOTPSecretRequest) -> Bool {
     if lhs.totptoken != rhs.totptoken {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1827,10 +1827,10 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 }
 
 extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1843,7 +1843,7 @@ extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1857,7 +1857,7 @@ extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_VerifyTOTPSecretResponse, rhs: Auth_VerifyTOTPSecretResponse) -> Bool {
+  public static func ==(lhs: Auth_VerifyTOTPSecretResponse, rhs: Auth_VerifyTOTPSecretResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.accepted != rhs.accepted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1866,10 +1866,10 @@ extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Auth_ChangeActiveAccountInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ChangeActiveAccountInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
+  public static let protoMessageName: String = _protobuf_package + ".ChangeActiveAccountInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1881,14 +1881,14 @@ extension Auth_ChangeActiveAccountInput: SwiftProtobuf.Message, SwiftProtobuf._M
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.accountID.isEmpty {
       try visitor.visitSingularStringField(value: self.accountID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_ChangeActiveAccountInput, rhs: Auth_ChangeActiveAccountInput) -> Bool {
+  public static func ==(lhs: Auth_ChangeActiveAccountInput, rhs: Auth_ChangeActiveAccountInput) -> Bool {
     if lhs.accountID != rhs.accountID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1896,10 +1896,10 @@ extension Auth_ChangeActiveAccountInput: SwiftProtobuf.Message, SwiftProtobuf._M
 }
 
 extension Auth_EmailAddressVerificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
+  public static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1911,14 +1911,14 @@ extension Auth_EmailAddressVerificationRequest: SwiftProtobuf.Message, SwiftProt
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.token.isEmpty {
       try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_EmailAddressVerificationRequest, rhs: Auth_EmailAddressVerificationRequest) -> Bool {
+  public static func ==(lhs: Auth_EmailAddressVerificationRequest, rhs: Auth_EmailAddressVerificationRequest) -> Bool {
     if lhs.token != rhs.token {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1926,10 +1926,10 @@ extension Auth_EmailAddressVerificationRequest: SwiftProtobuf.Message, SwiftProt
 }
 
 extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1941,7 +1941,7 @@ extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftPro
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1952,7 +1952,7 @@ extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_EmailAddressVerificationResponse, rhs: Auth_EmailAddressVerificationResponse) -> Bool {
+  public static func ==(lhs: Auth_EmailAddressVerificationResponse, rhs: Auth_EmailAddressVerificationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1960,10 +1960,10 @@ extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftPro
 }
 
 extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PasswordResetResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Successful\0")
+  public static let protoMessageName: String = _protobuf_package + ".PasswordResetResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Successful\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1976,7 +1976,7 @@ extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1990,7 +1990,7 @@ extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_PasswordResetResponse, rhs: Auth_PasswordResetResponse) -> Bool {
+  public static func ==(lhs: Auth_PasswordResetResponse, rhs: Auth_PasswordResetResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.successful != rhs.successful {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1999,10 +1999,10 @@ extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 }
 
 extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PasswordResetToken"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ExpiresAt\0\u{1}RedeemedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Token\0\u{1}BelongsToUser\0")
+  public static let protoMessageName: String = _protobuf_package + ".PasswordResetToken"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ExpiresAt\0\u{1}RedeemedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Token\0\u{1}BelongsToUser\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2020,7 +2020,7 @@ extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._Message
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2049,7 +2049,7 @@ extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_PasswordResetToken, rhs: Auth_PasswordResetToken) -> Bool {
+  public static func ==(lhs: Auth_PasswordResetToken, rhs: Auth_PasswordResetToken) -> Bool {
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._expiresAt != rhs._expiresAt {return false}
     if lhs._redeemedAt != rhs._redeemedAt {return false}
@@ -2063,10 +2063,10 @@ extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._Message
 }
 
 extension Auth_PasswordResetTokenCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenCreationRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2078,14 +2078,14 @@ extension Auth_PasswordResetTokenCreationRequestInput: SwiftProtobuf.Message, Sw
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_PasswordResetTokenCreationRequestInput, rhs: Auth_PasswordResetTokenCreationRequestInput) -> Bool {
+  public static func ==(lhs: Auth_PasswordResetTokenCreationRequestInput, rhs: Auth_PasswordResetTokenCreationRequestInput) -> Bool {
     if lhs.emailAddress != rhs.emailAddress {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2093,10 +2093,10 @@ extension Auth_PasswordResetTokenCreationRequestInput: SwiftProtobuf.Message, Sw
 }
 
 extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenRedemptionRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
+  public static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenRedemptionRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2109,7 +2109,7 @@ extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, 
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.token.isEmpty {
       try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
     }
@@ -2119,7 +2119,7 @@ extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, 
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_PasswordResetTokenRedemptionRequestInput, rhs: Auth_PasswordResetTokenRedemptionRequestInput) -> Bool {
+  public static func ==(lhs: Auth_PasswordResetTokenRedemptionRequestInput, rhs: Auth_PasswordResetTokenRedemptionRequestInput) -> Bool {
     if lhs.token != rhs.token {return false}
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2128,10 +2128,10 @@ extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, 
 }
 
 extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PasswordUpdateInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".PasswordUpdateInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2145,7 +2145,7 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.newPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.newPassword, fieldNumber: 1)
     }
@@ -2158,7 +2158,7 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_PasswordUpdateInput, rhs: Auth_PasswordUpdateInput) -> Bool {
+  public static func ==(lhs: Auth_PasswordUpdateInput, rhs: Auth_PasswordUpdateInput) -> Bool {
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
     if lhs.totptoken != rhs.totptoken {return false}
@@ -2168,10 +2168,10 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
 }
 
 extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2184,7 +2184,7 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 1)
     }
@@ -2194,7 +2194,7 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_TOTPSecretRefreshInput, rhs: Auth_TOTPSecretRefreshInput) -> Bool {
+  public static func ==(lhs: Auth_TOTPSecretRefreshInput, rhs: Auth_TOTPSecretRefreshInput) -> Bool {
     if lhs.currentPassword != rhs.currentPassword {return false}
     if lhs.totptoken != rhs.totptoken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2203,10 +2203,10 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
 }
 
 extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}TwoFactorQRCode\0\u{1}TwoFactorSecret\0")
+  public static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}TwoFactorQRCode\0\u{1}TwoFactorSecret\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2219,7 +2219,7 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.twoFactorQrcode.isEmpty {
       try visitor.visitSingularStringField(value: self.twoFactorQrcode, fieldNumber: 2)
     }
@@ -2229,7 +2229,7 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_TOTPSecretRefreshResponse, rhs: Auth_TOTPSecretRefreshResponse) -> Bool {
+  public static func ==(lhs: Auth_TOTPSecretRefreshResponse, rhs: Auth_TOTPSecretRefreshResponse) -> Bool {
     if lhs.twoFactorQrcode != rhs.twoFactorQrcode {return false}
     if lhs.twoFactorSecret != rhs.twoFactorSecret {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2238,10 +2238,10 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
+  public static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2254,7 +2254,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.totptoken.isEmpty {
       try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 1)
     }
@@ -2264,7 +2264,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_TOTPSecretVerificationInput, rhs: Auth_TOTPSecretVerificationInput) -> Bool {
+  public static func ==(lhs: Auth_TOTPSecretVerificationInput, rhs: Auth_TOTPSecretVerificationInput) -> Bool {
     if lhs.totptoken != rhs.totptoken {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2273,10 +2273,10 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
 }
 
 extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2289,7 +2289,7 @@ extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProto
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2303,7 +2303,7 @@ extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_TOTPSecretVerificationResponse, rhs: Auth_TOTPSecretVerificationResponse) -> Bool {
+  public static func ==(lhs: Auth_TOTPSecretVerificationResponse, rhs: Auth_TOTPSecretVerificationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.accepted != rhs.accepted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2312,10 +2312,10 @@ extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProto
 }
 
 extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TokenResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
+  public static let protoMessageName: String = _protobuf_package + ".TokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2331,7 +2331,7 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2354,7 +2354,7 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_TokenResponse, rhs: Auth_TokenResponse) -> Bool {
+  public static func ==(lhs: Auth_TokenResponse, rhs: Auth_TokenResponse) -> Bool {
     if lhs.userID != rhs.userID {return false}
     if lhs.accountID != rhs.accountID {return false}
     if lhs.accessToken != rhs.accessToken {return false}
@@ -2366,10 +2366,10 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 }
 
 extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserLoginInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Username\0\u{1}Password\0\u{1}TOTPToken\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserLoginInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Username\0\u{1}Password\0\u{1}TOTPToken\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2383,7 +2383,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.username.isEmpty {
       try visitor.visitSingularStringField(value: self.username, fieldNumber: 1)
     }
@@ -2396,7 +2396,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UserLoginInput, rhs: Auth_UserLoginInput) -> Bool {
+  public static func ==(lhs: Auth_UserLoginInput, rhs: Auth_UserLoginInput) -> Bool {
     if lhs.username != rhs.username {return false}
     if lhs.password != rhs.password {return false}
     if lhs.totptoken != rhs.totptoken {return false}
@@ -2406,10 +2406,10 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 }
 
 extension Auth_UserPermissionsRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserPermissionsRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Permissions\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserPermissionsRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Permissions\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2421,14 +2421,14 @@ extension Auth_UserPermissionsRequestInput: SwiftProtobuf.Message, SwiftProtobuf
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.permissions.isEmpty {
       try visitor.visitRepeatedStringField(value: self.permissions, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UserPermissionsRequestInput, rhs: Auth_UserPermissionsRequestInput) -> Bool {
+  public static func ==(lhs: Auth_UserPermissionsRequestInput, rhs: Auth_UserPermissionsRequestInput) -> Bool {
     if lhs.permissions != rhs.permissions {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2436,10 +2436,10 @@ extension Auth_UserPermissionsRequestInput: SwiftProtobuf.Message, SwiftProtobuf
 }
 
 extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserPermissionsResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Permissions\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserPermissionsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Permissions\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2452,7 +2452,7 @@ extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2466,7 +2466,7 @@ extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UserPermissionsResponse, rhs: Auth_UserPermissionsResponse) -> Bool {
+  public static func ==(lhs: Auth_UserPermissionsResponse, rhs: Auth_UserPermissionsResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.permissions != rhs.permissions {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -2475,10 +2475,10 @@ extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
 }
 
 extension Auth_UsernameReminderRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UsernameReminderRequestInput"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let protoMessageName: String = _protobuf_package + ".UsernameReminderRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2490,14 +2490,14 @@ extension Auth_UsernameReminderRequestInput: SwiftProtobuf.Message, SwiftProtobu
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_UsernameReminderRequestInput, rhs: Auth_UsernameReminderRequestInput) -> Bool {
+  public static func ==(lhs: Auth_UsernameReminderRequestInput, rhs: Auth_UsernameReminderRequestInput) -> Bool {
     if lhs.emailAddress != rhs.emailAddress {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2505,29 +2505,29 @@ extension Auth_UsernameReminderRequestInput: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension Auth_GetSelfRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetSelfRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let protoMessageName: String = _protobuf_package + ".GetSelfRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     // Load everything into unknown fields
     while try decoder.nextFieldNumber() != nil {}
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetSelfRequest, rhs: Auth_GetSelfRequest) -> Bool {
+  public static func ==(lhs: Auth_GetSelfRequest, rhs: Auth_GetSelfRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
 extension Auth_GetSelfResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GetSelfResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let protoMessageName: String = _protobuf_package + ".GetSelfResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -2540,7 +2540,7 @@ extension Auth_GetSelfResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -2554,7 +2554,7 @@ extension Auth_GetSelfResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Auth_GetSelfResponse, rhs: Auth_GetSelfResponse) -> Bool {
+  public static func ==(lhs: Auth_GetSelfResponse, rhs: Auth_GetSelfResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

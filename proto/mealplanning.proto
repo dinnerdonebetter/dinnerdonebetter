@@ -1557,7 +1557,7 @@ message Recipe {
   repeated RecipePrepTask PrepTasks = 15;
   repeated RecipeStep Steps = 16;
   repeated RecipeMedia Media = 17;
-  bool SealOfApproval = 19;
+  string Status = 19;
   bool EligibleForMeals = 20;
 }
 
@@ -1574,9 +1574,8 @@ message RecipeCreationRequestInput {
   repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
   repeated RecipeStepCreationRequestInput Steps = 11;
   bool AlsoCreateMeal = 12;
-  bool SealOfApproval = 13;
-  bool EligibleForMeals = 14;
-  repeated RecipeMediaCreationRequestInput Media = 15;
+  bool EligibleForMeals = 13;
+  repeated RecipeMediaCreationRequestInput Media = 14;
 }
 
 message RecipeMedia {
@@ -2021,7 +2020,6 @@ message RecipeUpdateRequestInput {
   optional string Source = 3;
   optional string Description = 4;
   optional string InspiredByRecipeID = 5;
-  optional bool SealOfApproval = 6;
   optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
   optional string PortionName = 8;
   optional string PluralPortionName = 9;
@@ -2463,6 +2461,7 @@ message GetRecipeStepsResponse {
 // GetRecipes
 message GetRecipesRequest {
   filtering.QueryFilter Filter = 1;
+  string status = 2;
 }
 
 message GetRecipesResponse {
@@ -2484,6 +2483,18 @@ message SearchForRecipesResponse {
   repeated Recipe Results = 3;
 }
 
+// SearchForMealEligibleRecipes
+message SearchForMealEligibleRecipesRequest {
+  filtering.QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForMealEligibleRecipesResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.Pagination Pagination = 2;
+  repeated Recipe Results = 3;
+}
+
 // UpdateRecipe
 message UpdateRecipeRequest {
   string recipeID = 1;
@@ -2491,6 +2502,17 @@ message UpdateRecipeRequest {
 }
 
 message UpdateRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  Recipe Updated = 2;
+}
+
+// UpdateRecipeStatus
+message UpdateRecipeStatusRequest {
+  string recipeID = 1;
+  string newStatus = 2;
+}
+
+message UpdateRecipeStatusResponse {
   common.ResponseDetails ResponseDetails = 1;
   Recipe Updated = 2;
 }
@@ -3504,6 +3526,7 @@ service MealPlanningService {
   rpc RunMealPlanTaskCreatorWorker(RunMealPlanTaskCreatorWorkerRequest) returns (RunMealPlanTaskCreatorWorkerResponse);
   rpc SearchForMeals(SearchForMealsRequest) returns (SearchForMealsResponse);
   rpc SearchForRecipes(SearchForRecipesRequest) returns (SearchForRecipesResponse);
+  rpc SearchForMealEligibleRecipes(SearchForMealEligibleRecipesRequest) returns (SearchForMealEligibleRecipesResponse);
   rpc SearchForValidIngredientGroups(SearchForValidIngredientGroupsRequest) returns (SearchForValidIngredientGroupsResponse);
   rpc SearchForValidIngredientStates(SearchForValidIngredientStatesRequest) returns (SearchForValidIngredientStatesResponse);
   rpc SearchForValidIngredients(SearchForValidIngredientsRequest) returns (SearchForValidIngredientsResponse);
@@ -3520,6 +3543,7 @@ service MealPlanningService {
   rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);
   rpc UpdateMealPlanTaskStatus(UpdateMealPlanTaskStatusRequest) returns (UpdateMealPlanTaskStatusResponse);
   rpc UpdateRecipe(UpdateRecipeRequest) returns (UpdateRecipeResponse);
+  rpc UpdateRecipeStatus(UpdateRecipeStatusRequest) returns (UpdateRecipeStatusResponse);
   rpc UpdateRecipePrepTask(UpdateRecipePrepTaskRequest) returns (UpdateRecipePrepTaskResponse);
   rpc UpdateRecipeRating(UpdateRecipeRatingRequest) returns (UpdateRecipeRatingResponse);
   rpc UpdateRecipeStep(UpdateRecipeStepRequest) returns (UpdateRecipeStepResponse);

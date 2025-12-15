@@ -1135,7 +1135,7 @@ func TestServiceImpl_GetRecipes(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipes", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On("ListRecipes", testutils.ContextMatcher, "", testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{})
@@ -1164,6 +1164,31 @@ func TestServiceImpl_SearchForRecipes(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.SearchForRecipes(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_SearchForMealEligibleRecipes(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleResult := mealplanningfakes.BuildFakeRecipesList()
+		exampleRequest := fake.BuildFakeForTest[mealplanninggrpc.SearchForMealEligibleRecipesRequest](t)
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("SearchForMealEligibleRecipes", testutils.ContextMatcher, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.recipeManager = mrm
+
+		result, err := s.SearchForMealEligibleRecipes(ctx, exampleRequest)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
