@@ -32,7 +32,7 @@ func TestAdmin_BanningUsers(T *testing.T) {
 		newStatus := identity.BannedUserAccountStatus.String()
 
 		_, err = adminClient.AdminUpdateUserStatus(ctx, &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: createdUser.ID,
+			TargetUserId: createdUser.ID,
 			NewStatus:    newStatus,
 			Reason:       t.Name(),
 		})
@@ -54,7 +54,7 @@ func TestAdmin_BanningUsers(T *testing.T) {
 		require.NotNil(t, status)
 
 		_, err = testClient.AdminUpdateUserStatus(ctx, &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: createdUser.ID,
+			TargetUserId: createdUser.ID,
 			NewStatus:    identity.BannedUserAccountStatus.String(),
 			Reason:       t.Name(),
 		})
@@ -66,7 +66,7 @@ func TestAdmin_BanningUsers(T *testing.T) {
 		ctx := t.Context()
 
 		_, err := adminClient.AdminUpdateUserStatus(ctx, &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: nonexistentID,
+			TargetUserId: nonexistentID,
 			NewStatus:    identity.BannedUserAccountStatus.String(),
 			Reason:       t.Name(),
 		})
@@ -88,9 +88,9 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, account)
 
-		impersonatedCtx := client.ImpersonateUseAndAccountContext(ctx, user.ID, account.Result.ID)
+		impersonatedCtx := client.ImpersonateUseAndAccountContext(ctx, user.ID, account.Result.Id)
 
-		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.ID, webhook.ID)
+		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.Id, webhook.ID)
 
 		retrievedWebhook, err := adminClient.GetWebhook(impersonatedCtx, &webhookssvc.GetWebhookRequest{WebhookId: webhook.ID})
 		assert.NoError(t, err)
@@ -125,9 +125,9 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, account)
 
-		impersonatedCtx := client.ImpersonateUseAndAccountContext(ctx, user.ID, account.Result.ID)
+		impersonatedCtx := client.ImpersonateUseAndAccountContext(ctx, user.ID, account.Result.Id)
 
-		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.ID, retrievedWebhook.Result.Id)
+		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.Id, retrievedWebhook.Result.Id)
 
 		webhook, err := testClient2.GetWebhook(impersonatedCtx, &webhookssvc.GetWebhookRequest{WebhookId: retrievedWebhook.Result.Id})
 		assert.Error(t, err)

@@ -57,17 +57,17 @@ func TestUsers_Reading(T *testing.T) {
 
 		u, _ := createUserAndClientForTest(t)
 
-		user, err := adminClient.GetUser(ctx, &identitysvc.GetUserRequest{UserID: u.ID})
+		user, err := adminClient.GetUser(ctx, &identitysvc.GetUserRequest{UserId: u.ID})
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
-		assert.Equal(t, u.ID, user.Result.ID)
+		assert.Equal(t, u.ID, user.Result.Id)
 	})
 
 	T.Run("nonexistent user", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, err := adminClient.GetUser(ctx, &identitysvc.GetUserRequest{UserID: nonexistentID})
+		user, err := adminClient.GetUser(ctx, &identitysvc.GetUserRequest{UserId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, user)
 	})
@@ -79,7 +79,7 @@ func TestUsers_Reading(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		u, _ := createUserAndClientForTest(t)
 
-		user, err := c.GetUser(ctx, &identitysvc.GetUserRequest{UserID: u.ID})
+		user, err := c.GetUser(ctx, &identitysvc.GetUserRequest{UserId: u.ID})
 		assert.Error(t, err)
 		assert.Nil(t, user)
 	})
@@ -165,7 +165,7 @@ func TestUsers_Archiving(T *testing.T) {
 		user, _ := createUserAndClientForTest(t)
 
 		_, err := adminClient.ArchiveUser(ctx, &identitysvc.ArchiveUserRequest{
-			UserID: user.ID,
+			UserId: user.ID,
 		})
 		assert.NoError(t, err)
 	})
@@ -175,7 +175,7 @@ func TestUsers_Archiving(T *testing.T) {
 		ctx := t.Context()
 
 		_, err := adminClient.ArchiveUser(ctx, &identitysvc.ArchiveUserRequest{
-			UserID: nonexistentID,
+			UserId: nonexistentID,
 		})
 		assert.Error(t, err)
 	})
@@ -188,7 +188,7 @@ func TestUsers_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		_, err := testClient.ArchiveUser(ctx, &identitysvc.ArchiveUserRequest{
-			UserID: user.ID,
+			UserId: user.ID,
 		})
 		assert.Error(t, err)
 	})
@@ -201,7 +201,7 @@ func TestUsers_Archiving(T *testing.T) {
 		testClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := testClient.ArchiveUser(ctx, &identitysvc.ArchiveUserRequest{
-			UserID: user.ID,
+			UserId: user.ID,
 		})
 		assert.Error(t, err)
 	})

@@ -32,7 +32,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 		return page("Accounts", s.renderAccountsError("Error: No account ID provided")), nil
 	}
 
-	accountsRes, err := c.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: accountID})
+	accountsRes, err := c.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: accountID})
 	if err != nil {
 		return page("Accounts", s.renderAccountsError(fmt.Sprintf("Error loading account: %v", err))), nil
 	}
@@ -61,7 +61,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 		FormOptions: &components.FormOptions[*identitysvc.Account]{
 			Palette: &design.StandardPalette,
 			FormID:  "edit-account-form",
-			Action:  fmt.Sprintf("/api/accounts/%s", account.ID),
+			Action:  fmt.Sprintf("/api/accounts/%s", account.Id),
 			Method:  "PUT",
 			// With the new auto-enable feature, we only need to explicitly list fields
 			// that should be editable even when they already have a value.
@@ -222,7 +222,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 	var pageSize uint32 = 10 // Default page size
 
 	usersRes, err := c.GetUsersForAccount(ctx, &identitysvc.GetUsersForAccountRequest{
-		AccountID: accountID,
+		AccountId: accountID,
 		Filter: &filtering.QueryFilter{
 			MaxResponseSize: &pageSize,
 		},
@@ -262,7 +262,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 		},
 		RowLinkGenerator: func(user *identitysvc.User) string {
 			// Link to user details page
-			return fmt.Sprintf("/users/%s", user.ID)
+			return fmt.Sprintf("/users/%s", user.Id)
 		},
 	})
 	if err != nil {
@@ -383,7 +383,7 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.Account) string {
-			return fmt.Sprintf("/accounts/%s", data.ID)
+			return fmt.Sprintf("/accounts/%s", data.Id)
 		},
 		EmptyStateTitle:       "No accounts found",
 		EmptyStateDescription: "Get started by creating your first account account.",
@@ -484,7 +484,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.Account) string {
-			return fmt.Sprintf("/accounts/%s", data.ID)
+			return fmt.Sprintf("/accounts/%s", data.Id)
 		},
 	})
 	if err != nil {

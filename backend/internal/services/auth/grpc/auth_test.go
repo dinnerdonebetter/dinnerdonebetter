@@ -404,7 +404,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeAccount.ID, response.Result.ID)
+		assert.Equal(t, fakeAccount.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, identityRepo)
 	})
@@ -497,7 +497,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeUser.ID, response.Result.ID)
+		assert.Equal(t, fakeUser.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, identityRepo)
 	})

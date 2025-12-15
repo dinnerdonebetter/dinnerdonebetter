@@ -135,7 +135,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
-				AccountInvitationID: invitation.Created.ID,
+				AccountInvitationId: invitation.Created.Id,
 				Input: &identitygrpc.AccountInvitationUpdateRequestInput{
 					Token: invitation.Created.Token,
 					Note:  t.Name(),
@@ -143,7 +143,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			})
 
 			require.NoError(t, err)
-			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountID: relevantAccountID})
+			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountId: relevantAccountID})
 			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
@@ -351,7 +351,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
-				AccountInvitationID: invitation.Created.ID,
+				AccountInvitationId: invitation.Created.Id,
 				Input: &identitygrpc.AccountInvitationUpdateRequestInput{
 					Token: invitation.Created.Token,
 					Note:  t.Name(),
@@ -359,7 +359,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			})
 
 			require.NoError(t, err)
-			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountID: relevantAccountID})
+			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountId: relevantAccountID})
 			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{

@@ -9,6 +9,6 @@ func ConvertGRPCAdminUpdateUserStatusRequestToUserAccountStatusUpdateInput(input
 	return &identity.UserAccountStatusUpdateInput{
 		NewStatus:    input.NewStatus,
 		Reason:       input.Reason,
-		TargetUserID: input.TargetUserID,
+		TargetUserID: input.TargetUserId,
 	}
 }

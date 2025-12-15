@@ -17,7 +17,7 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationID,
+		keys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -26,7 +26,7 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 	}
 
 	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
-	if err = s.identityDataManager.AcceptAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, input); err != nil {
+	if err = s.identityDataManager.AcceptAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "accepting account invitation")
 	}
 
@@ -42,7 +42,7 @@ func (s *serviceImpl) RejectAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationID,
+		keys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -51,7 +51,7 @@ func (s *serviceImpl) RejectAccountInvitation(ctx context.Context, request *iden
 	}
 
 	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
-	if err = s.identityDataManager.RejectAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, input); err != nil {
+	if err = s.identityDataManager.RejectAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to reject account invitation")
 	}
 
@@ -67,7 +67,7 @@ func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *iden
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInvitationIDKey: request.AccountInvitationID,
+		keys.AccountInvitationIDKey: request.AccountInvitationId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -75,7 +75,7 @@ func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *iden
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.identityDataManager.CancelAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, request.Input.Note); err != nil {
+	if err = s.identityDataManager.CancelAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationId, request.Input.Note); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to cancel account invitation")
 	}
 
@@ -95,7 +95,7 @@ func (s *serviceImpl) GetAccountInvitation(ctx context.Context, request *identit
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	accountInvitation, err := s.identityDataManager.GetAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID)
+	accountInvitation, err := s.identityDataManager.GetAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account invitation")
 	}

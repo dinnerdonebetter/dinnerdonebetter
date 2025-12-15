@@ -31,7 +31,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 		return page("Users", s.renderUsersError("Error: No user ID provided")), nil
 	}
 
-	usersRes, err := c.GetUser(ctx, &identitysvc.GetUserRequest{UserID: userID})
+	usersRes, err := c.GetUser(ctx, &identitysvc.GetUserRequest{UserId: userID})
 	if err != nil {
 		return page("Users", s.renderUsersError(fmt.Sprintf("Error loading users: %v", err))), nil
 	}
@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 		Data:         user,
 		FormOptions: &components.FormOptions[*identitysvc.User]{
 			FormID: "edit-user-form",
-			Action: fmt.Sprintf("/api/users/%s", user.ID),
+			Action: fmt.Sprintf("/api/users/%s", user.Id),
 			Method: "PUT",
 
 			// Enable editable fields
@@ -208,7 +208,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 	}
 
 	accountsRes, err := c.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
-		UserID: userID,
+		UserId: userID,
 		Filter: &filtering.QueryFilter{
 			MaxResponseSize: &pageSize,
 			Cursor:          nextCursor,
@@ -253,7 +253,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 			"CreatedAt": renderTimestamp,
 		},
 		RowLinkGenerator: func(account *identitysvc.Account) string {
-			return fmt.Sprintf("/accounts/%s", account.ID)
+			return fmt.Sprintf("/accounts/%s", account.Id)
 		},
 	})
 	if err != nil {
@@ -383,7 +383,7 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *identitysvc.User) string {
-			return fmt.Sprintf("/users/%s", data.ID)
+			return fmt.Sprintf("/users/%s", data.Id)
 		},
 		EmptyStateTitle:       "No users found",
 		EmptyStateDescription: "Get started by creating your first user account.",
@@ -493,7 +493,7 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *identitysvc.User) string {
-			return fmt.Sprintf("/users/%s", data.ID)
+			return fmt.Sprintf("/users/%s", data.Id)
 		},
 	})
 	if err != nil {

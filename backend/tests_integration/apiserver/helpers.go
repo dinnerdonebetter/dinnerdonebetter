@@ -114,12 +114,12 @@ func createServiceUser(ctx context.Context, verifyTOTP bool, in *identity.UserRe
 	ucr := res.Created
 
 	if verifyTOTP {
-		if err = verifyTOTPSecretForUser(ctx, c, ucr.CreatedUserID, ucr.TwoFactorSecret); err != nil {
+		if err = verifyTOTPSecretForUser(ctx, c, ucr.CreatedUserId, ucr.TwoFactorSecret); err != nil {
 			return nil, fmt.Errorf("verifying totp code: %w", err)
 		}
 	}
 	u := &identity.User{
-		ID:              ucr.CreatedUserID,
+		ID:              ucr.CreatedUserId,
 		Username:        ucr.Username,
 		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
