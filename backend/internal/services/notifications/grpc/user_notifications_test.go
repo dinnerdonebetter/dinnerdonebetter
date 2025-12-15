@@ -231,7 +231,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		fakeNotification := notificationsfakes.BuildFakeUserNotification()
 		notificationID := fakeNotification.ID
 		userID := "test-user-id"
-		newStatus := notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_READ
+		newStatus := notifications.UserNotificationStatusTypeRead
 
 		// Mock the first call to get existing notification
 		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
@@ -241,13 +241,13 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 
 		// Mock the second call to get updated notification
 		updatedNotification := *fakeNotification
-		updatedNotification.Status = newStatus.String()
+		updatedNotification.Status = newStatus
 		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(&updatedNotification, nil).Once()
 
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: pointer.To(newStatus),
+				Status: pointer.To(converters.ConvertStringToUserNotificationStatus(newStatus)),
 			},
 		}
 
@@ -257,7 +257,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotNil(t, response.Updated)
-		assert.Equal(t, newStatus.String(), response.Updated.Status.String())
+		assert.Equal(t, newStatus, converters.ConvertUserNotificationStatusToString(response.Updated.Status))
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
