@@ -77,7 +77,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WebhookIDKey, request.WebhookID)
+	logger := s.logger.WithSpan(span).WithValue(keys.WebhookIDKey, request.WebhookId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, sessionContextData.GetActiveAccountID())
+	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhook")
 	}
@@ -144,7 +144,7 @@ func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *webhookssvc.A
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookID, sessionContextData.ActiveAccountID); err != nil {
+	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookId, sessionContextData.ActiveAccountID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook")
 	}
 
@@ -161,9 +161,9 @@ func (s *serviceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *w
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookID).WithValue(keys.WebhookTriggerEventIDKey, request.WebhookTriggerEventID)
+	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookId).WithValue(keys.WebhookTriggerEventIDKey, request.WebhookTriggerEventId)
 
-	if err := s.webhookRepository.ArchiveWebhookTriggerEvent(ctx, request.WebhookID, request.WebhookTriggerEventID); err != nil {
+	if err := s.webhookRepository.ArchiveWebhookTriggerEvent(ctx, request.WebhookId, request.WebhookTriggerEventId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook trigger event")
 	}
 

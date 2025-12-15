@@ -13,9 +13,9 @@ func ConvertWebhookToGRPCWebhook(webhook *webhooks.Webhook) *webhookssvc.Webhook
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(webhook.ArchivedAt),
 		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(webhook.LastUpdatedAt),
 		Name:             webhook.Name,
-		URL:              webhook.URL,
+		Url:              webhook.URL,
 		Method:           webhook.Method,
-		ID:               webhook.ID,
+		Id:               webhook.ID,
 		BelongsToAccount: webhook.BelongsToAccount,
 		ContentType:      webhook.ContentType,
 	}
@@ -31,7 +31,7 @@ func ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(z *webhooks.WebhookTrig
 	return &webhookssvc.WebhookTriggerEvent{
 		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(z.CreatedAt),
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(z.ArchivedAt),
-		ID:               z.ID,
+		Id:               z.ID,
 		BelongsToWebhook: z.BelongsToWebhook,
 		TriggerEvent:     z.TriggerEvent,
 	}
@@ -43,9 +43,9 @@ func ConvertGRPCWebhookToWebhook(webhook *webhookssvc.Webhook) *webhooks.Webhook
 		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(webhook.ArchivedAt),
 		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(webhook.LastUpdatedAt),
 		Name:             webhook.Name,
-		URL:              webhook.URL,
+		URL:              webhook.Url,
 		Method:           webhook.Method,
-		ID:               webhook.ID,
+		ID:               webhook.Id,
 		BelongsToAccount: webhook.BelongsToAccount,
 		ContentType:      webhook.ContentType,
 	}
@@ -61,7 +61,7 @@ func ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(z *webhookssvc.WebhookT
 	return &webhooks.WebhookTriggerEvent{
 		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(z.CreatedAt),
 		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(z.ArchivedAt),
-		ID:               z.ID,
+		ID:               z.Id,
 		BelongsToWebhook: z.BelongsToWebhook,
 		TriggerEvent:     z.TriggerEvent,
 	}
@@ -83,7 +83,7 @@ func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input 
 		ID:               webhookID,
 		Name:             input.Name,
 		ContentType:      input.ContentType,
-		URL:              input.URL,
+		URL:              input.Url,
 		Method:           input.Method,
 		BelongsToAccount: accountID,
 		Events:           events,
@@ -96,7 +96,7 @@ func ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(input *
 	return &webhookssvc.WebhookCreationRequestInput{
 		Name:        input.Name,
 		ContentType: input.ContentType,
-		URL:         input.URL,
+		Url:         input.URL,
 		Method:      input.Method,
 		Events:      input.Events,
 	}

@@ -77,7 +77,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        fakeInput.Name,
 				ContentType: fakeInput.ContentType,
-				URL:         fakeInput.URL,
+				Url:         fakeInput.URL,
 				Method:      fakeInput.Method,
 				Events:      fakeInput.Events,
 			},
@@ -89,9 +89,9 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.Created)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, fakeWebhook.ID, response.Created.ID)
+		assert.Equal(t, fakeWebhook.ID, response.Created.Id)
 		assert.Equal(t, fakeWebhook.Name, response.Created.Name)
-		assert.Equal(t, fakeWebhook.URL, response.Created.URL)
+		assert.Equal(t, fakeWebhook.URL, response.Created.Url)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
@@ -106,7 +106,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        "test webhook",
 				ContentType: "application/json",
-				URL:         "https://example.com/webhook",
+				Url:         "https://example.com/webhook",
 				Method:      "POST",
 				Events:      []string{"test_event"},
 			},
@@ -130,7 +130,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        "", // Invalid empty name
 				ContentType: "application/json",
-				URL:         "https://example.com/webhook",
+				Url:         "https://example.com/webhook",
 				Method:      "POST",
 				Events:      []string{"test_event"},
 			},
@@ -157,7 +157,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        fakeInput.Name,
 				ContentType: fakeInput.ContentType,
-				URL:         fakeInput.URL,
+				Url:         fakeInput.URL,
 				Method:      fakeInput.Method,
 				Events:      fakeInput.Events,
 			},
@@ -199,7 +199,7 @@ func TestServiceImpl_AddWebhookTriggerEvent(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.Created)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, fakeEvent.ID, response.Created.ID)
+		assert.Equal(t, fakeEvent.ID, response.Created.Id)
 		assert.Equal(t, fakeEvent.TriggerEvent, response.Created.TriggerEvent)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
@@ -265,7 +265,7 @@ func TestServiceImpl_GetWebhook(t *testing.T) {
 		mockRepo.On("GetWebhook", testutils.ContextMatcher, webhookID, "test-account-id").Return(fakeWebhook, nil)
 
 		request := &webhookssvc.GetWebhookRequest{
-			WebhookID: webhookID,
+			WebhookId: webhookID,
 		}
 
 		response, err := service.GetWebhook(ctx, request)
@@ -274,7 +274,7 @@ func TestServiceImpl_GetWebhook(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.Result)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, fakeWebhook.ID, response.Result.ID)
+		assert.Equal(t, fakeWebhook.ID, response.Result.Id)
 		assert.Equal(t, fakeWebhook.Name, response.Result.Name)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
@@ -287,7 +287,7 @@ func TestServiceImpl_GetWebhook(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &webhookssvc.GetWebhookRequest{
-			WebhookID: "test-webhook-id",
+			WebhookId: "test-webhook-id",
 		}
 
 		response, err := service.GetWebhook(ctx, request)
@@ -308,7 +308,7 @@ func TestServiceImpl_GetWebhook(t *testing.T) {
 		mockRepo.On("GetWebhook", testutils.ContextMatcher, webhookID, "test-account-id").Return(nil, errors.New("repository error"))
 
 		request := &webhookssvc.GetWebhookRequest{
-			WebhookID: webhookID,
+			WebhookId: webhookID,
 		}
 
 		response, err := service.GetWebhook(ctx, request)
@@ -346,7 +346,7 @@ func TestServiceImpl_GetWebhooks(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.Len(t, response.Results, len(fakeWebhooks.Data))
-		assert.Equal(t, fakeWebhooks.Data[0].ID, response.Results[0].ID)
+		assert.Equal(t, fakeWebhooks.Data[0].ID, response.Results[0].Id)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
@@ -404,7 +404,7 @@ func TestServiceImpl_ArchiveWebhook(t *testing.T) {
 		mockRepo.On("ArchiveWebhook", testutils.ContextMatcher, webhookID, "test-account-id").Return(nil)
 
 		request := &webhookssvc.ArchiveWebhookRequest{
-			WebhookID: webhookID,
+			WebhookId: webhookID,
 		}
 
 		response, err := service.ArchiveWebhook(ctx, request)
@@ -423,7 +423,7 @@ func TestServiceImpl_ArchiveWebhook(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &webhookssvc.ArchiveWebhookRequest{
-			WebhookID: "test-webhook-id",
+			WebhookId: "test-webhook-id",
 		}
 
 		response, err := service.ArchiveWebhook(ctx, request)
@@ -444,7 +444,7 @@ func TestServiceImpl_ArchiveWebhook(t *testing.T) {
 		mockRepo.On("ArchiveWebhook", testutils.ContextMatcher, webhookID, "test-account-id").Return(errors.New("repository error"))
 
 		request := &webhookssvc.ArchiveWebhookRequest{
-			WebhookID: webhookID,
+			WebhookId: webhookID,
 		}
 
 		response, err := service.ArchiveWebhook(ctx, request)
@@ -472,8 +472,8 @@ func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
 		mockRepo.On("ArchiveWebhookTriggerEvent", testutils.ContextMatcher, webhookID, eventID).Return(nil)
 
 		request := &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookID:             webhookID,
-			WebhookTriggerEventID: eventID,
+			WebhookId:             webhookID,
+			WebhookTriggerEventId: eventID,
 		}
 
 		response, err := service.ArchiveWebhookTriggerEvent(ctx, request)
@@ -497,8 +497,8 @@ func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
 		mockRepo.On("ArchiveWebhookTriggerEvent", testutils.ContextMatcher, webhookID, eventID).Return(errors.New("repository error"))
 
 		request := &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookID:             webhookID,
-			WebhookTriggerEventID: eventID,
+			WebhookId:             webhookID,
+			WebhookTriggerEventId: eventID,
 		}
 
 		response, err := service.ArchiveWebhookTriggerEvent(ctx, request)

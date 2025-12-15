@@ -390,7 +390,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})
@@ -471,7 +471,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})
@@ -549,7 +549,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		assert.Empty(t, sentInvitations.Results)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		assert.Error(t, err)
 		assert.Nil(t, webhook)
 	})
@@ -667,7 +667,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})

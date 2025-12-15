@@ -243,7 +243,7 @@ fileprivate let _protobuf_package = "audit"
 
 extension Audit_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{5}AccountAuditLogEntries\0\u{2}\u{4}UserAuditLogEntries\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{5}account_audit_log_entries\0\u{4}\u{4}user_audit_log_entries\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -278,7 +278,7 @@ extension Audit_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
 extension Audit_ChangeLog: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChangeLog"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OldValue\0\u{1}NewValue\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}old_value\0\u{3}new_value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -313,7 +313,7 @@ extension Audit_ChangeLog: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
 
 extension Audit_AuditLogEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AuditLogEntry"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}Changes\0\u{1}BelongsToAccount\0\u{1}ID\0\u{1}ResourceType\0\u{1}RelevantID\0\u{1}EventType\0\u{1}BelongsToUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}changes\0\u{3}belongs_to_account\0\u{1}id\0\u{3}resource_type\0\u{3}relevant_id\0\u{3}event_type\0\u{3}belongs_to_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -382,7 +382,7 @@ extension Audit_AuditLogEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension Audit_GetAuditLogEntriesForAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -416,7 +416,7 @@ extension Audit_GetAuditLogEntriesForAccountRequest: SwiftProtobuf.Message, Swif
 
 extension Audit_GetAuditLogEntriesForAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -460,7 +460,7 @@ extension Audit_GetAuditLogEntriesForAccountResponse: SwiftProtobuf.Message, Swi
 
 extension Audit_GetAuditLogEntriesForUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -494,7 +494,7 @@ extension Audit_GetAuditLogEntriesForUserRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Audit_GetAuditLogEntriesForUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForUserResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -538,7 +538,7 @@ extension Audit_GetAuditLogEntriesForUserResponse: SwiftProtobuf.Message, SwiftP
 
 extension Audit_GetAuditLogEntryByIDRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntryByIDRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AuditLogEntryID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}audit_log_entry_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -568,7 +568,7 @@ extension Audit_GetAuditLogEntryByIDRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Audit_GetAuditLogEntryByIDResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntryByIDResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
