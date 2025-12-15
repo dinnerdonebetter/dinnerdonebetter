@@ -220,7 +220,7 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
-	AND recipes.status = COALESCE(sqlc.narg(status), 'approved')
+	AND recipes.status = COALESCE(sqlc.narg(status), 'approved')::recipe_status
 	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (

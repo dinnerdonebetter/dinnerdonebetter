@@ -617,7 +617,7 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
-	AND recipes.status = COALESCE($6, 'approved')
+	AND recipes.status = COALESCE($6, 'approved')::recipe_status
 	AND recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (

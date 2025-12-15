@@ -172,7 +172,7 @@ ORDER BY %s.%s;`,
 	%s
 FROM %s
 	WHERE %s.%s IS NULL
-	AND %s.%s = COALESCE(sqlc.narg(%s), 'approved')
+	AND %s.%s = COALESCE(sqlc.narg(%s), 'approved')::recipe_status
 	%s
 %s;`,
 					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
