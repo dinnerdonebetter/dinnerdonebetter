@@ -25,7 +25,7 @@ func ConvertServiceSettingToGRPCServiceSetting(input *settings.ServiceSetting) *
 		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		Name:          input.Name,
-		ID:            input.ID,
+		Id:            input.ID,
 		Type:          input.Type,
 		Description:   input.Description,
 		Enumeration:   input.Enumeration,
@@ -40,7 +40,7 @@ func ConvertGRPCServiceSettingToServiceSetting(input *settingssvc.ServiceSetting
 		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		Name:          input.Name,
-		ID:            input.ID,
+		ID:            input.Id,
 		Type:          input.Type,
 		Description:   input.Description,
 		Enumeration:   input.Enumeration,
@@ -54,7 +54,7 @@ func ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingC
 		ID:               identifiers.New(),
 		Value:            input.Value,
 		Notes:            input.Notes,
-		ServiceSettingID: input.ServiceSettingID,
+		ServiceSettingID: input.ServiceSettingId,
 		BelongsToUser:    userID,
 		BelongsToAccount: accountID,
 	}
@@ -64,7 +64,7 @@ func ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingC
 	return &settingssvc.ServiceSettingConfigurationCreationRequestInput{
 		Value:            input.Value,
 		Notes:            input.Notes,
-		ServiceSettingID: input.ServiceSettingID,
+		ServiceSettingId: input.ServiceSettingID,
 	}
 }
 
@@ -84,7 +84,7 @@ func ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(input *
 		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		ID:               input.ID,
+		Id:               input.ID,
 		Value:            input.Value,
 		Notes:            input.Notes,
 		BelongsToUser:    input.BelongsToUser,
@@ -98,7 +98,7 @@ func ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(input *
 		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		ID:               input.ID,
+		ID:               input.Id,
 		Value:            input.Value,
 		Notes:            input.Notes,
 		BelongsToUser:    input.BelongsToUser,
@@ -111,6 +111,6 @@ func ConvertGRPCServiceSettingConfigurationUpdateRequestInputToServiceSettingCon
 	return &settings.ServiceSettingConfigurationUpdateRequestInput{
 		Value:            input.Value,
 		Notes:            input.Notes,
-		ServiceSettingID: input.ServiceSettingID,
+		ServiceSettingID: input.ServiceSettingId,
 	}
 }

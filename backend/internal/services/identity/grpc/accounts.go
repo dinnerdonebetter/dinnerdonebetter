@@ -17,7 +17,7 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountID,
+		keys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -25,7 +25,7 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.identityDataManager.ArchiveAccount(ctx, request.AccountID, sessionContextData.GetUserID()); err != nil {
+	if err = s.identityDataManager.ArchiveAccount(ctx, request.AccountId, sessionContextData.GetUserID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
 	}
 
@@ -93,7 +93,7 @@ func (s *serviceImpl) GetAccount(ctx context.Context, request *identitysvc.GetAc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	account, err := s.identityDataManager.GetAccount(ctx, request.AccountID)
+	account, err := s.identityDataManager.GetAccount(ctx, request.AccountId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account")
 	}
@@ -139,7 +139,7 @@ func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitys
 	defer span.End()
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
-	accounts, err := s.identityDataManager.GetAccounts(ctx, request.UserID, filter)
+	accounts, err := s.identityDataManager.GetAccounts(ctx, request.UserId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
 	}
@@ -161,7 +161,7 @@ func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysv
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountID,
+		keys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -169,7 +169,7 @@ func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysv
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.identityDataManager.SetDefaultAccount(ctx, sessionContextData.GetUserID(), request.AccountID); err != nil {
+	if err = s.identityDataManager.SetDefaultAccount(ctx, sessionContextData.GetUserID(), request.AccountId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set default account")
 	}
 
@@ -186,7 +186,7 @@ func (s *serviceImpl) TransferAccountOwnership(ctx context.Context, request *ide
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountID,
+		keys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -213,7 +213,7 @@ func (s *serviceImpl) UpdateAccount(ctx context.Context, request *identitysvc.Up
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountIDKey: request.AccountID,
+		keys.AccountIDKey: request.AccountId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -239,7 +239,7 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIDKey: request.UserID,
+		keys.UserIDKey: request.UserId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -248,7 +248,7 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	}
 
 	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
-	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, sessionContextData.GetActiveAccountID(), request.UserID, input); err != nil {
+	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, sessionContextData.GetActiveAccountID(), request.UserId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
 	}
 
@@ -265,7 +265,7 @@ func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identi
 
 	// TODO: validate that the user is authorized to do this?
 
-	if err := s.identityDataManager.ArchiveUserMembership(ctx, request.UserID, request.AccountID); err != nil {
+	if err := s.identityDataManager.ArchiveUserMembership(ctx, request.UserId, request.AccountId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user membership")
 	}
 

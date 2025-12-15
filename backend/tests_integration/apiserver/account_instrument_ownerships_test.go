@@ -30,7 +30,7 @@ func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.Cl
 	converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(createdAccountInstrumentOwnership.Created)
 	assertRoughEquality(t, exampleAccountInstrumentOwnership, converted, defaultIgnoredFields("ID", "BelongsToAccount", "Instrument")...)
 
-	res, err := clientToUse.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: createdAccountInstrumentOwnership.Created.ID})
+	res, err := clientToUse.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: createdAccountInstrumentOwnership.Created.Id})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
@@ -74,7 +74,7 @@ func TestAccountInstrumentOwnerships_Creating(T *testing.T) {
 		creationRequestInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
 		convertedInput := mealplanningconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(creationRequestInput)
 		// this is not allowed
-		convertedInput.ValidInstrumentID = ""
+		convertedInput.ValidInstrumentId = ""
 
 		created, err := testClient.CreateAccountInstrumentOwnership(ctx, &settingssvc.CreateAccountInstrumentOwnershipRequest{
 			Input: convertedInput,
@@ -95,7 +95,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 
 		created := createAccountInstrumentOwnershipForTest(t, testClient)
 
-		retrieved, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: created.ID})
+		retrieved, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 
@@ -112,7 +112,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: created.ID})
+		_, err := c.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -120,7 +120,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: nonexistentID})
+		_, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -135,10 +135,10 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		created := createAccountInstrumentOwnershipForTest(t, testClient)
 
-		_, err := testClient.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: created.ID})
+		_, err := testClient.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: created.ID})
+		x, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -152,7 +152,7 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: created.ID})
+		_, err := c.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -162,7 +162,7 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 
-		_, err := testClient.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipID: nonexistentID})
+		_, err := testClient.ArchiveAccountInstrumentOwnership(ctx, &settingssvc.ArchiveAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: nonexistentID})
 		assert.Error(t, err)
 	})
 }

@@ -30,7 +30,7 @@ func createValidIngredientStateIngredientForTest(t *testing.T) (*types.ValidIngr
 	require.NotNil(t, createdValidIngredientStateIngredient)
 
 	validPrepIngredientRes, err := adminClient.GetValidIngredientStateIngredient(ctx, &mealplanningsvc.GetValidIngredientStateIngredientRequest{
-		ValidIngredientStateIngredientID: createdValidIngredientStateIngredient.Result.ID,
+		ValidIngredientStateIngredientId: createdValidIngredientStateIngredient.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepIngredientRes.Result)
@@ -53,8 +53,8 @@ func TestValidIngredientStateIngredients_Creating(T *testing.T) {
 
 		exampleValidIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
 		exampleValidIngredientStateIngredientInput := mealplanningconverters.ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientCreationRequestInput(exampleValidIngredientStateIngredient))
-		exampleValidIngredientStateIngredientInput.ValidIngredientID = ""
-		exampleValidIngredientStateIngredientInput.ValidIngredientStateID = ""
+		exampleValidIngredientStateIngredientInput.ValidIngredientId = ""
+		exampleValidIngredientStateIngredientInput.ValidIngredientStateId = ""
 
 		createdValidIngredientStateIngredient, err := adminClient.CreateValidIngredientStateIngredient(ctx, &mealplanningsvc.CreateValidIngredientStateIngredientRequest{Input: exampleValidIngredientStateIngredientInput})
 		require.Error(t, err)
@@ -81,8 +81,8 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 	for range exampleQuantity - 1 {
 		exampleValidIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
 		exampleValidIngredientStateIngredientInput := mealplanningconverters.ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientCreationRequestInput(exampleValidIngredientStateIngredient))
-		exampleValidIngredientStateIngredientInput.ValidIngredientID = validIngredient.ID
-		exampleValidIngredientStateIngredientInput.ValidIngredientStateID = validIngredientState.ID
+		exampleValidIngredientStateIngredientInput.ValidIngredientId = validIngredient.ID
+		exampleValidIngredientStateIngredientInput.ValidIngredientStateId = validIngredientState.ID
 
 		createdValidIngredientStateIngredient, err := adminClient.CreateValidIngredientStateIngredient(T.Context(), &mealplanningsvc.CreateValidIngredientStateIngredientRequest{Input: exampleValidIngredientStateIngredientInput})
 		require.NoError(T, err)
@@ -105,7 +105,7 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientStateIngredientsByIngredient(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientRequest{ValidIngredientID: validIngredient.ID})
+		results, err := adminClient.GetValidIngredientStateIngredientsByIngredient(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientStateIngredients))
@@ -115,7 +115,7 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{ValidIngredientStateID: validIngredientState.ID})
+		results, err := adminClient.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{ValidIngredientStateId: validIngredientState.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientStateIngredients))

@@ -44,7 +44,7 @@ func (s *AdminFrontendServer) ValidVesselCreate(res http.ResponseWriter, req *ht
 	}
 
 	// Redirect to the newly created valid vessel's page
-	vesselID := createRes.Result.ID
+	vesselID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_vessels/%s", vesselID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -172,7 +172,7 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 		return page("Valid Vessels", s.renderValidVesselsError("Error: No valid vessel ID provided")), nil
 	}
 
-	validVesselRes, err := c.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselID: validVesselID})
+	validVesselRes, err := c.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: validVesselID})
 	if err != nil {
 		return page("Valid Vessels", s.renderValidVesselsError(fmt.Sprintf("Error loading valid vessel: %v", err))), nil
 	}
@@ -198,7 +198,7 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidVessel]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-vessel-form",
-			Action:  fmt.Sprintf("/api/valid_vessels/%s", validVessel.ID),
+			Action:  fmt.Sprintf("/api/valid_vessels/%s", validVessel.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -357,7 +357,7 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
-			return fmt.Sprintf("/valid_vessels/%s", data.ID)
+			return fmt.Sprintf("/valid_vessels/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid vessels found",
 		EmptyStateDescription: "No valid vessels have been created yet.",
@@ -460,7 +460,7 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidVessel) string {
-			return fmt.Sprintf("/valid_vessels/%s", data.ID)
+			return fmt.Sprintf("/valid_vessels/%s", data.Id)
 		},
 	})
 	if err != nil {

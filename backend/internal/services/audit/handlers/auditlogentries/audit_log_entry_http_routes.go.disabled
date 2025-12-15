@@ -29,7 +29,7 @@ func (s *service) ReadAuditLogEntryHandler(res http.ResponseWriter, req *http.Re
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.
@@ -87,7 +87,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	tracing.AttachRequestToSpan(span, req)
@@ -152,7 +152,7 @@ func (s *service) ListAccountAuditLogEntriesHandler(res http.ResponseWriter, req
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	tracing.AttachRequestToSpan(span, req)

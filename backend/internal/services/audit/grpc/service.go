@@ -57,8 +57,7 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 
 	x := &auditsvc.GetAuditLogEntriesForAccountResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			CurrentAccountID: "",
-			TraceID:          span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(auditLogEntries.Pagination, filter),
 		Results:    nil,
@@ -85,8 +84,7 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 
 	x := &auditsvc.GetAuditLogEntriesForUserResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			CurrentAccountID: "",
-			TraceID:          span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(auditLogEntries.Pagination, filter),
 		Results:    nil,
@@ -103,8 +101,8 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryID)
-	auditLogEntry, err := s.auditRepository.GetAuditLogEntry(ctx, request.AuditLogEntryID)
+	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryId)
+	auditLogEntry, err := s.auditRepository.GetAuditLogEntry(ctx, request.AuditLogEntryId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -113,8 +111,7 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 
 	x := &auditsvc.GetAuditLogEntryByIDResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			CurrentAccountID: "",
-			TraceID:          span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: returnValue,
 	}

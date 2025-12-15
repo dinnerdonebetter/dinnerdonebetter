@@ -82,15 +82,15 @@ func createRecipePrepTaskForTest(t *testing.T, userClient client.Client) (*mealp
 	exampleInput := mpconverters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
 	createdRecipePrepTaskRes, err := userClient.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
-		RecipeID: createdRecipe.ID,
+		RecipeId: createdRecipe.ID,
 		Input:    converters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(exampleInput),
 	})
 	require.NoError(t, err)
 	createdRecipePrepTask := converters.ConvertGRPCRecipePrepTaskToRecipePrepTask(createdRecipePrepTaskRes.Created)
 
 	retrievedRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-		RecipeID:         createdRecipe.ID,
-		RecipePrepTaskID: createdRecipePrepTask.ID,
+		RecipeId:         createdRecipe.ID,
+		RecipePrepTaskId: createdRecipePrepTask.ID,
 	})
 	require.NoError(t, err)
 
@@ -119,15 +119,15 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		actual.Update(updateInput)
 
 		_, err := adminClient.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
-			RecipeID:         createdRecipe.ID,
-			RecipePrepTaskID: actual.ID,
+			RecipeId:         createdRecipe.ID,
+			RecipePrepTaskId: actual.ID,
 			Input:            converters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		retrievedRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-			RecipeID:         createdRecipe.ID,
-			RecipePrepTaskID: actual.ID,
+			RecipeId:         createdRecipe.ID,
+			RecipePrepTaskId: actual.ID,
 		})
 		require.NoError(t, err)
 
@@ -138,12 +138,12 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		assert.NotNil(t, retrieved.LastUpdatedAt)
 
 		_, err = userClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
-			RecipeID:         createdRecipe.ID,
-			RecipePrepTaskID: actual.ID,
+			RecipeId:         createdRecipe.ID,
+			RecipePrepTaskId: actual.ID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -180,7 +180,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 			exampleInput := mpconverters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
 			createdRecipePrepTaskRes, err := adminClient.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
-				RecipeID: createdRecipe.ID,
+				RecipeId: createdRecipe.ID,
 				Input:    converters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(exampleInput),
 			})
 			require.NoError(t, err)
@@ -195,8 +195,8 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 			checkRecipePrepTaskEquality(t, -1, exampleRecipePrepTask, createdRecipePrepTask)
 
 			retrievedRecipePrepTaskRes, err := userClient.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-				RecipeID:         createdRecipe.ID,
-				RecipePrepTaskID: createdRecipePrepTask.ID,
+				RecipeId:         createdRecipe.ID,
+				RecipePrepTaskId: createdRecipePrepTask.ID,
 			})
 			require.NoError(t, err)
 
@@ -207,7 +207,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 		}
 
 		// assert recipe prep task list equality
-		actual, err := userClient.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeID: createdRecipe.ID})
+		actual, err := userClient.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeId: createdRecipe.ID})
 		require.NoError(t, err)
 		assert.True(
 			t,
@@ -219,13 +219,13 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 
 		for _, createdRecipePrepTask := range expected {
 			_, err = userClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
-				RecipeID:         createdRecipe.ID,
-				RecipePrepTaskID: createdRecipePrepTask.ID,
+				RecipeId:         createdRecipe.ID,
+				RecipePrepTaskId: createdRecipePrepTask.ID,
 			})
 			assert.NoError(t, err)
 		}
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

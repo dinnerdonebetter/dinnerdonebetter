@@ -35,7 +35,7 @@ func (s *serviceImpl) ArchiveUser(ctx context.Context, request *identitysvc.Arch
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := s.identityDataManager.ArchiveUser(ctx, request.UserID); err != nil {
+	if err := s.identityDataManager.ArchiveUser(ctx, request.UserId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user")
 	}
 
@@ -51,10 +51,10 @@ func (s *serviceImpl) GetUser(ctx context.Context, request *identitysvc.GetUserR
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIDKey: request.UserID,
+		keys.UserIDKey: request.UserId,
 	}, span, s.logger)
 
-	user, err := s.identityDataManager.GetUser(ctx, request.UserID)
+	user, err := s.identityDataManager.GetUser(ctx, request.UserId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}
@@ -100,7 +100,7 @@ func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitys
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountID, filter)
+	users, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
 	}

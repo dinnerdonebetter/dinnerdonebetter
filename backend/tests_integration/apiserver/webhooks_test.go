@@ -54,7 +54,7 @@ func createWebhookForTest(t *testing.T, testClient client.Client) *webhooks.Webh
 	converted := grpcconverters.ConvertGRPCWebhookToWebhook(createdWebhook.Created)
 	checkWebhookEquality(t, exampleWebhook, converted)
 
-	retrievedWebhook, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.Created.ID})
+	retrievedWebhook, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.Created.Id})
 	require.NoError(t, err)
 	require.NotNil(t, retrievedWebhook)
 
@@ -115,7 +115,7 @@ func TestWebhooks_Reading(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createdWebhook := createWebhookForTest(t, testClient)
 
-		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		assert.NoError(t, err)
 		assert.NotNil(t, retrieved)
 	})
@@ -126,7 +126,7 @@ func TestWebhooks_Reading(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 
-		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: nonexistentID})
+		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, retrieved)
 	})
@@ -181,7 +181,7 @@ func TestWebhooks_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createdWebhook := createWebhookForTest(t, testClient)
 
-		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookID: createdWebhook.ID})
+		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookId: createdWebhook.ID})
 		assert.NoError(t, err)
 	})
 
@@ -192,7 +192,7 @@ func TestWebhooks_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createWebhookForTest(t, testClient)
 
-		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookID: nonexistentID})
+		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -217,7 +217,7 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 		createdWebhook := createWebhookForTest(t, testClient)
 
 		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
-			WebhookID: createdWebhook.ID,
+			WebhookId: createdWebhook.ID,
 			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
 				BelongsToWebhook: createdWebhook.ID,
 				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
@@ -233,7 +233,7 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createWebhookForTest(t, testClient)
 
-		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{WebhookID: nonexistentID, Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{}})
+		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{WebhookId: nonexistentID, Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{}})
 		assert.Error(t, err)
 	})
 
@@ -258,7 +258,7 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 		createdWebhook := createWebhookForTest(t, testClient)
 
 		createdTriggerEvent, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
-			WebhookID: createdWebhook.ID,
+			WebhookId: createdWebhook.ID,
 			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
 				BelongsToWebhook: createdWebhook.ID,
 				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
@@ -267,8 +267,8 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 		require.NoError(t, err)
 
 		_, err = testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookID:             createdWebhook.ID,
-			WebhookTriggerEventID: createdTriggerEvent.Created.ID,
+			WebhookId:             createdWebhook.ID,
+			WebhookTriggerEventId: createdTriggerEvent.Created.Id,
 		})
 		assert.NoError(t, err)
 	})
@@ -280,7 +280,7 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createWebhookForTest(t, testClient)
 
-		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{WebhookID: nonexistentID})
+		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{WebhookId: nonexistentID})
 		assert.Error(t, err)
 	})
 

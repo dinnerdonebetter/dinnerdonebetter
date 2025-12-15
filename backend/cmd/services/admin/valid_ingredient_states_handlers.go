@@ -47,7 +47,7 @@ func (s *AdminFrontendServer) ValidIngredientStateCreate(res http.ResponseWriter
 	}
 
 	// Redirect to the newly created valid ingredient state's page
-	ingredientStateID := createRes.Result.ID
+	ingredientStateID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_ingredient_states/%s", ingredientStateID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -155,7 +155,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 		return page("Valid Ingredient States", s.renderValidIngredientStatesError("Error: No valid ingredient state ID provided")), nil
 	}
 
-	validIngredientStateRes, err := c.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateID: validIngredientStateID})
+	validIngredientStateRes, err := c.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: validIngredientStateID})
 	if err != nil {
 		return page("Valid Ingredient States", s.renderValidIngredientStatesError(fmt.Sprintf("Error loading valid ingredient state: %v", err))), nil
 	}
@@ -172,7 +172,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 
 	// Fetch ingredients for this ingredient state with filter
 	ingredientsRes, err := c.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{
-		ValidIngredientStateID: validIngredientStateID,
+		ValidIngredientStateId: validIngredientStateID,
 		Filter:                 grpcFilter,
 	})
 	if err != nil {
@@ -194,7 +194,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidIngredientState]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-ingredient-state-form",
-			Action:  fmt.Sprintf("/api/valid_ingredient_states/%s", validIngredientState.ID),
+			Action:  fmt.Sprintf("/api/valid_ingredient_states/%s", validIngredientState.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -330,7 +330,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
-			return fmt.Sprintf("/valid_ingredient_states/%s", data.ID)
+			return fmt.Sprintf("/valid_ingredient_states/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid ingredient states found",
 		EmptyStateDescription: "No valid ingredient states have been created yet.",
@@ -426,7 +426,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientState) string {
-			return fmt.Sprintf("/valid_ingredient_states/%s", data.ID)
+			return fmt.Sprintf("/valid_ingredient_states/%s", data.Id)
 		},
 	})
 	if err != nil {
@@ -496,7 +496,7 @@ func renderIngredientsTableForState(
 				"IngredientName": func(value any) g.Node {
 					// Value will be the whole item for custom fields, extract ingredient name
 					if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
-						ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.ID)
+						ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.Id)
 						return ghtml.A(
 							ghtml.Href(ingredientURL),
 							g.Attr("hx-get", ingredientURL),
@@ -527,7 +527,7 @@ func renderIngredientsTableForState(
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientStateIngredient) string {
 			if data != nil && data.Ingredient != nil {
-				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.ID)
+				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.Id)
 			}
 			return ""
 		},
@@ -596,7 +596,7 @@ func (s *AdminFrontendServer) ValidIngredientStateIngredientsSearch(_ http.Respo
 	}
 
 	ingredientsRes, err := c.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{
-		ValidIngredientStateID: validIngredientStateID,
+		ValidIngredientStateId: validIngredientStateID,
 		Filter:                 grpcFilter,
 	})
 	if err != nil {
@@ -660,7 +660,7 @@ func (s *AdminFrontendServer) ValidIngredientStateIngredientsSearch(_ http.Respo
 		FieldRenderers: map[string]components.FieldRenderer{
 			"IngredientName": func(value any) g.Node {
 				if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
-					ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.ID)
+					ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.Id)
 					return ghtml.A(
 						ghtml.Href(ingredientURL),
 						g.Attr("hx-get", ingredientURL),
@@ -690,7 +690,7 @@ func (s *AdminFrontendServer) ValidIngredientStateIngredientsSearch(_ http.Respo
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientStateIngredient) string {
 			if data != nil && data.Ingredient != nil {
-				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.ID)
+				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.Id)
 			}
 			return ""
 		},

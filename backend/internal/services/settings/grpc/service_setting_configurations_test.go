@@ -32,7 +32,7 @@ func TestServiceImpl_CreateServiceSettingConfiguration(t *testing.T) {
 			Input: &settingssvc.ServiceSettingConfigurationCreationRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -46,7 +46,7 @@ func TestServiceImpl_CreateServiceSettingConfiguration(t *testing.T) {
 		assert.NotNil(t, actual)
 		assert.NotNil(t, actual.ResponseDetails)
 		assert.NotNil(t, actual.Created)
-		assert.Equal(t, exampleServiceSettingConfiguration.ID, actual.Created.ID)
+		assert.Equal(t, exampleServiceSettingConfiguration.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, settingsRepo)
 	})
@@ -63,7 +63,7 @@ func TestServiceImpl_CreateServiceSettingConfiguration(t *testing.T) {
 			Input: &settingssvc.ServiceSettingConfigurationCreationRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -110,7 +110,7 @@ func TestServiceImpl_CreateServiceSettingConfiguration(t *testing.T) {
 			Input: &settingssvc.ServiceSettingConfigurationCreationRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -151,7 +151,7 @@ func TestServiceImpl_GetServiceSettingConfigurationByName(t *testing.T) {
 		assert.NotNil(t, actual)
 		assert.NotNil(t, actual.ResponseDetails)
 		assert.NotNil(t, actual.Result)
-		assert.Equal(t, exampleServiceSettingConfiguration.ID, actual.Result.ID)
+		assert.Equal(t, exampleServiceSettingConfiguration.ID, actual.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, settingsRepo)
 	})
@@ -379,11 +379,11 @@ func TestServiceImpl_UpdateServiceSettingConfiguration(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.UpdateServiceSettingConfigurationRequest{
-			ServiceSettingConfigurationID: exampleServiceSettingConfiguration.ID,
+			ServiceSettingConfigurationId: exampleServiceSettingConfiguration.ID,
 			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -412,11 +412,11 @@ func TestServiceImpl_UpdateServiceSettingConfiguration(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.UpdateServiceSettingConfigurationRequest{
-			ServiceSettingConfigurationID: exampleServiceSettingConfiguration.ID,
+			ServiceSettingConfigurationId: exampleServiceSettingConfiguration.ID,
 			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -441,11 +441,11 @@ func TestServiceImpl_UpdateServiceSettingConfiguration(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.UpdateServiceSettingConfigurationRequest{
-			ServiceSettingConfigurationID: exampleServiceSettingConfiguration.ID,
+			ServiceSettingConfigurationId: exampleServiceSettingConfiguration.ID,
 			Input: &settingssvc.ServiceSettingConfigurationUpdateRequestInput{
 				Value:            exampleInput.Value,
 				Notes:            exampleInput.Notes,
-				ServiceSettingID: exampleInput.ServiceSettingID,
+				ServiceSettingId: exampleInput.ServiceSettingID,
 			},
 		}
 
@@ -476,7 +476,7 @@ func TestServiceImpl_ArchiveServiceSettingConfiguration(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.ArchiveServiceSettingConfigurationRequest{
-			ServiceSettingConfigurationID: exampleServiceSettingConfiguration.ID,
+			ServiceSettingConfigurationId: exampleServiceSettingConfiguration.ID,
 		}
 
 		settingsRepo.On("ArchiveServiceSettingConfiguration", testutils.ContextMatcher, exampleServiceSettingConfiguration.ID).Return(nil)
@@ -499,7 +499,7 @@ func TestServiceImpl_ArchiveServiceSettingConfiguration(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.ArchiveServiceSettingConfigurationRequest{
-			ServiceSettingConfigurationID: exampleServiceSettingConfiguration.ID,
+			ServiceSettingConfigurationId: exampleServiceSettingConfiguration.ID,
 		}
 
 		settingsRepo.On("ArchiveServiceSettingConfiguration", testutils.ContextMatcher, exampleServiceSettingConfiguration.ID).Return(errors.New("repository error"))

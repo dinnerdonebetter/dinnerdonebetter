@@ -54,19 +54,18 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
-		IngredientID                    *string                           `json:"ingredientID"`
-		ProductOfRecipeStepIndex        *uint64                           `json:"productOfRecipeStepIndex"`
+		_                               struct{}                          `json:"-"`
+		Quantity                        types.Float32RangeWithOptionalMax `json:"quantity"`
+		RecipeStepProductRecipeID       *string                           `json:"productOfRecipeID"`
 		ProductOfRecipeStepProductIndex *uint64                           `json:"productOfRecipeStepProductIndex"`
 		VesselIndex                     *uint16                           `json:"vesselIndex"`
 		ProductPercentageToUse          *float32                          `json:"productPercentageToUse"`
-		RecipeStepProductRecipeID       *string                           `json:"productOfRecipeID"`
+		ProductOfRecipeStepIndex        *uint64                           `json:"productOfRecipeStepIndex"`
+		IngredientID                    *string                           `json:"ingredientID"`
 		IngredientNotes                 string                            `json:"ingredientNotes"`
 		MeasurementUnitID               string                            `json:"measurementUnitID"`
 		Name                            string                            `json:"name"`
 		QuantityNotes                   string                            `json:"quantityNotes"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"quantity"`
 		OptionIndex                     uint16                            `json:"optionIndex"`
 		Optional                        bool                              `json:"optional"`
 		ToTaste                         bool                              `json:"toTaste"`
@@ -74,8 +73,8 @@ type (
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_ struct{} `json:"-"`
-
+		_                               struct{}                          `json:"-"`
+		Quantity                        types.Float32RangeWithOptionalMax `json:"-"`
 		RecipeStepProductRecipeID       *string                           `json:"-"`
 		IngredientID                    *string                           `json:"-"`
 		RecipeStepProductID             *string                           `json:"-"`
@@ -84,12 +83,11 @@ type (
 		VesselIndex                     *uint16                           `json:"-"`
 		ProductPercentageToUse          *float32                          `json:"-"`
 		ID                              string                            `json:"-"`
-		MeasurementUnitID               string                            `json:"-"`
 		BelongsToRecipeStep             string                            `json:"-"`
 		Name                            string                            `json:"-"`
 		IngredientNotes                 string                            `json:"-"`
 		QuantityNotes                   string                            `json:"-"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"-"`
+		MeasurementUnitID               string                            `json:"-"`
 		OptionIndex                     uint16                            `json:"-"`
 		Optional                        bool                              `json:"-"`
 		ToTaste                         bool                              `json:"-"`

@@ -30,7 +30,7 @@ func createValidMeasurementUnitConversionForTest(t *testing.T) (unit1, unit2 *ty
 	require.NotNil(t, createdValidMeasurementUnitConversion)
 
 	validPrepPreparationRes, err := adminClient.GetValidMeasurementUnitConversion(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionRequest{
-		ValidMeasurementUnitConversionID: createdValidMeasurementUnitConversion.Result.ID,
+		ValidMeasurementUnitConversionId: createdValidMeasurementUnitConversion.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepPreparationRes.Result)
@@ -83,19 +83,19 @@ func TestValidMeasurementUnitConversions_Listing(T *testing.T) {
 		createdValidMeasurementUnitConversions := []*types.ValidMeasurementUnitConversion{created}
 
 		results, err := adminClient.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
-			ValidMeasurementUnitID: toUnit.ID,
+			ValidMeasurementUnitId: toUnit.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.Equal(t, len(results.Results), len(createdValidMeasurementUnitConversions))
-		assert.Equal(t, results.Results[0].ID, createdValidMeasurementUnitConversions[0].ID)
+		assert.Equal(t, results.Results[0].Id, createdValidMeasurementUnitConversions[0].ID)
 
 		results, err = adminClient.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
-			ValidMeasurementUnitID: fromUnit.ID,
+			ValidMeasurementUnitId: fromUnit.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.Equal(t, len(results.Results), len(createdValidMeasurementUnitConversions))
-		assert.Equal(t, results.Results[0].ID, createdValidMeasurementUnitConversions[0].ID)
+		assert.Equal(t, results.Results[0].Id, createdValidMeasurementUnitConversions[0].ID)
 	})
 }

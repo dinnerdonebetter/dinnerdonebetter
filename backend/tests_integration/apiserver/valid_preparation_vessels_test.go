@@ -30,7 +30,7 @@ func createValidPreparationVesselForTest(t *testing.T) (*types.ValidPreparation,
 	require.NotNil(t, createdValidPreparationVessel)
 
 	validPrepVesselRes, err := adminClient.GetValidPreparationVessel(ctx, &mealplanningsvc.GetValidPreparationVesselRequest{
-		ValidPreparationVesselID: createdValidPreparationVessel.Result.ID,
+		ValidPreparationVesselId: createdValidPreparationVessel.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepVesselRes.Result)
@@ -53,8 +53,8 @@ func TestValidPreparationVessels_Creating(T *testing.T) {
 
 		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 		exampleValidPreparationVesselInput := mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel))
-		exampleValidPreparationVesselInput.ValidVesselID = ""
-		exampleValidPreparationVesselInput.ValidPreparationID = ""
+		exampleValidPreparationVesselInput.ValidVesselId = ""
+		exampleValidPreparationVesselInput.ValidPreparationId = ""
 
 		createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(ctx, &mealplanningsvc.CreateValidPreparationVesselRequest{Input: exampleValidPreparationVesselInput})
 		require.Error(t, err)
@@ -81,8 +81,8 @@ func TestValidPreparationVessels_Listing(T *testing.T) {
 	for range exampleQuantity - 1 {
 		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 		exampleValidPreparationVesselInput := mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel))
-		exampleValidPreparationVesselInput.ValidVesselID = validVessel.ID
-		exampleValidPreparationVesselInput.ValidPreparationID = validPreparation.ID
+		exampleValidPreparationVesselInput.ValidVesselId = validVessel.ID
+		exampleValidPreparationVesselInput.ValidPreparationId = validPreparation.ID
 
 		createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(T.Context(), &mealplanningsvc.CreateValidPreparationVesselRequest{Input: exampleValidPreparationVesselInput})
 		require.NoError(T, err)
@@ -105,7 +105,7 @@ func TestValidPreparationVessels_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidPreparationVesselsByVessel(ctx, &mealplanningsvc.GetValidPreparationVesselsByVesselRequest{ValidVesselID: validVessel.ID})
+		results, err := adminClient.GetValidPreparationVesselsByVessel(ctx, &mealplanningsvc.GetValidPreparationVesselsByVesselRequest{ValidVesselId: validVessel.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidPreparationVessels))
@@ -115,7 +115,7 @@ func TestValidPreparationVessels_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidPreparationVesselsByPreparation(ctx, &mealplanningsvc.GetValidPreparationVesselsByPreparationRequest{ValidPreparationID: validPreparation.ID})
+		results, err := adminClient.GetValidPreparationVesselsByPreparation(ctx, &mealplanningsvc.GetValidPreparationVesselsByPreparationRequest{ValidPreparationId: validPreparation.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidPreparationVessels))

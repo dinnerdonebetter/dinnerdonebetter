@@ -53,7 +53,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 				LastName:              exampleInput.LastName,
 				Password:              exampleInput.Password,
 				AccountName:           exampleInput.AccountName,
-				AcceptedTOS:           exampleInput.AcceptedTOS,
+				AcceptedTos:           exampleInput.AcceptedTOS,
 				AcceptedPrivacyPolicy: exampleInput.AcceptedPrivacyPolicy,
 			},
 		}
@@ -64,7 +64,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
 		assert.NotNil(t, result.Created)
-		assert.Equal(t, exampleResponse.CreatedUserID, result.Created.CreatedUserID)
+		assert.Equal(t, exampleResponse.CreatedUserID, result.Created.CreatedUserId)
 		assert.Equal(t, exampleResponse.Username, result.Created.Username)
 		assert.Equal(t, exampleResponse.EmailAddress, result.Created.EmailAddress)
 	})
@@ -86,7 +86,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 				LastName:              exampleInput.LastName,
 				Password:              exampleInput.Password,
 				AccountName:           exampleInput.AccountName,
-				AcceptedTOS:           exampleInput.AcceptedTOS,
+				AcceptedTos:           exampleInput.AcceptedTOS,
 				AcceptedPrivacyPolicy: exampleInput.AcceptedPrivacyPolicy,
 			},
 		}
@@ -115,7 +115,7 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 		identityDataManager.On("ArchiveUser", testutils.ContextMatcher, exampleUserID).Return(nil)
 
 		request := &identitysvc.ArchiveUserRequest{
-			UserID: exampleUserID,
+			UserId: exampleUserID,
 		}
 
 		result, err := service.ArchiveUser(t.Context(), request)
@@ -135,7 +135,7 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 		identityDataManager.On("ArchiveUser", testutils.ContextMatcher, exampleUserID).Return(errors.New("database error"))
 
 		request := &identitysvc.ArchiveUserRequest{
-			UserID: exampleUserID,
+			UserId: exampleUserID,
 		}
 
 		result, err := service.ArchiveUser(t.Context(), request)
@@ -162,7 +162,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 		identityDataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
 
 		request := &identitysvc.GetUserRequest{
-			UserID: exampleUser.ID,
+			UserId: exampleUser.ID,
 		}
 
 		result, err := service.GetUser(t.Context(), request)
@@ -171,7 +171,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
 		assert.NotNil(t, result.Result)
-		assert.Equal(t, exampleUser.ID, result.Result.ID)
+		assert.Equal(t, exampleUser.ID, result.Result.Id)
 		assert.Equal(t, exampleUser.Username, result.Result.Username)
 		assert.Equal(t, exampleUser.EmailAddress, result.Result.EmailAddress)
 	})
@@ -186,7 +186,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 		identityDataManager.On("GetUser", testutils.ContextMatcher, exampleUserID).Return((*identity.User)(nil), errors.New("database error"))
 
 		request := &identitysvc.GetUserRequest{
-			UserID: exampleUserID,
+			UserId: exampleUserID,
 		}
 
 		result, err := service.GetUser(t.Context(), request)
@@ -231,7 +231,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 		assert.Equal(t, len(exampleUsers.Data), len(result.Results))
 		for i := range result.Results {
-			assert.Equal(t, result.Results[i].ID, exampleUsers.Data[i].ID)
+			assert.Equal(t, result.Results[i].Id, exampleUsers.Data[i].ID)
 		}
 	})
 
@@ -296,7 +296,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 		assert.Equal(t, len(exampleUsers.Data), len(result.Results))
 		for i := range result.Results {
-			assert.Equal(t, result.Results[i].ID, exampleUsers.Data[i].ID)
+			assert.Equal(t, result.Results[i].Id, exampleUsers.Data[i].ID)
 		}
 	})
 
@@ -330,7 +330,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 		assert.Equal(t, len(exampleUsers.Data), len(result.Results))
 		for i := range result.Results {
-			assert.Equal(t, result.Results[i].ID, exampleUsers.Data[i].ID)
+			assert.Equal(t, result.Results[i].Id, exampleUsers.Data[i].ID)
 		}
 	})
 

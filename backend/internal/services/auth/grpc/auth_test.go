@@ -58,8 +58,8 @@ func TestServiceImpl_GetAuthStatus(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
-		assert.NotEmpty(t, response.UserID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
+		assert.NotEmpty(t, response.UserId)
 		assert.NotEmpty(t, response.ActiveAccount)
 		assert.Equal(t, identity.GoodStandingUserAccountStatus.String(), response.AccountStatus)
 	})
@@ -111,11 +111,11 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.Equal(t, fakeTokenResponse.AccessToken, response.AccessToken)
 		assert.Equal(t, fakeTokenResponse.RefreshToken, response.RefreshToken)
-		assert.NotEmpty(t, response.UserID)
-		assert.NotEmpty(t, response.AccountID)
+		assert.NotEmpty(t, response.UserId)
+		assert.NotEmpty(t, response.AccountId)
 
 		mock.AssertExpectationsForObjects(t, authenticationManager)
 	})
@@ -188,7 +188,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  "testuser",
 				Password:  "password123",
-				TOTPToken: "123456",
+				TotpToken: "123456",
 			},
 		}
 
@@ -197,7 +197,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.NotNil(t, response.Result)
 		assert.Equal(t, fakeTokenResponse.AccessToken, response.Result.AccessToken)
 		assert.Equal(t, fakeTokenResponse.RefreshToken, response.Result.RefreshToken)
@@ -217,7 +217,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  "testuser",
 				Password:  "wrongpassword",
-				TOTPToken: "123456",
+				TotpToken: "123456",
 			},
 		}
 
@@ -257,7 +257,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  "adminuser",
 				Password:  "adminpassword123",
-				TOTPToken: "123456",
+				TotpToken: "123456",
 			},
 		}
 
@@ -266,7 +266,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.NotNil(t, response.Result)
 		assert.Equal(t, fakeTokenResponse.AccessToken, response.Result.AccessToken)
 		assert.Equal(t, fakeTokenResponse.RefreshToken, response.Result.RefreshToken)
@@ -286,7 +286,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  "adminuser",
 				Password:  "wrongpassword",
-				TOTPToken: "123456",
+				TotpToken: "123456",
 			},
 		}
 
@@ -330,7 +330,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.Equal(t, fakePermissionsResponse.Permissions, response.Permissions)
 
 		mock.AssertExpectationsForObjects(t, authManager)
@@ -402,9 +402,9 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeAccount.ID, response.Result.ID)
+		assert.Equal(t, fakeAccount.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, identityRepo)
 	})
@@ -495,9 +495,9 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeUser.ID, response.Result.ID)
+		assert.Equal(t, fakeUser.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, identityRepo)
 	})
@@ -588,7 +588,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -657,7 +657,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 
 		request := &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: "password123",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.RefreshTOTPSecret(ctx, request)
@@ -665,10 +665,10 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.NotNil(t, response.Result)
 		assert.Equal(t, fakeTOTPResponse.TwoFactorSecret, response.Result.TwoFactorSecret)
-		assert.Equal(t, fakeTOTPResponse.TwoFactorQRCode, response.Result.TwoFactorQRCode)
+		assert.Equal(t, fakeTOTPResponse.TwoFactorQRCode, response.Result.TwoFactorQrCode)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -681,7 +681,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 
 		request := &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: "password123",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.RefreshTOTPSecret(ctx, request)
@@ -704,7 +704,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 
 		request := &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: "wrongpassword",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.RefreshTOTPSecret(ctx, request)
@@ -738,7 +738,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -804,7 +804,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -874,7 +874,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -944,7 +944,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.True(t, response.Verified)
 
 		mock.AssertExpectationsForObjects(t, authManager)
@@ -1007,8 +1007,8 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 		authManager.On("TOTPSecretVerification", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(nil)
 
 		request := &authsvc.VerifyTOTPSecretRequest{
-			UserID:    identityfakes.BuildFakeID(),
-			TOTPToken: "123456",
+			UserId:    identityfakes.BuildFakeID(),
+			TotpToken: "123456",
 		}
 
 		response, err := service.VerifyTOTPSecret(ctx, request)
@@ -1016,7 +1016,7 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 		assert.True(t, response.Accepted)
 
 		mock.AssertExpectationsForObjects(t, authManager)
@@ -1031,8 +1031,8 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 		authManager.On("TOTPSecretVerification", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(errors.New("verification failed"))
 
 		request := &authsvc.VerifyTOTPSecretRequest{
-			UserID:    identityfakes.BuildFakeID(),
-			TOTPToken: "invalid",
+			UserId:    identityfakes.BuildFakeID(),
+			TotpToken: "invalid",
 		}
 
 		response, err := service.VerifyTOTPSecret(ctx, request)
@@ -1062,7 +1062,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		request := &authsvc.UpdatePasswordRequest{
 			NewPassword:     "newpassword123",
 			CurrentPassword: "oldpassword123",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.UpdatePassword(ctx, request)
@@ -1070,7 +1070,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 
 		mock.AssertExpectationsForObjects(t, authManager)
 	})
@@ -1084,7 +1084,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		request := &authsvc.UpdatePasswordRequest{
 			NewPassword:     "newpassword123",
 			CurrentPassword: "oldpassword123",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.UpdatePassword(ctx, request)
@@ -1108,7 +1108,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		request := &authsvc.UpdatePasswordRequest{
 			NewPassword:     "newpassword123",
 			CurrentPassword: "wrongpassword",
-			TOTPToken:       "123456",
+			TotpToken:       "123456",
 		}
 
 		response, err := service.UpdatePassword(ctx, request)

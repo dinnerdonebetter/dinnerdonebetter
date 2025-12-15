@@ -40,7 +40,7 @@ func createValidIngredientGroupForTest(t *testing.T) *mealplanning.ValidIngredie
 	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, converted)
 
 	retrieved, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{
-		ValidIngredientGroupID: converted.ID,
+		ValidIngredientGroupId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -119,7 +119,7 @@ func TestValidIngredientGroups_Reading(T *testing.T) {
 
 		created := createValidIngredientGroupForTest(t)
 
-		retrieved, err := testClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		retrieved, err := testClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(retrieved.Result)
@@ -135,7 +135,7 @@ func TestValidIngredientGroups_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		_, err := c.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -143,7 +143,7 @@ func TestValidIngredientGroups_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupID: nonexistentID})
+		_, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -161,7 +161,7 @@ func TestValidIngredientGroups_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidIngredientGroup(ctx, &mealplanningsvc.UpdateValidIngredientGroupRequest{
-			ValidIngredientGroupID: created.ID,
+			ValidIngredientGroupId: created.ID,
 			Input:                  grpcconverters.ConvertValidIngredientGroupUpdateRequestInputToGRPCValidIngredientGroupUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -185,7 +185,7 @@ func TestValidIngredientGroups_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidIngredientGroup(ctx, &mealplanningsvc.UpdateValidIngredientGroupRequest{
-			ValidIngredientGroupID: created.ID,
+			ValidIngredientGroupId: created.ID,
 			Input:                  grpcconverters.ConvertValidIngredientGroupUpdateRequestInputToGRPCValidIngredientGroupUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -209,7 +209,7 @@ func TestValidIngredientGroups_Updating(T *testing.T) {
 		created := createValidIngredientGroupForTest(t)
 
 		response, err := testClient.UpdateValidIngredientGroup(ctx, &mealplanningsvc.UpdateValidIngredientGroupRequest{
-			ValidIngredientGroupID: created.ID,
+			ValidIngredientGroupId: created.ID,
 			Input: &mealplanningsvc.ValidIngredientGroupUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -228,10 +228,10 @@ func TestValidIngredientGroups_Archiving(T *testing.T) {
 
 		created := createValidIngredientGroupForTest(t)
 
-		_, err := adminClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		_, err := adminClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		x, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -244,7 +244,7 @@ func TestValidIngredientGroups_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		_, err := c.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -252,7 +252,7 @@ func TestValidIngredientGroups_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupID: nonexistentID})
+		_, err := adminClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -263,42 +263,10 @@ func TestValidIngredientGroups_Archiving(T *testing.T) {
 		created := createValidIngredientGroupForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupID: created.ID})
+		_, err := testClient.ArchiveValidIngredientGroup(ctx, &mealplanningsvc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupId: created.ID})
 		assert.Error(t, err)
 	})
 }
-
-/* // TODO: we have this functionality for other types, why not this one?
-
-func TestValidIngredientGroups_GetRandom(T *testing.T) {
-	T.Parallel()
-
-	_, testClient := createUserAndClientForTest(T)
-
-	T.Run("happy path", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		// in case we haven't already
-		createValidIngredientGroupForTest(t)
-
-		response, err := testClient.GetRandomValidIngredientGroup(ctx, &mealplanningsvc.GetRandomValidIngredientGroupRequest{})
-		assert.NoError(t, err)
-		assert.NotNil(t, response)
-	})
-
-	T.Run("requires auth", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		c := buildUnauthenticatedGRPCClientForTest(t)
-
-		response, err := c.GetRandomValidIngredientGroup(ctx, &mealplanningsvc.GetRandomValidIngredientGroupRequest{})
-		assert.Error(t, err)
-		assert.Nil(t, response)
-	})
-}
-*/
 
 func TestValidIngredientGroups_Listing(T *testing.T) {
 	T.Parallel()

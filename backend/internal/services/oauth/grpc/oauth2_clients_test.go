@@ -62,7 +62,7 @@ func TestServiceImpl_CreateOAuth2Client(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.Created)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, fakeClient.ID, response.Created.ID)
+		assert.Equal(t, fakeClient.ID, response.Created.Id)
 		assert.Equal(t, fakeClient.Name, response.Created.Name)
 
 		mock.AssertExpectationsForObjects(t, mockManager)
@@ -109,7 +109,7 @@ func TestServiceImpl_GetOAuth2Client(t *testing.T) {
 		mockManager.On("GetOAuth2Client", testutils.ContextMatcher, clientID).Return(fakeClient, nil)
 
 		request := &oauthsvc.GetOAuth2ClientRequest{
-			OAuth2ClientID: clientID,
+			Oauth2ClientId: clientID,
 		}
 
 		response, err := service.GetOAuth2Client(ctx, request)
@@ -118,7 +118,7 @@ func TestServiceImpl_GetOAuth2Client(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeClient.ID, response.Result.ID)
+		assert.Equal(t, fakeClient.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mockManager)
 	})
@@ -134,7 +134,7 @@ func TestServiceImpl_GetOAuth2Client(t *testing.T) {
 		mockManager.On("GetOAuth2Client", testutils.ContextMatcher, clientID).Return((*oauth.OAuth2Client)(nil), errors.New("manager error"))
 
 		request := &oauthsvc.GetOAuth2ClientRequest{
-			OAuth2ClientID: clientID,
+			Oauth2ClientId: clientID,
 		}
 
 		response, err := service.GetOAuth2Client(ctx, request)
@@ -225,7 +225,7 @@ func TestServiceImpl_ArchiveOAuth2Client(t *testing.T) {
 		mockManager.On("ArchiveOAuth2Client", testutils.ContextMatcher, clientID).Return(nil)
 
 		request := &oauthsvc.ArchiveOAuth2ClientRequest{
-			OAuth2ClientID: clientID,
+			Oauth2ClientId: clientID,
 		}
 
 		response, err := service.ArchiveOAuth2Client(ctx, request)
@@ -248,7 +248,7 @@ func TestServiceImpl_ArchiveOAuth2Client(t *testing.T) {
 		mockManager.On("ArchiveOAuth2Client", testutils.ContextMatcher, clientID).Return(errors.New("manager error"))
 
 		request := &oauthsvc.ArchiveOAuth2ClientRequest{
-			OAuth2ClientID: clientID,
+			Oauth2ClientId: clientID,
 		}
 
 		response, err := service.ArchiveOAuth2Client(ctx, request)

@@ -17,7 +17,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.Input.ServiceSettingID)
+	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.Input.ServiceSettingId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 
 	x := &settingssvc.CreateServiceSettingConfigurationResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(created),
 	}
@@ -66,7 +66,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationByName(ctx context.Context, 
 
 	x := &settingssvc.GetServiceSettingConfigurationByNameResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(serviceSettingConfig),
 	}
@@ -95,7 +95,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 
 	x := &settingssvc.GetServiceSettingConfigurationsForAccountResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettingConfigs.Pagination, filter),
 	}
@@ -127,7 +127,7 @@ func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 
 	x := &settingssvc.GetServiceSettingConfigurationsForUserResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettingConfigs.Pagination, filter),
 	}
@@ -143,9 +143,9 @@ func (s *serviceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationID)
+	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
 
-	existing, err := s.serviceSettingsRepository.GetServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationID)
+	existing, err := s.serviceSettingsRepository.GetServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration")
 	}
@@ -158,7 +158,7 @@ func (s *serviceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 
 	x := &settingssvc.UpdateServiceSettingConfigurationResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(existing),
 	}
@@ -170,15 +170,15 @@ func (s *serviceImpl) ArchiveServiceSettingConfiguration(ctx context.Context, re
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationID)
+	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, request.ServiceSettingConfigurationId)
 
-	if err := s.serviceSettingsRepository.ArchiveServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationID); err != nil {
+	if err := s.serviceSettingsRepository.ArchiveServiceSettingConfiguration(ctx, request.ServiceSettingConfigurationId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting configuration")
 	}
 
 	x := &settingssvc.ArchiveServiceSettingConfigurationResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

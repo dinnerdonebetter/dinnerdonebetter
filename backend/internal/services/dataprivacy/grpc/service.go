@@ -39,7 +39,7 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, request *data
 
 	x := &dataprivacysvc.AggregateUserDataReportResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -54,7 +54,7 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, request *datapriva
 
 	x := &dataprivacysvc.DestroyAllUserDataResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -69,7 +69,7 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 
 	x := &dataprivacysvc.FetchUserDataReportResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

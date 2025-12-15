@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitCreate(res http.ResponseWriter
 	}
 
 	// Redirect to the newly created valid measurement unit's page
-	measurementUnitID := createRes.Result.ID
+	measurementUnitID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_measurement_units/%s", measurementUnitID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -150,7 +150,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 		return page("Valid Measurement Units", s.renderValidMeasurementUnitsError("Error: No valid measurement unit ID provided")), nil
 	}
 
-	validMeasurementUnitRes, err := c.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: validMeasurementUnitID})
+	validMeasurementUnitRes, err := c.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: validMeasurementUnitID})
 	if err != nil {
 		return page("Valid Measurement Units", s.renderValidMeasurementUnitsError(fmt.Sprintf("Error loading valid measurement unit: %v", err))), nil
 	}
@@ -190,7 +190,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidMeasurementUnit]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-measurement-unit-form",
-			Action:  fmt.Sprintf("/api/valid_measurement_units/%s", validMeasurementUnit.ID),
+			Action:  fmt.Sprintf("/api/valid_measurement_units/%s", validMeasurementUnit.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -434,7 +434,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsList(_ http.ResponseWriter, r
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidMeasurementUnit) string {
-			return fmt.Sprintf("/valid_measurement_units/%s", data.ID)
+			return fmt.Sprintf("/valid_measurement_units/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid measurement units found",
 		EmptyStateDescription: "No valid measurement units have been created yet.",
@@ -551,7 +551,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsSearch(_ http.ResponseWriter,
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidMeasurementUnit) string {
-			return fmt.Sprintf("/valid_measurement_units/%s", data.ID)
+			return fmt.Sprintf("/valid_measurement_units/%s", data.Id)
 		},
 	})
 	if err != nil {

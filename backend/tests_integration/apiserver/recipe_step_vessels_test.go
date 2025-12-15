@@ -64,8 +64,8 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 
 		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 			Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
 		})
 		require.NoError(t, err)
@@ -74,9 +74,9 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
 
 		retrievedRecipeStepVesselRes, err := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
-			RecipeID:           createdRecipe.ID,
-			RecipeStepID:       createdRecipeStepID,
-			RecipeStepVesselID: createdRecipeStepVessel.ID,
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStepID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
 		})
 		require.NoError(t, err)
 
@@ -93,17 +93,17 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		exampleRecipeStepVessel.Update(updateInput)
 
 		_, err = adminClient.UpdateRecipeStepVessel(ctx, &mealplanninggrpc.UpdateRecipeStepVesselRequest{
-			RecipeID:           createdRecipe.ID,
-			RecipeStepID:       createdRecipeStepID,
-			RecipeStepVesselID: createdRecipeStepVessel.ID,
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStepID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
 			Input:              converters.ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
 
 		retrievedRecipeStepVesselRes, err = userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
-			RecipeID:           createdRecipe.ID,
-			RecipeStepID:       createdRecipeStepID,
-			RecipeStepVesselID: createdRecipeStepVessel.ID,
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStepID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
 		})
 		require.NoError(t, err)
 
@@ -111,19 +111,19 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
 
 		_, err = userClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
-			RecipeID:           createdRecipe.ID,
-			RecipeStepID:       createdRecipeStepID,
-			RecipeStepVesselID: createdRecipeStepVessel.ID,
+			RecipeId:           createdRecipe.ID,
+			RecipeStepId:       createdRecipeStepID,
+			RecipeStepVesselId: createdRecipeStepVessel.ID,
 		})
 		assert.NoError(t, err)
 
 		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -246,7 +246,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		expected.Status = created.Status
 		checkRecipeEquality(t, expected, created)
 
-		retrievedRes, err := userClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: created.ID})
+		retrievedRes, err := userClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: created.ID})
 		require.NotNil(t, retrievedRes)
 		require.NoError(t, err)
 		checkRecipeEquality(t, expected, created)
@@ -289,8 +289,8 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 			createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
-				RecipeID:     createdRecipe.ID,
-				RecipeStepID: createdRecipeStepID,
+				RecipeId:     createdRecipe.ID,
+				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
 			})
 			require.NoError(t, err)
@@ -299,9 +299,9 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			checkRecipeStepVesselEquality(t, i, i, exampleRecipeStepVessel, createdRecipeStepVessel)
 
 			retrievedRecipeStepVesselRes, err := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
-				RecipeID:           createdRecipe.ID,
-				RecipeStepID:       createdRecipeStepID,
-				RecipeStepVesselID: createdRecipeStepVessel.ID,
+				RecipeId:           createdRecipe.ID,
+				RecipeStepId:       createdRecipeStepID,
+				RecipeStepVesselId: createdRecipeStepVessel.ID,
 			})
 			require.NotNil(t, retrievedRecipeStepVesselRes)
 			require.NoError(t, err)
@@ -314,8 +314,8 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 
 		// assert recipe step vessel list equality
 		actual, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		require.NotNil(t, actual)
 		require.NoError(t, err)
@@ -329,17 +329,17 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 
 		for _, createdRecipeStepVessel := range expected {
 			_, err = userClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
-				RecipeID:           createdRecipe.ID,
-				RecipeStepID:       createdRecipeStepID,
-				RecipeStepVesselID: createdRecipeStepVessel.ID,
+				RecipeId:           createdRecipe.ID,
+				RecipeStepId:       createdRecipeStepID,
+				RecipeStepVesselId: createdRecipeStepVessel.ID,
 			})
 			assert.NoError(t, err)
 		}
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeID: createdRecipe.ID, RecipeStepID: createdRecipeStepID})
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

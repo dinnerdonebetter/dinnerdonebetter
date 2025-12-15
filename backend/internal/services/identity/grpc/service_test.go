@@ -107,7 +107,7 @@ func TestServiceImpl_buildResponseDetails(t *testing.T) {
 
 		assert.NotNil(t, result)
 		assert.IsType(t, &types.ResponseDetails{}, result)
-		assert.NotEmpty(t, result.CurrentAccountID)
+		assert.NotEmpty(t, result.CurrentAccountId)
 	})
 
 	t.Run("with span", func(t *testing.T) {
@@ -121,8 +121,8 @@ func TestServiceImpl_buildResponseDetails(t *testing.T) {
 
 		assert.NotNil(t, result)
 		assert.IsType(t, &types.ResponseDetails{}, result)
-		assert.NotEmpty(t, result.TraceID)
-		assert.NotEmpty(t, result.CurrentAccountID)
+		assert.NotEmpty(t, result.TraceId)
+		assert.NotEmpty(t, result.CurrentAccountId)
 	})
 
 	t.Run("with session error", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestServiceImpl_buildResponseDetails(t *testing.T) {
 
 		assert.NotNil(t, result)
 		assert.IsType(t, &types.ResponseDetails{}, result)
-		assert.Empty(t, result.CurrentAccountID)
+		assert.Empty(t, result.CurrentAccountId)
 	})
 
 	t.Run("with nil span", func(t *testing.T) {
@@ -148,7 +148,7 @@ func TestServiceImpl_buildResponseDetails(t *testing.T) {
 
 		assert.NotNil(t, result)
 		assert.IsType(t, &types.ResponseDetails{}, result)
-		assert.Empty(t, result.TraceID)
-		assert.NotEmpty(t, result.CurrentAccountID)
+		assert.Empty(t, result.TraceId)
+		assert.NotEmpty(t, result.CurrentAccountId)
 	})
 }

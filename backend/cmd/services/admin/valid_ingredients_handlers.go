@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) ValidIngredientCreate(res http.ResponseWriter, req
 	}
 
 	// Redirect to the newly created valid ingredient's page
-	ingredientID := createRes.Result.ID
+	ingredientID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_ingredients/%s", ingredientID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -181,7 +181,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 		return page("Valid Ingredients", s.renderValidIngredientsError("Error: No valid ingredient ID provided")), nil
 	}
 
-	validIngredientRes, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: validIngredientID})
+	validIngredientRes, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: validIngredientID})
 	if err != nil {
 		return page("Valid Ingredients", s.renderValidIngredientsError(fmt.Sprintf("Error loading valid ingredient: %v", err))), nil
 	}
@@ -212,7 +212,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidIngredient]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-ingredient-form",
-			Action:  fmt.Sprintf("/api/valid_ingredients/%s", validIngredient.ID),
+			Action:  fmt.Sprintf("/api/valid_ingredients/%s", validIngredient.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -449,7 +449,7 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 			PaginationHTMXTarget:   "#search-results",
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
-			return fmt.Sprintf("/valid_ingredients/%s", data.ID)
+			return fmt.Sprintf("/valid_ingredients/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid ingredients found",
 		EmptyStateDescription: "No valid ingredients have been created yet.",
@@ -596,7 +596,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		DeepLinkURLGenerator:   deepLinkURLGenerator,
 		PaginationHTMXTarget:   "#search-results",
 		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredient) string {
-			return fmt.Sprintf("/valid_ingredients/%s", data.ID)
+			return fmt.Sprintf("/valid_ingredients/%s", data.Id)
 		},
 	})
 	if err != nil {

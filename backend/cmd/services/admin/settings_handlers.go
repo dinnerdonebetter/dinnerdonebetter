@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) SettingCreate(res http.ResponseWriter, req *http.R
 	}
 
 	// Redirect to the newly created setting's page
-	settingID := createRes.Created.ID
+	settingID := createRes.Created.Id
 	http.Redirect(res, req, fmt.Sprintf("/settings/%s", settingID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -188,7 +188,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 		return page("Settings", s.renderSettingsError("Error: No setting ID provided")), nil
 	}
 
-	settingsRes, err := c.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: settingID})
+	settingsRes, err := c.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: settingID})
 	if err != nil {
 		return page("Settings", s.renderSettingsError(fmt.Sprintf("Error loading setting: %v", err))), nil
 	}
@@ -202,7 +202,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 		Data:         setting,
 		FormOptions: &components.FormOptions[*settingssvc.ServiceSetting]{
 			FormID: "edit-setting-form",
-			Action: fmt.Sprintf("/api/settings/%s", setting.ID),
+			Action: fmt.Sprintf("/api/settings/%s", setting.Id),
 			Method: "PUT",
 
 			// Enable editable fields
@@ -391,7 +391,7 @@ func (s *AdminFrontendServer) SettingsList(_ http.ResponseWriter, req *http.Requ
 			},
 		},
 		RowLinkGenerator: func(data *settingssvc.ServiceSetting) string {
-			return fmt.Sprintf("/settings/%s", data.ID)
+			return fmt.Sprintf("/settings/%s", data.Id)
 		},
 		EmptyStateTitle:       "No settings found",
 		EmptyStateDescription: "Get started by creating your first service setting.",
@@ -521,7 +521,7 @@ func (s *AdminFrontendServer) SettingsSearch(_ http.ResponseWriter, req *http.Re
 			},
 		},
 		RowLinkGenerator: func(data *settingssvc.ServiceSetting) string {
-			return fmt.Sprintf("/settings/%s", data.ID)
+			return fmt.Sprintf("/settings/%s", data.Id)
 		},
 	})
 	if err != nil {

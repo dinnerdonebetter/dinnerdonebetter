@@ -115,7 +115,7 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 	createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
 	require.NoError(t, err)
 
-	createdRecipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
+	createdRecipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: createdRes.Created.Id})
 	require.NoError(t, err)
 	require.NotNil(t, createdRecipe)
 
@@ -353,13 +353,13 @@ func TestRecipes_Creating(T *testing.T) {
 		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
 		checkRecipeEquality(t, expected, created)
 
-		recipeRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
+		recipeRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: createdRes.Created.Id})
 		require.NoError(t, err)
 		created = converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
 
 		assert.Equal(t, created.Status, mealplanning.RecipeStatusSubmitted)
 		updateRes, err := adminClient.UpdateRecipeStatus(ctx, &mealplanninggrpc.UpdateRecipeStatusRequest{
-			RecipeID:  createdRes.Created.ID,
+			RecipeId:  createdRes.Created.Id,
 			NewStatus: mealplanning.RecipeStatusApproved,
 		})
 		require.NoError(t, err)
@@ -434,13 +434,13 @@ func TestRecipes_Updating(T *testing.T) {
 		updateInput := mpconverters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe)
 
 		_, err := adminClient.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
-			RecipeID: createdRecipe.ID,
+			RecipeId: createdRecipe.ID,
 			Input:    converters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		// Retrieve the updated recipe
-		actual, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRecipe.ID})
+		actual, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: createdRecipe.ID})
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 		actualRecipe := converters.ConvertGRPCRecipeToRecipe(actual.Result)
@@ -475,7 +475,7 @@ func TestRecipes_Updating(T *testing.T) {
 			}
 		}
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -490,7 +490,7 @@ func TestRecipes_Updating(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		_, err := c.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
-			RecipeID: createdRecipe.ID,
+			RecipeId: createdRecipe.ID,
 			Input:    converters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -504,7 +504,7 @@ func TestRecipes_Updating(T *testing.T) {
 		updateInput := mpconverters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe)
 
 		_, err := adminClient.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
-			RecipeID: nonexistentID,
+			RecipeId: nonexistentID,
 			Input:    converters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -542,7 +542,7 @@ func TestRecipes_Searching(T *testing.T) {
 		)
 
 		for _, createdRecipe := range expected {
-			_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+			_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 			assert.NoError(t, err)
 		}
 	})
@@ -569,13 +569,13 @@ func TestRecipes_Cloning(T *testing.T) {
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
-		actual, err := adminClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: createdRecipe.ID})
+		actual, err := adminClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeId: createdRecipe.ID})
 		require.NoError(t, err)
 
 		require.Equal(t, createdRecipe.Name, actual.Cloned.Name)
 		require.Equal(t, len(createdRecipe.Steps), len(actual.Cloned.Steps))
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -586,7 +586,7 @@ func TestRecipes_Cloning(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		cloned, err := c.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: createdRecipe.ID})
+		cloned, err := c.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
 		assert.Nil(t, cloned)
 	})
@@ -595,7 +595,7 @@ func TestRecipes_Cloning(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		cloned, err := adminClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: nonexistentID})
+		cloned, err := adminClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, cloned)
 	})
@@ -607,7 +607,7 @@ func TestRecipes_Cloning(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
-		cloned, err := testClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: createdRecipe.ID})
+		cloned, err := testClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 		assert.NotNil(t, cloned)
 	})
@@ -782,7 +782,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 		require.NoError(t, err)
 		checkRecipeEquality(t, expected, converters.ConvertGRPCRecipeToRecipe(created.Created))
 
-		steps, err := adminClient.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanID: created.Created.ID})
+		steps, err := adminClient.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanId: created.Created.Id})
 		require.NoError(t, err)
 		require.NotEmpty(t, steps)
 	})
@@ -798,7 +798,7 @@ func TestRecipes_Reading(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		recipe, err := c.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRecipe.ID})
+		recipe, err := c.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
 		assert.Nil(t, recipe)
 	})
@@ -807,7 +807,7 @@ func TestRecipes_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		recipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: nonexistentID})
+		recipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, recipe)
 	})
@@ -823,7 +823,7 @@ func TestRecipes_Archiving(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		_, err := c.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err := c.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
 	})
 
@@ -831,7 +831,7 @@ func TestRecipes_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: nonexistentID})
+		_, err := adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -842,7 +842,7 @@ func TestRecipes_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
-		_, err := testClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err := testClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
 	})
 }

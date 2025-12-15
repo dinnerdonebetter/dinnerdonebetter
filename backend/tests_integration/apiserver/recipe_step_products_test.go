@@ -63,8 +63,8 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 		exampleRecipeStepProductInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 		createdRecipeStepProductRes, err := adminClient.CreateRecipeStepProduct(ctx, &mealplanninggrpc.CreateRecipeStepProductRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 			Input:        converters.ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(exampleRecipeStepProductInput),
 		})
 		require.NoError(t, err)
@@ -73,9 +73,9 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
 
 		retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
-			RecipeID:            createdRecipe.ID,
-			RecipeStepID:        createdRecipeStepID,
-			RecipeStepProductID: createdRecipeStepProduct.ID,
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStepID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
 		})
 		require.NoError(t, err)
 		require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
@@ -89,17 +89,17 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepProduct.Update(updateInput)
 
 		_, err = adminClient.UpdateRecipeStepProduct(ctx, &mealplanninggrpc.UpdateRecipeStepProductRequest{
-			RecipeID:            createdRecipe.ID,
-			RecipeStepID:        createdRecipeStepID,
-			RecipeStepProductID: createdRecipeStepProduct.ID,
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStepID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
 			Input:               converters.ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		retrievedRecipeStepProductRes, err = userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
-			RecipeID:            createdRecipe.ID,
-			RecipeStepID:        createdRecipeStepID,
-			RecipeStepProductID: createdRecipeStepProduct.ID,
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStepID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
 		})
 		require.NoError(t, err)
 
@@ -110,19 +110,19 @@ func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
 		assert.NotNil(t, actual.LastUpdatedAt)
 
 		_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
-			RecipeID:            createdRecipe.ID,
-			RecipeStepID:        createdRecipeStepID,
-			RecipeStepProductID: createdRecipeStepProduct.ID,
+			RecipeId:            createdRecipe.ID,
+			RecipeStepId:        createdRecipeStepID,
+			RecipeStepProductId: createdRecipeStepProduct.ID,
 		})
 		assert.NoError(t, err)
 
 		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -154,8 +154,8 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 			exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 			exampleRecipeStepProductInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 			createdRecipeStepProductRes, err := adminClient.CreateRecipeStepProduct(ctx, &mealplanninggrpc.CreateRecipeStepProductRequest{
-				RecipeID:     createdRecipe.ID,
-				RecipeStepID: createdRecipeStepID,
+				RecipeId:     createdRecipe.ID,
+				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(exampleRecipeStepProductInput),
 			})
 			require.NoError(t, err)
@@ -164,9 +164,9 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 			checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
 
 			retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
-				RecipeID:            createdRecipe.ID,
-				RecipeStepID:        createdRecipeStepID,
-				RecipeStepProductID: createdRecipeStepProduct.ID,
+				RecipeId:            createdRecipe.ID,
+				RecipeStepId:        createdRecipeStepID,
+				RecipeStepProductId: createdRecipeStepProduct.ID,
 			})
 			require.NoError(t, err)
 
@@ -178,8 +178,8 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 
 		// assert recipe step product list equality
 		actual, err := userClient.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		require.NoError(t, err)
 		assert.True(
@@ -192,20 +192,20 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 
 		for _, createdRecipeStepProduct := range expected {
 			_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
-				RecipeID:            createdRecipe.ID,
-				RecipeStepID:        createdRecipeStepID,
-				RecipeStepProductID: createdRecipeStepProduct.ID,
+				RecipeId:            createdRecipe.ID,
+				RecipeStepId:        createdRecipeStepID,
+				RecipeStepProductId: createdRecipeStepProduct.ID,
 			})
 			assert.NoError(t, err)
 		}
 
 		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

@@ -30,7 +30,7 @@ func TestServiceImpl_AcceptAccountInvitation(t *testing.T) {
 		identityDataManager.On("AcceptAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.AcceptAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 				Note:  "Accepting invitation",
@@ -50,7 +50,7 @@ func TestServiceImpl_AcceptAccountInvitation(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &identitysvc.AcceptAccountInvitationRequest{
-			AccountInvitationID: identityfakes.BuildFakeID(),
+			AccountInvitationId: identityfakes.BuildFakeID(),
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 			},
@@ -76,7 +76,7 @@ func TestServiceImpl_AcceptAccountInvitation(t *testing.T) {
 		identityDataManager.On("AcceptAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("accept error"))
 
 		request := &identitysvc.AcceptAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 			},
@@ -106,7 +106,7 @@ func TestServiceImpl_RejectAccountInvitation(t *testing.T) {
 		identityDataManager.On("RejectAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.RejectAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 				Note:  "Rejecting invitation",
@@ -126,7 +126,7 @@ func TestServiceImpl_RejectAccountInvitation(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &identitysvc.RejectAccountInvitationRequest{
-			AccountInvitationID: identityfakes.BuildFakeID(),
+			AccountInvitationId: identityfakes.BuildFakeID(),
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 			},
@@ -152,7 +152,7 @@ func TestServiceImpl_RejectAccountInvitation(t *testing.T) {
 		identityDataManager.On("RejectAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("reject error"))
 
 		request := &identitysvc.RejectAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: "invitation-token",
 			},
@@ -182,7 +182,7 @@ func TestServiceImpl_CancelAccountInvitation(t *testing.T) {
 		identityDataManager.On("CancelAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(nil)
 
 		request := &identitysvc.CancelAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Note: "Cancelling invitation",
 			},
@@ -201,7 +201,7 @@ func TestServiceImpl_CancelAccountInvitation(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &identitysvc.CancelAccountInvitationRequest{
-			AccountInvitationID: identityfakes.BuildFakeID(),
+			AccountInvitationId: identityfakes.BuildFakeID(),
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Note: "Cancelling invitation",
 			},
@@ -227,7 +227,7 @@ func TestServiceImpl_CancelAccountInvitation(t *testing.T) {
 		identityDataManager.On("CancelAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(errors.New("cancel error"))
 
 		request := &identitysvc.CancelAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Note: "Cancelling invitation",
 			},
@@ -257,7 +257,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 		identityDataManager.On("GetAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitation.ID).Return(exampleInvitation, nil)
 
 		request := &identitysvc.GetAccountInvitationRequest{
-			AccountInvitationID: exampleInvitation.ID,
+			AccountInvitationId: exampleInvitation.ID,
 		}
 
 		result, err := service.GetAccountInvitation(t.Context(), request)
@@ -266,7 +266,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 		assert.NotNil(t, result)
 		assert.NotNil(t, result.ResponseDetails)
 		assert.NotNil(t, result.Result)
-		assert.Equal(t, exampleInvitation.ID, result.Result.ID)
+		assert.Equal(t, exampleInvitation.ID, result.Result.Id)
 		assert.Equal(t, exampleInvitation.ToEmail, result.Result.ToEmail)
 	})
 
@@ -276,7 +276,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &identitysvc.GetAccountInvitationRequest{
-			AccountInvitationID: identityfakes.BuildFakeID(),
+			AccountInvitationId: identityfakes.BuildFakeID(),
 		}
 
 		result, err := service.GetAccountInvitation(t.Context(), request)
@@ -299,7 +299,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 		identityDataManager.On("GetAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID).Return((*identity.AccountInvitation)(nil), errors.New("get error"))
 
 		request := &identitysvc.GetAccountInvitationRequest{
-			AccountInvitationID: exampleInvitationID,
+			AccountInvitationId: exampleInvitationID,
 		}
 
 		result, err := service.GetAccountInvitation(t.Context(), request)
@@ -345,7 +345,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 		assert.Equal(t, len(exampleInvitations.Data), len(result.Results))
 		for i := range result.Results {
-			assert.Equal(t, result.Results[i].ID, exampleInvitations.Data[i].ID)
+			assert.Equal(t, result.Results[i].Id, exampleInvitations.Data[i].ID)
 		}
 	})
 
@@ -430,7 +430,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 		assert.NotNil(t, result.ResponseDetails)
 		assert.Equal(t, len(exampleInvitations.Data), len(result.Results))
 		for i := range result.Results {
-			assert.Equal(t, result.Results[i].ID, exampleInvitations.Data[i].ID)
+			assert.Equal(t, result.Results[i].Id, exampleInvitations.Data[i].ID)
 		}
 	})
 

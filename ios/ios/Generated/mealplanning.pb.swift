@@ -20,6 +20,352 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+public enum Mealplanning_ValidIngredientStateAttributeType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case texture // = 0
+  case consistency // = 1
+  case temperature // = 2
+  case color // = 3
+  case appearance // = 4
+  case odor // = 5
+  case taste // = 6
+  case sound // = 7
+  case other // = 8
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .texture
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .texture
+    case 1: self = .consistency
+    case 2: self = .temperature
+    case 3: self = .color
+    case 4: self = .appearance
+    case 5: self = .odor
+    case 6: self = .taste
+    case 7: self = .sound
+    case 8: self = .other
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .texture: return 0
+    case .consistency: return 1
+    case .temperature: return 2
+    case .color: return 3
+    case .appearance: return 4
+    case .odor: return 5
+    case .taste: return 6
+    case .sound: return 7
+    case .other: return 8
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_ValidIngredientStateAttributeType] = [
+    .texture,
+    .consistency,
+    .temperature,
+    .color,
+    .appearance,
+    .odor,
+    .taste,
+    .sound,
+    .other,
+  ]
+
+}
+
+public enum Mealplanning_ValidVesselShape: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case vesselShapeHemisphere // = 0
+  case vesselShapeRectangle // = 1
+  case vesselShapeCone // = 2
+  case vesselShapePyramid // = 3
+  case vesselShapeCylinder // = 4
+  case vesselShapeSphere // = 5
+  case vesselShapeCube // = 6
+  case vesselShapeOther // = 7
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .vesselShapeHemisphere
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .vesselShapeHemisphere
+    case 1: self = .vesselShapeRectangle
+    case 2: self = .vesselShapeCone
+    case 3: self = .vesselShapePyramid
+    case 4: self = .vesselShapeCylinder
+    case 5: self = .vesselShapeSphere
+    case 6: self = .vesselShapeCube
+    case 7: self = .vesselShapeOther
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .vesselShapeHemisphere: return 0
+    case .vesselShapeRectangle: return 1
+    case .vesselShapeCone: return 2
+    case .vesselShapePyramid: return 3
+    case .vesselShapeCylinder: return 4
+    case .vesselShapeSphere: return 5
+    case .vesselShapeCube: return 6
+    case .vesselShapeOther: return 7
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_ValidVesselShape] = [
+    .vesselShapeHemisphere,
+    .vesselShapeRectangle,
+    .vesselShapeCone,
+    .vesselShapePyramid,
+    .vesselShapeCylinder,
+    .vesselShapeSphere,
+    .vesselShapeCube,
+    .vesselShapeOther,
+  ]
+
+}
+
+public enum Mealplanning_RecipeStepProductType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case ingredient // = 0
+  case instrument // = 1
+  case vessel // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .ingredient
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .ingredient
+    case 1: self = .instrument
+    case 2: self = .vessel
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .ingredient: return 0
+    case .instrument: return 1
+    case .vessel: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_RecipeStepProductType] = [
+    .ingredient,
+    .instrument,
+    .vessel,
+  ]
+
+}
+
+public enum Mealplanning_MealComponentType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case amuseBouche // = 1
+  case appetizer // = 2
+  case soup // = 3
+  case main // = 4
+  case salad // = 5
+  case beverage // = 6
+  case side // = 7
+  case dessert // = 8
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .amuseBouche
+    case 2: self = .appetizer
+    case 3: self = .soup
+    case 4: self = .main
+    case 5: self = .salad
+    case 6: self = .beverage
+    case 7: self = .side
+    case 8: self = .dessert
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .amuseBouche: return 1
+    case .appetizer: return 2
+    case .soup: return 3
+    case .main: return 4
+    case .salad: return 5
+    case .beverage: return 6
+    case .side: return 7
+    case .dessert: return 8
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealComponentType] = [
+    .unspecified,
+    .amuseBouche,
+    .appetizer,
+    .soup,
+    .main,
+    .salad,
+    .beverage,
+    .side,
+    .dessert,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanElectionMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case schulze // = 0
+  case instantRunoff // = 1
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .schulze
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .schulze
+    case 1: self = .instantRunoff
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .schulze: return 0
+    case .instantRunoff: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanElectionMethod] = [
+    .schulze,
+    .instantRunoff,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unknown // = 0
+  case alreadyOwned // = 1
+  case needs // = 2
+  case unavailable // = 3
+  case acquired // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unknown
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unknown
+    case 1: self = .alreadyOwned
+    case 2: self = .needs
+    case 3: self = .unavailable
+    case 4: self = .acquired
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unknown: return 0
+    case .alreadyOwned: return 1
+    case .needs: return 2
+    case .unavailable: return 3
+    case .acquired: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanGroceryListItemStatus] = [
+    .unknown,
+    .alreadyOwned,
+    .needs,
+    .unavailable,
+    .acquired,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanTaskStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unfinished // = 0
+  case postponed // = 1
+  case ignored // = 2
+  case canceled // = 3
+  case finished // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unfinished
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unfinished
+    case 1: self = .postponed
+    case 2: self = .ignored
+    case 3: self = .canceled
+    case 4: self = .finished
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unfinished: return 0
+    case .postponed: return 1
+    case .ignored: return 2
+    case .canceled: return 3
+    case .finished: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanTaskStatus] = [
+    .unfinished,
+    .postponed,
+    .ignored,
+    .canceled,
+    .finished,
+  ]
+
+}
+
 public struct Mealplanning_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -911,7 +1257,7 @@ public struct Mealplanning_ValidIngredientState: Sendable {
 
   public var name: String = String()
 
-  public var attributeType: String = String()
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType = .texture
 
   public var slug: String = String()
 
@@ -937,7 +1283,7 @@ public struct Mealplanning_ValidIngredientStateCreationRequestInput: Sendable {
 
   public var description_p: String = String()
 
-  public var attributeType: String = String()
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType = .texture
 
   public var iconPath: String = String()
 
@@ -1111,8 +1457,8 @@ public struct Mealplanning_ValidIngredientStateUpdateRequestInput: Sendable {
   /// Clears the value of `description_p`. Subsequent reads from it will return its default value.
   public mutating func clearDescription_p() {self._description_p = nil}
 
-  public var attributeType: String {
-    get {return _attributeType ?? String()}
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType {
+    get {return _attributeType ?? .texture}
     set {_attributeType = newValue}
   }
   /// Returns true if `attributeType` has been explicitly set.
@@ -1137,7 +1483,7 @@ public struct Mealplanning_ValidIngredientStateUpdateRequestInput: Sendable {
   fileprivate var _slug: String? = nil
   fileprivate var _pastTense: String? = nil
   fileprivate var _description_p: String? = nil
-  fileprivate var _attributeType: String? = nil
+  fileprivate var _attributeType: Mealplanning_ValidIngredientStateAttributeType? = nil
   fileprivate var _iconPath: String? = nil
 }
 
@@ -2667,7 +3013,7 @@ public struct Mealplanning_ValidVessel: @unchecked Sendable {
     set {_uniqueStorage()._slug = newValue}
   }
 
-  public var shape: String {
+  public var shape: Mealplanning_ValidVesselShape {
     get {return _storage._shape}
     set {_uniqueStorage()._shape = newValue}
   }
@@ -2733,7 +3079,7 @@ public struct Mealplanning_ValidVesselCreationRequestInput: Sendable {
   /// Clears the value of `capacityUnitID`. Subsequent reads from it will return its default value.
   public mutating func clearCapacityUnitID() {self._capacityUnitID = nil}
 
-  public var shape: String = String()
+  public var shape: Mealplanning_ValidVesselShape = .vesselShapeHemisphere
 
   public var iconPath: String = String()
 
@@ -2888,8 +3234,8 @@ public struct Mealplanning_ValidVesselUpdateRequestInput: Sendable {
   /// Clears the value of `heightInMillimeters`. Subsequent reads from it will return its default value.
   public mutating func clearHeightInMillimeters() {self._heightInMillimeters = nil}
 
-  public var shape: String {
-    get {return _shape ?? String()}
+  public var shape: Mealplanning_ValidVesselShape {
+    get {return _shape ?? .vesselShapeHemisphere}
     set {_shape = newValue}
   }
   /// Returns true if `shape` has been explicitly set.
@@ -2914,7 +3260,7 @@ public struct Mealplanning_ValidVesselUpdateRequestInput: Sendable {
   fileprivate var _widthInMillimeters: Float? = nil
   fileprivate var _lengthInMillimeters: Float? = nil
   fileprivate var _heightInMillimeters: Float? = nil
-  fileprivate var _shape: String? = nil
+  fileprivate var _shape: Mealplanning_ValidVesselShape? = nil
 }
 
 public struct Mealplanning_UserIngredientPreference: Sendable {
@@ -7769,7 +8115,7 @@ public struct Mealplanning_Recipe: @unchecked Sendable {
     set {_uniqueStorage()._slug = newValue}
   }
 
-  public var yieldsComponentType: String {
+  public var yieldsComponentType: Mealplanning_MealComponentType {
     get {return _storage._yieldsComponentType}
     set {_uniqueStorage()._yieldsComponentType = newValue}
   }
@@ -7832,7 +8178,7 @@ public struct Mealplanning_RecipeCreationRequestInput: Sendable {
 
   public var slug: String = String()
 
-  public var yieldsComponentType: String = String()
+  public var yieldsComponentType: Mealplanning_MealComponentType = .unspecified
 
   public var estimatedPortions: Common_Float32RangeWithOptionalMax {
     get {return _estimatedPortions ?? Common_Float32RangeWithOptionalMax()}
@@ -9749,7 +10095,7 @@ public struct Mealplanning_RecipeStepProduct: @unchecked Sendable {
     set {_uniqueStorage()._belongsToRecipeStep = newValue}
   }
 
-  public var type: String {
+  public var type: Mealplanning_RecipeStepProductType {
     get {return _storage._type}
     set {_uniqueStorage()._type = newValue}
   }
@@ -9852,7 +10198,7 @@ public struct Mealplanning_RecipeStepProductCreationRequestInput: Sendable {
 
   public var storageInstructions: String = String()
 
-  public var type: String = String()
+  public var type: Mealplanning_RecipeStepProductType = .ingredient
 
   public var index: UInt32 = 0
 
@@ -9887,8 +10233,8 @@ public struct Mealplanning_RecipeStepProductUpdateRequestInput: @unchecked Senda
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   public mutating func clearName() {_uniqueStorage()._name = nil}
 
-  public var type: String {
-    get {return _storage._type ?? String()}
+  public var type: Mealplanning_RecipeStepProductType {
+    get {return _storage._type ?? .ingredient}
     set {_uniqueStorage()._type = newValue}
   }
   /// Returns true if `type` has been explicitly set.
@@ -10451,8 +10797,8 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   /// Clears the value of `eligibleForMeals`. Subsequent reads from it will return its default value.
   public mutating func clearEligibleForMeals() {self._eligibleForMeals = nil}
 
-  public var yieldsComponentType: String {
-    get {return _yieldsComponentType ?? String()}
+  public var yieldsComponentType: Mealplanning_MealComponentType {
+    get {return _yieldsComponentType ?? .unspecified}
     set {_yieldsComponentType = newValue}
   }
   /// Returns true if `yieldsComponentType` has been explicitly set.
@@ -10473,7 +10819,7 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   fileprivate var _portionName: String? = nil
   fileprivate var _pluralPortionName: String? = nil
   fileprivate var _eligibleForMeals: Bool? = nil
-  fileprivate var _yieldsComponentType: String? = nil
+  fileprivate var _yieldsComponentType: Mealplanning_MealComponentType? = nil
 }
 
 /// ArchiveRecipe
@@ -13165,7 +13511,7 @@ public struct Mealplanning_MealComponent: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var componentType: String = String()
+  public var componentType: Mealplanning_MealComponentType = .unspecified
 
   public var recipe: Mealplanning_Recipe {
     get {return _recipe ?? Mealplanning_Recipe()}
@@ -13192,7 +13538,7 @@ public struct Mealplanning_MealComponentCreationRequestInput: Sendable {
 
   public var recipeID: String = String()
 
-  public var componentType: String = String()
+  public var componentType: Mealplanning_MealComponentType = .unspecified
 
   public var recipeScale: Float = 0
 
@@ -13215,8 +13561,8 @@ public struct Mealplanning_MealComponentUpdateRequestInput: Sendable {
   /// Clears the value of `recipeID`. Subsequent reads from it will return its default value.
   public mutating func clearRecipeID() {self._recipeID = nil}
 
-  public var componentType: String {
-    get {return _componentType ?? String()}
+  public var componentType: Mealplanning_MealComponentType {
+    get {return _componentType ?? .unspecified}
     set {_componentType = newValue}
   }
   /// Returns true if `componentType` has been explicitly set.
@@ -13238,7 +13584,7 @@ public struct Mealplanning_MealComponentUpdateRequestInput: Sendable {
   public init() {}
 
   fileprivate var _recipeID: String? = nil
-  fileprivate var _componentType: String? = nil
+  fileprivate var _componentType: Mealplanning_MealComponentType? = nil
   fileprivate var _recipeScale: Float? = nil
 }
 
@@ -13327,7 +13673,7 @@ public struct Mealplanning_MealPlan: @unchecked Sendable {
     set {_uniqueStorage()._notes = newValue}
   }
 
-  public var electionMethod: String {
+  public var electionMethod: Mealplanning_MealPlanElectionMethod {
     get {return _storage._electionMethod}
     set {_uniqueStorage()._electionMethod = newValue}
   }
@@ -13380,7 +13726,7 @@ public struct Mealplanning_MealPlanCreationRequestInput: Sendable {
 
   public var notes: String = String()
 
-  public var electionMethod: String = String()
+  public var electionMethod: Mealplanning_MealPlanElectionMethod = .schulze
 
   public var events: [Mealplanning_MealPlanEventCreationRequestInput] = []
 
@@ -13625,7 +13971,7 @@ public struct Mealplanning_MealPlanGroceryListItem: @unchecked Sendable {
     set {_uniqueStorage()._belongsToMealPlan = newValue}
   }
 
-  public var status: String {
+  public var status: Mealplanning_MealPlanGroceryListItemStatus {
     get {return _storage._status}
     set {_uniqueStorage()._status = newValue}
   }
@@ -13715,7 +14061,7 @@ public struct Mealplanning_MealPlanGroceryListItemCreationRequestInput: Sendable
   /// Clears the value of `quantityPurchased`. Subsequent reads from it will return its default value.
   public mutating func clearQuantityPurchased() {self._quantityPurchased = nil}
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanGroceryListItemStatus = .unknown
 
   public var belongsToMealPlan: String = String()
 
@@ -13822,8 +14168,8 @@ public struct Mealplanning_MealPlanGroceryListItemUpdateRequestInput: Sendable {
   /// Clears the value of `purchasePrice`. Subsequent reads from it will return its default value.
   public mutating func clearPurchasePrice() {self._purchasePrice = nil}
 
-  public var status: String {
-    get {return _status ?? String()}
+  public var status: Mealplanning_MealPlanGroceryListItemStatus {
+    get {return _status ?? .unknown}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
@@ -13852,7 +14198,7 @@ public struct Mealplanning_MealPlanGroceryListItemUpdateRequestInput: Sendable {
   fileprivate var _purchasedMeasurementUnitID: String? = nil
   fileprivate var _purchasedUpc: String? = nil
   fileprivate var _purchasePrice: Float? = nil
-  fileprivate var _status: String? = nil
+  fileprivate var _status: Mealplanning_MealPlanGroceryListItemStatus? = nil
   fileprivate var _quantityNeeded: Common_Float32RangeWithOptionalMaxUpdateRequestInput? = nil
 }
 
@@ -14263,7 +14609,7 @@ public struct Mealplanning_MealPlanTask: Sendable {
 
   public var id: String = String()
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanTaskStatus = .unfinished
 
   public var creationExplanation: String = String()
 
@@ -14304,7 +14650,7 @@ public struct Mealplanning_MealPlanTaskCreationRequestInput: Sendable {
   /// Clears the value of `assignedToUser`. Subsequent reads from it will return its default value.
   public mutating func clearAssignedToUser() {self._assignedToUser = nil}
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanTaskStatus = .unfinished
 
   public var creationExplanation: String = String()
 
@@ -14326,8 +14672,8 @@ public struct Mealplanning_MealPlanTaskStatusChangeRequestInput: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: String {
-    get {return _status ?? String()}
+  public var status: Mealplanning_MealPlanTaskStatus {
+    get {return _status ?? .unfinished}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
@@ -14352,7 +14698,7 @@ public struct Mealplanning_MealPlanTaskStatusChangeRequestInput: Sendable {
 
   public init() {}
 
-  fileprivate var _status: String? = nil
+  fileprivate var _status: Mealplanning_MealPlanTaskStatus? = nil
   fileprivate var _assignedToUser: String? = nil
 }
 
@@ -16734,9 +17080,37 @@ public struct Mealplanning_AccountInstrumentOwnershipUpdateRequestInput: Sendabl
 
 fileprivate let _protobuf_package = "mealplanning"
 
+extension Mealplanning_ValidIngredientStateAttributeType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEMPERATURE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_COLOR\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_APPEARANCE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_ODOR\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TASTE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_SOUND\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER\0")
+}
+
+extension Mealplanning_ValidVesselShape: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VESSEL_SHAPE_HEMISPHERE\0\u{1}VESSEL_SHAPE_RECTANGLE\0\u{1}VESSEL_SHAPE_CONE\0\u{1}VESSEL_SHAPE_PYRAMID\0\u{1}VESSEL_SHAPE_CYLINDER\0\u{1}VESSEL_SHAPE_SPHERE\0\u{1}VESSEL_SHAPE_CUBE\0\u{1}VESSEL_SHAPE_OTHER\0")
+}
+
+extension Mealplanning_RecipeStepProductType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RECIPE_STEP_PRODUCT_TYPE_INGREDIENT\0\u{1}RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT\0\u{1}RECIPE_STEP_PRODUCT_TYPE_VESSEL\0")
+}
+
+extension Mealplanning_MealComponentType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_COMPONENT_TYPE_UNSPECIFIED\0\u{1}MEAL_COMPONENT_TYPE_AMUSE_BOUCHE\0\u{1}MEAL_COMPONENT_TYPE_APPETIZER\0\u{1}MEAL_COMPONENT_TYPE_SOUP\0\u{1}MEAL_COMPONENT_TYPE_MAIN\0\u{1}MEAL_COMPONENT_TYPE_SALAD\0\u{1}MEAL_COMPONENT_TYPE_BEVERAGE\0\u{1}MEAL_COMPONENT_TYPE_SIDE\0\u{1}MEAL_COMPONENT_TYPE_DESSERT\0")
+}
+
+extension Mealplanning_MealPlanElectionMethod: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_ELECTION_METHOD_SCHULZE\0\u{1}MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF\0")
+}
+
+extension Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ALREADY_OWNED\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_NEEDS\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNAVAILABLE\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED\0")
+}
+
+extension Mealplanning_MealPlanTaskStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_TASK_STATUS_UNFINISHED\0\u{1}MEAL_PLAN_TASK_STATUS_POSTPONED\0\u{1}MEAL_PLAN_TASK_STATUS_IGNORED\0\u{1}MEAL_PLAN_TASK_STATUS_CANCELED\0\u{1}MEAL_PLAN_TASK_STATUS_FINISHED\0")
+}
+
 extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}AccountInstrumentOwnerships\0\u{1}MealPlans\0\u{1}RecipeRatings\0\u{1}Recipes\0\u{1}Meals\0\u{1}UserIngredientPreferences\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -16791,7 +17165,7 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}StorageTemperatureInCelsius\0\u{1}IconPath\0\u{1}Warning\0\u{1}PluralName\0\u{1}StorageInstructions\0\u{1}Name\0\u{1}ID\0\u{1}Description\0\u{1}Slug\0\u{1}ShoppingSuggestions\0\u{1}ContainsShellfish\0\u{1}IsLiquid\0\u{1}ContainsPeanut\0\u{1}ContainsTreeNut\0\u{1}ContainsEgg\0\u{1}ContainsWheat\0\u{1}ContainsSoy\0\u{1}AnimalDerived\0\u{1}RestrictToPreparations\0\u{1}ContainsSesame\0\u{1}ContainsFish\0\u{1}ContainsGluten\0\u{1}ContainsDairy\0\u{1}ContainsAlcohol\0\u{1}AnimalFlesh\0\u{1}IsStarch\0\u{1}IsProtein\0\u{1}IsGrain\0\u{1}IsFruit\0\u{1}IsSalt\0\u{1}IsFat\0\u{1}IsAcid\0\u{1}IsHeat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -17106,7 +17480,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}StorageTemperatureInCelsius\0\u{1}Warning\0\u{1}IconPath\0\u{1}PluralName\0\u{1}StorageInstructions\0\u{1}Name\0\u{1}Description\0\u{1}Slug\0\u{1}ShoppingSuggestions\0\u{1}ContainsFish\0\u{1}ContainsShellfish\0\u{1}AnimalFlesh\0\u{1}ContainsEgg\0\u{1}IsLiquid\0\u{1}ContainsSoy\0\u{1}ContainsPeanut\0\u{1}AnimalDerived\0\u{1}RestrictToPreparations\0\u{1}ContainsDairy\0\u{1}ContainsSesame\0\u{1}ContainsTreeNut\0\u{1}ContainsWheat\0\u{1}ContainsAlcohol\0\u{1}ContainsGluten\0\u{1}IsStarch\0\u{1}IsProtein\0\u{1}IsGrain\0\u{1}IsFruit\0\u{1}IsSalt\0\u{1}IsFat\0\u{1}IsAcid\0\u{1}IsHeat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{1}warning\0\u{3}icon_path\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_fish\0\u{3}contains_shellfish\0\u{3}animal_flesh\0\u{3}contains_egg\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}contains_peanut\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_dairy\0\u{3}contains_sesame\0\u{3}contains_tree_nut\0\u{3}contains_wheat\0\u{3}contains_alcohol\0\u{3}contains_gluten\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
 
   fileprivate class _StorageClass {
     var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
@@ -17393,7 +17767,7 @@ extension Mealplanning_ValidIngredientCreationRequestInput: SwiftProtobuf.Messag
 
 extension Mealplanning_ValidIngredientGroup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientGroup"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Name\0\u{1}Slug\0\u{1}Description\0\u{1}Members\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}id\0\u{1}name\0\u{1}slug\0\u{1}description\0\u{1}members\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17462,7 +17836,7 @@ extension Mealplanning_ValidIngredientGroup: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_ValidIngredientGroupCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientGroupCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Slug\0\u{1}Description\0\u{1}Members\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}description\0\u{1}members\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17507,7 +17881,7 @@ extension Mealplanning_ValidIngredientGroupCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_ValidIngredientGroupMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientGroupMember"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}BelongsToGroup\0\u{1}ValidIngredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{1}id\0\u{3}belongs_to_group\0\u{3}valid_ingredient\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17561,7 +17935,7 @@ extension Mealplanning_ValidIngredientGroupMember: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ValidIngredientGroupMemberCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientGroupMemberCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17591,7 +17965,7 @@ extension Mealplanning_ValidIngredientGroupMemberCreationRequestInput: SwiftProt
 
 extension Mealplanning_ValidIngredientGroupUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientGroupUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Slug\0\u{1}Description\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}description\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17635,7 +18009,7 @@ extension Mealplanning_ValidIngredientGroupUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientMeasurementUnit"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Notes\0\u{1}ID\0\u{1}AllowableQuantity\0\u{1}MeasurementUnit\0\u{1}Ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{3}allowable_quantity\0\u{3}measurement_unit\0\u{1}ingredient\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -17754,7 +18128,7 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ValidIngredientMeasurementUnitCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientMeasurementUnitCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidMeasurementUnitID\0\u{1}ValidIngredientID\0\u{1}AllowableQuantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_measurement_unit_id\0\u{3}valid_ingredient_id\0\u{3}allowable_quantity\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17803,7 +18177,7 @@ extension Mealplanning_ValidIngredientMeasurementUnitCreationRequestInput: Swift
 
 extension Mealplanning_ValidIngredientMeasurementUnitUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientMeasurementUnitUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidMeasurementUnitID\0\u{1}ValidIngredientID\0\u{1}AllowableQuantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_measurement_unit_id\0\u{3}valid_ingredient_id\0\u{3}allowable_quantity\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17852,7 +18226,7 @@ extension Mealplanning_ValidIngredientMeasurementUnitUpdateRequestInput: SwiftPr
 
 extension Mealplanning_ValidIngredientPreparation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientPreparation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Notes\0\u{1}ID\0\u{1}Preparation\0\u{1}Ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{1}preparation\0\u{1}ingredient\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17916,7 +18290,7 @@ extension Mealplanning_ValidIngredientPreparation: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ValidIngredientPreparationCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientPreparationCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -17956,7 +18330,7 @@ extension Mealplanning_ValidIngredientPreparationCreationRequestInput: SwiftProt
 
 extension Mealplanning_ValidIngredientPreparationUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientPreparationUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18000,7 +18374,7 @@ extension Mealplanning_ValidIngredientPreparationUpdateRequestInput: SwiftProtob
 
 extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientState"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}PastTense\0\u{1}Description\0\u{1}IconPath\0\u{1}ID\0\u{1}Name\0\u{1}AttributeType\0\u{1}Slug\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}past_tense\0\u{1}description\0\u{3}icon_path\0\u{1}id\0\u{1}name\0\u{3}attribute_type\0\u{1}slug\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18016,7 +18390,7 @@ extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobu
       case 6: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.attributeType) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.attributeType) }()
       case 10: try { try decoder.decodeSingularStringField(value: &self.slug) }()
       default: break
       }
@@ -18052,8 +18426,8 @@ extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobu
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 8)
     }
-    if !self.attributeType.isEmpty {
-      try visitor.visitSingularStringField(value: self.attributeType, fieldNumber: 9)
+    if self.attributeType != .texture {
+      try visitor.visitSingularEnumField(value: self.attributeType, fieldNumber: 9)
     }
     if !self.slug.isEmpty {
       try visitor.visitSingularStringField(value: self.slug, fieldNumber: 10)
@@ -18079,7 +18453,7 @@ extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientStateCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Slug\0\u{1}PastTense\0\u{1}Description\0\u{1}AttributeType\0\u{1}IconPath\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{3}past_tense\0\u{1}description\0\u{3}attribute_type\0\u{3}icon_path\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18091,7 +18465,7 @@ extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.M
       case 2: try { try decoder.decodeSingularStringField(value: &self.slug) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.pastTense) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.attributeType) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.attributeType) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       default: break
       }
@@ -18111,8 +18485,8 @@ extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.M
     if !self.description_p.isEmpty {
       try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 4)
     }
-    if !self.attributeType.isEmpty {
-      try visitor.visitSingularStringField(value: self.attributeType, fieldNumber: 5)
+    if self.attributeType != .texture {
+      try visitor.visitSingularEnumField(value: self.attributeType, fieldNumber: 5)
     }
     if !self.iconPath.isEmpty {
       try visitor.visitSingularStringField(value: self.iconPath, fieldNumber: 6)
@@ -18134,7 +18508,7 @@ extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_ValidIngredientStateIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientStateIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Notes\0\u{1}ID\0\u{1}IngredientState\0\u{1}Ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{3}ingredient_state\0\u{1}ingredient\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -18246,7 +18620,7 @@ extension Mealplanning_ValidIngredientStateIngredient: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ValidIngredientStateIngredientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientStateIngredientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidIngredientStateID\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_ingredient_state_id\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18286,7 +18660,7 @@ extension Mealplanning_ValidIngredientStateIngredientCreationRequestInput: Swift
 
 extension Mealplanning_ValidIngredientStateIngredientUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientStateIngredientUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidIngredientStateID\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_ingredient_state_id\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18330,7 +18704,7 @@ extension Mealplanning_ValidIngredientStateIngredientUpdateRequestInput: SwiftPr
 
 extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientStateUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Slug\0\u{1}PastTense\0\u{1}Description\0\u{1}AttributeType\0\u{1}IconPath\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{3}past_tense\0\u{1}description\0\u{3}attribute_type\0\u{3}icon_path\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18342,7 +18716,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
       case 2: try { try decoder.decodeSingularStringField(value: &self._slug) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._pastTense) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._attributeType) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self._attributeType) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self._iconPath) }()
       default: break
       }
@@ -18367,7 +18741,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
     try { if let v = self._attributeType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 5)
     } }()
     try { if let v = self._iconPath {
       try visitor.visitSingularStringField(value: v, fieldNumber: 6)
@@ -18389,7 +18763,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0\u{1}Warning\0\u{1}IconPath\0\u{1}ContainsDairy\0\u{1}ContainsPeanut\0\u{1}ContainsTreeNut\0\u{1}ContainsEgg\0\u{1}ContainsWheat\0\u{1}ContainsShellfish\0\u{1}ContainsSesame\0\u{1}ContainsFish\0\u{1}ContainsGluten\0\u{1}AnimalFlesh\0\u{1}IsLiquid\0\u{1}ContainsSoy\0\u{1}PluralName\0\u{1}AnimalDerived\0\u{1}RestrictToPreparations\0\u{1}StorageTemperatureInCelsius\0\u{1}StorageInstructions\0\u{1}Slug\0\u{1}ContainsAlcohol\0\u{1}ShoppingSuggestions\0\u{1}IsStarch\0\u{1}IsProtein\0\u{1}IsGrain\0\u{1}IsFruit\0\u{1}IsSalt\0\u{1}IsFat\0\u{1}IsAcid\0\u{1}IsHeat\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{1}warning\0\u{3}icon_path\0\u{3}contains_dairy\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_shellfish\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}animal_flesh\0\u{3}is_liquid\0\u{3}contains_soy\0\u{3}plural_name\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}storage_temperature_in_celsius\0\u{3}storage_instructions\0\u{1}slug\0\u{3}contains_alcohol\0\u{3}shopping_suggestions\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0")
 
   fileprivate class _StorageClass {
     var _name: String? = nil
@@ -18676,7 +19050,7 @@ extension Mealplanning_ValidIngredientUpdateRequestInput: SwiftProtobuf.Message,
 
 extension Mealplanning_ValidInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}IconPath\0\u{1}ID\0\u{1}Name\0\u{1}PluralName\0\u{1}Description\0\u{1}Slug\0\u{1}DisplayInSummaryLists\0\u{1}IncludeInGeneratedInstructions\0\u{1}UsableForStorage\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}icon_path\0\u{1}id\0\u{1}name\0\u{3}plural_name\0\u{1}description\0\u{1}slug\0\u{3}display_in_summary_lists\0\u{3}include_in_generated_instructions\0\u{3}usable_for_storage\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18765,7 +19139,7 @@ extension Mealplanning_ValidInstrument: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Mealplanning_ValidInstrumentCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidInstrumentCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}PluralName\0\u{1}Description\0\u{1}IconPath\0\u{1}Slug\0\u{1}DisplayInSummaryLists\0\u{1}IncludeInGeneratedInstructions\0\u{1}UsableForStorage\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}plural_name\0\u{1}description\0\u{3}icon_path\0\u{1}slug\0\u{3}display_in_summary_lists\0\u{3}include_in_generated_instructions\0\u{3}usable_for_storage\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18830,7 +19204,7 @@ extension Mealplanning_ValidInstrumentCreationRequestInput: SwiftProtobuf.Messag
 
 extension Mealplanning_ValidInstrumentUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidInstrumentUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}PluralName\0\u{1}Description\0\u{1}IconPath\0\u{1}Slug\0\u{1}UsableForStorage\0\u{1}DisplayInSummaryLists\0\u{1}IncludeInGeneratedInstructions\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}plural_name\0\u{1}description\0\u{3}icon_path\0\u{1}slug\0\u{3}usable_for_storage\0\u{3}display_in_summary_lists\0\u{3}include_in_generated_instructions\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18899,7 +19273,7 @@ extension Mealplanning_ValidInstrumentUpdateRequestInput: SwiftProtobuf.Message,
 
 extension Mealplanning_ValidMeasurementUnit: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnit"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Name\0\u{1}IconPath\0\u{1}ID\0\u{1}Description\0\u{1}PluralName\0\u{1}Slug\0\u{1}Volumetric\0\u{1}Universal\0\u{1}Metric\0\u{1}Imperial\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}name\0\u{3}icon_path\0\u{1}id\0\u{1}description\0\u{3}plural_name\0\u{1}slug\0\u{1}volumetric\0\u{1}universal\0\u{1}metric\0\u{1}imperial\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -18993,7 +19367,7 @@ extension Mealplanning_ValidMeasurementUnit: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_ValidMeasurementUnitConversion: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnitConversion"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}OnlyForIngredient\0\u{1}Notes\0\u{1}ID\0\u{1}From\0\u{1}To\0\u{1}Modifier\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}only_for_ingredient\0\u{1}notes\0\u{1}id\0\u{1}from\0\u{1}to\0\u{1}modifier\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -19119,7 +19493,7 @@ extension Mealplanning_ValidMeasurementUnitConversion: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ValidMeasurementUnitConversionCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnitConversionCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OnlyForIngredient\0\u{1}From\0\u{1}To\0\u{1}Notes\0\u{1}Modifier\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}only_for_ingredient\0\u{1}from\0\u{1}to\0\u{1}notes\0\u{1}modifier\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19173,7 +19547,7 @@ extension Mealplanning_ValidMeasurementUnitConversionCreationRequestInput: Swift
 
 extension Mealplanning_ValidMeasurementUnitConversionUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnitConversionUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}From\0\u{1}To\0\u{1}OnlyForIngredient\0\u{1}Modifier\0\u{1}Notes\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}from\0\u{1}to\0\u{3}only_for_ingredient\0\u{1}modifier\0\u{1}notes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19227,7 +19601,7 @@ extension Mealplanning_ValidMeasurementUnitConversionUpdateRequestInput: SwiftPr
 
 extension Mealplanning_ValidMeasurementUnitCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnitCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0\u{1}IconPath\0\u{1}PluralName\0\u{1}Slug\0\u{1}Volumetric\0\u{1}Universal\0\u{1}Metric\0\u{1}Imperial\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{3}icon_path\0\u{3}plural_name\0\u{1}slug\0\u{1}volumetric\0\u{1}universal\0\u{1}metric\0\u{1}imperial\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19297,7 +19671,7 @@ extension Mealplanning_ValidMeasurementUnitCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_ValidMeasurementUnitUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidMeasurementUnitUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0\u{1}IconPath\0\u{1}Volumetric\0\u{1}Universal\0\u{1}Metric\0\u{1}Imperial\0\u{1}PluralName\0\u{1}Slug\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{3}icon_path\0\u{1}volumetric\0\u{1}universal\0\u{1}metric\0\u{1}imperial\0\u{3}plural_name\0\u{1}slug\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19371,7 +19745,7 @@ extension Mealplanning_ValidMeasurementUnitUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}InstrumentCount\0\u{1}IngredientCount\0\u{1}VesselCount\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}IconPath\0\u{1}PastTense\0\u{1}ID\0\u{1}Name\0\u{1}Description\0\u{1}Slug\0\u{1}RestrictToIngredients\0\u{1}TemperatureRequired\0\u{1}TimeEstimateRequired\0\u{1}ConditionExpressionRequired\0\u{1}ConsumesVessel\0\u{1}OnlyForVessels\0\u{1}YieldsNothing\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}icon_path\0\u{3}past_tense\0\u{1}id\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}yields_nothing\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -19567,7 +19941,7 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Mealplanning_ValidPreparationCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InstrumentCount\0\u{1}IngredientCount\0\u{1}VesselCount\0\u{1}IconPath\0\u{1}PastTense\0\u{1}Slug\0\u{1}Name\0\u{1}Description\0\u{1}TemperatureRequired\0\u{1}TimeEstimateRequired\0\u{1}ConditionExpressionRequired\0\u{1}ConsumesVessel\0\u{1}OnlyForVessels\0\u{1}RestrictToIngredients\0\u{1}YieldsNothing\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{3}icon_path\0\u{3}past_tense\0\u{1}slug\0\u{1}name\0\u{1}description\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}restrict_to_ingredients\0\u{3}yields_nothing\0")
 
   fileprivate class _StorageClass {
     var _instrumentCount: Common_Uint16RangeWithOptionalMax? = nil
@@ -19735,7 +20109,7 @@ extension Mealplanning_ValidPreparationCreationRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_ValidPreparationInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Notes\0\u{1}Instrument\0\u{1}Preparation\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}id\0\u{1}notes\0\u{1}instrument\0\u{1}preparation\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -19847,7 +20221,7 @@ extension Mealplanning_ValidPreparationInstrument: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ValidPreparationInstrumentCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationInstrumentCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19887,7 +20261,7 @@ extension Mealplanning_ValidPreparationInstrumentCreationRequestInput: SwiftProt
 
 extension Mealplanning_ValidPreparationInstrumentUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationInstrumentUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -19931,7 +20305,7 @@ extension Mealplanning_ValidPreparationInstrumentUpdateRequestInput: SwiftProtob
 
 extension Mealplanning_ValidPreparationUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InstrumentCount\0\u{1}IngredientCount\0\u{1}VesselCount\0\u{1}Name\0\u{1}Description\0\u{1}IconPath\0\u{1}YieldsNothing\0\u{1}Slug\0\u{1}RestrictToIngredients\0\u{1}PastTense\0\u{1}TemperatureRequired\0\u{1}TimeEstimateRequired\0\u{1}ConditionExpressionRequired\0\u{1}ConsumesVessel\0\u{1}OnlyForVessels\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{1}name\0\u{1}description\0\u{3}icon_path\0\u{3}yields_nothing\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}past_tense\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0")
 
   fileprivate class _StorageClass {
     var _instrumentCount: Common_Uint16RangeWithOptionalMaxUpdateRequestInput? = nil
@@ -20099,7 +20473,7 @@ extension Mealplanning_ValidPreparationUpdateRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_ValidPreparationVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Notes\0\u{1}Preparation\0\u{1}Vessel\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}id\0\u{1}notes\0\u{1}preparation\0\u{1}vessel\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20163,7 +20537,7 @@ extension Mealplanning_ValidPreparationVessel: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_ValidPreparationVesselCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationVesselCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20203,7 +20577,7 @@ extension Mealplanning_ValidPreparationVesselCreationRequestInput: SwiftProtobuf
 
 extension Mealplanning_ValidPreparationVesselUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparationVesselUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidPreparationID\0\u{1}ValidVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_preparation_id\0\u{3}valid_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20247,7 +20621,7 @@ extension Mealplanning_ValidPreparationVesselUpdateRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}CapacityUnit\0\u{1}IconPath\0\u{1}PluralName\0\u{1}Description\0\u{1}Name\0\u{1}Slug\0\u{1}Shape\0\u{1}ID\0\u{1}WidthInMillimeters\0\u{1}LengthInMillimeters\0\u{1}HeightInMillimeters\0\u{1}Capacity\0\u{1}IncludeInGeneratedInstructions\0\u{1}DisplayInSummaryLists\0\u{1}UsableForStorage\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}capacity_unit\0\u{3}icon_path\0\u{3}plural_name\0\u{1}description\0\u{1}name\0\u{1}slug\0\u{1}shape\0\u{1}id\0\u{3}width_in_millimeters\0\u{3}length_in_millimeters\0\u{3}height_in_millimeters\0\u{1}capacity\0\u{3}include_in_generated_instructions\0\u{3}display_in_summary_lists\0\u{3}usable_for_storage\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -20259,7 +20633,7 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
     var _description_p: String = String()
     var _name: String = String()
     var _slug: String = String()
-    var _shape: String = String()
+    var _shape: Mealplanning_ValidVesselShape = .vesselShapeHemisphere
     var _id: String = String()
     var _widthInMillimeters: Float = 0
     var _lengthInMillimeters: Float = 0
@@ -20323,7 +20697,7 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._description_p) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 10: try { try decoder.decodeSingularStringField(value: &_storage._shape) }()
+        case 10: try { try decoder.decodeSingularEnumField(value: &_storage._shape) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 12: try { try decoder.decodeSingularFloatField(value: &_storage._widthInMillimeters) }()
         case 13: try { try decoder.decodeSingularFloatField(value: &_storage._lengthInMillimeters) }()
@@ -20371,8 +20745,8 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
       if !_storage._slug.isEmpty {
         try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 9)
       }
-      if !_storage._shape.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._shape, fieldNumber: 10)
+      if _storage._shape != .vesselShapeHemisphere {
+        try visitor.visitSingularEnumField(value: _storage._shape, fieldNumber: 10)
       }
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 11)
@@ -20436,7 +20810,7 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidVesselCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CapacityUnitID\0\u{1}Shape\0\u{1}IconPath\0\u{1}PluralName\0\u{1}Name\0\u{1}Description\0\u{1}Slug\0\u{1}LengthInMillimeters\0\u{1}HeightInMillimeters\0\u{1}Capacity\0\u{1}WidthInMillimeters\0\u{1}UsableForStorage\0\u{1}IncludeInGeneratedInstructions\0\u{1}DisplayInSummaryLists\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}capacity_unit_id\0\u{1}shape\0\u{3}icon_path\0\u{3}plural_name\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}length_in_millimeters\0\u{3}height_in_millimeters\0\u{1}capacity\0\u{3}width_in_millimeters\0\u{3}usable_for_storage\0\u{3}include_in_generated_instructions\0\u{3}display_in_summary_lists\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20445,7 +20819,7 @@ extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, S
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._capacityUnitID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.shape) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.shape) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.pluralName) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.name) }()
@@ -20471,8 +20845,8 @@ extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, S
     try { if let v = self._capacityUnitID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
-    if !self.shape.isEmpty {
-      try visitor.visitSingularStringField(value: self.shape, fieldNumber: 2)
+    if self.shape != .vesselShapeHemisphere {
+      try visitor.visitSingularEnumField(value: self.shape, fieldNumber: 2)
     }
     if !self.iconPath.isEmpty {
       try visitor.visitSingularStringField(value: self.iconPath, fieldNumber: 3)
@@ -20535,7 +20909,7 @@ extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, S
 
 extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidVesselUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}PluralName\0\u{1}Description\0\u{1}IconPath\0\u{1}UsableForStorage\0\u{1}Slug\0\u{1}DisplayInSummaryLists\0\u{1}IncludeInGeneratedInstructions\0\u{1}Capacity\0\u{1}CapacityUnitID\0\u{1}WidthInMillimeters\0\u{1}LengthInMillimeters\0\u{1}HeightInMillimeters\0\u{1}Shape\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}plural_name\0\u{1}description\0\u{3}icon_path\0\u{3}usable_for_storage\0\u{1}slug\0\u{3}display_in_summary_lists\0\u{3}include_in_generated_instructions\0\u{1}capacity\0\u{3}capacity_unit_id\0\u{3}width_in_millimeters\0\u{3}length_in_millimeters\0\u{3}height_in_millimeters\0\u{1}shape\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20556,7 +20930,7 @@ extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, Swi
       case 11: try { try decoder.decodeSingularFloatField(value: &self._widthInMillimeters) }()
       case 12: try { try decoder.decodeSingularFloatField(value: &self._lengthInMillimeters) }()
       case 13: try { try decoder.decodeSingularFloatField(value: &self._heightInMillimeters) }()
-      case 14: try { try decoder.decodeSingularStringField(value: &self._shape) }()
+      case 14: try { try decoder.decodeSingularEnumField(value: &self._shape) }()
       default: break
       }
     }
@@ -20607,7 +20981,7 @@ extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, Swi
       try visitor.visitSingularFloatField(value: v, fieldNumber: 13)
     } }()
     try { if let v = self._shape {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 14)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 14)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -20634,7 +21008,7 @@ extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_UserIngredientPreference: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserIngredientPreference"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}Notes\0\u{1}BelongsToUser\0\u{1}Ingredient\0\u{1}Rating\0\u{1}Allergy\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_user\0\u{1}ingredient\0\u{1}rating\0\u{1}allergy\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20708,7 +21082,7 @@ extension Mealplanning_UserIngredientPreference: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_UserIngredientPreferenceCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserIngredientPreferenceCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientGroupID\0\u{1}ValidIngredientID\0\u{1}Notes\0\u{1}Rating\0\u{1}Allergy\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_group_id\0\u{3}valid_ingredient_id\0\u{1}notes\0\u{1}rating\0\u{1}allergy\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20758,7 +21132,7 @@ extension Mealplanning_UserIngredientPreferenceCreationRequestInput: SwiftProtob
 
 extension Mealplanning_UserIngredientPreferenceUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserIngredientPreferenceUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}IngredientID\0\u{1}Rating\0\u{1}Allergy\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}ingredient_id\0\u{1}rating\0\u{1}allergy\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20807,7 +21181,7 @@ extension Mealplanning_UserIngredientPreferenceUpdateRequestInput: SwiftProtobuf
 
 extension Mealplanning_ArchiveValidIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20837,7 +21211,7 @@ extension Mealplanning_ArchiveValidIngredientRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_ArchiveValidIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20871,7 +21245,7 @@ extension Mealplanning_ArchiveValidIngredientResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ArchiveValidIngredientGroupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientGroupRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientGroupID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_group_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20901,7 +21275,7 @@ extension Mealplanning_ArchiveValidIngredientGroupRequest: SwiftProtobuf.Message
 
 extension Mealplanning_ArchiveValidIngredientGroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientGroupResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20935,7 +21309,7 @@ extension Mealplanning_ArchiveValidIngredientGroupResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_ArchiveValidIngredientMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20965,7 +21339,7 @@ extension Mealplanning_ArchiveValidIngredientMeasurementUnitRequest: SwiftProtob
 
 extension Mealplanning_ArchiveValidIngredientMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -20999,7 +21373,7 @@ extension Mealplanning_ArchiveValidIngredientMeasurementUnitResponse: SwiftProto
 
 extension Mealplanning_ArchiveValidIngredientPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21029,7 +21403,7 @@ extension Mealplanning_ArchiveValidIngredientPreparationRequest: SwiftProtobuf.M
 
 extension Mealplanning_ArchiveValidIngredientPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21063,7 +21437,7 @@ extension Mealplanning_ArchiveValidIngredientPreparationResponse: SwiftProtobuf.
 
 extension Mealplanning_ArchiveValidIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientStateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21093,7 +21467,7 @@ extension Mealplanning_ArchiveValidIngredientStateRequest: SwiftProtobuf.Message
 
 extension Mealplanning_ArchiveValidIngredientStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientStateResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21127,7 +21501,7 @@ extension Mealplanning_ArchiveValidIngredientStateResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_ArchiveValidIngredientStateIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientStateIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21157,7 +21531,7 @@ extension Mealplanning_ArchiveValidIngredientStateIngredientRequest: SwiftProtob
 
 extension Mealplanning_ArchiveValidIngredientStateIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientStateIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21191,7 +21565,7 @@ extension Mealplanning_ArchiveValidIngredientStateIngredientResponse: SwiftProto
 
 extension Mealplanning_ArchiveValidInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21221,7 +21595,7 @@ extension Mealplanning_ArchiveValidInstrumentRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_ArchiveValidInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21255,7 +21629,7 @@ extension Mealplanning_ArchiveValidInstrumentResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ArchiveValidMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21285,7 +21659,7 @@ extension Mealplanning_ArchiveValidMeasurementUnitRequest: SwiftProtobuf.Message
 
 extension Mealplanning_ArchiveValidMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21319,7 +21693,7 @@ extension Mealplanning_ArchiveValidMeasurementUnitResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_ArchiveValidMeasurementUnitConversionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidMeasurementUnitConversionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitConversionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_conversion_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21349,7 +21723,7 @@ extension Mealplanning_ArchiveValidMeasurementUnitConversionRequest: SwiftProtob
 
 extension Mealplanning_ArchiveValidMeasurementUnitConversionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidMeasurementUnitConversionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21383,7 +21757,7 @@ extension Mealplanning_ArchiveValidMeasurementUnitConversionResponse: SwiftProto
 
 extension Mealplanning_ArchiveValidPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21413,7 +21787,7 @@ extension Mealplanning_ArchiveValidPreparationRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ArchiveValidPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21447,7 +21821,7 @@ extension Mealplanning_ArchiveValidPreparationResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_ArchiveValidPreparationInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21477,7 +21851,7 @@ extension Mealplanning_ArchiveValidPreparationInstrumentRequest: SwiftProtobuf.M
 
 extension Mealplanning_ArchiveValidPreparationInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21511,7 +21885,7 @@ extension Mealplanning_ArchiveValidPreparationInstrumentResponse: SwiftProtobuf.
 
 extension Mealplanning_ArchiveValidPreparationVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21541,7 +21915,7 @@ extension Mealplanning_ArchiveValidPreparationVesselRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_ArchiveValidPreparationVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPreparationVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21575,7 +21949,7 @@ extension Mealplanning_ArchiveValidPreparationVesselResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_ArchiveValidVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21605,7 +21979,7 @@ extension Mealplanning_ArchiveValidVesselRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_ArchiveValidVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21639,7 +22013,7 @@ extension Mealplanning_ArchiveValidVesselResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_CreateValidIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21673,7 +22047,7 @@ extension Mealplanning_CreateValidIngredientRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_CreateValidIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21712,7 +22086,7 @@ extension Mealplanning_CreateValidIngredientResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_CreateValidIngredientGroupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientGroupRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21746,7 +22120,7 @@ extension Mealplanning_CreateValidIngredientGroupRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateValidIngredientGroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientGroupResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21785,7 +22159,7 @@ extension Mealplanning_CreateValidIngredientGroupResponse: SwiftProtobuf.Message
 
 extension Mealplanning_CreateValidIngredientMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21819,7 +22193,7 @@ extension Mealplanning_CreateValidIngredientMeasurementUnitRequest: SwiftProtobu
 
 extension Mealplanning_CreateValidIngredientMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21858,7 +22232,7 @@ extension Mealplanning_CreateValidIngredientMeasurementUnitResponse: SwiftProtob
 
 extension Mealplanning_CreateValidIngredientPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21892,7 +22266,7 @@ extension Mealplanning_CreateValidIngredientPreparationRequest: SwiftProtobuf.Me
 
 extension Mealplanning_CreateValidIngredientPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21931,7 +22305,7 @@ extension Mealplanning_CreateValidIngredientPreparationResponse: SwiftProtobuf.M
 
 extension Mealplanning_CreateValidIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientStateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -21965,7 +22339,7 @@ extension Mealplanning_CreateValidIngredientStateRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateValidIngredientStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientStateResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22004,7 +22378,7 @@ extension Mealplanning_CreateValidIngredientStateResponse: SwiftProtobuf.Message
 
 extension Mealplanning_CreateValidIngredientStateIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientStateIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22038,7 +22412,7 @@ extension Mealplanning_CreateValidIngredientStateIngredientRequest: SwiftProtobu
 
 extension Mealplanning_CreateValidIngredientStateIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidIngredientStateIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22077,7 +22451,7 @@ extension Mealplanning_CreateValidIngredientStateIngredientResponse: SwiftProtob
 
 extension Mealplanning_CreateValidInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22111,7 +22485,7 @@ extension Mealplanning_CreateValidInstrumentRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_CreateValidInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -22188,7 +22562,7 @@ extension Mealplanning_CreateValidInstrumentResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_CreateValidMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22222,7 +22596,7 @@ extension Mealplanning_CreateValidMeasurementUnitRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateValidMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -22299,7 +22673,7 @@ extension Mealplanning_CreateValidMeasurementUnitResponse: SwiftProtobuf.Message
 
 extension Mealplanning_CreateValidMeasurementUnitConversionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidMeasurementUnitConversionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22333,7 +22707,7 @@ extension Mealplanning_CreateValidMeasurementUnitConversionRequest: SwiftProtobu
 
 extension Mealplanning_CreateValidMeasurementUnitConversionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidMeasurementUnitConversionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22372,7 +22746,7 @@ extension Mealplanning_CreateValidMeasurementUnitConversionResponse: SwiftProtob
 
 extension Mealplanning_CreateValidPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22406,7 +22780,7 @@ extension Mealplanning_CreateValidPreparationRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_CreateValidPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22445,7 +22819,7 @@ extension Mealplanning_CreateValidPreparationResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_CreateValidPreparationInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22479,7 +22853,7 @@ extension Mealplanning_CreateValidPreparationInstrumentRequest: SwiftProtobuf.Me
 
 extension Mealplanning_CreateValidPreparationInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22518,7 +22892,7 @@ extension Mealplanning_CreateValidPreparationInstrumentResponse: SwiftProtobuf.M
 
 extension Mealplanning_CreateValidPreparationVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22552,7 +22926,7 @@ extension Mealplanning_CreateValidPreparationVesselRequest: SwiftProtobuf.Messag
 
 extension Mealplanning_CreateValidPreparationVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidPreparationVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22591,7 +22965,7 @@ extension Mealplanning_CreateValidPreparationVesselResponse: SwiftProtobuf.Messa
 
 extension Mealplanning_CreateValidVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22625,7 +22999,7 @@ extension Mealplanning_CreateValidVesselRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_CreateValidVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateValidVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22683,7 +23057,7 @@ extension Mealplanning_GetRandomValidIngredientRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRandomValidIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRandomValidIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22741,7 +23115,7 @@ extension Mealplanning_GetRandomValidInstrumentRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRandomValidInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRandomValidInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -22837,7 +23211,7 @@ extension Mealplanning_GetRandomValidPreparationRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetRandomValidPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRandomValidPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22895,7 +23269,7 @@ extension Mealplanning_GetRandomValidVesselRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetRandomValidVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRandomValidVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22934,7 +23308,7 @@ extension Mealplanning_GetRandomValidVesselResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetValidIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -22964,7 +23338,7 @@ extension Mealplanning_GetValidIngredientRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetValidIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23003,7 +23377,7 @@ extension Mealplanning_GetValidIngredientResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetValidIngredientGroupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientGroupRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientGroupID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_group_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23033,7 +23407,7 @@ extension Mealplanning_GetValidIngredientGroupRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetValidIngredientGroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientGroupResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23072,7 +23446,7 @@ extension Mealplanning_GetValidIngredientGroupResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidIngredientGroupsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientGroupsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23106,7 +23480,7 @@ extension Mealplanning_GetValidIngredientGroupsRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidIngredientGroupsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientGroupsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23150,7 +23524,7 @@ extension Mealplanning_GetValidIngredientGroupsResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetValidIngredientMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23180,7 +23554,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitRequest: SwiftProtobuf.M
 
 extension Mealplanning_GetValidIngredientMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23219,7 +23593,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitResponse: SwiftProtobuf.
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23253,7 +23627,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsRequest: SwiftProtobuf.
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23297,7 +23671,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsResponse: SwiftProtobuf
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsByIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsByIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23336,7 +23710,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsByIngredientRequest: Sw
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsByIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsByIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23380,7 +23754,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsByIngredientResponse: S
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsByMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsByMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23419,7 +23793,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsByMeasurementUnitReques
 
 extension Mealplanning_GetValidIngredientMeasurementUnitsByMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientMeasurementUnitsByMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23463,7 +23837,7 @@ extension Mealplanning_GetValidIngredientMeasurementUnitsByMeasurementUnitRespon
 
 extension Mealplanning_GetValidIngredientPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23493,7 +23867,7 @@ extension Mealplanning_GetValidIngredientPreparationRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_GetValidIngredientPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23532,7 +23906,7 @@ extension Mealplanning_GetValidIngredientPreparationResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_GetValidIngredientPreparationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23566,7 +23940,7 @@ extension Mealplanning_GetValidIngredientPreparationsRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_GetValidIngredientPreparationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23610,7 +23984,7 @@ extension Mealplanning_GetValidIngredientPreparationsResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_GetValidIngredientPreparationsByIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsByIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23649,7 +24023,7 @@ extension Mealplanning_GetValidIngredientPreparationsByIngredientRequest: SwiftP
 
 extension Mealplanning_GetValidIngredientPreparationsByIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsByIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23693,7 +24067,7 @@ extension Mealplanning_GetValidIngredientPreparationsByIngredientResponse: Swift
 
 extension Mealplanning_GetValidIngredientPreparationsByPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsByPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23732,7 +24106,7 @@ extension Mealplanning_GetValidIngredientPreparationsByPreparationRequest: Swift
 
 extension Mealplanning_GetValidIngredientPreparationsByPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientPreparationsByPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23776,7 +24150,7 @@ extension Mealplanning_GetValidIngredientPreparationsByPreparationResponse: Swif
 
 extension Mealplanning_GetValidIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23806,7 +24180,7 @@ extension Mealplanning_GetValidIngredientStateRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetValidIngredientStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23845,7 +24219,7 @@ extension Mealplanning_GetValidIngredientStateResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidIngredientStateIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23875,7 +24249,7 @@ extension Mealplanning_GetValidIngredientStateIngredientRequest: SwiftProtobuf.M
 
 extension Mealplanning_GetValidIngredientStateIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23914,7 +24288,7 @@ extension Mealplanning_GetValidIngredientStateIngredientResponse: SwiftProtobuf.
 
 extension Mealplanning_GetValidIngredientStateIngredientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23948,7 +24322,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsRequest: SwiftProtobuf.
 
 extension Mealplanning_GetValidIngredientStateIngredientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -23992,7 +24366,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsResponse: SwiftProtobuf
 
 extension Mealplanning_GetValidIngredientStateIngredientsByIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsByIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24031,7 +24405,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsByIngredientRequest: Sw
 
 extension Mealplanning_GetValidIngredientStateIngredientsByIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsByIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24075,7 +24449,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsByIngredientResponse: S
 
 extension Mealplanning_GetValidIngredientStateIngredientsByIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsByIngredientStateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidIngredientStateID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_state_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24114,7 +24488,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsByIngredientStateReques
 
 extension Mealplanning_GetValidIngredientStateIngredientsByIngredientStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStateIngredientsByIngredientStateResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24158,7 +24532,7 @@ extension Mealplanning_GetValidIngredientStateIngredientsByIngredientStateRespon
 
 extension Mealplanning_GetValidIngredientStatesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStatesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24192,7 +24566,7 @@ extension Mealplanning_GetValidIngredientStatesRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidIngredientStatesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientStatesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24236,7 +24610,7 @@ extension Mealplanning_GetValidIngredientStatesResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetValidIngredientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24270,7 +24644,7 @@ extension Mealplanning_GetValidIngredientsRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetValidIngredientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidIngredientsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24314,7 +24688,7 @@ extension Mealplanning_GetValidIngredientsResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetValidInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24344,7 +24718,7 @@ extension Mealplanning_GetValidInstrumentRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetValidInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -24421,7 +24795,7 @@ extension Mealplanning_GetValidInstrumentResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetValidInstrumentsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidInstrumentsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24455,7 +24829,7 @@ extension Mealplanning_GetValidInstrumentsRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetValidInstrumentsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidInstrumentsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24499,7 +24873,7 @@ extension Mealplanning_GetValidInstrumentsResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetValidMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24529,7 +24903,7 @@ extension Mealplanning_GetValidMeasurementUnitRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetValidMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -24606,7 +24980,7 @@ extension Mealplanning_GetValidMeasurementUnitResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidMeasurementUnitConversionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitConversionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitConversionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_conversion_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24636,7 +25010,7 @@ extension Mealplanning_GetValidMeasurementUnitConversionRequest: SwiftProtobuf.M
 
 extension Mealplanning_GetValidMeasurementUnitConversionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitConversionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24675,7 +25049,7 @@ extension Mealplanning_GetValidMeasurementUnitConversionResponse: SwiftProtobuf.
 
 extension Mealplanning_GetValidMeasurementUnitConversionsForUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitConversionsForUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidMeasurementUnitID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_measurement_unit_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24714,7 +25088,7 @@ extension Mealplanning_GetValidMeasurementUnitConversionsForUnitRequest: SwiftPr
 
 extension Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitConversionsForUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24758,7 +25132,7 @@ extension Mealplanning_GetValidMeasurementUnitConversionsForUnitResponse: SwiftP
 
 extension Mealplanning_GetValidMeasurementUnitsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24792,7 +25166,7 @@ extension Mealplanning_GetValidMeasurementUnitsRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetValidMeasurementUnitsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidMeasurementUnitsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24836,7 +25210,7 @@ extension Mealplanning_GetValidMeasurementUnitsResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetValidPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24866,7 +25240,7 @@ extension Mealplanning_GetValidPreparationRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetValidPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24905,7 +25279,7 @@ extension Mealplanning_GetValidPreparationResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetValidPreparationInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24935,7 +25309,7 @@ extension Mealplanning_GetValidPreparationInstrumentRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_GetValidPreparationInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -24974,7 +25348,7 @@ extension Mealplanning_GetValidPreparationInstrumentResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_GetValidPreparationInstrumentsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25008,7 +25382,7 @@ extension Mealplanning_GetValidPreparationInstrumentsRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_GetValidPreparationInstrumentsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25052,7 +25426,7 @@ extension Mealplanning_GetValidPreparationInstrumentsResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_GetValidPreparationInstrumentsByInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsByInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25091,7 +25465,7 @@ extension Mealplanning_GetValidPreparationInstrumentsByInstrumentRequest: SwiftP
 
 extension Mealplanning_GetValidPreparationInstrumentsByInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsByInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25135,7 +25509,7 @@ extension Mealplanning_GetValidPreparationInstrumentsByInstrumentResponse: Swift
 
 extension Mealplanning_GetValidPreparationInstrumentsByPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsByPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25174,7 +25548,7 @@ extension Mealplanning_GetValidPreparationInstrumentsByPreparationRequest: Swift
 
 extension Mealplanning_GetValidPreparationInstrumentsByPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationInstrumentsByPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25218,7 +25592,7 @@ extension Mealplanning_GetValidPreparationInstrumentsByPreparationResponse: Swif
 
 extension Mealplanning_GetValidPreparationVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25248,7 +25622,7 @@ extension Mealplanning_GetValidPreparationVesselRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetValidPreparationVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25287,7 +25661,7 @@ extension Mealplanning_GetValidPreparationVesselResponse: SwiftProtobuf.Message,
 
 extension Mealplanning_GetValidPreparationVesselsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25321,7 +25695,7 @@ extension Mealplanning_GetValidPreparationVesselsRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_GetValidPreparationVesselsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25365,7 +25739,7 @@ extension Mealplanning_GetValidPreparationVesselsResponse: SwiftProtobuf.Message
 
 extension Mealplanning_GetValidPreparationVesselsByPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsByPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25404,7 +25778,7 @@ extension Mealplanning_GetValidPreparationVesselsByPreparationRequest: SwiftProt
 
 extension Mealplanning_GetValidPreparationVesselsByPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsByPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25448,7 +25822,7 @@ extension Mealplanning_GetValidPreparationVesselsByPreparationResponse: SwiftPro
 
 extension Mealplanning_GetValidPreparationVesselsByVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsByVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}ValidVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25487,7 +25861,7 @@ extension Mealplanning_GetValidPreparationVesselsByVesselRequest: SwiftProtobuf.
 
 extension Mealplanning_GetValidPreparationVesselsByVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationVesselsByVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25531,7 +25905,7 @@ extension Mealplanning_GetValidPreparationVesselsByVesselResponse: SwiftProtobuf
 
 extension Mealplanning_GetValidPreparationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25565,7 +25939,7 @@ extension Mealplanning_GetValidPreparationsRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetValidPreparationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidPreparationsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25609,7 +25983,7 @@ extension Mealplanning_GetValidPreparationsResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetValidVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25639,7 +26013,7 @@ extension Mealplanning_GetValidVesselRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_GetValidVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25678,7 +26052,7 @@ extension Mealplanning_GetValidVesselResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetValidVesselsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidVesselsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25712,7 +26086,7 @@ extension Mealplanning_GetValidVesselsRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetValidVesselsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetValidVesselsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25756,7 +26130,7 @@ extension Mealplanning_GetValidVesselsResponse: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_SearchForValidIngredientGroupsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientGroupsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25800,7 +26174,7 @@ extension Mealplanning_SearchForValidIngredientGroupsRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_SearchForValidIngredientGroupsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientGroupsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25844,7 +26218,7 @@ extension Mealplanning_SearchForValidIngredientGroupsResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_SearchForValidIngredientStatesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientStatesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25888,7 +26262,7 @@ extension Mealplanning_SearchForValidIngredientStatesRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_SearchForValidIngredientStatesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientStatesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25932,7 +26306,7 @@ extension Mealplanning_SearchForValidIngredientStatesResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_SearchForValidIngredientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -25976,7 +26350,7 @@ extension Mealplanning_SearchForValidIngredientsRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_SearchForValidIngredientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidIngredientsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26020,7 +26394,7 @@ extension Mealplanning_SearchForValidIngredientsResponse: SwiftProtobuf.Message,
 
 extension Mealplanning_SearchForValidInstrumentsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidInstrumentsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26064,7 +26438,7 @@ extension Mealplanning_SearchForValidInstrumentsRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_SearchForValidInstrumentsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidInstrumentsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26108,7 +26482,7 @@ extension Mealplanning_SearchForValidInstrumentsResponse: SwiftProtobuf.Message,
 
 extension Mealplanning_SearchForValidMeasurementUnitsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidMeasurementUnitsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26152,7 +26526,7 @@ extension Mealplanning_SearchForValidMeasurementUnitsRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_SearchForValidMeasurementUnitsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidMeasurementUnitsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26196,7 +26570,7 @@ extension Mealplanning_SearchForValidMeasurementUnitsResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_SearchForValidPreparationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidPreparationsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26240,7 +26614,7 @@ extension Mealplanning_SearchForValidPreparationsRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_SearchForValidPreparationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidPreparationsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26284,7 +26658,7 @@ extension Mealplanning_SearchForValidPreparationsResponse: SwiftProtobuf.Message
 
 extension Mealplanning_SearchForValidVesselsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidVesselsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26328,7 +26702,7 @@ extension Mealplanning_SearchForValidVesselsRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_SearchForValidVesselsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForValidVesselsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26372,7 +26746,7 @@ extension Mealplanning_SearchForValidVesselsResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_SearchValidIngredientsByPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchValidIngredientsByPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}ValidPreparationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}valid_preparation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26416,7 +26790,7 @@ extension Mealplanning_SearchValidIngredientsByPreparationRequest: SwiftProtobuf
 
 extension Mealplanning_SearchValidIngredientsByPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchValidIngredientsByPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26460,7 +26834,7 @@ extension Mealplanning_SearchValidIngredientsByPreparationResponse: SwiftProtobu
 
 extension Mealplanning_SearchValidMeasurementUnitsByIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchValidMeasurementUnitsByIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}ValidIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}valid_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26504,7 +26878,7 @@ extension Mealplanning_SearchValidMeasurementUnitsByIngredientRequest: SwiftProt
 
 extension Mealplanning_SearchValidMeasurementUnitsByIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchValidMeasurementUnitsByIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26548,7 +26922,7 @@ extension Mealplanning_SearchValidMeasurementUnitsByIngredientResponse: SwiftPro
 
 extension Mealplanning_UpdateValidIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26587,7 +26961,7 @@ extension Mealplanning_UpdateValidIngredientRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_UpdateValidIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26626,7 +27000,7 @@ extension Mealplanning_UpdateValidIngredientResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_UpdateValidIngredientGroupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientGroupRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientGroupID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_group_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26665,7 +27039,7 @@ extension Mealplanning_UpdateValidIngredientGroupRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_UpdateValidIngredientGroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientGroupResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26704,7 +27078,7 @@ extension Mealplanning_UpdateValidIngredientGroupResponse: SwiftProtobuf.Message
 
 extension Mealplanning_UpdateValidIngredientMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientMeasurementUnitID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_measurement_unit_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26743,7 +27117,7 @@ extension Mealplanning_UpdateValidIngredientMeasurementUnitRequest: SwiftProtobu
 
 extension Mealplanning_UpdateValidIngredientMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26782,7 +27156,7 @@ extension Mealplanning_UpdateValidIngredientMeasurementUnitResponse: SwiftProtob
 
 extension Mealplanning_UpdateValidIngredientPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientPreparationID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_preparation_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26821,7 +27195,7 @@ extension Mealplanning_UpdateValidIngredientPreparationRequest: SwiftProtobuf.Me
 
 extension Mealplanning_UpdateValidIngredientPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26860,7 +27234,7 @@ extension Mealplanning_UpdateValidIngredientPreparationResponse: SwiftProtobuf.M
 
 extension Mealplanning_UpdateValidIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientStateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26899,7 +27273,7 @@ extension Mealplanning_UpdateValidIngredientStateRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_UpdateValidIngredientStateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientStateResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26938,7 +27312,7 @@ extension Mealplanning_UpdateValidIngredientStateResponse: SwiftProtobuf.Message
 
 extension Mealplanning_UpdateValidIngredientStateIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientStateIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidIngredientStateIngredientID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_ingredient_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26977,7 +27351,7 @@ extension Mealplanning_UpdateValidIngredientStateIngredientRequest: SwiftProtobu
 
 extension Mealplanning_UpdateValidIngredientStateIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidIngredientStateIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27016,7 +27390,7 @@ extension Mealplanning_UpdateValidIngredientStateIngredientResponse: SwiftProtob
 
 extension Mealplanning_UpdateValidInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidInstrumentID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_instrument_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27055,7 +27429,7 @@ extension Mealplanning_UpdateValidInstrumentRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_UpdateValidInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -27132,7 +27506,7 @@ extension Mealplanning_UpdateValidInstrumentResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_UpdateValidMeasurementUnitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidMeasurementUnitRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27171,7 +27545,7 @@ extension Mealplanning_UpdateValidMeasurementUnitRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_UpdateValidMeasurementUnitResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidMeasurementUnitResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -27248,7 +27622,7 @@ extension Mealplanning_UpdateValidMeasurementUnitResponse: SwiftProtobuf.Message
 
 extension Mealplanning_UpdateValidMeasurementUnitConversionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidMeasurementUnitConversionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidMeasurementUnitConversionID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_measurement_unit_conversion_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27287,7 +27661,7 @@ extension Mealplanning_UpdateValidMeasurementUnitConversionRequest: SwiftProtobu
 
 extension Mealplanning_UpdateValidMeasurementUnitConversionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidMeasurementUnitConversionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27326,7 +27700,7 @@ extension Mealplanning_UpdateValidMeasurementUnitConversionResponse: SwiftProtob
 
 extension Mealplanning_UpdateValidPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27365,7 +27739,7 @@ extension Mealplanning_UpdateValidPreparationRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_UpdateValidPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27404,7 +27778,7 @@ extension Mealplanning_UpdateValidPreparationResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_UpdateValidPreparationInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationInstrumentID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_instrument_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27443,7 +27817,7 @@ extension Mealplanning_UpdateValidPreparationInstrumentRequest: SwiftProtobuf.Me
 
 extension Mealplanning_UpdateValidPreparationInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27482,7 +27856,7 @@ extension Mealplanning_UpdateValidPreparationInstrumentResponse: SwiftProtobuf.M
 
 extension Mealplanning_UpdateValidPreparationVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidPreparationVesselID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_preparation_vessel_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27521,7 +27895,7 @@ extension Mealplanning_UpdateValidPreparationVesselRequest: SwiftProtobuf.Messag
 
 extension Mealplanning_UpdateValidPreparationVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidPreparationVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27560,7 +27934,7 @@ extension Mealplanning_UpdateValidPreparationVesselResponse: SwiftProtobuf.Messa
 
 extension Mealplanning_UpdateValidVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ValidVesselID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_vessel_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27599,7 +27973,7 @@ extension Mealplanning_UpdateValidVesselRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_UpdateValidVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateValidVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27638,7 +28012,7 @@ extension Mealplanning_UpdateValidVesselResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_ArchiveUserIngredientPreferenceRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserIngredientPreferenceRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userIngredientPreferenceID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_ingredient_preference_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27668,7 +28042,7 @@ extension Mealplanning_ArchiveUserIngredientPreferenceRequest: SwiftProtobuf.Mes
 
 extension Mealplanning_ArchiveUserIngredientPreferenceResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserIngredientPreferenceResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27702,7 +28076,7 @@ extension Mealplanning_ArchiveUserIngredientPreferenceResponse: SwiftProtobuf.Me
 
 extension Mealplanning_CreateUserIngredientPreferenceRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateUserIngredientPreferenceRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27736,7 +28110,7 @@ extension Mealplanning_CreateUserIngredientPreferenceRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_CreateUserIngredientPreferenceResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateUserIngredientPreferenceResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27775,7 +28149,7 @@ extension Mealplanning_CreateUserIngredientPreferenceResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_GetUserIngredientPreferenceRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserIngredientPreferenceRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}UserIngredientPreferenceID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_ingredient_preference_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27805,7 +28179,7 @@ extension Mealplanning_GetUserIngredientPreferenceRequest: SwiftProtobuf.Message
 
 extension Mealplanning_GetUserIngredientPreferenceResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserIngredientPreferenceResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27844,7 +28218,7 @@ extension Mealplanning_GetUserIngredientPreferenceResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_GetUserIngredientPreferencesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserIngredientPreferencesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27878,7 +28252,7 @@ extension Mealplanning_GetUserIngredientPreferencesRequest: SwiftProtobuf.Messag
 
 extension Mealplanning_GetUserIngredientPreferencesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserIngredientPreferencesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27922,7 +28296,7 @@ extension Mealplanning_GetUserIngredientPreferencesResponse: SwiftProtobuf.Messa
 
 extension Mealplanning_UpdateUserIngredientPreferenceRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserIngredientPreferenceRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userIngredientPreferenceID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_ingredient_preference_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27961,7 +28335,7 @@ extension Mealplanning_UpdateUserIngredientPreferenceRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_UpdateUserIngredientPreferenceResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserIngredientPreferenceResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28000,7 +28374,7 @@ extension Mealplanning_UpdateUserIngredientPreferenceResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipe"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}InspiredByRecipeID\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}EstimatedPortions\0\u{1}PluralPortionName\0\u{1}Description\0\u{1}Name\0\u{1}PortionName\0\u{1}ID\0\u{1}CreatedByUser\0\u{1}Source\0\u{1}Slug\0\u{1}YieldsComponentType\0\u{1}PrepTasks\0\u{1}Steps\0\u{1}Media\0\u{2}\u{2}Status\0\u{1}EligibleForMeals\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -28016,7 +28390,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _createdByUser: String = String()
     var _source: String = String()
     var _slug: String = String()
-    var _yieldsComponentType: String = String()
+    var _yieldsComponentType: Mealplanning_MealComponentType = .unspecified
     var _prepTasks: [Mealplanning_RecipePrepTask] = []
     var _steps: [Mealplanning_RecipeStep] = []
     var _media: [Mealplanning_RecipeMedia] = []
@@ -28082,7 +28456,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 14: try { try decoder.decodeSingularStringField(value: &_storage._yieldsComponentType) }()
+        case 14: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
         case 15: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
         case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
@@ -28139,8 +28513,8 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._slug.isEmpty {
         try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 13)
       }
-      if !_storage._yieldsComponentType.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._yieldsComponentType, fieldNumber: 14)
+      if _storage._yieldsComponentType != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 14)
       }
       if !_storage._prepTasks.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 15)
@@ -28196,7 +28570,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InspiredByRecipeID\0\u{1}Name\0\u{1}Source\0\u{1}Description\0\u{1}PluralPortionName\0\u{1}PortionName\0\u{1}Slug\0\u{1}YieldsComponentType\0\u{1}EstimatedPortions\0\u{1}PrepTasks\0\u{1}Steps\0\u{1}AlsoCreateMeal\0\u{1}EligibleForMeals\0\u{1}Media\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}inspired_by_recipe_id\0\u{1}name\0\u{1}source\0\u{1}description\0\u{3}plural_portion_name\0\u{3}portion_name\0\u{1}slug\0\u{3}yields_component_type\0\u{3}estimated_portions\0\u{3}prep_tasks\0\u{1}steps\0\u{3}also_create_meal\0\u{3}eligible_for_meals\0\u{1}media\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28211,7 +28585,7 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
       case 5: try { try decoder.decodeSingularStringField(value: &self.pluralPortionName) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.portionName) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.slug) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.yieldsComponentType) }()
+      case 8: try { try decoder.decodeSingularEnumField(value: &self.yieldsComponentType) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
       case 10: try { try decoder.decodeRepeatedMessageField(value: &self.prepTasks) }()
       case 11: try { try decoder.decodeRepeatedMessageField(value: &self.steps) }()
@@ -28249,8 +28623,8 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
     if !self.slug.isEmpty {
       try visitor.visitSingularStringField(value: self.slug, fieldNumber: 7)
     }
-    if !self.yieldsComponentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.yieldsComponentType, fieldNumber: 8)
+    if self.yieldsComponentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.yieldsComponentType, fieldNumber: 8)
     }
     try { if let v = self._estimatedPortions {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
@@ -28295,7 +28669,7 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_RecipeMedia: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeMedia"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}BelongsToRecipe\0\u{1}BelongsToRecipeStep\0\u{1}MimeType\0\u{1}InternalPath\0\u{1}ExternalPath\0\u{1}Index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}belongs_to_recipe\0\u{3}belongs_to_recipe_step\0\u{3}mime_type\0\u{3}internal_path\0\u{3}external_path\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28374,7 +28748,7 @@ extension Mealplanning_RecipeMedia: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Mealplanning_RecipeMediaCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeMediaCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToRecipe\0\u{1}BelongsToRecipeStep\0\u{1}MimeType\0\u{1}InternalPath\0\u{1}ExternalPath\0\u{1}Index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_recipe\0\u{3}belongs_to_recipe_step\0\u{3}mime_type\0\u{3}internal_path\0\u{3}external_path\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28429,7 +28803,7 @@ extension Mealplanning_RecipeMediaCreationRequestInput: SwiftProtobuf.Message, S
 
 extension Mealplanning_RecipeMediaUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeMediaUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToRecipe\0\u{1}BelongsToRecipeStep\0\u{1}MimeType\0\u{1}InternalPath\0\u{1}ExternalPath\0\u{1}Index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_recipe\0\u{3}belongs_to_recipe_step\0\u{3}mime_type\0\u{3}internal_path\0\u{3}external_path\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28488,7 +28862,7 @@ extension Mealplanning_RecipeMediaUpdateRequestInput: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTask"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}StorageTemperatureInCelsius\0\u{1}TimeBufferBeforeRecipeInSeconds\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}StorageType\0\u{1}BelongsToRecipe\0\u{1}ExplicitStorageInstructions\0\u{1}Notes\0\u{1}Name\0\u{1}Description\0\u{1}TaskSteps\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}storage_temperature_in_celsius\0\u{3}time_buffer_before_recipe_in_seconds\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}storage_type\0\u{3}belongs_to_recipe\0\u{3}explicit_storage_instructions\0\u{1}notes\0\u{1}name\0\u{1}description\0\u{3}task_steps\0\u{1}optional\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -28649,7 +29023,7 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_RecipePrepTaskCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}StorageTemperatureInCelsius\0\u{1}TimeBufferBeforeRecipeInSeconds\0\u{1}StorageType\0\u{1}ExplicitStorageInstructions\0\u{1}Notes\0\u{1}Name\0\u{1}Description\0\u{1}BelongsToRecipe\0\u{1}RecipeSteps\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{3}time_buffer_before_recipe_in_seconds\0\u{3}storage_type\0\u{3}explicit_storage_instructions\0\u{1}notes\0\u{1}name\0\u{1}description\0\u{3}belongs_to_recipe\0\u{3}recipe_steps\0\u{1}optional\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28728,7 +29102,7 @@ extension Mealplanning_RecipePrepTaskCreationRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_RecipePrepTaskStep: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskStep"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ID\0\u{1}BelongsToRecipeStep\0\u{1}BelongsToRecipePrepTask\0\u{1}SatisfiesRecipeStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}belongs_to_recipe_step\0\u{3}belongs_to_recipe_prep_task\0\u{3}satisfies_recipe_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28773,7 +29147,7 @@ extension Mealplanning_RecipePrepTaskStep: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_RecipePrepTaskStepCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskStepCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToRecipeStep\0\u{1}SatisfiesRecipeStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_recipe_step\0\u{3}satisfies_recipe_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28808,7 +29182,7 @@ extension Mealplanning_RecipePrepTaskStepCreationRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipePrepTaskStepUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskStepUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SatisfiesRecipeStep\0\u{1}BelongsToRecipeStep\0\u{1}BelongsToRecipePrepTask\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}satisfies_recipe_step\0\u{3}belongs_to_recipe_step\0\u{3}belongs_to_recipe_prep_task\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28852,7 +29226,7 @@ extension Mealplanning_RecipePrepTaskStepUpdateRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_RecipePrepTaskStepWithinRecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskStepWithinRecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToRecipeStepIndex\0\u{1}SatisfiesRecipeStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_recipe_step_index\0\u{3}satisfies_recipe_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28887,7 +29261,7 @@ extension Mealplanning_RecipePrepTaskStepWithinRecipeCreationRequestInput: Swift
 
 extension Mealplanning_RecipePrepTaskUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ExplicitStorageInstructions\0\u{1}StorageType\0\u{1}Name\0\u{1}Optional\0\u{1}Description\0\u{1}StorageTemperatureInCelsius\0\u{1}TimeBufferBeforeRecipeInSeconds\0\u{1}BelongsToRecipe\0\u{1}TaskSteps\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}explicit_storage_instructions\0\u{3}storage_type\0\u{1}name\0\u{1}optional\0\u{1}description\0\u{3}storage_temperature_in_celsius\0\u{3}time_buffer_before_recipe_in_seconds\0\u{3}belongs_to_recipe\0\u{3}task_steps\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28966,7 +29340,7 @@ extension Mealplanning_RecipePrepTaskUpdateRequestInput: SwiftProtobuf.Message, 
 
 extension Mealplanning_RecipePrepTaskWithinRecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTaskWithinRecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}StorageTemperatureInCelsius\0\u{1}TimeBufferBeforeRecipeInSeconds\0\u{1}StorageType\0\u{1}Name\0\u{1}Description\0\u{1}ExplicitStorageInstructions\0\u{1}Notes\0\u{1}BelongsToRecipe\0\u{1}RecipeSteps\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{3}time_buffer_before_recipe_in_seconds\0\u{3}storage_type\0\u{1}name\0\u{1}description\0\u{3}explicit_storage_instructions\0\u{1}notes\0\u{3}belongs_to_recipe\0\u{3}recipe_steps\0\u{1}optional\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29045,7 +29419,7 @@ extension Mealplanning_RecipePrepTaskWithinRecipeCreationRequestInput: SwiftProt
 
 extension Mealplanning_RecipeRating: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeRating"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Notes\0\u{1}ID\0\u{1}RecipeID\0\u{1}ByUser\0\u{1}Taste\0\u{1}Instructions\0\u{1}Overall\0\u{1}Cleanup\0\u{1}Difficulty\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{3}recipe_id\0\u{3}by_user\0\u{1}taste\0\u{1}instructions\0\u{1}overall\0\u{1}cleanup\0\u{1}difficulty\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29134,7 +29508,7 @@ extension Mealplanning_RecipeRating: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Mealplanning_RecipeRatingCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeRatingCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}Notes\0\u{1}ByUser\0\u{1}Taste\0\u{1}Difficulty\0\u{1}Cleanup\0\u{1}Instructions\0\u{1}Overall\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}notes\0\u{3}by_user\0\u{1}taste\0\u{1}difficulty\0\u{1}cleanup\0\u{1}instructions\0\u{1}overall\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29199,7 +29573,7 @@ extension Mealplanning_RecipeRatingCreationRequestInput: SwiftProtobuf.Message, 
 
 extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeRatingUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}Taste\0\u{1}Difficulty\0\u{1}Cleanup\0\u{1}Instructions\0\u{1}Overall\0\u{1}Notes\0\u{1}ByUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}taste\0\u{1}difficulty\0\u{1}cleanup\0\u{1}instructions\0\u{1}overall\0\u{1}notes\0\u{3}by_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29268,7 +29642,7 @@ extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStep"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}EstimatedTimeInSeconds\0\u{1}TemperatureInCelsius\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}BelongsToRecipe\0\u{1}ConditionExpression\0\u{1}ID\0\u{1}Notes\0\u{1}ExplicitInstructions\0\u{1}Media\0\u{1}Products\0\u{1}Instruments\0\u{1}Vessels\0\u{1}CompletionConditions\0\u{1}Ingredients\0\u{1}Preparation\0\u{1}Index\0\u{1}Optional\0\u{1}StartTimerAutomatically\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}belongs_to_recipe\0\u{3}condition_expression\0\u{1}id\0\u{1}notes\0\u{3}explicit_instructions\0\u{1}media\0\u{1}products\0\u{1}instruments\0\u{1}vessels\0\u{3}completion_conditions\0\u{1}ingredients\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -29471,7 +29845,7 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Mealplanning_RecipeStepCompletionCondition: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionCondition"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}IngredientState\0\u{1}ID\0\u{1}BelongsToRecipeStep\0\u{1}Notes\0\u{1}Ingredients\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}ingredient_state\0\u{1}id\0\u{3}belongs_to_recipe_step\0\u{1}notes\0\u{1}ingredients\0\u{1}optional\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -29597,7 +29971,7 @@ extension Mealplanning_RecipeStepCompletionCondition: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_RecipeStepCompletionConditionCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionConditionCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}IngredientStateID\0\u{1}BelongsToRecipeStep\0\u{1}Notes\0\u{1}Ingredients\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_state_id\0\u{3}belongs_to_recipe_step\0\u{1}notes\0\u{1}ingredients\0\u{1}optional\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29647,7 +30021,7 @@ extension Mealplanning_RecipeStepCompletionConditionCreationRequestInput: SwiftP
 
 extension Mealplanning_RecipeStepCompletionConditionForExistingRecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionConditionForExistingRecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}IngredientStateID\0\u{1}BelongsToRecipeStep\0\u{1}Notes\0\u{1}Ingredients\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_state_id\0\u{3}belongs_to_recipe_step\0\u{1}notes\0\u{1}ingredients\0\u{1}optional\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29697,7 +30071,7 @@ extension Mealplanning_RecipeStepCompletionConditionForExistingRecipeCreationReq
 
 extension Mealplanning_RecipeStepCompletionConditionIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionConditionIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}BelongsToRecipeStepCompletionCondition\0\u{1}RecipeStepIngredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}belongs_to_recipe_step_completion_condition\0\u{3}recipe_step_ingredient\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29756,7 +30130,7 @@ extension Mealplanning_RecipeStepCompletionConditionIngredient: SwiftProtobuf.Me
 
 extension Mealplanning_RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeStepIngredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_ingredient\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29786,7 +30160,7 @@ extension Mealplanning_RecipeStepCompletionConditionIngredientForExistingRecipeC
 
 extension Mealplanning_RecipeStepCompletionConditionUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCompletionConditionUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}IngredientStateID\0\u{1}BelongsToRecipeStep\0\u{1}Notes\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_state_id\0\u{3}belongs_to_recipe_step\0\u{1}notes\0\u{1}optional\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29835,7 +30209,7 @@ extension Mealplanning_RecipeStepCompletionConditionUpdateRequestInput: SwiftPro
 
 extension Mealplanning_RecipeStepCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EstimatedTimeInSeconds\0\u{1}TemperatureInCelsius\0\u{1}PreparationID\0\u{1}Notes\0\u{1}ConditionExpression\0\u{1}ExplicitInstructions\0\u{1}Instruments\0\u{1}Vessels\0\u{1}Products\0\u{1}Ingredients\0\u{1}CompletionConditions\0\u{1}Index\0\u{1}Optional\0\u{1}StartTimerAutomatically\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{3}preparation_id\0\u{1}notes\0\u{3}condition_expression\0\u{3}explicit_instructions\0\u{1}instruments\0\u{1}vessels\0\u{1}products\0\u{1}ingredients\0\u{3}completion_conditions\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -29934,7 +30308,7 @@ extension Mealplanning_RecipeStepCreationRequestInput: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}RecipeStepProductRecipeID\0\u{1}ArchivedAt\0\u{1}Ingredient\0\u{1}LastUpdatedAt\0\u{1}VesselIndex\0\u{1}ProductPercentageToUse\0\u{1}RecipeStepProductID\0\u{1}BelongsToRecipeStep\0\u{1}ID\0\u{1}QuantityNotes\0\u{1}IngredientNotes\0\u{1}Name\0\u{1}Quantity\0\u{1}MeasurementUnit\0\u{1}OptionIndex\0\u{1}Optional\0\u{1}ToTaste\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -30123,7 +30497,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}IngredientID\0\u{1}ProductOfRecipeStepIndex\0\u{1}ProductOfRecipeStepProductIndex\0\u{1}VesselIndex\0\u{1}ProductPercentageToUse\0\u{1}RecipeStepProductRecipeID\0\u{1}IngredientNotes\0\u{1}MeasurementUnitID\0\u{1}Name\0\u{1}QuantityNotes\0\u{1}Quantity\0\u{1}OptionIndex\0\u{1}Optional\0\u{1}ToTaste\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0\u{3}ingredient_notes\0\u{3}measurement_unit_id\0\u{1}name\0\u{3}quantity_notes\0\u{1}quantity\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -30222,7 +30596,7 @@ extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredientUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}IngredientID\0\u{1}RecipeStepProductID\0\u{1}Name\0\u{1}Optional\0\u{1}MeasurementUnitID\0\u{1}QuantityNotes\0\u{1}IngredientNotes\0\u{1}BelongsToRecipeStep\0\u{1}Quantity\0\u{1}OptionIndex\0\u{1}VesselIndex\0\u{1}ToTaste\0\u{1}ProductPercentageToUse\0\u{1}RecipeStepProductRecipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_id\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}optional\0\u{3}measurement_unit_id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{3}belongs_to_recipe_step\0\u{1}quantity\0\u{3}option_index\0\u{3}vessel_index\0\u{3}to_taste\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -30321,7 +30695,7 @@ extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}Instrument\0\u{1}LastUpdatedAt\0\u{1}RecipeStepProductID\0\u{1}ArchivedAt\0\u{1}Notes\0\u{1}Name\0\u{1}BelongsToRecipeStep\0\u{1}ID\0\u{1}Quantity\0\u{1}OptionIndex\0\u{1}PreferenceRank\0\u{1}Optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -30475,7 +30849,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrumentCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InstrumentID\0\u{1}RecipeStepProductID\0\u{1}ProductOfRecipeStepIndex\0\u{1}ProductOfRecipeStepProductIndex\0\u{1}Quantity\0\u{1}Notes\0\u{1}Name\0\u{1}OptionIndex\0\u{1}Optional\0\u{1}PreferenceRank\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_id\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{1}quantity\0\u{1}notes\0\u{1}name\0\u{3}option_index\0\u{1}optional\0\u{3}preference_rank\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -30554,7 +30928,7 @@ extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrumentUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InstrumentID\0\u{1}RecipeStepProductID\0\u{1}Notes\0\u{1}PreferenceRank\0\u{1}BelongsToRecipeStep\0\u{1}Name\0\u{1}Optional\0\u{1}OptionIndex\0\u{1}Quantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_id\0\u{3}recipe_step_product_id\0\u{1}notes\0\u{3}preference_rank\0\u{3}belongs_to_recipe_step\0\u{1}name\0\u{1}optional\0\u{3}option_index\0\u{1}quantity\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -30628,7 +31002,7 @@ extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepProduct"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}StorageTemperatureInCelsius\0\u{1}StorageDurationInSeconds\0\u{1}Quantity\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}MeasurementUnit\0\u{1}ContainedInVesselIndex\0\u{1}Name\0\u{1}BelongsToRecipeStep\0\u{1}Type\0\u{1}ID\0\u{1}StorageInstructions\0\u{1}QuantityNotes\0\u{1}Index\0\u{1}IsWaste\0\u{1}IsLiquid\0\u{1}Compostable\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}storage_temperature_in_celsius\0\u{3}storage_duration_in_seconds\0\u{1}quantity\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}measurement_unit\0\u{3}contained_in_vessel_index\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}type\0\u{1}id\0\u{3}storage_instructions\0\u{3}quantity_notes\0\u{1}index\0\u{3}is_waste\0\u{3}is_liquid\0\u{1}compostable\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -30641,7 +31015,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
     var _containedInVesselIndex: UInt32? = nil
     var _name: String = String()
     var _belongsToRecipeStep: String = String()
-    var _type: String = String()
+    var _type: Mealplanning_RecipeStepProductType = .ingredient
     var _id: String = String()
     var _storageInstructions: String = String()
     var _quantityNotes: String = String()
@@ -30705,7 +31079,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
         case 8: try { try decoder.decodeSingularUInt32Field(value: &_storage._containedInVesselIndex) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
-        case 11: try { try decoder.decodeSingularStringField(value: &_storage._type) }()
+        case 11: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._storageInstructions) }()
         case 14: try { try decoder.decodeSingularStringField(value: &_storage._quantityNotes) }()
@@ -30755,8 +31129,8 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
       if !_storage._belongsToRecipeStep.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToRecipeStep, fieldNumber: 10)
       }
-      if !_storage._type.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._type, fieldNumber: 11)
+      if _storage._type != .ingredient {
+        try visitor.visitSingularEnumField(value: _storage._type, fieldNumber: 11)
       }
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 12)
@@ -30817,7 +31191,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepProductCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}StorageTemperatureInCelsius\0\u{1}StorageDurationInSeconds\0\u{1}Quantity\0\u{1}MeasurementUnitID\0\u{1}ContainedInVesselIndex\0\u{1}QuantityNotes\0\u{1}Name\0\u{1}StorageInstructions\0\u{1}Type\0\u{1}Index\0\u{1}Compostable\0\u{1}IsLiquid\0\u{1}IsWaste\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_temperature_in_celsius\0\u{3}storage_duration_in_seconds\0\u{1}quantity\0\u{3}measurement_unit_id\0\u{3}contained_in_vessel_index\0\u{3}quantity_notes\0\u{1}name\0\u{3}storage_instructions\0\u{1}type\0\u{1}index\0\u{1}compostable\0\u{3}is_liquid\0\u{3}is_waste\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -30833,7 +31207,7 @@ extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Mess
       case 6: try { try decoder.decodeSingularStringField(value: &self.quantityNotes) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.storageInstructions) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.type) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
       case 11: try { try decoder.decodeSingularBoolField(value: &self.compostable) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.isLiquid) }()
@@ -30872,8 +31246,8 @@ extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Mess
     if !self.storageInstructions.isEmpty {
       try visitor.visitSingularStringField(value: self.storageInstructions, fieldNumber: 8)
     }
-    if !self.type.isEmpty {
-      try visitor.visitSingularStringField(value: self.type, fieldNumber: 9)
+    if self.type != .ingredient {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 9)
     }
     if self.index != 0 {
       try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 10)
@@ -30911,11 +31285,11 @@ extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Mess
 
 extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepProductUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Type\0\u{1}MeasurementUnitID\0\u{1}QuantityNotes\0\u{1}BelongsToRecipeStep\0\u{1}StorageTemperatureInCelsius\0\u{1}StorageDurationInSeconds\0\u{1}Quantity\0\u{1}Compostable\0\u{1}StorageInstructions\0\u{1}IsLiquid\0\u{1}IsWaste\0\u{1}Index\0\u{1}ContainedInVesselIndex\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}type\0\u{3}measurement_unit_id\0\u{3}quantity_notes\0\u{3}belongs_to_recipe_step\0\u{3}storage_temperature_in_celsius\0\u{3}storage_duration_in_seconds\0\u{1}quantity\0\u{1}compostable\0\u{3}storage_instructions\0\u{3}is_liquid\0\u{3}is_waste\0\u{1}index\0\u{3}contained_in_vessel_index\0")
 
   fileprivate class _StorageClass {
     var _name: String? = nil
-    var _type: String? = nil
+    var _type: Mealplanning_RecipeStepProductType? = nil
     var _measurementUnitID: String? = nil
     var _quantityNotes: String? = nil
     var _belongsToRecipeStep: String? = nil
@@ -30971,7 +31345,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
-        case 2: try { try decoder.decodeSingularStringField(value: &_storage._type) }()
+        case 2: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
         case 3: try { try decoder.decodeSingularStringField(value: &_storage._measurementUnitID) }()
         case 4: try { try decoder.decodeSingularStringField(value: &_storage._quantityNotes) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
@@ -31000,7 +31374,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
         try visitor.visitSingularStringField(value: v, fieldNumber: 1)
       } }()
       try { if let v = _storage._type {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
       } }()
       try { if let v = _storage._measurementUnitID {
         try visitor.visitSingularStringField(value: v, fieldNumber: 3)
@@ -31072,7 +31446,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
 
 extension Mealplanning_RecipeStepUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EstimatedTimeInSeconds\0\u{1}TemperatureInCelsius\0\u{1}Notes\0\u{1}Preparation\0\u{1}Index\0\u{1}Optional\0\u{1}ExplicitInstructions\0\u{1}ConditionExpression\0\u{1}StartTimerAutomatically\0\u{1}BelongsToRecipe\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{1}notes\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}explicit_instructions\0\u{3}condition_expression\0\u{3}start_timer_automatically\0\u{3}belongs_to_recipe\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31151,7 +31525,7 @@ extension Mealplanning_RecipeStepUpdateRequestInput: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}Quantity\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}RecipeStepProductID\0\u{1}Vessel\0\u{1}ID\0\u{1}Notes\0\u{1}BelongsToRecipeStep\0\u{1}VesselPreposition\0\u{1}Name\0\u{1}UnavailableAfterStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31240,7 +31614,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVesselCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeStepProductID\0\u{1}ProductOfRecipeStepIndex\0\u{1}ProductOfRecipeStepProductIndex\0\u{1}VesselID\0\u{1}Quantity\0\u{1}Name\0\u{1}Notes\0\u{1}VesselPreposition\0\u{1}UnavailableAfterStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{3}vessel_id\0\u{1}quantity\0\u{1}name\0\u{1}notes\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31314,7 +31688,7 @@ extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVesselUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeStepProductID\0\u{1}Name\0\u{1}Notes\0\u{1}BelongsToRecipeStep\0\u{1}VesselID\0\u{1}Quantity\0\u{1}VesselPreposition\0\u{1}UnavailableAfterStep\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_id\0\u{1}quantity\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31383,7 +31757,7 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Slug\0\u{1}Source\0\u{1}Description\0\u{1}InspiredByRecipeID\0\u{2}\u{2}EstimatedPortions\0\u{1}PortionName\0\u{1}PluralPortionName\0\u{1}EligibleForMeals\0\u{1}YieldsComponentType\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}source\0\u{1}description\0\u{3}inspired_by_recipe_id\0\u{4}\u{2}estimated_portions\0\u{3}portion_name\0\u{3}plural_portion_name\0\u{3}eligible_for_meals\0\u{3}yields_component_type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31400,7 +31774,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       case 8: try { try decoder.decodeSingularStringField(value: &self._portionName) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._pluralPortionName) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self._eligibleForMeals) }()
-      case 11: try { try decoder.decodeSingularStringField(value: &self._yieldsComponentType) }()
+      case 11: try { try decoder.decodeSingularEnumField(value: &self._yieldsComponentType) }()
       default: break
       }
     }
@@ -31439,7 +31813,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       try visitor.visitSingularBoolField(value: v, fieldNumber: 10)
     } }()
     try { if let v = self._yieldsComponentType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -31462,7 +31836,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_ArchiveRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31492,7 +31866,7 @@ extension Mealplanning_ArchiveRecipeRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_ArchiveRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31526,7 +31900,7 @@ extension Mealplanning_ArchiveRecipeResponse: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_ArchiveRecipePrepTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipePrepTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipePrepTaskID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_prep_task_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31561,7 +31935,7 @@ extension Mealplanning_ArchiveRecipePrepTaskRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_ArchiveRecipePrepTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipePrepTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31595,7 +31969,7 @@ extension Mealplanning_ArchiveRecipePrepTaskResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_ArchiveRecipeRatingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeRatingRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeRatingID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_rating_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31630,7 +32004,7 @@ extension Mealplanning_ArchiveRecipeRatingRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ArchiveRecipeRatingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeRatingResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31664,7 +32038,7 @@ extension Mealplanning_ArchiveRecipeRatingResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_ArchiveRecipeStepRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31699,7 +32073,7 @@ extension Mealplanning_ArchiveRecipeStepRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_ArchiveRecipeStepResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31733,7 +32107,7 @@ extension Mealplanning_ArchiveRecipeStepResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_ArchiveRecipeStepCompletionConditionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepCompletionConditionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepCompletionConditionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_completion_condition_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31773,7 +32147,7 @@ extension Mealplanning_ArchiveRecipeStepCompletionConditionRequest: SwiftProtobu
 
 extension Mealplanning_ArchiveRecipeStepCompletionConditionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepCompletionConditionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31807,7 +32181,7 @@ extension Mealplanning_ArchiveRecipeStepCompletionConditionResponse: SwiftProtob
 
 extension Mealplanning_ArchiveRecipeStepIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31847,7 +32221,7 @@ extension Mealplanning_ArchiveRecipeStepIngredientRequest: SwiftProtobuf.Message
 
 extension Mealplanning_ArchiveRecipeStepIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31881,7 +32255,7 @@ extension Mealplanning_ArchiveRecipeStepIngredientResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_ArchiveRecipeStepInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31921,7 +32295,7 @@ extension Mealplanning_ArchiveRecipeStepInstrumentRequest: SwiftProtobuf.Message
 
 extension Mealplanning_ArchiveRecipeStepInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31955,7 +32329,7 @@ extension Mealplanning_ArchiveRecipeStepInstrumentResponse: SwiftProtobuf.Messag
 
 extension Mealplanning_ArchiveRecipeStepProductRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepProductRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepProductID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_product_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -31995,7 +32369,7 @@ extension Mealplanning_ArchiveRecipeStepProductRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_ArchiveRecipeStepProductResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepProductResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32029,7 +32403,7 @@ extension Mealplanning_ArchiveRecipeStepProductResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_ArchiveRecipeStepVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32069,7 +32443,7 @@ extension Mealplanning_ArchiveRecipeStepVesselRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_ArchiveRecipeStepVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeStepVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32103,7 +32477,7 @@ extension Mealplanning_ArchiveRecipeStepVesselResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_CloneRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CloneRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32133,7 +32507,7 @@ extension Mealplanning_CloneRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_CloneRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CloneRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Cloned\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}cloned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32172,7 +32546,7 @@ extension Mealplanning_CloneRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Mealplanning_CreateRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32206,7 +32580,7 @@ extension Mealplanning_CreateRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Mealplanning_CreateRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32245,7 +32619,7 @@ extension Mealplanning_CreateRecipeResponse: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_CreateRecipePrepTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipePrepTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32284,7 +32658,7 @@ extension Mealplanning_CreateRecipePrepTaskRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_CreateRecipePrepTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipePrepTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32323,7 +32697,7 @@ extension Mealplanning_CreateRecipePrepTaskResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_CreateRecipeRatingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeRatingRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32362,7 +32736,7 @@ extension Mealplanning_CreateRecipeRatingRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_CreateRecipeRatingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeRatingResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -32439,7 +32813,7 @@ extension Mealplanning_CreateRecipeRatingResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_CreateRecipeStepRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}input\0")
 
   fileprivate class _StorageClass {
     var _recipeID: String = String()
@@ -32516,7 +32890,7 @@ extension Mealplanning_CreateRecipeStepRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_CreateRecipeStepResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32555,7 +32929,7 @@ extension Mealplanning_CreateRecipeStepResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_CreateRecipeStepCompletionConditionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepCompletionConditionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32599,7 +32973,7 @@ extension Mealplanning_CreateRecipeStepCompletionConditionRequest: SwiftProtobuf
 
 extension Mealplanning_CreateRecipeStepCompletionConditionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepCompletionConditionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32638,7 +33012,7 @@ extension Mealplanning_CreateRecipeStepCompletionConditionResponse: SwiftProtobu
 
 extension Mealplanning_CreateRecipeStepIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   fileprivate class _StorageClass {
     var _recipeID: String = String()
@@ -32722,7 +33096,7 @@ extension Mealplanning_CreateRecipeStepIngredientRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateRecipeStepIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32761,7 +33135,7 @@ extension Mealplanning_CreateRecipeStepIngredientResponse: SwiftProtobuf.Message
 
 extension Mealplanning_CreateRecipeStepInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32805,7 +33179,7 @@ extension Mealplanning_CreateRecipeStepInstrumentRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateRecipeStepInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32844,7 +33218,7 @@ extension Mealplanning_CreateRecipeStepInstrumentResponse: SwiftProtobuf.Message
 
 extension Mealplanning_CreateRecipeStepProductRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepProductRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   fileprivate class _StorageClass {
     var _recipeID: String = String()
@@ -32928,7 +33302,7 @@ extension Mealplanning_CreateRecipeStepProductRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_CreateRecipeStepProductResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepProductResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -32967,7 +33341,7 @@ extension Mealplanning_CreateRecipeStepProductResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_CreateRecipeStepVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33011,7 +33385,7 @@ extension Mealplanning_CreateRecipeStepVesselRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_CreateRecipeStepVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -33088,7 +33462,7 @@ extension Mealplanning_CreateRecipeStepVesselResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetMermaidDiagramForRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMermaidDiagramForRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33118,7 +33492,7 @@ extension Mealplanning_GetMermaidDiagramForRecipeRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_GetMermaidDiagramForRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMermaidDiagramForRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Response\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}response\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33157,7 +33531,7 @@ extension Mealplanning_GetMermaidDiagramForRecipeResponse: SwiftProtobuf.Message
 
 extension Mealplanning_GetRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33187,7 +33561,7 @@ extension Mealplanning_GetRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Mealplanning_GetRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33226,7 +33600,7 @@ extension Mealplanning_GetRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_EstimateRecipePrepTasksRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EstimateRecipePrepTasksRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33256,7 +33630,7 @@ extension Mealplanning_EstimateRecipePrepTasksRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_EstimateRecipePrepTasksResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EstimateRecipePrepTasksResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33295,7 +33669,7 @@ extension Mealplanning_EstimateRecipePrepTasksResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRecipePrepTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipePrepTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipePrepTaskID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_prep_task_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33330,7 +33704,7 @@ extension Mealplanning_GetRecipePrepTaskRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetRecipePrepTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipePrepTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33369,7 +33743,7 @@ extension Mealplanning_GetRecipePrepTaskResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetRecipePrepTasksRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipePrepTasksRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33408,7 +33782,7 @@ extension Mealplanning_GetRecipePrepTasksRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetRecipePrepTasksResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipePrepTasksResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33452,7 +33826,7 @@ extension Mealplanning_GetRecipePrepTasksResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetRecipeRatingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeRatingRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}RecipeRatingID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_rating_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33487,7 +33861,7 @@ extension Mealplanning_GetRecipeRatingRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetRecipeRatingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeRatingResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -33564,7 +33938,7 @@ extension Mealplanning_GetRecipeRatingResponse: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_GetRecipeRatingsForRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeRatingsForRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33603,7 +33977,7 @@ extension Mealplanning_GetRecipeRatingsForRecipeRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetRecipeRatingsForRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeRatingsForRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33647,7 +34021,7 @@ extension Mealplanning_GetRecipeRatingsForRecipeResponse: SwiftProtobuf.Message,
 
 extension Mealplanning_GetRecipeStepRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33682,7 +34056,7 @@ extension Mealplanning_GetRecipeStepRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_GetRecipeStepResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33721,7 +34095,7 @@ extension Mealplanning_GetRecipeStepResponse: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_GetRecipeStepCompletionConditionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepCompletionConditionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepCompletionConditionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_completion_condition_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33761,7 +34135,7 @@ extension Mealplanning_GetRecipeStepCompletionConditionRequest: SwiftProtobuf.Me
 
 extension Mealplanning_GetRecipeStepCompletionConditionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepCompletionConditionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33800,7 +34174,7 @@ extension Mealplanning_GetRecipeStepCompletionConditionResponse: SwiftProtobuf.M
 
 extension Mealplanning_GetRecipeStepCompletionConditionsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepCompletionConditionsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33844,7 +34218,7 @@ extension Mealplanning_GetRecipeStepCompletionConditionsRequest: SwiftProtobuf.M
 
 extension Mealplanning_GetRecipeStepCompletionConditionsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepCompletionConditionsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33888,7 +34262,7 @@ extension Mealplanning_GetRecipeStepCompletionConditionsResponse: SwiftProtobuf.
 
 extension Mealplanning_GetRecipeStepIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepIngredientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_ingredient_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33928,7 +34302,7 @@ extension Mealplanning_GetRecipeStepIngredientRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetRecipeStepIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33967,7 +34341,7 @@ extension Mealplanning_GetRecipeStepIngredientResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRecipeStepIngredientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepIngredientsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34011,7 +34385,7 @@ extension Mealplanning_GetRecipeStepIngredientsRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRecipeStepIngredientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepIngredientsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34055,7 +34429,7 @@ extension Mealplanning_GetRecipeStepIngredientsResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetRecipeStepInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}RecipeStepID\0\u{1}RecipeStepInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34095,7 +34469,7 @@ extension Mealplanning_GetRecipeStepInstrumentRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetRecipeStepInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34134,7 +34508,7 @@ extension Mealplanning_GetRecipeStepInstrumentResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRecipeStepInstrumentsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepInstrumentsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34178,7 +34552,7 @@ extension Mealplanning_GetRecipeStepInstrumentsRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_GetRecipeStepInstrumentsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepInstrumentsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34222,7 +34596,7 @@ extension Mealplanning_GetRecipeStepInstrumentsResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_GetRecipeStepProductRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepProductRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepProductID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_product_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34262,7 +34636,7 @@ extension Mealplanning_GetRecipeStepProductRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetRecipeStepProductResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepProductResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34301,7 +34675,7 @@ extension Mealplanning_GetRecipeStepProductResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetRecipeStepProductsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepProductsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34345,7 +34719,7 @@ extension Mealplanning_GetRecipeStepProductsRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetRecipeStepProductsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepProductsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34389,7 +34763,7 @@ extension Mealplanning_GetRecipeStepProductsResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_GetRecipeStepVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepVesselID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_vessel_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34429,7 +34803,7 @@ extension Mealplanning_GetRecipeStepVesselRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetRecipeStepVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -34506,7 +34880,7 @@ extension Mealplanning_GetRecipeStepVesselResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetRecipeStepVesselsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepVesselsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0\u{1}recipeStepID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0\u{3}recipe_step_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34550,7 +34924,7 @@ extension Mealplanning_GetRecipeStepVesselsRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_GetRecipeStepVesselsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepVesselsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34594,7 +34968,7 @@ extension Mealplanning_GetRecipeStepVesselsResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetRecipeStepsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}recipeID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}recipe_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34633,7 +35007,7 @@ extension Mealplanning_GetRecipeStepsRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_GetRecipeStepsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34677,7 +35051,7 @@ extension Mealplanning_GetRecipeStepsResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}status\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}status\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34716,7 +35090,7 @@ extension Mealplanning_GetRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_GetRecipesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetRecipesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34760,7 +35134,7 @@ extension Mealplanning_GetRecipesResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_SearchForRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForRecipesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34804,7 +35178,7 @@ extension Mealplanning_SearchForRecipesRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_SearchForRecipesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForRecipesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34848,7 +35222,7 @@ extension Mealplanning_SearchForRecipesResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_SearchForMealEligibleRecipesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForMealEligibleRecipesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34887,7 +35261,7 @@ extension Mealplanning_SearchForMealEligibleRecipesRequest: SwiftProtobuf.Messag
 
 extension Mealplanning_SearchForMealEligibleRecipesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForMealEligibleRecipesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34931,7 +35305,7 @@ extension Mealplanning_SearchForMealEligibleRecipesResponse: SwiftProtobuf.Messa
 
 extension Mealplanning_UpdateRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34970,7 +35344,7 @@ extension Mealplanning_UpdateRecipeRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Mealplanning_UpdateRecipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35009,7 +35383,7 @@ extension Mealplanning_UpdateRecipeResponse: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_UpdateRecipeStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStatusRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}newStatus\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}new_status\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35044,7 +35418,7 @@ extension Mealplanning_UpdateRecipeStatusRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_UpdateRecipeStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStatusResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35083,7 +35457,7 @@ extension Mealplanning_UpdateRecipeStatusResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_UpdateRecipePrepTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipePrepTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipePrepTaskID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_prep_task_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35127,7 +35501,7 @@ extension Mealplanning_UpdateRecipePrepTaskRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_UpdateRecipePrepTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipePrepTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35166,7 +35540,7 @@ extension Mealplanning_UpdateRecipePrepTaskResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_UpdateRecipeRatingRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeRatingRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeRatingID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_rating_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35210,7 +35584,7 @@ extension Mealplanning_UpdateRecipeRatingRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_UpdateRecipeRatingResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeRatingResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -35287,7 +35661,7 @@ extension Mealplanning_UpdateRecipeRatingResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_UpdateRecipeStepRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35331,7 +35705,7 @@ extension Mealplanning_UpdateRecipeStepRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_UpdateRecipeStepResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35370,7 +35744,7 @@ extension Mealplanning_UpdateRecipeStepResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_UpdateRecipeStepCompletionConditionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepCompletionConditionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepCompletionConditionID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_completion_condition_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35419,7 +35793,7 @@ extension Mealplanning_UpdateRecipeStepCompletionConditionRequest: SwiftProtobuf
 
 extension Mealplanning_UpdateRecipeStepCompletionConditionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepCompletionConditionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35458,7 +35832,7 @@ extension Mealplanning_UpdateRecipeStepCompletionConditionResponse: SwiftProtobu
 
 extension Mealplanning_UpdateRecipeStepIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepIngredientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepIngredientID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_ingredient_id\0\u{1}input\0")
 
   fileprivate class _StorageClass {
     var _recipeID: String = String()
@@ -35549,7 +35923,7 @@ extension Mealplanning_UpdateRecipeStepIngredientRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_UpdateRecipeStepIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepIngredientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35588,7 +35962,7 @@ extension Mealplanning_UpdateRecipeStepIngredientResponse: SwiftProtobuf.Message
 
 extension Mealplanning_UpdateRecipeStepInstrumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepInstrumentRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepInstrumentID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_instrument_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35637,7 +36011,7 @@ extension Mealplanning_UpdateRecipeStepInstrumentRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_UpdateRecipeStepInstrumentResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepInstrumentResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35676,7 +36050,7 @@ extension Mealplanning_UpdateRecipeStepInstrumentResponse: SwiftProtobuf.Message
 
 extension Mealplanning_UpdateRecipeStepProductRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepProductRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepProductID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_product_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35725,7 +36099,7 @@ extension Mealplanning_UpdateRecipeStepProductRequest: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_UpdateRecipeStepProductResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepProductResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35764,7 +36138,7 @@ extension Mealplanning_UpdateRecipeStepProductResponse: SwiftProtobuf.Message, S
 
 extension Mealplanning_UpdateRecipeStepVesselRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepVesselRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipeID\0\u{1}recipeStepID\0\u{1}recipeStepVesselID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}recipe_step_vessel_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35813,7 +36187,7 @@ extension Mealplanning_UpdateRecipeStepVesselRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_UpdateRecipeStepVesselResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepVesselResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -35890,7 +36264,7 @@ extension Mealplanning_UpdateRecipeStepVesselResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_InitializeMealPlanGroceryListRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".InitializeMealPlanGroceryListRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35920,7 +36294,7 @@ extension Mealplanning_InitializeMealPlanGroceryListRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_InitializeMealPlanGroceryListResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".InitializeMealPlanGroceryListResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Success\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}success\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -35950,7 +36324,7 @@ extension Mealplanning_InitializeMealPlanGroceryListResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Meal"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}EstimatedPortions\0\u{1}ID\0\u{1}Description\0\u{1}CreatedByUser\0\u{1}Name\0\u{1}Components\0\u{1}EligibleForMealPlans\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}estimated_portions\0\u{1}id\0\u{1}description\0\u{3}created_by_user\0\u{1}name\0\u{1}components\0\u{3}eligible_for_meal_plans\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36029,7 +36403,7 @@ extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealComponent"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ComponentType\0\u{1}Recipe\0\u{1}RecipeScale\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}component_type\0\u{1}recipe\0\u{3}recipe_scale\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36037,7 +36411,7 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.componentType) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.componentType) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._recipe) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.recipeScale) }()
       default: break
@@ -36050,8 +36424,8 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.componentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.componentType, fieldNumber: 1)
+    if self.componentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.componentType, fieldNumber: 1)
     }
     try { if let v = self._recipe {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
@@ -36073,7 +36447,7 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealComponentCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}ComponentType\0\u{1}RecipeScale\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}component_type\0\u{3}recipe_scale\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36082,7 +36456,7 @@ extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message,
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.recipeID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.componentType) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.componentType) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.recipeScale) }()
       default: break
       }
@@ -36093,8 +36467,8 @@ extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message,
     if !self.recipeID.isEmpty {
       try visitor.visitSingularStringField(value: self.recipeID, fieldNumber: 1)
     }
-    if !self.componentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.componentType, fieldNumber: 2)
+    if self.componentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.componentType, fieldNumber: 2)
     }
     if self.recipeScale.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.recipeScale, fieldNumber: 3)
@@ -36113,7 +36487,7 @@ extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message,
 
 extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealComponentUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipeID\0\u{1}ComponentType\0\u{1}RecipeScale\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{3}component_type\0\u{3}recipe_scale\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36122,7 +36496,7 @@ extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, S
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._recipeID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._componentType) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._componentType) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self._recipeScale) }()
       default: break
       }
@@ -36138,7 +36512,7 @@ extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, S
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
     try { if let v = self._componentType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
     } }()
     try { if let v = self._recipeScale {
       try visitor.visitSingularFloatField(value: v, fieldNumber: 3)
@@ -36157,7 +36531,7 @@ extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, S
 
 extension Mealplanning_MealCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EstimatedPortions\0\u{1}Name\0\u{1}Description\0\u{1}Components\0\u{1}EligibleForMealPlans\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}estimated_portions\0\u{1}name\0\u{1}description\0\u{1}components\0\u{3}eligible_for_meal_plans\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36211,7 +36585,7 @@ extension Mealplanning_MealCreationRequestInput: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlan"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}VotingDeadline\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Status\0\u{1}Notes\0\u{1}ElectionMethod\0\u{1}BelongsToAccount\0\u{1}CreatedByUser\0\u{1}Events\0\u{1}GroceryListInitialized\0\u{1}TasksCreated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}voting_deadline\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}status\0\u{1}notes\0\u{3}election_method\0\u{3}belongs_to_account\0\u{3}created_by_user\0\u{1}events\0\u{3}grocery_list_initialized\0\u{3}tasks_created\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -36221,7 +36595,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _id: String = String()
     var _status: String = String()
     var _notes: String = String()
-    var _electionMethod: String = String()
+    var _electionMethod: Mealplanning_MealPlanElectionMethod = .schulze
     var _belongsToAccount: String = String()
     var _createdByUser: String = String()
     var _events: [Mealplanning_MealPlanEvent] = []
@@ -36275,7 +36649,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
-        case 8: try { try decoder.decodeSingularStringField(value: &_storage._electionMethod) }()
+        case 8: try { try decoder.decodeSingularEnumField(value: &_storage._electionMethod) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._belongsToAccount) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 11: try { try decoder.decodeRepeatedMessageField(value: &_storage._events) }()
@@ -36314,8 +36688,8 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if !_storage._notes.isEmpty {
         try visitor.visitSingularStringField(value: _storage._notes, fieldNumber: 7)
       }
-      if !_storage._electionMethod.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._electionMethod, fieldNumber: 8)
+      if _storage._electionMethod != .schulze {
+        try visitor.visitSingularEnumField(value: _storage._electionMethod, fieldNumber: 8)
       }
       if !_storage._belongsToAccount.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToAccount, fieldNumber: 9)
@@ -36365,7 +36739,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}VotingDeadline\0\u{1}Notes\0\u{1}ElectionMethod\0\u{1}Events\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}voting_deadline\0\u{1}notes\0\u{3}election_method\0\u{1}events\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36375,7 +36749,7 @@ extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, Swif
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._votingDeadline) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.notes) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.electionMethod) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.electionMethod) }()
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.events) }()
       default: break
       }
@@ -36393,8 +36767,8 @@ extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, Swif
     if !self.notes.isEmpty {
       try visitor.visitSingularStringField(value: self.notes, fieldNumber: 2)
     }
-    if !self.electionMethod.isEmpty {
-      try visitor.visitSingularStringField(value: self.electionMethod, fieldNumber: 3)
+    if self.electionMethod != .schulze {
+      try visitor.visitSingularEnumField(value: self.electionMethod, fieldNumber: 3)
     }
     if !self.events.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.events, fieldNumber: 4)
@@ -36414,7 +36788,7 @@ extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanEvent"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}StartsAt\0\u{1}EndsAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}MealName\0\u{1}Notes\0\u{1}BelongsToMealPlan\0\u{1}ID\0\u{1}Options\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}starts_at\0\u{3}ends_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}meal_name\0\u{1}notes\0\u{3}belongs_to_meal_plan\0\u{1}id\0\u{1}options\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36493,7 +36867,7 @@ extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Mealplanning_MealPlanEventCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanEventCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EndsAt\0\u{1}StartsAt\0\u{1}Notes\0\u{1}MealName\0\u{1}Options\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ends_at\0\u{3}starts_at\0\u{1}notes\0\u{3}meal_name\0\u{1}options\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36547,7 +36921,7 @@ extension Mealplanning_MealPlanEventCreationRequestInput: SwiftProtobuf.Message,
 
 extension Mealplanning_MealPlanEventUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanEventUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}StartsAt\0\u{1}MealName\0\u{1}EndsAt\0\u{1}BelongsToMealPlan\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}starts_at\0\u{3}meal_name\0\u{3}ends_at\0\u{3}belongs_to_meal_plan\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36601,7 +36975,7 @@ extension Mealplanning_MealPlanEventUpdateRequestInput: SwiftProtobuf.Message, S
 
 extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanGroceryListItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}QuantityPurchased\0\u{1}PurchasePrice\0\u{1}PurchasedUPC\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}PurchasedMeasurementUnit\0\u{1}BelongsToMealPlan\0\u{1}Status\0\u{1}StatusExplanation\0\u{1}ID\0\u{1}QuantityNeeded\0\u{1}MeasurementUnit\0\u{1}Ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}quantity_purchased\0\u{3}purchase_price\0\u{3}purchased_upc\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}purchased_measurement_unit\0\u{3}belongs_to_meal_plan\0\u{1}status\0\u{3}status_explanation\0\u{1}id\0\u{3}quantity_needed\0\u{3}measurement_unit\0\u{1}ingredient\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -36612,7 +36986,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _purchasedMeasurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _belongsToMealPlan: String = String()
-    var _status: String = String()
+    var _status: Mealplanning_MealPlanGroceryListItemStatus = .unknown
     var _statusExplanation: String = String()
     var _id: String = String()
     var _quantityNeeded: Common_Float32RangeWithOptionalMax? = nil
@@ -36668,7 +37042,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._purchasedMeasurementUnit) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._belongsToMealPlan) }()
-        case 9: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
+        case 9: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._statusExplanation) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._quantityNeeded) }()
@@ -36710,8 +37084,8 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       if !_storage._belongsToMealPlan.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToMealPlan, fieldNumber: 8)
       }
-      if !_storage._status.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._status, fieldNumber: 9)
+      if _storage._status != .unknown {
+        try visitor.visitSingularEnumField(value: _storage._status, fieldNumber: 9)
       }
       if !_storage._statusExplanation.isEmpty {
         try visitor.visitSingularStringField(value: _storage._statusExplanation, fieldNumber: 10)
@@ -36762,7 +37136,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanGroceryListItemCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}PurchasedMeasurementUnitID\0\u{1}PurchasedUPC\0\u{1}PurchasePrice\0\u{1}QuantityPurchased\0\u{1}Status\0\u{1}BelongsToMealPlan\0\u{1}ValidIngredientID\0\u{1}ValidMeasurementUnitID\0\u{1}StatusExplanation\0\u{1}QuantityNeeded\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}purchased_measurement_unit_id\0\u{3}purchased_upc\0\u{3}purchase_price\0\u{3}quantity_purchased\0\u{1}status\0\u{3}belongs_to_meal_plan\0\u{3}valid_ingredient_id\0\u{3}valid_measurement_unit_id\0\u{3}status_explanation\0\u{3}quantity_needed\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36774,7 +37148,7 @@ extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobu
       case 2: try { try decoder.decodeSingularStringField(value: &self._purchasedUpc) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self._purchasePrice) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self._quantityPurchased) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.belongsToMealPlan) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.validMeasurementUnitID) }()
@@ -36802,8 +37176,8 @@ extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobu
     try { if let v = self._quantityPurchased {
       try visitor.visitSingularFloatField(value: v, fieldNumber: 4)
     } }()
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 5)
+    if self.status != .unknown {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 5)
     }
     if !self.belongsToMealPlan.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToMealPlan, fieldNumber: 6)
@@ -36841,7 +37215,7 @@ extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobu
 
 extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanGroceryListItemUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToMealPlan\0\u{1}ValidIngredientID\0\u{1}ValidMeasurementUnitID\0\u{1}StatusExplanation\0\u{1}QuantityPurchased\0\u{1}PurchasedMeasurementUnitID\0\u{1}PurchasedUPC\0\u{1}PurchasePrice\0\u{1}Status\0\u{1}QuantityNeeded\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_meal_plan\0\u{3}valid_ingredient_id\0\u{3}valid_measurement_unit_id\0\u{3}status_explanation\0\u{3}quantity_purchased\0\u{3}purchased_measurement_unit_id\0\u{3}purchased_upc\0\u{3}purchase_price\0\u{1}status\0\u{3}quantity_needed\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -36857,7 +37231,7 @@ extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.
       case 6: try { try decoder.decodeSingularStringField(value: &self._purchasedMeasurementUnitID) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._purchasedUpc) }()
       case 8: try { try decoder.decodeSingularFloatField(value: &self._purchasePrice) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self._status) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self._status) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._quantityNeeded) }()
       default: break
       }
@@ -36894,7 +37268,7 @@ extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.
       try visitor.visitSingularFloatField(value: v, fieldNumber: 8)
     } }()
     try { if let v = self._status {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 9)
     } }()
     try { if let v = self._quantityNeeded {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
@@ -36920,7 +37294,7 @@ extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.
 
 extension Mealplanning_MealPlanOption: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOption"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}AssignedCook\0\u{1}ArchivedAt\0\u{1}AssignedDishwasher\0\u{1}Notes\0\u{1}BelongsToMealPlanEvent\0\u{1}ID\0\u{1}Votes\0\u{1}Meal\0\u{1}MealScale\0\u{1}Chosen\0\u{1}TieBroken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}assigned_cook\0\u{3}archived_at\0\u{3}assigned_dishwasher\0\u{1}notes\0\u{3}belongs_to_meal_plan_event\0\u{1}id\0\u{1}votes\0\u{1}meal\0\u{3}meal_scale\0\u{1}chosen\0\u{3}tie_broken\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -37074,7 +37448,7 @@ extension Mealplanning_MealPlanOption: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_MealPlanOptionCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AssignedCook\0\u{1}AssignedDishwasher\0\u{1}MealID\0\u{1}Notes\0\u{1}MealScale\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}assigned_cook\0\u{3}assigned_dishwasher\0\u{3}meal_id\0\u{1}notes\0\u{3}meal_scale\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37128,7 +37502,7 @@ extension Mealplanning_MealPlanOptionCreationRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_MealPlanOptionUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MealID\0\u{1}Notes\0\u{1}AssignedCook\0\u{1}AssignedDishwasher\0\u{1}MealScale\0\u{1}BelongsToMealPlanEvent\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_id\0\u{1}notes\0\u{3}assigned_cook\0\u{3}assigned_dishwasher\0\u{3}meal_scale\0\u{3}belongs_to_meal_plan_event\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37187,7 +37561,7 @@ extension Mealplanning_MealPlanOptionUpdateRequestInput: SwiftProtobuf.Message, 
 
 extension Mealplanning_MealPlanOptionVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionVote"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Notes\0\u{1}BelongsToMealPlanOption\0\u{1}ByUser\0\u{1}Rank\0\u{1}Abstain\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_meal_plan_option\0\u{3}by_user\0\u{1}rank\0\u{1}abstain\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37261,7 +37635,7 @@ extension Mealplanning_MealPlanOptionVote: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_MealPlanOptionVoteCreationInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionVoteCreationInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ID\0\u{1}Notes\0\u{1}ByUser\0\u{1}BelongsToMealPlanOption\0\u{1}Rank\0\u{1}Abstain\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}notes\0\u{3}by_user\0\u{3}belongs_to_meal_plan_option\0\u{1}rank\0\u{1}abstain\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37316,7 +37690,7 @@ extension Mealplanning_MealPlanOptionVoteCreationInput: SwiftProtobuf.Message, S
 
 extension Mealplanning_MealPlanOptionVoteCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionVoteCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Votes\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}votes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37346,7 +37720,7 @@ extension Mealplanning_MealPlanOptionVoteCreationRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_MealPlanOptionVoteUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanOptionVoteUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}Rank\0\u{1}Abstain\0\u{1}BelongsToMealPlanOption\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{1}rank\0\u{1}abstain\0\u{3}belongs_to_meal_plan_option\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37395,7 +37769,7 @@ extension Mealplanning_MealPlanOptionVoteUpdateRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_MissingVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MissingVote"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EventID\0\u{1}OptionID\0\u{1}UserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}event_id\0\u{3}option_id\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37435,7 +37809,7 @@ extension Mealplanning_MissingVote: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanTask"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RecipePrepTask\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}CompletedAt\0\u{1}AssignedToUser\0\u{1}ID\0\u{1}Status\0\u{1}CreationExplanation\0\u{1}StatusExplanation\0\u{1}MealPlanOption\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_prep_task\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}completed_at\0\u{3}assigned_to_user\0\u{1}id\0\u{1}status\0\u{3}creation_explanation\0\u{3}status_explanation\0\u{3}meal_plan_option\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37449,7 +37823,7 @@ extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 4: try { try decoder.decodeSingularMessageField(value: &self._completedAt) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.id) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 7: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.creationExplanation) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._mealPlanOption) }()
@@ -37481,8 +37855,8 @@ extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 6)
     }
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 7)
+    if self.status != .unfinished {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 7)
     }
     if !self.creationExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.creationExplanation, fieldNumber: 8)
@@ -37514,7 +37888,7 @@ extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanTaskCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AssignedToUser\0\u{1}Status\0\u{1}CreationExplanation\0\u{1}StatusExplanation\0\u{1}MealPlanOptionID\0\u{1}RecipePrepTaskID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}assigned_to_user\0\u{1}status\0\u{3}creation_explanation\0\u{3}status_explanation\0\u{3}meal_plan_option_id\0\u{3}recipe_prep_task_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37523,7 +37897,7 @@ extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, 
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.creationExplanation) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.mealPlanOptionID) }()
@@ -37541,8 +37915,8 @@ extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, 
     try { if let v = self._assignedToUser {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 2)
+    if self.status != .unfinished {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 2)
     }
     if !self.creationExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.creationExplanation, fieldNumber: 3)
@@ -37573,7 +37947,7 @@ extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, 
 
 extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanTaskStatusChangeRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Status\0\u{1}StatusExplanation\0\u{1}AssignedToUser\0\u{1}ID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{3}status_explanation\0\u{3}assigned_to_user\0\u{1}id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37581,7 +37955,7 @@ extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Messa
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._status) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._status) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.id) }()
@@ -37596,7 +37970,7 @@ extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Messa
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     try { if let v = self._status {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     } }()
     if !self.statusExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.statusExplanation, fieldNumber: 2)
@@ -37622,7 +37996,7 @@ extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_MealPlanUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}BelongsToAccount\0\u{1}Notes\0\u{1}VotingDeadline\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}belongs_to_account\0\u{1}notes\0\u{3}voting_deadline\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37666,7 +38040,7 @@ extension Mealplanning_MealPlanUpdateRequestInput: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_MealUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0\u{1}CreatedByUser\0\u{1}EstimatedPortions\0\u{1}EligibleForMealPlans\0\u{1}Components\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{3}created_by_user\0\u{3}estimated_portions\0\u{3}eligible_for_meal_plans\0\u{1}components\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37725,7 +38099,7 @@ extension Mealplanning_MealUpdateRequestInput: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_ArchiveMealRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37755,7 +38129,7 @@ extension Mealplanning_ArchiveMealRequest: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_ArchiveMealResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37789,7 +38163,7 @@ extension Mealplanning_ArchiveMealResponse: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Mealplanning_ArchiveMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37819,7 +38193,7 @@ extension Mealplanning_ArchiveMealPlanRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_ArchiveMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37853,7 +38227,7 @@ extension Mealplanning_ArchiveMealPlanResponse: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_ArchiveMealPlanEventRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanEventRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37888,7 +38262,7 @@ extension Mealplanning_ArchiveMealPlanEventRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_ArchiveMealPlanEventResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanEventResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37922,7 +38296,7 @@ extension Mealplanning_ArchiveMealPlanEventResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_ArchiveMealPlanGroceryListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanGroceryListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanGroceryListItemID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_grocery_list_item_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37957,7 +38331,7 @@ extension Mealplanning_ArchiveMealPlanGroceryListItemRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_ArchiveMealPlanGroceryListItemResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanGroceryListItemResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -37991,7 +38365,7 @@ extension Mealplanning_ArchiveMealPlanGroceryListItemResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_ArchiveMealPlanOptionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanOptionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MealPlanID\0\u{1}MealPlanEventID\0\u{1}MealPlanOptionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38031,7 +38405,7 @@ extension Mealplanning_ArchiveMealPlanOptionRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_ArchiveMealPlanOptionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanOptionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38065,7 +38439,7 @@ extension Mealplanning_ArchiveMealPlanOptionResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_ArchiveMealPlanOptionVoteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanOptionVoteRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}mealPlanOptionID\0\u{1}mealPlanOptionVoteID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0\u{3}meal_plan_option_vote_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38110,7 +38484,7 @@ extension Mealplanning_ArchiveMealPlanOptionVoteRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_ArchiveMealPlanOptionVoteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealPlanOptionVoteResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38144,7 +38518,7 @@ extension Mealplanning_ArchiveMealPlanOptionVoteResponse: SwiftProtobuf.Message,
 
 extension Mealplanning_CreateMealRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38178,7 +38552,7 @@ extension Mealplanning_CreateMealRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_CreateMealResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38217,7 +38591,7 @@ extension Mealplanning_CreateMealResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_CreateMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38251,7 +38625,7 @@ extension Mealplanning_CreateMealPlanRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_CreateMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38290,7 +38664,7 @@ extension Mealplanning_CreateMealPlanResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_CreateMealPlanEventRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanEventRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38329,7 +38703,7 @@ extension Mealplanning_CreateMealPlanEventRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_CreateMealPlanEventResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanEventResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -38406,7 +38780,7 @@ extension Mealplanning_CreateMealPlanEventResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_CreateMealPlanGroceryListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanGroceryListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38445,7 +38819,7 @@ extension Mealplanning_CreateMealPlanGroceryListItemRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_CreateMealPlanGroceryListItemResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanGroceryListItemResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38484,7 +38858,7 @@ extension Mealplanning_CreateMealPlanGroceryListItemResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_CreateMealPlanOptionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanOptionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38528,7 +38902,7 @@ extension Mealplanning_CreateMealPlanOptionRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_CreateMealPlanOptionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanOptionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38567,7 +38941,7 @@ extension Mealplanning_CreateMealPlanOptionResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_CreateMealPlanOptionVoteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanOptionVoteRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38611,7 +38985,7 @@ extension Mealplanning_CreateMealPlanOptionVoteRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_CreateMealPlanOptionVoteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanOptionVoteResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38650,7 +39024,7 @@ extension Mealplanning_CreateMealPlanOptionVoteResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_CreateMealPlanTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38689,7 +39063,7 @@ extension Mealplanning_CreateMealPlanTaskRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_CreateMealPlanTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38728,7 +39102,7 @@ extension Mealplanning_CreateMealPlanTaskResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_FinalizeMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FinalizeMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38758,7 +39132,7 @@ extension Mealplanning_FinalizeMealPlanRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_FinalizeMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FinalizeMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Finalized\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}finalized\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38797,7 +39171,7 @@ extension Mealplanning_FinalizeMealPlanResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetMealRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38827,7 +39201,7 @@ extension Mealplanning_GetMealRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_GetMealResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38866,7 +39240,7 @@ extension Mealplanning_GetMealResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Mealplanning_GetMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38896,7 +39270,7 @@ extension Mealplanning_GetMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Mealplanning_GetMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38935,7 +39309,7 @@ extension Mealplanning_GetMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Mealplanning_GetMealPlanEventRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanEventRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -38970,7 +39344,7 @@ extension Mealplanning_GetMealPlanEventRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_GetMealPlanEventResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanEventResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -39047,7 +39421,7 @@ extension Mealplanning_GetMealPlanEventResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetMealPlanEventsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanEventsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39086,7 +39460,7 @@ extension Mealplanning_GetMealPlanEventsRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetMealPlanEventsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanEventsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39130,7 +39504,7 @@ extension Mealplanning_GetMealPlanEventsResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetMealPlanGroceryListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanGroceryListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanGroceryListItemID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_grocery_list_item_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39165,7 +39539,7 @@ extension Mealplanning_GetMealPlanGroceryListItemRequest: SwiftProtobuf.Message,
 
 extension Mealplanning_GetMealPlanGroceryListItemResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanGroceryListItemResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39204,7 +39578,7 @@ extension Mealplanning_GetMealPlanGroceryListItemResponse: SwiftProtobuf.Message
 
 extension Mealplanning_GetMealPlanGroceryListItemsForMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanGroceryListItemsForMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39243,7 +39617,7 @@ extension Mealplanning_GetMealPlanGroceryListItemsForMealPlanRequest: SwiftProto
 
 extension Mealplanning_GetMealPlanGroceryListItemsForMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanGroceryListItemsForMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39287,7 +39661,7 @@ extension Mealplanning_GetMealPlanGroceryListItemsForMealPlanResponse: SwiftProt
 
 extension Mealplanning_GetMealPlanOptionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}MealPlanID\0\u{1}MealPlanEventID\0\u{1}MealPlanOptionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39327,7 +39701,7 @@ extension Mealplanning_GetMealPlanOptionRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetMealPlanOptionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39366,7 +39740,7 @@ extension Mealplanning_GetMealPlanOptionResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetMealPlanOptionVoteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionVoteRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}mealPlanOptionID\0\u{1}mealPlanOptionVoteID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0\u{3}meal_plan_option_vote_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39411,7 +39785,7 @@ extension Mealplanning_GetMealPlanOptionVoteRequest: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_GetMealPlanOptionVoteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionVoteResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39450,7 +39824,7 @@ extension Mealplanning_GetMealPlanOptionVoteResponse: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_GetMealPlanOptionVotesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionVotesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}mealPlanOptionID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39499,7 +39873,7 @@ extension Mealplanning_GetMealPlanOptionVotesRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_GetMealPlanOptionVotesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionVotesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39543,7 +39917,7 @@ extension Mealplanning_GetMealPlanOptionVotesResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetMealPlanOptionsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39587,7 +39961,7 @@ extension Mealplanning_GetMealPlanOptionsRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_GetMealPlanOptionsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanOptionsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39631,7 +40005,7 @@ extension Mealplanning_GetMealPlanOptionsResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_GetMealPlanTaskRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanTaskRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanTaskID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_task_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39666,7 +40040,7 @@ extension Mealplanning_GetMealPlanTaskRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_GetMealPlanTaskResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanTaskResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39705,7 +40079,7 @@ extension Mealplanning_GetMealPlanTaskResponse: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_GetMealPlanTasksRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanTasksRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}mealPlanID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}meal_plan_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39744,7 +40118,7 @@ extension Mealplanning_GetMealPlanTasksRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Mealplanning_GetMealPlanTasksResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlanTasksResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39788,7 +40162,7 @@ extension Mealplanning_GetMealPlanTasksResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_GetMealPlansForAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlansForAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39822,7 +40196,7 @@ extension Mealplanning_GetMealPlansForAccountRequest: SwiftProtobuf.Message, Swi
 
 extension Mealplanning_GetMealPlansForAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealPlansForAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39866,7 +40240,7 @@ extension Mealplanning_GetMealPlansForAccountResponse: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_GetMealsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39900,7 +40274,7 @@ extension Mealplanning_GetMealsRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Mealplanning_GetMealsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMealsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39963,7 +40337,7 @@ extension Mealplanning_RunFinalizeMealPlanWorkerRequest: SwiftProtobuf.Message, 
 
 extension Mealplanning_RunFinalizeMealPlanWorkerResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RunFinalizeMealPlanWorkerResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Finalized\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}finalized\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40021,7 +40395,7 @@ extension Mealplanning_RunMealPlanGroceryListInitializerWorkerRequest: SwiftProt
 
 extension Mealplanning_RunMealPlanGroceryListInitializerWorkerResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RunMealPlanGroceryListInitializerWorkerResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40074,7 +40448,7 @@ extension Mealplanning_RunMealPlanTaskCreatorWorkerRequest: SwiftProtobuf.Messag
 
 extension Mealplanning_RunMealPlanTaskCreatorWorkerResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RunMealPlanTaskCreatorWorkerResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40108,7 +40482,7 @@ extension Mealplanning_RunMealPlanTaskCreatorWorkerResponse: SwiftProtobuf.Messa
 
 extension Mealplanning_SearchForMealsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForMealsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40152,7 +40526,7 @@ extension Mealplanning_SearchForMealsRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_SearchForMealsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForMealsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40196,7 +40570,7 @@ extension Mealplanning_SearchForMealsResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_UpdateMealPlanRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40235,7 +40609,7 @@ extension Mealplanning_UpdateMealPlanRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Mealplanning_UpdateMealPlanResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40274,7 +40648,7 @@ extension Mealplanning_UpdateMealPlanResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Mealplanning_UpdateMealPlanEventRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanEventRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40318,7 +40692,7 @@ extension Mealplanning_UpdateMealPlanEventRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_UpdateMealPlanEventResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanEventResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -40395,7 +40769,7 @@ extension Mealplanning_UpdateMealPlanEventResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_UpdateMealPlanGroceryListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanGroceryListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanGroceryListItemID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_grocery_list_item_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40439,7 +40813,7 @@ extension Mealplanning_UpdateMealPlanGroceryListItemRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_UpdateMealPlanGroceryListItemResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanGroceryListItemResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40478,7 +40852,7 @@ extension Mealplanning_UpdateMealPlanGroceryListItemResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_UpdateMealPlanOptionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanOptionRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}mealPlanOptionID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40527,7 +40901,7 @@ extension Mealplanning_UpdateMealPlanOptionRequest: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_UpdateMealPlanOptionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanOptionResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40566,7 +40940,7 @@ extension Mealplanning_UpdateMealPlanOptionResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_UpdateMealPlanOptionVoteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanOptionVoteRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanEventID\0\u{1}mealPlanOptionID\0\u{1}mealPlanOptionVoteID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_event_id\0\u{3}meal_plan_option_id\0\u{3}meal_plan_option_vote_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40620,7 +40994,7 @@ extension Mealplanning_UpdateMealPlanOptionVoteRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_UpdateMealPlanOptionVoteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanOptionVoteResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40659,7 +41033,7 @@ extension Mealplanning_UpdateMealPlanOptionVoteResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_UpdateMealPlanTaskStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanTaskStatusRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mealPlanID\0\u{1}mealPlanTaskID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_plan_id\0\u{3}meal_plan_task_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40703,7 +41077,7 @@ extension Mealplanning_UpdateMealPlanTaskStatusRequest: SwiftProtobuf.Message, S
 
 extension Mealplanning_UpdateMealPlanTaskStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateMealPlanTaskStatusResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40742,7 +41116,7 @@ extension Mealplanning_UpdateMealPlanTaskStatusResponse: SwiftProtobuf.Message, 
 
 extension Mealplanning_CreateMealPlanTasksRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanTasksRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40772,7 +41146,7 @@ extension Mealplanning_CreateMealPlanTasksRequest: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_CreateMealPlanTasksResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateMealPlanTasksResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Success\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}success\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40802,7 +41176,7 @@ extension Mealplanning_CreateMealPlanTasksResponse: SwiftProtobuf.Message, Swift
 
 extension Mealplanning_FinalizeMealPlansRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FinalizeMealPlansRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ReturnCount\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}return_count\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40832,7 +41206,7 @@ extension Mealplanning_FinalizeMealPlansRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_FinalizeMealPlansResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FinalizeMealPlansResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Count\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}count\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40862,7 +41236,7 @@ extension Mealplanning_FinalizeMealPlansResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Mealplanning_ArchiveAccountInstrumentOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveAccountInstrumentOwnershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInstrumentOwnershipID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_instrument_ownership_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40892,7 +41266,7 @@ extension Mealplanning_ArchiveAccountInstrumentOwnershipRequest: SwiftProtobuf.M
 
 extension Mealplanning_ArchiveAccountInstrumentOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveAccountInstrumentOwnershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40926,7 +41300,7 @@ extension Mealplanning_ArchiveAccountInstrumentOwnershipResponse: SwiftProtobuf.
 
 extension Mealplanning_CreateAccountInstrumentOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateAccountInstrumentOwnershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40960,7 +41334,7 @@ extension Mealplanning_CreateAccountInstrumentOwnershipRequest: SwiftProtobuf.Me
 
 extension Mealplanning_CreateAccountInstrumentOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateAccountInstrumentOwnershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -40999,7 +41373,7 @@ extension Mealplanning_CreateAccountInstrumentOwnershipResponse: SwiftProtobuf.M
 
 extension Mealplanning_GetAccountInstrumentOwnershipsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInstrumentOwnershipsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41033,7 +41407,7 @@ extension Mealplanning_GetAccountInstrumentOwnershipsRequest: SwiftProtobuf.Mess
 
 extension Mealplanning_GetAccountInstrumentOwnershipsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInstrumentOwnershipsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41077,7 +41451,7 @@ extension Mealplanning_GetAccountInstrumentOwnershipsResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_GetAccountInstrumentOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInstrumentOwnershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInstrumentOwnershipID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_instrument_ownership_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41107,7 +41481,7 @@ extension Mealplanning_GetAccountInstrumentOwnershipRequest: SwiftProtobuf.Messa
 
 extension Mealplanning_GetAccountInstrumentOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInstrumentOwnershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41146,7 +41520,7 @@ extension Mealplanning_GetAccountInstrumentOwnershipResponse: SwiftProtobuf.Mess
 
 extension Mealplanning_UpdateAccountInstrumentOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountInstrumentOwnershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInstrumentOwnershipID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_instrument_ownership_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41185,7 +41559,7 @@ extension Mealplanning_UpdateAccountInstrumentOwnershipRequest: SwiftProtobuf.Me
 
 extension Mealplanning_UpdateAccountInstrumentOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountInstrumentOwnershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Updated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41224,7 +41598,7 @@ extension Mealplanning_UpdateAccountInstrumentOwnershipResponse: SwiftProtobuf.M
 
 extension Mealplanning_AccountInstrumentOwnership: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInstrumentOwnership"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Notes\0\u{1}BelongsToAccount\0\u{1}Instrument\0\u{1}Quantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_account\0\u{1}instrument\0\u{1}quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -41343,7 +41717,7 @@ extension Mealplanning_AccountInstrumentOwnership: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_AccountInstrumentOwnershipCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInstrumentOwnershipCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}ValidInstrumentID\0\u{2}\u{2}Quantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_instrument_id\0\u{2}\u{2}quantity\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -41383,7 +41757,7 @@ extension Mealplanning_AccountInstrumentOwnershipCreationRequestInput: SwiftProt
 
 extension Mealplanning_AccountInstrumentOwnershipUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInstrumentOwnershipUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Notes\0\u{1}Quantity\0\u{1}ValidInstrumentID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{1}quantity\0\u{3}valid_instrument_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

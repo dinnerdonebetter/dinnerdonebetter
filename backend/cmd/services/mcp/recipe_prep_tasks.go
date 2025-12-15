@@ -56,8 +56,8 @@ var getRecipePrepTaskTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipePrepTask() mcp.ToolHandlerFor[*GetRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
 		result, err := h.client.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-			RecipeID:         x.RecipeID,
-			RecipePrepTaskID: x.RecipePrepTaskID,
+			RecipeId:         x.RecipeID,
+			RecipePrepTaskId: x.RecipePrepTaskID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -93,7 +93,7 @@ var getRecipePrepTasksTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipePrepTasks() mcp.ToolHandlerFor[*GetRecipePrepTasksInvocation, *GetRecipePrepTasksResult] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipePrepTasksInvocation) (*mcp.CallToolResult, *GetRecipePrepTasksResult, error) {
 		results, err := h.client.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{
-			RecipeID: x.RecipeID,
+			RecipeId: x.RecipeID,
 			Filter:   grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -137,7 +137,7 @@ var recipePrepTaskCreationTool = &mcp.Tool{
 func (h *mcpToolManager) CreateRecipePrepTask() mcp.ToolHandlerFor[*CreateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
 		result, err := h.client.CreateRecipePrepTask(ctx, &mealplanninggrpc.CreateRecipePrepTaskRequest{
-			RecipeID: x.RecipeID,
+			RecipeId: x.RecipeID,
 			Input:    mealplanningconverters.ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationRequestInput(x.RecipePrepTaskCreationRequestInput),
 		})
 		if err != nil {
@@ -178,8 +178,8 @@ var recipePrepTaskUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateRecipePrepTask() mcp.ToolHandlerFor[*UpdateRecipePrepTaskInvocation, *mealplanning.RecipePrepTask] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipePrepTaskInvocation) (*mcp.CallToolResult, *mealplanning.RecipePrepTask, error) {
 		result, err := h.client.UpdateRecipePrepTask(ctx, &mealplanninggrpc.UpdateRecipePrepTaskRequest{
-			RecipeID:         x.RecipeID,
-			RecipePrepTaskID: x.RecipePrepTaskID,
+			RecipeId:         x.RecipeID,
+			RecipePrepTaskId: x.RecipePrepTaskID,
 			Input:            mealplanningconverters.ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInput(x.RecipePrepTaskUpdateRequestInput),
 		})
 		if err != nil {

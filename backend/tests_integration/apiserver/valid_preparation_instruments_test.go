@@ -30,7 +30,7 @@ func createValidPreparationInstrumentForTest(t *testing.T) (*types.ValidPreparat
 	require.NotNil(t, createdValidPreparationInstrument)
 
 	validPrepInstrumentRes, err := adminClient.GetValidPreparationInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentRequest{
-		ValidPreparationInstrumentID: createdValidPreparationInstrument.Result.ID,
+		ValidPreparationInstrumentId: createdValidPreparationInstrument.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepInstrumentRes.Result)
@@ -53,8 +53,8 @@ func TestValidPreparationInstruments_Creating(T *testing.T) {
 
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 		exampleValidPreparationInstrumentInput := mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument))
-		exampleValidPreparationInstrumentInput.ValidInstrumentID = ""
-		exampleValidPreparationInstrumentInput.ValidPreparationID = ""
+		exampleValidPreparationInstrumentInput.ValidInstrumentId = ""
+		exampleValidPreparationInstrumentInput.ValidPreparationId = ""
 
 		createdValidPreparationInstrument, err := adminClient.CreateValidPreparationInstrument(ctx, &mealplanningsvc.CreateValidPreparationInstrumentRequest{Input: exampleValidPreparationInstrumentInput})
 		require.Error(t, err)
@@ -81,8 +81,8 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 	for range exampleQuantity - 1 {
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 		exampleValidPreparationInstrumentInput := mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument))
-		exampleValidPreparationInstrumentInput.ValidInstrumentID = validInstrument.ID
-		exampleValidPreparationInstrumentInput.ValidPreparationID = validPreparation.ID
+		exampleValidPreparationInstrumentInput.ValidInstrumentId = validInstrument.ID
+		exampleValidPreparationInstrumentInput.ValidPreparationId = validPreparation.ID
 
 		createdValidPreparationInstrument, err := adminClient.CreateValidPreparationInstrument(T.Context(), &mealplanningsvc.CreateValidPreparationInstrumentRequest{Input: exampleValidPreparationInstrumentInput})
 		require.NoError(T, err)
@@ -105,7 +105,7 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidPreparationInstrumentsByInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByInstrumentRequest{ValidInstrumentID: validInstrument.ID})
+		results, err := adminClient.GetValidPreparationInstrumentsByInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByInstrumentRequest{ValidInstrumentId: validInstrument.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidPreparationInstruments))
@@ -115,7 +115,7 @@ func TestValidPreparationInstruments_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidPreparationInstrumentsByPreparation(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByPreparationRequest{ValidPreparationID: validPreparation.ID})
+		results, err := adminClient.GetValidPreparationInstrumentsByPreparation(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByPreparationRequest{ValidPreparationId: validPreparation.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidPreparationInstruments))

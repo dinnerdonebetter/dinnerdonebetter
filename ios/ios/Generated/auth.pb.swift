@@ -304,7 +304,7 @@ public struct Auth_RefreshTOTPSecretRequest: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -460,7 +460,7 @@ public struct Auth_UpdatePasswordRequest: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -530,7 +530,7 @@ public struct Auth_VerifyTOTPSecretRequest: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var userID: String = String()
 
@@ -722,7 +722,7 @@ public struct Auth_PasswordUpdateInput: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -736,7 +736,7 @@ public struct Auth_TOTPSecretRefreshInput: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -748,7 +748,7 @@ public struct Auth_TOTPSecretRefreshResponse: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var twoFactorQrcode: String = String()
+  public var twoFactorQrCode: String = String()
 
   public var twoFactorSecret: String = String()
 
@@ -762,7 +762,7 @@ public struct Auth_TOTPSecretVerificationInput: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var userID: String = String()
 
@@ -832,7 +832,7 @@ public struct Auth_UserLoginInput: Sendable {
 
   public var password: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -934,7 +934,7 @@ fileprivate let _protobuf_package = "auth"
 
 extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoginForTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -968,7 +968,7 @@ extension Auth_LoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoginForTokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1007,7 +1007,7 @@ extension Auth_LoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1041,7 +1041,7 @@ extension Auth_AdminLoginForTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdminLoginForTokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1080,7 +1080,7 @@ extension Auth_AdminLoginForTokenResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ExchangeTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}refresh_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1110,7 +1110,7 @@ extension Auth_ExchangeTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Auth_ExchangeTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ExchangeTokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_id\0\u{3}account_id\0\u{3}access_token\0\u{3}refresh_token\0\u{3}expires_utc\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1188,7 +1188,7 @@ extension Auth_GetActiveAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Auth_GetActiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetActiveAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1246,7 +1246,7 @@ extension Auth_GetAuthStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuthStatusResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserID\0\u{1}AccountStatus\0\u{1}AccountStatusExplanation\0\u{1}ActiveAccount\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_id\0\u{3}account_status\0\u{3}account_status_explanation\0\u{3}active_account\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1300,7 +1300,7 @@ extension Auth_GetAuthStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0\u{3}new_password\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1335,7 +1335,7 @@ extension Auth_RedeemPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RedeemPasswordResetTokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1369,7 +1369,7 @@ extension Auth_RedeemPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1378,7 +1378,7 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -1388,15 +1388,15 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 1)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 2)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Auth_RefreshTOTPSecretRequest, rhs: Auth_RefreshTOTPSecretRequest) -> Bool {
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1404,7 +1404,7 @@ extension Auth_RefreshTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RefreshTOTPSecretResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1443,7 +1443,7 @@ extension Auth_RefreshTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Auth_RequestEmailVerificationEmailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}email_address\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1473,7 +1473,7 @@ extension Auth_RequestEmailVerificationEmailRequest: SwiftProtobuf.Message, Swif
 
 extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestEmailVerificationEmailResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}submitted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1512,7 +1512,7 @@ extension Auth_RequestEmailVerificationEmailResponse: SwiftProtobuf.Message, Swi
 
 extension Auth_RequestPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}email_address\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1542,7 +1542,7 @@ extension Auth_RequestPasswordResetTokenRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestPasswordResetTokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}accepted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1581,7 +1581,7 @@ extension Auth_RequestPasswordResetTokenResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Auth_RequestUsernameReminderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}email_address\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1611,7 +1611,7 @@ extension Auth_RequestUsernameReminderRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestUsernameReminderResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Submitted\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}submitted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1650,7 +1650,7 @@ extension Auth_RequestUsernameReminderResponse: SwiftProtobuf.Message, SwiftProt
 
 extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdatePasswordRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_password\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1660,7 +1660,7 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.newPassword) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -1673,8 +1673,8 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 2)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 3)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1682,7 +1682,7 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
   public static func ==(lhs: Auth_UpdatePasswordRequest, rhs: Auth_UpdatePasswordRequest) -> Bool {
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1690,7 +1690,7 @@ extension Auth_UpdatePasswordRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdatePasswordResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1724,7 +1724,7 @@ extension Auth_UpdatePasswordResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Auth_VerifyEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1754,7 +1754,7 @@ extension Auth_VerifyEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".VerifyEmailAddressResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Verified\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}verified\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1793,7 +1793,7 @@ extension Auth_VerifyEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}totp_token\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1801,7 +1801,7 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.userID) }()
       default: break
       }
@@ -1809,8 +1809,8 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 1)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 1)
     }
     if !self.userID.isEmpty {
       try visitor.visitSingularStringField(value: self.userID, fieldNumber: 2)
@@ -1819,7 +1819,7 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 
   public static func ==(lhs: Auth_VerifyTOTPSecretRequest, rhs: Auth_VerifyTOTPSecretRequest) -> Bool {
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1828,7 +1828,7 @@ extension Auth_VerifyTOTPSecretRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".VerifyTOTPSecretResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}accepted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1867,7 +1867,7 @@ extension Auth_VerifyTOTPSecretResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Auth_ChangeActiveAccountInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChangeActiveAccountInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1897,7 +1897,7 @@ extension Auth_ChangeActiveAccountInput: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Auth_EmailAddressVerificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1927,7 +1927,7 @@ extension Auth_EmailAddressVerificationRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EmailAddressVerificationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1961,7 +1961,7 @@ extension Auth_EmailAddressVerificationResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PasswordResetResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Successful\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}successful\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2000,7 +2000,7 @@ extension Auth_PasswordResetResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PasswordResetToken"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ExpiresAt\0\u{1}RedeemedAt\0\u{1}LastUpdatedAt\0\u{1}ID\0\u{1}Token\0\u{1}BelongsToUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}expires_at\0\u{3}redeemed_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}token\0\u{3}belongs_to_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2064,7 +2064,7 @@ extension Auth_PasswordResetToken: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Auth_PasswordResetTokenCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}email_address\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2094,7 +2094,7 @@ extension Auth_PasswordResetTokenCreationRequestInput: SwiftProtobuf.Message, Sw
 
 extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PasswordResetTokenRedemptionRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}NewPassword\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0\u{3}new_password\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2129,7 +2129,7 @@ extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, 
 
 extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PasswordUpdateInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewPassword\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_password\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2139,7 +2139,7 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.newPassword) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -2152,8 +2152,8 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 2)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 3)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2161,7 +2161,7 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
   public static func ==(lhs: Auth_PasswordUpdateInput, rhs: Auth_PasswordUpdateInput) -> Bool {
     if lhs.newPassword != rhs.newPassword {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2169,7 +2169,7 @@ extension Auth_PasswordUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2178,7 +2178,7 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -2188,15 +2188,15 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 1)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 2)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Auth_TOTPSecretRefreshInput, rhs: Auth_TOTPSecretRefreshInput) -> Bool {
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2204,7 +2204,7 @@ extension Auth_TOTPSecretRefreshInput: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}TwoFactorQRCode\0\u{1}TwoFactorSecret\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}two_factor_qr_code\0\u{3}two_factor_secret\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2212,7 +2212,7 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrcode) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrCode) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.twoFactorSecret) }()
       default: break
       }
@@ -2220,8 +2220,8 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.twoFactorQrcode.isEmpty {
-      try visitor.visitSingularStringField(value: self.twoFactorQrcode, fieldNumber: 2)
+    if !self.twoFactorQrCode.isEmpty {
+      try visitor.visitSingularStringField(value: self.twoFactorQrCode, fieldNumber: 2)
     }
     if !self.twoFactorSecret.isEmpty {
       try visitor.visitSingularStringField(value: self.twoFactorSecret, fieldNumber: 3)
@@ -2230,7 +2230,7 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
   }
 
   public static func ==(lhs: Auth_TOTPSecretRefreshResponse, rhs: Auth_TOTPSecretRefreshResponse) -> Bool {
-    if lhs.twoFactorQrcode != rhs.twoFactorQrcode {return false}
+    if lhs.twoFactorQrCode != rhs.twoFactorQrCode {return false}
     if lhs.twoFactorSecret != rhs.twoFactorSecret {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2239,7 +2239,7 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TOTPToken\0\u{1}UserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}totp_token\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2247,7 +2247,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.userID) }()
       default: break
       }
@@ -2255,8 +2255,8 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 1)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 1)
     }
     if !self.userID.isEmpty {
       try visitor.visitSingularStringField(value: self.userID, fieldNumber: 2)
@@ -2265,7 +2265,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
   }
 
   public static func ==(lhs: Auth_TOTPSecretVerificationInput, rhs: Auth_TOTPSecretVerificationInput) -> Bool {
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.userID != rhs.userID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2274,7 +2274,7 @@ extension Auth_TOTPSecretVerificationInput: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TOTPSecretVerificationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Accepted\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}accepted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2313,7 +2313,7 @@ extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}UserID\0\u{1}AccountID\0\u{1}AccessToken\0\u{1}RefreshToken\0\u{1}ExpiresUTC\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}user_id\0\u{3}account_id\0\u{3}access_token\0\u{3}refresh_token\0\u{3}expires_utc\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2367,7 +2367,7 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
 extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserLoginInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Username\0\u{1}Password\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}username\0\u{1}password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2377,7 +2377,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.username) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.password) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -2390,8 +2390,8 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if !self.password.isEmpty {
       try visitor.visitSingularStringField(value: self.password, fieldNumber: 2)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 3)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2399,7 +2399,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   public static func ==(lhs: Auth_UserLoginInput, rhs: Auth_UserLoginInput) -> Bool {
     if lhs.username != rhs.username {return false}
     if lhs.password != rhs.password {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2407,7 +2407,7 @@ extension Auth_UserLoginInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension Auth_UserPermissionsRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserPermissionsRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Permissions\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}permissions\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2437,7 +2437,7 @@ extension Auth_UserPermissionsRequestInput: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserPermissionsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Permissions\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}permissions\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2476,7 +2476,7 @@ extension Auth_UserPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Auth_UsernameReminderRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UsernameReminderRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}EmailAddress\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}email_address\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2525,7 +2525,7 @@ extension Auth_GetSelfRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
 extension Auth_GetSelfResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetSelfResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

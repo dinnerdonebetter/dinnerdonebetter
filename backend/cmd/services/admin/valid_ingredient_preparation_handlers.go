@@ -39,7 +39,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 
 	// Fetch associations
 	res, err := c.GetValidIngredientPreparationsByIngredient(ctx, &mealplanningsvc.GetValidIngredientPreparationsByIngredientRequest{
-		ValidIngredientID: ingredientID,
+		ValidIngredientId: ingredientID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -55,7 +55,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForIngredient(_ http.Re
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
 				Notes:       assoc.Notes,
@@ -104,7 +104,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 
 	// Fetch associations
 	res, err := c.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{
-		ValidPreparationID: preparationID,
+		ValidPreparationId: preparationID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -120,7 +120,7 @@ func (s *AdminFrontendServer) ValidIngredientPreparationsForPreparation(_ http.R
 	for _, assoc := range res.Results {
 		if assoc.Ingredient != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Ingredient.Name,
 				Description: assoc.Ingredient.Description,
 				Notes:       assoc.Notes,
@@ -178,7 +178,7 @@ func (s *AdminFrontendServer) SearchPreparationsForIngredient(_ http.ResponseWri
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          preparation.ID,
+				ID:          preparation.Id,
 				Name:        preparation.Name,
 				Description: preparation.Description,
 			})
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) SearchIngredientsForPreparation(_ http.ResponseWri
 	for _, ingredient := range searchRes.Results {
 		if contains(ingredient.Name, query) || contains(ingredient.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          ingredient.ID,
+				ID:          ingredient.Id,
 				Name:        ingredient.Name,
 				Description: ingredient.Description,
 			})
@@ -275,8 +275,8 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromIngredient(_ http.R
 	// Create the association
 	_, err = c.CreateValidIngredientPreparation(ctx, &mealplanningsvc.CreateValidIngredientPreparationRequest{
 		Input: &mealplanningsvc.ValidIngredientPreparationCreationRequestInput{
-			ValidIngredientID:  ingredientID,
-			ValidPreparationID: input.ID,
+			ValidIngredientId:  ingredientID,
+			ValidPreparationId: input.ID,
 		},
 	})
 	if err != nil {
@@ -319,8 +319,8 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromPreparation(_ http.
 	// Create the association
 	_, err = c.CreateValidIngredientPreparation(ctx, &mealplanningsvc.CreateValidIngredientPreparationRequest{
 		Input: &mealplanningsvc.ValidIngredientPreparationCreationRequestInput{
-			ValidIngredientID:  input.ID,
-			ValidPreparationID: preparationID,
+			ValidIngredientId:  input.ID,
+			ValidPreparationId: preparationID,
 		},
 	})
 	if err != nil {
@@ -358,7 +358,7 @@ func (s *AdminFrontendServer) DeleteIngredientPreparation(_ http.ResponseWriter,
 
 	// Archive (delete) the association
 	_, err = c.ArchiveValidIngredientPreparation(ctx, &mealplanningsvc.ArchiveValidIngredientPreparationRequest{
-		ValidIngredientPreparationID: associationID,
+		ValidIngredientPreparationId: associationID,
 	})
 	if err != nil {
 		return ghtml.Div(

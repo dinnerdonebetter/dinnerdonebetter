@@ -386,7 +386,7 @@ struct TaskCard: View {
 
       // Status indicator
       Circle()
-        .fill(task.status.lowercased() == "completed" ? Color.green : Color.orange)
+            .fill(task.status == .finished ? Color.green : Color.orange)
         .frame(width: 12, height: 12)
     }
     .padding()

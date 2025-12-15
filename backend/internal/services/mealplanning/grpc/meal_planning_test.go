@@ -64,7 +64,7 @@ func TestServiceImpl_ArchiveMeal(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: exampleMealID})
+		res, err := s.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: exampleMealID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -95,7 +95,7 @@ func TestServiceImpl_ArchiveMealPlan(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: exampleMealPlanID})
+		res, err := s.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: exampleMealPlanID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -120,8 +120,8 @@ func TestServiceImpl_ArchiveMealPlanEvent(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		res, err := s.ArchiveMealPlanEvent(ctx, &mealplanninggrpc.ArchiveMealPlanEventRequest{
-			MealPlanID:      exampleMealPlanID,
-			MealPlanEventID: exampleMealPlanEventID,
+			MealPlanId:      exampleMealPlanID,
+			MealPlanEventId: exampleMealPlanEventID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -147,8 +147,8 @@ func TestServiceImpl_ArchiveMealPlanGroceryListItem(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		res, err := s.ArchiveMealPlanGroceryListItem(ctx, &mealplanninggrpc.ArchiveMealPlanGroceryListItemRequest{
-			MealPlanID:                exampleMealPlanID,
-			MealPlanGroceryListItemID: exampleMealPlanGroceryListItemID,
+			MealPlanId:                exampleMealPlanID,
+			MealPlanGroceryListItemId: exampleMealPlanGroceryListItemID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -175,9 +175,9 @@ func TestServiceImpl_ArchiveMealPlanOption(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		res, err := s.ArchiveMealPlanOption(ctx, &mealplanninggrpc.ArchiveMealPlanOptionRequest{
-			MealPlanID:       exampleMealPlanID,
-			MealPlanEventID:  exampleMealPlanEventID,
-			MealPlanOptionID: exampleMealPlanOptionID,
+			MealPlanId:       exampleMealPlanID,
+			MealPlanEventId:  exampleMealPlanEventID,
+			MealPlanOptionId: exampleMealPlanOptionID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -205,10 +205,10 @@ func TestServiceImpl_ArchiveMealPlanOptionVote(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		res, err := s.ArchiveMealPlanOptionVote(ctx, &mealplanninggrpc.ArchiveMealPlanOptionVoteRequest{
-			MealPlanID:           exampleMealPlanID,
-			MealPlanEventID:      exampleMealPlanEventID,
-			MealPlanOptionID:     exampleMealPlanOptionID,
-			MealPlanOptionVoteID: exampleMealPlanOptionVoteID,
+			MealPlanId:           exampleMealPlanID,
+			MealPlanEventId:      exampleMealPlanEventID,
+			MealPlanOptionId:     exampleMealPlanOptionID,
+			MealPlanOptionVoteId: exampleMealPlanOptionVoteID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -243,7 +243,7 @@ func TestServiceImpl_ArchiveUserIngredientPreference(T *testing.T) {
 		}
 
 		res, err := s.ArchiveUserIngredientPreference(ctx, &mealplanninggrpc.ArchiveUserIngredientPreferenceRequest{
-			UserIngredientPreferenceID: exampleUserIngredientPreferenceID,
+			UserIngredientPreferenceId: exampleUserIngredientPreferenceID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -282,7 +282,7 @@ func TestServiceImpl_CreateMeal(T *testing.T) {
 		actual, err := s.CreateMeal(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMeal.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMeal.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -320,7 +320,7 @@ func TestServiceImpl_CreateMealPlan(T *testing.T) {
 		actual, err := s.CreateMealPlan(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlan.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMealPlan.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -343,12 +343,12 @@ func TestServiceImpl_CreateMealPlanEvent(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanEventRequest](t)
-		exampleInput.MealPlanID = exampleMealPlanID
+		exampleInput.MealPlanId = exampleMealPlanID
 
 		actual, err := s.CreateMealPlanEvent(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlanEvent.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMealPlanEvent.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -371,12 +371,12 @@ func TestServiceImpl_CreateMealPlanGroceryListItem(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanGroceryListItemRequest](t)
-		exampleInput.MealPlanID = exampleMealPlanID
+		exampleInput.MealPlanId = exampleMealPlanID
 
 		actual, err := s.CreateMealPlanGroceryListItem(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlanGroceryListItem.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMealPlanGroceryListItem.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -400,13 +400,13 @@ func TestServiceImpl_CreateMealPlanOption(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanOptionRequest](t)
-		exampleInput.MealPlanID = exampleMealPlanID
-		exampleInput.MealPlanEventID = exampleMealPlanEventID
+		exampleInput.MealPlanId = exampleMealPlanID
+		exampleInput.MealPlanEventId = exampleMealPlanEventID
 
 		actual, err := s.CreateMealPlanOption(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlanOption.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMealPlanOption.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -441,7 +441,7 @@ func TestServiceImpl_CreateMealPlanOptionVote(T *testing.T) {
 		}
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanOptionVoteRequest](t)
-		exampleInput.MealPlanID = exampleMealPlanID
+		exampleInput.MealPlanId = exampleMealPlanID
 
 		actual, err := s.CreateMealPlanOptionVote(ctx, exampleInput)
 		assert.NotNil(t, actual)
@@ -469,12 +469,12 @@ func TestServiceImpl_CreateMealPlanTask(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanTaskRequest](t)
-		exampleInput.MealPlanID = exampleMealPlanID
+		exampleInput.MealPlanId = exampleMealPlanID
 
 		actual, err := s.CreateMealPlanTask(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlanTask.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedMealPlanTask.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -542,7 +542,7 @@ func TestServiceImpl_FinalizeMealPlan(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.FinalizeMealPlan(ctx, &mealplanninggrpc.FinalizeMealPlanRequest{MealPlanID: exampleMealPlanID})
+		res, err := s.FinalizeMealPlan(ctx, &mealplanninggrpc.FinalizeMealPlanRequest{MealPlanId: exampleMealPlanID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleFinalized, res.Finalized)
@@ -566,8 +566,8 @@ func TestServiceImpl_GetMeal(T *testing.T) {
 		mmpm.On("ReadMeal", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		result, err := s.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -597,8 +597,8 @@ func TestServiceImpl_GetMealPlan(T *testing.T) {
 			}, nil
 		}
 
-		result, err := s.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -653,10 +653,10 @@ func TestServiceImpl_GetMealPlanEvent(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanEvent(ctx, &mealplanninggrpc.GetMealPlanEventRequest{
-			MealPlanID:      exampleResult.BelongsToMealPlan,
-			MealPlanEventID: exampleResult.ID,
+			MealPlanId:      exampleResult.BelongsToMealPlan,
+			MealPlanEventId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -679,7 +679,7 @@ func TestServiceImpl_GetMealPlanEvents(T *testing.T) {
 		mmpm.On("ListMealPlanEvents", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		result, err := s.GetMealPlanEvents(ctx, &mealplanninggrpc.GetMealPlanEventsRequest{MealPlanID: exampleMealPlanID})
+		result, err := s.GetMealPlanEvents(ctx, &mealplanninggrpc.GetMealPlanEventsRequest{MealPlanId: exampleMealPlanID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -704,10 +704,10 @@ func TestServiceImpl_GetMealPlanGroceryListItem(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
-			MealPlanID:                exampleResult.BelongsToMealPlan,
-			MealPlanGroceryListItemID: exampleResult.ID,
+			MealPlanId:                exampleResult.BelongsToMealPlan,
+			MealPlanGroceryListItemId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -730,7 +730,7 @@ func TestServiceImpl_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		mmpm.On("ListMealPlanGroceryListItemsByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		result, err := s.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanID: exampleMealPlanID})
+		result, err := s.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{MealPlanId: exampleMealPlanID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -757,11 +757,11 @@ func TestServiceImpl_GetMealPlanOption(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanOption(ctx, &mealplanninggrpc.GetMealPlanOptionRequest{
-			MealPlanID:       exampleMealPlanID,
-			MealPlanEventID:  exampleMealPlanEventID,
-			MealPlanOptionID: exampleResult.ID,
+			MealPlanId:       exampleMealPlanID,
+			MealPlanEventId:  exampleMealPlanEventID,
+			MealPlanOptionId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -787,12 +787,12 @@ func TestServiceImpl_GetMealPlanOptionVote(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanOptionVote(ctx, &mealplanninggrpc.GetMealPlanOptionVoteRequest{
-			MealPlanID:           exampleMealPlanID,
-			MealPlanEventID:      exampleMealPlanEventID,
-			MealPlanOptionID:     exampleMealPlanOptionID,
-			MealPlanOptionVoteID: exampleResult.ID,
+			MealPlanId:           exampleMealPlanID,
+			MealPlanEventId:      exampleMealPlanEventID,
+			MealPlanOptionId:     exampleMealPlanOptionID,
+			MealPlanOptionVoteId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -818,9 +818,9 @@ func TestServiceImpl_GetMealPlanOptionVotes(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanOptionVotes(ctx, &mealplanninggrpc.GetMealPlanOptionVotesRequest{
-			MealPlanID:       exampleMealPlanID,
-			MealPlanEventID:  exampleMealPlanEventID,
-			MealPlanOptionID: exampleMealPlanOptionID,
+			MealPlanId:       exampleMealPlanID,
+			MealPlanEventId:  exampleMealPlanEventID,
+			MealPlanOptionId: exampleMealPlanOptionID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -848,8 +848,8 @@ func TestServiceImpl_GetMealPlanOptions(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanOptions(ctx, &mealplanninggrpc.GetMealPlanOptionsRequest{
-			MealPlanID:      exampleMealPlanID,
-			MealPlanEventID: exampleMealPlanEventID,
+			MealPlanId:      exampleMealPlanID,
+			MealPlanEventId: exampleMealPlanEventID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -876,10 +876,10 @@ func TestServiceImpl_GetMealPlanTask(T *testing.T) {
 		s.mealPlanningManager = mmpm
 
 		result, err := s.GetMealPlanTask(ctx, &mealplanninggrpc.GetMealPlanTaskRequest{
-			MealPlanID:     exampleMealPlanID,
-			MealPlanTaskID: exampleResult.ID,
+			MealPlanId:     exampleMealPlanID,
+			MealPlanTaskId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -902,7 +902,7 @@ func TestServiceImpl_GetMealPlanTasks(T *testing.T) {
 		mmpm.On("ListMealPlanTasksByMealPlan", testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		result, err := s.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanID: exampleMealPlanID})
+		result, err := s.GetMealPlanTasks(ctx, &mealplanninggrpc.GetMealPlanTasksRequest{MealPlanId: exampleMealPlanID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -961,9 +961,9 @@ func TestServiceImpl_GetUserIngredientPreference(T *testing.T) {
 		}
 
 		result, err := s.GetUserIngredientPreference(ctx, &mealplanninggrpc.GetUserIngredientPreferenceRequest{
-			UserIngredientPreferenceID: exampleResult.ID,
+			UserIngredientPreferenceId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -1082,8 +1082,8 @@ func TestServiceImpl_UpdateMealPlan(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateMealPlan", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleAccountID, testutils.MatchType[*mealplanning.MealPlanUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlan", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleAccountID).Return(exampleResponse, nil)
+		mmpm.On("UpdateMealPlan", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleAccountID, testutils.MatchType[*mealplanning.MealPlanUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadMealPlan", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleAccountID).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		// Override session context to return specific account ID
@@ -1095,7 +1095,7 @@ func TestServiceImpl_UpdateMealPlan(T *testing.T) {
 
 		res, err := s.UpdateMealPlan(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1114,13 +1114,13 @@ func TestServiceImpl_UpdateMealPlanEvent(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateMealPlanEvent", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID, testutils.MatchType[*mealplanning.MealPlanEventUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlanEvent", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID).Return(exampleResponse, nil)
+		mmpm.On("UpdateMealPlanEvent", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId, testutils.MatchType[*mealplanning.MealPlanEventUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadMealPlanEvent", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		res, err := s.UpdateMealPlanEvent(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1139,13 +1139,13 @@ func TestServiceImpl_UpdateMealPlanGroceryListItem(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateMealPlanGroceryListItem", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanGroceryListItemID, testutils.MatchType[*mealplanning.MealPlanGroceryListItemUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlanGroceryListItem", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanGroceryListItemID).Return(exampleResponse, nil)
+		mmpm.On("UpdateMealPlanGroceryListItem", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanGroceryListItemId, testutils.MatchType[*mealplanning.MealPlanGroceryListItemUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadMealPlanGroceryListItem", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanGroceryListItemId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		res, err := s.UpdateMealPlanGroceryListItem(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1164,13 +1164,13 @@ func TestServiceImpl_UpdateMealPlanOption(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateMealPlanOption", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID, exampleRequest.MealPlanOptionID, testutils.MatchType[*mealplanning.MealPlanOptionUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlanOption", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID, exampleRequest.MealPlanOptionID).Return(exampleResponse, nil)
+		mmpm.On("UpdateMealPlanOption", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId, exampleRequest.MealPlanOptionId, testutils.MatchType[*mealplanning.MealPlanOptionUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadMealPlanOption", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId, exampleRequest.MealPlanOptionId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		res, err := s.UpdateMealPlanOption(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1189,13 +1189,13 @@ func TestServiceImpl_UpdateMealPlanOptionVote(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateMealPlanOptionVote", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID, exampleRequest.MealPlanOptionID, exampleRequest.MealPlanOptionVoteID, testutils.MatchType[*mealplanning.MealPlanOptionVoteUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlanOptionVote", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanEventID, exampleRequest.MealPlanOptionID, exampleRequest.MealPlanOptionVoteID).Return(exampleResponse, nil)
+		mmpm.On("UpdateMealPlanOptionVote", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId, exampleRequest.MealPlanOptionId, exampleRequest.MealPlanOptionVoteId, testutils.MatchType[*mealplanning.MealPlanOptionVoteUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadMealPlanOptionVote", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanEventId, exampleRequest.MealPlanOptionId, exampleRequest.MealPlanOptionVoteId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		res, err := s.UpdateMealPlanOptionVote(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1215,12 +1215,12 @@ func TestServiceImpl_UpdateMealPlanTaskStatus(T *testing.T) {
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
 		mmpm.On("MealPlanTaskStatusChange", testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanTaskStatusChangeRequestInput]()).Return(nil)
-		mmpm.On("ReadMealPlanTask", testutils.ContextMatcher, exampleRequest.MealPlanID, exampleRequest.MealPlanTaskID).Return(exampleResponse, nil)
+		mmpm.On("ReadMealPlanTask", testutils.ContextMatcher, exampleRequest.MealPlanId, exampleRequest.MealPlanTaskId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		res, err := s.UpdateMealPlanTaskStatus(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1240,8 +1240,8 @@ func TestServiceImpl_UpdateUserIngredientPreference(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("UpdateUserIngredientPreference", testutils.ContextMatcher, exampleRequest.UserIngredientPreferenceID, exampleUserID, testutils.MatchType[*mealplanning.UserIngredientPreferenceUpdateRequestInput]()).Return(nil)
-		mmpm.On("ReadUserIngredientPreference", testutils.ContextMatcher, exampleUserID, exampleRequest.UserIngredientPreferenceID).Return(exampleResponse, nil)
+		mmpm.On("UpdateUserIngredientPreference", testutils.ContextMatcher, exampleRequest.UserIngredientPreferenceId, exampleUserID, testutils.MatchType[*mealplanning.UserIngredientPreferenceUpdateRequestInput]()).Return(nil)
+		mmpm.On("ReadUserIngredientPreference", testutils.ContextMatcher, exampleUserID, exampleRequest.UserIngredientPreferenceId).Return(exampleResponse, nil)
 		s.mealPlanningManager = mmpm
 
 		// Override session context to return specific user ID
@@ -1255,7 +1255,7 @@ func TestServiceImpl_UpdateUserIngredientPreference(T *testing.T) {
 
 		res, err := s.UpdateUserIngredientPreference(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1289,7 +1289,7 @@ func TestServiceImpl_CreateAccountInstrumentOwnership(T *testing.T) {
 		actual, err := s.CreateAccountInstrumentOwnership(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedAccountInstrumentOwnership.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedAccountInstrumentOwnership.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})
@@ -1319,9 +1319,9 @@ func TestServiceImpl_GetAccountInstrumentOwnership(T *testing.T) {
 		}
 
 		result, err := s.GetAccountInstrumentOwnership(ctx, &mealplanninggrpc.GetAccountInstrumentOwnershipRequest{
-			AccountInstrumentOwnershipID: exampleResult.ID,
+			AccountInstrumentOwnershipId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
@@ -1374,7 +1374,7 @@ func TestServiceImpl_UpdateAccountInstrumentOwnership(T *testing.T) {
 		s := buildServiceImplForMealPlanningTest(t)
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On("ReadAccountInstrumentOwnership", testutils.ContextMatcher, exampleAccountID, exampleRequest.AccountInstrumentOwnershipID).Return(exampleAccountInstrumentOwnership, nil)
+		mmpm.On("ReadAccountInstrumentOwnership", testutils.ContextMatcher, exampleAccountID, exampleRequest.AccountInstrumentOwnershipId).Return(exampleAccountInstrumentOwnership, nil)
 		mmpm.On("UpdateAccountInstrumentOwnership", testutils.ContextMatcher, exampleAccountInstrumentOwnership.ID, exampleAccountInstrumentOwnership.BelongsToAccount, testutils.MatchType[*mealplanning.AccountInstrumentOwnershipUpdateRequestInput]()).Return(nil)
 		s.mealPlanningManager = mmpm
 
@@ -1417,7 +1417,7 @@ func TestServiceImpl_ArchiveAccountInstrumentOwnership(T *testing.T) {
 		}
 
 		res, err := s.ArchiveAccountInstrumentOwnership(ctx, &mealplanninggrpc.ArchiveAccountInstrumentOwnershipRequest{
-			AccountInstrumentOwnershipID: exampleAccountInstrumentOwnershipID,
+			AccountInstrumentOwnershipId: exampleAccountInstrumentOwnershipID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)

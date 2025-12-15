@@ -49,17 +49,17 @@ func TestMealPlanOptions_CompleteLifecycle(T *testing.T) {
 		updateInput := mpconverters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(newMealPlanOption)
 		createdMealPlanOption.Update(updateInput)
 		_, err := userClient.UpdateMealPlanOption(ctx, &mealplanninggrpc.UpdateMealPlanOptionRequest{
-			MealPlanID:       createdMealPlan.ID,
-			MealPlanOptionID: createdMealPlanOption.ID,
-			MealPlanEventID:  createdMealPlanEvent.ID,
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanOptionId: createdMealPlanOption.ID,
+			MealPlanEventId:  createdMealPlanEvent.ID,
 			Input:            converters.ConvertMealPlanOptionUpdateRequestInputToGRPCMealPlanOptionUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		actualRes, err := userClient.GetMealPlanOption(ctx, &mealplanninggrpc.GetMealPlanOptionRequest{
-			MealPlanID:       createdMealPlan.ID,
-			MealPlanEventID:  createdMealPlanEvent.ID,
-			MealPlanOptionID: createdMealPlanOption.ID,
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanEventId:  createdMealPlanEvent.ID,
+			MealPlanOptionId: createdMealPlanOption.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualRes)
@@ -71,19 +71,19 @@ func TestMealPlanOptions_CompleteLifecycle(T *testing.T) {
 		assert.NotNil(t, actual.LastUpdatedAt)
 
 		_, err = userClient.ArchiveMealPlanOption(ctx, &mealplanninggrpc.ArchiveMealPlanOptionRequest{
-			MealPlanID:       createdMealPlan.ID,
-			MealPlanEventID:  createdMealPlanEvent.ID,
-			MealPlanOptionID: createdMealPlanOption.ID,
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanEventId:  createdMealPlanEvent.ID,
+			MealPlanOptionId: createdMealPlanOption.ID,
 		})
 		require.NoError(t, err)
 
 		_, err = userClient.ArchiveMealPlanEvent(ctx, &mealplanninggrpc.ArchiveMealPlanEventRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 		})
 		require.NoError(t, err)
 
-		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		require.NoError(t, err)
 	})
 }
@@ -117,8 +117,8 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 
 			exampleMealPlanOptionInput := mpconverters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleMealPlanOption)
 			createdMealPlanOptionRes, err := userClient.CreateMealPlanOption(ctx, &mealplanninggrpc.CreateMealPlanOptionRequest{
-				MealPlanID:      createdMealPlan.ID,
-				MealPlanEventID: createdMealPlanEvent.ID,
+				MealPlanId:      createdMealPlan.ID,
+				MealPlanEventId: createdMealPlanEvent.ID,
 				Input:           converters.ConvertMealPlanOptionCreationRequestInputToGRPCMealPlanOptionCreationRequestInput(exampleMealPlanOptionInput),
 			})
 			require.NoError(t, err)
@@ -127,9 +127,9 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 			checkMealPlanOptionEquality(t, exampleMealPlanOption, newlyCreatedMealPlanOption)
 
 			retrievedMealPlanOptionRes, err := userClient.GetMealPlanOption(ctx, &mealplanninggrpc.GetMealPlanOptionRequest{
-				MealPlanID:       createdMealPlan.ID,
-				MealPlanEventID:  createdMealPlanEvent.ID,
-				MealPlanOptionID: newlyCreatedMealPlanOption.ID,
+				MealPlanId:       createdMealPlan.ID,
+				MealPlanEventId:  createdMealPlanEvent.ID,
+				MealPlanOptionId: newlyCreatedMealPlanOption.ID,
 			})
 			require.NotNil(t, retrievedMealPlanOptionRes)
 			require.NoError(t, err)
@@ -141,8 +141,8 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 		// assert meal plan option list equality
 		actual, err := userClient.GetMealPlanOptions(ctx, &mealplanninggrpc.GetMealPlanOptionsRequest{
 			Filter:          nil,
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 		})
 		require.NotNil(t, actual)
 		require.NoError(t, err)
@@ -154,7 +154,7 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 			len(actual.Results),
 		)
 
-		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		assert.NoError(t, err)
 	})
 }

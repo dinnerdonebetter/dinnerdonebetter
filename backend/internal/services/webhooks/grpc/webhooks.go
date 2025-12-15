@@ -37,7 +37,7 @@ func (s *serviceImpl) CreateWebhook(ctx context.Context, request *webhookssvc.Cr
 
 	x := &webhookssvc.CreateWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertWebhookToGRPCWebhook(created),
 	}
@@ -65,7 +65,7 @@ func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *webho
 
 	x := &webhookssvc.AddWebhookTriggerEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(created),
 	}
@@ -77,7 +77,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.WebhookIDKey, request.WebhookID)
+	logger := s.logger.WithSpan(span).WithValue(keys.WebhookIDKey, request.WebhookId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -85,14 +85,14 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, sessionContextData.GetActiveAccountID())
+	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhook")
 	}
 
 	x := &webhookssvc.GetWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertWebhookToGRPCWebhook(webhook),
 	}
@@ -120,7 +120,7 @@ func (s *serviceImpl) GetWebhooks(ctx context.Context, request *webhookssvc.GetW
 
 	x := &webhookssvc.GetWebhooksResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(retrieved.Pagination, filter),
 	}
@@ -144,13 +144,13 @@ func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *webhookssvc.A
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookID, sessionContextData.ActiveAccountID); err != nil {
+	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookId, sessionContextData.ActiveAccountID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook")
 	}
 
 	x := &webhookssvc.ArchiveWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -161,15 +161,15 @@ func (s *serviceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *w
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookID).WithValue(keys.WebhookTriggerEventIDKey, request.WebhookTriggerEventID)
+	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookId).WithValue(keys.WebhookTriggerEventIDKey, request.WebhookTriggerEventId)
 
-	if err := s.webhookRepository.ArchiveWebhookTriggerEvent(ctx, request.WebhookID, request.WebhookTriggerEventID); err != nil {
+	if err := s.webhookRepository.ArchiveWebhookTriggerEvent(ctx, request.WebhookId, request.WebhookTriggerEventId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook trigger event")
 	}
 
 	x := &webhookssvc.ArchiveWebhookTriggerEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

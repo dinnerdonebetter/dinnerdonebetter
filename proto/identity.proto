@@ -9,49 +9,49 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 
 message DataCollection {
-  User User = 2;
-  repeated AccountInvitation ReceivedInvites = 6;
-  repeated AccountInvitation SentInvites = 7;
-  repeated Account Accounts = 10;
+  User user = 2;
+  repeated AccountInvitation received_invites = 6;
+  repeated AccountInvitation sent_invites = 7;
+  repeated Account accounts = 10;
 }
 
 // ArchiveUser
 message ArchiveUserRequest {
-  string userID = 1;
+  string user_id = 1;
 }
 
 message ArchiveUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveUserMembership
 message ArchiveUserMembershipRequest {
-  string accountID = 1;
-  string userID = 2;
+  string account_id = 1;
+  string user_id = 2;
 }
 
 message ArchiveUserMembershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CreateUser
 message CreateUserRequest {
-  UserRegistrationInput Input = 1;
+  UserRegistrationInput input = 1;
 }
 
 message CreateUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserCreationResponse Created = 2;
+  common.ResponseDetails response_details = 1;
+  UserCreationResponse created = 2;
 }
 
 // CreateAccount
 message CreateAccountRequest {
-  AccountCreationRequestInput Input = 1;
+  AccountCreationRequestInput input = 1;
 }
 
 message CreateAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Account Created = 2;
+  common.ResponseDetails response_details = 1;
+  Account created = 2;
 }
 
 // CreateAccountInvitation
@@ -60,446 +60,446 @@ message CreateAccountInvitationRequest {
 }
 
 message CreateAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AccountInvitation Created = 2;
+  common.ResponseDetails response_details = 1;
+  AccountInvitation created = 2;
 }
 
 // CancelAccountInvitation
 message CancelAccountInvitationRequest {
-  string accountInvitationID = 1;
+  string account_invitation_id = 1;
   AccountInvitationUpdateRequestInput input = 2;
 }
 
 message CancelAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveAccount
 message ArchiveAccountRequest {
-  string accountID = 1;
+  string account_id = 1;
 }
 
 message ArchiveAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // AcceptAccountInvitation
 message AcceptAccountInvitationRequest {
-  string accountInvitationID = 1;
+  string account_invitation_id = 1;
   AccountInvitationUpdateRequestInput input = 2;
 }
 
 message AcceptAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // GetAccount
 message GetAccountRequest {
-  string accountID = 1;
+  string account_id = 1;
 }
 
 message GetAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Account Result = 2;
+  common.ResponseDetails response_details = 1;
+  Account result = 2;
 }
 
 // GetAccountInvitation
 message GetAccountInvitationRequest {
-  string accountInvitationID = 1;
+  string account_invitation_id = 1;
 }
 
 message GetAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AccountInvitation Result = 2;
+  common.ResponseDetails response_details = 1;
+  AccountInvitation result = 2;
 }
 
 // GetAccounts
 message GetAccountsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetAccountsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Account Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Account results = 3;
 }
 
 // GetAccountsForUser
 message GetAccountsForUserRequest {
-  filtering.QueryFilter Filter = 1;
-  string UserID = 2;
+  filtering.QueryFilter filter = 1;
+  string user_id = 2;
 }
 
 message GetAccountsForUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Account Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Account results = 3;
 }
 
 // GetReceivedAccountInvitations
 message GetReceivedAccountInvitationsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetReceivedAccountInvitationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated AccountInvitation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated AccountInvitation results = 3;
 }
 
 // GetSentAccountInvitations
 message GetSentAccountInvitationsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetSentAccountInvitationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated AccountInvitation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated AccountInvitation results = 3;
 }
 
 // GetUser
 message GetUserRequest {
-  string userID = 1;
+  string user_id = 1;
 }
 
 message GetUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  User Result = 2;
+  common.ResponseDetails response_details = 1;
+  User result = 2;
 }
 
 // GetUsers
 message GetUsersRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetUsersResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated User Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated User results = 3;
 }
 
 // GetUsersForAccount
 message GetUsersForAccountRequest {
-  filtering.QueryFilter Filter = 1;
-  string AccountID = 2;
+  filtering.QueryFilter filter = 1;
+  string account_id = 2;
 }
 
 message GetUsersForAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated User Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated User results = 3;
 }
 
 // RejectAccountInvitation
 message RejectAccountInvitationRequest {
-  string accountInvitationID = 1;
+  string account_invitation_id = 1;
   AccountInvitationUpdateRequestInput input = 2;
 }
 
 message RejectAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // SearchForUsers
 message SearchForUsersRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForUsersResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated User Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated User results = 3;
 }
 
 // SetDefaultAccount
 message SetDefaultAccountRequest {
-  string AccountID = 1;
+  string account_id = 1;
 }
 
 message SetDefaultAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Success = 2;
+  common.ResponseDetails response_details = 1;
+  bool success = 2;
 }
 
 // TransferAccountOwnership
 message TransferAccountOwnershipRequest {
-  string accountID = 1;
+  string account_id = 1;
   AccountOwnershipTransferInput input = 2;
 }
 
 message TransferAccountOwnershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Success = 2;
+  common.ResponseDetails response_details = 1;
+  bool success = 2;
 }
 
 // UpdateAccount
 message UpdateAccountRequest {
-  string accountID = 1;
+  string account_id = 1;
   AccountUpdateRequestInput input = 2;
 }
 
 message UpdateAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // UpdateAccountMemberPermissions
 message UpdateAccountMemberPermissionsRequest {
-  string userID = 1;
+  string user_id = 1;
   ModifyUserPermissionsInput input = 2;
 }
 
 message UpdateAccountMemberPermissionsResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 message ModifyUserPermissionsInput {
-  string Reason = 1;
-  string NewRole = 2;
+  string reason = 1;
+  string new_role = 2;
 }
 
 // UpdateUserDetails
 message UserDetailsUpdateRequestInput {
-  string FirstName = 1;
-  string LastName = 2;
-  google.protobuf.Timestamp Birthday = 3;
-  string CurrentPassword = 4;
-  string TOTPToken = 5;
+  string first_name = 1;
+  string last_name = 2;
+  google.protobuf.Timestamp birthday = 3;
+  string current_password = 4;
+  string totp_token = 5;
 }
 
 message UpdateUserDetailsRequest {
-  UserDetailsUpdateRequestInput Input = 1;
+  UserDetailsUpdateRequestInput input = 1;
 }
 
 message UpdateUserDetailsResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // UpdateUserEmailAddress
 message UpdateUserEmailAddressRequest {
-  string NewEmailAddress = 1;
-  string CurrentPassword = 2;
-  string TOTPToken = 3;
+  string new_email_address = 1;
+  string current_password = 2;
+  string totp_token = 3;
 }
 message UpdateUserEmailAddressResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // UpdateUserUsername
 message UpdateUserUsernameRequest {
-  string NewUsername = 1;
+  string new_username = 1;
 }
 
 message UpdateUserUsernameResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // UploadUserAvatar
 message UploadUserAvatarRequest {
-  string Base64EncodedData = 1;
+  string base64_encoded_data = 1;
 }
 
 message UploadUserAvatarResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 message Account {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional string SubscriptionPlanID = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  optional float Longitude = 5;
-  optional float Latitude = 6;
-  string State = 7;
-  string ContactPhone = 8;
-  string City = 9;
-  string AddressLine1 = 10;
-  string ZipCode = 11;
-  string Country = 12;
-  string BillingStatus = 13;
-  string AddressLine2 = 14;
-  string PaymentProcessorCustomerID = 15;
-  string BelongsToUser = 16;
-  string ID = 17;
-  string Name = 18;
-  string WebhookEncryptionKey = 19;
-  repeated AccountUserMembershipWithUser Members = 20;
+  google.protobuf.Timestamp created_at = 1;
+  optional string subscription_plan_id = 2;
+  google.protobuf.Timestamp last_updated_at = 3;
+  google.protobuf.Timestamp archived_at = 4;
+  optional float longitude = 5;
+  optional float latitude = 6;
+  string state = 7;
+  string contact_phone = 8;
+  string city = 9;
+  string address_line1 = 10;
+  string zip_code = 11;
+  string country = 12;
+  string billing_status = 13;
+  string address_line2 = 14;
+  string payment_processor_customer_id = 15;
+  string belongs_to_user = 16;
+  string id = 17;
+  string name = 18;
+  string webhook_encryption_key = 19;
+  repeated AccountUserMembershipWithUser members = 20;
 }
 
 message AccountCreationRequestInput {
-  optional float Latitude = 1;
-  optional float Longitude = 2;
-  string Name = 3;
-  string ContactPhone = 4;
-  string AddressLine1 = 5;
-  string AddressLine2 = 6;
-  string City = 7;
-  string State = 8;
-  string ZipCode = 9;
-  string Country = 10;
-  string BelongsToUser = 11;
+  optional float latitude = 1;
+  optional float longitude = 2;
+  string name = 3;
+  string contact_phone = 4;
+  string address_line1 = 5;
+  string address_line2 = 6;
+  string city = 7;
+  string state = 8;
+  string zip_code = 9;
+  string country = 10;
+  string belongs_to_user = 11;
 }
 
 message AccountInvitation {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
-  optional string ToUser = 4;
-  string Status = 5;
-  string ToEmail = 6;
-  string StatusNote = 7;
-  string Token = 8;
-  string ID = 9;
-  string Note = 10;
-  string ToName = 11;
-  google.protobuf.Timestamp ExpiresAt = 12;
-  Account DestinationAccount = 13;
-  User FromUser = 14;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp last_updated_at = 2;
+  google.protobuf.Timestamp archived_at = 3;
+  optional string to_user = 4;
+  string status = 5;
+  string to_email = 6;
+  string status_note = 7;
+  string token = 8;
+  string id = 9;
+  string note = 10;
+  string to_name = 11;
+  google.protobuf.Timestamp expires_at = 12;
+  Account destination_account = 13;
+  User from_user = 14;
 }
 
 message AccountInvitationCreationRequestInput {
-  google.protobuf.Timestamp ExpiresAt = 1;
-  string Note = 2;
-  string ToEmail = 3;
-  string ToName = 4;
+  google.protobuf.Timestamp expires_at = 1;
+  string note = 2;
+  string to_email = 3;
+  string to_name = 4;
 }
 
 message AccountInvitationUpdateRequestInput {
-  string Token = 1;
-  string Note = 2;
+  string token = 1;
+  string note = 2;
 }
 
 message AccountOwnershipTransferInput {
-  string Reason = 1;
-  string CurrentOwner = 2;
-  string NewOwner = 3;
+  string reason = 1;
+  string current_owner = 2;
+  string new_owner = 3;
 }
 
 message AccountUpdateRequestInput {
-  optional string Name = 1;
-  optional string ContactPhone = 2;
-  optional string AddressLine1 = 3;
-  optional string AddressLine2 = 4;
-  optional string City = 5;
-  optional string State = 6;
-  optional string ZipCode = 7;
-  optional string Country = 8;
-  optional float Latitude = 9;
-  optional float Longitude = 10;
-  string BelongsToUser = 11;
+  optional string name = 1;
+  optional string contact_phone = 2;
+  optional string address_line1 = 3;
+  optional string address_line2 = 4;
+  optional string city = 5;
+  optional string state = 6;
+  optional string zip_code = 7;
+  optional string country = 8;
+  optional float latitude = 9;
+  optional float longitude = 10;
+  string belongs_to_user = 11;
 }
 
 message AccountUserMembership {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string BelongsToUser = 5;
-  string BelongsToAccount = 6;
-  string AccountRole = 7;
-  bool DefaultAccount = 8;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp last_updated_at = 2;
+  google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string belongs_to_user = 5;
+  string belongs_to_account = 6;
+  string account_role = 7;
+  bool default_account = 8;
 }
 
 message AccountUserMembershipWithUser {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  User BelongsToUser = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  string ID = 5;
-  string BelongsToAccount = 6;
-  string AccountRole = 7;
-  bool DefaultAccount = 8;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp last_updated_at = 2;
+  User belongs_to_user = 3;
+  google.protobuf.Timestamp archived_at = 4;
+  string id = 5;
+  string belongs_to_account = 6;
+  string account_role = 7;
+  bool default_account = 8;
 }
 
 message User {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp PasswordLastChangedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp LastAcceptedTermsOfService = 4;
-  google.protobuf.Timestamp LastAcceptedPrivacyPolicy = 5;
-  google.protobuf.Timestamp TwoFactorSecretVerifiedAt = 6;
-  optional string AvatarSrc = 7;
-  google.protobuf.Timestamp Birthday = 8;
-  google.protobuf.Timestamp ArchivedAt = 9;
-  string AccountStatusExplanation = 10;
-  string TwoFactorSecret = 11;
-  string HashedPassword = 12;
-  string ID = 13;
-  string AccountStatus = 14;
-  string Username = 15;
-  string FirstName = 16;
-  string LastName = 17;
-  string EmailAddress = 18;
-  google.protobuf.Timestamp EmailAddressVerifiedAt = 19;
-  string ServiceRole = 20;
-  bool RequiresPasswordChange = 21;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp password_last_changed_at = 2;
+  google.protobuf.Timestamp last_updated_at = 3;
+  google.protobuf.Timestamp last_accepted_terms_of_service = 4;
+  google.protobuf.Timestamp last_accepted_privacy_policy = 5;
+  google.protobuf.Timestamp two_factor_secret_verified_at = 6;
+  optional string avatar_src = 7;
+  google.protobuf.Timestamp birthday = 8;
+  google.protobuf.Timestamp archived_at = 9;
+  string account_status_explanation = 10;
+  string two_factor_secret = 11;
+  string hashed_password = 12;
+  string id = 13;
+  string account_status = 14;
+  string username = 15;
+  string first_name = 16;
+  string last_name = 17;
+  string email_address = 18;
+  google.protobuf.Timestamp email_address_verified_at = 19;
+  string service_role = 20;
+  bool requires_password_change = 21;
 }
 
 message UserAccountStatusUpdateInput {
-  string NewStatus = 1;
-  string Reason = 2;
-  string TargetUserID = 3;
+  string new_status = 1;
+  string reason = 2;
+  string target_user_id = 3;
 }
 
 message UserCreationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  google.protobuf.Timestamp CreatedAt = 2;
-  google.protobuf.Timestamp Birthday = 3;
-  string Username = 4;
-  string EmailAddress = 5;
-  string TwoFactorQRCode = 6;
-  string CreatedUserID = 7;
-  string AccountStatus = 8;
-  string TwoFactorSecret = 9;
-  string FirstName = 10;
-  string LastName = 11;
+  common.ResponseDetails response_details = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp birthday = 3;
+  string username = 4;
+  string email_address = 5;
+  string two_factor_qr_code = 6;
+  string created_user_id = 7;
+  string account_status = 8;
+  string two_factor_secret = 9;
+  string first_name = 10;
+  string last_name = 11;
 }
 
 message UserDataAggregationRequest {
-  string RequestID = 1;
-  string ReportID = 2;
-  string UserID = 3;
+  string request_id = 1;
+  string report_id = 2;
+  string user_id = 3;
 }
 
 message UserDetailsUpdateRequest {
-  string FirstName = 1;
-  string LastName = 2;
-  google.protobuf.Timestamp Birthday = 3;
-  string CurrentPassword = 4;
-  string TOTPToken = 5;
+  string first_name = 1;
+  string last_name = 2;
+  google.protobuf.Timestamp birthday = 3;
+  string current_password = 4;
+  string totp_token = 5;
 }
 
 message UserRegistrationInput {
-  google.protobuf.Timestamp Birthday = 1;
-  string Password = 2;
-  string EmailAddress = 3;
-  string InvitationToken = 4;
-  string InvitationID = 5;
-  string Username = 6;
-  string FirstName = 7;
-  string LastName = 8;
-  string AccountName = 9;
-  bool AcceptedTOS = 10;
-  bool AcceptedPrivacyPolicy = 11;
+  google.protobuf.Timestamp birthday = 1;
+  string password = 2;
+  string email_address = 3;
+  string invitation_token = 4;
+  string invitation_id = 5;
+  string username = 6;
+  string first_name = 7;
+  string last_name = 8;
+  string account_name = 9;
+  bool accepted_tos = 10;
+  bool accepted_privacy_policy = 11;
 }
 
 message UsernameUpdateRequest {
-  string NewUsername = 1;
-  string CurrentPassword = 2;
-  string TOTPToken = 3;
+  string new_username = 1;
+  string current_password = 2;
+  string totp_token = 3;
 }
 
 // AdminUpdateUserStatus
 message AdminUpdateUserStatusRequest {
-  string TargetUserID = 1;
-  string NewStatus = 2;
-  string Reason = 3;
+  string target_user_id = 1;
+  string new_status = 2;
+  string reason = 3;
 }
 
 message AdminUpdateUserStatusResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 service IdentityService {

@@ -55,9 +55,9 @@ var getRecipeStepCompletionConditionTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipeStepCompletionCondition() mcp.ToolHandlerFor[*GetRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
 		result, err := h.client.GetRecipeStepCompletionCondition(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionRequest{
-			RecipeID:                        x.RecipeID,
-			RecipeStepID:                    x.RecipeStepID,
-			RecipeStepCompletionConditionID: x.RecipeStepCompletionConditionID,
+			RecipeId:                        x.RecipeID,
+			RecipeStepId:                    x.RecipeStepID,
+			RecipeStepCompletionConditionId: x.RecipeStepCompletionConditionID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -95,8 +95,8 @@ var getRecipeStepCompletionConditionsTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipeStepCompletionConditions() mcp.ToolHandlerFor[*GetRecipeStepCompletionConditionsInvocation, *GetRecipeStepCompletionConditionsResult] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepCompletionConditionsInvocation) (*mcp.CallToolResult, *GetRecipeStepCompletionConditionsResult, error) {
 		results, err := h.client.GetRecipeStepCompletionConditions(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionsRequest{
-			RecipeID:     x.RecipeID,
-			RecipeStepID: x.RecipeStepID,
+			RecipeId:     x.RecipeID,
+			RecipeStepId: x.RecipeStepID,
 			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -140,8 +140,8 @@ var recipeStepCompletionConditionCreationTool = &mcp.Tool{
 func (h *mcpToolManager) CreateRecipeStepCompletionCondition() mcp.ToolHandlerFor[*CreateRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
 		result, err := h.client.CreateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.CreateRecipeStepCompletionConditionRequest{
-			RecipeID:     x.RecipeID,
-			RecipeStepID: x.RecipeStepID,
+			RecipeId:     x.RecipeID,
+			RecipeStepId: x.RecipeStepID,
 			Input:        mealplanningconverters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(x.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput),
 		})
 		if err != nil {
@@ -179,9 +179,9 @@ var recipeStepCompletionConditionUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateRecipeStepCompletionCondition() mcp.ToolHandlerFor[*UpdateRecipeStepCompletionConditionInvocation, *mealplanning.RecipeStepCompletionCondition] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeStepCompletionConditionInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepCompletionCondition, error) {
 		result, err := h.client.UpdateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.UpdateRecipeStepCompletionConditionRequest{
-			RecipeID:                        x.RecipeID,
-			RecipeStepID:                    x.RecipeStepID,
-			RecipeStepCompletionConditionID: x.RecipeStepCompletionConditionID,
+			RecipeId:                        x.RecipeID,
+			RecipeStepId:                    x.RecipeStepID,
+			RecipeStepCompletionConditionId: x.RecipeStepCompletionConditionID,
 			Input:                           mealplanningconverters.ConvertRecipeStepCompletionConditionUpdateRequestInputToGRPCRecipeStepCompletionConditionUpdateRequestInput(x.RecipeStepCompletionConditionUpdateRequestInput),
 		})
 		if err != nil {

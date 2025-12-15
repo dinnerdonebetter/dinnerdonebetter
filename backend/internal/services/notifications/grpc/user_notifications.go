@@ -9,6 +9,7 @@ import (
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -18,21 +19,21 @@ func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notifica
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
+	logger := s.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, request.UserNotificationId)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
-	notification, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
+	notification, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
 	x := &notificationssvc.GetUserNotificationResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertUserNotificationToGRPCUserNotification(notification),
 	}
@@ -62,7 +63,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	x := &notificationssvc.GetUserNotificationsResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(notifs.Pagination, filter),
 	}
@@ -84,26 +85,31 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
-	logger = logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
+	logger = logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationId)
 
-	existing, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
+	existing, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
-	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: request.Input.Status})
+	var newStatus *string
+	if request.Input.Status != nil {
+		newStatus = pointer.To(converters.ConvertUserNotificationStatusToString(*request.Input.Status))
+	}
+
+	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: newStatus})
 	if err = s.notificationsRepository.UpdateUserNotification(ctx, existing); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}
 
-	updated, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
+	updated, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
 	x := &notificationssvc.UpdateUserNotificationResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertUserNotificationToGRPCUserNotification(updated),
 	}

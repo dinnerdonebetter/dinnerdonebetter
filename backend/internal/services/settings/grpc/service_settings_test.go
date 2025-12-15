@@ -98,7 +98,7 @@ func TestServiceImpl_CreateServiceSetting(t *testing.T) {
 		assert.NotNil(t, actual)
 		assert.NotNil(t, actual.ResponseDetails)
 		assert.NotNil(t, actual.Created)
-		assert.Equal(t, exampleServiceSetting.ID, actual.Created.ID)
+		assert.Equal(t, exampleServiceSetting.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, settingsRepo)
 	})
@@ -170,7 +170,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.GetServiceSettingRequest{
-			ServiceSettingID: exampleServiceSetting.ID,
+			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
 		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(exampleServiceSetting, nil)
@@ -181,7 +181,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 		assert.NotNil(t, actual)
 		assert.NotNil(t, actual.ResponseDetails)
 		assert.NotNil(t, actual.Result)
-		assert.Equal(t, exampleServiceSetting.ID, actual.Result.ID)
+		assert.Equal(t, exampleServiceSetting.ID, actual.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, settingsRepo)
 	})
@@ -195,7 +195,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.GetServiceSettingRequest{
-			ServiceSettingID: exampleServiceSetting.ID,
+			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
 		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
@@ -334,7 +334,7 @@ func TestServiceImpl_ArchiveServiceSetting(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.ArchiveServiceSettingRequest{
-			ServiceSettingID: exampleServiceSetting.ID,
+			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
 		settingsRepo.On("ArchiveServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(nil)
@@ -357,7 +357,7 @@ func TestServiceImpl_ArchiveServiceSetting(t *testing.T) {
 		service, settingsRepo := buildTestService(t)
 
 		request := &settingssvc.ArchiveServiceSettingRequest{
-			ServiceSettingID: exampleServiceSetting.ID,
+			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
 		settingsRepo.On("ArchiveServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(errors.New("repository error"))

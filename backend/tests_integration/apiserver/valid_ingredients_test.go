@@ -57,7 +57,7 @@ func createValidIngredientForTest(t *testing.T) *mealplanning.ValidIngredient {
 	checkValidIngredientEquality(t, exampleValidIngredient, converted)
 
 	retrieved, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{
-		ValidIngredientID: converted.ID,
+		ValidIngredientId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -136,7 +136,7 @@ func TestValidIngredients_Reading(T *testing.T) {
 
 		created := createValidIngredientForTest(t)
 
-		retrieved, err := testClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		retrieved, err := testClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidIngredientToValidIngredient(retrieved.Result)
@@ -152,7 +152,7 @@ func TestValidIngredients_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		_, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -160,7 +160,7 @@ func TestValidIngredients_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: nonexistentID})
+		_, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -178,7 +178,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
-			ValidIngredientID: created.ID,
+			ValidIngredientId: created.ID,
 			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -202,7 +202,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
-			ValidIngredientID: created.ID,
+			ValidIngredientId: created.ID,
 			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -226,7 +226,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		created := createValidIngredientForTest(t)
 
 		response, err := testClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
-			ValidIngredientID: created.ID,
+			ValidIngredientId: created.ID,
 			Input: &mealplanningsvc.ValidIngredientUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -245,10 +245,10 @@ func TestValidIngredients_Archiving(T *testing.T) {
 
 		created := createValidIngredientForTest(t)
 
-		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		x, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -261,7 +261,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		_, err := c.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -269,7 +269,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: nonexistentID})
+		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -280,7 +280,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 		created := createValidIngredientForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		_, err := testClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientId: created.ID})
 		assert.Error(t, err)
 	})
 }

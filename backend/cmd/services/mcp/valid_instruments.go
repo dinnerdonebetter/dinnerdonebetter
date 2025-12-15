@@ -45,7 +45,7 @@ var getValidInstrumentTool = &mcp.Tool{
 func (h *mcpToolManager) GetValidInstrument() mcp.ToolHandlerFor[*GetValidInstrumentInvocation, *mealplanning.ValidInstrument] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
 		result, err := h.client.GetValidInstrument(ctx, &mealplanninggrpc.GetValidInstrumentRequest{
-			ValidInstrumentID: x.ValidInstrumentID,
+			ValidInstrumentId: x.ValidInstrumentID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -160,7 +160,7 @@ var validInstrumentUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateValidInstrument() mcp.ToolHandlerFor[*UpdateValidInstrumentInvocation, *mealplanning.ValidInstrument] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.ValidInstrument, error) {
 		result, err := h.client.UpdateValidInstrument(ctx, &mealplanninggrpc.UpdateValidInstrumentRequest{
-			ValidInstrumentID: x.ValidInstrumentID,
+			ValidInstrumentId: x.ValidInstrumentID,
 			Input:             mealplanningconverters.ConvertValidInstrumentUpdateRequestInputToGRPCValidInstrumentUpdateRequestInput(x.ValidInstrumentUpdateRequestInput),
 		})
 		if err != nil {

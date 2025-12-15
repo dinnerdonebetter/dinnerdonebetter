@@ -74,7 +74,7 @@ func (s serviceImpl) PublishArbitraryQueueMessage(ctx context.Context, request *
 
 	x := &settingssvc.PublishArbitraryQueueMessageResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Success: true,
 	}

@@ -26,7 +26,7 @@ func createServiceSettingForTest(t *testing.T) *settings.ServiceSetting {
 	converted := settingsconverters.ConvertGRPCServiceSettingToServiceSetting(createdServiceSetting.Created)
 	assertRoughEquality(t, exampleServiceSetting, converted, defaultIgnoredFields("ID")...)
 
-	res, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: createdServiceSetting.Created.ID})
+	res, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: createdServiceSetting.Created.Id})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
@@ -104,7 +104,7 @@ func TestServiceSettings_Reading(T *testing.T) {
 
 		created := createServiceSettingForTest(t)
 
-		retrieved, err := testClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: created.ID})
+		retrieved, err := testClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.NoError(t, err)
 
 		converted := settingsconverters.ConvertGRPCServiceSettingToServiceSetting(retrieved.Result)
@@ -120,7 +120,7 @@ func TestServiceSettings_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: created.ID})
+		_, err := c.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -128,7 +128,7 @@ func TestServiceSettings_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: nonexistentID})
+		_, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -142,10 +142,10 @@ func TestServiceSettings_Archiving(T *testing.T) {
 
 		created := createServiceSettingForTest(t)
 
-		_, err := adminClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingID: created.ID})
+		_, err := adminClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingID: created.ID})
+		x, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -158,7 +158,7 @@ func TestServiceSettings_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingID: created.ID})
+		_, err := c.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -166,7 +166,7 @@ func TestServiceSettings_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingID: nonexistentID})
+		_, err := adminClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -177,7 +177,7 @@ func TestServiceSettings_Archiving(T *testing.T) {
 		created := createServiceSettingForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingID: created.ID})
+		_, err := testClient.ArchiveServiceSetting(ctx, &settingssvc.ArchiveServiceSettingRequest{ServiceSettingId: created.ID})
 		assert.Error(t, err)
 	})
 }

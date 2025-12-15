@@ -6,17 +6,17 @@ import "common.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops";
 
-service InternalOperations {
-  rpc PublishArbitraryQueueMessage(PublishArbitraryQueueMessageRequest) returns (PublishArbitraryQueueMessageResponse);
-}
-
 // PublishArbitraryQueueMessage
 message PublishArbitraryQueueMessageRequest {
-  string QueueName = 1;
-  string Body = 2;
+  string queue_name = 1;
+  string body = 2;
 }
 
 message PublishArbitraryQueueMessageResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Success = 2;
+  common.ResponseDetails response_details = 1;
+  bool success = 2;
+}
+
+service InternalOperations {
+  rpc PublishArbitraryQueueMessage(PublishArbitraryQueueMessageRequest) returns (PublishArbitraryQueueMessageResponse);
 }

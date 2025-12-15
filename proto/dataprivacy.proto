@@ -25,35 +25,35 @@ service DataPrivacyService {
 message AggregateUserDataReportRequest {}
 
 message AggregateUserDataReportResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  string ReportID = 2;
+  common.ResponseDetails response_details = 1;
+  string report_id = 2;
 }
 
 // DestroyAllUserData
 message DestroyAllUserDataRequest {}
 
 message DestroyAllUserDataResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Successful = 2;
+  common.ResponseDetails response_details = 1;
+  bool successful = 2;
 }
 
 // FetchUserDataReport
 message FetchUserDataReportRequest {
-  string UserDataAggregationReportID = 1;
+  string user_data_aggregation_report_id = 1;
 }
 
 message FetchUserDataReportResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserDataCollection UserDataCollection = 2;
+  common.ResponseDetails response_details = 1;
+  UserDataCollection user_data_collection = 2;
 }
 
 // END requests and responses
 
 message UserDataCollection {
-  string ReportID = 1;
-  identity.DataCollection IdentityDataCollection = 2;
-  audit.DataCollection AuditDataCollection = 3;
-  settings.DataCollection SettingsDataCollection = 4;
-  webhooks.DataCollection WebhooksDataCollection = 5;
-  mealplanning.DataCollection MealPlanningDataCollection = 6;
+  string report_id = 1;
+  identity.DataCollection identity_data_collection = 2;
+  audit.DataCollection audit_data_collection = 3;
+  settings.DataCollection settings_data_collection = 4;
+  webhooks.DataCollection webhooks_data_collection = 5;
+  mealplanning.DataCollection meal_planning_data_collection = 6;
 }

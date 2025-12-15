@@ -403,7 +403,7 @@ fileprivate let _protobuf_package = "oauth"
 
 extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -437,7 +437,7 @@ extension Oauth_CreateOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateOAuth2ClientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -476,7 +476,7 @@ extension Oauth_CreateOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Oauth_ArchiveOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}oauth2_client_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -506,7 +506,7 @@ extension Oauth_ArchiveOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveOAuth2ClientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -540,7 +540,7 @@ extension Oauth_ArchiveOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobu
 
 extension Oauth_GetOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}OAuth2ClientID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}oauth2_client_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -570,7 +570,7 @@ extension Oauth_GetOAuth2ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -609,7 +609,7 @@ extension Oauth_GetOAuth2ClientResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -643,7 +643,7 @@ extension Oauth_GetOAuth2ClientsRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetOAuth2ClientsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -687,7 +687,7 @@ extension Oauth_GetOAuth2ClientsResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".OAuth2Client"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}ArchivedAt\0\u{1}Name\0\u{1}Description\0\u{1}ClientID\0\u{1}ID\0\u{1}ClientSecret\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{1}name\0\u{1}description\0\u{3}client_id\0\u{1}id\0\u{3}client_secret\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -751,7 +751,7 @@ extension Oauth_OAuth2Client: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
 extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}Description\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -786,7 +786,7 @@ extension Oauth_OAuth2ClientCreationRequestInput: SwiftProtobuf.Message, SwiftPr
 
 extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientCreationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ClientID\0\u{1}ClientSecret\0\u{1}Name\0\u{1}Description\0\u{1}ID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}client_id\0\u{3}client_secret\0\u{1}name\0\u{1}description\0\u{1}id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -836,7 +836,7 @@ extension Oauth_OAuth2ClientCreationResponse: SwiftProtobuf.Message, SwiftProtob
 
 extension Oauth_OAuth2ClientToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".OAuth2ClientToken"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RefreshCreatedAt\0\u{1}AccessCreatedAt\0\u{1}CodeCreatedAt\0\u{1}RedirectURI\0\u{1}Scope\0\u{1}Code\0\u{1}CodeChallenge\0\u{1}CodeChallengeMethod\0\u{1}BelongsToUser\0\u{1}Access\0\u{1}ClientID\0\u{1}Refresh\0\u{1}ID\0\u{1}CodeExpiresAt\0\u{1}AccessExpiresAt\0\u{1}RefreshExpiresAt\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}refresh_created_at\0\u{3}access_created_at\0\u{3}code_created_at\0\u{3}redirect_uri\0\u{1}scope\0\u{1}code\0\u{3}code_challenge\0\u{3}code_challenge_method\0\u{3}belongs_to_user\0\u{1}access\0\u{3}client_id\0\u{1}refresh\0\u{1}id\0\u{3}code_expires_at\0\u{3}access_expires_at\0\u{3}refresh_expires_at\0")
 
   fileprivate class _StorageClass {
     var _refreshCreatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil

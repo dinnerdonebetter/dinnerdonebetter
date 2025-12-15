@@ -1178,7 +1178,7 @@ public struct Identity_UserDetailsUpdateRequestInput: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1239,7 +1239,7 @@ public struct Identity_UpdateUserEmailAddressRequest: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2119,7 +2119,7 @@ public struct Identity_UserCreationResponse: Sendable {
 
   public var emailAddress: String = String()
 
-  public var twoFactorQrcode: String = String()
+  public var twoFactorQrCode: String = String()
 
   public var createdUserID: String = String()
 
@@ -2176,7 +2176,7 @@ public struct Identity_UserDetailsUpdateRequest: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2235,7 +2235,7 @@ public struct Identity_UsernameUpdateRequest: Sendable {
 
   public var currentPassword: String = String()
 
-  public var totptoken: String = String()
+  public var totpToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2286,7 +2286,7 @@ fileprivate let _protobuf_package = "identity"
 
 extension Identity_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}User\0\u{2}\u{4}ReceivedInvites\0\u{1}SentInvites\0\u{2}\u{3}Accounts\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}user\0\u{4}\u{4}received_invites\0\u{3}sent_invites\0\u{2}\u{3}accounts\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2335,7 +2335,7 @@ extension Identity_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Identity_ArchiveUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2365,7 +2365,7 @@ extension Identity_ArchiveUserRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Identity_ArchiveUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2399,7 +2399,7 @@ extension Identity_ArchiveUserResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Identity_ArchiveUserMembershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserMembershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountID\0\u{1}userID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2434,7 +2434,7 @@ extension Identity_ArchiveUserMembershipRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Identity_ArchiveUserMembershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveUserMembershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2468,7 +2468,7 @@ extension Identity_ArchiveUserMembershipResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_CreateUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2502,7 +2502,7 @@ extension Identity_CreateUserRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Identity_CreateUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateUserResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2541,7 +2541,7 @@ extension Identity_CreateUserResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Identity_CreateAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2575,7 +2575,7 @@ extension Identity_CreateAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Identity_CreateAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2648,7 +2648,7 @@ extension Identity_CreateAccountInvitationRequest: SwiftProtobuf.Message, SwiftP
 
 extension Identity_CreateAccountInvitationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateAccountInvitationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2687,7 +2687,7 @@ extension Identity_CreateAccountInvitationResponse: SwiftProtobuf.Message, Swift
 
 extension Identity_CancelAccountInvitationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CancelAccountInvitationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInvitationID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_invitation_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2726,7 +2726,7 @@ extension Identity_CancelAccountInvitationRequest: SwiftProtobuf.Message, SwiftP
 
 extension Identity_CancelAccountInvitationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CancelAccountInvitationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2760,7 +2760,7 @@ extension Identity_CancelAccountInvitationResponse: SwiftProtobuf.Message, Swift
 
 extension Identity_ArchiveAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2790,7 +2790,7 @@ extension Identity_ArchiveAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_ArchiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2824,7 +2824,7 @@ extension Identity_ArchiveAccountResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Identity_AcceptAccountInvitationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AcceptAccountInvitationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInvitationID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_invitation_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2863,7 +2863,7 @@ extension Identity_AcceptAccountInvitationRequest: SwiftProtobuf.Message, SwiftP
 
 extension Identity_AcceptAccountInvitationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AcceptAccountInvitationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2897,7 +2897,7 @@ extension Identity_AcceptAccountInvitationResponse: SwiftProtobuf.Message, Swift
 
 extension Identity_GetAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2927,7 +2927,7 @@ extension Identity_GetAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Identity_GetAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2966,7 +2966,7 @@ extension Identity_GetAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Identity_GetAccountInvitationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInvitationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInvitationID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_invitation_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2996,7 +2996,7 @@ extension Identity_GetAccountInvitationRequest: SwiftProtobuf.Message, SwiftProt
 
 extension Identity_GetAccountInvitationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountInvitationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3035,7 +3035,7 @@ extension Identity_GetAccountInvitationResponse: SwiftProtobuf.Message, SwiftPro
 
 extension Identity_GetAccountsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3069,7 +3069,7 @@ extension Identity_GetAccountsRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Identity_GetAccountsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3113,7 +3113,7 @@ extension Identity_GetAccountsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Identity_GetAccountsForUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountsForUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}UserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3152,7 +3152,7 @@ extension Identity_GetAccountsForUserRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_GetAccountsForUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAccountsForUserResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3196,7 +3196,7 @@ extension Identity_GetAccountsForUserResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_GetReceivedAccountInvitationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetReceivedAccountInvitationsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3230,7 +3230,7 @@ extension Identity_GetReceivedAccountInvitationsRequest: SwiftProtobuf.Message, 
 
 extension Identity_GetReceivedAccountInvitationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetReceivedAccountInvitationsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3274,7 +3274,7 @@ extension Identity_GetReceivedAccountInvitationsResponse: SwiftProtobuf.Message,
 
 extension Identity_GetSentAccountInvitationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetSentAccountInvitationsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3308,7 +3308,7 @@ extension Identity_GetSentAccountInvitationsRequest: SwiftProtobuf.Message, Swif
 
 extension Identity_GetSentAccountInvitationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetSentAccountInvitationsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3352,7 +3352,7 @@ extension Identity_GetSentAccountInvitationsResponse: SwiftProtobuf.Message, Swi
 
 extension Identity_GetUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3382,7 +3382,7 @@ extension Identity_GetUserRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Identity_GetUserResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Result\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3421,7 +3421,7 @@ extension Identity_GetUserResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Identity_GetUsersRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUsersRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3455,7 +3455,7 @@ extension Identity_GetUsersRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Identity_GetUsersResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUsersResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3499,7 +3499,7 @@ extension Identity_GetUsersResponse: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Identity_GetUsersForAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUsersForAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}AccountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3538,7 +3538,7 @@ extension Identity_GetUsersForAccountRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_GetUsersForAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUsersForAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3582,7 +3582,7 @@ extension Identity_GetUsersForAccountResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_RejectAccountInvitationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RejectAccountInvitationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountInvitationID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_invitation_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3621,7 +3621,7 @@ extension Identity_RejectAccountInvitationRequest: SwiftProtobuf.Message, SwiftP
 
 extension Identity_RejectAccountInvitationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RejectAccountInvitationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3655,7 +3655,7 @@ extension Identity_RejectAccountInvitationResponse: SwiftProtobuf.Message, Swift
 
 extension Identity_SearchForUsersRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForUsersRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Filter\0\u{1}Query\0\u{1}UseSearchService\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{1}query\0\u{3}use_search_service\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3699,7 +3699,7 @@ extension Identity_SearchForUsersRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_SearchForUsersResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SearchForUsersResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Pagination\0\u{1}Results\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3743,7 +3743,7 @@ extension Identity_SearchForUsersResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Identity_SetDefaultAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetDefaultAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}AccountID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3773,7 +3773,7 @@ extension Identity_SetDefaultAccountRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Identity_SetDefaultAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetDefaultAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Success\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}success\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3812,7 +3812,7 @@ extension Identity_SetDefaultAccountResponse: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_TransferAccountOwnershipRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TransferAccountOwnershipRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3851,7 +3851,7 @@ extension Identity_TransferAccountOwnershipRequest: SwiftProtobuf.Message, Swift
 
 extension Identity_TransferAccountOwnershipResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TransferAccountOwnershipResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Success\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}success\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3890,7 +3890,7 @@ extension Identity_TransferAccountOwnershipResponse: SwiftProtobuf.Message, Swif
 
 extension Identity_UpdateAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}accountID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3929,7 +3929,7 @@ extension Identity_UpdateAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Identity_UpdateAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3963,7 +3963,7 @@ extension Identity_UpdateAccountResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_UpdateAccountMemberPermissionsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountMemberPermissionsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userID\0\u{1}input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4002,7 +4002,7 @@ extension Identity_UpdateAccountMemberPermissionsRequest: SwiftProtobuf.Message,
 
 extension Identity_UpdateAccountMemberPermissionsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateAccountMemberPermissionsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4036,7 +4036,7 @@ extension Identity_UpdateAccountMemberPermissionsResponse: SwiftProtobuf.Message
 
 extension Identity_ModifyUserPermissionsInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ModifyUserPermissionsInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Reason\0\u{1}NewRole\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0\u{3}new_role\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4071,7 +4071,7 @@ extension Identity_ModifyUserPermissionsInput: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_UserDetailsUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserDetailsUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}FirstName\0\u{1}LastName\0\u{1}Birthday\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}first_name\0\u{3}last_name\0\u{1}birthday\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4083,7 +4083,7 @@ extension Identity_UserDetailsUpdateRequestInput: SwiftProtobuf.Message, SwiftPr
       case 2: try { try decoder.decodeSingularStringField(value: &self.lastName) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._birthday) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -4106,8 +4106,8 @@ extension Identity_UserDetailsUpdateRequestInput: SwiftProtobuf.Message, SwiftPr
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 4)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 5)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4117,7 +4117,7 @@ extension Identity_UserDetailsUpdateRequestInput: SwiftProtobuf.Message, SwiftPr
     if lhs.lastName != rhs.lastName {return false}
     if lhs._birthday != rhs._birthday {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4125,7 +4125,7 @@ extension Identity_UserDetailsUpdateRequestInput: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_UpdateUserDetailsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserDetailsRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Input\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4159,7 +4159,7 @@ extension Identity_UpdateUserDetailsRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Identity_UpdateUserDetailsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserDetailsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4193,7 +4193,7 @@ extension Identity_UpdateUserDetailsResponse: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_UpdateUserEmailAddressRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserEmailAddressRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewEmailAddress\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_email_address\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4203,7 +4203,7 @@ extension Identity_UpdateUserEmailAddressRequest: SwiftProtobuf.Message, SwiftPr
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.newEmailAddress) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -4216,8 +4216,8 @@ extension Identity_UpdateUserEmailAddressRequest: SwiftProtobuf.Message, SwiftPr
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 2)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 3)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4225,7 +4225,7 @@ extension Identity_UpdateUserEmailAddressRequest: SwiftProtobuf.Message, SwiftPr
   public static func ==(lhs: Identity_UpdateUserEmailAddressRequest, rhs: Identity_UpdateUserEmailAddressRequest) -> Bool {
     if lhs.newEmailAddress != rhs.newEmailAddress {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4233,7 +4233,7 @@ extension Identity_UpdateUserEmailAddressRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_UpdateUserEmailAddressResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserEmailAddressResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4267,7 +4267,7 @@ extension Identity_UpdateUserEmailAddressResponse: SwiftProtobuf.Message, SwiftP
 
 extension Identity_UpdateUserUsernameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserUsernameRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewUsername\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_username\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4297,7 +4297,7 @@ extension Identity_UpdateUserUsernameRequest: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_UpdateUserUsernameResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateUserUsernameResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4331,7 +4331,7 @@ extension Identity_UpdateUserUsernameResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_UploadUserAvatarRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UploadUserAvatarRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Base64EncodedData\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}base64_encoded_data\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4361,7 +4361,7 @@ extension Identity_UploadUserAvatarRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Identity_UploadUserAvatarResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UploadUserAvatarResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4395,7 +4395,7 @@ extension Identity_UploadUserAvatarResponse: SwiftProtobuf.Message, SwiftProtobu
 
 extension Identity_Account: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Account"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}SubscriptionPlanID\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}Longitude\0\u{1}Latitude\0\u{1}State\0\u{1}ContactPhone\0\u{1}City\0\u{1}AddressLine1\0\u{1}ZipCode\0\u{1}Country\0\u{1}BillingStatus\0\u{1}AddressLine2\0\u{1}PaymentProcessorCustomerID\0\u{1}BelongsToUser\0\u{1}ID\0\u{1}Name\0\u{1}WebhookEncryptionKey\0\u{1}Members\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}subscription_plan_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}longitude\0\u{1}latitude\0\u{1}state\0\u{3}contact_phone\0\u{1}city\0\u{3}address_line1\0\u{3}zip_code\0\u{1}country\0\u{3}billing_status\0\u{3}address_line2\0\u{3}payment_processor_customer_id\0\u{3}belongs_to_user\0\u{1}id\0\u{1}name\0\u{3}webhook_encryption_key\0\u{1}members\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -4598,7 +4598,7 @@ extension Identity_Account: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
 extension Identity_AccountCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Latitude\0\u{1}Longitude\0\u{1}Name\0\u{1}ContactPhone\0\u{1}AddressLine1\0\u{1}AddressLine2\0\u{1}City\0\u{1}State\0\u{1}ZipCode\0\u{1}Country\0\u{1}BelongsToUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}latitude\0\u{1}longitude\0\u{1}name\0\u{3}contact_phone\0\u{3}address_line1\0\u{3}address_line2\0\u{1}city\0\u{1}state\0\u{3}zip_code\0\u{1}country\0\u{3}belongs_to_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4682,7 +4682,7 @@ extension Identity_AccountCreationRequestInput: SwiftProtobuf.Message, SwiftProt
 
 extension Identity_AccountInvitation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInvitation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ToUser\0\u{1}Status\0\u{1}ToEmail\0\u{1}StatusNote\0\u{1}Token\0\u{1}ID\0\u{1}Note\0\u{1}ToName\0\u{1}ExpiresAt\0\u{1}DestinationAccount\0\u{1}FromUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}to_user\0\u{1}status\0\u{3}to_email\0\u{3}status_note\0\u{1}token\0\u{1}id\0\u{1}note\0\u{3}to_name\0\u{3}expires_at\0\u{3}destination_account\0\u{3}from_user\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -4843,7 +4843,7 @@ extension Identity_AccountInvitation: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Identity_AccountInvitationCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInvitationCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ExpiresAt\0\u{1}Note\0\u{1}ToEmail\0\u{1}ToName\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}expires_at\0\u{1}note\0\u{3}to_email\0\u{3}to_name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4892,7 +4892,7 @@ extension Identity_AccountInvitationCreationRequestInput: SwiftProtobuf.Message,
 
 extension Identity_AccountInvitationUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInvitationUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Token\0\u{1}Note\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0\u{1}note\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4927,7 +4927,7 @@ extension Identity_AccountInvitationUpdateRequestInput: SwiftProtobuf.Message, S
 
 extension Identity_AccountOwnershipTransferInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountOwnershipTransferInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Reason\0\u{1}CurrentOwner\0\u{1}NewOwner\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0\u{3}current_owner\0\u{3}new_owner\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4967,7 +4967,7 @@ extension Identity_AccountOwnershipTransferInput: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_AccountUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Name\0\u{1}ContactPhone\0\u{1}AddressLine1\0\u{1}AddressLine2\0\u{1}City\0\u{1}State\0\u{1}ZipCode\0\u{1}Country\0\u{1}Latitude\0\u{1}Longitude\0\u{1}BelongsToUser\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}contact_phone\0\u{3}address_line1\0\u{3}address_line2\0\u{1}city\0\u{1}state\0\u{3}zip_code\0\u{1}country\0\u{1}latitude\0\u{1}longitude\0\u{3}belongs_to_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5051,7 +5051,7 @@ extension Identity_AccountUpdateRequestInput: SwiftProtobuf.Message, SwiftProtob
 
 extension Identity_AccountUserMembership: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountUserMembership"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}BelongsToUser\0\u{1}BelongsToAccount\0\u{1}AccountRole\0\u{1}DefaultAccount\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}id\0\u{3}belongs_to_user\0\u{3}belongs_to_account\0\u{3}account_role\0\u{3}default_account\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5120,7 +5120,7 @@ extension Identity_AccountUserMembership: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_AccountUserMembershipWithUser: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountUserMembershipWithUser"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}LastUpdatedAt\0\u{1}BelongsToUser\0\u{1}ArchivedAt\0\u{1}ID\0\u{1}BelongsToAccount\0\u{1}AccountRole\0\u{1}DefaultAccount\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}belongs_to_user\0\u{3}archived_at\0\u{1}id\0\u{3}belongs_to_account\0\u{3}account_role\0\u{3}default_account\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5189,7 +5189,7 @@ extension Identity_AccountUserMembershipWithUser: SwiftProtobuf.Message, SwiftPr
 
 extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".User"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}CreatedAt\0\u{1}PasswordLastChangedAt\0\u{1}LastUpdatedAt\0\u{1}LastAcceptedTermsOfService\0\u{1}LastAcceptedPrivacyPolicy\0\u{1}TwoFactorSecretVerifiedAt\0\u{1}AvatarSrc\0\u{1}Birthday\0\u{1}ArchivedAt\0\u{1}AccountStatusExplanation\0\u{1}TwoFactorSecret\0\u{1}HashedPassword\0\u{1}ID\0\u{1}AccountStatus\0\u{1}Username\0\u{1}FirstName\0\u{1}LastName\0\u{1}EmailAddress\0\u{1}EmailAddressVerifiedAt\0\u{1}ServiceRole\0\u{1}RequiresPasswordChange\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}password_last_changed_at\0\u{3}last_updated_at\0\u{3}last_accepted_terms_of_service\0\u{3}last_accepted_privacy_policy\0\u{3}two_factor_secret_verified_at\0\u{3}avatar_src\0\u{1}birthday\0\u{3}archived_at\0\u{3}account_status_explanation\0\u{3}two_factor_secret\0\u{3}hashed_password\0\u{1}id\0\u{3}account_status\0\u{1}username\0\u{3}first_name\0\u{3}last_name\0\u{3}email_address\0\u{3}email_address_verified_at\0\u{3}service_role\0\u{3}requires_password_change\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -5399,7 +5399,7 @@ extension Identity_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
 
 extension Identity_UserAccountStatusUpdateInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserAccountStatusUpdateInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewStatus\0\u{1}Reason\0\u{1}TargetUserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_status\0\u{1}reason\0\u{3}target_user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5439,7 +5439,7 @@ extension Identity_UserAccountStatusUpdateInput: SwiftProtobuf.Message, SwiftPro
 
 extension Identity_UserCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserCreationResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}CreatedAt\0\u{1}Birthday\0\u{1}Username\0\u{1}EmailAddress\0\u{1}TwoFactorQRCode\0\u{1}CreatedUserID\0\u{1}AccountStatus\0\u{1}TwoFactorSecret\0\u{1}FirstName\0\u{1}LastName\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}created_at\0\u{1}birthday\0\u{1}username\0\u{3}email_address\0\u{3}two_factor_qr_code\0\u{3}created_user_id\0\u{3}account_status\0\u{3}two_factor_secret\0\u{3}first_name\0\u{3}last_name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5452,7 +5452,7 @@ extension Identity_UserCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._M
       case 3: try { try decoder.decodeSingularMessageField(value: &self._birthday) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.username) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.emailAddress) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrcode) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrCode) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.createdUserID) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.accountStatus) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self.twoFactorSecret) }()
@@ -5483,8 +5483,8 @@ extension Identity_UserCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     if !self.emailAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.emailAddress, fieldNumber: 5)
     }
-    if !self.twoFactorQrcode.isEmpty {
-      try visitor.visitSingularStringField(value: self.twoFactorQrcode, fieldNumber: 6)
+    if !self.twoFactorQrCode.isEmpty {
+      try visitor.visitSingularStringField(value: self.twoFactorQrCode, fieldNumber: 6)
     }
     if !self.createdUserID.isEmpty {
       try visitor.visitSingularStringField(value: self.createdUserID, fieldNumber: 7)
@@ -5510,7 +5510,7 @@ extension Identity_UserCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._M
     if lhs._birthday != rhs._birthday {return false}
     if lhs.username != rhs.username {return false}
     if lhs.emailAddress != rhs.emailAddress {return false}
-    if lhs.twoFactorQrcode != rhs.twoFactorQrcode {return false}
+    if lhs.twoFactorQrCode != rhs.twoFactorQrCode {return false}
     if lhs.createdUserID != rhs.createdUserID {return false}
     if lhs.accountStatus != rhs.accountStatus {return false}
     if lhs.twoFactorSecret != rhs.twoFactorSecret {return false}
@@ -5523,7 +5523,7 @@ extension Identity_UserCreationResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Identity_UserDataAggregationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserDataAggregationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}RequestID\0\u{1}ReportID\0\u{1}UserID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}request_id\0\u{3}report_id\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5563,7 +5563,7 @@ extension Identity_UserDataAggregationRequest: SwiftProtobuf.Message, SwiftProto
 
 extension Identity_UserDetailsUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserDetailsUpdateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}FirstName\0\u{1}LastName\0\u{1}Birthday\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}first_name\0\u{3}last_name\0\u{1}birthday\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5575,7 +5575,7 @@ extension Identity_UserDetailsUpdateRequest: SwiftProtobuf.Message, SwiftProtobu
       case 2: try { try decoder.decodeSingularStringField(value: &self.lastName) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._birthday) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -5598,8 +5598,8 @@ extension Identity_UserDetailsUpdateRequest: SwiftProtobuf.Message, SwiftProtobu
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 4)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 5)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5609,7 +5609,7 @@ extension Identity_UserDetailsUpdateRequest: SwiftProtobuf.Message, SwiftProtobu
     if lhs.lastName != rhs.lastName {return false}
     if lhs._birthday != rhs._birthday {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5617,7 +5617,7 @@ extension Identity_UserDetailsUpdateRequest: SwiftProtobuf.Message, SwiftProtobu
 
 extension Identity_UserRegistrationInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserRegistrationInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Birthday\0\u{1}Password\0\u{1}EmailAddress\0\u{1}InvitationToken\0\u{1}InvitationID\0\u{1}Username\0\u{1}FirstName\0\u{1}LastName\0\u{1}AccountName\0\u{1}AcceptedTOS\0\u{1}AcceptedPrivacyPolicy\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}birthday\0\u{1}password\0\u{3}email_address\0\u{3}invitation_token\0\u{3}invitation_id\0\u{1}username\0\u{3}first_name\0\u{3}last_name\0\u{3}account_name\0\u{3}accepted_tos\0\u{3}accepted_privacy_policy\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5701,7 +5701,7 @@ extension Identity_UserRegistrationInput: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_UsernameUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UsernameUpdateRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}NewUsername\0\u{1}CurrentPassword\0\u{1}TOTPToken\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}new_username\0\u{3}current_password\0\u{3}totp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5711,7 +5711,7 @@ extension Identity_UsernameUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.newUsername) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.currentPassword) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.totptoken) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.totpToken) }()
       default: break
       }
     }
@@ -5724,8 +5724,8 @@ extension Identity_UsernameUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._
     if !self.currentPassword.isEmpty {
       try visitor.visitSingularStringField(value: self.currentPassword, fieldNumber: 2)
     }
-    if !self.totptoken.isEmpty {
-      try visitor.visitSingularStringField(value: self.totptoken, fieldNumber: 3)
+    if !self.totpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.totpToken, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5733,7 +5733,7 @@ extension Identity_UsernameUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._
   public static func ==(lhs: Identity_UsernameUpdateRequest, rhs: Identity_UsernameUpdateRequest) -> Bool {
     if lhs.newUsername != rhs.newUsername {return false}
     if lhs.currentPassword != rhs.currentPassword {return false}
-    if lhs.totptoken != rhs.totptoken {return false}
+    if lhs.totpToken != rhs.totpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5741,7 +5741,7 @@ extension Identity_UsernameUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Identity_AdminUpdateUserStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdminUpdateUserStatusRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}TargetUserID\0\u{1}NewStatus\0\u{1}Reason\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_user_id\0\u{3}new_status\0\u{1}reason\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5781,7 +5781,7 @@ extension Identity_AdminUpdateUserStatusRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Identity_AdminUpdateUserStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdminUpdateUserStatusResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

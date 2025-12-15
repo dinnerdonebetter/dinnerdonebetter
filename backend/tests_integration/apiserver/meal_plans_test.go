@@ -51,9 +51,9 @@ func createMealPlanForTest(t *testing.T, clientToUse client.Client, mealPlan *me
 		Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
 	})
 	require.NoError(t, err)
-	require.NotEmpty(t, createdMealPlanRes.Created.ID)
+	require.NotEmpty(t, createdMealPlanRes.Created.Id)
 
-	mealPlanRes, err := clientToUse.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlanRes.Created.ID})
+	mealPlanRes, err := clientToUse.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: createdMealPlanRes.Created.Id})
 	require.NoError(t, err)
 
 	actual := converters.ConvertGRPCMealPlanToMealPlan(mealPlanRes.Result)
@@ -89,7 +89,7 @@ func TestMealPlans_Listing(T *testing.T) {
 		)
 
 		for _, createdMealPlan := range expected {
-			_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+			_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 			assert.NoError(t, err)
 		}
 	})
@@ -135,7 +135,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
-				AccountInvitationID: invitation.Created.ID,
+				AccountInvitationId: invitation.Created.Id,
 				Input: &identitygrpc.AccountInvitationUpdateRequestInput{
 					Token: invitation.Created.Token,
 					Note:  t.Name(),
@@ -143,13 +143,13 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			})
 
 			require.NoError(t, err)
-			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountID: relevantAccountID})
+			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountId: relevantAccountID})
 			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
 				Username:  u.Username,
 				Password:  u.HashedPassword,
-				TOTPToken: generateTOTPCodeForUserForTest(t, u),
+				TotpToken: generateTOTPCodeForUserForTest(t, u),
 			}})
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
@@ -251,24 +251,24 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 		}
 
 		createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userAVotes),
 		})
 		require.NoError(t, err)
 		require.NotNil(t, createdMealPlanOptionVotesA)
 
 		createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userBVotes),
 		})
 		require.NoError(t, err)
 		require.NotNil(t, createdMealPlanOptionVotesB)
 
 		createdMealPlanOptionVotesC, err := accountAdminUserClient.CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userCVotes),
 		})
 		require.NoError(t, err)
@@ -291,7 +291,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, runRes)
 
-		createdMealPlanRes, err := accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		createdMealPlanRes, err := accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		require.NotNil(t, createdMealPlanRes)
 		require.NoError(t, err)
 
@@ -351,7 +351,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			assert.NotEmpty(t, invitations.Results)
 
 			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
-				AccountInvitationID: invitation.Created.ID,
+				AccountInvitationId: invitation.Created.Id,
 				Input: &identitygrpc.AccountInvitationUpdateRequestInput{
 					Token: invitation.Created.Token,
 					Note:  t.Name(),
@@ -359,13 +359,13 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			})
 
 			require.NoError(t, err)
-			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountID: relevantAccountID})
+			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountId: relevantAccountID})
 			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
 				Username:  u.Username,
 				Password:  u.HashedPassword,
-				TOTPToken: generateTOTPCodeForUserForTest(t, u),
+				TotpToken: generateTOTPCodeForUserForTest(t, u),
 			}})
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
@@ -413,10 +413,10 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 
 		exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
 		createMealPlanRes, err := accountAdminUserClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput)})
-		require.NotEmpty(t, createMealPlanRes.Created.ID)
+		require.NotEmpty(t, createMealPlanRes.Created.Id)
 		require.NoError(t, err)
 
-		createdMealPlanRes, err := accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createMealPlanRes.Created.ID})
+		createdMealPlanRes, err := accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: createMealPlanRes.Created.Id})
 		require.NotNil(t, createdMealPlanRes)
 		require.NoError(t, err)
 
@@ -461,22 +461,22 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		}
 
 		createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userAVotes),
 		})
 		require.NoError(t, err)
 		require.NotNil(t, createdMealPlanOptionVotesA)
 
 		createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userBVotes),
 		})
 		require.NoError(t, err)
 		require.NotNil(t, createdMealPlanOptionVotesB)
 
-		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		require.NotNil(t, createdMealPlanRes)
 		require.NoError(t, err)
 
@@ -500,7 +500,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, runRes)
 
-		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		require.NotNil(t, createdMealPlan)
 		require.NoError(t, err)
 
