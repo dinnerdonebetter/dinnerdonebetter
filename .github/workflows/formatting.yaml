@@ -24,6 +24,8 @@ jobs:
             frontend_typescript:
               - frontend/**/*.ts
               - frontend/**/*.tsx
+            ios_swift:
+              - ios/**/*.swift
 
   golang:
     needs: [changes]
@@ -45,6 +47,19 @@ jobs:
       - name: check formatting
         working-directory: backend
         run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+
+  swift:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.ios_swift == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: check formatting
+        working-directory: ios
+        run: make format-check
 
   typescript:
     needs: [changes]

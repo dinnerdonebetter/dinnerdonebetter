@@ -99,15 +99,16 @@ func TestRecipeManager_ListRecipes(T *testing.T) {
 		rm := buildRecipeManagerForTest(t)
 
 		expected := fakes.BuildFakeRecipesList()
+		status := types.RecipeStatusSubmitted
 
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, status, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
-		actual, err := rm.ListRecipes(ctx, "", nil)
+		actual, err := rm.ListRecipes(ctx, status, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
