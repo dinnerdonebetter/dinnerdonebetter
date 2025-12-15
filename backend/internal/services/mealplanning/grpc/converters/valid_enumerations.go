@@ -500,7 +500,6 @@ func ConvertStringToValidIngredientStateAttributeType(s string) mealplanninggrpc
 		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER
 	}
 	return mealplanninggrpc.ValidIngredientStateAttributeType(value)
-
 }
 
 func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateCreationRequestInput) *mealplanning.ValidIngredientStateCreationRequestInput {
@@ -1203,7 +1202,6 @@ func ConvertStringToValidVesselShape(s string) mealplanninggrpc.ValidVesselShape
 		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_OTHER
 	}
 	return mealplanninggrpc.ValidVesselShape(value)
-
 }
 
 func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {

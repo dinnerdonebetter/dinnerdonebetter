@@ -13,7 +13,6 @@ func ConvertStringToUserNotificationStatus(s string) notificationssvc.UserNotifi
 		return notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_UNREAD
 	}
 	return notificationssvc.UserNotificationStatus(value)
-
 }
 
 func ConvertUserNotificationToGRPCUserNotification(notification *notifications.UserNotification) *notificationssvc.UserNotification {
