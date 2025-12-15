@@ -1,6 +1,8 @@
 package grpcconverters
 
 import (
+	"log"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -12,11 +14,39 @@ import (
 )
 
 func ConvertStringToMealPlanTaskStatus(s string) mealplanningsvc.MealPlanTaskStatus {
-	value, ok := mealplanningsvc.MealPlanTaskStatus_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.MealPlanTaskStatusPostponed:
+		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_POSTPONED
+	case mealplanning.MealPlanTaskStatusIgnored:
+		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_IGNORED
+	case mealplanning.MealPlanTaskStatusCanceled:
+		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_CANCELED
+	case mealplanning.MealPlanTaskStatusFinished:
+		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_FINISHED
+	case mealplanning.MealPlanTaskStatusUnfinished:
+		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_UNFINISHED
+	default:
+		log.Printf("UNKNOWN MEALPLAN TASK_STATUS: %s", s)
 		return mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_UNFINISHED
 	}
-	return mealplanningsvc.MealPlanTaskStatus(value)
+}
+
+func ConvertMealPlanTaskStatusToString(s mealplanningsvc.MealPlanTaskStatus) string {
+	switch s {
+	case mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_POSTPONED:
+		return mealplanning.MealPlanTaskStatusPostponed
+	case mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_IGNORED:
+		return mealplanning.MealPlanTaskStatusIgnored
+	case mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_CANCELED:
+		return mealplanning.MealPlanTaskStatusCanceled
+	case mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_FINISHED:
+		return mealplanning.MealPlanTaskStatusFinished
+	case mealplanningsvc.MealPlanTaskStatus_MEAL_PLAN_TASK_STATUS_UNFINISHED:
+		return mealplanning.MealPlanTaskStatusUnfinished
+	default:
+		log.Printf("UNKNOWN MEALPLAN TASK_STATUS: %s", s)
+		return mealplanning.MealPlanTaskStatusUnfinished
+	}
 }
 
 func ConvertMealPlanTaskToGRPCMealPlanTask(input *mealplanning.MealPlanTask) *mealplanningsvc.MealPlanTask {
@@ -134,17 +164,45 @@ func ConvertGRPCMealToMeal(input *mealplanningsvc.Meal) *mealplanning.Meal {
 func ConvertGRPCMealComponentToMealComponent(input *mealplanningsvc.MealComponent) *mealplanning.MealComponent {
 	return &mealplanning.MealComponent{
 		Recipe:        *ConvertGRPCRecipeToRecipe(input.Recipe),
-		ComponentType: input.ComponentType.String(),
+		ComponentType: ConvertMealComponentTypeToString(input.ComponentType),
 		RecipeScale:   input.RecipeScale,
 	}
 }
 
 func ConvertStringToMealPlanGroceryListItemStatus(s string) mealplanningsvc.MealPlanGroceryListItemStatus {
-	value, ok := mealplanningsvc.MealPlanGroceryListItemStatus_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.MealPlanGroceryListItemStatusAlreadyOwned:
+		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ALREADY_OWNED
+	case mealplanning.MealPlanGroceryListItemStatusNeeds:
+		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_NEEDS
+	case mealplanning.MealPlanGroceryListItemStatusUnavailable:
+		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNAVAILABLE
+	case mealplanning.MealPlanGroceryListItemStatusAcquired:
+		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED
+	case mealplanning.MealPlanGroceryListItemStatusUnknown:
+		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN
+	default:
+		log.Printf("UNKNOWN MealPlanGroceryListItemStatus: %q", s)
 		return mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN
 	}
-	return mealplanningsvc.MealPlanGroceryListItemStatus(value)
+}
+
+func ConvertMealPlanGroceryListItemStatusToString(s mealplanningsvc.MealPlanGroceryListItemStatus) string {
+	switch s {
+	case mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ALREADY_OWNED:
+		return mealplanning.MealPlanGroceryListItemStatusAlreadyOwned
+	case mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_NEEDS:
+		return mealplanning.MealPlanGroceryListItemStatusNeeds
+	case mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNAVAILABLE:
+		return mealplanning.MealPlanGroceryListItemStatusUnavailable
+	case mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED:
+		return mealplanning.MealPlanGroceryListItemStatusAcquired
+	case mealplanningsvc.MealPlanGroceryListItemStatus_MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN:
+		return mealplanning.MealPlanGroceryListItemStatusUnknown
+	default:
+		log.Printf("UNKNOWN MealPlanGroceryListItemStatus: %q", s)
+		return mealplanning.MealPlanGroceryListItemStatusUnknown
+	}
 }
 
 func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplanning.MealPlanGroceryListItem) *mealplanningsvc.MealPlanGroceryListItem {
@@ -192,7 +250,7 @@ func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplan
 		MeasurementUnit:          *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		PurchasedMeasurementUnit: purchasedMeasurementUnit,
 		PurchasedUPC:             input.PurchasedUpc,
-		Status:                   input.Status.String(),
+		Status:                   ConvertMealPlanGroceryListItemStatusToString(input.Status),
 		StatusExplanation:        input.StatusExplanation,
 		ID:                       input.Id,
 		BelongsToMealPlan:        input.BelongsToMealPlan,
@@ -255,7 +313,7 @@ func ConvertGRPCMealPlanToMealPlan(input *mealplanningsvc.MealPlan) *mealplannin
 		LastUpdatedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		VotingDeadline:         grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
-		ElectionMethod:         input.ElectionMethod.String(),
+		ElectionMethod:         ConvertMealPlanElectionMethodToString(input.ElectionMethod),
 		Status:                 input.Status,
 		Notes:                  input.Notes,
 		ID:                     input.Id,
@@ -371,11 +429,55 @@ func ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(input *mealpl
 }
 
 func ConvertStringToMealComponentType(s string) mealplanningsvc.MealComponentType {
-	value, ok := mealplanningsvc.MealComponentType_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.MealComponentTypesAmuseBouche:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_AMUSE_BOUCHE
+	case mealplanning.MealComponentTypesAppetizer:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_APPETIZER
+	case mealplanning.MealComponentTypesSoup:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SOUP
+	case mealplanning.MealComponentTypesMain:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_MAIN
+	case mealplanning.MealComponentTypesSalad:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SALAD
+	case mealplanning.MealComponentTypesBeverage:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_BEVERAGE
+	case mealplanning.MealComponentTypesSide:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SIDE
+	case mealplanning.MealComponentTypesDessert:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_DESSERT
+	case mealplanning.MealComponentTypesUnspecified:
+		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_UNSPECIFIED
+	default:
+		log.Printf("UNKNOWN MEAL COMPONENT TYPE: %q", s)
 		return mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_UNSPECIFIED
 	}
-	return mealplanningsvc.MealComponentType(value)
+}
+
+func ConvertMealComponentTypeToString(s mealplanningsvc.MealComponentType) string {
+	switch s {
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_AMUSE_BOUCHE:
+		return mealplanning.MealComponentTypesAmuseBouche
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_APPETIZER:
+		return mealplanning.MealComponentTypesAppetizer
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SOUP:
+		return mealplanning.MealComponentTypesSoup
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_MAIN:
+		return mealplanning.MealComponentTypesMain
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SALAD:
+		return mealplanning.MealComponentTypesSalad
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_BEVERAGE:
+		return mealplanning.MealComponentTypesBeverage
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_SIDE:
+		return mealplanning.MealComponentTypesSide
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_DESSERT:
+		return mealplanning.MealComponentTypesDessert
+	case mealplanningsvc.MealComponentType_MEAL_COMPONENT_TYPE_UNSPECIFIED:
+		return mealplanning.MealComponentTypesUnspecified
+	default:
+		log.Printf("UNKNOWN MEAL COMPONENT TYPE: %q", s)
+		return mealplanning.MealComponentTypesUnspecified
+	}
 }
 
 func ConvertMealComponentCreationRequestInputToGRPCMealComponentCreationRequestInput(input *mealplanning.MealComponentCreationRequestInput) *mealplanningsvc.MealComponentCreationRequestInput {
@@ -407,17 +509,33 @@ func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealpl
 func ConvertGRPCMealComponentCreationRequestInputToMealComponentCreationRequestInput(input *mealplanningsvc.MealComponentCreationRequestInput) *mealplanning.MealComponentCreationRequestInput {
 	return &mealplanning.MealComponentCreationRequestInput{
 		RecipeID:      input.RecipeId,
-		ComponentType: input.ComponentType.String(),
+		ComponentType: ConvertMealComponentTypeToString(input.ComponentType),
 		RecipeScale:   input.RecipeScale,
 	}
 }
 
 func ConvertStringToMealPlanElectionMethod(s string) mealplanningsvc.MealPlanElectionMethod {
-	value, ok := mealplanningsvc.MealPlanElectionMethod_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.MealPlanElectionMethodSchulze:
+		return mealplanningsvc.MealPlanElectionMethod_MEAL_PLAN_ELECTION_METHOD_SCHULZE
+	case mealplanning.MealPlanElectionMethodInstantRunoff:
+		return mealplanningsvc.MealPlanElectionMethod_MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF
+	default:
+		log.Printf("UNKNOWN MEAL COMPONENT TYPE: %q", s)
 		return mealplanningsvc.MealPlanElectionMethod_MEAL_PLAN_ELECTION_METHOD_SCHULZE
 	}
-	return mealplanningsvc.MealPlanElectionMethod(value)
+}
+
+func ConvertMealPlanElectionMethodToString(s mealplanningsvc.MealPlanElectionMethod) string {
+	switch s {
+	case mealplanningsvc.MealPlanElectionMethod_MEAL_PLAN_ELECTION_METHOD_SCHULZE:
+		return mealplanning.MealPlanElectionMethodSchulze
+	case mealplanningsvc.MealPlanElectionMethod_MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF:
+		return mealplanning.MealPlanElectionMethodInstantRunoff
+	default:
+		log.Printf("UNKNOWN MEAL COMPONENT TYPE: %q", s)
+		return mealplanning.MealPlanElectionMethodSchulze
+	}
 }
 
 func ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(input *mealplanning.MealPlanCreationRequestInput) *mealplanningsvc.MealPlanCreationRequestInput {
@@ -468,7 +586,7 @@ func ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(input
 	return &mealplanning.MealPlanCreationRequestInput{
 		VotingDeadline: grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
 		Notes:          input.Notes,
-		ElectionMethod: input.ElectionMethod.String(),
+		ElectionMethod: ConvertMealPlanElectionMethodToString(input.ElectionMethod),
 		Events:         events,
 	}
 }
@@ -526,7 +644,7 @@ func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryList
 		PurchasedUPC:               input.PurchasedUpc,
 		PurchasePrice:              input.PurchasePrice,
 		QuantityPurchased:          input.QuantityPurchased,
-		Status:                     input.Status.String(),
+		Status:                     ConvertMealPlanGroceryListItemStatusToString(input.Status),
 		BelongsToMealPlan:          input.BelongsToMealPlan,
 		ValidIngredientID:          input.ValidIngredientId,
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitId,
@@ -559,7 +677,7 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToGRPCMealPlanGroceryList
 func ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInput(input *mealplanningsvc.MealPlanTaskCreationRequestInput) *mealplanning.MealPlanTaskCreationRequestInput {
 	return &mealplanning.MealPlanTaskCreationRequestInput{
 		AssignedToUser:      input.AssignedToUser,
-		Status:              input.Status.String(),
+		Status:              ConvertMealPlanTaskStatusToString(input.Status),
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
 		MealPlanOptionID:    input.MealPlanOptionId,
@@ -627,7 +745,7 @@ func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput
 func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(input *mealplanningsvc.MealPlanGroceryListItemUpdateRequestInput) *mealplanning.MealPlanGroceryListItemUpdateRequestInput {
 	var status *string
 	if input.Status != nil {
-		status = pointer.To(input.Status.String())
+		status = pointer.To(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
 	}
 
 	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
@@ -690,7 +808,7 @@ func ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRe
 func ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(input *mealplanningsvc.MealPlanTaskStatusChangeRequestInput) *mealplanning.MealPlanTaskStatusChangeRequestInput {
 	var status *string
 	if input.Status != nil {
-		status = pointer.To(input.Status.String())
+		status = pointer.To(ConvertMealPlanTaskStatusToString(*input.Status))
 	}
 
 	return &mealplanning.MealPlanTaskStatusChangeRequestInput{
@@ -804,7 +922,7 @@ func ConvertGRPCMealPlanTaskToMealPlanTask(input *mealplanningsvc.MealPlanTask) 
 		LastUpdatedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		AssignedToUser:      input.AssignedToUser,
 		ID:                  input.Id,
-		Status:              input.Status.String(),
+		Status:              ConvertMealPlanTaskStatusToString(input.Status),
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
 		MealPlanOption:      *ConvertGRPCMealPlanOptionToMealPlanOption(input.MealPlanOption),

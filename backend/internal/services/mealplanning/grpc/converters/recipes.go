@@ -1,6 +1,8 @@
 package grpcconverters
 
 import (
+	"log"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -33,7 +35,7 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 		PluralPortionName:   input.PluralPortionName,
 		PortionName:         input.PortionName,
 		Slug:                input.Slug,
-		YieldsComponentType: input.YieldsComponentType.String(),
+		YieldsComponentType: ConvertMealComponentTypeToString(input.YieldsComponentType),
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
@@ -312,11 +314,31 @@ func ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRe
 }
 
 func ConvertStringToRecipeStepProductType(s string) mealplanningsvc.RecipeStepProductType {
-	value, ok := mealplanningsvc.RecipeStepProductType_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.RecipeStepProductInstrumentType:
+		return mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT
+	case mealplanning.RecipeStepProductVesselType:
+		return mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_VESSEL
+	case mealplanning.RecipeStepProductIngredientType:
+		return mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INGREDIENT
+	default:
+		log.Printf("UNKNOWN RECIPE STEP PRODUCT TYPE: %q", s)
 		return mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INGREDIENT
 	}
-	return mealplanningsvc.RecipeStepProductType(value)
+}
+
+func ConvertRecipeStepProductTypeToString(s mealplanningsvc.RecipeStepProductType) string {
+	switch s {
+	case mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT:
+		return mealplanning.RecipeStepProductInstrumentType
+	case mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_VESSEL:
+		return mealplanning.RecipeStepProductVesselType
+	case mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INGREDIENT:
+		return mealplanning.RecipeStepProductIngredientType
+	default:
+		log.Printf("UNKNOWN RECIPE STEP PRODUCT TYPE: %q", s)
+		return mealplanning.RecipeStepProductIngredientType
+	}
 }
 
 func ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreationRequestInput(input *mealplanningsvc.RecipeStepProductCreationRequestInput) *mealplanning.RecipeStepProductCreationRequestInput {
@@ -326,7 +348,7 @@ func ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreation
 		QuantityNotes:          input.QuantityNotes,
 		Name:                   input.Name,
 		StorageInstructions:    input.StorageInstructions,
-		Type:                   input.Type.String(),
+		Type:                   ConvertRecipeStepProductTypeToString(input.Type),
 		Index:                  uint16(input.Index),
 		Compostable:            input.Compostable,
 		IsLiquid:               input.IsLiquid,
@@ -636,7 +658,7 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 		LastUpdatedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		ID:                  input.Id,
-		YieldsComponentType: input.YieldsComponentType.String(),
+		YieldsComponentType: ConvertMealComponentTypeToString(input.YieldsComponentType),
 		Description:         input.Description,
 		Name:                input.Name,
 		PortionName:         input.PortionName,
@@ -1048,7 +1070,7 @@ func ConvertGRPCRecipeStepProductToRecipeStepProduct(input *mealplanningsvc.Reci
 		MeasurementUnit:        ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		BelongsToRecipeStep:    input.BelongsToRecipeStep,
 		Name:                   input.Name,
-		Type:                   input.Type.String(),
+		Type:                   ConvertRecipeStepProductTypeToString(input.Type),
 		ID:                     input.Id,
 		StorageInstructions:    input.StorageInstructions,
 		QuantityNotes:          input.QuantityNotes,
@@ -1235,7 +1257,7 @@ func ConvertGRPCRecipeRatingToRecipeRating(input *mealplanningsvc.RecipeRating) 
 func ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(input *mealplanningsvc.RecipeUpdateRequestInput) *mealplanning.RecipeUpdateRequestInput {
 	var componentType *string
 	if input.YieldsComponentType != nil {
-		componentType = pointer.To(input.YieldsComponentType.String())
+		componentType = pointer.To(ConvertMealComponentTypeToString(*input.YieldsComponentType))
 	}
 
 	return &mealplanning.RecipeUpdateRequestInput{
@@ -1513,7 +1535,7 @@ func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpda
 func ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequestInput(input *mealplanningsvc.RecipeStepProductUpdateRequestInput) *mealplanning.RecipeStepProductUpdateRequestInput {
 	var newType *string
 	if input.Type != nil {
-		newType = pointer.To(input.Type.String())
+		newType = pointer.To(ConvertRecipeStepProductTypeToString(*input.Type))
 	}
 
 	return &mealplanning.RecipeStepProductUpdateRequestInput{

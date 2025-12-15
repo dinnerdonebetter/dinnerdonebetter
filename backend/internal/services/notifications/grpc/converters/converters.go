@@ -1,6 +1,8 @@
 package converters
 
 import (
+	"log"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
@@ -8,11 +10,31 @@ import (
 )
 
 func ConvertStringToUserNotificationStatus(s string) notificationssvc.UserNotificationStatus {
-	value, ok := notificationssvc.UserNotificationStatus_value[s]
-	if !ok {
+	switch s {
+	case notifications.UserNotificationStatusTypeRead:
+		return notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_READ
+	case notifications.UserNotificationStatusTypeUnread:
+		return notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_UNREAD
+	case notifications.UserNotificationStatusTypeDismissed:
+		return notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_DISMISSED
+	default:
+		log.Printf("UNKNOWN USER NOTIFICATION STATUS: %q", s)
 		return notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_UNREAD
 	}
-	return notificationssvc.UserNotificationStatus(value)
+}
+
+func ConvertUserNotificationStatusToString(s notificationssvc.UserNotificationStatus) string {
+	switch s {
+	case notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_READ:
+		return notifications.UserNotificationStatusTypeRead
+	case notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_UNREAD:
+		return notifications.UserNotificationStatusTypeUnread
+	case notificationssvc.UserNotificationStatus_USER_NOTIFICATION_STATUS_DISMISSED:
+		return notifications.UserNotificationStatusTypeDismissed
+	default:
+		log.Printf("UNKNOWN USER NOTIFICATION STATUS: %q", s)
+		return notifications.UserNotificationStatusTypeUnread
+	}
 }
 
 func ConvertUserNotificationToGRPCUserNotification(notification *notifications.UserNotification) *notificationssvc.UserNotification {
@@ -32,7 +54,7 @@ func ConvertGRPCUserNotificationToUserNotification(notification *notificationssv
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(notification.LastUpdatedAt),
 		ID:            notification.Id,
 		Content:       notification.Content,
-		Status:        notification.Status.String(),
+		Status:        ConvertUserNotificationStatusToString(notification.Status),
 		BelongsToUser: notification.BelongsToUser,
 	}
 }

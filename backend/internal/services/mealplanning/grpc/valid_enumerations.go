@@ -303,7 +303,8 @@ func (s *serviceImpl) CreateValidIngredientState(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientState(ctx, mealplanningconverters.ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(request.Input))
+	input := mealplanningconverters.ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(request.Input)
+	created, err := s.validEnumerationsManager.CreateValidIngredientState(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient state")
 	}

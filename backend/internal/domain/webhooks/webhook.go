@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -157,7 +158,7 @@ func (w *WebhookDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&w.Name, validation.Required),
 		validation.Field(&w.URL, validation.Required, is.URL),
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
-		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
+		validation.Field(&w.ContentType, validation.Required, validation.In(encoding.ContentTypeToString(encoding.ContentTypeJSON), encoding.ContentTypeToString(encoding.ContentTypeXML))),
 		validation.Field(&w.Events, validation.Required),
 		validation.Field(&w.BelongsToAccount, validation.Required),
 	)

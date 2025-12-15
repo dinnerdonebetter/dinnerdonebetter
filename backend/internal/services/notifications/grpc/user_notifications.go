@@ -94,7 +94,7 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 
 	var newStatus *string
 	if request.Input.Status != nil {
-		newStatus = pointer.To(request.Input.Status.String())
+		newStatus = pointer.To(converters.ConvertUserNotificationStatusToString(*request.Input.Status))
 	}
 
 	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: newStatus})

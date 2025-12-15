@@ -1,6 +1,8 @@
 package grpcconverters
 
 import (
+	"log"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	converters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -495,11 +497,55 @@ func ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(x *mealpl
 }
 
 func ConvertStringToValidIngredientStateAttributeType(s string) mealplanninggrpc.ValidIngredientStateAttributeType {
-	value, ok := mealplanninggrpc.ValidIngredientStateAttributeType_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.ValidIngredientStateAttributeTypeTexture:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE
+	case mealplanning.ValidIngredientStateAttributeTypeConsistency:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY
+	case mealplanning.ValidIngredientStateAttributeTypeTemperature:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEMPERATURE
+	case mealplanning.ValidIngredientStateAttributeTypeColor:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_COLOR
+	case mealplanning.ValidIngredientStateAttributeTypeAppearance:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_APPEARANCE
+	case mealplanning.ValidIngredientStateAttributeTypeOdor:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_ODOR
+	case mealplanning.ValidIngredientStateAttributeTypeTaste:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TASTE
+	case mealplanning.ValidIngredientStateAttributeTypeSound:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_SOUND
+	case mealplanning.ValidIngredientStateAttributeTypeOther:
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER
+	default:
+		log.Printf("UNKNOWN VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE: %q", s)
 		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER
 	}
-	return mealplanninggrpc.ValidIngredientStateAttributeType(value)
+}
+
+func ConvertValidIngredientStateAttributeTypeToString(s mealplanninggrpc.ValidIngredientStateAttributeType) string {
+	switch s {
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE:
+		return mealplanning.ValidIngredientStateAttributeTypeTexture
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY:
+		return mealplanning.ValidIngredientStateAttributeTypeConsistency
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEMPERATURE:
+		return mealplanning.ValidIngredientStateAttributeTypeTemperature
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_COLOR:
+		return mealplanning.ValidIngredientStateAttributeTypeColor
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_APPEARANCE:
+		return mealplanning.ValidIngredientStateAttributeTypeAppearance
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_ODOR:
+		return mealplanning.ValidIngredientStateAttributeTypeOdor
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TASTE:
+		return mealplanning.ValidIngredientStateAttributeTypeTaste
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_SOUND:
+		return mealplanning.ValidIngredientStateAttributeTypeSound
+	case mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER:
+		return mealplanning.ValidIngredientStateAttributeTypeOther
+	default:
+		log.Printf("UNKNOWN VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE: %q", s)
+		return mealplanning.ValidIngredientStateAttributeTypeOther
+	}
 }
 
 func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateCreationRequestInput) *mealplanning.ValidIngredientStateCreationRequestInput {
@@ -508,7 +554,7 @@ func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationR
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
 		Description:   x.Description,
-		AttributeType: x.AttributeType.String(),
+		AttributeType: ConvertValidIngredientStateAttributeTypeToString(x.AttributeType),
 		IconPath:      x.IconPath,
 	}
 }
@@ -527,7 +573,7 @@ func ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCr
 func ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateUpdateRequestInput) *mealplanning.ValidIngredientStateUpdateRequestInput {
 	var attributeType *string
 	if x.AttributeType != nil {
-		attributeType = pointer.To(x.AttributeType.String())
+		attributeType = pointer.To(ConvertValidIngredientStateAttributeTypeToString(*x.AttributeType))
 	}
 
 	return &mealplanning.ValidIngredientStateUpdateRequestInput{
@@ -581,7 +627,7 @@ func ConvertGRPCValidIngredientStateToValidIngredientState(x *mealplanninggrpc.V
 		IconPath:      x.IconPath,
 		ID:            x.Id,
 		Name:          x.Name,
-		AttributeType: x.AttributeType.String(),
+		AttributeType: ConvertValidIngredientStateAttributeTypeToString(x.AttributeType),
 		Slug:          x.Slug,
 	}
 }
@@ -1197,17 +1243,56 @@ func ConvertGRPCValidPreparationVesselToValidPreparationVessel(x *mealplanninggr
 }
 
 func ConvertStringToValidVesselShape(s string) mealplanninggrpc.ValidVesselShape {
-	value, ok := mealplanninggrpc.ValidVesselShape_value[s]
-	if !ok {
+	switch s {
+	case mealplanning.VesselShapeHemisphere:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_HEMISPHERE
+	case mealplanning.VesselShapeRectangle:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_RECTANGLE
+	case mealplanning.VesselShapeCone:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CONE
+	case mealplanning.VesselShapePyramid:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_PYRAMID
+	case mealplanning.VesselShapeCylinder:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CYLINDER
+	case mealplanning.VesselShapeSphere:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_SPHERE
+	case mealplanning.VesselShapeCube:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CUBE
+	case mealplanning.VesselShapeOther:
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_OTHER
+	default:
+		log.Printf("UNKNOWN VESSEL SHAPE: %q", s)
 		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_OTHER
 	}
-	return mealplanninggrpc.ValidVesselShape(value)
+}
+func ConvertValidVesselShapeToString(s mealplanninggrpc.ValidVesselShape) string {
+	switch s {
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_HEMISPHERE:
+		return mealplanning.VesselShapeHemisphere
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_RECTANGLE:
+		return mealplanning.VesselShapeRectangle
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CONE:
+		return mealplanning.VesselShapeCone
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_PYRAMID:
+		return mealplanning.VesselShapePyramid
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CYLINDER:
+		return mealplanning.VesselShapeCylinder
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_SPHERE:
+		return mealplanning.VesselShapeSphere
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_CUBE:
+		return mealplanning.VesselShapeCube
+	case mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_OTHER:
+		return mealplanning.VesselShapeOther
+	default:
+		log.Printf("UNKNOWN VESSEL SHAPE: %q", s)
+		return mealplanning.VesselShapeOther
+	}
 }
 
 func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
 	return &mealplanning.ValidVesselCreationRequestInput{
 		CapacityUnitID:                 x.CapacityUnitId,
-		Shape:                          x.Shape.String(),
+		Shape:                          ConvertValidVesselShapeToString(x.Shape),
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Name:                           x.Name,
@@ -1245,7 +1330,7 @@ func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput
 func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *mealplanninggrpc.ValidVesselUpdateRequestInput) *mealplanning.ValidVesselUpdateRequestInput {
 	var shape *string
 	if x.Shape != nil {
-		shape = pointer.To(x.Shape.String())
+		shape = pointer.To(ConvertValidVesselShapeToString(*x.Shape))
 	}
 
 	return &mealplanning.ValidVesselUpdateRequestInput{
@@ -1329,7 +1414,7 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		CapacityUnit:                   capacityUnit,
-		Shape:                          x.Shape.String(),
+		Shape:                          ConvertValidVesselShapeToString(x.Shape),
 		Description:                    x.Description,
 		Name:                           x.Name,
 		Slug:                           x.Slug,
