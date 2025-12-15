@@ -113,7 +113,7 @@ class AuthenticationManager: AuthenticationManaging {
     loginInput.username = username
     loginInput.password = password
     if let totpToken = totpToken, !totpToken.isEmpty {
-      loginInput.totptoken = totpToken
+      loginInput.totpToken = totpToken
     }
 
     var requestMessage = Auth_LoginForTokenRequest()
