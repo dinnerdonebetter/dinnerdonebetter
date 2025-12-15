@@ -13,24 +13,37 @@ message DataCollection {
   map<string, Webhook> webhooks = 1;
 }
 
+enum WebhookContentType {
+  WEBHOOK_CONTENT_TYPE_JSON = 0;
+  WEBHOOK_CONTENT_TYPE_XML = 1;
+}
+
+enum WebhookMethod {
+  WEBHOOK_METHOD_GET = 0;
+  WEBHOOK_METHOD_PUT = 1;
+  WEBHOOK_METHOD_PATCH = 2;
+  WEBHOOK_METHOD_POST = 3;
+  WEBHOOK_METHOD_DELETE = 4;
+}
+
 message Webhook {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp archived_at = 2;
   google.protobuf.Timestamp last_updated_at = 3;
   string name = 4;
   string url = 5;
-  string method = 6;
+  WebhookMethod method = 6;
   string id = 7;
   string belongs_to_account = 8;
-  string content_type = 9;
+  WebhookContentType content_type = 9;
   repeated WebhookTriggerEvent events = 10;
 }
 
 message WebhookCreationRequestInput {
   string name = 1;
-  string content_type = 2;
+  WebhookContentType content_type = 2;
   string url = 3;
-  string method = 4;
+  WebhookMethod method = 4;
   repeated string events = 5;
 }
 

@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -76,9 +77,9 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        fakeInput.Name,
-				ContentType: fakeInput.ContentType,
+				ContentType: converters.ConvertStringToWebhookContentType(fakeInput.ContentType),
+				Method:      converters.ConvertStringToWebhookMethod(fakeInput.Method),
 				Url:         fakeInput.URL,
-				Method:      fakeInput.Method,
 				Events:      fakeInput.Events,
 			},
 		}
@@ -105,9 +106,9 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        "test webhook",
-				ContentType: "application/json",
 				Url:         "https://example.com/webhook",
-				Method:      "POST",
+				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
+				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
 				Events:      []string{"test_event"},
 			},
 		}
@@ -129,9 +130,9 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        "", // Invalid empty name
-				ContentType: "application/json",
+				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
+				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
 				Url:         "https://example.com/webhook",
-				Method:      "POST",
 				Events:      []string{"test_event"},
 			},
 		}
@@ -156,9 +157,9 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        fakeInput.Name,
-				ContentType: fakeInput.ContentType,
 				Url:         fakeInput.URL,
-				Method:      fakeInput.Method,
+				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
+				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
 				Events:      fakeInput.Events,
 			},
 		}

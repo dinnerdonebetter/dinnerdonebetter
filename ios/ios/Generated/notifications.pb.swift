@@ -20,6 +20,44 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+public enum Notifications_UserNotificationStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unread // = 0
+  case read // = 1
+  case dismissed // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unread
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unread
+    case 1: self = .read
+    case 2: self = .dismissed
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unread: return 0
+    case .read: return 1
+    case .dismissed: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Notifications_UserNotificationStatus] = [
+    .unread,
+    .read,
+    .dismissed,
+  ]
+
+}
+
 /// GetUserNotification
 public struct Notifications_GetUserNotificationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -201,7 +239,7 @@ public struct Notifications_UserNotification: Sendable {
 
   public var content: String = String()
 
-  public var status: String = String()
+  public var status: Notifications_UserNotificationStatus = .unread
 
   public var belongsToUser: String = String()
 
@@ -220,7 +258,7 @@ public struct Notifications_UserNotificationCreationRequestInput: Sendable {
 
   public var content: String = String()
 
-  public var status: String = String()
+  public var status: Notifications_UserNotificationStatus = .unread
 
   public var belongsToUser: String = String()
 
@@ -234,8 +272,8 @@ public struct Notifications_UserNotificationUpdateRequestInput: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: String {
-    get {return _status ?? String()}
+  public var status: Notifications_UserNotificationStatus {
+    get {return _status ?? .unread}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
@@ -247,12 +285,16 @@ public struct Notifications_UserNotificationUpdateRequestInput: Sendable {
 
   public init() {}
 
-  fileprivate var _status: String? = nil
+  fileprivate var _status: Notifications_UserNotificationStatus? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "notifications"
+
+extension Notifications_UserNotificationStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0USER_NOTIFICATION_STATUS_UNREAD\0\u{1}USER_NOTIFICATION_STATUS_READ\0\u{1}USER_NOTIFICATION_STATUS_DISMISSED\0")
+}
 
 extension Notifications_GetUserNotificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetUserNotificationRequest"
@@ -493,7 +535,7 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
       case 2: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.content) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.belongsToUser) }()
       default: break
       }
@@ -517,8 +559,8 @@ extension Notifications_UserNotification: SwiftProtobuf.Message, SwiftProtobuf._
     if !self.content.isEmpty {
       try visitor.visitSingularStringField(value: self.content, fieldNumber: 4)
     }
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 5)
+    if self.status != .unread {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 5)
     }
     if !self.belongsToUser.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToUser, fieldNumber: 6)
@@ -549,7 +591,7 @@ extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Mess
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.content) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.belongsToUser) }()
       default: break
       }
@@ -560,8 +602,8 @@ extension Notifications_UserNotificationCreationRequestInput: SwiftProtobuf.Mess
     if !self.content.isEmpty {
       try visitor.visitSingularStringField(value: self.content, fieldNumber: 1)
     }
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 2)
+    if self.status != .unread {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 2)
     }
     if !self.belongsToUser.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToUser, fieldNumber: 3)
@@ -588,7 +630,7 @@ extension Notifications_UserNotificationUpdateRequestInput: SwiftProtobuf.Messag
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._status) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._status) }()
       default: break
       }
     }
@@ -600,7 +642,7 @@ extension Notifications_UserNotificationUpdateRequestInput: SwiftProtobuf.Messag
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     try { if let v = self._status {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }

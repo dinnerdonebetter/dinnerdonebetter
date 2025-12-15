@@ -7,6 +7,22 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 )
 
+func ConvertStringToWebhookContentType(s string) webhookssvc.WebhookContentType {
+	value, ok := webhookssvc.WebhookContentType_value[s]
+	if !ok {
+		return webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON
+	}
+	return webhookssvc.WebhookContentType(value)
+}
+
+func ConvertStringToWebhookMethod(s string) webhookssvc.WebhookMethod {
+	value, ok := webhookssvc.WebhookMethod_value[s]
+	if !ok {
+		return webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST
+	}
+	return webhookssvc.WebhookMethod(value)
+}
+
 func ConvertWebhookToGRPCWebhook(webhook *webhooks.Webhook) *webhookssvc.Webhook {
 	converted := &webhookssvc.Webhook{
 		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(webhook.CreatedAt),
@@ -14,10 +30,10 @@ func ConvertWebhookToGRPCWebhook(webhook *webhooks.Webhook) *webhookssvc.Webhook
 		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(webhook.LastUpdatedAt),
 		Name:             webhook.Name,
 		Url:              webhook.URL,
-		Method:           webhook.Method,
+		Method:           ConvertStringToWebhookMethod(webhook.Method),
 		Id:               webhook.ID,
 		BelongsToAccount: webhook.BelongsToAccount,
-		ContentType:      webhook.ContentType,
+		ContentType:      ConvertStringToWebhookContentType(webhook.ContentType),
 	}
 
 	for _, event := range webhook.Events {
@@ -44,10 +60,10 @@ func ConvertGRPCWebhookToWebhook(webhook *webhookssvc.Webhook) *webhooks.Webhook
 		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(webhook.LastUpdatedAt),
 		Name:             webhook.Name,
 		URL:              webhook.Url,
-		Method:           webhook.Method,
+		Method:           webhook.Method.String(),
 		ID:               webhook.Id,
 		BelongsToAccount: webhook.BelongsToAccount,
-		ContentType:      webhook.ContentType,
+		ContentType:      webhook.ContentType.String(),
 	}
 
 	for _, event := range webhook.Events {
@@ -82,9 +98,9 @@ func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input 
 	x := &webhooks.WebhookDatabaseCreationInput{
 		ID:               webhookID,
 		Name:             input.Name,
-		ContentType:      input.ContentType,
+		ContentType:      input.ContentType.String(),
 		URL:              input.Url,
-		Method:           input.Method,
+		Method:           input.Method.String(),
 		BelongsToAccount: accountID,
 		Events:           events,
 	}
@@ -95,9 +111,9 @@ func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input 
 func ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(input *webhooks.WebhookCreationRequestInput) *webhookssvc.WebhookCreationRequestInput {
 	return &webhookssvc.WebhookCreationRequestInput{
 		Name:        input.Name,
-		ContentType: input.ContentType,
+		ContentType: ConvertStringToWebhookContentType(input.ContentType),
 		Url:         input.URL,
-		Method:      input.Method,
+		Method:      ConvertStringToWebhookMethod(input.Method),
 		Events:      input.Events,
 	}
 }

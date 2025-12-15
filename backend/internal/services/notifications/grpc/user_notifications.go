@@ -9,6 +9,7 @@ import (
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -91,7 +92,12 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
-	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: request.Input.Status})
+	var newStatus *string
+	if request.Input.Status != nil {
+		newStatus = pointer.To(request.Input.Status.String())
+	}
+
+	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: newStatus})
 	if err = s.notificationsRepository.UpdateUserNotification(ctx, existing); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}

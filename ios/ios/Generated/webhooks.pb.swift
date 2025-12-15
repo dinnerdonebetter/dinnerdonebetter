@@ -20,6 +20,86 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+public enum Webhooks_WebhookContentType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case json // = 0
+  case xml // = 1
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .json
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .json
+    case 1: self = .xml
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .json: return 0
+    case .xml: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Webhooks_WebhookContentType] = [
+    .json,
+    .xml,
+  ]
+
+}
+
+public enum Webhooks_WebhookMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case get // = 0
+  case put // = 1
+  case patch // = 2
+  case post // = 3
+  case delete // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .get
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .get
+    case 1: self = .put
+    case 2: self = .patch
+    case 3: self = .post
+    case 4: self = .delete
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .get: return 0
+    case .put: return 1
+    case .patch: return 2
+    case .post: return 3
+    case .delete: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Webhooks_WebhookMethod] = [
+    .get,
+    .put,
+    .patch,
+    .post,
+    .delete,
+  ]
+
+}
+
 public struct Webhooks_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -68,13 +148,13 @@ public struct Webhooks_Webhook: Sendable {
 
   public var url: String = String()
 
-  public var method: String = String()
+  public var method: Webhooks_WebhookMethod = .get
 
   public var id: String = String()
 
   public var belongsToAccount: String = String()
 
-  public var contentType: String = String()
+  public var contentType: Webhooks_WebhookContentType = .json
 
   public var events: [Webhooks_WebhookTriggerEvent] = []
 
@@ -94,11 +174,11 @@ public struct Webhooks_WebhookCreationRequestInput: Sendable {
 
   public var name: String = String()
 
-  public var contentType: String = String()
+  public var contentType: Webhooks_WebhookContentType = .json
 
   public var url: String = String()
 
-  public var method: String = String()
+  public var method: Webhooks_WebhookMethod = .get
 
   public var events: [String] = []
 
@@ -468,6 +548,14 @@ public struct Webhooks_GetWebhooksResponse: Sendable {
 
 fileprivate let _protobuf_package = "webhooks"
 
+extension Webhooks_WebhookContentType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WEBHOOK_CONTENT_TYPE_JSON\0\u{1}WEBHOOK_CONTENT_TYPE_XML\0")
+}
+
+extension Webhooks_WebhookMethod: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WEBHOOK_METHOD_GET\0\u{1}WEBHOOK_METHOD_PUT\0\u{1}WEBHOOK_METHOD_PATCH\0\u{1}WEBHOOK_METHOD_POST\0\u{1}WEBHOOK_METHOD_DELETE\0")
+}
+
 extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}webhooks\0")
@@ -513,10 +601,10 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 3: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.url) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.method) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self.method) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.belongsToAccount) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.contentType) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.contentType) }()
       case 10: try { try decoder.decodeRepeatedMessageField(value: &self.events) }()
       default: break
       }
@@ -543,8 +631,8 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if !self.url.isEmpty {
       try visitor.visitSingularStringField(value: self.url, fieldNumber: 5)
     }
-    if !self.method.isEmpty {
-      try visitor.visitSingularStringField(value: self.method, fieldNumber: 6)
+    if self.method != .get {
+      try visitor.visitSingularEnumField(value: self.method, fieldNumber: 6)
     }
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 7)
@@ -552,8 +640,8 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if !self.belongsToAccount.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToAccount, fieldNumber: 8)
     }
-    if !self.contentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.contentType, fieldNumber: 9)
+    if self.contentType != .json {
+      try visitor.visitSingularEnumField(value: self.contentType, fieldNumber: 9)
     }
     if !self.events.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.events, fieldNumber: 10)
@@ -588,9 +676,9 @@ extension Webhooks_WebhookCreationRequestInput: SwiftProtobuf.Message, SwiftProt
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.contentType) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.contentType) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.url) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.method) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.method) }()
       case 5: try { try decoder.decodeRepeatedStringField(value: &self.events) }()
       default: break
       }
@@ -601,14 +689,14 @@ extension Webhooks_WebhookCreationRequestInput: SwiftProtobuf.Message, SwiftProt
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
     }
-    if !self.contentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.contentType, fieldNumber: 2)
+    if self.contentType != .json {
+      try visitor.visitSingularEnumField(value: self.contentType, fieldNumber: 2)
     }
     if !self.url.isEmpty {
       try visitor.visitSingularStringField(value: self.url, fieldNumber: 3)
     }
-    if !self.method.isEmpty {
-      try visitor.visitSingularStringField(value: self.method, fieldNumber: 4)
+    if self.method != .get {
+      try visitor.visitSingularEnumField(value: self.method, fieldNumber: 4)
     }
     if !self.events.isEmpty {
       try visitor.visitRepeatedStringField(value: self.events, fieldNumber: 5)

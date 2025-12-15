@@ -14,7 +14,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -245,7 +247,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &newStatus,
+				Status: pointer.To(converters.ConvertStringToUserNotificationStatus(newStatus)),
 			},
 		}
 
@@ -270,7 +272,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: "test-notification-id",
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &statusValue,
+				Status: pointer.To(converters.ConvertStringToUserNotificationStatus(statusValue)),
 			},
 		}
 
@@ -296,7 +298,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &statusValue,
+				Status: pointer.To(converters.ConvertStringToUserNotificationStatus(statusValue)),
 			},
 		}
 
@@ -326,7 +328,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &statusValue,
+				Status: pointer.To(converters.ConvertStringToUserNotificationStatus(statusValue)),
 			},
 		}
 

@@ -20,6 +20,352 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+public enum Mealplanning_ValidIngredientStateAttributeType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case texture // = 0
+  case consistency // = 1
+  case temperature // = 2
+  case color // = 3
+  case appearance // = 4
+  case odor // = 5
+  case taste // = 6
+  case sound // = 7
+  case other // = 8
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .texture
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .texture
+    case 1: self = .consistency
+    case 2: self = .temperature
+    case 3: self = .color
+    case 4: self = .appearance
+    case 5: self = .odor
+    case 6: self = .taste
+    case 7: self = .sound
+    case 8: self = .other
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .texture: return 0
+    case .consistency: return 1
+    case .temperature: return 2
+    case .color: return 3
+    case .appearance: return 4
+    case .odor: return 5
+    case .taste: return 6
+    case .sound: return 7
+    case .other: return 8
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_ValidIngredientStateAttributeType] = [
+    .texture,
+    .consistency,
+    .temperature,
+    .color,
+    .appearance,
+    .odor,
+    .taste,
+    .sound,
+    .other,
+  ]
+
+}
+
+public enum Mealplanning_ValidVesselShape: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case vesselShapeHemisphere // = 0
+  case vesselShapeRectangle // = 1
+  case vesselShapeCone // = 2
+  case vesselShapePyramid // = 3
+  case vesselShapeCylinder // = 4
+  case vesselShapeSphere // = 5
+  case vesselShapeCube // = 6
+  case vesselShapeOther // = 7
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .vesselShapeHemisphere
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .vesselShapeHemisphere
+    case 1: self = .vesselShapeRectangle
+    case 2: self = .vesselShapeCone
+    case 3: self = .vesselShapePyramid
+    case 4: self = .vesselShapeCylinder
+    case 5: self = .vesselShapeSphere
+    case 6: self = .vesselShapeCube
+    case 7: self = .vesselShapeOther
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .vesselShapeHemisphere: return 0
+    case .vesselShapeRectangle: return 1
+    case .vesselShapeCone: return 2
+    case .vesselShapePyramid: return 3
+    case .vesselShapeCylinder: return 4
+    case .vesselShapeSphere: return 5
+    case .vesselShapeCube: return 6
+    case .vesselShapeOther: return 7
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_ValidVesselShape] = [
+    .vesselShapeHemisphere,
+    .vesselShapeRectangle,
+    .vesselShapeCone,
+    .vesselShapePyramid,
+    .vesselShapeCylinder,
+    .vesselShapeSphere,
+    .vesselShapeCube,
+    .vesselShapeOther,
+  ]
+
+}
+
+public enum Mealplanning_RecipeStepProductType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case ingredient // = 0
+  case instrument // = 1
+  case vessel // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .ingredient
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .ingredient
+    case 1: self = .instrument
+    case 2: self = .vessel
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .ingredient: return 0
+    case .instrument: return 1
+    case .vessel: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_RecipeStepProductType] = [
+    .ingredient,
+    .instrument,
+    .vessel,
+  ]
+
+}
+
+public enum Mealplanning_MealComponentType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case amuseBouche // = 1
+  case appetizer // = 2
+  case soup // = 3
+  case main // = 4
+  case salad // = 5
+  case beverage // = 6
+  case side // = 7
+  case dessert // = 8
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .amuseBouche
+    case 2: self = .appetizer
+    case 3: self = .soup
+    case 4: self = .main
+    case 5: self = .salad
+    case 6: self = .beverage
+    case 7: self = .side
+    case 8: self = .dessert
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .amuseBouche: return 1
+    case .appetizer: return 2
+    case .soup: return 3
+    case .main: return 4
+    case .salad: return 5
+    case .beverage: return 6
+    case .side: return 7
+    case .dessert: return 8
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealComponentType] = [
+    .unspecified,
+    .amuseBouche,
+    .appetizer,
+    .soup,
+    .main,
+    .salad,
+    .beverage,
+    .side,
+    .dessert,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanElectionMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case schulze // = 0
+  case instantRunoff // = 1
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .schulze
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .schulze
+    case 1: self = .instantRunoff
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .schulze: return 0
+    case .instantRunoff: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanElectionMethod] = [
+    .schulze,
+    .instantRunoff,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unknown // = 0
+  case alreadyOwned // = 1
+  case needs // = 2
+  case unavailable // = 3
+  case acquired // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unknown
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unknown
+    case 1: self = .alreadyOwned
+    case 2: self = .needs
+    case 3: self = .unavailable
+    case 4: self = .acquired
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unknown: return 0
+    case .alreadyOwned: return 1
+    case .needs: return 2
+    case .unavailable: return 3
+    case .acquired: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanGroceryListItemStatus] = [
+    .unknown,
+    .alreadyOwned,
+    .needs,
+    .unavailable,
+    .acquired,
+  ]
+
+}
+
+public enum Mealplanning_MealPlanTaskStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unfinished // = 0
+  case postponed // = 1
+  case ignored // = 2
+  case canceled // = 3
+  case finished // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unfinished
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unfinished
+    case 1: self = .postponed
+    case 2: self = .ignored
+    case 3: self = .canceled
+    case 4: self = .finished
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unfinished: return 0
+    case .postponed: return 1
+    case .ignored: return 2
+    case .canceled: return 3
+    case .finished: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanTaskStatus] = [
+    .unfinished,
+    .postponed,
+    .ignored,
+    .canceled,
+    .finished,
+  ]
+
+}
+
 public struct Mealplanning_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -911,7 +1257,7 @@ public struct Mealplanning_ValidIngredientState: Sendable {
 
   public var name: String = String()
 
-  public var attributeType: String = String()
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType = .texture
 
   public var slug: String = String()
 
@@ -937,7 +1283,7 @@ public struct Mealplanning_ValidIngredientStateCreationRequestInput: Sendable {
 
   public var description_p: String = String()
 
-  public var attributeType: String = String()
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType = .texture
 
   public var iconPath: String = String()
 
@@ -1111,8 +1457,8 @@ public struct Mealplanning_ValidIngredientStateUpdateRequestInput: Sendable {
   /// Clears the value of `description_p`. Subsequent reads from it will return its default value.
   public mutating func clearDescription_p() {self._description_p = nil}
 
-  public var attributeType: String {
-    get {return _attributeType ?? String()}
+  public var attributeType: Mealplanning_ValidIngredientStateAttributeType {
+    get {return _attributeType ?? .texture}
     set {_attributeType = newValue}
   }
   /// Returns true if `attributeType` has been explicitly set.
@@ -1137,7 +1483,7 @@ public struct Mealplanning_ValidIngredientStateUpdateRequestInput: Sendable {
   fileprivate var _slug: String? = nil
   fileprivate var _pastTense: String? = nil
   fileprivate var _description_p: String? = nil
-  fileprivate var _attributeType: String? = nil
+  fileprivate var _attributeType: Mealplanning_ValidIngredientStateAttributeType? = nil
   fileprivate var _iconPath: String? = nil
 }
 
@@ -2667,7 +3013,7 @@ public struct Mealplanning_ValidVessel: @unchecked Sendable {
     set {_uniqueStorage()._slug = newValue}
   }
 
-  public var shape: String {
+  public var shape: Mealplanning_ValidVesselShape {
     get {return _storage._shape}
     set {_uniqueStorage()._shape = newValue}
   }
@@ -2733,7 +3079,7 @@ public struct Mealplanning_ValidVesselCreationRequestInput: Sendable {
   /// Clears the value of `capacityUnitID`. Subsequent reads from it will return its default value.
   public mutating func clearCapacityUnitID() {self._capacityUnitID = nil}
 
-  public var shape: String = String()
+  public var shape: Mealplanning_ValidVesselShape = .vesselShapeHemisphere
 
   public var iconPath: String = String()
 
@@ -2888,8 +3234,8 @@ public struct Mealplanning_ValidVesselUpdateRequestInput: Sendable {
   /// Clears the value of `heightInMillimeters`. Subsequent reads from it will return its default value.
   public mutating func clearHeightInMillimeters() {self._heightInMillimeters = nil}
 
-  public var shape: String {
-    get {return _shape ?? String()}
+  public var shape: Mealplanning_ValidVesselShape {
+    get {return _shape ?? .vesselShapeHemisphere}
     set {_shape = newValue}
   }
   /// Returns true if `shape` has been explicitly set.
@@ -2914,7 +3260,7 @@ public struct Mealplanning_ValidVesselUpdateRequestInput: Sendable {
   fileprivate var _widthInMillimeters: Float? = nil
   fileprivate var _lengthInMillimeters: Float? = nil
   fileprivate var _heightInMillimeters: Float? = nil
-  fileprivate var _shape: String? = nil
+  fileprivate var _shape: Mealplanning_ValidVesselShape? = nil
 }
 
 public struct Mealplanning_UserIngredientPreference: Sendable {
@@ -7769,7 +8115,7 @@ public struct Mealplanning_Recipe: @unchecked Sendable {
     set {_uniqueStorage()._slug = newValue}
   }
 
-  public var yieldsComponentType: String {
+  public var yieldsComponentType: Mealplanning_MealComponentType {
     get {return _storage._yieldsComponentType}
     set {_uniqueStorage()._yieldsComponentType = newValue}
   }
@@ -7832,7 +8178,7 @@ public struct Mealplanning_RecipeCreationRequestInput: Sendable {
 
   public var slug: String = String()
 
-  public var yieldsComponentType: String = String()
+  public var yieldsComponentType: Mealplanning_MealComponentType = .unspecified
 
   public var estimatedPortions: Common_Float32RangeWithOptionalMax {
     get {return _estimatedPortions ?? Common_Float32RangeWithOptionalMax()}
@@ -9749,7 +10095,7 @@ public struct Mealplanning_RecipeStepProduct: @unchecked Sendable {
     set {_uniqueStorage()._belongsToRecipeStep = newValue}
   }
 
-  public var type: String {
+  public var type: Mealplanning_RecipeStepProductType {
     get {return _storage._type}
     set {_uniqueStorage()._type = newValue}
   }
@@ -9852,7 +10198,7 @@ public struct Mealplanning_RecipeStepProductCreationRequestInput: Sendable {
 
   public var storageInstructions: String = String()
 
-  public var type: String = String()
+  public var type: Mealplanning_RecipeStepProductType = .ingredient
 
   public var index: UInt32 = 0
 
@@ -9887,8 +10233,8 @@ public struct Mealplanning_RecipeStepProductUpdateRequestInput: @unchecked Senda
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   public mutating func clearName() {_uniqueStorage()._name = nil}
 
-  public var type: String {
-    get {return _storage._type ?? String()}
+  public var type: Mealplanning_RecipeStepProductType {
+    get {return _storage._type ?? .ingredient}
     set {_uniqueStorage()._type = newValue}
   }
   /// Returns true if `type` has been explicitly set.
@@ -10451,8 +10797,8 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   /// Clears the value of `eligibleForMeals`. Subsequent reads from it will return its default value.
   public mutating func clearEligibleForMeals() {self._eligibleForMeals = nil}
 
-  public var yieldsComponentType: String {
-    get {return _yieldsComponentType ?? String()}
+  public var yieldsComponentType: Mealplanning_MealComponentType {
+    get {return _yieldsComponentType ?? .unspecified}
     set {_yieldsComponentType = newValue}
   }
   /// Returns true if `yieldsComponentType` has been explicitly set.
@@ -10473,7 +10819,7 @@ public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
   fileprivate var _portionName: String? = nil
   fileprivate var _pluralPortionName: String? = nil
   fileprivate var _eligibleForMeals: Bool? = nil
-  fileprivate var _yieldsComponentType: String? = nil
+  fileprivate var _yieldsComponentType: Mealplanning_MealComponentType? = nil
 }
 
 /// ArchiveRecipe
@@ -13165,7 +13511,7 @@ public struct Mealplanning_MealComponent: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var componentType: String = String()
+  public var componentType: Mealplanning_MealComponentType = .unspecified
 
   public var recipe: Mealplanning_Recipe {
     get {return _recipe ?? Mealplanning_Recipe()}
@@ -13192,7 +13538,7 @@ public struct Mealplanning_MealComponentCreationRequestInput: Sendable {
 
   public var recipeID: String = String()
 
-  public var componentType: String = String()
+  public var componentType: Mealplanning_MealComponentType = .unspecified
 
   public var recipeScale: Float = 0
 
@@ -13215,8 +13561,8 @@ public struct Mealplanning_MealComponentUpdateRequestInput: Sendable {
   /// Clears the value of `recipeID`. Subsequent reads from it will return its default value.
   public mutating func clearRecipeID() {self._recipeID = nil}
 
-  public var componentType: String {
-    get {return _componentType ?? String()}
+  public var componentType: Mealplanning_MealComponentType {
+    get {return _componentType ?? .unspecified}
     set {_componentType = newValue}
   }
   /// Returns true if `componentType` has been explicitly set.
@@ -13238,7 +13584,7 @@ public struct Mealplanning_MealComponentUpdateRequestInput: Sendable {
   public init() {}
 
   fileprivate var _recipeID: String? = nil
-  fileprivate var _componentType: String? = nil
+  fileprivate var _componentType: Mealplanning_MealComponentType? = nil
   fileprivate var _recipeScale: Float? = nil
 }
 
@@ -13327,7 +13673,7 @@ public struct Mealplanning_MealPlan: @unchecked Sendable {
     set {_uniqueStorage()._notes = newValue}
   }
 
-  public var electionMethod: String {
+  public var electionMethod: Mealplanning_MealPlanElectionMethod {
     get {return _storage._electionMethod}
     set {_uniqueStorage()._electionMethod = newValue}
   }
@@ -13380,7 +13726,7 @@ public struct Mealplanning_MealPlanCreationRequestInput: Sendable {
 
   public var notes: String = String()
 
-  public var electionMethod: String = String()
+  public var electionMethod: Mealplanning_MealPlanElectionMethod = .schulze
 
   public var events: [Mealplanning_MealPlanEventCreationRequestInput] = []
 
@@ -13625,7 +13971,7 @@ public struct Mealplanning_MealPlanGroceryListItem: @unchecked Sendable {
     set {_uniqueStorage()._belongsToMealPlan = newValue}
   }
 
-  public var status: String {
+  public var status: Mealplanning_MealPlanGroceryListItemStatus {
     get {return _storage._status}
     set {_uniqueStorage()._status = newValue}
   }
@@ -13715,7 +14061,7 @@ public struct Mealplanning_MealPlanGroceryListItemCreationRequestInput: Sendable
   /// Clears the value of `quantityPurchased`. Subsequent reads from it will return its default value.
   public mutating func clearQuantityPurchased() {self._quantityPurchased = nil}
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanGroceryListItemStatus = .unknown
 
   public var belongsToMealPlan: String = String()
 
@@ -13822,8 +14168,8 @@ public struct Mealplanning_MealPlanGroceryListItemUpdateRequestInput: Sendable {
   /// Clears the value of `purchasePrice`. Subsequent reads from it will return its default value.
   public mutating func clearPurchasePrice() {self._purchasePrice = nil}
 
-  public var status: String {
-    get {return _status ?? String()}
+  public var status: Mealplanning_MealPlanGroceryListItemStatus {
+    get {return _status ?? .unknown}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
@@ -13852,7 +14198,7 @@ public struct Mealplanning_MealPlanGroceryListItemUpdateRequestInput: Sendable {
   fileprivate var _purchasedMeasurementUnitID: String? = nil
   fileprivate var _purchasedUpc: String? = nil
   fileprivate var _purchasePrice: Float? = nil
-  fileprivate var _status: String? = nil
+  fileprivate var _status: Mealplanning_MealPlanGroceryListItemStatus? = nil
   fileprivate var _quantityNeeded: Common_Float32RangeWithOptionalMaxUpdateRequestInput? = nil
 }
 
@@ -14263,7 +14609,7 @@ public struct Mealplanning_MealPlanTask: Sendable {
 
   public var id: String = String()
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanTaskStatus = .unfinished
 
   public var creationExplanation: String = String()
 
@@ -14304,7 +14650,7 @@ public struct Mealplanning_MealPlanTaskCreationRequestInput: Sendable {
   /// Clears the value of `assignedToUser`. Subsequent reads from it will return its default value.
   public mutating func clearAssignedToUser() {self._assignedToUser = nil}
 
-  public var status: String = String()
+  public var status: Mealplanning_MealPlanTaskStatus = .unfinished
 
   public var creationExplanation: String = String()
 
@@ -14326,8 +14672,8 @@ public struct Mealplanning_MealPlanTaskStatusChangeRequestInput: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: String {
-    get {return _status ?? String()}
+  public var status: Mealplanning_MealPlanTaskStatus {
+    get {return _status ?? .unfinished}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
@@ -14352,7 +14698,7 @@ public struct Mealplanning_MealPlanTaskStatusChangeRequestInput: Sendable {
 
   public init() {}
 
-  fileprivate var _status: String? = nil
+  fileprivate var _status: Mealplanning_MealPlanTaskStatus? = nil
   fileprivate var _assignedToUser: String? = nil
 }
 
@@ -16734,6 +17080,34 @@ public struct Mealplanning_AccountInstrumentOwnershipUpdateRequestInput: Sendabl
 
 fileprivate let _protobuf_package = "mealplanning"
 
+extension Mealplanning_ValidIngredientStateAttributeType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEMPERATURE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_COLOR\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_APPEARANCE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_ODOR\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TASTE\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_SOUND\0\u{1}VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER\0")
+}
+
+extension Mealplanning_ValidVesselShape: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VESSEL_SHAPE_HEMISPHERE\0\u{1}VESSEL_SHAPE_RECTANGLE\0\u{1}VESSEL_SHAPE_CONE\0\u{1}VESSEL_SHAPE_PYRAMID\0\u{1}VESSEL_SHAPE_CYLINDER\0\u{1}VESSEL_SHAPE_SPHERE\0\u{1}VESSEL_SHAPE_CUBE\0\u{1}VESSEL_SHAPE_OTHER\0")
+}
+
+extension Mealplanning_RecipeStepProductType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RECIPE_STEP_PRODUCT_TYPE_INGREDIENT\0\u{1}RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT\0\u{1}RECIPE_STEP_PRODUCT_TYPE_VESSEL\0")
+}
+
+extension Mealplanning_MealComponentType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_COMPONENT_TYPE_UNSPECIFIED\0\u{1}MEAL_COMPONENT_TYPE_AMUSE_BOUCHE\0\u{1}MEAL_COMPONENT_TYPE_APPETIZER\0\u{1}MEAL_COMPONENT_TYPE_SOUP\0\u{1}MEAL_COMPONENT_TYPE_MAIN\0\u{1}MEAL_COMPONENT_TYPE_SALAD\0\u{1}MEAL_COMPONENT_TYPE_BEVERAGE\0\u{1}MEAL_COMPONENT_TYPE_SIDE\0\u{1}MEAL_COMPONENT_TYPE_DESSERT\0")
+}
+
+extension Mealplanning_MealPlanElectionMethod: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_ELECTION_METHOD_SCHULZE\0\u{1}MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF\0")
+}
+
+extension Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ALREADY_OWNED\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_NEEDS\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNAVAILABLE\0\u{1}MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED\0")
+}
+
+extension Mealplanning_MealPlanTaskStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_TASK_STATUS_UNFINISHED\0\u{1}MEAL_PLAN_TASK_STATUS_POSTPONED\0\u{1}MEAL_PLAN_TASK_STATUS_IGNORED\0\u{1}MEAL_PLAN_TASK_STATUS_CANCELED\0\u{1}MEAL_PLAN_TASK_STATUS_FINISHED\0")
+}
+
 extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
@@ -18016,7 +18390,7 @@ extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobu
       case 6: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.attributeType) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.attributeType) }()
       case 10: try { try decoder.decodeSingularStringField(value: &self.slug) }()
       default: break
       }
@@ -18052,8 +18426,8 @@ extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobu
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 8)
     }
-    if !self.attributeType.isEmpty {
-      try visitor.visitSingularStringField(value: self.attributeType, fieldNumber: 9)
+    if self.attributeType != .texture {
+      try visitor.visitSingularEnumField(value: self.attributeType, fieldNumber: 9)
     }
     if !self.slug.isEmpty {
       try visitor.visitSingularStringField(value: self.slug, fieldNumber: 10)
@@ -18091,7 +18465,7 @@ extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.M
       case 2: try { try decoder.decodeSingularStringField(value: &self.slug) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.pastTense) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.attributeType) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.attributeType) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       default: break
       }
@@ -18111,8 +18485,8 @@ extension Mealplanning_ValidIngredientStateCreationRequestInput: SwiftProtobuf.M
     if !self.description_p.isEmpty {
       try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 4)
     }
-    if !self.attributeType.isEmpty {
-      try visitor.visitSingularStringField(value: self.attributeType, fieldNumber: 5)
+    if self.attributeType != .texture {
+      try visitor.visitSingularEnumField(value: self.attributeType, fieldNumber: 5)
     }
     if !self.iconPath.isEmpty {
       try visitor.visitSingularStringField(value: self.iconPath, fieldNumber: 6)
@@ -18342,7 +18716,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
       case 2: try { try decoder.decodeSingularStringField(value: &self._slug) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._pastTense) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._attributeType) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self._attributeType) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self._iconPath) }()
       default: break
       }
@@ -18367,7 +18741,7 @@ extension Mealplanning_ValidIngredientStateUpdateRequestInput: SwiftProtobuf.Mes
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
     try { if let v = self._attributeType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 5)
     } }()
     try { if let v = self._iconPath {
       try visitor.visitSingularStringField(value: v, fieldNumber: 6)
@@ -20259,7 +20633,7 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
     var _description_p: String = String()
     var _name: String = String()
     var _slug: String = String()
-    var _shape: String = String()
+    var _shape: Mealplanning_ValidVesselShape = .vesselShapeHemisphere
     var _id: String = String()
     var _widthInMillimeters: Float = 0
     var _lengthInMillimeters: Float = 0
@@ -20323,7 +20697,7 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._description_p) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 10: try { try decoder.decodeSingularStringField(value: &_storage._shape) }()
+        case 10: try { try decoder.decodeSingularEnumField(value: &_storage._shape) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 12: try { try decoder.decodeSingularFloatField(value: &_storage._widthInMillimeters) }()
         case 13: try { try decoder.decodeSingularFloatField(value: &_storage._lengthInMillimeters) }()
@@ -20371,8 +20745,8 @@ extension Mealplanning_ValidVessel: SwiftProtobuf.Message, SwiftProtobuf._Messag
       if !_storage._slug.isEmpty {
         try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 9)
       }
-      if !_storage._shape.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._shape, fieldNumber: 10)
+      if _storage._shape != .vesselShapeHemisphere {
+        try visitor.visitSingularEnumField(value: _storage._shape, fieldNumber: 10)
       }
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 11)
@@ -20445,7 +20819,7 @@ extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, S
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._capacityUnitID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.shape) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.shape) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.iconPath) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.pluralName) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.name) }()
@@ -20471,8 +20845,8 @@ extension Mealplanning_ValidVesselCreationRequestInput: SwiftProtobuf.Message, S
     try { if let v = self._capacityUnitID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
-    if !self.shape.isEmpty {
-      try visitor.visitSingularStringField(value: self.shape, fieldNumber: 2)
+    if self.shape != .vesselShapeHemisphere {
+      try visitor.visitSingularEnumField(value: self.shape, fieldNumber: 2)
     }
     if !self.iconPath.isEmpty {
       try visitor.visitSingularStringField(value: self.iconPath, fieldNumber: 3)
@@ -20556,7 +20930,7 @@ extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, Swi
       case 11: try { try decoder.decodeSingularFloatField(value: &self._widthInMillimeters) }()
       case 12: try { try decoder.decodeSingularFloatField(value: &self._lengthInMillimeters) }()
       case 13: try { try decoder.decodeSingularFloatField(value: &self._heightInMillimeters) }()
-      case 14: try { try decoder.decodeSingularStringField(value: &self._shape) }()
+      case 14: try { try decoder.decodeSingularEnumField(value: &self._shape) }()
       default: break
       }
     }
@@ -20607,7 +20981,7 @@ extension Mealplanning_ValidVesselUpdateRequestInput: SwiftProtobuf.Message, Swi
       try visitor.visitSingularFloatField(value: v, fieldNumber: 13)
     } }()
     try { if let v = self._shape {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 14)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 14)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -28016,7 +28390,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _createdByUser: String = String()
     var _source: String = String()
     var _slug: String = String()
-    var _yieldsComponentType: String = String()
+    var _yieldsComponentType: Mealplanning_MealComponentType = .unspecified
     var _prepTasks: [Mealplanning_RecipePrepTask] = []
     var _steps: [Mealplanning_RecipeStep] = []
     var _media: [Mealplanning_RecipeMedia] = []
@@ -28082,7 +28456,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 14: try { try decoder.decodeSingularStringField(value: &_storage._yieldsComponentType) }()
+        case 14: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
         case 15: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
         case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
@@ -28139,8 +28513,8 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._slug.isEmpty {
         try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 13)
       }
-      if !_storage._yieldsComponentType.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._yieldsComponentType, fieldNumber: 14)
+      if _storage._yieldsComponentType != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 14)
       }
       if !_storage._prepTasks.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 15)
@@ -28211,7 +28585,7 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
       case 5: try { try decoder.decodeSingularStringField(value: &self.pluralPortionName) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.portionName) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.slug) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.yieldsComponentType) }()
+      case 8: try { try decoder.decodeSingularEnumField(value: &self.yieldsComponentType) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
       case 10: try { try decoder.decodeRepeatedMessageField(value: &self.prepTasks) }()
       case 11: try { try decoder.decodeRepeatedMessageField(value: &self.steps) }()
@@ -28249,8 +28623,8 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
     if !self.slug.isEmpty {
       try visitor.visitSingularStringField(value: self.slug, fieldNumber: 7)
     }
-    if !self.yieldsComponentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.yieldsComponentType, fieldNumber: 8)
+    if self.yieldsComponentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.yieldsComponentType, fieldNumber: 8)
     }
     try { if let v = self._estimatedPortions {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
@@ -30641,7 +31015,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
     var _containedInVesselIndex: UInt32? = nil
     var _name: String = String()
     var _belongsToRecipeStep: String = String()
-    var _type: String = String()
+    var _type: Mealplanning_RecipeStepProductType = .ingredient
     var _id: String = String()
     var _storageInstructions: String = String()
     var _quantityNotes: String = String()
@@ -30705,7 +31079,7 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
         case 8: try { try decoder.decodeSingularUInt32Field(value: &_storage._containedInVesselIndex) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
-        case 11: try { try decoder.decodeSingularStringField(value: &_storage._type) }()
+        case 11: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._storageInstructions) }()
         case 14: try { try decoder.decodeSingularStringField(value: &_storage._quantityNotes) }()
@@ -30755,8 +31129,8 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
       if !_storage._belongsToRecipeStep.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToRecipeStep, fieldNumber: 10)
       }
-      if !_storage._type.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._type, fieldNumber: 11)
+      if _storage._type != .ingredient {
+        try visitor.visitSingularEnumField(value: _storage._type, fieldNumber: 11)
       }
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 12)
@@ -30833,7 +31207,7 @@ extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Mess
       case 6: try { try decoder.decodeSingularStringField(value: &self.quantityNotes) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.storageInstructions) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.type) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
       case 11: try { try decoder.decodeSingularBoolField(value: &self.compostable) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.isLiquid) }()
@@ -30872,8 +31246,8 @@ extension Mealplanning_RecipeStepProductCreationRequestInput: SwiftProtobuf.Mess
     if !self.storageInstructions.isEmpty {
       try visitor.visitSingularStringField(value: self.storageInstructions, fieldNumber: 8)
     }
-    if !self.type.isEmpty {
-      try visitor.visitSingularStringField(value: self.type, fieldNumber: 9)
+    if self.type != .ingredient {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 9)
     }
     if self.index != 0 {
       try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 10)
@@ -30915,7 +31289,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
 
   fileprivate class _StorageClass {
     var _name: String? = nil
-    var _type: String? = nil
+    var _type: Mealplanning_RecipeStepProductType? = nil
     var _measurementUnitID: String? = nil
     var _quantityNotes: String? = nil
     var _belongsToRecipeStep: String? = nil
@@ -30971,7 +31345,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
-        case 2: try { try decoder.decodeSingularStringField(value: &_storage._type) }()
+        case 2: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
         case 3: try { try decoder.decodeSingularStringField(value: &_storage._measurementUnitID) }()
         case 4: try { try decoder.decodeSingularStringField(value: &_storage._quantityNotes) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
@@ -31000,7 +31374,7 @@ extension Mealplanning_RecipeStepProductUpdateRequestInput: SwiftProtobuf.Messag
         try visitor.visitSingularStringField(value: v, fieldNumber: 1)
       } }()
       try { if let v = _storage._type {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
       } }()
       try { if let v = _storage._measurementUnitID {
         try visitor.visitSingularStringField(value: v, fieldNumber: 3)
@@ -31400,7 +31774,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       case 8: try { try decoder.decodeSingularStringField(value: &self._portionName) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._pluralPortionName) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self._eligibleForMeals) }()
-      case 11: try { try decoder.decodeSingularStringField(value: &self._yieldsComponentType) }()
+      case 11: try { try decoder.decodeSingularEnumField(value: &self._yieldsComponentType) }()
       default: break
       }
     }
@@ -31439,7 +31813,7 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       try visitor.visitSingularBoolField(value: v, fieldNumber: 10)
     } }()
     try { if let v = self._yieldsComponentType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -36037,7 +36411,7 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.componentType) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.componentType) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._recipe) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.recipeScale) }()
       default: break
@@ -36050,8 +36424,8 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.componentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.componentType, fieldNumber: 1)
+    if self.componentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.componentType, fieldNumber: 1)
     }
     try { if let v = self._recipe {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
@@ -36082,7 +36456,7 @@ extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message,
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.recipeID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.componentType) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.componentType) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.recipeScale) }()
       default: break
       }
@@ -36093,8 +36467,8 @@ extension Mealplanning_MealComponentCreationRequestInput: SwiftProtobuf.Message,
     if !self.recipeID.isEmpty {
       try visitor.visitSingularStringField(value: self.recipeID, fieldNumber: 1)
     }
-    if !self.componentType.isEmpty {
-      try visitor.visitSingularStringField(value: self.componentType, fieldNumber: 2)
+    if self.componentType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.componentType, fieldNumber: 2)
     }
     if self.recipeScale.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.recipeScale, fieldNumber: 3)
@@ -36122,7 +36496,7 @@ extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, S
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._recipeID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._componentType) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._componentType) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self._recipeScale) }()
       default: break
       }
@@ -36138,7 +36512,7 @@ extension Mealplanning_MealComponentUpdateRequestInput: SwiftProtobuf.Message, S
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
     try { if let v = self._componentType {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
     } }()
     try { if let v = self._recipeScale {
       try visitor.visitSingularFloatField(value: v, fieldNumber: 3)
@@ -36221,7 +36595,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _id: String = String()
     var _status: String = String()
     var _notes: String = String()
-    var _electionMethod: String = String()
+    var _electionMethod: Mealplanning_MealPlanElectionMethod = .schulze
     var _belongsToAccount: String = String()
     var _createdByUser: String = String()
     var _events: [Mealplanning_MealPlanEvent] = []
@@ -36275,7 +36649,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
-        case 8: try { try decoder.decodeSingularStringField(value: &_storage._electionMethod) }()
+        case 8: try { try decoder.decodeSingularEnumField(value: &_storage._electionMethod) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._belongsToAccount) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 11: try { try decoder.decodeRepeatedMessageField(value: &_storage._events) }()
@@ -36314,8 +36688,8 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if !_storage._notes.isEmpty {
         try visitor.visitSingularStringField(value: _storage._notes, fieldNumber: 7)
       }
-      if !_storage._electionMethod.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._electionMethod, fieldNumber: 8)
+      if _storage._electionMethod != .schulze {
+        try visitor.visitSingularEnumField(value: _storage._electionMethod, fieldNumber: 8)
       }
       if !_storage._belongsToAccount.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToAccount, fieldNumber: 9)
@@ -36375,7 +36749,7 @@ extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, Swif
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._votingDeadline) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.notes) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.electionMethod) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.electionMethod) }()
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.events) }()
       default: break
       }
@@ -36393,8 +36767,8 @@ extension Mealplanning_MealPlanCreationRequestInput: SwiftProtobuf.Message, Swif
     if !self.notes.isEmpty {
       try visitor.visitSingularStringField(value: self.notes, fieldNumber: 2)
     }
-    if !self.electionMethod.isEmpty {
-      try visitor.visitSingularStringField(value: self.electionMethod, fieldNumber: 3)
+    if self.electionMethod != .schulze {
+      try visitor.visitSingularEnumField(value: self.electionMethod, fieldNumber: 3)
     }
     if !self.events.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.events, fieldNumber: 4)
@@ -36612,7 +36986,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _purchasedMeasurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _belongsToMealPlan: String = String()
-    var _status: String = String()
+    var _status: Mealplanning_MealPlanGroceryListItemStatus = .unknown
     var _statusExplanation: String = String()
     var _id: String = String()
     var _quantityNeeded: Common_Float32RangeWithOptionalMax? = nil
@@ -36668,7 +37042,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._purchasedMeasurementUnit) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._belongsToMealPlan) }()
-        case 9: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
+        case 9: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._statusExplanation) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._quantityNeeded) }()
@@ -36710,8 +37084,8 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       if !_storage._belongsToMealPlan.isEmpty {
         try visitor.visitSingularStringField(value: _storage._belongsToMealPlan, fieldNumber: 8)
       }
-      if !_storage._status.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._status, fieldNumber: 9)
+      if _storage._status != .unknown {
+        try visitor.visitSingularEnumField(value: _storage._status, fieldNumber: 9)
       }
       if !_storage._statusExplanation.isEmpty {
         try visitor.visitSingularStringField(value: _storage._statusExplanation, fieldNumber: 10)
@@ -36774,7 +37148,7 @@ extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobu
       case 2: try { try decoder.decodeSingularStringField(value: &self._purchasedUpc) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self._purchasePrice) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self._quantityPurchased) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.belongsToMealPlan) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.validMeasurementUnitID) }()
@@ -36802,8 +37176,8 @@ extension Mealplanning_MealPlanGroceryListItemCreationRequestInput: SwiftProtobu
     try { if let v = self._quantityPurchased {
       try visitor.visitSingularFloatField(value: v, fieldNumber: 4)
     } }()
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 5)
+    if self.status != .unknown {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 5)
     }
     if !self.belongsToMealPlan.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToMealPlan, fieldNumber: 6)
@@ -36857,7 +37231,7 @@ extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.
       case 6: try { try decoder.decodeSingularStringField(value: &self._purchasedMeasurementUnitID) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._purchasedUpc) }()
       case 8: try { try decoder.decodeSingularFloatField(value: &self._purchasePrice) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self._status) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self._status) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._quantityNeeded) }()
       default: break
       }
@@ -36894,7 +37268,7 @@ extension Mealplanning_MealPlanGroceryListItemUpdateRequestInput: SwiftProtobuf.
       try visitor.visitSingularFloatField(value: v, fieldNumber: 8)
     } }()
     try { if let v = self._status {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 9)
     } }()
     try { if let v = self._quantityNeeded {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
@@ -37449,7 +37823,7 @@ extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 4: try { try decoder.decodeSingularMessageField(value: &self._completedAt) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.id) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 7: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.creationExplanation) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._mealPlanOption) }()
@@ -37481,8 +37855,8 @@ extension Mealplanning_MealPlanTask: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 6)
     }
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 7)
+    if self.status != .unfinished {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 7)
     }
     if !self.creationExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.creationExplanation, fieldNumber: 8)
@@ -37523,7 +37897,7 @@ extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, 
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.status) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.creationExplanation) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.mealPlanOptionID) }()
@@ -37541,8 +37915,8 @@ extension Mealplanning_MealPlanTaskCreationRequestInput: SwiftProtobuf.Message, 
     try { if let v = self._assignedToUser {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
-    if !self.status.isEmpty {
-      try visitor.visitSingularStringField(value: self.status, fieldNumber: 2)
+    if self.status != .unfinished {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 2)
     }
     if !self.creationExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.creationExplanation, fieldNumber: 3)
@@ -37581,7 +37955,7 @@ extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Messa
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._status) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._status) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.statusExplanation) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._assignedToUser) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.id) }()
@@ -37596,7 +37970,7 @@ extension Mealplanning_MealPlanTaskStatusChangeRequestInput: SwiftProtobuf.Messa
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     try { if let v = self._status {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     } }()
     if !self.statusExplanation.isEmpty {
       try visitor.visitSingularStringField(value: self.statusExplanation, fieldNumber: 2)

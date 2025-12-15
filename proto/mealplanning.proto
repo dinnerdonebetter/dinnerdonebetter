@@ -176,6 +176,18 @@ message ValidIngredientPreparationUpdateRequestInput {
   optional string valid_ingredient_id = 3;
 }
 
+enum ValidIngredientStateAttributeType {
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE = 0;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY = 1;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEMPERATURE = 2;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_COLOR = 3;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_APPEARANCE = 4;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_ODOR = 5;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TASTE = 6;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_SOUND = 7;
+  VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER = 8;
+}
+
 message ValidIngredientState {
   google.protobuf.Timestamp created_at = 1;
   optional google.protobuf.Timestamp archived_at = 2;
@@ -185,7 +197,7 @@ message ValidIngredientState {
   string icon_path = 6;
   string id = 7;
   string name = 8;
-  string attribute_type = 9;
+  ValidIngredientStateAttributeType attribute_type = 9;
   string slug = 10;
 }
 
@@ -194,7 +206,7 @@ message ValidIngredientStateCreationRequestInput {
   string slug = 2;
   string past_tense = 3;
   string description = 4;
-  string attribute_type = 5;
+  ValidIngredientStateAttributeType attribute_type = 5;
   string icon_path = 6;
 }
 
@@ -225,7 +237,7 @@ message ValidIngredientStateUpdateRequestInput {
   optional string slug = 2;
   optional string past_tense = 3;
   optional string description = 4;
-  optional string attribute_type = 5;
+  optional ValidIngredientStateAttributeType attribute_type = 5;
   optional string icon_path = 6;
 }
 
@@ -471,6 +483,17 @@ message ValidPreparationVesselUpdateRequestInput {
   optional string valid_vessel_id = 3;
 }
 
+enum ValidVesselShape {
+  VESSEL_SHAPE_HEMISPHERE = 0;
+  VESSEL_SHAPE_RECTANGLE = 1;
+  VESSEL_SHAPE_CONE = 2;
+  VESSEL_SHAPE_PYRAMID = 3;
+  VESSEL_SHAPE_CYLINDER = 4;
+  VESSEL_SHAPE_SPHERE = 5;
+  VESSEL_SHAPE_CUBE = 6;
+  VESSEL_SHAPE_OTHER = 7;
+}
+
 message ValidVessel {
   google.protobuf.Timestamp created_at = 1;
   optional google.protobuf.Timestamp archived_at = 2;
@@ -481,7 +504,7 @@ message ValidVessel {
   string description = 7;
   string name = 8;
   string slug = 9;
-  string shape = 10;
+  ValidVesselShape shape = 10;
   string id = 11;
   float width_in_millimeters = 12;
   float length_in_millimeters = 13;
@@ -494,7 +517,7 @@ message ValidVessel {
 
 message ValidVesselCreationRequestInput {
   optional string capacity_unit_id = 1;
-  string shape = 2;
+  ValidVesselShape shape = 2;
   string icon_path = 3;
   string plural_name = 4;
   string name = 5;
@@ -523,7 +546,7 @@ message ValidVesselUpdateRequestInput {
   optional float width_in_millimeters = 11;
   optional float length_in_millimeters = 12;
   optional float height_in_millimeters = 13;
-  optional string shape = 14;
+  optional ValidVesselShape shape = 14;
 }
 
 message UserIngredientPreference {
@@ -1553,7 +1576,7 @@ message Recipe {
   string created_by_user = 11;
   string source = 12;
   string slug = 13;
-  string yields_component_type = 14;
+  MealComponentType yields_component_type = 14;
   repeated RecipePrepTask prep_tasks = 15;
   repeated RecipeStep steps = 16;
   repeated RecipeMedia media = 17;
@@ -1569,7 +1592,7 @@ message RecipeCreationRequestInput {
   string plural_portion_name = 5;
   string portion_name = 6;
   string slug = 7;
-  string yields_component_type = 8;
+  MealComponentType yields_component_type = 8;
   common.Float32RangeWithOptionalMax estimated_portions = 9;
   repeated RecipePrepTaskWithinRecipeCreationRequestInput prep_tasks = 10;
   repeated RecipeStepCreationRequestInput steps = 11;
@@ -1909,6 +1932,12 @@ message RecipeStepInstrumentUpdateRequestInput {
   optional common.Uint32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
 }
 
+enum RecipeStepProductType {
+  RECIPE_STEP_PRODUCT_TYPE_INGREDIENT = 0;
+  RECIPE_STEP_PRODUCT_TYPE_INSTRUMENT = 1;
+  RECIPE_STEP_PRODUCT_TYPE_VESSEL = 2;
+}
+
 message RecipeStepProduct {
   google.protobuf.Timestamp created_at = 1;
   common.OptionalFloat32Range storage_temperature_in_celsius = 2;
@@ -1920,7 +1949,7 @@ message RecipeStepProduct {
   optional uint32 contained_in_vessel_index = 8;
   string name = 9;
   string belongs_to_recipe_step = 10;
-  string type = 11;
+  RecipeStepProductType type = 11;
   string id = 12;
   string storage_instructions = 13;
   string quantity_notes = 14;
@@ -1939,7 +1968,7 @@ message RecipeStepProductCreationRequestInput {
   string quantity_notes = 6;
   string name = 7;
   string storage_instructions = 8;
-  string type = 9;
+  RecipeStepProductType type = 9;
   uint32 index = 10;
   bool compostable = 11;
   bool is_liquid = 12;
@@ -1948,7 +1977,7 @@ message RecipeStepProductCreationRequestInput {
 
 message RecipeStepProductUpdateRequestInput {
   optional string name = 1;
-  optional string type = 2;
+  optional RecipeStepProductType type = 2;
   optional string measurement_unit_id = 3;
   optional string quantity_notes = 4;
   optional string belongs_to_recipe_step = 5;
@@ -2024,7 +2053,7 @@ message RecipeUpdateRequestInput {
   optional string portion_name = 8;
   optional string plural_portion_name = 9;
   optional bool eligible_for_meals = 10;
-  optional string yields_component_type = 11;
+  optional MealComponentType yields_component_type = 11;
 }
 
 // ArchiveRecipe
@@ -2642,20 +2671,32 @@ message Meal {
 }
 
 message MealComponent {
-  string component_type = 1;
+  MealComponentType component_type = 1;
   Recipe recipe = 2;
   float recipe_scale = 3;
 }
 
+enum MealComponentType {
+  MEAL_COMPONENT_TYPE_UNSPECIFIED = 0;
+  MEAL_COMPONENT_TYPE_AMUSE_BOUCHE = 1;
+  MEAL_COMPONENT_TYPE_APPETIZER = 2;
+  MEAL_COMPONENT_TYPE_SOUP = 3;
+  MEAL_COMPONENT_TYPE_MAIN = 4;
+  MEAL_COMPONENT_TYPE_SALAD = 5;
+  MEAL_COMPONENT_TYPE_BEVERAGE = 6;
+  MEAL_COMPONENT_TYPE_SIDE = 7;
+  MEAL_COMPONENT_TYPE_DESSERT = 8;
+}
+
 message MealComponentCreationRequestInput {
   string recipe_id = 1;
-  string component_type = 2;
+  MealComponentType component_type = 2;
   float recipe_scale = 3;
 }
 
 message MealComponentUpdateRequestInput {
   optional string recipe_id = 1;
-  optional string component_type = 2;
+  optional MealComponentType component_type = 2;
   optional float recipe_scale = 3;
 }
 
@@ -2667,6 +2708,11 @@ message MealCreationRequestInput {
   bool eligible_for_meal_plans = 5;
 }
 
+enum MealPlanElectionMethod {
+  MEAL_PLAN_ELECTION_METHOD_SCHULZE = 0;
+  MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF = 1;
+}
+
 message MealPlan {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp voting_deadline = 2;
@@ -2675,7 +2721,7 @@ message MealPlan {
   string id = 5;
   string status = 6;
   string notes = 7;
-  string election_method = 8;
+  MealPlanElectionMethod election_method = 8;
   string belongs_to_account = 9;
   string created_by_user = 10;
   repeated MealPlanEvent events = 11;
@@ -2686,7 +2732,7 @@ message MealPlan {
 message MealPlanCreationRequestInput {
   google.protobuf.Timestamp voting_deadline = 1;
   string notes = 2;
-  string election_method = 3;
+  MealPlanElectionMethod election_method = 3;
   repeated MealPlanEventCreationRequestInput events = 4;
 }
 
@@ -2719,6 +2765,14 @@ message MealPlanEventUpdateRequestInput {
   string belongs_to_meal_plan = 5;
 }
 
+enum MealPlanGroceryListItemStatus {
+  MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNKNOWN = 0;
+  MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ALREADY_OWNED = 1;
+  MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_NEEDS = 2;
+  MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_UNAVAILABLE = 3;
+  MEAL_PLAN_GROCERY_LIST_ITEM_STATUS_ACQUIRED = 4;
+}
+
 message MealPlanGroceryListItem {
   google.protobuf.Timestamp created_at = 1;
   optional float quantity_purchased = 2;
@@ -2728,7 +2782,7 @@ message MealPlanGroceryListItem {
   optional google.protobuf.Timestamp last_updated_at = 6;
   ValidMeasurementUnit purchased_measurement_unit = 7;
   string belongs_to_meal_plan = 8;
-  string status = 9;
+  MealPlanGroceryListItemStatus status = 9;
   string status_explanation = 10;
   string id = 11;
   common.Float32RangeWithOptionalMax quantity_needed = 12;
@@ -2741,7 +2795,7 @@ message MealPlanGroceryListItemCreationRequestInput {
   optional string purchased_upc = 2;
   optional float purchase_price = 3;
   optional float quantity_purchased = 4;
-  string status = 5;
+  MealPlanGroceryListItemStatus status = 5;
   string belongs_to_meal_plan = 6;
   string valid_ingredient_id = 7;
   string valid_measurement_unit_id = 8;
@@ -2758,7 +2812,7 @@ message MealPlanGroceryListItemUpdateRequestInput {
   optional string purchased_measurement_unit_id = 6;
   optional string purchased_upc = 7;
   optional float purchase_price = 8;
-  optional string status = 9;
+  optional MealPlanGroceryListItemStatus status = 9;
   optional common.Float32RangeWithOptionalMaxUpdateRequestInput quantity_needed = 10;
 }
 
@@ -2833,6 +2887,14 @@ message MissingVote {
   string user_id = 3;
 }
 
+enum MealPlanTaskStatus {
+  MEAL_PLAN_TASK_STATUS_UNFINISHED = 0;
+  MEAL_PLAN_TASK_STATUS_POSTPONED = 1;
+  MEAL_PLAN_TASK_STATUS_IGNORED = 2;
+  MEAL_PLAN_TASK_STATUS_CANCELED = 3;
+  MEAL_PLAN_TASK_STATUS_FINISHED = 4;
+}
+
 message MealPlanTask {
   RecipePrepTask recipe_prep_task = 1;
   google.protobuf.Timestamp created_at = 2;
@@ -2840,7 +2902,7 @@ message MealPlanTask {
   google.protobuf.Timestamp completed_at = 4;
   optional string assigned_to_user = 5;
   string id = 6;
-  string status = 7;
+  MealPlanTaskStatus status = 7;
   string creation_explanation = 8;
   string status_explanation = 9;
   MealPlanOption meal_plan_option = 10;
@@ -2848,7 +2910,7 @@ message MealPlanTask {
 
 message MealPlanTaskCreationRequestInput {
   optional string assigned_to_user = 1;
-  string status = 2;
+  MealPlanTaskStatus status = 2;
   string creation_explanation = 3;
   string status_explanation = 4;
   string meal_plan_option_id = 5;
@@ -2856,7 +2918,7 @@ message MealPlanTaskCreationRequestInput {
 }
 
 message MealPlanTaskStatusChangeRequestInput {
-  optional string status = 1;
+  optional MealPlanTaskStatus status = 1;
   string status_explanation = 2;
   optional string assigned_to_user = 3;
   string id = 4;

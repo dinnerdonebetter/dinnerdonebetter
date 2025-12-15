@@ -80,7 +80,7 @@ class HomeViewModel {
 
       // Filter to show only items that aren't fully acquired
       let activeItems = items.filter { item in
-        item.status.lowercased() != "acquired" && item.status.lowercased() != "archived"
+        item.status != .acquired
       }
 
       return activeItems.isEmpty ? nil : (mealPlanID, activeItems)

@@ -494,13 +494,22 @@ func ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(x *mealpl
 	}
 }
 
+func ConvertStringToValidIngredientStateAttributeType(s string) mealplanninggrpc.ValidIngredientStateAttributeType {
+	value, ok := mealplanninggrpc.ValidIngredientStateAttributeType_value[s]
+	if !ok {
+		return mealplanninggrpc.ValidIngredientStateAttributeType_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_OTHER
+	}
+	return mealplanninggrpc.ValidIngredientStateAttributeType(value)
+
+}
+
 func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateCreationRequestInput) *mealplanning.ValidIngredientStateCreationRequestInput {
 	return &mealplanning.ValidIngredientStateCreationRequestInput{
 		Name:          x.Name,
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
 		Description:   x.Description,
-		AttributeType: x.AttributeType,
+		AttributeType: x.AttributeType.String(),
 		IconPath:      x.IconPath,
 	}
 }
@@ -511,29 +520,39 @@ func ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCr
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
 		Description:   x.Description,
-		AttributeType: x.AttributeType,
+		AttributeType: ConvertStringToValidIngredientStateAttributeType(x.AttributeType),
 		IconPath:      x.IconPath,
 	}
 }
 
 func ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateUpdateRequestInput) *mealplanning.ValidIngredientStateUpdateRequestInput {
+	var attributeType *string
+	if x.AttributeType != nil {
+		attributeType = pointer.To(x.AttributeType.String())
+	}
+
 	return &mealplanning.ValidIngredientStateUpdateRequestInput{
 		Name:          x.Name,
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
 		Description:   x.Description,
-		AttributeType: x.AttributeType,
+		AttributeType: attributeType,
 		IconPath:      x.IconPath,
 	}
 }
 
 func ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(x *mealplanning.ValidIngredientStateUpdateRequestInput) *mealplanninggrpc.ValidIngredientStateUpdateRequestInput {
+	var attributeType *mealplanninggrpc.ValidIngredientStateAttributeType
+	if x.AttributeType != nil {
+		attributeType = pointer.To(ConvertStringToValidIngredientStateAttributeType(*x.AttributeType))
+	}
+
 	return &mealplanninggrpc.ValidIngredientStateUpdateRequestInput{
 		Name:          x.Name,
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
 		Description:   x.Description,
-		AttributeType: x.AttributeType,
+		AttributeType: attributeType,
 		IconPath:      x.IconPath,
 	}
 }
@@ -548,7 +567,7 @@ func ConvertValidIngredientStateToGRPCValidIngredientState(x *mealplanning.Valid
 		IconPath:      x.IconPath,
 		Id:            x.ID,
 		Name:          x.Name,
-		AttributeType: x.AttributeType,
+		AttributeType: ConvertStringToValidIngredientStateAttributeType(x.AttributeType),
 		Slug:          x.Slug,
 	}
 }
@@ -563,7 +582,7 @@ func ConvertGRPCValidIngredientStateToValidIngredientState(x *mealplanninggrpc.V
 		IconPath:      x.IconPath,
 		ID:            x.Id,
 		Name:          x.Name,
-		AttributeType: x.AttributeType,
+		AttributeType: x.AttributeType.String(),
 		Slug:          x.Slug,
 	}
 }
@@ -1178,10 +1197,19 @@ func ConvertGRPCValidPreparationVesselToValidPreparationVessel(x *mealplanninggr
 	}
 }
 
+func ConvertStringToValidVesselShape(s string) mealplanninggrpc.ValidVesselShape {
+	value, ok := mealplanninggrpc.ValidVesselShape_value[s]
+	if !ok {
+		return mealplanninggrpc.ValidVesselShape_VESSEL_SHAPE_OTHER
+	}
+	return mealplanninggrpc.ValidVesselShape(value)
+
+}
+
 func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
 	return &mealplanning.ValidVesselCreationRequestInput{
 		CapacityUnitID:                 x.CapacityUnitId,
-		Shape:                          x.Shape,
+		Shape:                          x.Shape.String(),
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Name:                           x.Name,
@@ -1200,7 +1228,7 @@ func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput
 func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(x *mealplanning.ValidVesselCreationRequestInput) *mealplanninggrpc.ValidVesselCreationRequestInput {
 	return &mealplanninggrpc.ValidVesselCreationRequestInput{
 		CapacityUnitId:                 x.CapacityUnitID,
-		Shape:                          x.Shape,
+		Shape:                          ConvertStringToValidVesselShape(x.Shape),
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Name:                           x.Name,
@@ -1217,6 +1245,11 @@ func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput
 }
 
 func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *mealplanninggrpc.ValidVesselUpdateRequestInput) *mealplanning.ValidVesselUpdateRequestInput {
+	var shape *string
+	if x.Shape != nil {
+		shape = pointer.To(x.Shape.String())
+	}
+
 	return &mealplanning.ValidVesselUpdateRequestInput{
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
@@ -1231,11 +1264,16 @@ func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
-		Shape:                          x.Shape,
+		Shape:                          shape,
 	}
 }
 
 func ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x *mealplanning.ValidVesselUpdateRequestInput) *mealplanninggrpc.ValidVesselUpdateRequestInput {
+	var shape *mealplanninggrpc.ValidVesselShape
+	if x.Shape != nil {
+		shape = pointer.To(ConvertStringToValidVesselShape(*x.Shape))
+	}
+
 	return &mealplanninggrpc.ValidVesselUpdateRequestInput{
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
@@ -1250,7 +1288,7 @@ func ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x *
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
-		Shape:                          x.Shape,
+		Shape:                          shape,
 	}
 }
 
@@ -1265,7 +1303,7 @@ func ConvertValidVesselToGRPCValidVessel(x *mealplanning.ValidVessel) *mealplann
 		LastUpdatedAt:                  converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		CapacityUnit:                   capacityUnit,
-		Shape:                          x.Shape,
+		Shape:                          ConvertStringToValidVesselShape(x.Shape),
 		Description:                    x.Description,
 		Name:                           x.Name,
 		Slug:                           x.Slug,
@@ -1293,7 +1331,7 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		CapacityUnit:                   capacityUnit,
-		Shape:                          x.Shape,
+		Shape:                          x.Shape.String(),
 		Description:                    x.Description,
 		Name:                           x.Name,
 		Slug:                           x.Slug,
