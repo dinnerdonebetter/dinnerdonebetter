@@ -219,7 +219,7 @@ extension Dataprivacy_AggregateUserDataReportRequest: SwiftProtobuf.Message, Swi
 
 extension Dataprivacy_AggregateUserDataReportResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AggregateUserDataReportResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}ReportID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}report_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -277,7 +277,7 @@ extension Dataprivacy_DestroyAllUserDataRequest: SwiftProtobuf.Message, SwiftPro
 
 extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DestroyAllUserDataResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Successful\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}successful\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -316,7 +316,7 @@ extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftPr
 
 extension Dataprivacy_FetchUserDataReportRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}UserDataAggregationReportID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_data_aggregation_report_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -346,7 +346,7 @@ extension Dataprivacy_FetchUserDataReportRequest: SwiftProtobuf.Message, SwiftPr
 
 extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserDataCollection\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_data_collection\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -423,7 +423,7 @@ extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftP
 
 extension Dataprivacy_UserDataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UserDataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ReportID\0\u{1}IdentityDataCollection\0\u{1}AuditDataCollection\0\u{1}SettingsDataCollection\0\u{1}WebhooksDataCollection\0\u{1}MealPlanningDataCollection\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}report_id\0\u{3}identity_data_collection\0\u{3}audit_data_collection\0\u{3}settings_data_collection\0\u{3}webhooks_data_collection\0\u{3}meal_planning_data_collection\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
