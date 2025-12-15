@@ -25,6 +25,52 @@ type RowLinkGenerator[T any] func(item T) string
 // PaginationURLGenerator is a function type that generates a URL for pagination with the given cursor.
 type PaginationURLGenerator func(cursor string) string
 
+// CreateStatusFilter creates a status filter toggle that uses the search endpoint.
+func CreateStatusFilter(searchEndpoint string, currentStatus string, tableID string) g.Node {
+	statusOptions := []struct {
+		Value string
+		Label string
+	}{
+		{Value: "submitted", Label: "Submitted"},
+		{Value: "approved", Label: "Approved"},
+	}
+
+	var optionNodes []g.Node
+	for _, opt := range statusOptions {
+		optionNodes = append(optionNodes,
+			ghtml.Option(
+				g.If(opt.Value == currentStatus, ghtml.Selected()),
+				g.Attr("value", opt.Value),
+				g.Text(opt.Label),
+			),
+		)
+	}
+
+	selectID := fmt.Sprintf("%s-status-filter", tableID)
+
+	return ghtml.Div(
+		ghtml.Class("flex items-center gap-2 mr-4"),
+		ghtml.Label(
+			ghtml.Class("text-sm text-gray-600 whitespace-nowrap"),
+			g.Text("Status:"),
+		),
+		ghtml.Select(
+			ghtml.Class("px-2 py-1 text-sm border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"),
+			g.Attr("name", "status"),
+			g.Attr("id", selectID),
+			g.Attr("hx-get", searchEndpoint),
+			g.Attr("hx-target", "#search-results"),
+			g.Attr("hx-swap", "innerHTML"),
+			g.Attr("hx-push-url", "true"),
+			g.Attr("hx-trigger", "change"),
+			// Include the search input value to preserve search query
+			g.Attr("hx-include", "#search"),
+			g.Attr("hx-vals", "js:{status: this.value}"),
+			g.Group(optionNodes),
+		),
+	)
+}
+
 // CreatePageSizeSelector creates a page size selector dropdown that uses the search endpoint.
 func CreatePageSizeSelector(searchEndpoint string, currentLimit uint8, tableID string) g.Node {
 	pageSizeOptions := []uint8{25, 50, 100, 250}

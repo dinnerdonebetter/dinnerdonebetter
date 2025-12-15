@@ -1014,6 +1014,11 @@ func ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(input *mealplanningsv
 }
 
 func ConvertRecipeStepProductToGRPCRecipeStepProduct(input *mealplanning.RecipeStepProduct) *mealplanningsvc.RecipeStepProduct {
+	var validMeasurementUnit *mealplanningsvc.ValidMeasurementUnit
+	if input.MeasurementUnit != nil {
+		validMeasurementUnit = ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(input.MeasurementUnit)
+	}
+
 	rsp := &mealplanningsvc.RecipeStepProduct{
 		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
@@ -1030,7 +1035,7 @@ func ConvertRecipeStepProductToGRPCRecipeStepProduct(input *mealplanning.RecipeS
 		},
 		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		MeasurementUnit:     ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(input.MeasurementUnit),
+		MeasurementUnit:     validMeasurementUnit,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Name:                input.Name,
 		Type:                ConvertStringToRecipeStepProductType(input.Type),

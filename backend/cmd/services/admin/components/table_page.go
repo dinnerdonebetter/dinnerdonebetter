@@ -34,6 +34,7 @@ type TablePageProps[T any] struct {
 	Data                  []T
 	EmptyStateActions     []g.Node
 	ShowSearch            bool
+	SearchModifiers       []g.Node
 }
 
 // TablePageResult contains both the rendered page and metadata about the table.
@@ -104,6 +105,7 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 		HTMXSearchTrigger: props.HTMXSearchTrigger,
 		Actions:           props.Actions,
 		PageSizeSelector:  pageSizeSelector,
+		SearchModifiers:   props.SearchModifiers,
 	},
 		// Wrap table in horizontally scrollable container for HTMX targeting
 		g.El("div",

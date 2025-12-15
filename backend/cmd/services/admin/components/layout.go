@@ -12,6 +12,7 @@ import (
 // ContentContainerProps holds configuration for content containers.
 type ContentContainerProps struct {
 	PageSizeSelector  g.Node
+	SearchModifiers   []g.Node
 	Palette           *design.Palette
 	Title             string
 	Subtitle          string
@@ -67,6 +68,14 @@ func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 	// Page size selector (if provided) - between search and actions
 	if props.PageSizeSelector != nil {
 		headerContent = append(headerContent, props.PageSizeSelector)
+	}
+
+	// Search modifiers (if provided) - between page size selector and actions
+	if len(props.SearchModifiers) > 0 {
+		headerContent = append(headerContent, ghtml.Div(
+			ghtml.Class("flex items-center gap-2"),
+			g.Group(props.SearchModifiers),
+		))
 	}
 
 	// Actions section - takes only needed space
