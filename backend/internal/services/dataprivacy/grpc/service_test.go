@@ -62,7 +62,7 @@ func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 	})
 }
 
@@ -82,7 +82,7 @@ func TestServiceImpl_DestroyAllUserData(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 	})
 }
 
@@ -102,6 +102,6 @@ func TestServiceImpl_FetchUserDataReport(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
+		assert.NotEmpty(t, response.ResponseDetails.TraceId)
 	})
 }

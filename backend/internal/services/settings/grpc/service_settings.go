@@ -32,7 +32,7 @@ func (s *serviceImpl) CreateServiceSetting(ctx context.Context, request *setting
 
 	x := &settingssvc.CreateServiceSettingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertServiceSettingToGRPCServiceSetting(created),
 	}
@@ -53,7 +53,7 @@ func (s *serviceImpl) GetServiceSetting(ctx context.Context, request *settingssv
 
 	x := &settingssvc.GetServiceSettingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertServiceSettingToGRPCServiceSetting(serviceSetting),
 	}
@@ -75,7 +75,7 @@ func (s *serviceImpl) GetServiceSettings(ctx context.Context, request *settingss
 
 	x := &settingssvc.GetServiceSettingsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettings.Pagination, filter),
 	}
@@ -103,7 +103,7 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 
 	x := &settingssvc.SearchForServiceSettingsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(serviceSettings.Pagination, filter),
 	}
@@ -127,7 +127,7 @@ func (s *serviceImpl) ArchiveServiceSetting(ctx context.Context, request *settin
 
 	x := &settingssvc.ArchiveServiceSettingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

@@ -37,7 +37,7 @@ func (s *serviceImpl) CreateWebhook(ctx context.Context, request *webhookssvc.Cr
 
 	x := &webhookssvc.CreateWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertWebhookToGRPCWebhook(created),
 	}
@@ -65,7 +65,7 @@ func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *webho
 
 	x := &webhookssvc.AddWebhookTriggerEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(created),
 	}
@@ -92,7 +92,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 
 	x := &webhookssvc.GetWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertWebhookToGRPCWebhook(webhook),
 	}
@@ -120,7 +120,7 @@ func (s *serviceImpl) GetWebhooks(ctx context.Context, request *webhookssvc.GetW
 
 	x := &webhookssvc.GetWebhooksResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(retrieved.Pagination, filter),
 	}
@@ -150,7 +150,7 @@ func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *webhookssvc.A
 
 	x := &webhookssvc.ArchiveWebhookResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -169,7 +169,7 @@ func (s *serviceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *w
 
 	x := &webhookssvc.ArchiveWebhookTriggerEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

@@ -29,7 +29,7 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 	logger.Info("meal plan finalization worker invoked")
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.
@@ -85,7 +85,7 @@ func (s *service) UserDataAggregationRequestHandler(res http.ResponseWriter, req
 	logger.Info("meal plan finalization worker invoked")
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.
@@ -145,7 +145,7 @@ func (s *service) ReadUserDataAggregationReportHandler(res http.ResponseWriter, 
 	logger.Info("meal plan finalization worker invoked")
 
 	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
+		TraceId: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.

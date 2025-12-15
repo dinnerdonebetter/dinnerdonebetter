@@ -23,7 +23,7 @@ func (s *serviceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc
 
 	x := &oauthsvc.ArchiveOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -45,7 +45,7 @@ func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 
 	x := &oauthsvc.CreateOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(created),
 	}
@@ -66,7 +66,7 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 
 	x := &oauthsvc.GetOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(oauth2Client),
 	}
@@ -88,7 +88,7 @@ func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 
 	x := &oauthsvc.GetOAuth2ClientsResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(oauth2Clients.Pagination, filter),
 	}

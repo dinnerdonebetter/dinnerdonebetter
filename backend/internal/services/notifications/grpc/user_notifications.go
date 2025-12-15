@@ -32,7 +32,7 @@ func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notifica
 
 	x := &notificationssvc.GetUserNotificationResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertUserNotificationToGRPCUserNotification(notification),
 	}
@@ -62,7 +62,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	x := &notificationssvc.GetUserNotificationsResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(notifs.Pagination, filter),
 	}
@@ -103,7 +103,7 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 
 	x := &notificationssvc.UpdateUserNotificationResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertUserNotificationToGRPCUserNotification(updated),
 	}

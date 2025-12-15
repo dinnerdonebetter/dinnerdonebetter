@@ -33,7 +33,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 
 	x := &mealplanningsvc.ArchiveMealResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -59,7 +59,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 
 	x := &mealplanningsvc.ArchiveMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -81,7 +81,7 @@ func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealpla
 
 	x := &mealplanningsvc.ArchiveMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -103,7 +103,7 @@ func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 
 	x := &mealplanningsvc.ArchiveMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -126,7 +126,7 @@ func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealpl
 
 	x := &mealplanningsvc.ArchiveMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -150,7 +150,7 @@ func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 
 	x := &mealplanningsvc.ArchiveMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -176,7 +176,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 
 	x := &mealplanningsvc.ArchiveUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -207,7 +207,7 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanningsvc.C
 
 	x := &mealplanningsvc.CreateMealResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealToGRPCMeal(created),
 	}
@@ -235,7 +235,7 @@ func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplannings
 
 	x := &mealplanningsvc.CreateMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealPlanToGRPCMealPlan(created),
 	}
@@ -260,7 +260,7 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 
 	x := &mealplanningsvc.CreateMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealPlanEventToGRPCMealPlanEvent(created),
 	}
@@ -285,7 +285,7 @@ func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 
 	x := &mealplanningsvc.CreateMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(created),
 	}
@@ -310,7 +310,7 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 
 	x := &mealplanningsvc.CreateMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealPlanOptionToGRPCMealPlanOption(created),
 	}
@@ -343,7 +343,7 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 
 	x := &mealplanningsvc.CreateMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -371,7 +371,7 @@ func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 
 	x := &mealplanningsvc.CreateMealPlanTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealPlanTaskToGRPCMealPlanTask(created),
 	}
@@ -399,7 +399,7 @@ func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, reques
 
 	x := &mealplanningsvc.CreateUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -430,7 +430,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 
 	x := &mealplanningsvc.FinalizeMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Finalized: finalized,
 	}
@@ -453,7 +453,7 @@ func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanningsvc.GetM
 
 	x := &mealplanningsvc.GetMealResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealToGRPCMeal(meal),
 	}
@@ -481,7 +481,7 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.
 
 	x := &mealplanningsvc.GetMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanToGRPCMealPlan(mealPlan),
 	}
@@ -509,7 +509,7 @@ func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealp
 
 	x := &mealplanningsvc.GetMealPlansForAccountResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealPlansResult.Pagination, filter),
 	}
@@ -537,7 +537,7 @@ func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplannin
 
 	x := &mealplanningsvc.GetMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanEventToGRPCMealPlanEvent(mealPlanEvent),
 	}
@@ -562,7 +562,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 
 	x := &mealplanningsvc.GetMealPlanEventsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -589,7 +589,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 
 	x := &mealplanningsvc.GetMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(mealPlanGroceryListItem),
 	}
@@ -614,7 +614,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 
 	x := &mealplanningsvc.GetMealPlanGroceryListItemsForMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -642,7 +642,7 @@ func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanni
 
 	x := &mealplanningsvc.GetMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanOptionToGRPCMealPlanOption(mealPlanOption),
 	}
@@ -668,7 +668,7 @@ func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealpl
 
 	x := &mealplanningsvc.GetMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(mealPlanOptionVote),
 	}
@@ -695,7 +695,7 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 
 	x := &mealplanningsvc.GetMealPlanOptionVotesResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -723,7 +723,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 
 	x := &mealplanningsvc.GetMealPlanOptionsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -750,7 +750,7 @@ func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning
 
 	x := &mealplanningsvc.GetMealPlanTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertMealPlanTaskToGRPCMealPlanTask(mealPlanTask),
 	}
@@ -775,7 +775,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 
 	x := &mealplanningsvc.GetMealPlanTasksResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealPlanTasks.Pagination, filter),
 	}
@@ -802,7 +802,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanningsvc.Get
 
 	x := &mealplanningsvc.GetMealsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(mealsResult.Pagination, filter),
 	}
@@ -832,7 +832,7 @@ func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *
 
 	x := &mealplanningsvc.GetUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(userIngredientPreference),
 	}
@@ -859,7 +859,7 @@ func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request 
 
 	x := &mealplanningsvc.GetUserIngredientPreferencesResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -883,7 +883,7 @@ func (s *serviceImpl) RunFinalizeMealPlanWorker(ctx context.Context, _ *mealplan
 
 	x := &mealplanningsvc.RunFinalizeMealPlanWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Finalized: uint32(finalized),
 	}
@@ -903,7 +903,7 @@ func (s *serviceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Contex
 
 	x := &mealplanningsvc.RunMealPlanGroceryListInitializerWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -922,7 +922,7 @@ func (s *serviceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, _ *mealp
 
 	x := &mealplanningsvc.RunMealPlanTaskCreatorWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -944,7 +944,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 
 	x := &mealplanningsvc.SearchForMealsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(meals.Pagination, filter),
 	}
@@ -982,7 +982,7 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplannings
 
 	x := &mealplanningsvc.UpdateMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanToGRPCMealPlan(updated),
 	}
@@ -1012,7 +1012,7 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 
 	x := &mealplanningsvc.UpdateMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanEventToGRPCMealPlanEvent(updated),
 	}
@@ -1042,7 +1042,7 @@ func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 
 	x := &mealplanningsvc.UpdateMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(updated),
 	}
@@ -1073,7 +1073,7 @@ func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 
 	x := &mealplanningsvc.UpdateMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanOptionToGRPCMealPlanOption(updated),
 	}
@@ -1104,7 +1104,7 @@ func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 
 	x := &mealplanningsvc.UpdateMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(updated),
 	}
@@ -1134,7 +1134,7 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 
 	x := &mealplanningsvc.UpdateMealPlanTaskStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertMealPlanTaskToGRPCMealPlanTask(updated),
 	}
@@ -1168,7 +1168,7 @@ func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 
 	x := &mealplanningsvc.UpdateUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(updated),
 	}
@@ -1199,7 +1199,7 @@ func (s *serviceImpl) CreateAccountInstrumentOwnership(ctx context.Context, requ
 
 	x := &mealplanningsvc.CreateAccountInstrumentOwnershipResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(created),
 	}
@@ -1227,7 +1227,7 @@ func (s *serviceImpl) GetAccountInstrumentOwnership(ctx context.Context, request
 
 	x := &mealplanningsvc.GetAccountInstrumentOwnershipResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(result),
 	}
@@ -1255,7 +1255,7 @@ func (s *serviceImpl) GetAccountInstrumentOwnerships(ctx context.Context, reques
 
 	x := &mealplanningsvc.GetAccountInstrumentOwnershipsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1292,7 +1292,7 @@ func (s *serviceImpl) UpdateAccountInstrumentOwnership(ctx context.Context, requ
 
 	x := &mealplanningsvc.UpdateAccountInstrumentOwnershipResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1318,7 +1318,7 @@ func (s *serviceImpl) ArchiveAccountInstrumentOwnership(ctx context.Context, req
 
 	x := &mealplanningsvc.ArchiveAccountInstrumentOwnershipResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

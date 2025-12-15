@@ -33,7 +33,7 @@ func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 
 	x := &mealplanning.ArchiveRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -55,7 +55,7 @@ func (s *serviceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealpl
 
 	x := &mealplanning.ArchiveRecipePrepTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -77,7 +77,7 @@ func (s *serviceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplan
 
 	x := &mealplanning.ArchiveRecipeRatingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -99,7 +99,7 @@ func (s *serviceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanni
 
 	x := &mealplanning.ArchiveRecipeStepResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -122,7 +122,7 @@ func (s *serviceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, 
 
 	x := &mealplanning.ArchiveRecipeStepCompletionConditionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -145,7 +145,7 @@ func (s *serviceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *
 
 	x := &mealplanning.ArchiveRecipeStepIngredientResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -168,7 +168,7 @@ func (s *serviceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *
 
 	x := &mealplanning.ArchiveRecipeStepInstrumentResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -191,7 +191,7 @@ func (s *serviceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mea
 
 	x := &mealplanning.ArchiveRecipeStepProductResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -214,7 +214,7 @@ func (s *serviceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *meal
 
 	x := &mealplanning.ArchiveRecipeStepVesselResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -241,7 +241,7 @@ func (s *serviceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 
 	x := &mealplanning.CloneRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Cloned: converters.ConvertRecipeToGRPCRecipe(cloned),
 	}
@@ -269,7 +269,7 @@ func (s *serviceImpl) CreateRecipe(ctx context.Context, request *mealplanning.Cr
 
 	x := &mealplanning.CreateRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeToGRPCRecipe(created),
 	}
@@ -294,7 +294,7 @@ func (s *serviceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 
 	x := &mealplanning.CreateRecipePrepTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(created),
 	}
@@ -325,7 +325,7 @@ func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 
 	x := &mealplanning.CreateRecipeRatingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeRatingToGRPCRecipeRating(created),
 	}
@@ -350,7 +350,7 @@ func (s *serviceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 
 	x := &mealplanning.CreateRecipeStepResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepToGRPCRecipeStep(created),
 	}
@@ -376,7 +376,7 @@ func (s *serviceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 
 	x := &mealplanning.CreateRecipeStepCompletionConditionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(created),
 	}
@@ -402,7 +402,7 @@ func (s *serviceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 
 	x := &mealplanning.CreateRecipeStepIngredientResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(created),
 	}
@@ -428,7 +428,7 @@ func (s *serviceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 
 	x := &mealplanning.CreateRecipeStepInstrumentResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(created),
 	}
@@ -454,7 +454,7 @@ func (s *serviceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 
 	x := &mealplanning.CreateRecipeStepProductResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(created),
 	}
@@ -480,7 +480,7 @@ func (s *serviceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 
 	x := &mealplanning.CreateRecipeStepVesselResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(created),
 	}
@@ -503,7 +503,7 @@ func (s *serviceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *m
 
 	x := &mealplanning.GetMermaidDiagramForRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Response: mermaidDiagram,
 	}
@@ -526,7 +526,7 @@ func (s *serviceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 
 	x := &mealplanning.GetRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeToGRPCRecipe(recipe),
 	}
@@ -550,7 +550,7 @@ func (s *serviceImpl) EstimateRecipePrepTasks(ctx context.Context, request *meal
 
 	x := &mealplanning.EstimateRecipePrepTasksResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -577,7 +577,7 @@ func (s *serviceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 
 	x := &mealplanning.GetRecipePrepTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(recipePrepTask),
 	}
@@ -603,7 +603,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 
 	x := &mealplanning.GetRecipePrepTasksResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(recipePrepTasks.Pagination, filter),
 	}
@@ -631,7 +631,7 @@ func (s *serviceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 
 	x := &mealplanning.GetRecipeRatingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeRatingToGRPCRecipeRating(recipeRating),
 	}
@@ -657,7 +657,7 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 
 	x := &mealplanning.GetRecipeRatingsForRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -684,7 +684,7 @@ func (s *serviceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 
 	x := &mealplanning.GetRecipeStepResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepToGRPCRecipeStep(recipeStep),
 	}
@@ -709,7 +709,7 @@ func (s *serviceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 
 	x := &mealplanning.GetRecipeStepCompletionConditionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(recipeStepCompletionCondition),
 	}
@@ -736,7 +736,7 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 
 	x := &mealplanning.GetRecipeStepCompletionConditionsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -764,7 +764,7 @@ func (s *serviceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 
 	x := &mealplanning.GetRecipeStepIngredientResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(recipeStepIngredient),
 	}
@@ -791,7 +791,7 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 
 	x := &mealplanning.GetRecipeStepIngredientsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -819,7 +819,7 @@ func (s *serviceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 
 	x := &mealplanning.GetRecipeStepInstrumentResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(recipeStepInstrument),
 	}
@@ -846,7 +846,7 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 
 	x := &mealplanning.GetRecipeStepInstrumentsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -874,7 +874,7 @@ func (s *serviceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 
 	x := &mealplanning.GetRecipeStepProductResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(recipeStepProduct),
 	}
@@ -901,7 +901,7 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 
 	x := &mealplanning.GetRecipeStepProductsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -929,7 +929,7 @@ func (s *serviceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 
 	x := &mealplanning.GetRecipeStepVesselResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(recipeStepVessel),
 	}
@@ -956,7 +956,7 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 
 	x := &mealplanning.GetRecipeStepVesselsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -985,7 +985,7 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 
 	x := &mealplanning.GetRecipeStepsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1012,7 +1012,7 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 
 	x := &mealplanning.GetRecipesResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1041,7 +1041,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 
 	x := &mealplanning.SearchForRecipesResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1070,7 +1070,7 @@ func (s *serviceImpl) SearchForMealEligibleRecipes(ctx context.Context, request 
 
 	x := &mealplanning.SearchForMealEligibleRecipesResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -1102,7 +1102,7 @@ func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 
 	x := &mealplanning.UpdateRecipeResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeToGRPCRecipe(updated),
 	}
@@ -1129,7 +1129,7 @@ func (s *serviceImpl) UpdateRecipeStatus(ctx context.Context, request *mealplann
 
 	x := &mealplanning.UpdateRecipeStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeToGRPCRecipe(updated),
 	}
@@ -1159,7 +1159,7 @@ func (s *serviceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 
 	x := &mealplanning.UpdateRecipePrepTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(updated),
 	}
@@ -1189,7 +1189,7 @@ func (s *serviceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 
 	x := &mealplanning.UpdateRecipeRatingResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeRatingToGRPCRecipeRating(updated),
 	}
@@ -1219,7 +1219,7 @@ func (s *serviceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 
 	x := &mealplanning.UpdateRecipeStepResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepToGRPCRecipeStep(updated),
 	}
@@ -1250,7 +1250,7 @@ func (s *serviceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 
 	x := &mealplanning.UpdateRecipeStepCompletionConditionResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(updated),
 	}
@@ -1281,7 +1281,7 @@ func (s *serviceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 
 	x := &mealplanning.UpdateRecipeStepIngredientResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(updated),
 	}
@@ -1312,7 +1312,7 @@ func (s *serviceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 
 	x := &mealplanning.UpdateRecipeStepInstrumentResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(updated),
 	}
@@ -1343,7 +1343,7 @@ func (s *serviceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 
 	x := &mealplanning.UpdateRecipeStepProductResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(updated),
 	}
@@ -1374,7 +1374,7 @@ func (s *serviceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealp
 
 	x := &mealplanning.UpdateRecipeStepVesselResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(updated),
 	}
