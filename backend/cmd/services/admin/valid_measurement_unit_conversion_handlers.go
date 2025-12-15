@@ -34,7 +34,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitConversionsForUnit(_ http.Resp
 	}
 
 	fromRes, err := c.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitConversionsForUnitRequest{
-		ValidMeasurementUnitID: measurementUnitID,
+		ValidMeasurementUnitId: measurementUnitID,
 	})
 	if err != nil {
 		s.logger.Error("error fetching conversions from unit", err)
@@ -226,8 +226,8 @@ func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, 
 		pluralizeUnit(conv.From.Name, conv.From.PluralName, float32(reverseModifier)))
 
 	// Determine which unit is current for highlighting
-	fromIsCurrent := conv.From.ID == currentUnitID
-	toIsCurrent := conv.To.ID == currentUnitID
+	fromIsCurrent := conv.From.Id == currentUnitID
+	toIsCurrent := conv.To.Id == currentUnitID
 
 	return ghtml.Div(
 		ghtml.Class("flex items-start justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"),
@@ -300,7 +300,7 @@ func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, 
 		ghtml.Button(
 			ghtml.Type("button"),
 			ghtml.Class("ml-3 p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"),
-			g.Attr("hx-delete", "/api/valid_measurement_unit_conversions/"+conv.ID),
+			g.Attr("hx-delete", "/api/valid_measurement_unit_conversions/"+conv.Id),
 			g.Attr("hx-target", "#conversions-container"),
 			g.Attr("hx-swap", "outerHTML"),
 			g.Attr("hx-confirm", "Are you sure you want to remove this conversion?"),
@@ -351,9 +351,9 @@ func (s *AdminFrontendServer) SearchMeasurementUnitsForConversion(_ http.Respons
 	}
 	var results []searchResult
 	for _, unit := range searchRes.Results {
-		if unit.ID != measurementUnitID && (contains(unit.Name, query) || contains(unit.Description, query)) {
+		if unit.Id != measurementUnitID && (contains(unit.Name, query) || contains(unit.Description, query)) {
 			results = append(results, searchResult{
-				ID:          unit.ID,
+				ID:          unit.Id,
 				Name:        unit.Name,
 				Description: unit.Description,
 			})
@@ -512,7 +512,7 @@ func (s *AdminFrontendServer) DeleteMeasurementUnitConversion(_ http.ResponseWri
 
 	// Archive (delete) the conversion
 	_, err = c.ArchiveValidMeasurementUnitConversion(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitConversionRequest{
-		ValidMeasurementUnitConversionID: conversionID,
+		ValidMeasurementUnitConversionId: conversionID,
 	})
 	if err != nil {
 		return ghtml.Div(

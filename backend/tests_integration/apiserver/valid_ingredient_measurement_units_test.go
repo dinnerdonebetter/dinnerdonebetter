@@ -30,7 +30,7 @@ func createValidIngredientMeasurementUnitForTest(t *testing.T) (*types.ValidIngr
 	require.NotNil(t, createdValidIngredientMeasurementUnit)
 
 	validPrepMeasurementUnitRes, err := adminClient.GetValidIngredientMeasurementUnit(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitRequest{
-		ValidIngredientMeasurementUnitID: createdValidIngredientMeasurementUnit.Result.ID,
+		ValidIngredientMeasurementUnitId: createdValidIngredientMeasurementUnit.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepMeasurementUnitRes.Result)
@@ -53,8 +53,8 @@ func TestValidIngredientMeasurementUnits_Creating(T *testing.T) {
 
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 		exampleValidIngredientMeasurementUnitInput := mealplanningconverters.ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit))
-		exampleValidIngredientMeasurementUnitInput.ValidMeasurementUnitID = ""
-		exampleValidIngredientMeasurementUnitInput.ValidIngredientID = ""
+		exampleValidIngredientMeasurementUnitInput.ValidMeasurementUnitId = ""
+		exampleValidIngredientMeasurementUnitInput.ValidIngredientId = ""
 
 		createdValidIngredientMeasurementUnit, err := adminClient.CreateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{Input: exampleValidIngredientMeasurementUnitInput})
 		require.Error(t, err)
@@ -81,8 +81,8 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 	for range exampleQuantity - 1 {
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 		exampleValidIngredientMeasurementUnitInput := mealplanningconverters.ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit))
-		exampleValidIngredientMeasurementUnitInput.ValidMeasurementUnitID = validMeasurementUnit.ID
-		exampleValidIngredientMeasurementUnitInput.ValidIngredientID = validIngredient.ID
+		exampleValidIngredientMeasurementUnitInput.ValidMeasurementUnitId = validMeasurementUnit.ID
+		exampleValidIngredientMeasurementUnitInput.ValidIngredientId = validIngredient.ID
 
 		createdValidIngredientMeasurementUnit, err := adminClient.CreateValidIngredientMeasurementUnit(T.Context(), &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{Input: exampleValidIngredientMeasurementUnitInput})
 		require.NoError(T, err)
@@ -105,7 +105,7 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest{ValidMeasurementUnitID: validMeasurementUnit.ID})
+		results, err := adminClient.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest{ValidMeasurementUnitId: validMeasurementUnit.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientMeasurementUnits))
@@ -115,7 +115,7 @@ func TestValidIngredientMeasurementUnits_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientMeasurementUnitsByIngredient(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByIngredientRequest{ValidIngredientID: validIngredient.ID})
+		results, err := adminClient.GetValidIngredientMeasurementUnitsByIngredient(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientMeasurementUnits))

@@ -39,7 +39,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 
 	// Fetch associations
 	res, err := c.GetValidPreparationVesselsByPreparation(ctx, &mealplanningsvc.GetValidPreparationVesselsByPreparationRequest{
-		ValidPreparationID: preparationID,
+		ValidPreparationId: preparationID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -55,7 +55,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForPreparation(_ http.Respo
 	for _, assoc := range res.Results {
 		if assoc.Vessel != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Vessel.Name,
 				Description: assoc.Vessel.Description,
 				Notes:       assoc.Notes,
@@ -104,7 +104,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 
 	// Fetch associations
 	res, err := c.GetValidPreparationVesselsByVessel(ctx, &mealplanningsvc.GetValidPreparationVesselsByVesselRequest{
-		ValidVesselID: vesselID,
+		ValidVesselId: vesselID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -120,7 +120,7 @@ func (s *AdminFrontendServer) ValidPreparationVesselsForVessel(_ http.ResponseWr
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
 				Notes:       assoc.Notes,
@@ -178,7 +178,7 @@ func (s *AdminFrontendServer) SearchVesselsForPreparation(_ http.ResponseWriter,
 	for _, vessel := range searchRes.Results {
 		if contains(vessel.Name, query) || contains(vessel.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          vessel.ID,
+				ID:          vessel.Id,
 				Name:        vessel.Name,
 				Description: vessel.Description,
 			})
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) SearchPreparationsForVessel(_ http.ResponseWriter,
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          preparation.ID,
+				ID:          preparation.Id,
 				Name:        preparation.Name,
 				Description: preparation.Description,
 			})
@@ -275,8 +275,8 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromPreparation(_ http.Resp
 	// Create the association
 	_, err = c.CreateValidPreparationVessel(ctx, &mealplanningsvc.CreateValidPreparationVesselRequest{
 		Input: &mealplanningsvc.ValidPreparationVesselCreationRequestInput{
-			ValidPreparationID: preparationID,
-			ValidVesselID:      input.ID,
+			ValidPreparationId: preparationID,
+			ValidVesselId:      input.ID,
 		},
 	})
 	if err != nil {
@@ -319,8 +319,8 @@ func (s *AdminFrontendServer) CreatePreparationVesselFromVessel(_ http.ResponseW
 	// Create the association
 	_, err = c.CreateValidPreparationVessel(ctx, &mealplanningsvc.CreateValidPreparationVesselRequest{
 		Input: &mealplanningsvc.ValidPreparationVesselCreationRequestInput{
-			ValidPreparationID: input.ID,
-			ValidVesselID:      vesselID,
+			ValidPreparationId: input.ID,
+			ValidVesselId:      vesselID,
 		},
 	})
 	if err != nil {
@@ -358,7 +358,7 @@ func (s *AdminFrontendServer) DeletePreparationVessel(_ http.ResponseWriter, req
 
 	// Archive (delete) the association
 	_, err = c.ArchiveValidPreparationVessel(ctx, &mealplanningsvc.ArchiveValidPreparationVesselRequest{
-		ValidPreparationVesselID: associationID,
+		ValidPreparationVesselId: associationID,
 	})
 	if err != nil {
 		return ghtml.Div(

@@ -148,7 +148,7 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		PluralName:             x.PluralName,
 		IconPath:               x.IconPath,
 		Name:                   x.Name,
-		ID:                     x.ID,
+		Id:                     x.ID,
 		Description:            x.Description,
 		Slug:                   x.Slug,
 		ShoppingSuggestions:    x.ShoppingSuggestions,
@@ -192,7 +192,7 @@ func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngred
 		PluralName:             x.PluralName,
 		IconPath:               x.IconPath,
 		Name:                   x.Name,
-		ID:                     x.ID,
+		ID:                     x.Id,
 		Description:            x.Description,
 		Slug:                   x.Slug,
 		ShoppingSuggestions:    x.ShoppingSuggestions,
@@ -266,7 +266,7 @@ func ConvertGRPCValidIngredientGroupCreationRequestInputToValidIngredientGroupCr
 	members := make([]*mealplanning.ValidIngredientGroupMemberCreationRequestInput, len(request.Members))
 	for i, member := range request.Members {
 		members[i] = &mealplanning.ValidIngredientGroupMemberCreationRequestInput{
-			ValidIngredientID: member.ValidIngredientID,
+			ValidIngredientID: member.ValidIngredientId,
 		}
 	}
 
@@ -282,7 +282,7 @@ func ConvertValidIngredientGroupCreationRequestInputToGRPCValidIngredientGroupCr
 	members := make([]*mealplanninggrpc.ValidIngredientGroupMemberCreationRequestInput, len(request.Members))
 	for i, member := range request.Members {
 		members[i] = &mealplanninggrpc.ValidIngredientGroupMemberCreationRequestInput{
-			ValidIngredientID: member.ValidIngredientID,
+			ValidIngredientId: member.ValidIngredientID,
 		}
 	}
 
@@ -316,7 +316,7 @@ func ConvertValidIngredientGroupToGRPCValidIngredientGroup(x *mealplanning.Valid
 		members[i] = &mealplanninggrpc.ValidIngredientGroupMember{
 			CreatedAt:       converters.ConvertTimeToPBTimestamp(member.CreatedAt),
 			ArchivedAt:      converters.ConvertTimePointerToPBTimestamp(member.ArchivedAt),
-			ID:              member.ID,
+			Id:              member.ID,
 			BelongsToGroup:  member.BelongsToGroup,
 			ValidIngredient: ConvertValidIngredientToGRPCValidIngredient(&member.ValidIngredient),
 		}
@@ -326,7 +326,7 @@ func ConvertValidIngredientGroupToGRPCValidIngredientGroup(x *mealplanning.Valid
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
-		ID:            x.ID,
+		Id:            x.ID,
 		Name:          x.Name,
 		Slug:          x.Slug,
 		Description:   x.Description,
@@ -340,7 +340,7 @@ func ConvertGRPCValidIngredientGroupToValidIngredientGroup(x *mealplanninggrpc.V
 		members[i] = &mealplanning.ValidIngredientGroupMember{
 			CreatedAt:       converters.ConvertPBTimestampToTime(member.CreatedAt),
 			ArchivedAt:      converters.ConvertPBTimestampToTimePointer(member.ArchivedAt),
-			ID:              member.ID,
+			ID:              member.Id,
 			BelongsToGroup:  member.BelongsToGroup,
 			ValidIngredient: *ConvertGRPCValidIngredientToValidIngredient(member.ValidIngredient),
 		}
@@ -350,7 +350,7 @@ func ConvertGRPCValidIngredientGroupToValidIngredientGroup(x *mealplanninggrpc.V
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		ID:            x.ID,
+		ID:            x.Id,
 		Name:          x.Name,
 		Slug:          x.Slug,
 		Description:   x.Description,
@@ -361,8 +361,8 @@ func ConvertGRPCValidIngredientGroupToValidIngredientGroup(x *mealplanninggrpc.V
 func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeasurementUnitCreationRequestInput(request *mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput) *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput {
 	return &mealplanning.ValidIngredientMeasurementUnitCreationRequestInput{
 		Notes:                  request.Notes,
-		ValidMeasurementUnitID: request.ValidMeasurementUnitID,
-		ValidIngredientID:      request.ValidIngredientID,
+		ValidMeasurementUnitID: request.ValidMeasurementUnitId,
+		ValidIngredientID:      request.ValidIngredientId,
 		AllowableQuantity: types.Float32RangeWithOptionalMax{
 			Max: request.AllowableQuantity.Max,
 			Min: request.AllowableQuantity.Min,
@@ -373,8 +373,8 @@ func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeas
 func ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(request *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput) *mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput {
 	return &mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput{
 		Notes:                  request.Notes,
-		ValidMeasurementUnitID: request.ValidMeasurementUnitID,
-		ValidIngredientID:      request.ValidIngredientID,
+		ValidMeasurementUnitId: request.ValidMeasurementUnitID,
+		ValidIngredientId:      request.ValidIngredientID,
 		AllowableQuantity: &grpctypes.Float32RangeWithOptionalMax{
 			Max: request.AllowableQuantity.Max,
 			Min: request.AllowableQuantity.Min,
@@ -385,8 +385,8 @@ func ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeas
 func ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(x *mealplanninggrpc.ValidIngredientMeasurementUnitUpdateRequestInput) *mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput {
 	return &mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  x.Notes,
-		ValidMeasurementUnitID: x.ValidMeasurementUnitID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidMeasurementUnitID: x.ValidMeasurementUnitId,
+		ValidIngredientID:      x.ValidIngredientId,
 		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
 			Min: x.AllowableQuantity.Min,
 			Max: x.AllowableQuantity.Max,
@@ -397,8 +397,8 @@ func ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredien
 func ConvertValidIngredientMeasurementUnitUpdateRequestInputToGRPCValidIngredientMeasurementUnitUpdateRequestInput(x *mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput) *mealplanninggrpc.ValidIngredientMeasurementUnitUpdateRequestInput {
 	return &mealplanninggrpc.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  x.Notes,
-		ValidMeasurementUnitID: x.ValidMeasurementUnitID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidMeasurementUnitId: x.ValidMeasurementUnitID,
+		ValidIngredientId:      x.ValidIngredientID,
 		AllowableQuantity: &grpctypes.Float32RangeWithOptionalMaxUpdateRequestInput{
 			Min: x.AllowableQuantity.Min,
 			Max: x.AllowableQuantity.Max,
@@ -412,7 +412,7 @@ func ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		Notes:         x.Notes,
-		ID:            x.ID,
+		Id:            x.ID,
 		AllowableQuantity: &grpctypes.Float32RangeWithOptionalMax{
 			Max: x.AllowableQuantity.Max,
 			Min: x.AllowableQuantity.Min,
@@ -428,7 +428,7 @@ func ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(x
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		Notes:         x.Notes,
-		ID:            x.ID,
+		ID:            x.Id,
 		AllowableQuantity: types.Float32RangeWithOptionalMax{
 			Max: x.AllowableQuantity.Max,
 			Min: x.AllowableQuantity.Min,
@@ -441,32 +441,32 @@ func ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(x
 func ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(x *mealplanninggrpc.ValidIngredientPreparationCreationRequestInput) *mealplanning.ValidIngredientPreparationCreationRequestInput {
 	return &mealplanning.ValidIngredientPreparationCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidIngredientID:  x.ValidIngredientID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidIngredientID:  x.ValidIngredientId,
 	}
 }
 
 func ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(x *mealplanning.ValidIngredientPreparationCreationRequestInput) *mealplanninggrpc.ValidIngredientPreparationCreationRequestInput {
 	return &mealplanninggrpc.ValidIngredientPreparationCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidIngredientID:  x.ValidIngredientID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidIngredientId:  x.ValidIngredientID,
 	}
 }
 
 func ConvertGRPCValidIngredientPreparationUpdateRequestInputToValidIngredientPreparationUpdateRequestInput(x *mealplanninggrpc.ValidIngredientPreparationUpdateRequestInput) *mealplanning.ValidIngredientPreparationUpdateRequestInput {
 	return &mealplanning.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidIngredientID:  x.ValidIngredientID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidIngredientID:  x.ValidIngredientId,
 	}
 }
 
 func ConvertValidIngredientPreparationUpdateRequestInputToGRPCValidIngredientPreparationUpdateRequestInput(x *mealplanning.ValidIngredientPreparationUpdateRequestInput) *mealplanninggrpc.ValidIngredientPreparationUpdateRequestInput {
 	return &mealplanninggrpc.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidIngredientID:  x.ValidIngredientID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidIngredientId:  x.ValidIngredientID,
 	}
 }
 
@@ -476,7 +476,7 @@ func ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(x *mealpl
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		Notes:         x.Notes,
-		ID:            x.ID,
+		Id:            x.ID,
 		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
 		Ingredient:    ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
 	}
@@ -488,7 +488,7 @@ func ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(x *mealpl
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		Notes:         x.Notes,
-		ID:            x.ID,
+		ID:            x.Id,
 		Preparation:   *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
 		Ingredient:    *ConvertGRPCValidIngredientToValidIngredient(x.Ingredient),
 	}
@@ -546,7 +546,7 @@ func ConvertValidIngredientStateToGRPCValidIngredientState(x *mealplanning.Valid
 		PastTense:     x.PastTense,
 		Description:   x.Description,
 		IconPath:      x.IconPath,
-		ID:            x.ID,
+		Id:            x.ID,
 		Name:          x.Name,
 		AttributeType: x.AttributeType,
 		Slug:          x.Slug,
@@ -561,7 +561,7 @@ func ConvertGRPCValidIngredientStateToValidIngredientState(x *mealplanninggrpc.V
 		PastTense:     x.PastTense,
 		Description:   x.Description,
 		IconPath:      x.IconPath,
-		ID:            x.ID,
+		ID:            x.Id,
 		Name:          x.Name,
 		AttributeType: x.AttributeType,
 		Slug:          x.Slug,
@@ -571,32 +571,32 @@ func ConvertGRPCValidIngredientStateToValidIngredientState(x *mealplanninggrpc.V
 func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput) *mealplanning.ValidIngredientStateIngredientCreationRequestInput {
 	return &mealplanning.ValidIngredientStateIngredientCreationRequestInput{
 		Notes:                  x.Notes,
-		ValidIngredientStateID: x.ValidIngredientStateID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidIngredientStateID: x.ValidIngredientStateId,
+		ValidIngredientID:      x.ValidIngredientId,
 	}
 }
 
 func ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(x *mealplanning.ValidIngredientStateIngredientCreationRequestInput) *mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput {
 	return &mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput{
 		Notes:                  x.Notes,
-		ValidIngredientStateID: x.ValidIngredientStateID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidIngredientStateId: x.ValidIngredientStateID,
+		ValidIngredientId:      x.ValidIngredientID,
 	}
 }
 
 func ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateIngredientUpdateRequestInput) *mealplanning.ValidIngredientStateIngredientUpdateRequestInput {
 	return &mealplanning.ValidIngredientStateIngredientUpdateRequestInput{
 		Notes:                  x.Notes,
-		ValidIngredientStateID: x.ValidIngredientStateID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidIngredientStateID: x.ValidIngredientStateId,
+		ValidIngredientID:      x.ValidIngredientId,
 	}
 }
 
 func ConvertValidIngredientStateIngredientUpdateRequestInputToGRPCValidIngredientStateIngredientUpdateRequestInput(x *mealplanning.ValidIngredientStateIngredientUpdateRequestInput) *mealplanninggrpc.ValidIngredientStateIngredientUpdateRequestInput {
 	return &mealplanninggrpc.ValidIngredientStateIngredientUpdateRequestInput{
 		Notes:                  x.Notes,
-		ValidIngredientStateID: x.ValidIngredientStateID,
-		ValidIngredientID:      x.ValidIngredientID,
+		ValidIngredientStateId: x.ValidIngredientStateID,
+		ValidIngredientId:      x.ValidIngredientID,
 	}
 }
 
@@ -606,7 +606,7 @@ func ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x
 		LastUpdatedAt:   converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:      converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		Notes:           x.Notes,
-		ID:              x.ID,
+		Id:              x.ID,
 		IngredientState: ConvertValidIngredientStateToGRPCValidIngredientState(&x.IngredientState),
 		Ingredient:      ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
 	}
@@ -618,7 +618,7 @@ func ConvertGRPCValidIngredientStateIngredientToValidIngredientStateIngredient(x
 		LastUpdatedAt:   converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:      converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		Notes:           x.Notes,
-		ID:              x.ID,
+		ID:              x.Id,
 		IngredientState: *ConvertGRPCValidIngredientStateToValidIngredientState(x.IngredientState),
 		Ingredient:      *ConvertGRPCValidIngredientToValidIngredient(x.Ingredient),
 	}
@@ -669,7 +669,7 @@ func ConvertValidInstrumentToGRPCValidInstrument(x *mealplanning.ValidInstrument
 		LastUpdatedAt:                  converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		Name:                           x.Name,
-		ID:                             x.ID,
+		Id:                             x.ID,
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Description:                    x.Description,
@@ -686,7 +686,7 @@ func ConvertGRPCValidInstrumentToValidInstrument(x *mealplanninggrpc.ValidInstru
 		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		Name:                           x.Name,
-		ID:                             x.ID,
+		ID:                             x.Id,
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Description:                    x.Description,
@@ -773,7 +773,7 @@ func ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x *mealplanning.Valid
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		PluralName:    x.PluralName,
 		IconPath:      x.IconPath,
-		ID:            x.ID,
+		Id:            x.ID,
 		Description:   x.Description,
 		Name:          x.Name,
 		Slug:          x.Slug,
@@ -791,7 +791,7 @@ func ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x *mealplanninggrpc.V
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		PluralName:    x.PluralName,
 		IconPath:      x.IconPath,
-		ID:            x.ID,
+		ID:            x.Id,
 		Description:   x.Description,
 		Name:          x.Name,
 		Slug:          x.Slug,
@@ -856,7 +856,7 @@ func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x
 		To:                ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.To),
 		Notes:             x.Notes,
 		OnlyForIngredient: ingredient,
-		ID:                x.ID,
+		Id:                x.ID,
 		Modifier:          x.Modifier,
 	}
 
@@ -877,7 +877,7 @@ func ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(x
 		To:                *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.To),
 		Notes:             x.Notes,
 		OnlyForIngredient: ingredient,
-		ID:                x.ID,
+		ID:                x.Id,
 		Modifier:          x.Modifier,
 	}
 
@@ -1018,7 +1018,7 @@ func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparat
 			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
 		},
 		Name:                        x.Name,
-		ID:                          x.ID,
+		Id:                          x.ID,
 		IconPath:                    x.IconPath,
 		Description:                 x.Description,
 		Slug:                        x.Slug,
@@ -1052,7 +1052,7 @@ func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPrep
 		LastUpdatedAt:               converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		IconPath:                    x.IconPath,
 		PastTense:                   x.PastTense,
-		ID:                          x.ID,
+		ID:                          x.Id,
 		Name:                        x.Name,
 		Description:                 x.Description,
 		Slug:                        x.Slug,
@@ -1069,32 +1069,32 @@ func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPrep
 func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(x *mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput) *mealplanning.ValidPreparationInstrumentCreationRequestInput {
 	return &mealplanning.ValidPreparationInstrumentCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidInstrumentID:  x.ValidInstrumentID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidInstrumentID:  x.ValidInstrumentId,
 	}
 }
 
 func ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(x *mealplanning.ValidPreparationInstrumentCreationRequestInput) *mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput {
 	return &mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidInstrumentID:  x.ValidInstrumentID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidInstrumentId:  x.ValidInstrumentID,
 	}
 }
 
 func ConvertGRPCValidPreparationInstrumentUpdateRequestInputToValidPreparationInstrumentUpdateRequestInput(x *mealplanninggrpc.ValidPreparationInstrumentUpdateRequestInput) *mealplanning.ValidPreparationInstrumentUpdateRequestInput {
 	return &mealplanning.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidInstrumentID:  x.ValidInstrumentID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidInstrumentID:  x.ValidInstrumentId,
 	}
 }
 
 func ConvertValidPreparationInstrumentUpdateRequestInputToGRPCValidPreparationInstrumentUpdateRequestInput(x *mealplanning.ValidPreparationInstrumentUpdateRequestInput) *mealplanninggrpc.ValidPreparationInstrumentUpdateRequestInput {
 	return &mealplanninggrpc.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidInstrumentID:  x.ValidInstrumentID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidInstrumentId:  x.ValidInstrumentID,
 	}
 }
 
@@ -1103,7 +1103,7 @@ func ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x *mealpl
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
-		ID:            x.ID,
+		Id:            x.ID,
 		Notes:         x.Notes,
 		Instrument:    ConvertValidInstrumentToGRPCValidInstrument(&x.Instrument),
 		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
@@ -1115,7 +1115,7 @@ func ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(x *mealpl
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		ID:            x.ID,
+		ID:            x.Id,
 		Notes:         x.Notes,
 		Instrument:    *ConvertGRPCValidInstrumentToValidInstrument(x.Instrument),
 		Preparation:   *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
@@ -1125,32 +1125,32 @@ func ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(x *mealpl
 func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(x *mealplanninggrpc.ValidPreparationVesselCreationRequestInput) *mealplanning.ValidPreparationVesselCreationRequestInput {
 	return &mealplanning.ValidPreparationVesselCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidVesselID:      x.ValidVesselID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidVesselID:      x.ValidVesselId,
 	}
 }
 
 func ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(x *mealplanning.ValidPreparationVesselCreationRequestInput) *mealplanninggrpc.ValidPreparationVesselCreationRequestInput {
 	return &mealplanninggrpc.ValidPreparationVesselCreationRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidVesselID:      x.ValidVesselID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidVesselId:      x.ValidVesselID,
 	}
 }
 
 func ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(x *mealplanninggrpc.ValidPreparationVesselUpdateRequestInput) *mealplanning.ValidPreparationVesselUpdateRequestInput {
 	return &mealplanning.ValidPreparationVesselUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidVesselID:      x.ValidVesselID,
+		ValidPreparationID: x.ValidPreparationId,
+		ValidVesselID:      x.ValidVesselId,
 	}
 }
 
 func ConvertValidPreparationVesselUpdateRequestInputToGRPCValidPreparationVesselUpdateRequestInput(x *mealplanning.ValidPreparationVesselUpdateRequestInput) *mealplanninggrpc.ValidPreparationVesselUpdateRequestInput {
 	return &mealplanninggrpc.ValidPreparationVesselUpdateRequestInput{
 		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidVesselID:      x.ValidVesselID,
+		ValidPreparationId: x.ValidPreparationID,
+		ValidVesselId:      x.ValidVesselID,
 	}
 }
 
@@ -1159,7 +1159,7 @@ func ConvertValidPreparationVesselToGRPCValidPreparationVessel(x *mealplanning.V
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
-		ID:            x.ID,
+		Id:            x.ID,
 		Notes:         x.Notes,
 		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
 		Vessel:        ConvertValidVesselToGRPCValidVessel(&x.Vessel),
@@ -1171,7 +1171,7 @@ func ConvertGRPCValidPreparationVesselToValidPreparationVessel(x *mealplanninggr
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		ID:            x.ID,
+		ID:            x.Id,
 		Notes:         x.Notes,
 		Preparation:   *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
 		Vessel:        *ConvertGRPCValidVesselToValidVessel(x.Vessel),
@@ -1180,7 +1180,7 @@ func ConvertGRPCValidPreparationVesselToValidPreparationVessel(x *mealplanninggr
 
 func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
 	return &mealplanning.ValidVesselCreationRequestInput{
-		CapacityUnitID:                 x.CapacityUnitID,
+		CapacityUnitID:                 x.CapacityUnitId,
 		Shape:                          x.Shape,
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
@@ -1199,7 +1199,7 @@ func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput
 
 func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(x *mealplanning.ValidVesselCreationRequestInput) *mealplanninggrpc.ValidVesselCreationRequestInput {
 	return &mealplanninggrpc.ValidVesselCreationRequestInput{
-		CapacityUnitID:                 x.CapacityUnitID,
+		CapacityUnitId:                 x.CapacityUnitID,
 		Shape:                          x.Shape,
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
@@ -1227,7 +1227,7 @@ func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *
 		DisplayInSummaryLists:          x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
 		Capacity:                       x.Capacity,
-		CapacityUnitID:                 x.CapacityUnitID,
+		CapacityUnitID:                 x.CapacityUnitId,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
@@ -1246,7 +1246,7 @@ func ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x *
 		DisplayInSummaryLists:          x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
 		Capacity:                       x.Capacity,
-		CapacityUnitID:                 x.CapacityUnitID,
+		CapacityUnitId:                 x.CapacityUnitID,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
@@ -1270,7 +1270,7 @@ func ConvertValidVesselToGRPCValidVessel(x *mealplanning.ValidVessel) *mealplann
 		Name:                           x.Name,
 		Slug:                           x.Slug,
 		IconPath:                       x.IconPath,
-		ID:                             x.ID,
+		Id:                             x.ID,
 		PluralName:                     x.PluralName,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
@@ -1298,7 +1298,7 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 		Name:                           x.Name,
 		Slug:                           x.Slug,
 		IconPath:                       x.IconPath,
-		ID:                             x.ID,
+		ID:                             x.Id,
 		PluralName:                     x.PluralName,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,

@@ -41,7 +41,7 @@ func TestMealPlanTasks_CompleteLifecycle(T *testing.T) {
 		exampleMealPlanTaskInput.RecipePrepTaskID = createdMealPlan.Events[0].Options[0].Meal.Components[0].Recipe.PrepTasks[0].ID
 
 		createdMealPlanTaskRes, err := adminClient.CreateMealPlanTask(ctx, &mealplanninggrpc.CreateMealPlanTaskRequest{
-			MealPlanID: createdMealPlan.ID,
+			MealPlanId: createdMealPlan.ID,
 			Input:      converters.ConvertMealPlanTaskCreationRequestInputToGRPCMealPlanTaskCreationRequestInput(exampleMealPlanTaskInput),
 		})
 		require.NoError(t, err)
@@ -50,8 +50,8 @@ func TestMealPlanTasks_CompleteLifecycle(T *testing.T) {
 		checkMealPlanTaskEquality(t, exampleMealPlanTask, createdMealPlanTask)
 
 		actualRes, err := adminClient.GetMealPlanTask(ctx, &mealplanninggrpc.GetMealPlanTaskRequest{
-			MealPlanID:     createdMealPlan.ID,
-			MealPlanTaskID: createdMealPlanTask.ID,
+			MealPlanId:     createdMealPlan.ID,
+			MealPlanTaskId: createdMealPlanTask.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualRes)

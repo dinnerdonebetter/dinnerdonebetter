@@ -9,3382 +9,3382 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
 message DataCollection {
-  repeated AccountInstrumentOwnership AccountInstrumentOwnerships = 2;
-  repeated MealPlan MealPlans = 3;
-  repeated RecipeRating RecipeRatings = 4;
-  repeated Recipe Recipes = 5;
-  repeated Meal Meals = 6;
-  repeated UserIngredientPreference UserIngredientPreferences = 7;
+  repeated AccountInstrumentOwnership account_instrument_ownerships = 2;
+  repeated MealPlan meal_plans = 3;
+  repeated RecipeRating recipe_ratings = 4;
+  repeated Recipe recipes = 5;
+  repeated Meal meals = 6;
+  repeated UserIngredientPreference user_ingredient_preferences = 7;
 }
 
 // Valid Enumerations
 
 message ValidIngredient {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 4;
-  string IconPath = 5;
-  string Warning = 6;
-  string PluralName = 7;
-  string StorageInstructions = 8;
-  string Name = 9;
-  string ID = 10;
-  string Description = 11;
-  string Slug = 12;
-  string ShoppingSuggestions = 13;
-  bool ContainsShellfish = 14;
-  bool IsLiquid = 15;
-  bool ContainsPeanut = 16;
-  bool ContainsTreeNut = 17;
-  bool ContainsEgg = 18;
-  bool ContainsWheat = 19;
-  bool ContainsSoy = 20;
-  bool AnimalDerived = 21;
-  bool RestrictToPreparations = 22;
-  bool ContainsSesame = 23;
-  bool ContainsFish = 24;
-  bool ContainsGluten = 25;
-  bool ContainsDairy = 26;
-  bool ContainsAlcohol = 27;
-  bool AnimalFlesh = 28;
-  bool IsStarch = 29;
-  bool IsProtein = 30;
-  bool IsGrain = 31;
-  bool IsFruit = 32;
-  bool IsSalt = 33;
-  bool IsFat = 34;
-  bool IsAcid = 35;
-  bool IsHeat = 36;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 4;
+  string icon_path = 5;
+  string warning = 6;
+  string plural_name = 7;
+  string storage_instructions = 8;
+  string name = 9;
+  string id = 10;
+  string description = 11;
+  string slug = 12;
+  string shopping_suggestions = 13;
+  bool contains_shellfish = 14;
+  bool is_liquid = 15;
+  bool contains_peanut = 16;
+  bool contains_tree_nut = 17;
+  bool contains_egg = 18;
+  bool contains_wheat = 19;
+  bool contains_soy = 20;
+  bool animal_derived = 21;
+  bool restrict_to_preparations = 22;
+  bool contains_sesame = 23;
+  bool contains_fish = 24;
+  bool contains_gluten = 25;
+  bool contains_dairy = 26;
+  bool contains_alcohol = 27;
+  bool animal_flesh = 28;
+  bool is_starch = 29;
+  bool is_protein = 30;
+  bool is_grain = 31;
+  bool is_fruit = 32;
+  bool is_salt = 33;
+  bool is_fat = 34;
+  bool is_acid = 35;
+  bool is_heat = 36;
 }
 
 message ValidIngredientCreationRequestInput {
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  string Warning = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string StorageInstructions = 5;
-  string Name = 6;
-  string Description = 7;
-  string Slug = 8;
-  string ShoppingSuggestions = 9;
-  bool ContainsFish = 10;
-  bool ContainsShellfish = 11;
-  bool AnimalFlesh = 12;
-  bool ContainsEgg = 13;
-  bool IsLiquid = 14;
-  bool ContainsSoy = 15;
-  bool ContainsPeanut = 16;
-  bool AnimalDerived = 17;
-  bool RestrictToPreparations = 18;
-  bool ContainsDairy = 19;
-  bool ContainsSesame = 20;
-  bool ContainsTreeNut = 21;
-  bool ContainsWheat = 22;
-  bool ContainsAlcohol = 23;
-  bool ContainsGluten = 24;
-  bool IsStarch = 25;
-  bool IsProtein = 26;
-  bool IsGrain = 27;
-  bool IsFruit = 28;
-  bool IsSalt = 29;
-  bool IsFat = 30;
-  bool IsAcid = 31;
-  bool IsHeat = 32;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
+  string warning = 2;
+  string icon_path = 3;
+  string plural_name = 4;
+  string storage_instructions = 5;
+  string name = 6;
+  string description = 7;
+  string slug = 8;
+  string shopping_suggestions = 9;
+  bool contains_fish = 10;
+  bool contains_shellfish = 11;
+  bool animal_flesh = 12;
+  bool contains_egg = 13;
+  bool is_liquid = 14;
+  bool contains_soy = 15;
+  bool contains_peanut = 16;
+  bool animal_derived = 17;
+  bool restrict_to_preparations = 18;
+  bool contains_dairy = 19;
+  bool contains_sesame = 20;
+  bool contains_tree_nut = 21;
+  bool contains_wheat = 22;
+  bool contains_alcohol = 23;
+  bool contains_gluten = 24;
+  bool is_starch = 25;
+  bool is_protein = 26;
+  bool is_grain = 27;
+  bool is_fruit = 28;
+  bool is_salt = 29;
+  bool is_fat = 30;
+  bool is_acid = 31;
+  bool is_heat = 32;
 }
 
 message ValidIngredientGroup {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string Name = 5;
-  string Slug = 6;
-  string Description = 7;
-  repeated ValidIngredientGroupMember Members = 8;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string name = 5;
+  string slug = 6;
+  string description = 7;
+  repeated ValidIngredientGroupMember members = 8;
 }
 
 message ValidIngredientGroupCreationRequestInput {
-  string Name = 1;
-  string Slug = 2;
-  string Description = 3;
-  repeated ValidIngredientGroupMemberCreationRequestInput Members = 4;
+  string name = 1;
+  string slug = 2;
+  string description = 3;
+  repeated ValidIngredientGroupMemberCreationRequestInput members = 4;
 }
 
 message ValidIngredientGroupMember {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  string ID = 3;
-  string BelongsToGroup = 4;
-  ValidIngredient ValidIngredient = 5;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  string id = 3;
+  string belongs_to_group = 4;
+  ValidIngredient valid_ingredient = 5;
 }
 
 message ValidIngredientGroupMemberCreationRequestInput {
-  string ValidIngredientID = 1;
+  string valid_ingredient_id = 1;
 }
 
 message ValidIngredientGroupUpdateRequestInput {
-  optional string Name = 1;
-  optional string Slug = 2;
-  optional string Description = 3;
+  optional string name = 1;
+  optional string slug = 2;
+  optional string description = 3;
 }
 
 message ValidIngredientMeasurementUnit {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string Notes = 4;
-  string ID = 5;
-  common.Float32RangeWithOptionalMax AllowableQuantity = 6;
-  ValidMeasurementUnit MeasurementUnit = 7;
-  ValidIngredient Ingredient = 8;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string notes = 4;
+  string id = 5;
+  common.Float32RangeWithOptionalMax allowable_quantity = 6;
+  ValidMeasurementUnit measurement_unit = 7;
+  ValidIngredient ingredient = 8;
 }
 
 message ValidIngredientMeasurementUnitCreationRequestInput {
-  string Notes = 1;
-  string ValidMeasurementUnitID = 2;
-  string ValidIngredientID = 3;
-  common.Float32RangeWithOptionalMax AllowableQuantity = 4;
+  string notes = 1;
+  string valid_measurement_unit_id = 2;
+  string valid_ingredient_id = 3;
+  common.Float32RangeWithOptionalMax allowable_quantity = 4;
 }
 
 message ValidIngredientMeasurementUnitUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ValidMeasurementUnitID = 2;
-  optional string ValidIngredientID = 3;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput AllowableQuantity = 4;
+  optional string notes = 1;
+  optional string valid_measurement_unit_id = 2;
+  optional string valid_ingredient_id = 3;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput allowable_quantity = 4;
 }
 
 message ValidIngredientPreparation {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string Notes = 4;
-  string ID = 5;
-  ValidPreparation Preparation = 6;
-  ValidIngredient Ingredient = 7;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string notes = 4;
+  string id = 5;
+  ValidPreparation preparation = 6;
+  ValidIngredient ingredient = 7;
 }
 
 message ValidIngredientPreparationCreationRequestInput {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidIngredientID = 3;
+  string notes = 1;
+  string valid_preparation_id = 2;
+  string valid_ingredient_id = 3;
 }
 
 message ValidIngredientPreparationUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ValidPreparationID = 2;
-  optional string ValidIngredientID = 3;
+  optional string notes = 1;
+  optional string valid_preparation_id = 2;
+  optional string valid_ingredient_id = 3;
 }
 
 message ValidIngredientState {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string PastTense = 4;
-  string Description = 5;
-  string IconPath = 6;
-  string ID = 7;
-  string Name = 8;
-  string AttributeType = 9;
-  string Slug = 10;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  string past_tense = 4;
+  string description = 5;
+  string icon_path = 6;
+  string id = 7;
+  string name = 8;
+  string attribute_type = 9;
+  string slug = 10;
 }
 
 message ValidIngredientStateCreationRequestInput {
-  string Name = 1;
-  string Slug = 2;
-  string PastTense = 3;
-  string Description = 4;
-  string AttributeType = 5;
-  string IconPath = 6;
+  string name = 1;
+  string slug = 2;
+  string past_tense = 3;
+  string description = 4;
+  string attribute_type = 5;
+  string icon_path = 6;
 }
 
 message ValidIngredientStateIngredient {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string Notes = 4;
-  string ID = 5;
-  ValidIngredientState IngredientState = 6;
-  ValidIngredient Ingredient = 7;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string notes = 4;
+  string id = 5;
+  ValidIngredientState ingredient_state = 6;
+  ValidIngredient ingredient = 7;
 }
 
 message ValidIngredientStateIngredientCreationRequestInput {
-  string Notes = 1;
-  string ValidIngredientStateID = 2;
-  string ValidIngredientID = 3;
+  string notes = 1;
+  string valid_ingredient_state_id = 2;
+  string valid_ingredient_id = 3;
 }
 
 message ValidIngredientStateIngredientUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ValidIngredientStateID = 2;
-  optional string ValidIngredientID = 3;
+  optional string notes = 1;
+  optional string valid_ingredient_state_id = 2;
+  optional string valid_ingredient_id = 3;
 }
 
 message ValidIngredientStateUpdateRequestInput {
-  optional string Name = 1;
-  optional string Slug = 2;
-  optional string PastTense = 3;
-  optional string Description = 4;
-  optional string AttributeType = 5;
-  optional string IconPath = 6;
+  optional string name = 1;
+  optional string slug = 2;
+  optional string past_tense = 3;
+  optional string description = 4;
+  optional string attribute_type = 5;
+  optional string icon_path = 6;
 }
 
 message ValidIngredientUpdateRequestInput {
-  optional string Name = 1;
-  optional string Description = 2;
-  optional string Warning = 3;
-  optional string IconPath = 4;
-  optional bool ContainsDairy = 5;
-  optional bool ContainsPeanut = 6;
-  optional bool ContainsTreeNut = 7;
-  optional bool ContainsEgg = 8;
-  optional bool ContainsWheat = 9;
-  optional bool ContainsShellfish = 10;
-  optional bool ContainsSesame = 11;
-  optional bool ContainsFish = 12;
-  optional bool ContainsGluten = 13;
-  optional bool AnimalFlesh = 14;
-  optional bool IsLiquid = 15;
-  optional bool ContainsSoy = 16;
-  optional string PluralName = 17;
-  optional bool AnimalDerived = 18;
-  optional bool RestrictToPreparations = 19;
-  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 20;
-  optional string StorageInstructions = 21;
-  optional string Slug = 22;
-  optional bool ContainsAlcohol = 23;
-  optional string ShoppingSuggestions = 24;
-  optional bool IsStarch = 25;
-  optional bool IsProtein = 26;
-  optional bool IsGrain = 27;
-  optional bool IsFruit = 28;
-  optional bool IsSalt = 29;
-  optional bool IsFat = 30;
-  optional bool IsAcid = 31;
-  optional bool IsHeat = 32;
+  optional string name = 1;
+  optional string description = 2;
+  optional string warning = 3;
+  optional string icon_path = 4;
+  optional bool contains_dairy = 5;
+  optional bool contains_peanut = 6;
+  optional bool contains_tree_nut = 7;
+  optional bool contains_egg = 8;
+  optional bool contains_wheat = 9;
+  optional bool contains_shellfish = 10;
+  optional bool contains_sesame = 11;
+  optional bool contains_fish = 12;
+  optional bool contains_gluten = 13;
+  optional bool animal_flesh = 14;
+  optional bool is_liquid = 15;
+  optional bool contains_soy = 16;
+  optional string plural_name = 17;
+  optional bool animal_derived = 18;
+  optional bool restrict_to_preparations = 19;
+  optional common.OptionalFloat32Range storage_temperature_in_celsius = 20;
+  optional string storage_instructions = 21;
+  optional string slug = 22;
+  optional bool contains_alcohol = 23;
+  optional string shopping_suggestions = 24;
+  optional bool is_starch = 25;
+  optional bool is_protein = 26;
+  optional bool is_grain = 27;
+  optional bool is_fruit = 28;
+  optional bool is_salt = 29;
+  optional bool is_fat = 30;
+  optional bool is_acid = 31;
+  optional bool is_heat = 32;
 }
 
 message ValidInstrument {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string IconPath = 4;
-  string ID = 5;
-  string Name = 6;
-  string PluralName = 7;
-  string Description = 8;
-  string Slug = 9;
-  bool DisplayInSummaryLists = 10;
-  bool IncludeInGeneratedInstructions = 11;
-  bool UsableForStorage = 12;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string icon_path = 4;
+  string id = 5;
+  string name = 6;
+  string plural_name = 7;
+  string description = 8;
+  string slug = 9;
+  bool display_in_summary_lists = 10;
+  bool include_in_generated_instructions = 11;
+  bool usable_for_storage = 12;
 }
 
 message ValidInstrumentCreationRequestInput {
-  string Name = 1;
-  string PluralName = 2;
-  string Description = 3;
-  string IconPath = 4;
-  string Slug = 5;
-  bool DisplayInSummaryLists = 6;
-  bool IncludeInGeneratedInstructions = 7;
-  bool UsableForStorage = 8;
+  string name = 1;
+  string plural_name = 2;
+  string description = 3;
+  string icon_path = 4;
+  string slug = 5;
+  bool display_in_summary_lists = 6;
+  bool include_in_generated_instructions = 7;
+  bool usable_for_storage = 8;
 }
 
 message ValidInstrumentUpdateRequestInput {
-  optional string Name = 1;
-  optional string PluralName = 2;
-  optional string Description = 3;
-  optional string IconPath = 4;
-  optional string Slug = 5;
-  optional bool UsableForStorage = 6;
-  optional bool DisplayInSummaryLists = 7;
-  optional bool IncludeInGeneratedInstructions = 8;
+  optional string name = 1;
+  optional string plural_name = 2;
+  optional string description = 3;
+  optional string icon_path = 4;
+  optional string slug = 5;
+  optional bool usable_for_storage = 6;
+  optional bool display_in_summary_lists = 7;
+  optional bool include_in_generated_instructions = 8;
 }
 
 message ValidMeasurementUnit {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string Name = 4;
-  string IconPath = 5;
-  string ID = 6;
-  string Description = 7;
-  string PluralName = 8;
-  string Slug = 9;
-  bool Volumetric = 10;
-  bool Universal = 11;
-  bool Metric = 12;
-  bool Imperial = 13;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string name = 4;
+  string icon_path = 5;
+  string id = 6;
+  string description = 7;
+  string plural_name = 8;
+  string slug = 9;
+  bool volumetric = 10;
+  bool universal = 11;
+  bool metric = 12;
+  bool imperial = 13;
 }
 
 message ValidMeasurementUnitConversion {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  ValidIngredient OnlyForIngredient = 4;
-  string Notes = 5;
-  string ID = 6;
-  ValidMeasurementUnit From = 7;
-  ValidMeasurementUnit To = 8;
-  float Modifier = 9;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  ValidIngredient only_for_ingredient = 4;
+  string notes = 5;
+  string id = 6;
+  ValidMeasurementUnit from = 7;
+  ValidMeasurementUnit to = 8;
+  float modifier = 9;
 }
 
 message ValidMeasurementUnitConversionCreationRequestInput {
-  optional string OnlyForIngredient = 1;
-  string From = 2;
-  string To = 3;
-  string Notes = 4;
-  float Modifier = 5;
+  optional string only_for_ingredient = 1;
+  string from = 2;
+  string to = 3;
+  string notes = 4;
+  float modifier = 5;
 }
 
 message ValidMeasurementUnitConversionUpdateRequestInput {
-  optional string From = 1;
-  optional string To = 2;
-  optional string OnlyForIngredient = 3;
-  optional float Modifier = 4;
-  optional string Notes = 5;
+  optional string from = 1;
+  optional string to = 2;
+  optional string only_for_ingredient = 3;
+  optional float modifier = 4;
+  optional string notes = 5;
 }
 
 message ValidMeasurementUnitCreationRequestInput {
-  string Name = 1;
-  string Description = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string Slug = 5;
-  bool Volumetric = 6;
-  bool Universal = 7;
-  bool Metric = 8;
-  bool Imperial = 9;
+  string name = 1;
+  string description = 2;
+  string icon_path = 3;
+  string plural_name = 4;
+  string slug = 5;
+  bool volumetric = 6;
+  bool universal = 7;
+  bool metric = 8;
+  bool imperial = 9;
 }
 
 message ValidMeasurementUnitUpdateRequestInput {
-  optional string Name = 1;
-  optional string Description = 2;
-  optional string IconPath = 3;
-  optional bool Volumetric = 4;
-  optional bool Universal = 5;
-  optional bool Metric = 6;
-  optional bool Imperial = 7;
-  optional string PluralName = 8;
-  optional string Slug = 9;
+  optional string name = 1;
+  optional string description = 2;
+  optional string icon_path = 3;
+  optional bool volumetric = 4;
+  optional bool universal = 5;
+  optional bool metric = 6;
+  optional bool imperial = 7;
+  optional string plural_name = 8;
+  optional string slug = 9;
 }
 
 message ValidPreparation {
-  google.protobuf.Timestamp CreatedAt = 1;
-  common.Uint16RangeWithOptionalMax InstrumentCount = 2;
-  common.Uint16RangeWithOptionalMax IngredientCount = 3;
-  common.Uint16RangeWithOptionalMax VesselCount = 4;
-  optional google.protobuf.Timestamp ArchivedAt = 5;
-  optional google.protobuf.Timestamp LastUpdatedAt = 6;
-  string IconPath = 7;
-  string PastTense = 8;
-  string ID = 9;
-  string Name = 10;
-  string Description = 11;
-  string Slug = 12;
-  bool RestrictToIngredients = 13;
-  bool TemperatureRequired = 14;
-  bool TimeEstimateRequired = 15;
-  bool ConditionExpressionRequired = 16;
-  bool ConsumesVessel = 17;
-  bool OnlyForVessels = 18;
-  bool YieldsNothing = 19;
+  google.protobuf.Timestamp created_at = 1;
+  common.Uint16RangeWithOptionalMax instrument_count = 2;
+  common.Uint16RangeWithOptionalMax ingredient_count = 3;
+  common.Uint16RangeWithOptionalMax vessel_count = 4;
+  optional google.protobuf.Timestamp archived_at = 5;
+  optional google.protobuf.Timestamp last_updated_at = 6;
+  string icon_path = 7;
+  string past_tense = 8;
+  string id = 9;
+  string name = 10;
+  string description = 11;
+  string slug = 12;
+  bool restrict_to_ingredients = 13;
+  bool temperature_required = 14;
+  bool time_estimate_required = 15;
+  bool condition_expression_required = 16;
+  bool consumes_vessel = 17;
+  bool only_for_vessels = 18;
+  bool yields_nothing = 19;
 }
 
 message ValidPreparationCreationRequestInput {
-  common.Uint16RangeWithOptionalMax InstrumentCount = 1;
-  common.Uint16RangeWithOptionalMax IngredientCount = 2;
-  common.Uint16RangeWithOptionalMax VesselCount = 3;
-  string IconPath = 4;
-  string PastTense = 5;
-  string Slug = 6;
-  string Name = 7;
-  string Description = 8;
-  bool TemperatureRequired = 9;
-  bool TimeEstimateRequired = 10;
-  bool ConditionExpressionRequired = 11;
-  bool ConsumesVessel = 12;
-  bool OnlyForVessels = 13;
-  bool RestrictToIngredients = 14;
-  bool YieldsNothing = 15;
+  common.Uint16RangeWithOptionalMax instrument_count = 1;
+  common.Uint16RangeWithOptionalMax ingredient_count = 2;
+  common.Uint16RangeWithOptionalMax vessel_count = 3;
+  string icon_path = 4;
+  string past_tense = 5;
+  string slug = 6;
+  string name = 7;
+  string description = 8;
+  bool temperature_required = 9;
+  bool time_estimate_required = 10;
+  bool condition_expression_required = 11;
+  bool consumes_vessel = 12;
+  bool only_for_vessels = 13;
+  bool restrict_to_ingredients = 14;
+  bool yields_nothing = 15;
 }
 
 message ValidPreparationInstrument {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string Notes = 5;
-  ValidInstrument Instrument = 6;
-  ValidPreparation Preparation = 7;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string notes = 5;
+  ValidInstrument instrument = 6;
+  ValidPreparation preparation = 7;
 }
 
 message ValidPreparationInstrumentCreationRequestInput {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidInstrumentID = 3;
+  string notes = 1;
+  string valid_preparation_id = 2;
+  string valid_instrument_id = 3;
 }
 
 message ValidPreparationInstrumentUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ValidPreparationID = 2;
-  optional string ValidInstrumentID = 3;
+  optional string notes = 1;
+  optional string valid_preparation_id = 2;
+  optional string valid_instrument_id = 3;
 }
 
 message ValidPreparationUpdateRequestInput {
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput InstrumentCount = 1;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput IngredientCount = 2;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput VesselCount = 3;
-  optional string Name = 4;
-  optional string Description = 5;
-  optional string IconPath = 6;
-  optional bool YieldsNothing = 7;
-  optional string Slug = 8;
-  optional bool RestrictToIngredients = 9;
-  optional string PastTense = 10;
-  optional bool TemperatureRequired = 11;
-  optional bool TimeEstimateRequired = 12;
-  optional bool ConditionExpressionRequired = 13;
-  optional bool ConsumesVessel = 14;
-  optional bool OnlyForVessels = 15;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput instrument_count = 1;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput ingredient_count = 2;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput vessel_count = 3;
+  optional string name = 4;
+  optional string description = 5;
+  optional string icon_path = 6;
+  optional bool yields_nothing = 7;
+  optional string slug = 8;
+  optional bool restrict_to_ingredients = 9;
+  optional string past_tense = 10;
+  optional bool temperature_required = 11;
+  optional bool time_estimate_required = 12;
+  optional bool condition_expression_required = 13;
+  optional bool consumes_vessel = 14;
+  optional bool only_for_vessels = 15;
 }
 
 message ValidPreparationVessel {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string Notes = 5;
-  ValidPreparation Preparation = 6;
-  ValidVessel Vessel = 7;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string notes = 5;
+  ValidPreparation preparation = 6;
+  ValidVessel vessel = 7;
 }
 
 message ValidPreparationVesselCreationRequestInput {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidVesselID = 3;
+  string notes = 1;
+  string valid_preparation_id = 2;
+  string valid_vessel_id = 3;
 }
 
 message ValidPreparationVesselUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ValidPreparationID = 2;
-  optional string ValidVesselID = 3;
+  optional string notes = 1;
+  optional string valid_preparation_id = 2;
+  optional string valid_vessel_id = 3;
 }
 
 message ValidVessel {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  ValidMeasurementUnit CapacityUnit = 4;
-  string IconPath = 5;
-  string PluralName = 6;
-  string Description = 7;
-  string Name = 8;
-  string Slug = 9;
-  string Shape = 10;
-  string ID = 11;
-  float WidthInMillimeters = 12;
-  float LengthInMillimeters = 13;
-  float HeightInMillimeters = 14;
-  float Capacity = 15;
-  bool IncludeInGeneratedInstructions = 16;
-  bool DisplayInSummaryLists = 17;
-  bool UsableForStorage = 18;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  ValidMeasurementUnit capacity_unit = 4;
+  string icon_path = 5;
+  string plural_name = 6;
+  string description = 7;
+  string name = 8;
+  string slug = 9;
+  string shape = 10;
+  string id = 11;
+  float width_in_millimeters = 12;
+  float length_in_millimeters = 13;
+  float height_in_millimeters = 14;
+  float capacity = 15;
+  bool include_in_generated_instructions = 16;
+  bool display_in_summary_lists = 17;
+  bool usable_for_storage = 18;
 }
 
 message ValidVesselCreationRequestInput {
-  optional string CapacityUnitID = 1;
-  string Shape = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string Name = 5;
-  string Description = 6;
-  string Slug = 7;
-  float LengthInMillimeters = 8;
-  float HeightInMillimeters = 9;
-  float Capacity = 10;
-  float WidthInMillimeters = 11;
-  bool UsableForStorage = 12;
-  bool IncludeInGeneratedInstructions = 13;
-  bool DisplayInSummaryLists = 14;
+  optional string capacity_unit_id = 1;
+  string shape = 2;
+  string icon_path = 3;
+  string plural_name = 4;
+  string name = 5;
+  string description = 6;
+  string slug = 7;
+  float length_in_millimeters = 8;
+  float height_in_millimeters = 9;
+  float capacity = 10;
+  float width_in_millimeters = 11;
+  bool usable_for_storage = 12;
+  bool include_in_generated_instructions = 13;
+  bool display_in_summary_lists = 14;
 }
 
 message ValidVesselUpdateRequestInput {
-  optional string Name = 1;
-  optional string PluralName = 2;
-  optional string Description = 3;
-  optional string IconPath = 4;
-  optional bool UsableForStorage = 5;
-  optional string Slug = 6;
-  optional bool DisplayInSummaryLists = 7;
-  optional bool IncludeInGeneratedInstructions = 8;
-  optional float Capacity = 9;
-  optional string CapacityUnitID = 10;
-  optional float WidthInMillimeters = 11;
-  optional float LengthInMillimeters = 12;
-  optional float HeightInMillimeters = 13;
-  optional string Shape = 14;
+  optional string name = 1;
+  optional string plural_name = 2;
+  optional string description = 3;
+  optional string icon_path = 4;
+  optional bool usable_for_storage = 5;
+  optional string slug = 6;
+  optional bool display_in_summary_lists = 7;
+  optional bool include_in_generated_instructions = 8;
+  optional float capacity = 9;
+  optional string capacity_unit_id = 10;
+  optional float width_in_millimeters = 11;
+  optional float length_in_millimeters = 12;
+  optional float height_in_millimeters = 13;
+  optional string shape = 14;
 }
 
 message UserIngredientPreference {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string Notes = 5;
-  string BelongsToUser = 6;
-  ValidIngredient Ingredient = 7;
-  int32 Rating = 8;
-  bool Allergy = 9;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string notes = 5;
+  string belongs_to_user = 6;
+  ValidIngredient ingredient = 7;
+  int32 rating = 8;
+  bool allergy = 9;
 }
 
 message UserIngredientPreferenceCreationRequestInput {
-  string ValidIngredientGroupID = 1;
-  string ValidIngredientID = 2;
-  string Notes = 3;
-  int32 Rating = 4;
-  bool Allergy = 5;
+  string valid_ingredient_group_id = 1;
+  string valid_ingredient_id = 2;
+  string notes = 3;
+  int32 rating = 4;
+  bool allergy = 5;
 }
 
 message UserIngredientPreferenceUpdateRequestInput {
-  optional string Notes = 1;
-  optional string IngredientID = 2;
-  optional int32 Rating = 3;
-  optional bool Allergy = 4;
+  optional string notes = 1;
+  optional string ingredient_id = 2;
+  optional int32 rating = 3;
+  optional bool allergy = 4;
 }
 
 // ArchiveValidIngredient
 message ArchiveValidIngredientRequest {
-  string ValidIngredientID = 1;
+  string valid_ingredient_id = 1;
 }
 
 message ArchiveValidIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidIngredientGroup
 message ArchiveValidIngredientGroupRequest {
-  string ValidIngredientGroupID = 1;
+  string valid_ingredient_group_id = 1;
 }
 
 message ArchiveValidIngredientGroupResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidIngredientMeasurementUnit
 message ArchiveValidIngredientMeasurementUnitRequest {
-  string ValidIngredientMeasurementUnitID = 1;
+  string valid_ingredient_measurement_unit_id = 1;
 }
 
 message ArchiveValidIngredientMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidIngredientPreparation
 message ArchiveValidIngredientPreparationRequest {
-  string ValidIngredientPreparationID = 1;
+  string valid_ingredient_preparation_id = 1;
 }
 
 message ArchiveValidIngredientPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidIngredientState
 message ArchiveValidIngredientStateRequest {
-  string ValidIngredientStateID = 1;
+  string valid_ingredient_state_id = 1;
 }
 
 message ArchiveValidIngredientStateResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidIngredientStateIngredient
 message ArchiveValidIngredientStateIngredientRequest {
-  string ValidIngredientStateIngredientID = 1;
+  string valid_ingredient_state_ingredient_id = 1;
 }
 
 message ArchiveValidIngredientStateIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidInstrument
 message ArchiveValidInstrumentRequest {
-  string ValidInstrumentID = 1;
+  string valid_instrument_id = 1;
 }
 
 message ArchiveValidInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidMeasurementUnit
 message ArchiveValidMeasurementUnitRequest {
-  string ValidMeasurementUnitID = 1;
+  string valid_measurement_unit_id = 1;
 }
 
 message ArchiveValidMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidMeasurementUnitConversion
 message ArchiveValidMeasurementUnitConversionRequest {
-  string ValidMeasurementUnitConversionID = 1;
+  string valid_measurement_unit_conversion_id = 1;
 }
 
 message ArchiveValidMeasurementUnitConversionResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidPreparation
 message ArchiveValidPreparationRequest {
-  string ValidPreparationID = 1;
+  string valid_preparation_id = 1;
 }
 
 message ArchiveValidPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidPreparationInstrument
 message ArchiveValidPreparationInstrumentRequest {
-  string ValidPreparationInstrumentID = 1;
+  string valid_preparation_instrument_id = 1;
 }
 
 message ArchiveValidPreparationInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidPreparationVessel
 message ArchiveValidPreparationVesselRequest {
-  string ValidPreparationVesselID = 1;
+  string valid_preparation_vessel_id = 1;
 }
 
 message ArchiveValidPreparationVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveValidVessel
 message ArchiveValidVesselRequest {
-  string ValidVesselID = 1;
+  string valid_vessel_id = 1;
 }
 
 message ArchiveValidVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CreateValidIngredient
 message CreateValidIngredientRequest {
-  ValidIngredientCreationRequestInput Input = 1;
+  ValidIngredientCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredient result = 2;
 }
 
 // CreateValidIngredientGroup
 message CreateValidIngredientGroupRequest {
-  ValidIngredientGroupCreationRequestInput Input = 1;
+  ValidIngredientGroupCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientGroupResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientGroup Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientGroup result = 2;
 }
 
 // CreateValidIngredientMeasurementUnit
 message CreateValidIngredientMeasurementUnitRequest {
-  ValidIngredientMeasurementUnitCreationRequestInput Input = 1;
+  ValidIngredientMeasurementUnitCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientMeasurementUnit result = 2;
 }
 
 // CreateValidIngredientPreparation
 message CreateValidIngredientPreparationRequest {
-  ValidIngredientPreparationCreationRequestInput Input = 1;
+  ValidIngredientPreparationCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientPreparation result = 2;
 }
 
 // CreateValidIngredientState
 message CreateValidIngredientStateRequest {
-  ValidIngredientStateCreationRequestInput Input = 1;
+  ValidIngredientStateCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientStateResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientState Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientState result = 2;
 }
 
 // CreateValidIngredientStateIngredient
 message CreateValidIngredientStateIngredientRequest {
-  ValidIngredientStateIngredientCreationRequestInput Input = 1;
+  ValidIngredientStateIngredientCreationRequestInput input = 1;
 }
 
 message CreateValidIngredientStateIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientStateIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientStateIngredient result = 2;
 }
 
 // CreateValidInstrument
 message CreateValidInstrumentRequest {
-  ValidInstrumentCreationRequestInput Input = 1;
+  ValidInstrumentCreationRequestInput input = 1;
 }
 
 message CreateValidInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidInstrument result = 2;
 }
 
 // CreateValidMeasurementUnit
 message CreateValidMeasurementUnitRequest {
-  ValidMeasurementUnitCreationRequestInput Input = 1;
+  ValidMeasurementUnitCreationRequestInput input = 1;
 }
 
 message CreateValidMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnit result = 2;
 }
 
 // CreateValidMeasurementUnitConversion
 message CreateValidMeasurementUnitConversionRequest {
-  ValidMeasurementUnitConversionCreationRequestInput Input = 1;
+  ValidMeasurementUnitConversionCreationRequestInput input = 1;
 }
 
 message CreateValidMeasurementUnitConversionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnitConversion Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnitConversion result = 2;
 }
 
 // CreateValidPreparation
 message CreateValidPreparationRequest {
-  ValidPreparationCreationRequestInput Input = 1;
+  ValidPreparationCreationRequestInput input = 1;
 }
 
 message CreateValidPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparation result = 2;
 }
 
 // CreateValidPreparationInstrument
 message CreateValidPreparationInstrumentRequest {
-  ValidPreparationInstrumentCreationRequestInput Input = 1;
+  ValidPreparationInstrumentCreationRequestInput input = 1;
 }
 
 message CreateValidPreparationInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationInstrument result = 2;
 }
 
 // CreateValidPreparationVessel
 message CreateValidPreparationVesselRequest {
-  ValidPreparationVesselCreationRequestInput Input = 1;
+  ValidPreparationVesselCreationRequestInput input = 1;
 }
 
 message CreateValidPreparationVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationVessel result = 2;
 }
 
 // CreateValidVessel
 message CreateValidVesselRequest {
-  ValidVesselCreationRequestInput Input = 1;
+  ValidVesselCreationRequestInput input = 1;
 }
 
 message CreateValidVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidVessel result = 2;
 }
 
 // GetRandomValidIngredient
 message GetRandomValidIngredientRequest {}
 
 message GetRandomValidIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredient result = 2;
 }
 
 // GetRandomValidInstrument
 message GetRandomValidInstrumentRequest {}
 
 message GetRandomValidInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidInstrument result = 2;
 }
 
 // GetRandomValidPreparation
 message GetRandomValidPreparationRequest {}
 
 message GetRandomValidPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparation result = 2;
 }
 
 // GetRandomValidVessel
 message GetRandomValidVesselRequest {}
 
 message GetRandomValidVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidVessel result = 2;
 }
 
 // GetValidIngredient
 message GetValidIngredientRequest {
-  string ValidIngredientID = 1;
+  string valid_ingredient_id = 1;
 }
 
 message GetValidIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredient result = 2;
 }
 
 // GetValidIngredientGroup
 message GetValidIngredientGroupRequest {
-  string ValidIngredientGroupID = 1;
+  string valid_ingredient_group_id = 1;
 }
 
 message GetValidIngredientGroupResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientGroup Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientGroup result = 2;
 }
 
 // GetValidIngredientGroups
 message GetValidIngredientGroupsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientGroupsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientGroup Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientGroup results =  3;
 }
 
 // GetValidIngredientMeasurementUnit
 message GetValidIngredientMeasurementUnitRequest {
-  string ValidIngredientMeasurementUnitID = 1;
+  string valid_ingredient_measurement_unit_id = 1;
 }
 
 message GetValidIngredientMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientMeasurementUnit result = 2;
 }
 
 // GetValidIngredientMeasurementUnits
 message GetValidIngredientMeasurementUnitsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientMeasurementUnitsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientMeasurementUnit results =  3;
 }
 
 // GetValidIngredientMeasurementUnitsByIngredient
 message GetValidIngredientMeasurementUnitsByIngredientRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidIngredientID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_id = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientMeasurementUnit results =  3;
 }
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnit
 message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidMeasurementUnitID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_measurement_unit_id = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientMeasurementUnit results =  3;
 }
 
 // GetValidIngredientPreparation
 message GetValidIngredientPreparationRequest {
-  string ValidIngredientPreparationID = 1;
+  string valid_ingredient_preparation_id = 1;
 }
 
 message GetValidIngredientPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientPreparation result = 2;
 }
 
 // GetValidIngredientPreparations
 message GetValidIngredientPreparationsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientPreparationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientPreparation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientPreparation results =  3;
 }
 
 // GetValidIngredientPreparationsByIngredient
 message GetValidIngredientPreparationsByIngredientRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidIngredientID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_id = 2;
 }
 
 message GetValidIngredientPreparationsByIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientPreparation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientPreparation results =  3;
 }
 
 // GetValidIngredientPreparationsByPreparation
 message GetValidIngredientPreparationsByPreparationRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidPreparationID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_preparation_id = 2;
 }
 
 message GetValidIngredientPreparationsByPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientPreparation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientPreparation results =  3;
 }
 
 // GetValidIngredientState
 message GetValidIngredientStateRequest {
-  string ValidIngredientStateID = 1;
+  string valid_ingredient_state_id = 1;
 }
 
 message GetValidIngredientStateResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientState Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientState result = 2;
 }
 
 // GetValidIngredientStateIngredient
 message GetValidIngredientStateIngredientRequest {
-  string ValidIngredientStateIngredientID = 1;
+  string valid_ingredient_state_ingredient_id = 1;
 }
 
 message GetValidIngredientStateIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientStateIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientStateIngredient result = 2;
 }
 
 // GetValidIngredientStateIngredients
 message GetValidIngredientStateIngredientsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientStateIngredientsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientStateIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientStateIngredient results =  3;
 }
 
 // GetValidIngredientStateIngredientsByIngredient
 message GetValidIngredientStateIngredientsByIngredientRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidIngredientID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_id = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientStateIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientStateIngredient results =  3;
 }
 
 // GetValidIngredientStateIngredientsByIngredientState
 message GetValidIngredientStateIngredientsByIngredientStateRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidIngredientStateID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_state_id = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientStateResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientStateIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientStateIngredient results =  3;
 }
 
 // GetValidIngredientStates
 message GetValidIngredientStatesRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientStatesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientState Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientState results =  3;
 }
 
 // GetValidIngredients
 message GetValidIngredientsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidIngredientsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredient results =  3;
 }
 
 // GetValidInstrument
 message GetValidInstrumentRequest {
-  string ValidInstrumentID = 1;
+  string valid_instrument_id = 1;
 }
 
 message GetValidInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidInstrument result = 2;
 }
 
 // GetValidInstruments
 message GetValidInstrumentsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidInstrumentsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidInstrument results =  3;
 }
 
 // GetValidMeasurementUnit
 message GetValidMeasurementUnitRequest {
-  string ValidMeasurementUnitID = 1;
+  string valid_measurement_unit_id = 1;
 }
 
 message GetValidMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnit result = 2;
 }
 
 // GetValidMeasurementUnitConversion
 message GetValidMeasurementUnitConversionRequest {
-  string ValidMeasurementUnitConversionID = 1;
+  string valid_measurement_unit_conversion_id = 1;
 }
 
 message GetValidMeasurementUnitConversionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnitConversion Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnitConversion result = 2;
 }
 
 // GetValidMeasurementUnitConversionsForUnit
 message GetValidMeasurementUnitConversionsForUnitRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidMeasurementUnitID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_measurement_unit_id = 2;
 }
 
 message GetValidMeasurementUnitConversionsForUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidMeasurementUnitConversion Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidMeasurementUnitConversion results =  3;
 }
 
 // GetValidMeasurementUnits
 message GetValidMeasurementUnitsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidMeasurementUnitsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidMeasurementUnit results =  3;
 }
 
 // GetValidPreparation
 message GetValidPreparationRequest {
-  string ValidPreparationID = 1;
+  string valid_preparation_id = 1;
 }
 
 message GetValidPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparation result = 2;
 }
 
 // GetValidPreparationInstrument
 message GetValidPreparationInstrumentRequest {
-  string ValidPreparationInstrumentID = 1;
+  string valid_preparation_instrument_id = 1;
 }
 
 message GetValidPreparationInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationInstrument result = 2;
 }
 
 // GetValidPreparationInstruments
 message GetValidPreparationInstrumentsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidPreparationInstrumentsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationInstrument results =  3;
 }
 
 // GetValidPreparationInstrumentsByInstrument
 message GetValidPreparationInstrumentsByInstrumentRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidInstrumentID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_instrument_id = 2;
 }
 
 message GetValidPreparationInstrumentsByInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationInstrument results =  3;
 }
 
 // GetValidPreparationInstrumentsByPreparation
 message GetValidPreparationInstrumentsByPreparationRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidPreparationID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_preparation_id = 2;
 }
 
 message GetValidPreparationInstrumentsByPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationInstrument results =  3;
 }
 
 // GetValidPreparationVessel
 message GetValidPreparationVesselRequest {
-  string ValidPreparationVesselID = 1;
+  string valid_preparation_vessel_id = 1;
 }
 
 message GetValidPreparationVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationVessel result = 2;
 }
 
 // GetValidPreparationVessels
 message GetValidPreparationVesselsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidPreparationVesselsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationVessel results =  3;
 }
 
 // GetValidPreparationVesselsByPreparation
 message GetValidPreparationVesselsByPreparationRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidPreparationID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_preparation_id = 2;
 }
 
 message GetValidPreparationVesselsByPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationVessel results =  3;
 }
 
 // GetValidPreparationVesselsByVessel
 message GetValidPreparationVesselsByVesselRequest {
-  filtering.QueryFilter Filter = 1;
-  string ValidVesselID = 2;
+  filtering.QueryFilter filter = 1;
+  string valid_vessel_id = 2;
 }
 
 message GetValidPreparationVesselsByVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparationVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparationVessel results =  3;
 }
 
 // GetValidPreparations
 message GetValidPreparationsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidPreparationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparation results =  3;
 }
 
 // GetValidVessel
 message GetValidVesselRequest {
-  string ValidVesselID = 1;
+  string valid_vessel_id = 1;
 }
 
 message GetValidVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidVessel result = 2;
 }
 
 // GetValidVessels
 message GetValidVesselsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetValidVesselsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidVessel results =  3;
 }
 
 // SearchForValidIngredientGroups
 message SearchForValidIngredientGroupsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidIngredientGroupsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientGroup Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientGroup results =  3;
 }
 
 // SearchForValidIngredientStates
 message SearchForValidIngredientStatesRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidIngredientStatesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredientState Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredientState results =  3;
 }
 
 // SearchForValidIngredients
 message SearchForValidIngredientsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidIngredientsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredient results =  3;
 }
 
 // SearchForValidInstruments
 message SearchForValidInstrumentsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidInstrumentsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidInstrument results =  3;
 }
 
 // SearchForValidMeasurementUnits
 message SearchForValidMeasurementUnitsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidMeasurementUnitsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidMeasurementUnit results =  3;
 }
 
 // SearchForValidPreparations
 message SearchForValidPreparationsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidPreparationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidPreparation Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPreparation results =  3;
 }
 
 // SearchForValidVessels
 message SearchForValidVesselsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForValidVesselsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidVessel results =  3;
 }
 
 // SearchValidIngredientsByPreparation
 message SearchValidIngredientsByPreparationRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  string ValidPreparationID = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  string valid_preparation_id = 3;
 }
 
 message SearchValidIngredientsByPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidIngredient results =  3;
 }
 
 // SearchValidMeasurementUnitsByIngredient
 message SearchValidMeasurementUnitsByIngredientRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  string ValidIngredientID = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  string valid_ingredient_id = 3;
 }
 
 message SearchValidMeasurementUnitsByIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ValidMeasurementUnit Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidMeasurementUnit results =  3;
 }
 
 // UpdateValidIngredient
 message UpdateValidIngredientRequest {
-  string ValidIngredientID = 1;
+  string valid_ingredient_id = 1;
   ValidIngredientUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredient result = 2;
 }
 
 // UpdateValidIngredientGroup
 message UpdateValidIngredientGroupRequest {
-  string ValidIngredientGroupID = 1;
+  string valid_ingredient_group_id = 1;
   ValidIngredientGroupUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientGroupResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientGroup Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientGroup result = 2;
 }
 
 // UpdateValidIngredientMeasurementUnit
 message UpdateValidIngredientMeasurementUnitRequest {
-  string ValidIngredientMeasurementUnitID = 1;
+  string valid_ingredient_measurement_unit_id = 1;
   ValidIngredientMeasurementUnitUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientMeasurementUnit result = 2;
 }
 
 // UpdateValidIngredientPreparation
 message UpdateValidIngredientPreparationRequest {
-  string ValidIngredientPreparationID = 1;
+  string valid_ingredient_preparation_id = 1;
   ValidIngredientPreparationUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientPreparation result = 2;
 }
 
 // UpdateValidIngredientState
 message UpdateValidIngredientStateRequest {
-  string ValidIngredientStateID = 1;
+  string valid_ingredient_state_id = 1;
   ValidIngredientStateUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientStateResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientState Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientState result = 2;
 }
 
 // UpdateValidIngredientStateIngredient
 message UpdateValidIngredientStateIngredientRequest {
-  string ValidIngredientStateIngredientID = 1;
+  string valid_ingredient_state_ingredient_id = 1;
   ValidIngredientStateIngredientUpdateRequestInput input = 2;
 }
 
 message UpdateValidIngredientStateIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidIngredientStateIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidIngredientStateIngredient result = 2;
 }
 
 // UpdateValidInstrument
 message UpdateValidInstrumentRequest {
-  string ValidInstrumentID = 1;
+  string valid_instrument_id = 1;
   ValidInstrumentUpdateRequestInput input = 2;
 }
 
 message UpdateValidInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidInstrument result = 2;
 }
 
 // UpdateValidMeasurementUnit
 message UpdateValidMeasurementUnitRequest {
-  string ValidMeasurementUnitID = 1;
+  string valid_measurement_unit_id = 1;
   ValidMeasurementUnitUpdateRequestInput input = 2;
 }
 
 message UpdateValidMeasurementUnitResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnit Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnit result = 2;
 }
 
 // UpdateValidMeasurementUnitConversion
 message UpdateValidMeasurementUnitConversionRequest {
-  string ValidMeasurementUnitConversionID = 1;
+  string valid_measurement_unit_conversion_id = 1;
   ValidMeasurementUnitConversionUpdateRequestInput input = 2;
 }
 
 message UpdateValidMeasurementUnitConversionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidMeasurementUnitConversion Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidMeasurementUnitConversion result = 2;
 }
 
 // UpdateValidPreparation
 message UpdateValidPreparationRequest {
-  string ValidPreparationID = 1;
+  string valid_preparation_id = 1;
   ValidPreparationUpdateRequestInput input = 2;
 }
 
 message UpdateValidPreparationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparation Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparation result = 2;
 }
 
 // UpdateValidPreparationInstrument
 message UpdateValidPreparationInstrumentRequest {
-  string ValidPreparationInstrumentID = 1;
+  string valid_preparation_instrument_id = 1;
   ValidPreparationInstrumentUpdateRequestInput input = 2;
 }
 
 message UpdateValidPreparationInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationInstrument result = 2;
 }
 
 // UpdateValidPreparationVessel
 message UpdateValidPreparationVesselRequest {
-  string ValidPreparationVesselID = 1;
+  string valid_preparation_vessel_id = 1;
   ValidPreparationVesselUpdateRequestInput input = 2;
 }
 
 message UpdateValidPreparationVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidPreparationVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidPreparationVessel result = 2;
 }
 
 // UpdateValidVessel
 message UpdateValidVesselRequest {
-  string ValidVesselID = 1;
+  string valid_vessel_id = 1;
   ValidVesselUpdateRequestInput input = 2;
 }
 
 message UpdateValidVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ValidVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  ValidVessel result = 2;
 }
 
 // ArchiveUserIngredientPreference
 message ArchiveUserIngredientPreferenceRequest {
-  string userIngredientPreferenceID = 1;
+  string user_ingredient_preference_id = 1;
 }
 
 message ArchiveUserIngredientPreferenceResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CreateUserIngredientPreference
 message CreateUserIngredientPreferenceRequest {
-  UserIngredientPreferenceCreationRequestInput Input = 1;
+  UserIngredientPreferenceCreationRequestInput input = 1;
 }
 
 message CreateUserIngredientPreferenceResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  repeated UserIngredientPreference Created = 2;
+  common.ResponseDetails response_details = 1;
+  repeated UserIngredientPreference created = 2;
 }
 
 // GetUserIngredientPreference
 message GetUserIngredientPreferenceRequest {
-  string UserIngredientPreferenceID = 1;
+  string user_ingredient_preference_id = 1;
 }
 
 message GetUserIngredientPreferenceResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserIngredientPreference Result = 2;
+  common.ResponseDetails response_details = 1;
+  UserIngredientPreference result = 2;
 }
 
 // GetUserIngredientPreferences
 message GetUserIngredientPreferencesRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetUserIngredientPreferencesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated UserIngredientPreference Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated UserIngredientPreference results =  3;
 }
 
 // UpdateUserIngredientPreference
 message UpdateUserIngredientPreferenceRequest {
-  string userIngredientPreferenceID = 1;
+  string user_ingredient_preference_id = 1;
   UserIngredientPreferenceUpdateRequestInput input = 2;
 }
 
 message UpdateUserIngredientPreferenceResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserIngredientPreference Updated = 2;
+  common.ResponseDetails response_details = 1;
+  UserIngredientPreference updated = 2;
 }
 
 // Recipes
 
 message Recipe {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional string InspiredByRecipeID = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  common.Float32RangeWithOptionalMax EstimatedPortions = 5;
-  string PluralPortionName = 6;
-  string Description = 7;
-  string Name = 8;
-  string PortionName = 9;
-  string ID = 10;
-  string CreatedByUser = 11;
-  string Source = 12;
-  string Slug = 13;
-  string YieldsComponentType = 14;
-  repeated RecipePrepTask PrepTasks = 15;
-  repeated RecipeStep Steps = 16;
-  repeated RecipeMedia Media = 17;
-  string Status = 19;
-  bool EligibleForMeals = 20;
+  google.protobuf.Timestamp created_at = 1;
+  optional string inspired_by_recipe_id = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  common.Float32RangeWithOptionalMax estimated_portions = 5;
+  string plural_portion_name = 6;
+  string description = 7;
+  string name = 8;
+  string portion_name = 9;
+  string id = 10;
+  string created_by_user = 11;
+  string source = 12;
+  string slug = 13;
+  string yields_component_type = 14;
+  repeated RecipePrepTask prep_tasks = 15;
+  repeated RecipeStep steps = 16;
+  repeated RecipeMedia media = 17;
+  string status = 19;
+  bool eligible_for_meals = 20;
 }
 
 message RecipeCreationRequestInput {
-  optional string InspiredByRecipeID = 1;
-  string Name = 2;
-  string Source = 3;
-  string Description = 4;
-  string PluralPortionName = 5;
-  string PortionName = 6;
-  string Slug = 7;
-  string YieldsComponentType = 8;
-  common.Float32RangeWithOptionalMax EstimatedPortions = 9;
-  repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
-  repeated RecipeStepCreationRequestInput Steps = 11;
-  bool AlsoCreateMeal = 12;
-  bool EligibleForMeals = 13;
-  repeated RecipeMediaCreationRequestInput Media = 14;
+  optional string inspired_by_recipe_id = 1;
+  string name = 2;
+  string source = 3;
+  string description = 4;
+  string plural_portion_name = 5;
+  string portion_name = 6;
+  string slug = 7;
+  string yields_component_type = 8;
+  common.Float32RangeWithOptionalMax estimated_portions = 9;
+  repeated RecipePrepTaskWithinRecipeCreationRequestInput prep_tasks = 10;
+  repeated RecipeStepCreationRequestInput steps = 11;
+  bool also_create_meal = 12;
+  bool eligible_for_meals = 13;
+  repeated RecipeMediaCreationRequestInput media = 14;
 }
 
 message RecipeMedia {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string ID = 4;
-  optional string BelongsToRecipe = 5;
-  optional string BelongsToRecipeStep = 6;
-  string MimeType = 7;
-  string InternalPath = 8;
-  string ExternalPath = 9;
-  uint32 Index = 10;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  string id = 4;
+  optional string belongs_to_recipe = 5;
+  optional string belongs_to_recipe_step = 6;
+  string mime_type = 7;
+  string internal_path = 8;
+  string external_path = 9;
+  uint32 index = 10;
 }
 
 message RecipeMediaCreationRequestInput {
-  string BelongsToRecipe = 1;
-  string BelongsToRecipeStep = 2;
-  string MimeType = 3;
-  string InternalPath = 4;
-  string ExternalPath = 5;
-  uint32 Index = 6;
+  string belongs_to_recipe = 1;
+  string belongs_to_recipe_step = 2;
+  string mime_type = 3;
+  string internal_path = 4;
+  string external_path = 5;
+  uint32 index = 6;
 }
 
 message RecipeMediaUpdateRequestInput {
-  optional string BelongsToRecipe = 1;
-  optional string BelongsToRecipeStep = 2;
-  optional string MimeType = 3;
-  optional string InternalPath = 4;
-  optional string ExternalPath = 5;
-  optional uint32 Index = 6;
+  optional string belongs_to_recipe = 1;
+  optional string belongs_to_recipe_step = 2;
+  optional string mime_type = 3;
+  optional string internal_path = 4;
+  optional string external_path = 5;
+  optional uint32 index = 6;
 }
 
 message RecipePrepTask {
-  google.protobuf.Timestamp CreatedAt = 1;
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 2;
-  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  optional google.protobuf.Timestamp LastUpdatedAt = 5;
-  string ID = 6;
-  string StorageType = 7;
-  string BelongsToRecipe = 8;
-  string ExplicitStorageInstructions = 9;
-  string Notes = 10;
-  string Name = 11;
-  string Description = 12;
-  repeated RecipePrepTaskStep TaskSteps = 13;
-  bool Optional = 14;
+  google.protobuf.Timestamp created_at = 1;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  optional google.protobuf.Timestamp last_updated_at = 5;
+  string id = 6;
+  string storage_type = 7;
+  string belongs_to_recipe = 8;
+  string explicit_storage_instructions = 9;
+  string notes = 10;
+  string name = 11;
+  string description = 12;
+  repeated RecipePrepTaskStep task_steps = 13;
+  bool optional = 14;
 }
 
 message RecipePrepTaskCreationRequestInput {
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
-  string StorageType = 3;
-  string ExplicitStorageInstructions = 4;
-  string Notes = 5;
-  string Name = 6;
-  string Description = 7;
-  string BelongsToRecipe = 8;
-  repeated RecipePrepTaskStepCreationRequestInput RecipeSteps = 9;
-  bool Optional = 10;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
+  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 2;
+  string storage_type = 3;
+  string explicit_storage_instructions = 4;
+  string notes = 5;
+  string name = 6;
+  string description = 7;
+  string belongs_to_recipe = 8;
+  repeated RecipePrepTaskStepCreationRequestInput recipe_steps = 9;
+  bool optional = 10;
 }
 
 message RecipePrepTaskStep {
-  string ID = 1;
-  string BelongsToRecipeStep = 2;
-  string BelongsToRecipePrepTask = 3;
-  bool SatisfiesRecipeStep = 4;
+  string id = 1;
+  string belongs_to_recipe_step = 2;
+  string belongs_to_recipe_prep_task = 3;
+  bool satisfies_recipe_step = 4;
 }
 
 message RecipePrepTaskStepCreationRequestInput {
-  string BelongsToRecipeStep = 1;
-  bool SatisfiesRecipeStep = 2;
+  string belongs_to_recipe_step = 1;
+  bool satisfies_recipe_step = 2;
 }
 
 message RecipePrepTaskStepUpdateRequestInput {
-  optional bool SatisfiesRecipeStep = 1;
-  optional string BelongsToRecipeStep = 2;
-  optional string BelongsToRecipePrepTask = 3;
+  optional bool satisfies_recipe_step = 1;
+  optional string belongs_to_recipe_step = 2;
+  optional string belongs_to_recipe_prep_task = 3;
 }
 
 message RecipePrepTaskStepWithinRecipeCreationRequestInput {
-  uint32 BelongsToRecipeStepIndex = 1;
-  bool SatisfiesRecipeStep = 2;
+  uint32 belongs_to_recipe_step_index = 1;
+  bool satisfies_recipe_step = 2;
 }
 
 message RecipePrepTaskUpdateRequestInput {
-  optional string Notes = 1;
-  optional string ExplicitStorageInstructions = 2;
-  optional string StorageType = 3;
-  optional string Name = 4;
-  optional bool Optional = 5;
-  optional string Description = 6;
-  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 7;
-  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput TimeBufferBeforeRecipeInSeconds = 8;
-  optional string BelongsToRecipe = 9;
-  repeated RecipePrepTaskStepUpdateRequestInput TaskSteps = 10;
+  optional string notes = 1;
+  optional string explicit_storage_instructions = 2;
+  optional string storage_type = 3;
+  optional string name = 4;
+  optional bool optional = 5;
+  optional string description = 6;
+  optional common.OptionalFloat32Range storage_temperature_in_celsius = 7;
+  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput time_buffer_before_recipe_in_seconds = 8;
+  optional string belongs_to_recipe = 9;
+  repeated RecipePrepTaskStepUpdateRequestInput task_steps = 10;
 }
 
 message RecipePrepTaskWithinRecipeCreationRequestInput {
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
-  string StorageType = 3;
-  string Name = 4;
-  string Description = 5;
-  string ExplicitStorageInstructions = 6;
-  string Notes = 7;
-  string BelongsToRecipe = 8;
-  repeated RecipePrepTaskStepWithinRecipeCreationRequestInput RecipeSteps = 9;
-  bool Optional = 10;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
+  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 2;
+  string storage_type = 3;
+  string name = 4;
+  string description = 5;
+  string explicit_storage_instructions = 6;
+  string notes = 7;
+  string belongs_to_recipe = 8;
+  repeated RecipePrepTaskStepWithinRecipeCreationRequestInput recipe_steps = 9;
+  bool optional = 10;
 }
 
 message RecipeRating {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  string Notes = 4;
-  string ID = 5;
-  string RecipeID = 6;
-  string ByUser = 7;
-  float Taste = 8;
-  float Instructions = 9;
-  float Overall = 10;
-  float Cleanup = 11;
-  float Difficulty = 12;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  string notes = 4;
+  string id = 5;
+  string recipe_id = 6;
+  string by_user = 7;
+  float taste = 8;
+  float instructions = 9;
+  float overall = 10;
+  float cleanup = 11;
+  float difficulty = 12;
 }
 
 message RecipeRatingCreationRequestInput {
-  string RecipeID = 1;
-  string Notes = 2;
-  string ByUser = 3;
-  float Taste = 4;
-  float Difficulty = 5;
-  float Cleanup = 6;
-  float Instructions = 7;
-  float Overall = 8;
+  string recipe_id = 1;
+  string notes = 2;
+  string by_user = 3;
+  float taste = 4;
+  float difficulty = 5;
+  float cleanup = 6;
+  float instructions = 7;
+  float overall = 8;
 }
 
 message RecipeRatingUpdateRequestInput {
-  optional string RecipeID = 1;
-  optional float Taste = 2;
-  optional float Difficulty = 3;
-  optional float Cleanup = 4;
-  optional float Instructions = 5;
-  optional float Overall = 6;
-  optional string Notes = 7;
-  optional string ByUser = 8;
+  optional string recipe_id = 1;
+  optional float taste = 2;
+  optional float difficulty = 3;
+  optional float cleanup = 4;
+  optional float instructions = 5;
+  optional float overall = 6;
+  optional string notes = 7;
+  optional string by_user = 8;
 }
 
 message RecipeStep {
-  google.protobuf.Timestamp CreatedAt = 1;
-  common.OptionalUint32Range EstimatedTimeInSeconds = 2;
-  common.OptionalFloat32Range TemperatureInCelsius = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  optional google.protobuf.Timestamp LastUpdatedAt = 5;
-  string BelongsToRecipe = 6;
-  string ConditionExpression = 7;
-  string ID = 8;
-  string Notes = 9;
-  string ExplicitInstructions = 10;
-  repeated RecipeMedia Media = 11;
-  repeated RecipeStepProduct Products = 12;
-  repeated RecipeStepInstrument Instruments = 13;
-  repeated RecipeStepVessel Vessels = 14;
-  repeated RecipeStepCompletionCondition CompletionConditions = 15;
-  repeated RecipeStepIngredient Ingredients = 16;
-  ValidPreparation Preparation = 17;
-  uint32 Index = 18;
-  bool Optional = 19;
-  bool StartTimerAutomatically = 20;
+  google.protobuf.Timestamp created_at = 1;
+  common.OptionalUint32Range estimated_time_in_seconds = 2;
+  common.OptionalFloat32Range temperature_in_celsius = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  optional google.protobuf.Timestamp last_updated_at = 5;
+  string belongs_to_recipe = 6;
+  string condition_expression = 7;
+  string id = 8;
+  string notes = 9;
+  string explicit_instructions = 10;
+  repeated RecipeMedia media = 11;
+  repeated RecipeStepProduct products = 12;
+  repeated RecipeStepInstrument instruments = 13;
+  repeated RecipeStepVessel vessels = 14;
+  repeated RecipeStepCompletionCondition completion_conditions = 15;
+  repeated RecipeStepIngredient ingredients = 16;
+  ValidPreparation preparation = 17;
+  uint32 index = 18;
+  bool optional = 19;
+  bool start_timer_automatically = 20;
 }
 
 message RecipeStepCompletionCondition {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  ValidIngredientState IngredientState = 4;
-  string ID = 5;
-  string BelongsToRecipeStep = 6;
-  string Notes = 7;
-  repeated RecipeStepCompletionConditionIngredient Ingredients = 8;
-  bool Optional = 9;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  ValidIngredientState ingredient_state = 4;
+  string id = 5;
+  string belongs_to_recipe_step = 6;
+  string notes = 7;
+  repeated RecipeStepCompletionConditionIngredient ingredients = 8;
+  bool optional = 9;
 }
 
 message RecipeStepCompletionConditionCreationRequestInput {
-  string IngredientStateID = 1;
-  string BelongsToRecipeStep = 2;
-  string Notes = 3;
-  repeated uint64 Ingredients = 4;
-  bool Optional = 5;
+  string ingredient_state_id = 1;
+  string belongs_to_recipe_step = 2;
+  string notes = 3;
+  repeated uint64 ingredients = 4;
+  bool optional = 5;
 }
 
 message RecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
-  string IngredientStateID = 1;
-  string BelongsToRecipeStep = 2;
-  string Notes = 3;
-  repeated RecipeStepCompletionConditionIngredient Ingredients = 4;
-  bool Optional = 5;
+  string ingredient_state_id = 1;
+  string belongs_to_recipe_step = 2;
+  string notes = 3;
+  repeated RecipeStepCompletionConditionIngredient ingredients = 4;
+  bool optional = 5;
 }
 
 message RecipeStepCompletionConditionIngredient {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string ID = 4;
-  string BelongsToRecipeStepCompletionCondition = 5;
-  string RecipeStepIngredient = 6;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  string id = 4;
+  string belongs_to_recipe_step_completion_condition = 5;
+  string recipe_step_ingredient = 6;
 }
 
 message RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput {
-  string RecipeStepIngredient = 1;
+  string recipe_step_ingredient = 1;
 }
 
 message RecipeStepCompletionConditionUpdateRequestInput {
-  optional string IngredientStateID = 1;
-  optional string BelongsToRecipeStep = 2;
-  optional string Notes = 3;
-  optional bool Optional = 4;
+  optional string ingredient_state_id = 1;
+  optional string belongs_to_recipe_step = 2;
+  optional string notes = 3;
+  optional bool optional = 4;
 }
 
 message RecipeStepCreationRequestInput {
-  common.OptionalUint32Range EstimatedTimeInSeconds = 1;
-  common.OptionalFloat32Range TemperatureInCelsius = 2;
-  string PreparationID = 3;
-  string Notes = 4;
-  string ConditionExpression = 5;
-  string ExplicitInstructions = 6;
-  repeated RecipeStepInstrumentCreationRequestInput Instruments = 7;
-  repeated RecipeStepVesselCreationRequestInput Vessels = 8;
-  repeated RecipeStepProductCreationRequestInput Products = 9;
-  repeated RecipeStepIngredientCreationRequestInput Ingredients = 10;
-  repeated RecipeStepCompletionConditionCreationRequestInput CompletionConditions = 11;
-  uint32 Index = 12;
-  bool Optional = 13;
-  bool StartTimerAutomatically = 14;
+  common.OptionalUint32Range estimated_time_in_seconds = 1;
+  common.OptionalFloat32Range temperature_in_celsius = 2;
+  string preparation_id = 3;
+  string notes = 4;
+  string condition_expression = 5;
+  string explicit_instructions = 6;
+  repeated RecipeStepInstrumentCreationRequestInput instruments = 7;
+  repeated RecipeStepVesselCreationRequestInput vessels = 8;
+  repeated RecipeStepProductCreationRequestInput products = 9;
+  repeated RecipeStepIngredientCreationRequestInput ingredients = 10;
+  repeated RecipeStepCompletionConditionCreationRequestInput completion_conditions = 11;
+  uint32 index = 12;
+  bool optional = 13;
+  bool start_timer_automatically = 14;
 }
 
 message RecipeStepIngredient {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional string RecipeStepProductRecipeID = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  ValidIngredient Ingredient = 4;
-  optional google.protobuf.Timestamp LastUpdatedAt = 5;
-  optional uint32 VesselIndex = 6;
-  optional float ProductPercentageToUse = 7;
-  optional string RecipeStepProductID = 8;
-  string BelongsToRecipeStep = 9;
-  string ID = 10;
-  string QuantityNotes = 11;
-  string IngredientNotes = 12;
-  string Name = 13;
-  common.Float32RangeWithOptionalMax Quantity = 14;
-  ValidMeasurementUnit MeasurementUnit = 15;
-  uint32 OptionIndex = 16;
-  bool Optional = 17;
-  bool ToTaste = 18;
+  google.protobuf.Timestamp created_at = 1;
+  optional string recipe_step_product_recipe_id = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  ValidIngredient ingredient = 4;
+  optional google.protobuf.Timestamp last_updated_at = 5;
+  optional uint32 vessel_index = 6;
+  optional float product_percentage_to_use = 7;
+  optional string recipe_step_product_id = 8;
+  string belongs_to_recipe_step = 9;
+  string id = 10;
+  string quantity_notes = 11;
+  string ingredient_notes = 12;
+  string name = 13;
+  common.Float32RangeWithOptionalMax quantity = 14;
+  ValidMeasurementUnit measurement_unit = 15;
+  uint32 option_index = 16;
+  bool optional = 17;
+  bool to_taste = 18;
 }
 
 message RecipeStepIngredientCreationRequestInput {
-  optional string IngredientID = 1;
-  optional uint64 ProductOfRecipeStepIndex = 2;
-  optional uint64 ProductOfRecipeStepProductIndex = 3;
-  optional uint32 VesselIndex = 4;
-  optional float ProductPercentageToUse = 5;
-  optional string RecipeStepProductRecipeID = 6;
-  string IngredientNotes = 7;
-  string MeasurementUnitID = 8;
-  string Name = 9;
-  string QuantityNotes = 10;
-  common.Float32RangeWithOptionalMax Quantity = 11;
-  uint32 OptionIndex = 12;
-  bool Optional = 13;
-  bool ToTaste = 14;
+  optional string ingredient_id = 1;
+  optional uint64 product_of_recipe_step_index = 2;
+  optional uint64 product_of_recipe_step_product_index = 3;
+  optional uint32 vessel_index = 4;
+  optional float product_percentage_to_use = 5;
+  optional string recipe_step_product_recipe_id = 6;
+  string ingredient_notes = 7;
+  string measurement_unit_id = 8;
+  string name = 9;
+  string quantity_notes = 10;
+  common.Float32RangeWithOptionalMax quantity = 11;
+  uint32 option_index = 12;
+  bool optional = 13;
+  bool to_taste = 14;
 }
 
 message RecipeStepIngredientUpdateRequestInput {
-  optional string IngredientID = 1;
-  optional string RecipeStepProductID = 2;
-  optional string Name = 3;
-  optional bool Optional = 4;
-  optional string MeasurementUnitID = 5;
-  optional string QuantityNotes = 6;
-  optional string IngredientNotes = 7;
-  optional string BelongsToRecipeStep = 8;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
-  optional uint32 OptionIndex = 10;
-  optional uint32 VesselIndex = 11;
-  optional bool ToTaste = 12;
-  optional float ProductPercentageToUse = 13;
-  optional string RecipeStepProductRecipeID = 14;
+  optional string ingredient_id = 1;
+  optional string recipe_step_product_id = 2;
+  optional string name = 3;
+  optional bool optional = 4;
+  optional string measurement_unit_id = 5;
+  optional string quantity_notes = 6;
+  optional string ingredient_notes = 7;
+  optional string belongs_to_recipe_step = 8;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
+  optional uint32 option_index = 10;
+  optional uint32 vessel_index = 11;
+  optional bool to_taste = 12;
+  optional float product_percentage_to_use = 13;
+  optional string recipe_step_product_recipe_id = 14;
 }
 
 message RecipeStepInstrument {
-  google.protobuf.Timestamp CreatedAt = 1;
-  ValidInstrument Instrument = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  optional string RecipeStepProductID = 4;
-  optional google.protobuf.Timestamp ArchivedAt = 5;
-  string Notes = 6;
-  string Name = 7;
-  string BelongsToRecipeStep = 8;
-  string ID = 9;
-  common.Uint32RangeWithOptionalMax Quantity = 10;
-  uint32 OptionIndex = 11;
-  uint32 PreferenceRank = 12;
-  bool Optional = 13;
+  google.protobuf.Timestamp created_at = 1;
+  ValidInstrument instrument = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  optional string recipe_step_product_id = 4;
+  optional google.protobuf.Timestamp archived_at = 5;
+  string notes = 6;
+  string name = 7;
+  string belongs_to_recipe_step = 8;
+  string id = 9;
+  common.Uint32RangeWithOptionalMax quantity = 10;
+  uint32 option_index = 11;
+  uint32 preference_rank = 12;
+  bool optional = 13;
 }
 
 message RecipeStepInstrumentCreationRequestInput {
-  optional string InstrumentID = 1;
-  optional string RecipeStepProductID = 2;
-  optional uint64 ProductOfRecipeStepIndex = 3;
-  optional uint64 ProductOfRecipeStepProductIndex = 4;
-  common.Uint32RangeWithOptionalMax Quantity = 5;
-  string Notes = 6;
-  string Name = 7;
-  uint32 OptionIndex = 8;
-  bool Optional = 9;
-  uint32 PreferenceRank = 10;
+  optional string instrument_id = 1;
+  optional string recipe_step_product_id = 2;
+  optional uint64 product_of_recipe_step_index = 3;
+  optional uint64 product_of_recipe_step_product_index = 4;
+  common.Uint32RangeWithOptionalMax quantity = 5;
+  string notes = 6;
+  string name = 7;
+  uint32 option_index = 8;
+  bool optional = 9;
+  uint32 preference_rank = 10;
 }
 
 message RecipeStepInstrumentUpdateRequestInput {
-  optional string InstrumentID = 1;
-  optional string RecipeStepProductID = 2;
-  optional string Notes = 3;
-  optional uint32 PreferenceRank = 4;
-  optional string BelongsToRecipeStep = 5;
-  optional string Name = 6;
-  optional bool Optional = 7;
-  optional uint32 OptionIndex = 8;
-  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
+  optional string instrument_id = 1;
+  optional string recipe_step_product_id = 2;
+  optional string notes = 3;
+  optional uint32 preference_rank = 4;
+  optional string belongs_to_recipe_step = 5;
+  optional string name = 6;
+  optional bool optional = 7;
+  optional uint32 option_index = 8;
+  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
 }
 
 message RecipeStepProduct {
-  google.protobuf.Timestamp CreatedAt = 1;
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 2;
-  common.OptionalUint32Range StorageDurationInSeconds = 3;
-  common.OptionalFloat32Range Quantity = 4;
-  optional google.protobuf.Timestamp ArchivedAt = 5;
-  optional google.protobuf.Timestamp LastUpdatedAt = 6;
-  ValidMeasurementUnit MeasurementUnit = 7;
-  optional uint32 ContainedInVesselIndex = 8;
-  string Name = 9;
-  string BelongsToRecipeStep = 10;
-  string Type = 11;
-  string ID = 12;
-  string StorageInstructions = 13;
-  string QuantityNotes = 14;
-  uint32 Index = 15;
-  bool IsWaste = 16;
-  bool IsLiquid = 17;
-  bool Compostable = 18;
+  google.protobuf.Timestamp created_at = 1;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  common.OptionalUint32Range storage_duration_in_seconds = 3;
+  common.OptionalFloat32Range quantity = 4;
+  optional google.protobuf.Timestamp archived_at = 5;
+  optional google.protobuf.Timestamp last_updated_at = 6;
+  ValidMeasurementUnit measurement_unit = 7;
+  optional uint32 contained_in_vessel_index = 8;
+  string name = 9;
+  string belongs_to_recipe_step = 10;
+  string type = 11;
+  string id = 12;
+  string storage_instructions = 13;
+  string quantity_notes = 14;
+  uint32 index = 15;
+  bool is_waste = 16;
+  bool is_liquid = 17;
+  bool compostable = 18;
 }
 
 message RecipeStepProductCreationRequestInput {
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  common.OptionalUint32Range StorageDurationInSeconds = 2;
-  common.OptionalFloat32Range Quantity = 3;
-  optional string MeasurementUnitID = 4;
-  optional uint32 ContainedInVesselIndex = 5;
-  string QuantityNotes = 6;
-  string Name = 7;
-  string StorageInstructions = 8;
-  string Type = 9;
-  uint32 Index = 10;
-  bool Compostable = 11;
-  bool IsLiquid = 12;
-  bool IsWaste = 13;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
+  common.OptionalUint32Range storage_duration_in_seconds = 2;
+  common.OptionalFloat32Range quantity = 3;
+  optional string measurement_unit_id = 4;
+  optional uint32 contained_in_vessel_index = 5;
+  string quantity_notes = 6;
+  string name = 7;
+  string storage_instructions = 8;
+  string type = 9;
+  uint32 index = 10;
+  bool compostable = 11;
+  bool is_liquid = 12;
+  bool is_waste = 13;
 }
 
 message RecipeStepProductUpdateRequestInput {
-  optional string Name = 1;
-  optional string Type = 2;
-  optional string MeasurementUnitID = 3;
-  optional string QuantityNotes = 4;
-  optional string BelongsToRecipeStep = 5;
-  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 6;
-  optional common.OptionalUint32Range StorageDurationInSeconds = 7;
-  optional common.OptionalFloat32Range Quantity = 8;
-  optional bool Compostable = 9;
-  optional string StorageInstructions = 10;
-  optional bool IsLiquid = 11;
-  optional bool IsWaste = 12;
-  optional uint32 Index = 13;
-  optional uint32 ContainedInVesselIndex = 14;
+  optional string name = 1;
+  optional string type = 2;
+  optional string measurement_unit_id = 3;
+  optional string quantity_notes = 4;
+  optional string belongs_to_recipe_step = 5;
+  optional common.OptionalFloat32Range storage_temperature_in_celsius = 6;
+  optional common.OptionalUint32Range storage_duration_in_seconds = 7;
+  optional common.OptionalFloat32Range quantity = 8;
+  optional bool compostable = 9;
+  optional string storage_instructions = 10;
+  optional bool is_liquid = 11;
+  optional bool is_waste = 12;
+  optional uint32 index = 13;
+  optional uint32 contained_in_vessel_index = 14;
 }
 
 message RecipeStepUpdateRequestInput {
-  optional common.OptionalUint32Range EstimatedTimeInSeconds = 1;
-  optional common.OptionalFloat32Range TemperatureInCelsius = 2;
-  optional string Notes = 3;
-  optional ValidPreparation Preparation = 4;
-  optional uint32 Index = 5;
-  optional bool Optional = 6;
-  optional string ExplicitInstructions = 7;
-  optional string ConditionExpression = 8;
-  optional bool StartTimerAutomatically = 9;
-  optional string BelongsToRecipe = 10;
+  optional common.OptionalUint32Range estimated_time_in_seconds = 1;
+  optional common.OptionalFloat32Range temperature_in_celsius = 2;
+  optional string notes = 3;
+  optional ValidPreparation preparation = 4;
+  optional uint32 index = 5;
+  optional bool optional = 6;
+  optional string explicit_instructions = 7;
+  optional string condition_expression = 8;
+  optional bool start_timer_automatically = 9;
+  optional string belongs_to_recipe = 10;
 }
 
 message RecipeStepVessel {
-  google.protobuf.Timestamp CreatedAt = 1;
-  common.Uint16RangeWithOptionalMax Quantity = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  optional string RecipeStepProductID = 5;
-  ValidVessel Vessel = 6;
-  string ID = 7;
-  string Notes = 8;
-  string BelongsToRecipeStep = 9;
-  string VesselPreposition = 10;
-  string Name = 11;
-  bool UnavailableAfterStep = 12;
+  google.protobuf.Timestamp created_at = 1;
+  common.Uint16RangeWithOptionalMax quantity = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  optional string recipe_step_product_id = 5;
+  ValidVessel vessel = 6;
+  string id = 7;
+  string notes = 8;
+  string belongs_to_recipe_step = 9;
+  string vessel_preposition = 10;
+  string name = 11;
+  bool unavailable_after_step = 12;
 }
 
 message RecipeStepVesselCreationRequestInput {
-  optional string RecipeStepProductID = 1;
-  optional uint64 ProductOfRecipeStepIndex = 2;
-  optional uint64 ProductOfRecipeStepProductIndex = 3;
-  optional string VesselID = 4;
-  common.Uint16RangeWithOptionalMax Quantity = 5;
-  string Name = 6;
-  string Notes = 7;
-  string VesselPreposition = 8;
-  bool UnavailableAfterStep = 9;
+  optional string recipe_step_product_id = 1;
+  optional uint64 product_of_recipe_step_index = 2;
+  optional uint64 product_of_recipe_step_product_index = 3;
+  optional string vessel_id = 4;
+  common.Uint16RangeWithOptionalMax quantity = 5;
+  string name = 6;
+  string notes = 7;
+  string vessel_preposition = 8;
+  bool unavailable_after_step = 9;
 }
 
 message RecipeStepVesselUpdateRequestInput {
-  optional string RecipeStepProductID = 1;
-  optional string Name = 2;
-  optional string Notes = 3;
-  optional string BelongsToRecipeStep = 4;
-  optional string VesselID = 5;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput Quantity = 6;
-  optional string VesselPreposition = 7;
-  optional bool UnavailableAfterStep = 8;
+  optional string recipe_step_product_id = 1;
+  optional string name = 2;
+  optional string notes = 3;
+  optional string belongs_to_recipe_step = 4;
+  optional string vessel_id = 5;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput quantity = 6;
+  optional string vessel_preposition = 7;
+  optional bool unavailable_after_step = 8;
 }
 
 message RecipeUpdateRequestInput {
-  optional string Name = 1;
-  optional string Slug = 2;
-  optional string Source = 3;
-  optional string Description = 4;
-  optional string InspiredByRecipeID = 5;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
-  optional string PortionName = 8;
-  optional string PluralPortionName = 9;
-  optional bool EligibleForMeals = 10;
-  optional string YieldsComponentType = 11;
+  optional string name = 1;
+  optional string slug = 2;
+  optional string source = 3;
+  optional string description = 4;
+  optional string inspired_by_recipe_id = 5;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput estimated_portions = 7;
+  optional string portion_name = 8;
+  optional string plural_portion_name = 9;
+  optional bool eligible_for_meals = 10;
+  optional string yields_component_type = 11;
 }
 
 // ArchiveRecipe
 message ArchiveRecipeRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
 }
 
 message ArchiveRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipePrepTask
 message ArchiveRecipePrepTaskRequest {
-  string recipeID = 1;
-  string recipePrepTaskID = 2;
+  string recipe_id = 1;
+  string recipe_prep_task_id = 2;
 }
 
 message ArchiveRecipePrepTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeRating
 message ArchiveRecipeRatingRequest {
-  string recipeID = 1;
-  string recipeRatingID = 2;
+  string recipe_id = 1;
+  string recipe_rating_id = 2;
 }
 
 message ArchiveRecipeRatingResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStep
 message ArchiveRecipeStepRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
 }
 
 message ArchiveRecipeStepResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStepCompletionCondition
 message ArchiveRecipeStepCompletionConditionRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepCompletionConditionID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_completion_condition_id = 3;
 }
 
 message ArchiveRecipeStepCompletionConditionResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStepIngredient
 message ArchiveRecipeStepIngredientRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepIngredientID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_ingredient_id = 3;
 }
 
 message ArchiveRecipeStepIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStepInstrument
 message ArchiveRecipeStepInstrumentRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepInstrumentID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_instrument_id = 3;
 }
 
 message ArchiveRecipeStepInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStepProduct
 message ArchiveRecipeStepProductRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepProductID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_product_id = 3;
 }
 
 message ArchiveRecipeStepProductResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveRecipeStepVessel
 message ArchiveRecipeStepVesselRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepVesselID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_vessel_id = 3;
 }
 
 message ArchiveRecipeStepVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CloneRecipe
 message CloneRecipeRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
 }
 
 message CloneRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Recipe Cloned = 2;
+  common.ResponseDetails response_details = 1;
+  Recipe cloned = 2;
 }
 
 // CreateRecipe
 message CreateRecipeRequest {
-  RecipeCreationRequestInput Input = 1;
+  RecipeCreationRequestInput input = 1;
 }
 
 message CreateRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Recipe Created = 2;
+  common.ResponseDetails response_details = 1;
+  Recipe created = 2;
 }
 
 // CreateRecipePrepTask
 message CreateRecipePrepTaskRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
   RecipePrepTaskCreationRequestInput input = 2;
 }
 
 message CreateRecipePrepTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipePrepTask Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipePrepTask created = 2;
 }
 
 // CreateRecipeRating
 message CreateRecipeRatingRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
   RecipeRatingCreationRequestInput input = 2;
 }
 
 message CreateRecipeRatingResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeRating Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeRating created = 2;
 }
 
 // CreateRecipeStep
 message CreateRecipeStepRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
   RecipeStepCreationRequestInput input = 2;
 }
 
 message CreateRecipeStepResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStep Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStep created = 2;
 }
 
 // CreateRecipeStepCompletionCondition
 message CreateRecipeStepCompletionConditionRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepCompletionConditionForExistingRecipeCreationRequestInput input = 3;
 }
 
 message CreateRecipeStepCompletionConditionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepCompletionCondition Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepCompletionCondition created = 2;
 }
 
 // CreateRecipeStepIngredient
 message CreateRecipeStepIngredientRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepIngredientCreationRequestInput input = 3;
 }
 
 message CreateRecipeStepIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepIngredient Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepIngredient created = 2;
 }
 
 // CreateRecipeStepInstrument
 message CreateRecipeStepInstrumentRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepInstrumentCreationRequestInput input = 3;
 }
 
 message CreateRecipeStepInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepInstrument Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepInstrument created = 2;
 }
 
 // CreateRecipeStepProduct
 message CreateRecipeStepProductRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepProductCreationRequestInput input = 3;
 }
 
 message CreateRecipeStepProductResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepProduct Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepProduct created = 2;
 }
 
 // CreateRecipeStepVessel
 message CreateRecipeStepVesselRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepVesselCreationRequestInput input = 3;
 }
 
 message CreateRecipeStepVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepVessel Created = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepVessel created = 2;
 }
 
 // GetMermaidDiagramForRecipe
 message GetMermaidDiagramForRecipeRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
 }
 
 message GetMermaidDiagramForRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  string Response = 2;
+  common.ResponseDetails response_details = 1;
+  string response = 2;
 }
 
 // GetRecipe
 message GetRecipeRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
 }
 
 message GetRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Recipe Result = 2;
+  common.ResponseDetails response_details = 1;
+  Recipe result = 2;
 }
 
 // EstimateRecipePrepTasks
 message EstimateRecipePrepTasksRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
 }
 
 message EstimateRecipePrepTasksResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  repeated MealPlanTask Results = 2;
+  common.ResponseDetails response_details = 1;
+  repeated MealPlanTask results =  2;
 }
 
 // GetRecipePrepTask
 message GetRecipePrepTaskRequest {
-  string recipeID = 1;
-  string recipePrepTaskID = 2;
+  string recipe_id = 1;
+  string recipe_prep_task_id = 2;
 }
 
 message GetRecipePrepTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipePrepTask Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipePrepTask result = 2;
 }
 
 // GetRecipePrepTasks
 message GetRecipePrepTasksRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
 }
 
 message GetRecipePrepTasksResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipePrepTask Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipePrepTask results =  3;
 }
 
 // GetRecipeRating
 message GetRecipeRatingRequest {
-  string RecipeID = 1;
-  string RecipeRatingID = 2;
+  string recipe_id = 1;
+  string recipe_rating_id = 2;
 }
 
 message GetRecipeRatingResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeRating Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeRating result = 2;
 }
 
 // GetRecipeRatingsForRecipe
 message GetRecipeRatingsForRecipeRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
 }
 
 message GetRecipeRatingsForRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeRating Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeRating results =  3;
 }
 
 // GetRecipeStep
 message GetRecipeStepRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
 }
 
 message GetRecipeStepResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStep Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStep result = 2;
 }
 
 // GetRecipeStepCompletionCondition
 message GetRecipeStepCompletionConditionRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepCompletionConditionID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_completion_condition_id = 3;
 }
 
 message GetRecipeStepCompletionConditionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepCompletionCondition Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepCompletionCondition result = 2;
 }
 
 // GetRecipeStepCompletionConditions
 message GetRecipeStepCompletionConditionsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
-  string recipeStepID = 3;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
+  string recipe_step_id = 3;
 }
 
 message GetRecipeStepCompletionConditionsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStepCompletionCondition Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStepCompletionCondition results =  3;
 }
 
 // GetRecipeStepIngredient
 message GetRecipeStepIngredientRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepIngredientID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_ingredient_id = 3;
 }
 
 message GetRecipeStepIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepIngredient Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepIngredient result = 2;
 }
 
 // GetRecipeStepIngredients
 message GetRecipeStepIngredientsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
-  string recipeStepID = 3;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
+  string recipe_step_id = 3;
 }
 
 message GetRecipeStepIngredientsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStepIngredient Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStepIngredient results =  3;
 }
 
 // GetRecipeStepInstrument
 message GetRecipeStepInstrumentRequest {
-  string RecipeID = 1;
-  string RecipeStepID = 2;
-  string RecipeStepInstrumentID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_instrument_id = 3;
 }
 
 message GetRecipeStepInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepInstrument Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepInstrument result = 2;
 }
 
 // GetRecipeStepInstruments
 message GetRecipeStepInstrumentsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
-  string recipeStepID = 3;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
+  string recipe_step_id = 3;
 }
 
 message GetRecipeStepInstrumentsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStepInstrument Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStepInstrument results =  3;
 }
 
 // GetRecipeStepProduct
 message GetRecipeStepProductRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepProductID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_product_id = 3;
 }
 
 message GetRecipeStepProductResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepProduct Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepProduct result = 2;
 }
 
 // GetRecipeStepProducts
 message GetRecipeStepProductsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
-  string recipeStepID = 3;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
+  string recipe_step_id = 3;
 }
 
 message GetRecipeStepProductsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStepProduct Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStepProduct results =  3;
 }
 
 // GetRecipeStepVessel
 message GetRecipeStepVesselRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepVesselID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_vessel_id = 3;
 }
 
 message GetRecipeStepVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepVessel Result = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepVessel result = 2;
 }
 
 // GetRecipeStepVessels
 message GetRecipeStepVesselsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
-  string recipeStepID = 3;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
+  string recipe_step_id = 3;
 }
 
 message GetRecipeStepVesselsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStepVessel Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStepVessel results =  3;
 }
 
 // GetRecipeSteps
 message GetRecipeStepsRequest {
-  filtering.QueryFilter Filter = 1;
-  string recipeID = 2;
+  filtering.QueryFilter filter = 1;
+  string recipe_id = 2;
 }
 
 message GetRecipeStepsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated RecipeStep Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeStep results =  3;
 }
 
 // GetRecipes
 message GetRecipesRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
   string status = 2;
 }
 
 message GetRecipesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Recipe Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Recipe results =  3;
 }
 
 // SearchForRecipes
 message SearchForRecipesRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForRecipesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Recipe Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Recipe results =  3;
 }
 
 // SearchForMealEligibleRecipes
 message SearchForMealEligibleRecipesRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
 }
 
 message SearchForMealEligibleRecipesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Recipe Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Recipe results =  3;
 }
 
 // UpdateRecipe
 message UpdateRecipeRequest {
-  string recipeID = 1;
+  string recipe_id = 1;
   RecipeUpdateRequestInput input = 2;
 }
 
 message UpdateRecipeResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Recipe Updated = 2;
+  common.ResponseDetails response_details = 1;
+  Recipe updated = 2;
 }
 
 // UpdateRecipeStatus
 message UpdateRecipeStatusRequest {
-  string recipeID = 1;
-  string newStatus = 2;
+  string recipe_id = 1;
+  string new_status = 2;
 }
 
 message UpdateRecipeStatusResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Recipe Updated = 2;
+  common.ResponseDetails response_details = 1;
+  Recipe updated = 2;
 }
 
 // UpdateRecipePrepTask
 message UpdateRecipePrepTaskRequest {
-  string recipeID = 1;
-  string recipePrepTaskID = 2;
+  string recipe_id = 1;
+  string recipe_prep_task_id = 2;
   RecipePrepTaskUpdateRequestInput input = 3;
 }
 
 message UpdateRecipePrepTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipePrepTask Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipePrepTask updated = 2;
 }
 
 // UpdateRecipeRating
 message UpdateRecipeRatingRequest {
-  string recipeID = 1;
-  string recipeRatingID = 2;
+  string recipe_id = 1;
+  string recipe_rating_id = 2;
   RecipeRatingUpdateRequestInput input = 3;
 }
 
 message UpdateRecipeRatingResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeRating Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeRating updated = 2;
 }
 
 // UpdateRecipeStep
 message UpdateRecipeStepRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
   RecipeStepUpdateRequestInput input = 3;
 }
 
 message UpdateRecipeStepResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStep Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStep updated = 2;
 }
 
 // UpdateRecipeStepCompletionCondition
 message UpdateRecipeStepCompletionConditionRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepCompletionConditionID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_completion_condition_id = 3;
   RecipeStepCompletionConditionUpdateRequestInput input = 4;
 }
 
 message UpdateRecipeStepCompletionConditionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepCompletionCondition Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepCompletionCondition updated = 2;
 }
 
 // UpdateRecipeStepIngredient
 message UpdateRecipeStepIngredientRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepIngredientID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_ingredient_id = 3;
   RecipeStepIngredientUpdateRequestInput input = 4;
 }
 
 message UpdateRecipeStepIngredientResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepIngredient Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepIngredient updated = 2;
 }
 
 // UpdateRecipeStepInstrument
 message UpdateRecipeStepInstrumentRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepInstrumentID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_instrument_id = 3;
   RecipeStepInstrumentUpdateRequestInput input = 4;
 }
 
 message UpdateRecipeStepInstrumentResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepInstrument Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepInstrument updated = 2;
 }
 
 // UpdateRecipeStepProduct
 message UpdateRecipeStepProductRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepProductID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_product_id = 3;
   RecipeStepProductUpdateRequestInput input = 4;
 }
 
 message UpdateRecipeStepProductResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepProduct Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepProduct updated = 2;
 }
 
 // UpdateRecipeStepVessel
 message UpdateRecipeStepVesselRequest {
-  string recipeID = 1;
-  string recipeStepID = 2;
-  string recipeStepVesselID = 3;
+  string recipe_id = 1;
+  string recipe_step_id = 2;
+  string recipe_step_vessel_id = 3;
   RecipeStepVesselUpdateRequestInput input = 4;
 }
 
 message UpdateRecipeStepVesselResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  RecipeStepVessel Updated = 2;
+  common.ResponseDetails response_details = 1;
+  RecipeStepVessel updated = 2;
 }
 
 // Meal Planning
 
 message InitializeMealPlanGroceryListRequest {
-  string AccountID = 1;
+  string account_id = 1;
 }
 
 message InitializeMealPlanGroceryListResponse {
-  bool Success = 1;
+  bool success = 1;
 }
 
 message Meal {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  common.Float32RangeWithOptionalMax EstimatedPortions = 4;
-  string ID = 5;
-  string Description = 6;
-  string CreatedByUser = 7;
-  string Name = 8;
-  repeated MealComponent Components = 9;
-  bool EligibleForMealPlans = 10;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  common.Float32RangeWithOptionalMax estimated_portions = 4;
+  string id = 5;
+  string description = 6;
+  string created_by_user = 7;
+  string name = 8;
+  repeated MealComponent components = 9;
+  bool eligible_for_meal_plans = 10;
 }
 
 message MealComponent {
-  string ComponentType = 1;
-  Recipe Recipe = 2;
-  float RecipeScale = 3;
+  string component_type = 1;
+  Recipe recipe = 2;
+  float recipe_scale = 3;
 }
 
 message MealComponentCreationRequestInput {
-  string RecipeID = 1;
-  string ComponentType = 2;
-  float RecipeScale = 3;
+  string recipe_id = 1;
+  string component_type = 2;
+  float recipe_scale = 3;
 }
 
 message MealComponentUpdateRequestInput {
-  optional string RecipeID = 1;
-  optional string ComponentType = 2;
-  optional float RecipeScale = 3;
+  optional string recipe_id = 1;
+  optional string component_type = 2;
+  optional float recipe_scale = 3;
 }
 
 message MealCreationRequestInput {
-  common.Float32RangeWithOptionalMax EstimatedPortions = 1;
-  string Name = 2;
-  string Description = 3;
-  repeated MealComponentCreationRequestInput Components = 4;
-  bool EligibleForMealPlans = 5;
+  common.Float32RangeWithOptionalMax estimated_portions = 1;
+  string name = 2;
+  string description = 3;
+  repeated MealComponentCreationRequestInput components = 4;
+  bool eligible_for_meal_plans = 5;
 }
 
 message MealPlan {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp VotingDeadline = 2;
-  optional google.protobuf.Timestamp ArchivedAt = 3;
-  optional google.protobuf.Timestamp LastUpdatedAt = 4;
-  string ID = 5;
-  string Status = 6;
-  string Notes = 7;
-  string ElectionMethod = 8;
-  string BelongsToAccount = 9;
-  string CreatedByUser = 10;
-  repeated MealPlanEvent Events = 11;
-  bool GroceryListInitialized = 12;
-  bool TasksCreated = 13;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp voting_deadline = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  optional google.protobuf.Timestamp last_updated_at = 4;
+  string id = 5;
+  string status = 6;
+  string notes = 7;
+  string election_method = 8;
+  string belongs_to_account = 9;
+  string created_by_user = 10;
+  repeated MealPlanEvent events = 11;
+  bool grocery_list_initialized = 12;
+  bool tasks_created = 13;
 }
 
 message MealPlanCreationRequestInput {
-  google.protobuf.Timestamp VotingDeadline = 1;
-  string Notes = 2;
-  string ElectionMethod = 3;
-  repeated MealPlanEventCreationRequestInput Events = 4;
+  google.protobuf.Timestamp voting_deadline = 1;
+  string notes = 2;
+  string election_method = 3;
+  repeated MealPlanEventCreationRequestInput events = 4;
 }
 
 message MealPlanEvent {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp StartsAt = 2;
-  google.protobuf.Timestamp EndsAt = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  optional google.protobuf.Timestamp LastUpdatedAt = 5;
-  string MealName = 6;
-  string Notes = 7;
-  string BelongsToMealPlan = 8;
-  string ID = 9;
-  repeated MealPlanOption Options = 10;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  google.protobuf.Timestamp ends_at = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  optional google.protobuf.Timestamp last_updated_at = 5;
+  string meal_name = 6;
+  string notes = 7;
+  string belongs_to_meal_plan = 8;
+  string id = 9;
+  repeated MealPlanOption options = 10;
 }
 
 message MealPlanEventCreationRequestInput {
-  google.protobuf.Timestamp EndsAt = 1;
-  google.protobuf.Timestamp StartsAt = 2;
-  string Notes = 3;
-  string MealName = 4;
-  repeated MealPlanOptionCreationRequestInput Options = 5;
+  google.protobuf.Timestamp ends_at = 1;
+  google.protobuf.Timestamp starts_at = 2;
+  string notes = 3;
+  string meal_name = 4;
+  repeated MealPlanOptionCreationRequestInput options = 5;
 }
 
 message MealPlanEventUpdateRequestInput {
-  optional string Notes = 1;
-  optional google.protobuf.Timestamp StartsAt = 2;
-  optional string MealName = 3;
-  optional google.protobuf.Timestamp EndsAt = 4;
-  string BelongsToMealPlan = 5;
+  optional string notes = 1;
+  optional google.protobuf.Timestamp starts_at = 2;
+  optional string meal_name = 3;
+  optional google.protobuf.Timestamp ends_at = 4;
+  string belongs_to_meal_plan = 5;
 }
 
 message MealPlanGroceryListItem {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional float QuantityPurchased = 2;
-  optional float PurchasePrice = 3;
-  optional string PurchasedUPC = 4;
-  optional google.protobuf.Timestamp ArchivedAt = 5;
-  optional google.protobuf.Timestamp LastUpdatedAt = 6;
-  ValidMeasurementUnit PurchasedMeasurementUnit = 7;
-  string BelongsToMealPlan = 8;
-  string Status = 9;
-  string StatusExplanation = 10;
-  string ID = 11;
-  common.Float32RangeWithOptionalMax QuantityNeeded = 12;
-  ValidMeasurementUnit MeasurementUnit = 13;
-  ValidIngredient Ingredient = 14;
+  google.protobuf.Timestamp created_at = 1;
+  optional float quantity_purchased = 2;
+  optional float purchase_price = 3;
+  optional string purchased_upc = 4;
+  optional google.protobuf.Timestamp archived_at = 5;
+  optional google.protobuf.Timestamp last_updated_at = 6;
+  ValidMeasurementUnit purchased_measurement_unit = 7;
+  string belongs_to_meal_plan = 8;
+  string status = 9;
+  string status_explanation = 10;
+  string id = 11;
+  common.Float32RangeWithOptionalMax quantity_needed = 12;
+  ValidMeasurementUnit measurement_unit = 13;
+  ValidIngredient ingredient = 14;
 }
 
 message MealPlanGroceryListItemCreationRequestInput {
-  optional string PurchasedMeasurementUnitID = 1;
-  optional string PurchasedUPC = 2;
-  optional float PurchasePrice = 3;
-  optional float QuantityPurchased = 4;
-  string Status = 5;
-  string BelongsToMealPlan = 6;
-  string ValidIngredientID = 7;
-  string ValidMeasurementUnitID = 8;
-  string StatusExplanation = 9;
-  common.Float32RangeWithOptionalMax QuantityNeeded = 10;
+  optional string purchased_measurement_unit_id = 1;
+  optional string purchased_upc = 2;
+  optional float purchase_price = 3;
+  optional float quantity_purchased = 4;
+  string status = 5;
+  string belongs_to_meal_plan = 6;
+  string valid_ingredient_id = 7;
+  string valid_measurement_unit_id = 8;
+  string status_explanation = 9;
+  common.Float32RangeWithOptionalMax quantity_needed = 10;
 }
 
 message MealPlanGroceryListItemUpdateRequestInput {
-  optional string BelongsToMealPlan = 1;
-  optional string ValidIngredientID = 2;
-  optional string ValidMeasurementUnitID = 3;
-  optional string StatusExplanation = 4;
-  optional float QuantityPurchased = 5;
-  optional string PurchasedMeasurementUnitID = 6;
-  optional string PurchasedUPC = 7;
-  optional float PurchasePrice = 8;
-  optional string Status = 9;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput QuantityNeeded = 10;
+  optional string belongs_to_meal_plan = 1;
+  optional string valid_ingredient_id = 2;
+  optional string valid_measurement_unit_id = 3;
+  optional string status_explanation = 4;
+  optional float quantity_purchased = 5;
+  optional string purchased_measurement_unit_id = 6;
+  optional string purchased_upc = 7;
+  optional float purchase_price = 8;
+  optional string status = 9;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput quantity_needed = 10;
 }
 
 message MealPlanOption {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  optional string AssignedCook = 3;
-  optional google.protobuf.Timestamp ArchivedAt = 4;
-  optional string AssignedDishwasher = 5;
-  string Notes = 6;
-  string BelongsToMealPlanEvent = 7;
-  string ID = 8;
-  repeated MealPlanOptionVote Votes = 9;
-  Meal Meal = 10;
-  float MealScale = 11;
-  bool Chosen = 12;
-  bool TieBroken = 13;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional string assigned_cook = 3;
+  optional google.protobuf.Timestamp archived_at = 4;
+  optional string assigned_dishwasher = 5;
+  string notes = 6;
+  string belongs_to_meal_plan_event = 7;
+  string id = 8;
+  repeated MealPlanOptionVote votes = 9;
+  Meal meal = 10;
+  float meal_scale = 11;
+  bool chosen = 12;
+  bool tie_broken = 13;
 }
 
 message MealPlanOptionCreationRequestInput {
-  optional string AssignedCook = 1;
-  optional string AssignedDishwasher = 2;
-  string MealID = 3;
-  string Notes = 4;
-  float MealScale = 5;
+  optional string assigned_cook = 1;
+  optional string assigned_dishwasher = 2;
+  string meal_id = 3;
+  string notes = 4;
+  float meal_scale = 5;
 }
 
 message MealPlanOptionUpdateRequestInput {
-  optional string MealID = 1;
-  optional string Notes = 2;
-  optional string AssignedCook = 3;
-  optional string AssignedDishwasher = 4;
-  optional float MealScale = 5;
-  optional string BelongsToMealPlanEvent = 6;
+  optional string meal_id = 1;
+  optional string notes = 2;
+  optional string assigned_cook = 3;
+  optional string assigned_dishwasher = 4;
+  optional float meal_scale = 5;
+  optional string belongs_to_meal_plan_event = 6;
 }
 
 message MealPlanOptionVote {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string ID = 4;
-  string Notes = 5;
-  string BelongsToMealPlanOption = 6;
-  string ByUser = 7;
-  uint32 Rank = 8;
-  bool Abstain = 9;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  string id = 4;
+  string notes = 5;
+  string belongs_to_meal_plan_option = 6;
+  string by_user = 7;
+  uint32 rank = 8;
+  bool abstain = 9;
 }
 
 message MealPlanOptionVoteCreationInput {
-  string ID = 1;
-  string Notes = 2;
-  string ByUser = 3;
-  string BelongsToMealPlanOption = 4;
-  uint32 Rank = 5;
-  bool Abstain = 6;
+  string id = 1;
+  string notes = 2;
+  string by_user = 3;
+  string belongs_to_meal_plan_option = 4;
+  uint32 rank = 5;
+  bool abstain = 6;
 }
 
 message MealPlanOptionVoteCreationRequestInput {
-  repeated MealPlanOptionVoteCreationInput Votes = 1;
+  repeated MealPlanOptionVoteCreationInput votes = 1;
 }
 
 message MealPlanOptionVoteUpdateRequestInput {
-  optional string Notes = 1;
-  optional uint32 Rank = 2;
-  optional bool Abstain = 3;
-  string BelongsToMealPlanOption = 4;
+  optional string notes = 1;
+  optional uint32 rank = 2;
+  optional bool abstain = 3;
+  string belongs_to_meal_plan_option = 4;
 }
 
 message MissingVote {
-  string EventID = 1;
-  string OptionID = 2;
-  string UserID = 3;
+  string event_id = 1;
+  string option_id = 2;
+  string user_id = 3;
 }
 
 message MealPlanTask {
-  RecipePrepTask RecipePrepTask = 1;
-  google.protobuf.Timestamp CreatedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp CompletedAt = 4;
-  optional string AssignedToUser = 5;
-  string ID = 6;
-  string Status = 7;
-  string CreationExplanation = 8;
-  string StatusExplanation = 9;
-  MealPlanOption MealPlanOption = 10;
+  RecipePrepTask recipe_prep_task = 1;
+  google.protobuf.Timestamp created_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  google.protobuf.Timestamp completed_at = 4;
+  optional string assigned_to_user = 5;
+  string id = 6;
+  string status = 7;
+  string creation_explanation = 8;
+  string status_explanation = 9;
+  MealPlanOption meal_plan_option = 10;
 }
 
 message MealPlanTaskCreationRequestInput {
-  optional string AssignedToUser = 1;
-  string Status = 2;
-  string CreationExplanation = 3;
-  string StatusExplanation = 4;
-  string MealPlanOptionID = 5;
-  string RecipePrepTaskID = 6;
+  optional string assigned_to_user = 1;
+  string status = 2;
+  string creation_explanation = 3;
+  string status_explanation = 4;
+  string meal_plan_option_id = 5;
+  string recipe_prep_task_id = 6;
 }
 
 message MealPlanTaskStatusChangeRequestInput {
-  optional string Status = 1;
-  string StatusExplanation = 2;
-  optional string AssignedToUser = 3;
-  string ID = 4;
+  optional string status = 1;
+  string status_explanation = 2;
+  optional string assigned_to_user = 3;
+  string id = 4;
 }
 
 message MealPlanUpdateRequestInput {
-  optional string BelongsToAccount = 1;
-  optional string Notes = 2;
-  optional google.protobuf.Timestamp VotingDeadline = 3;
+  optional string belongs_to_account = 1;
+  optional string notes = 2;
+  optional google.protobuf.Timestamp voting_deadline = 3;
 }
 
 message MealUpdateRequestInput {
-  optional string Name = 1;
-  optional string Description = 2;
-  optional string CreatedByUser = 3;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 4;
-  optional bool EligibleForMealPlans = 5;
-  repeated MealComponentUpdateRequestInput Components = 6;
+  optional string name = 1;
+  optional string description = 2;
+  optional string created_by_user = 3;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput estimated_portions = 4;
+  optional bool eligible_for_meal_plans = 5;
+  repeated MealComponentUpdateRequestInput components = 6;
 }
 
 // ArchiveMeal
 message ArchiveMealRequest {
-  string mealID = 1;
+  string meal_id = 1;
 }
 
 message ArchiveMealResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveMealPlan
 message ArchiveMealPlanRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
 }
 
 message ArchiveMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveMealPlanEvent
 message ArchiveMealPlanEventRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
 }
 
 message ArchiveMealPlanEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveMealPlanGroceryListItem
 message ArchiveMealPlanGroceryListItemRequest {
-  string mealPlanID = 1;
-  string mealPlanGroceryListItemID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_grocery_list_item_id = 2;
 }
 
 message ArchiveMealPlanGroceryListItemResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveMealPlanOption
 message ArchiveMealPlanOptionRequest {
-  string MealPlanID = 1;
-  string MealPlanEventID = 2;
-  string MealPlanOptionID = 3;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
 }
 
 message ArchiveMealPlanOptionResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveMealPlanOptionVote
 message ArchiveMealPlanOptionVoteRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
-  string mealPlanOptionID = 3;
-  string mealPlanOptionVoteID = 4;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
+  string meal_plan_option_vote_id = 4;
 }
 
 message ArchiveMealPlanOptionVoteResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CreateMeal
 message CreateMealRequest {
-  MealCreationRequestInput Input = 1;
+  MealCreationRequestInput input = 1;
 }
 
 message CreateMealResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Meal Created = 2;
+  common.ResponseDetails response_details = 1;
+  Meal created = 2;
 }
 
 // CreateMealPlan
 message CreateMealPlanRequest {
-  MealPlanCreationRequestInput Input = 1;
+  MealPlanCreationRequestInput input = 1;
 }
 
 message CreateMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlan Created = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlan created = 2;
 }
 
 // CreateMealPlanEvent
 message CreateMealPlanEventRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
   MealPlanEventCreationRequestInput input = 2;
 }
 
 message CreateMealPlanEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanEvent Created = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanEvent created = 2;
 }
 
 // CreateMealPlanGroceryListItem
 message CreateMealPlanGroceryListItemRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
   MealPlanGroceryListItemCreationRequestInput input = 2;
 }
 
 message CreateMealPlanGroceryListItemResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanGroceryListItem Created = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanGroceryListItem created = 2;
 }
 
 // CreateMealPlanOption
 message CreateMealPlanOptionRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
   MealPlanOptionCreationRequestInput input = 3;
 }
 
 message CreateMealPlanOptionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanOption Created = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanOption created = 2;
 }
 
 // CreateMealPlanOptionVote
 message CreateMealPlanOptionVoteRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
   MealPlanOptionVoteCreationRequestInput input = 3;
 }
 
 message CreateMealPlanOptionVoteResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  repeated MealPlanOptionVote Created = 2;
+  common.ResponseDetails response_details = 1;
+  repeated MealPlanOptionVote created = 2;
 }
 
 // CreateMealPlanTask
 message CreateMealPlanTaskRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
   MealPlanTaskCreationRequestInput input = 2;
 }
 
 message CreateMealPlanTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanTask Created = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanTask created = 2;
 }
 
 // FinalizeMealPlan
 message FinalizeMealPlanRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
 }
 
 message FinalizeMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Finalized = 2;
+  common.ResponseDetails response_details = 1;
+  bool finalized = 2;
 }
 
 // GetMeal
 message GetMealRequest {
-  string mealID = 1;
+  string meal_id = 1;
 }
 
 message GetMealResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Meal Result = 2;
+  common.ResponseDetails response_details = 1;
+  Meal result = 2;
 }
 
 // GetMealPlan
 message GetMealPlanRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
 }
 
 message GetMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlan Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlan result = 2;
 }
 
 // GetMealPlanEvent
 message GetMealPlanEventRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
 }
 
 message GetMealPlanEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanEvent Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanEvent result = 2;
 }
 
 // GetMealPlanEvents
 message GetMealPlanEventsRequest {
-  filtering.QueryFilter Filter = 1;
-  string mealPlanID = 2;
+  filtering.QueryFilter filter = 1;
+  string meal_plan_id = 2;
 }
 
 message GetMealPlanEventsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlanEvent Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlanEvent results =  3;
 }
 
 // GetMealPlanGroceryListItem
 message GetMealPlanGroceryListItemRequest {
-  string mealPlanID = 1;
-  string mealPlanGroceryListItemID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_grocery_list_item_id = 2;
 }
 
 message GetMealPlanGroceryListItemResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanGroceryListItem Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanGroceryListItem result = 2;
 }
 
 // GetMealPlanGroceryListItemsForMealPlan
 message GetMealPlanGroceryListItemsForMealPlanRequest {
-  filtering.QueryFilter Filter = 1;
-  string mealPlanID = 2;
+  filtering.QueryFilter filter = 1;
+  string meal_plan_id = 2;
 }
 
 message GetMealPlanGroceryListItemsForMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlanGroceryListItem Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlanGroceryListItem results =  3;
 }
 
 // GetMealPlanOption
 message GetMealPlanOptionRequest {
-  string MealPlanID = 1;
-  string MealPlanEventID = 2;
-  string MealPlanOptionID = 3;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
 }
 
 message GetMealPlanOptionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanOption Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanOption result = 2;
 }
 
 // GetMealPlanOptionVote
 message GetMealPlanOptionVoteRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
-  string mealPlanOptionID = 3;
-  string mealPlanOptionVoteID = 4;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
+  string meal_plan_option_vote_id = 4;
 }
 
 message GetMealPlanOptionVoteResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanOptionVote Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanOptionVote result = 2;
 }
 
 // GetMealPlanOptionVotes
 message GetMealPlanOptionVotesRequest {
-  filtering.QueryFilter Filter = 1;
-  string mealPlanID = 2;
-  string mealPlanEventID = 3;
-  string mealPlanOptionID = 4;
+  filtering.QueryFilter filter = 1;
+  string meal_plan_id = 2;
+  string meal_plan_event_id = 3;
+  string meal_plan_option_id = 4;
 }
 
 message GetMealPlanOptionVotesResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlanOptionVote Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlanOptionVote results =  3;
 }
 
 // GetMealPlanOptions
 message GetMealPlanOptionsRequest {
-  filtering.QueryFilter Filter = 1;
-  string mealPlanID = 2;
-  string mealPlanEventID = 3;
+  filtering.QueryFilter filter = 1;
+  string meal_plan_id = 2;
+  string meal_plan_event_id = 3;
 }
 
 message GetMealPlanOptionsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlanOption Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlanOption results =  3;
 }
 
 // GetMealPlanTask
 message GetMealPlanTaskRequest {
-  string mealPlanID = 1;
-  string mealPlanTaskID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_task_id = 2;
 }
 
 message GetMealPlanTaskResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanTask Result = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanTask result = 2;
 }
 
 // GetMealPlanTasks
 message GetMealPlanTasksRequest {
-  filtering.QueryFilter Filter = 1;
-  string mealPlanID = 2;
+  filtering.QueryFilter filter = 1;
+  string meal_plan_id = 2;
 }
 
 message GetMealPlanTasksResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlanTask Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlanTask results =  3;
 }
 
 // GetMealPlansForAccount
 message GetMealPlansForAccountRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetMealPlansForAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated MealPlan Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealPlan results =  3;
 }
 
 // GetMeals
 message GetMealsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetMealsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Meal Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Meal results =  3;
 }
 
 // RunFinalizeMealPlanWorker
 message RunFinalizeMealPlanWorkerRequest {}
 
 message RunFinalizeMealPlanWorkerResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  uint32 Finalized = 2;
+  common.ResponseDetails response_details = 1;
+  uint32 finalized = 2;
 }
 
 // RunMealPlanGroceryListInitializerWorker
 message RunMealPlanGroceryListInitializerWorkerRequest {}
 
 message RunMealPlanGroceryListInitializerWorkerResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // RunMealPlanTaskCreatorWorker
 message RunMealPlanTaskCreatorWorkerRequest {}
 
 message RunMealPlanTaskCreatorWorkerResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // SearchForMeals
 message SearchForMealsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
-  bool UseSearchService = 3;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
+  bool use_search_service = 3;
 }
 
 message SearchForMealsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Meal Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Meal results =  3;
 }
 
 // UpdateMealPlan
 message UpdateMealPlanRequest {
-  string mealPlanID = 1;
+  string meal_plan_id = 1;
   MealPlanUpdateRequestInput input = 2;
 }
 
 message UpdateMealPlanResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlan Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlan updated = 2;
 }
 
 // UpdateMealPlanEvent
 message UpdateMealPlanEventRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
   MealPlanEventUpdateRequestInput input = 3;
 }
 
 message UpdateMealPlanEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanEvent Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanEvent updated = 2;
 }
 
 // UpdateMealPlanGroceryListItem
 message UpdateMealPlanGroceryListItemRequest {
-  string mealPlanID = 1;
-  string mealPlanGroceryListItemID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_grocery_list_item_id = 2;
   MealPlanGroceryListItemUpdateRequestInput input = 3;
 }
 
 message UpdateMealPlanGroceryListItemResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanGroceryListItem Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanGroceryListItem updated = 2;
 }
 
 // UpdateMealPlanOption
 message UpdateMealPlanOptionRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
-  string mealPlanOptionID = 3;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
   MealPlanOptionUpdateRequestInput input = 4;
 }
 
 message UpdateMealPlanOptionResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanOption Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanOption updated = 2;
 }
 
 // UpdateMealPlanOptionVote
 message UpdateMealPlanOptionVoteRequest {
-  string mealPlanID = 1;
-  string mealPlanEventID = 2;
-  string mealPlanOptionID = 3;
-  string mealPlanOptionVoteID = 4;
+  string meal_plan_id = 1;
+  string meal_plan_event_id = 2;
+  string meal_plan_option_id = 3;
+  string meal_plan_option_vote_id = 4;
   MealPlanOptionVoteUpdateRequestInput input = 5;
 }
 
 message UpdateMealPlanOptionVoteResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanOptionVote Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanOptionVote updated = 2;
 }
 
 // UpdateMealPlanTaskStatus
 message UpdateMealPlanTaskStatusRequest {
-  string mealPlanID = 1;
-  string mealPlanTaskID = 2;
+  string meal_plan_id = 1;
+  string meal_plan_task_id = 2;
   MealPlanTaskStatusChangeRequestInput input = 3;
 }
 
 message UpdateMealPlanTaskStatusResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  MealPlanTask Updated = 2;
+  common.ResponseDetails response_details = 1;
+  MealPlanTask updated = 2;
 }
 
 message CreateMealPlanTasksRequest {
-  string AccountID = 1;
+  string account_id = 1;
 }
 
 message CreateMealPlanTasksResponse {
-  bool Success = 1;
+  bool success = 1;
 }
 
 message FinalizeMealPlansRequest {
-  bool ReturnCount = 1;
+  bool return_count = 1;
 }
 
 message FinalizeMealPlansResponse {
-  int64 Count = 1;
+  int64 count = 1;
 }
 
 // ArchiveAccountInstrumentOwnership
 message ArchiveAccountInstrumentOwnershipRequest {
-  string accountInstrumentOwnershipID = 1;
+  string account_instrument_ownership_id = 1;
 }
 
 message ArchiveAccountInstrumentOwnershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // CreateAccountInstrumentOwnership
 message CreateAccountInstrumentOwnershipRequest {
-  AccountInstrumentOwnershipCreationRequestInput Input = 1;
+  AccountInstrumentOwnershipCreationRequestInput input = 1;
 }
 
 message CreateAccountInstrumentOwnershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AccountInstrumentOwnership Created = 2;
+  common.ResponseDetails response_details = 1;
+  AccountInstrumentOwnership created = 2;
 }
 
 // GetAccountInstrumentOwnerships
 message GetAccountInstrumentOwnershipsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetAccountInstrumentOwnershipsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated AccountInstrumentOwnership Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated AccountInstrumentOwnership results =  3;
 }
 
 // GetAccountInstrumentOwnership
 message GetAccountInstrumentOwnershipRequest {
-  string accountInstrumentOwnershipID = 1;
+  string account_instrument_ownership_id = 1;
 }
 
 message GetAccountInstrumentOwnershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AccountInstrumentOwnership Result = 2;
+  common.ResponseDetails response_details = 1;
+  AccountInstrumentOwnership result = 2;
 }
 
 // UpdateAccountInstrumentOwnership
 message UpdateAccountInstrumentOwnershipRequest {
-  string accountInstrumentOwnershipID = 1;
+  string account_instrument_ownership_id = 1;
   AccountInstrumentOwnershipUpdateRequestInput input = 2;
 }
 
 message UpdateAccountInstrumentOwnershipResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  AccountInstrumentOwnership Updated = 2;
+  common.ResponseDetails response_details = 1;
+  AccountInstrumentOwnership updated = 2;
 }
 
 message AccountInstrumentOwnership {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional google.protobuf.Timestamp ArchivedAt = 2;
-  optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string ID = 4;
-  string Notes = 5;
-  string BelongsToAccount = 6;
-  ValidInstrument Instrument = 7;
-  uint32 Quantity = 8;
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp archived_at = 2;
+  optional google.protobuf.Timestamp last_updated_at = 3;
+  string id = 4;
+  string notes = 5;
+  string belongs_to_account = 6;
+  ValidInstrument instrument = 7;
+  uint32 quantity = 8;
 }
 
 message AccountInstrumentOwnershipCreationRequestInput {
-  string Notes = 1;
-  string ValidInstrumentID = 2;
-  uint32 Quantity = 4;
+  string notes = 1;
+  string valid_instrument_id = 2;
+  uint32 quantity = 4;
 }
 
 message AccountInstrumentOwnershipUpdateRequestInput {
-  optional string Notes = 1;
-  optional uint32 Quantity = 2;
-  optional string ValidInstrumentID = 3;
+  optional string notes = 1;
+  optional uint32 quantity = 2;
+  optional string valid_instrument_id = 3;
 }
 
 service MealPlanningService {

@@ -19,7 +19,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealIDKey: request.MealID,
+		keys.MealIDKey: request.MealId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -27,7 +27,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
-	if err = s.mealPlanningManager.ArchiveMeal(ctx, request.MealID, sessionContextData.GetUserID()); err != nil {
+	if err = s.mealPlanningManager.ArchiveMeal(ctx, request.MealId, sessionContextData.GetUserID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal")
 	}
 
@@ -45,7 +45,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -53,7 +53,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.mealPlanningManager.ArchiveMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID()); err != nil {
+	if err = s.mealPlanningManager.ArchiveMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan")
 	}
 
@@ -71,11 +71,11 @@ func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanID,
-		keys.MealPlanEventIDKey: request.MealPlanEventID,
+		keys.MealPlanIDKey:      request.MealPlanId,
+		keys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
-	if err := s.mealPlanningManager.ArchiveMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID); err != nil {
+	if err := s.mealPlanningManager.ArchiveMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "failed to archive meal plan event")
 	}
 
@@ -93,11 +93,11 @@ func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanID,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemID,
+		keys.MealPlanIDKey:                request.MealPlanId,
+		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
-	if err := s.mealPlanningManager.ArchiveMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID); err != nil {
+	if err := s.mealPlanningManager.ArchiveMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan grocery list item")
 	}
 
@@ -115,12 +115,12 @@ func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanID,
-		keys.MealPlanEventIDKey:  request.MealPlanEventID,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionID,
+		keys.MealPlanIDKey:       request.MealPlanId,
+		keys.MealPlanEventIDKey:  request.MealPlanEventId,
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
 	}, span, s.logger)
 
-	if err := s.mealPlanningManager.ArchiveMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID); err != nil {
+	if err := s.mealPlanningManager.ArchiveMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan option")
 	}
 
@@ -138,13 +138,13 @@ func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteID,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionID,
-		keys.MealPlanEventIDKey:      request.MealPlanEventID,
-		keys.MealPlanIDKey:           request.MealPlanID,
+		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
+		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		keys.MealPlanEventIDKey:      request.MealPlanEventId,
+		keys.MealPlanIDKey:           request.MealPlanId,
 	}, span, s.logger)
 
-	if err := s.mealPlanningManager.ArchiveMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID); err != nil {
+	if err := s.mealPlanningManager.ArchiveMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan option vote")
 	}
 
@@ -162,7 +162,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceID,
+		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -170,7 +170,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.mealPlanningManager.ArchiveUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID); err != nil {
+	if err = s.mealPlanningManager.ArchiveUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive user ingredient preference")
 	}
 
@@ -248,12 +248,12 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMealPlanEvent(ctx, request.MealPlanID, input)
+	created, err := s.mealPlanningManager.CreateMealPlanEvent(ctx, request.MealPlanId, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan event")
 	}
@@ -273,7 +273,7 @@ func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemCreationRequestInput(request.Input)
@@ -298,12 +298,12 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMealPlanOptionWithEventID(ctx, request.MealPlanEventID, input)
+	created, err := s.mealPlanningManager.CreateMealPlanOptionWithEventID(ctx, request.MealPlanEventId, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option")
 	}
@@ -323,7 +323,7 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -359,7 +359,7 @@ func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInput(request.Input)
@@ -415,7 +415,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -423,7 +423,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	finalized, err := s.mealPlanningManager.FinalizeMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID())
+	finalized, err := s.mealPlanningManager.FinalizeMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to finalize meal plan")
 	}
@@ -443,10 +443,10 @@ func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanningsvc.GetM
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealIDKey: request.MealID,
+		keys.MealIDKey: request.MealId,
 	}, span, s.logger)
 
-	meal, err := s.mealPlanningManager.ReadMeal(ctx, request.MealID)
+	meal, err := s.mealPlanningManager.ReadMeal(ctx, request.MealId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal")
 	}
@@ -466,7 +466,7 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -474,7 +474,7 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	mealPlan, err := s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID())
+	mealPlan, err := s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan")
 	}
@@ -526,11 +526,11 @@ func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanID,
-		keys.MealPlanEventIDKey: request.MealPlanEventID,
+		keys.MealPlanIDKey:      request.MealPlanId,
+		keys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
-	mealPlanEvent, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID)
+	mealPlanEvent, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan")
 	}
@@ -550,12 +550,12 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanEventsResult, err := s.mealPlanningManager.ListMealPlanEvents(ctx, request.MealPlanID, filter)
+	mealPlanEventsResult, err := s.mealPlanningManager.ListMealPlanEvents(ctx, request.MealPlanId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan events")
 	}
@@ -578,11 +578,11 @@ func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanID,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemID,
+		keys.MealPlanIDKey:                request.MealPlanId,
+		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
-	mealPlanGroceryListItem, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID)
+	mealPlanGroceryListItem, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
@@ -602,12 +602,12 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanGroceryListItems, err := s.mealPlanningManager.ListMealPlanGroceryListItemsByMealPlan(ctx, request.MealPlanID, filter)
+	mealPlanGroceryListItems, err := s.mealPlanningManager.ListMealPlanGroceryListItemsByMealPlan(ctx, request.MealPlanId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan grocery list items")
 	}
@@ -630,12 +630,12 @@ func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanni
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanID,
-		keys.MealPlanEventIDKey:  request.MealPlanEventID,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionID,
+		keys.MealPlanIDKey:       request.MealPlanId,
+		keys.MealPlanEventIDKey:  request.MealPlanEventId,
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
 	}, span, s.logger)
 
-	mealPlanOption, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID)
+	mealPlanOption, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
@@ -655,13 +655,13 @@ func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealpl
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:           request.MealPlanID,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionID,
-		keys.MealPlanEventIDKey:      request.MealPlanEventID,
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteID,
+		keys.MealPlanIDKey:           request.MealPlanId,
+		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		keys.MealPlanEventIDKey:      request.MealPlanEventId,
+		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
 	}, span, s.logger)
 
-	mealPlanOptionVote, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID)
+	mealPlanOptionVote, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
@@ -681,14 +681,14 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanID,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionID,
-		keys.MealPlanEventIDKey:  request.MealPlanEventID,
+		keys.MealPlanIDKey:       request.MealPlanId,
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		keys.MealPlanEventIDKey:  request.MealPlanEventId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanOptionVotesResult, err := s.mealPlanningManager.ListMealPlanOptionVotes(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, filter)
+	mealPlanOptionVotesResult, err := s.mealPlanningManager.ListMealPlanOptionVotes(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan option votes")
 	}
@@ -711,12 +711,12 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanOptionsResult, err := s.mealPlanningManager.ListMealPlanOptions(ctx, request.MealPlanID, request.MealPlanEventID, filter)
+	mealPlanOptionsResult, err := s.mealPlanningManager.ListMealPlanOptions(ctx, request.MealPlanId, request.MealPlanEventId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan options")
 	}
@@ -739,11 +739,11 @@ func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:     request.MealPlanID,
-		keys.MealPlanTaskIDKey: request.MealPlanTaskID,
+		keys.MealPlanIDKey:     request.MealPlanId,
+		keys.MealPlanTaskIDKey: request.MealPlanTaskId,
 	}, span, s.logger)
 
-	mealPlanTask, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanID, request.MealPlanTaskID)
+	mealPlanTask, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanId, request.MealPlanTaskId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
@@ -763,12 +763,12 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	mealPlanTasks, err := s.mealPlanningManager.ListMealPlanTasksByMealPlan(ctx, request.MealPlanID, filter)
+	mealPlanTasks, err := s.mealPlanningManager.ListMealPlanTasksByMealPlan(ctx, request.MealPlanId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan tasks")
 	}
@@ -825,7 +825,7 @@ func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	userIngredientPreference, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID)
+	userIngredientPreference, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
@@ -961,7 +961,7 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplannings
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanID,
+		keys.MealPlanIDKey: request.MealPlanId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -971,11 +971,11 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplannings
 
 	input := converters.ConvertGRPCMealPlanUpdateRequestInputToMealPlanUpdateRequestInput(request.Input)
 
-	if err = s.mealPlanningManager.UpdateMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID(), input); err != nil {
+	if err = s.mealPlanningManager.UpdateMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID(), input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID())
+	updated, err := s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan")
 	}
@@ -995,17 +995,17 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:      request.MealPlanID,
-		keys.MealPlanEventIDKey: request.MealPlanEventID,
+		keys.MealPlanIDKey:      request.MealPlanId,
+		keys.MealPlanEventIDKey: request.MealPlanEventId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(request.Input)
 
-	if err := s.mealPlanningManager.UpdateMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID, input); err != nil {
+	if err := s.mealPlanningManager.UpdateMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan event")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID)
+	updated, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanId, request.MealPlanEventId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan event")
 	}
@@ -1025,17 +1025,17 @@ func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:                request.MealPlanID,
-		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemID,
+		keys.MealPlanIDKey:                request.MealPlanId,
+		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(request.Input)
 
-	if err := s.mealPlanningManager.UpdateMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID, input); err != nil {
+	if err := s.mealPlanningManager.UpdateMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan grocery list item")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID)
+	updated, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanId, request.MealPlanGroceryListItemId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan grocery list item")
 	}
@@ -1055,18 +1055,18 @@ func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:       request.MealPlanID,
-		keys.MealPlanOptionIDKey: request.MealPlanOptionID,
-		keys.MealPlanEventIDKey:  request.MealPlanEventID,
+		keys.MealPlanIDKey:       request.MealPlanId,
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		keys.MealPlanEventIDKey:  request.MealPlanEventId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInput(request.Input)
 
-	if err := s.mealPlanningManager.UpdateMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, input); err != nil {
+	if err := s.mealPlanningManager.UpdateMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan option")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID)
+	updated, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option")
 	}
@@ -1086,18 +1086,18 @@ func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:           request.MealPlanID,
-		keys.MealPlanOptionIDKey:     request.MealPlanOptionID,
-		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteID,
+		keys.MealPlanIDKey:           request.MealPlanId,
+		keys.MealPlanOptionIDKey:     request.MealPlanOptionId,
+		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(request.Input)
 
-	if err := s.mealPlanningManager.UpdateMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID, input); err != nil {
+	if err := s.mealPlanningManager.UpdateMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan option vote")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID)
+	updated, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanId, request.MealPlanEventId, request.MealPlanOptionId, request.MealPlanOptionVoteId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option vote")
 	}
@@ -1117,8 +1117,8 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey:     request.MealPlanID,
-		keys.MealPlanTaskIDKey: request.MealPlanTaskID,
+		keys.MealPlanIDKey:     request.MealPlanId,
+		keys.MealPlanTaskIDKey: request.MealPlanTaskId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(request.Input)
@@ -1127,7 +1127,7 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan task status")
 	}
 
-	updated, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanID, request.MealPlanTaskID)
+	updated, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanId, request.MealPlanTaskId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
 	}
@@ -1147,7 +1147,7 @@ func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceID,
+		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceId,
 	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
@@ -1157,11 +1157,11 @@ func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 
 	input := converters.ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPreferenceUpdateRequestInput(request.Input)
 
-	if err = s.mealPlanningManager.UpdateUserIngredientPreference(ctx, request.UserIngredientPreferenceID, sessionContextData.GetUserID(), input); err != nil {
+	if err = s.mealPlanningManager.UpdateUserIngredientPreference(ctx, request.UserIngredientPreferenceId, sessionContextData.GetUserID(), input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan task status")
 	}
 
-	updated, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID)
+	updated, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
 	}
@@ -1217,10 +1217,10 @@ func (s *serviceImpl) GetAccountInstrumentOwnership(ctx context.Context, request
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
-	result, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID)
+	result, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch account instrument ownership")
 	}
@@ -1276,12 +1276,12 @@ func (s *serviceImpl) UpdateAccountInstrumentOwnership(ctx context.Context, requ
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentOwnershipUpdateRequestInput(request.Input)
 
-	accountInstrumentOwnership, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID)
+	accountInstrumentOwnership, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch account instrument ownership")
 	}
@@ -1309,10 +1309,10 @@ func (s *serviceImpl) ArchiveAccountInstrumentOwnership(ctx context.Context, req
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipId,
 	}, span, s.logger)
 
-	if err = s.mealPlanningManager.ArchiveAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID); err != nil {
+	if err = s.mealPlanningManager.ArchiveAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account instrument ownership")
 	}
 

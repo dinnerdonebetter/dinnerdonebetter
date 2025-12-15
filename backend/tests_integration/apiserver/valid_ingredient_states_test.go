@@ -43,7 +43,7 @@ func createValidIngredientStateForTest(t *testing.T) *mealplanning.ValidIngredie
 	checkValidIngredientStateEquality(t, exampleValidIngredientState, converted)
 
 	retrieved, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{
-		ValidIngredientStateID: converted.ID,
+		ValidIngredientStateId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -122,7 +122,7 @@ func TestValidIngredientStates_Reading(T *testing.T) {
 
 		created := createValidIngredientStateForTest(t)
 
-		retrieved, err := testClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		retrieved, err := testClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidIngredientStateToValidIngredientState(retrieved.Result)
@@ -138,7 +138,7 @@ func TestValidIngredientStates_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		_, err := c.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -146,7 +146,7 @@ func TestValidIngredientStates_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateID: nonexistentID})
+		_, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -164,7 +164,7 @@ func TestValidIngredientStates_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidIngredientState(ctx, &mealplanningsvc.UpdateValidIngredientStateRequest{
-			ValidIngredientStateID: created.ID,
+			ValidIngredientStateId: created.ID,
 			Input:                  grpcconverters.ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -188,7 +188,7 @@ func TestValidIngredientStates_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidIngredientState(ctx, &mealplanningsvc.UpdateValidIngredientStateRequest{
-			ValidIngredientStateID: created.ID,
+			ValidIngredientStateId: created.ID,
 			Input:                  grpcconverters.ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -212,7 +212,7 @@ func TestValidIngredientStates_Updating(T *testing.T) {
 		created := createValidIngredientStateForTest(t)
 
 		response, err := testClient.UpdateValidIngredientState(ctx, &mealplanningsvc.UpdateValidIngredientStateRequest{
-			ValidIngredientStateID: created.ID,
+			ValidIngredientStateId: created.ID,
 			Input: &mealplanningsvc.ValidIngredientStateUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -231,10 +231,10 @@ func TestValidIngredientStates_Archiving(T *testing.T) {
 
 		created := createValidIngredientStateForTest(t)
 
-		_, err := adminClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		_, err := adminClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		x, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -247,7 +247,7 @@ func TestValidIngredientStates_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		_, err := c.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -255,7 +255,7 @@ func TestValidIngredientStates_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateID: nonexistentID})
+		_, err := adminClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -266,42 +266,10 @@ func TestValidIngredientStates_Archiving(T *testing.T) {
 		created := createValidIngredientStateForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateID: created.ID})
+		_, err := testClient.ArchiveValidIngredientState(ctx, &mealplanningsvc.ArchiveValidIngredientStateRequest{ValidIngredientStateId: created.ID})
 		assert.Error(t, err)
 	})
 }
-
-/* // TODO: we have this functionality for other things, why not this?
-
-func TestValidIngredientStates_GetRandom(T *testing.T) {
-	T.Parallel()
-
-	_, testClient := createUserAndClientForTest(T)
-
-	T.Run("happy path", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		// in case we haven't already
-		createValidIngredientStateForTest(t)
-
-		response, err := testClient.GetRandomValidIngredientState(ctx, &mealplanningsvc.GetRandomValidIngredientStateRequest{})
-		assert.NoError(t, err)
-		assert.NotNil(t, response)
-	})
-
-	T.Run("requires auth", func(t *testing.T) {
-		t.Parallel()
-		ctx := t.Context()
-
-		c := buildUnauthenticatedGRPCClientForTest(t)
-
-		response, err := c.GetRandomValidIngredientState(ctx, &mealplanningsvc.GetRandomValidIngredientStateRequest{})
-		assert.Error(t, err)
-		assert.Nil(t, response)
-	})
-}
-*/
 
 func TestValidIngredientStates_Listing(T *testing.T) {
 	T.Parallel()

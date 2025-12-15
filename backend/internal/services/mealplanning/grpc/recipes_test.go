@@ -59,7 +59,7 @@ func TestServiceImpl_ArchiveRecipe(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: exampleRecipeID})
+		res, err := s.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: exampleRecipeID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -84,8 +84,8 @@ func TestServiceImpl_ArchiveRecipePrepTask(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
-			RecipeID:         exampleRecipeID,
-			RecipePrepTaskID: exampleRecipePrepTaskID,
+			RecipeId:         exampleRecipeID,
+			RecipePrepTaskId: exampleRecipePrepTaskID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -111,8 +111,8 @@ func TestServiceImpl_ArchiveRecipeRating(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       exampleRecipeID,
-			RecipeRatingID: exampleRecipeRatingID,
+			RecipeId:       exampleRecipeID,
+			RecipeRatingId: exampleRecipeRatingID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -138,8 +138,8 @@ func TestServiceImpl_ArchiveRecipeStep(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -166,9 +166,9 @@ func TestServiceImpl_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepCompletionCondition(ctx, &mealplanninggrpc.ArchiveRecipeStepCompletionConditionRequest{
-			RecipeID:                        exampleRecipeID,
-			RecipeStepID:                    exampleRecipeStepID,
-			RecipeStepCompletionConditionID: exampleRecipeStepCompletionConditionID,
+			RecipeId:                        exampleRecipeID,
+			RecipeStepId:                    exampleRecipeStepID,
+			RecipeStepCompletionConditionId: exampleRecipeStepCompletionConditionID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -195,9 +195,9 @@ func TestServiceImpl_ArchiveRecipeStepIngredient(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
-			RecipeID:               exampleRecipeID,
-			RecipeStepID:           exampleRecipeStepID,
-			RecipeStepIngredientID: exampleRecipeStepIngredientID,
+			RecipeId:               exampleRecipeID,
+			RecipeStepId:           exampleRecipeStepID,
+			RecipeStepIngredientId: exampleRecipeStepIngredientID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -224,9 +224,9 @@ func TestServiceImpl_ArchiveRecipeStepInstrument(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepInstrument(ctx, &mealplanninggrpc.ArchiveRecipeStepInstrumentRequest{
-			RecipeID:               exampleRecipeID,
-			RecipeStepID:           exampleRecipeStepID,
-			RecipeStepInstrumentID: exampleRecipeStepInstrumentID,
+			RecipeId:               exampleRecipeID,
+			RecipeStepId:           exampleRecipeStepID,
+			RecipeStepInstrumentId: exampleRecipeStepInstrumentID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -253,9 +253,9 @@ func TestServiceImpl_ArchiveRecipeStepProduct(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
-			RecipeID:            exampleRecipeID,
-			RecipeStepID:        exampleRecipeStepID,
-			RecipeStepProductID: exampleRecipeStepProductID,
+			RecipeId:            exampleRecipeID,
+			RecipeStepId:        exampleRecipeStepID,
+			RecipeStepProductId: exampleRecipeStepProductID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -282,9 +282,9 @@ func TestServiceImpl_ArchiveRecipeStepVessel(T *testing.T) {
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
-			RecipeID:           exampleRecipeID,
-			RecipeStepID:       exampleRecipeStepID,
-			RecipeStepVesselID: exampleRecipeStepVesselID,
+			RecipeId:           exampleRecipeID,
+			RecipeStepId:       exampleRecipeStepID,
+			RecipeStepVesselId: exampleRecipeStepVesselID,
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
@@ -319,10 +319,10 @@ func TestServiceImpl_CloneRecipe(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: exampleRecipeID})
+		res, err := s.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeId: exampleRecipeID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleClonedRecipe.ID, res.Cloned.ID)
+		assert.Equal(t, exampleClonedRecipe.ID, res.Cloned.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -358,7 +358,7 @@ func TestServiceImpl_CreateRecipe(T *testing.T) {
 		actual, err := s.CreateRecipe(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipe.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipe.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -381,12 +381,12 @@ func TestServiceImpl_CreateRecipePrepTask(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipePrepTaskRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
+		exampleInput.RecipeId = exampleRecipeID
 
 		actual, err := s.CreateRecipePrepTask(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipePrepTask.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipePrepTask.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -419,12 +419,12 @@ func TestServiceImpl_CreateRecipeRating(T *testing.T) {
 		}
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeRatingRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
+		exampleInput.RecipeId = exampleRecipeID
 
 		actual, err := s.CreateRecipeRating(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeRating.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeRating.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -447,12 +447,12 @@ func TestServiceImpl_CreateRecipeStep(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
+		exampleInput.RecipeId = exampleRecipeID
 
 		actual, err := s.CreateRecipeStep(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStep.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStep.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -476,13 +476,13 @@ func TestServiceImpl_CreateRecipeStepCompletionCondition(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepCompletionConditionRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
-		exampleInput.RecipeStepID = exampleRecipeStepID
+		exampleInput.RecipeId = exampleRecipeID
+		exampleInput.RecipeStepId = exampleRecipeStepID
 
 		actual, err := s.CreateRecipeStepCompletionCondition(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStepCompletionCondition.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStepCompletionCondition.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -506,13 +506,13 @@ func TestServiceImpl_CreateRecipeStepIngredient(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepIngredientRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
-		exampleInput.RecipeStepID = exampleRecipeStepID
+		exampleInput.RecipeId = exampleRecipeID
+		exampleInput.RecipeStepId = exampleRecipeStepID
 
 		actual, err := s.CreateRecipeStepIngredient(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStepIngredient.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStepIngredient.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -536,13 +536,13 @@ func TestServiceImpl_CreateRecipeStepInstrument(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepInstrumentRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
-		exampleInput.RecipeStepID = exampleRecipeStepID
+		exampleInput.RecipeId = exampleRecipeID
+		exampleInput.RecipeStepId = exampleRecipeStepID
 
 		actual, err := s.CreateRecipeStepInstrument(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStepInstrument.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStepInstrument.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -566,13 +566,13 @@ func TestServiceImpl_CreateRecipeStepProduct(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepProductRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
-		exampleInput.RecipeStepID = exampleRecipeStepID
+		exampleInput.RecipeId = exampleRecipeID
+		exampleInput.RecipeStepId = exampleRecipeStepID
 
 		actual, err := s.CreateRecipeStepProduct(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStepProduct.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStepProduct.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -596,13 +596,13 @@ func TestServiceImpl_CreateRecipeStepVessel(T *testing.T) {
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepVesselRequest](t)
-		exampleInput.RecipeID = exampleRecipeID
-		exampleInput.RecipeStepID = exampleRecipeStepID
+		exampleInput.RecipeId = exampleRecipeID
+		exampleInput.RecipeStepId = exampleRecipeStepID
 
 		actual, err := s.CreateRecipeStepVessel(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedRecipeStepVessel.ID, actual.Created.ID)
+		assert.Equal(t, exampleCreatedRecipeStepVessel.ID, actual.Created.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -624,7 +624,7 @@ func TestServiceImpl_GetMermaidDiagramForRecipe(T *testing.T) {
 		mrm.On("RecipeMermaid", testutils.ContextMatcher, exampleRecipeID).Return(exampleMermaidDiagram, nil)
 		s.recipeManager = mrm
 
-		result, err := s.GetMermaidDiagramForRecipe(ctx, &mealplanninggrpc.GetMermaidDiagramForRecipeRequest{RecipeID: exampleRecipeID})
+		result, err := s.GetMermaidDiagramForRecipe(ctx, &mealplanninggrpc.GetMermaidDiagramForRecipeRequest{RecipeId: exampleRecipeID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, exampleMermaidDiagram, result.Response)
@@ -648,8 +648,8 @@ func TestServiceImpl_GetRecipe(T *testing.T) {
 		mrm.On("ReadRecipe", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
-		result, err := s.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -676,7 +676,7 @@ func TestServiceImpl_EstimateRecipePrepTasks(T *testing.T) {
 		mrm.On("RecipeEstimatedPrepSteps", testutils.ContextMatcher, exampleRecipeID).Return(exampleEstimatedPrepSteps, nil)
 		s.recipeManager = mrm
 
-		result, err := s.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{RecipeID: exampleRecipeID})
+		result, err := s.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{RecipeId: exampleRecipeID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleEstimatedPrepSteps))
@@ -701,10 +701,10 @@ func TestServiceImpl_GetRecipePrepTask(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
-			RecipeID:         exampleResult.BelongsToRecipe,
-			RecipePrepTaskID: exampleResult.ID,
+			RecipeId:         exampleResult.BelongsToRecipe,
+			RecipePrepTaskId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -727,7 +727,7 @@ func TestServiceImpl_GetRecipePrepTasks(T *testing.T) {
 		mrm.On("ListRecipePrepTask", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
-		result, err := s.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeID: exampleRecipeID})
+		result, err := s.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeId: exampleRecipeID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -752,10 +752,10 @@ func TestServiceImpl_GetRecipeRating(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
-			RecipeID:       exampleResult.RecipeID,
-			RecipeRatingID: exampleResult.ID,
+			RecipeId:       exampleResult.RecipeID,
+			RecipeRatingId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -778,7 +778,7 @@ func TestServiceImpl_GetRecipeRatingsForRecipe(T *testing.T) {
 		mrm.On("ListRecipeRatings", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
-		result, err := s.GetRecipeRatingsForRecipe(ctx, &mealplanninggrpc.GetRecipeRatingsForRecipeRequest{RecipeID: exampleRecipeID})
+		result, err := s.GetRecipeRatingsForRecipe(ctx, &mealplanninggrpc.GetRecipeRatingsForRecipeRequest{RecipeId: exampleRecipeID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -803,10 +803,10 @@ func TestServiceImpl_GetRecipeStep(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStep(ctx, &mealplanninggrpc.GetRecipeStepRequest{
-			RecipeID:     exampleResult.BelongsToRecipe,
-			RecipeStepID: exampleResult.ID,
+			RecipeId:     exampleResult.BelongsToRecipe,
+			RecipeStepId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -830,11 +830,11 @@ func TestServiceImpl_GetRecipeStepCompletionCondition(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepCompletionCondition(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionRequest{
-			RecipeID:                        exampleRecipeID,
-			RecipeStepID:                    exampleResult.BelongsToRecipeStep,
-			RecipeStepCompletionConditionID: exampleResult.ID,
+			RecipeId:                        exampleRecipeID,
+			RecipeStepId:                    exampleResult.BelongsToRecipeStep,
+			RecipeStepCompletionConditionId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -859,8 +859,8 @@ func TestServiceImpl_GetRecipeStepCompletionConditions(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepCompletionConditions(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionsRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -887,11 +887,11 @@ func TestServiceImpl_GetRecipeStepIngredient(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
-			RecipeID:               exampleRecipeID,
-			RecipeStepID:           exampleResult.BelongsToRecipeStep,
-			RecipeStepIngredientID: exampleResult.ID,
+			RecipeId:               exampleRecipeID,
+			RecipeStepId:           exampleResult.BelongsToRecipeStep,
+			RecipeStepIngredientId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -916,8 +916,8 @@ func TestServiceImpl_GetRecipeStepIngredients(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -944,11 +944,11 @@ func TestServiceImpl_GetRecipeStepInstrument(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
-			RecipeID:               exampleRecipeID,
-			RecipeStepID:           exampleResult.BelongsToRecipeStep,
-			RecipeStepInstrumentID: exampleResult.ID,
+			RecipeId:               exampleRecipeID,
+			RecipeStepId:           exampleResult.BelongsToRecipeStep,
+			RecipeStepInstrumentId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -973,8 +973,8 @@ func TestServiceImpl_GetRecipeStepInstruments(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1001,11 +1001,11 @@ func TestServiceImpl_GetRecipeStepProduct(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
-			RecipeID:            exampleRecipeID,
-			RecipeStepID:        exampleResult.BelongsToRecipeStep,
-			RecipeStepProductID: exampleResult.ID,
+			RecipeId:            exampleRecipeID,
+			RecipeStepId:        exampleResult.BelongsToRecipeStep,
+			RecipeStepProductId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -1030,8 +1030,8 @@ func TestServiceImpl_GetRecipeStepProducts(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1058,11 +1058,11 @@ func TestServiceImpl_GetRecipeStepVessel(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
-			RecipeID:           exampleRecipeID,
-			RecipeStepID:       exampleResult.BelongsToRecipeStep,
-			RecipeStepVesselID: exampleResult.ID,
+			RecipeId:           exampleRecipeID,
+			RecipeStepId:       exampleResult.BelongsToRecipeStep,
+			RecipeStepVesselId: exampleResult.ID,
 		})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mrm)
@@ -1087,8 +1087,8 @@ func TestServiceImpl_GetRecipeStepVessels(T *testing.T) {
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
-			RecipeID:     exampleRecipeID,
-			RecipeStepID: exampleRecipeStepID,
+			RecipeId:     exampleRecipeID,
+			RecipeStepId: exampleRecipeStepID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1114,7 +1114,7 @@ func TestServiceImpl_GetRecipeSteps(T *testing.T) {
 		mrm.On("ListRecipeSteps", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
-		result, err := s.GetRecipeSteps(ctx, &mealplanninggrpc.GetRecipeStepsRequest{RecipeID: exampleRecipeID})
+		result, err := s.GetRecipeSteps(ctx, &mealplanninggrpc.GetRecipeStepsRequest{RecipeId: exampleRecipeID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Len(t, result.Results, len(exampleResult.Data))
@@ -1210,13 +1210,13 @@ func TestServiceImpl_UpdateRecipe(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipe", testutils.ContextMatcher, exampleRequest.RecipeID, testutils.MatchType[*mealplanning.RecipeUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipe", testutils.ContextMatcher, exampleRequest.RecipeID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipe", testutils.ContextMatcher, exampleRequest.RecipeId, testutils.MatchType[*mealplanning.RecipeUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipe", testutils.ContextMatcher, exampleRequest.RecipeId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipe(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1235,13 +1235,13 @@ func TestServiceImpl_UpdateRecipePrepTask(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipePrepTaskID, testutils.MatchType[*mealplanning.RecipePrepTaskUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipePrepTaskID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId, testutils.MatchType[*mealplanning.RecipePrepTaskUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipePrepTask(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1260,13 +1260,13 @@ func TestServiceImpl_UpdateRecipeRating(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeRatingID, testutils.MatchType[*mealplanning.RecipeRatingUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeRatingID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId, testutils.MatchType[*mealplanning.RecipeRatingUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeRating(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1285,13 +1285,13 @@ func TestServiceImpl_UpdateRecipeStep(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, testutils.MatchType[*mealplanning.RecipeStepUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, testutils.MatchType[*mealplanning.RecipeStepUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStep(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1310,13 +1310,13 @@ func TestServiceImpl_UpdateRecipeStepCompletionCondition(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepCompletionConditionID, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepCompletionConditionID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepCompletionCondition(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1335,13 +1335,13 @@ func TestServiceImpl_UpdateRecipeStepIngredient(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepIngredientID, testutils.MatchType[*mealplanning.RecipeStepIngredientUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepIngredientID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId, testutils.MatchType[*mealplanning.RecipeStepIngredientUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepIngredient(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1360,13 +1360,13 @@ func TestServiceImpl_UpdateRecipeStepInstrument(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepInstrumentID, testutils.MatchType[*mealplanning.RecipeStepInstrumentUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepInstrumentID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId, testutils.MatchType[*mealplanning.RecipeStepInstrumentUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepInstrument(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1385,13 +1385,13 @@ func TestServiceImpl_UpdateRecipeStepProduct(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepProductID, testutils.MatchType[*mealplanning.RecipeStepProductUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepProductID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId, testutils.MatchType[*mealplanning.RecipeStepProductUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepProduct(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})
@@ -1410,13 +1410,13 @@ func TestServiceImpl_UpdateRecipeStepVessel(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepVesselID, testutils.MatchType[*mealplanning.RecipeStepVesselUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeID, exampleRequest.RecipeStepID, exampleRequest.RecipeStepVesselID).Return(exampleResponse, nil)
+		mrm.On("UpdateRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId, testutils.MatchType[*mealplanning.RecipeStepVesselUpdateRequestInput]()).Return(nil)
+		mrm.On("ReadRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepVessel(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Updated.ID)
+		assert.Equal(t, exampleResponse.ID, res.Updated.Id)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})

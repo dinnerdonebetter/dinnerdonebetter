@@ -46,7 +46,7 @@ var getValidMeasurementUnitTool = &mcp.Tool{
 func (h *mcpToolManager) GetValidMeasurementUnit() mcp.ToolHandlerFor[*GetValidMeasurementUnitInvocation, *mealplanning.ValidMeasurementUnit] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
 		result, err := h.client.GetValidMeasurementUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitRequest{
-			ValidMeasurementUnitID: x.ValidMeasurementUnitID,
+			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -163,7 +163,7 @@ var validMeasurementUnitUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateValidMeasurementUnit() mcp.ToolHandlerFor[*UpdateValidMeasurementUnitInvocation, *mealplanning.ValidMeasurementUnit] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidMeasurementUnitInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnit, error) {
 		result, err := h.client.UpdateValidMeasurementUnit(ctx, &mealplanninggrpc.UpdateValidMeasurementUnitRequest{
-			ValidMeasurementUnitID: x.ValidMeasurementUnitID,
+			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
 			Input:                  mealplanningconverters.ConvertValidMeasurementUnitUpdateRequestInputToGRPCValidMeasurementUnitUpdateRequestInput(x.ValidMeasurementUnitUpdateRequestInput),
 		})
 		if err != nil {

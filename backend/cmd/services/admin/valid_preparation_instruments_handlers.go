@@ -39,7 +39,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 
 	// Fetch associations
 	res, err := c.GetValidPreparationInstrumentsByPreparation(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByPreparationRequest{
-		ValidPreparationID: preparationID,
+		ValidPreparationId: preparationID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -55,7 +55,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForPreparation(_ http.R
 	for _, assoc := range res.Results {
 		if assoc.Instrument != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Instrument.Name,
 				Description: assoc.Instrument.Description,
 				Notes:       assoc.Notes,
@@ -104,7 +104,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 
 	// Fetch associations
 	res, err := c.GetValidPreparationInstrumentsByInstrument(ctx, &mealplanningsvc.GetValidPreparationInstrumentsByInstrumentRequest{
-		ValidInstrumentID: instrumentID,
+		ValidInstrumentId: instrumentID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -120,7 +120,7 @@ func (s *AdminFrontendServer) ValidPreparationInstrumentsForInstrument(_ http.Re
 	for _, assoc := range res.Results {
 		if assoc.Preparation != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Preparation.Name,
 				Description: assoc.Preparation.Description,
 				Notes:       assoc.Notes,
@@ -178,7 +178,7 @@ func (s *AdminFrontendServer) SearchInstrumentsForPreparation(_ http.ResponseWri
 	for _, instrument := range searchRes.Results {
 		if contains(instrument.Name, query) || contains(instrument.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          instrument.ID,
+				ID:          instrument.Id,
 				Name:        instrument.Name,
 				Description: instrument.Description,
 			})
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) SearchPreparationsForInstrument(_ http.ResponseWri
 	for _, preparation := range searchRes.Results {
 		if contains(preparation.Name, query) || contains(preparation.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          preparation.ID,
+				ID:          preparation.Id,
 				Name:        preparation.Name,
 				Description: preparation.Description,
 			})
@@ -275,8 +275,8 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromPreparation(_ http.
 	// Create the association
 	_, err = c.CreateValidPreparationInstrument(ctx, &mealplanningsvc.CreateValidPreparationInstrumentRequest{
 		Input: &mealplanningsvc.ValidPreparationInstrumentCreationRequestInput{
-			ValidPreparationID: preparationID,
-			ValidInstrumentID:  input.ID,
+			ValidPreparationId: preparationID,
+			ValidInstrumentId:  input.ID,
 		},
 	})
 	if err != nil {
@@ -319,8 +319,8 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromInstrument(_ http.R
 	// Create the association
 	_, err = c.CreateValidPreparationInstrument(ctx, &mealplanningsvc.CreateValidPreparationInstrumentRequest{
 		Input: &mealplanningsvc.ValidPreparationInstrumentCreationRequestInput{
-			ValidPreparationID: input.ID,
-			ValidInstrumentID:  instrumentID,
+			ValidPreparationId: input.ID,
+			ValidInstrumentId:  instrumentID,
 		},
 	})
 	if err != nil {
@@ -358,7 +358,7 @@ func (s *AdminFrontendServer) DeletePreparationInstrument(_ http.ResponseWriter,
 
 	// Archive (delete) the association
 	_, err = c.ArchiveValidPreparationInstrument(ctx, &mealplanningsvc.ArchiveValidPreparationInstrumentRequest{
-		ValidPreparationInstrumentID: associationID,
+		ValidPreparationInstrumentId: associationID,
 	})
 	if err != nil {
 		return ghtml.Div(

@@ -83,8 +83,39 @@ func getFieldsForStruct(structType *ast.StructType) map[string]string {
 	return structFields
 }
 
-func comparePackages(config *CheckConfig, auxPackage string) error {
+// getPackageName extracts the last component of a package path
+func getPackageName(pkgPath string) string {
+	parts := strings.Split(pkgPath, "/")
+	return parts[len(parts)-1]
+}
+
+// getSourceImportPath converts a relative package path to a full import path
+// Assumes the module is github.com/dinnerdonebetter/backend
+func getSourceImportPath(relativePath string) string {
+	return "github.com/dinnerdonebetter/backend/" + relativePath
+}
+
+// buildImportMap builds a map of import aliases to their package paths for a file
+func buildImportMap(f *ast.File) map[string]string {
+	importMap := make(map[string]string)
+	for _, imp := range f.Imports {
+		importPath := strings.Trim(imp.Path.Value, `"`)
+		var alias string
+		if imp.Name != nil {
+			alias = imp.Name.Name
+		} else {
+			// Extract package name from import path
+			parts := strings.Split(importPath, "/")
+			alias = parts[len(parts)-1]
+		}
+		importMap[alias] = importPath
+	}
+	return importMap
+}
+
+func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 	paramTypes := fetchTypesForPackage(config.SourcePkg, config.TypeFilter)
+	sourceImportPath := getSourceImportPath(config.SourcePkg)
 
 	fileset := token.NewFileSet()
 	astPkg, err := parser.ParseDir(fileset, auxPackage, noTestFiles, parser.AllErrors)
@@ -93,32 +124,42 @@ func comparePackages(config *CheckConfig, auxPackage string) error {
 	}
 
 	errors := &multierror.Error{}
+	structCount := 0
 
 	for _, p := range astPkg {
 		for fileName, f := range p.Files {
+			importMap := buildImportMap(f)
 			ast.Inspect(f, func(n ast.Node) bool {
 				switch config.PatternType {
 				case PatternTypeFunctionCallArgs:
 					if et, ok := n.(*ast.CallExpr); ok {
-						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset); err != nil {
+						count, err := checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
+						structCount += count
+						if err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 				case PatternTypeStructLiterals:
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						if err = checkStructLiteral(cl, paramTypes, fileName, fileset); err != nil {
+						count, err := checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
+						structCount += count
+						if err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 				default:
 					// Check both patterns for backward compatibility
 					if et, ok := n.(*ast.CallExpr); ok {
-						if err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset); err != nil {
+						count, err := checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
+						structCount += count
+						if err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						if err = checkStructLiteral(cl, paramTypes, fileName, fileset); err != nil {
+						count, err := checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
+						structCount += count
+						if err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
@@ -128,12 +169,12 @@ func comparePackages(config *CheckConfig, auxPackage string) error {
 		}
 	}
 
-	return errors.ErrorOrNil()
+	return errors.ErrorOrNil(), structCount
 }
 
-func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet) error {
+func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
 	if targetFieldName == "" {
-		return nil // Skip if no target field name specified
+		return 0, nil // Skip if no target field name specified
 	}
 
 	switch ft := et.Fun.(type) {
@@ -144,28 +185,44 @@ func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructTy
 					thirdParam := et.Args[2]
 					if ue, isUE := thirdParam.(*ast.UnaryExpr); isUE {
 						if se, isSE := ue.X.(*ast.CompositeLit); isSE {
-							return checkCompositeFields(se, paramTypes, fileName, fileset)
+							return checkCompositeFields(se, paramTypes, fileName, fileset, sourceImportPath, importMap)
 						}
 					}
 				}
 			}
 		}
 	}
-	return nil
+	return 0, nil
 }
 
-func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet) error {
-	return checkCompositeFields(cl, paramTypes, fileName, fileset)
+func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
+	return checkCompositeFields(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
 }
 
-func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet) error {
+func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
 	var errors *multierror.Error
 	pos := fileset.Position(se.Pos())
 	lineNum := pos.Line
+	structCount := 0
 
 	if tt, isType := se.Type.(*ast.SelectorExpr); isType {
+		// Check if the package selector refers to the source package
+		if pkgIdent, ok := tt.X.(*ast.Ident); ok {
+			importPath, found := importMap[pkgIdent.Name]
+			if !found {
+				// If not in import map, it might be a built-in or local type, skip it
+				return 0, nil
+			}
+			// Compare the full import path with the source import path
+			if importPath != sourceImportPath {
+				// This struct is from a different package, skip it
+				return 0, nil
+			}
+		}
+
 		lookup := tt.Sel.Name
 		if fieldDef, present := paramTypes[lookup]; present {
+			structCount = 1 // We're checking this struct
 			fieldsUsed := map[string]string{}
 			for _, el := range se.Elts {
 				if kv, isKV := el.(*ast.KeyValueExpr); isKV {
@@ -184,9 +241,11 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 		}
 	}
 	// Also handle direct type references like &SomeType{} without package selector
+	// These are from the current package, so we check them if the current package matches
 	if ident, isIdent := se.Type.(*ast.Ident); isIdent {
 		lookup := ident.Name
 		if fieldDef, present := paramTypes[lookup]; present {
+			structCount = 1 // We're checking this struct
 			fieldsUsed := map[string]string{}
 			for _, el := range se.Elts {
 				if kv, isKV := el.(*ast.KeyValueExpr); isKV {
@@ -206,7 +265,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 		}
 	}
 
-	return errors.ErrorOrNil()
+	return structCount, errors.ErrorOrNil()
 }
 
 func main() {
@@ -339,13 +398,18 @@ func main() {
 		},
 	}
 
+	totalCount := 0
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			if err := comparePackages(config, targetPkg); err != nil {
+			err, count := comparePackages(config, targetPkg)
+			totalCount += count
+			if err != nil {
 				errors = multierror.Append(errors, err)
 			}
 		}
 	}
+
+	log.Printf("Checked %d struct(s) total", totalCount)
 
 	if errors.ErrorOrNil() != nil {
 		log.Fatal(errors)

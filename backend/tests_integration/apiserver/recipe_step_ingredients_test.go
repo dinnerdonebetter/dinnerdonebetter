@@ -68,9 +68,9 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient ID must not be empty")
 
 		createdRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
-			RecipeID:               createdRecipe.ID,
-			RecipeStepID:           createdRecipeStepID,
-			RecipeStepIngredientID: createdRecipeStepIngredientID,
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStepID,
+			RecipeStepIngredientId: createdRecipeStepIngredientID,
 		})
 		require.NotNil(t, createdRecipeStepIngredientRes)
 		require.NoError(t, err)
@@ -89,17 +89,17 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepIngredient.Update(updateInput)
 
 		_, err = adminClient.UpdateRecipeStepIngredient(ctx, &mealplanninggrpc.UpdateRecipeStepIngredientRequest{
-			RecipeID:               createdRecipe.ID,
-			RecipeStepID:           createdRecipeStepID,
-			RecipeStepIngredientID: createdRecipeStepIngredientID,
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStepID,
+			RecipeStepIngredientId: createdRecipeStepIngredientID,
 			Input:                  converters.ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		retrievedRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
-			RecipeID:               createdRecipe.ID,
-			RecipeStepID:           createdRecipeStepID,
-			RecipeStepIngredientID: createdRecipeStepIngredientID,
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStepID,
+			RecipeStepIngredientId: createdRecipeStepIngredientID,
 		})
 		require.NotNil(t, retrievedRes)
 		require.NoError(t, err)
@@ -111,16 +111,16 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		assert.NotNil(t, actual.LastUpdatedAt)
 
 		_, err = userClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
-			RecipeID:               createdRecipe.ID,
-			RecipeStepID:           createdRecipeStepID,
-			RecipeStepIngredientID: createdRecipeStepIngredientID,
+			RecipeId:               createdRecipe.ID,
+			RecipeStepId:           createdRecipeStepID,
+			RecipeStepIngredientId: createdRecipeStepIngredientID,
 		})
 		assert.NoError(t, err)
 
-		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeID: createdRecipe.ID, RecipeStepID: createdRecipeStepID})
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeId: createdRecipe.ID, RecipeStepId: createdRecipeStepID})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -156,8 +156,8 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 			exampleRecipeStepIngredientInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
 			createdRecipeStepIngredientRes, err := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
-				RecipeID:     createdRecipe.ID,
-				RecipeStepID: createdRecipeStepID,
+				RecipeId:     createdRecipe.ID,
+				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredientInput),
 			})
 			require.NoError(t, err)
@@ -166,9 +166,9 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 			checkRecipeStepIngredientEquality(t, -1, -1, exampleRecipeStepIngredient, createdRecipeStepIngredient)
 
 			retrievedRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
-				RecipeID:               createdRecipe.ID,
-				RecipeStepID:           createdRecipeStepID,
-				RecipeStepIngredientID: createdRecipeStepIngredient.ID,
+				RecipeId:               createdRecipe.ID,
+				RecipeStepId:           createdRecipeStepID,
+				RecipeStepIngredientId: createdRecipeStepIngredient.ID,
 			})
 			require.NotNil(t, retrievedRecipeStepIngredientRes.Result)
 			require.NoError(t, err)
@@ -179,8 +179,8 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 		// assert recipe step ingredient list equality
 		actual, err := userClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		require.NotNil(t, actual)
 		require.NoError(t, err)
@@ -194,20 +194,20 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 		for _, createdRecipeStepIngredient := range expected {
 			_, err = userClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
-				RecipeID:               createdRecipe.ID,
-				RecipeStepID:           createdRecipeStepID,
-				RecipeStepIngredientID: createdRecipeStepIngredient.ID,
+				RecipeId:               createdRecipe.ID,
+				RecipeStepId:           createdRecipeStepID,
+				RecipeStepIngredientId: createdRecipeStepIngredient.ID,
 			})
 			assert.NoError(t, err)
 		}
 
 		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStepID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

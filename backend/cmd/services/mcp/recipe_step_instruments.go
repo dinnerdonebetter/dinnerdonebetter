@@ -50,9 +50,9 @@ var getRecipeStepInstrumentTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipeStepInstrument() mcp.ToolHandlerFor[*GetRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
 		result, err := h.client.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
-			RecipeID:               x.RecipeID,
-			RecipeStepID:           x.RecipeStepID,
-			RecipeStepInstrumentID: x.RecipeStepInstrumentID,
+			RecipeId:               x.RecipeID,
+			RecipeStepId:           x.RecipeStepID,
+			RecipeStepInstrumentId: x.RecipeStepInstrumentID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -90,8 +90,8 @@ var getRecipeStepInstrumentsTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipeStepInstruments() mcp.ToolHandlerFor[*GetRecipeStepInstrumentsInvocation, *GetRecipeStepInstrumentsResult] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeStepInstrumentsInvocation) (*mcp.CallToolResult, *GetRecipeStepInstrumentsResult, error) {
 		results, err := h.client.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
-			RecipeID:     x.RecipeID,
-			RecipeStepID: x.RecipeStepID,
+			RecipeId:     x.RecipeID,
+			RecipeStepId: x.RecipeStepID,
 			Filter:       grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
 		})
 		if err != nil {
@@ -138,8 +138,8 @@ var recipeStepInstrumentCreationTool = &mcp.Tool{
 func (h *mcpToolManager) CreateRecipeStepInstrument() mcp.ToolHandlerFor[*CreateRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *CreateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
 		result, err := h.client.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
-			RecipeID:     x.RecipeID,
-			RecipeStepID: x.RecipeStepID,
+			RecipeId:     x.RecipeID,
+			RecipeStepId: x.RecipeStepID,
 			Input:        mealplanningconverters.ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCreationRequestInput(x.RecipeStepInstrumentCreationRequestInput),
 		})
 		if err != nil {
@@ -181,9 +181,9 @@ var recipeStepInstrumentUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateRecipeStepInstrument() mcp.ToolHandlerFor[*UpdateRecipeStepInstrumentInvocation, *mealplanning.RecipeStepInstrument] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeStepInstrumentInvocation) (*mcp.CallToolResult, *mealplanning.RecipeStepInstrument, error) {
 		result, err := h.client.UpdateRecipeStepInstrument(ctx, &mealplanninggrpc.UpdateRecipeStepInstrumentRequest{
-			RecipeID:               x.RecipeID,
-			RecipeStepID:           x.RecipeStepID,
-			RecipeStepInstrumentID: x.RecipeStepInstrumentID,
+			RecipeId:               x.RecipeID,
+			RecipeStepId:           x.RecipeStepID,
+			RecipeStepInstrumentId: x.RecipeStepInstrumentID,
 			Input:                  mealplanningconverters.ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpdateRequestInput(x.RecipeStepInstrumentUpdateRequestInput),
 		})
 		if err != nil {

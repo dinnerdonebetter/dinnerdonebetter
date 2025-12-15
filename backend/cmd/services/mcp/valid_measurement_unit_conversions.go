@@ -42,7 +42,7 @@ var getValidMeasurementUnitConversionTool = &mcp.Tool{
 func (h *mcpToolManager) GetValidMeasurementUnitConversion() mcp.ToolHandlerFor[*GetValidMeasurementUnitConversionInvocation, *mealplanning.ValidMeasurementUnitConversion] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnitConversion, error) {
 		result, err := h.client.GetValidMeasurementUnitConversion(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionRequest{
-			ValidMeasurementUnitConversionID: x.ValidMeasurementUnitConversionID,
+			ValidMeasurementUnitConversionId: x.ValidMeasurementUnitConversionID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -79,7 +79,7 @@ func (h *mcpToolManager) GetValidMeasurementUnitConversionsForUnit() mcp.ToolHan
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidMeasurementUnitConversionsForUnitInvocation) (*mcp.CallToolResult, *GetValidMeasurementUnitConversionsForUnitResult, error) {
 		results, err := h.client.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForUnitRequest{
 			Filter:                 grpcconverters.ConvertQueryFilterToGRPCQueryFilter(x.Filter, filtering.Pagination{}),
-			ValidMeasurementUnitID: x.ValidMeasurementUnitID,
+			ValidMeasurementUnitId: x.ValidMeasurementUnitID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -142,7 +142,7 @@ var validMeasurementUnitConversionUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateValidMeasurementUnitConversion() mcp.ToolHandlerFor[*UpdateValidMeasurementUnitConversionInvocation, *mealplanning.ValidMeasurementUnitConversion] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidMeasurementUnitConversionInvocation) (*mcp.CallToolResult, *mealplanning.ValidMeasurementUnitConversion, error) {
 		result, err := h.client.UpdateValidMeasurementUnitConversion(ctx, &mealplanninggrpc.UpdateValidMeasurementUnitConversionRequest{
-			ValidMeasurementUnitConversionID: x.ValidMeasurementUnitConversionID,
+			ValidMeasurementUnitConversionId: x.ValidMeasurementUnitConversionID,
 			Input:                            mealplanningconverters.ConvertValidMeasurementUnitConversionUpdateRequestInputToGRPCValidMeasurementUnitConversionUpdateRequestInput(x.ValidMeasurementUnitConversionUpdateRequestInput),
 		})
 		if err != nil {

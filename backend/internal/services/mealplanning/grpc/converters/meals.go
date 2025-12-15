@@ -18,7 +18,7 @@ func ConvertMealPlanTaskToGRPCMealPlanTask(input *mealplanning.MealPlanTask) *me
 		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		CompletedAt:         grpcconverters.ConvertTimePointerToPBTimestamp(input.CompletedAt),
 		AssignedToUser:      input.AssignedToUser,
-		ID:                  input.ID,
+		Id:                  input.ID,
 		Status:              input.Status,
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
@@ -43,7 +43,7 @@ func ConvertMealPlanOptionToGRPCMealPlanOption(input *mealplanning.MealPlanOptio
 		LastUpdatedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:             grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		Meal:                   ConvertMealToGRPCMeal(&input.Meal),
-		ID:                     input.ID,
+		Id:                     input.ID,
 		Notes:                  input.Notes,
 		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
 		AssignedDishwasher:     input.AssignedDishwasher,
@@ -60,7 +60,7 @@ func ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(input *mealplanning.MealP
 		CreatedAt:               grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		ID:                      input.ID,
+		Id:                      input.ID,
 		Notes:                   input.Notes,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
 		ByUser:                  input.ByUser,
@@ -83,7 +83,7 @@ func ConvertMealToGRPCMeal(input *mealplanning.Meal) *mealplanningsvc.Meal {
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
-		ID:                   input.ID,
+		Id:                   input.ID,
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
 		Name:                 input.Name,
@@ -114,7 +114,7 @@ func ConvertGRPCMealToMeal(input *mealplanningsvc.Meal) *mealplanning.Meal {
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
-		ID:                   input.ID,
+		ID:                   input.Id,
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
 		Name:                 input.Name,
@@ -148,10 +148,10 @@ func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplan
 		Ingredient:               ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
 		MeasurementUnit:          ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&input.MeasurementUnit),
 		PurchasedMeasurementUnit: purchasedMeasurementUnit,
-		PurchasedUPC:             input.PurchasedUPC,
+		PurchasedUpc:             input.PurchasedUPC,
 		Status:                   input.Status,
 		StatusExplanation:        input.StatusExplanation,
-		ID:                       input.ID,
+		Id:                       input.ID,
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		PurchasePrice:            input.PurchasePrice,
 		QuantityPurchased:        input.QuantityPurchased,
@@ -175,10 +175,10 @@ func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplan
 		Ingredient:               *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
 		MeasurementUnit:          *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		PurchasedMeasurementUnit: purchasedMeasurementUnit,
-		PurchasedUPC:             input.PurchasedUPC,
+		PurchasedUPC:             input.PurchasedUpc,
 		Status:                   input.Status,
 		StatusExplanation:        input.StatusExplanation,
-		ID:                       input.ID,
+		ID:                       input.Id,
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		PurchasePrice:            input.PurchasePrice,
 		QuantityPurchased:        input.QuantityPurchased,
@@ -200,7 +200,7 @@ func ConvertMealPlanEventToGRPCMealPlanEvent(input *mealplanning.MealPlanEvent) 
 		MealName:          input.MealName,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
-		ID:                input.ID,
+		Id:                input.ID,
 		Options:           mealPlanOptions,
 	}
 }
@@ -219,7 +219,7 @@ func ConvertMealPlanToGRPCMealPlan(input *mealplanning.MealPlan) *mealplanningsv
 		ElectionMethod:         input.ElectionMethod,
 		Status:                 input.Status,
 		Notes:                  input.Notes,
-		ID:                     input.ID,
+		Id:                     input.ID,
 		BelongsToAccount:       input.BelongsToAccount,
 		CreatedByUser:          input.CreatedByUser,
 		Events:                 mealPlanEvents,
@@ -242,7 +242,7 @@ func ConvertGRPCMealPlanToMealPlan(input *mealplanningsvc.MealPlan) *mealplannin
 		ElectionMethod:         input.ElectionMethod,
 		Status:                 input.Status,
 		Notes:                  input.Notes,
-		ID:                     input.ID,
+		ID:                     input.Id,
 		BelongsToAccount:       input.BelongsToAccount,
 		CreatedByUser:          input.CreatedByUser,
 		Events:                 mealPlanEvents,
@@ -266,7 +266,7 @@ func ConvertGRPCMealPlanEventToMealPlanEvent(input *mealplanningsvc.MealPlanEven
 		MealName:          input.MealName,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
-		ID:                input.ID,
+		ID:                input.Id,
 		Options:           mealPlanOptions,
 	}
 }
@@ -282,7 +282,7 @@ func ConvertGRPCMealPlanOptionToMealPlanOption(input *mealplanningsvc.MealPlanOp
 		LastUpdatedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		Meal:                   *ConvertGRPCMealToMeal(input.Meal),
-		ID:                     input.ID,
+		ID:                     input.Id,
 		Notes:                  input.Notes,
 		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
 		AssignedDishwasher:     input.AssignedDishwasher,
@@ -299,7 +299,7 @@ func ConvertGRPCMealPlanOptionVoteToMealPlanOptionVote(input *mealplanningsvc.Me
 		CreatedAt:               grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		ID:                      input.ID,
+		ID:                      input.Id,
 		Notes:                   input.Notes,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
 		ByUser:                  input.ByUser,
@@ -314,7 +314,7 @@ func ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(input *mealpl
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		Ingredient:    ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
-		ID:            input.ID,
+		Id:            input.ID,
 		Notes:         input.Notes,
 		BelongsToUser: input.BelongsToUser,
 		Rating:        int32(input.Rating),
@@ -328,7 +328,7 @@ func ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(input *mealpl
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		Ingredient:    *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
-		ID:            input.ID,
+		ID:            input.Id,
 		Notes:         input.Notes,
 		BelongsToUser: input.BelongsToUser,
 		Rating:        int8(input.Rating),
@@ -356,7 +356,7 @@ func ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(input *mealpl
 
 func ConvertMealComponentCreationRequestInputToGRPCMealComponentCreationRequestInput(input *mealplanning.MealComponentCreationRequestInput) *mealplanningsvc.MealComponentCreationRequestInput {
 	return &mealplanningsvc.MealComponentCreationRequestInput{
-		RecipeID:      input.RecipeID,
+		RecipeId:      input.RecipeID,
 		ComponentType: input.ComponentType,
 		RecipeScale:   input.RecipeScale,
 	}
@@ -382,7 +382,7 @@ func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealpl
 
 func ConvertGRPCMealComponentCreationRequestInputToMealComponentCreationRequestInput(input *mealplanningsvc.MealComponentCreationRequestInput) *mealplanning.MealComponentCreationRequestInput {
 	return &mealplanning.MealComponentCreationRequestInput{
-		RecipeID:      input.RecipeID,
+		RecipeID:      input.RecipeId,
 		ComponentType: input.ComponentType,
 		RecipeScale:   input.RecipeScale,
 	}
@@ -421,7 +421,7 @@ func ConvertMealPlanOptionCreationRequestInputToGRPCMealPlanOptionCreationReques
 	return &mealplanningsvc.MealPlanOptionCreationRequestInput{
 		AssignedCook:       input.AssignedCook,
 		AssignedDishwasher: input.AssignedDishwasher,
-		MealID:             input.MealID,
+		MealId:             input.MealID,
 		Notes:              input.Notes,
 		MealScale:          input.MealScale,
 	}
@@ -460,7 +460,7 @@ func ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationReques
 	return &mealplanning.MealPlanOptionCreationRequestInput{
 		AssignedCook:       input.AssignedCook,
 		AssignedDishwasher: input.AssignedDishwasher,
-		MealID:             input.MealID,
+		MealID:             input.MealId,
 		Notes:              input.Notes,
 		MealScale:          input.MealScale,
 	}
@@ -479,7 +479,7 @@ func ConvertGRPCMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteCreati
 
 func ConvertGRPCMealPlanOptionVoteCreationInputToMealPlanOptionVoteCreationInput(input *mealplanningsvc.MealPlanOptionVoteCreationInput) *mealplanning.MealPlanOptionVoteCreationInput {
 	return &mealplanning.MealPlanOptionVoteCreationInput{
-		ID:                      input.ID,
+		ID:                      input.Id,
 		Notes:                   input.Notes,
 		ByUser:                  input.ByUser,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
@@ -490,14 +490,14 @@ func ConvertGRPCMealPlanOptionVoteCreationInputToMealPlanOptionVoteCreationInput
 
 func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemCreationRequestInput(input *mealplanningsvc.MealPlanGroceryListItemCreationRequestInput) *mealplanning.MealPlanGroceryListItemCreationRequestInput {
 	return &mealplanning.MealPlanGroceryListItemCreationRequestInput{
-		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
-		PurchasedUPC:               input.PurchasedUPC,
+		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitId,
+		PurchasedUPC:               input.PurchasedUpc,
 		PurchasePrice:              input.PurchasePrice,
 		QuantityPurchased:          input.QuantityPurchased,
 		Status:                     input.Status,
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		ValidIngredientID:          input.ValidIngredientID,
-		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		ValidIngredientID:          input.ValidIngredientId,
+		ValidMeasurementUnitID:     input.ValidMeasurementUnitId,
 		StatusExplanation:          input.StatusExplanation,
 		QuantityNeeded: types.Float32RangeWithOptionalMax{
 			Max: input.QuantityNeeded.Max,
@@ -508,14 +508,14 @@ func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryList
 
 func ConvertMealPlanGroceryListItemCreationRequestInputToGRPCMealPlanGroceryListItemCreationRequestInput(input *mealplanning.MealPlanGroceryListItemCreationRequestInput) *mealplanningsvc.MealPlanGroceryListItemCreationRequestInput {
 	return &mealplanningsvc.MealPlanGroceryListItemCreationRequestInput{
-		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
-		PurchasedUPC:               input.PurchasedUPC,
+		PurchasedMeasurementUnitId: input.PurchasedMeasurementUnitID,
+		PurchasedUpc:               input.PurchasedUPC,
 		PurchasePrice:              input.PurchasePrice,
 		QuantityPurchased:          input.QuantityPurchased,
 		Status:                     input.Status,
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		ValidIngredientID:          input.ValidIngredientID,
-		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		ValidIngredientId:          input.ValidIngredientID,
+		ValidMeasurementUnitId:     input.ValidMeasurementUnitID,
 		StatusExplanation:          input.StatusExplanation,
 		QuantityNeeded: &grpctypes.Float32RangeWithOptionalMax{
 			Max: input.QuantityNeeded.Max,
@@ -530,15 +530,15 @@ func ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInp
 		Status:              input.Status,
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
-		MealPlanOptionID:    input.MealPlanOptionID,
-		RecipePrepTaskID:    input.RecipePrepTaskID,
+		MealPlanOptionID:    input.MealPlanOptionId,
+		RecipePrepTaskID:    input.RecipePrepTaskId,
 	}
 }
 
 func ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceCreationRequestInput(input *mealplanningsvc.UserIngredientPreferenceCreationRequestInput) *mealplanning.UserIngredientPreferenceCreationRequestInput {
 	return &mealplanning.UserIngredientPreferenceCreationRequestInput{
-		ValidIngredientGroupID: input.ValidIngredientGroupID,
-		ValidIngredientID:      input.ValidIngredientID,
+		ValidIngredientGroupID: input.ValidIngredientGroupId,
+		ValidIngredientID:      input.ValidIngredientId,
 		Notes:                  input.Notes,
 		Rating:                 int8(input.Rating),
 		Allergy:                input.Allergy,
@@ -547,8 +547,8 @@ func ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPref
 
 func ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(input *mealplanning.UserIngredientPreferenceCreationRequestInput) *mealplanningsvc.UserIngredientPreferenceCreationRequestInput {
 	return &mealplanningsvc.UserIngredientPreferenceCreationRequestInput{
-		ValidIngredientGroupID: input.ValidIngredientGroupID,
-		ValidIngredientID:      input.ValidIngredientID,
+		ValidIngredientGroupId: input.ValidIngredientGroupID,
+		ValidIngredientId:      input.ValidIngredientID,
 		Notes:                  input.Notes,
 		Rating:                 int32(input.Rating),
 		Allergy:                input.Allergy,
@@ -595,12 +595,12 @@ func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput
 func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(input *mealplanningsvc.MealPlanGroceryListItemUpdateRequestInput) *mealplanning.MealPlanGroceryListItemUpdateRequestInput {
 	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		ValidIngredientID:          input.ValidIngredientID,
-		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		ValidIngredientID:          input.ValidIngredientId,
+		ValidMeasurementUnitID:     input.ValidMeasurementUnitId,
 		StatusExplanation:          input.StatusExplanation,
 		QuantityPurchased:          input.QuantityPurchased,
-		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
-		PurchasedUPC:               input.PurchasedUPC,
+		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitId,
+		PurchasedUPC:               input.PurchasedUpc,
 		PurchasePrice:              input.PurchasePrice,
 		Status:                     input.Status,
 		QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
@@ -612,7 +612,7 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 
 func ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInput(input *mealplanningsvc.MealPlanOptionUpdateRequestInput) *mealplanning.MealPlanOptionUpdateRequestInput {
 	return &mealplanning.MealPlanOptionUpdateRequestInput{
-		MealID:                 input.MealID,
+		MealID:                 input.MealId,
 		Notes:                  input.Notes,
 		AssignedCook:           input.AssignedCook,
 		AssignedDishwasher:     input.AssignedDishwasher,
@@ -623,7 +623,7 @@ func ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInp
 
 func ConvertMealPlanOptionUpdateRequestInputToGRPCMealPlanOptionUpdateRequestInput(input *mealplanning.MealPlanOptionUpdateRequestInput) *mealplanningsvc.MealPlanOptionUpdateRequestInput {
 	return &mealplanningsvc.MealPlanOptionUpdateRequestInput{
-		MealID:                 input.MealID,
+		MealId:                 input.MealID,
 		Notes:                  input.Notes,
 		AssignedCook:           input.AssignedCook,
 		AssignedDishwasher:     input.AssignedDishwasher,
@@ -655,14 +655,14 @@ func ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRe
 		Status:            input.Status,
 		StatusExplanation: input.StatusExplanation,
 		AssignedToUser:    input.AssignedToUser,
-		ID:                input.ID,
+		ID:                input.Id,
 	}
 }
 
 func ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPreferenceUpdateRequestInput(input *mealplanningsvc.UserIngredientPreferenceUpdateRequestInput) *mealplanning.UserIngredientPreferenceUpdateRequestInput {
 	return &mealplanning.UserIngredientPreferenceUpdateRequestInput{
 		Notes:        input.Notes,
-		IngredientID: input.IngredientID,
+		IngredientID: input.IngredientId,
 		Rating:       pointer.To(int8(pointer.Dereference(input.Rating))),
 		Allergy:      input.Allergy,
 	}
@@ -671,7 +671,7 @@ func ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPrefer
 func ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) *mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput {
 	return &mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput{
 		Notes:             input.Notes,
-		ValidInstrumentID: input.ValidInstrumentID,
+		ValidInstrumentId: input.ValidInstrumentID,
 		Quantity:          uint32(input.Quantity),
 	}
 }
@@ -681,7 +681,7 @@ func ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(input *me
 		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ID:               input.ID,
+		ID:               input.Id,
 		Notes:            input.Notes,
 		BelongsToAccount: input.BelongsToAccount,
 		Instrument:       *ConvertGRPCValidInstrumentToValidInstrument(input.Instrument),
@@ -692,7 +692,7 @@ func ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(input *me
 func ConvertGRPCAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipCreationRequestInput(input *mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput) *mealplanning.AccountInstrumentOwnershipCreationRequestInput {
 	return &mealplanning.AccountInstrumentOwnershipCreationRequestInput{
 		Notes:             input.Notes,
-		ValidInstrumentID: input.ValidInstrumentID,
+		ValidInstrumentID: input.ValidInstrumentId,
 		Quantity:          uint16(input.Quantity),
 	}
 }
@@ -703,7 +703,7 @@ func ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(input *me
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		Instrument:       ConvertValidInstrumentToGRPCValidInstrument(&input.Instrument),
-		ID:               input.ID,
+		Id:               input.ID,
 		Notes:            input.Notes,
 		BelongsToAccount: input.BelongsToAccount,
 		Quantity:         uint32(input.Quantity),
@@ -719,7 +719,7 @@ func ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentO
 	return &mealplanning.AccountInstrumentOwnershipUpdateRequestInput{
 		Notes:             input.Notes,
 		Quantity:          quantity,
-		ValidInstrumentID: input.ValidInstrumentID,
+		ValidInstrumentID: input.ValidInstrumentId,
 	}
 }
 
@@ -734,7 +734,7 @@ func ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreati
 
 func ConvertMealPlanOptionVoteCreationInputToGRPCMealPlanOptionVoteCreationInput(input *mealplanning.MealPlanOptionVoteCreationInput) *mealplanningsvc.MealPlanOptionVoteCreationInput {
 	return &mealplanningsvc.MealPlanOptionVoteCreationInput{
-		ID:                      input.ID,
+		Id:                      input.ID,
 		Notes:                   input.Notes,
 		ByUser:                  input.ByUser,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
@@ -749,8 +749,8 @@ func ConvertMealPlanTaskCreationRequestInputToGRPCMealPlanTaskCreationRequestInp
 		Status:              input.Status,
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
-		MealPlanOptionID:    input.MealPlanOptionID,
-		RecipePrepTaskID:    input.RecipePrepTaskID,
+		MealPlanOptionId:    input.MealPlanOptionID,
+		RecipePrepTaskId:    input.RecipePrepTaskID,
 	}
 }
 
@@ -761,7 +761,7 @@ func ConvertGRPCMealPlanTaskToMealPlanTask(input *mealplanningsvc.MealPlanTask) 
 		CompletedAt:         grpcconverters.ConvertPBTimestampToTimePointer(input.CompletedAt),
 		LastUpdatedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		AssignedToUser:      input.AssignedToUser,
-		ID:                  input.ID,
+		ID:                  input.Id,
 		Status:              input.Status,
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,

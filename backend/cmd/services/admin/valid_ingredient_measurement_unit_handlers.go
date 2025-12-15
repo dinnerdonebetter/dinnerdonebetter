@@ -39,7 +39,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 
 	// Fetch associations
 	res, err := c.GetValidIngredientMeasurementUnitsByIngredient(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByIngredientRequest{
-		ValidIngredientID: ingredientID,
+		ValidIngredientId: ingredientID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -55,7 +55,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForIngredient(_ htt
 	for _, assoc := range res.Results {
 		if assoc.MeasurementUnit != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.MeasurementUnit.Name,
 				Description: assoc.MeasurementUnit.Description,
 				Notes:       assoc.Notes,
@@ -104,7 +104,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 
 	// Fetch associations
 	res, err := c.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, &mealplanningsvc.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest{
-		ValidMeasurementUnitID: measurementUnitID,
+		ValidMeasurementUnitId: measurementUnitID,
 	})
 	if err != nil {
 		return components.AssociationList(&components.AssociationListProps{
@@ -120,7 +120,7 @@ func (s *AdminFrontendServer) ValidIngredientMeasurementUnitsForMeasurementUnit(
 	for _, assoc := range res.Results {
 		if assoc.Ingredient != nil {
 			items = append(items, &components.AssociationItem{
-				ID:          assoc.ID,
+				ID:          assoc.Id,
 				Name:        assoc.Ingredient.Name,
 				Description: assoc.Ingredient.Description,
 				Notes:       assoc.Notes,
@@ -178,7 +178,7 @@ func (s *AdminFrontendServer) SearchMeasurementUnitsForIngredient(_ http.Respons
 	for _, unit := range searchRes.Results {
 		if contains(unit.Name, query) || contains(unit.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          unit.ID,
+				ID:          unit.Id,
 				Name:        unit.Name,
 				Description: unit.Description,
 			})
@@ -230,7 +230,7 @@ func (s *AdminFrontendServer) SearchIngredientsForMeasurementUnit(_ http.Respons
 	for _, ingredient := range searchRes.Results {
 		if contains(ingredient.Name, query) || contains(ingredient.Description, query) {
 			results = append(results, &components.SearchResultItem{
-				ID:          ingredient.ID,
+				ID:          ingredient.Id,
 				Name:        ingredient.Name,
 				Description: ingredient.Description,
 			})
@@ -275,8 +275,8 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromIngredient(_ ht
 	// Create the association
 	_, err = c.CreateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{
 		Input: &mealplanningsvc.ValidIngredientMeasurementUnitCreationRequestInput{
-			ValidIngredientID:      ingredientID,
-			ValidMeasurementUnitID: input.ID,
+			ValidIngredientId:      ingredientID,
+			ValidMeasurementUnitId: input.ID,
 		},
 	})
 	if err != nil {
@@ -319,8 +319,8 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromMeasurementUnit
 	// Create the association
 	_, err = c.CreateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{
 		Input: &mealplanningsvc.ValidIngredientMeasurementUnitCreationRequestInput{
-			ValidIngredientID:      input.ID,
-			ValidMeasurementUnitID: measurementUnitID,
+			ValidIngredientId:      input.ID,
+			ValidMeasurementUnitId: measurementUnitID,
 		},
 	})
 	if err != nil {
@@ -358,7 +358,7 @@ func (s *AdminFrontendServer) DeleteIngredientMeasurementUnit(_ http.ResponseWri
 
 	// Archive (delete) the association
 	_, err = c.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidIngredientMeasurementUnitRequest{
-		ValidIngredientMeasurementUnitID: associationID,
+		ValidIngredientMeasurementUnitId: associationID,
 	})
 	if err != nil {
 		return ghtml.Div(
