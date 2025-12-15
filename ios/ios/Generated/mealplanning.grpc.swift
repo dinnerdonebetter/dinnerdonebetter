@@ -1676,6 +1676,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "SearchForRecipes"
             )
         }
+        /// Namespace for "SearchForMealEligibleRecipes" metadata.
+        internal enum SearchForMealEligibleRecipes {
+            /// Request type for "SearchForMealEligibleRecipes".
+            internal typealias Input = Mealplanning_SearchForMealEligibleRecipesRequest
+            /// Response type for "SearchForMealEligibleRecipes".
+            internal typealias Output = Mealplanning_SearchForMealEligibleRecipesResponse
+            /// Descriptor for "SearchForMealEligibleRecipes".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "SearchForMealEligibleRecipes"
+            )
+        }
         /// Namespace for "SearchForValidIngredientGroups" metadata.
         internal enum SearchForValidIngredientGroups {
             /// Request type for "SearchForValidIngredientGroups".
@@ -2392,6 +2404,7 @@ internal enum Mealplanning_MealPlanningService {
             RunMealPlanTaskCreatorWorker.descriptor,
             SearchForMeals.descriptor,
             SearchForRecipes.descriptor,
+            SearchForMealEligibleRecipes.descriptor,
             SearchForValidIngredientGroups.descriptor,
             SearchForValidIngredientStates.descriptor,
             SearchForValidIngredients.descriptor,
@@ -5079,6 +5092,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_SearchForRecipesResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForRecipesResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SearchForMealEligibleRecipes" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_SearchForMealEligibleRecipesRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_SearchForMealEligibleRecipesRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_SearchForMealEligibleRecipesResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func searchForMealEligibleRecipes<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_SearchForMealEligibleRecipesRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_SearchForMealEligibleRecipesRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_SearchForMealEligibleRecipesResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForMealEligibleRecipesResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "SearchForValidIngredientGroups" method.
@@ -10150,6 +10182,36 @@ extension Mealplanning_MealPlanningService {
             )
         }
 
+        /// Call the "SearchForMealEligibleRecipes" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_SearchForMealEligibleRecipesRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_SearchForMealEligibleRecipesRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_SearchForMealEligibleRecipesResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func searchForMealEligibleRecipes<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_SearchForMealEligibleRecipesRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_SearchForMealEligibleRecipesRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_SearchForMealEligibleRecipesResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForMealEligibleRecipesResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.SearchForMealEligibleRecipes.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
         /// Call the "SearchForValidIngredientGroups" method.
         ///
         /// - Parameters:
@@ -15040,6 +15102,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_SearchForRecipesRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_SearchForRecipesResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SearchForMealEligibleRecipes" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_SearchForMealEligibleRecipesRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func searchForMealEligibleRecipes<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_SearchForMealEligibleRecipesRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForMealEligibleRecipesResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.searchForMealEligibleRecipes(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_SearchForMealEligibleRecipesRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_SearchForMealEligibleRecipesResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -20245,6 +20332,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.searchForRecipes(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SearchForMealEligibleRecipes" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func searchForMealEligibleRecipes<Result>(
+        _ message: Mealplanning_SearchForMealEligibleRecipesRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_SearchForMealEligibleRecipesResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_SearchForMealEligibleRecipesRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.searchForMealEligibleRecipes(
             request: request,
             options: options,
             onResponse: handleResponse

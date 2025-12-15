@@ -1052,6 +1052,35 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
+func (s *serviceImpl) SearchForMealEligibleRecipes(ctx context.Context, request *mealplanning.SearchForMealEligibleRecipesRequest) (*mealplanning.SearchForMealEligibleRecipesResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.SearchQueryKey: request.Query,
+	}, span, s.logger)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	recipes, err := s.recipeManager.SearchForMealEligibleRecipes(ctx, request.Query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
+	}
+
+	x := &mealplanning.SearchForMealEligibleRecipesResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipe := range recipes.Data {
+		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.UpdateRecipeRequest) (*mealplanning.UpdateRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

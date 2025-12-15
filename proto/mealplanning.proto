@@ -2483,6 +2483,18 @@ message SearchForRecipesResponse {
   repeated Recipe Results = 3;
 }
 
+// SearchForMealEligibleRecipes
+message SearchForMealEligibleRecipesRequest {
+  filtering.QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForMealEligibleRecipesResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.Pagination Pagination = 2;
+  repeated Recipe Results = 3;
+}
+
 // UpdateRecipe
 message UpdateRecipeRequest {
   string recipeID = 1;
@@ -3514,6 +3526,7 @@ service MealPlanningService {
   rpc RunMealPlanTaskCreatorWorker(RunMealPlanTaskCreatorWorkerRequest) returns (RunMealPlanTaskCreatorWorkerResponse);
   rpc SearchForMeals(SearchForMealsRequest) returns (SearchForMealsResponse);
   rpc SearchForRecipes(SearchForRecipesRequest) returns (SearchForRecipesResponse);
+  rpc SearchForMealEligibleRecipes(SearchForMealEligibleRecipesRequest) returns (SearchForMealEligibleRecipesResponse);
   rpc SearchForValidIngredientGroups(SearchForValidIngredientGroupsRequest) returns (SearchForValidIngredientGroupsResponse);
   rpc SearchForValidIngredientStates(SearchForValidIngredientStatesRequest) returns (SearchForValidIngredientStatesResponse);
   rpc SearchForValidIngredients(SearchForValidIngredientsRequest) returns (SearchForValidIngredientsResponse);

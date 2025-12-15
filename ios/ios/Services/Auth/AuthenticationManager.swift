@@ -235,8 +235,9 @@ class AuthenticationManager: AuthenticationManaging {
   }
 
   /// Exchange JWT token for OAuth2 access token
-  private func exchangeJWTForOAuth2Token(jwtToken: String) async -> (success: Bool, error: String?)
-  {
+  private func exchangeJWTForOAuth2Token(jwtToken: String) async -> (
+    success: Bool, error: String?
+  ) {
     // Generate state for OAuth2 flow
     let state = UUID().uuidString
 

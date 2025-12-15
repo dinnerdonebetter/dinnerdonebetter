@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -126,6 +125,7 @@ type (
 		GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error
@@ -133,20 +133,6 @@ type (
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetRecipesWithIDs(ctx context.Context, ids []string) ([]*Recipe, error)
-	}
-
-	// RecipeDataService describes a structure capable of serving traffic related to recipes.
-	RecipeDataService interface {
-		ListRecipesHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeHandler(http.ResponseWriter, *http.Request)
-		SearchRecipesHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeHandler(http.ResponseWriter, *http.Request)
-		RecipeEstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
-		RecipeImageUploadHandler(http.ResponseWriter, *http.Request)
-		RecipeMermaidHandler(http.ResponseWriter, *http.Request)
-		CloneRecipeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

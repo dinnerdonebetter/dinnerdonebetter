@@ -10,10 +10,11 @@ import (
 const (
 	recipesTableName = "recipes"
 
-	belongsToRecipeColumn = "belongs_to_recipe"
-	recipeIDColumn        = "recipe_id"
-	lastValidatedAtColumn = "last_validated_at"
-	statusColumn          = "status"
+	belongsToRecipeColumn  = "belongs_to_recipe"
+	recipeIDColumn         = "recipe_id"
+	lastValidatedAtColumn  = "last_validated_at"
+	eligibleForMealsColumn = "eligible_for_meals"
+	statusColumn           = "status"
 )
 
 func init() {
@@ -32,7 +33,7 @@ var recipesColumns = []string{
 	"max_estimated_portions",
 	"portion_name",
 	"plural_portion_name",
-	"eligible_for_meals",
+	eligibleForMealsColumn,
 	"yields_component_type",
 	lastIndexedAtColumn,
 	lastValidatedAtColumn,
@@ -233,6 +234,36 @@ WHERE %s.%s IS NULL
 					buildTotalCountSelect(recipesTableName, true, []string{}),
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
+					recipesTableName, nameColumn, buildILIKEForArgument("query"),
+					buildFilterConditions(recipesTableName, true, false),
+					buildCursorLimitClause(recipesTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForMealEligibleRecipes",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = true 
+	AND %s.%s = 'approved'
+	AND %s.%s %s
+	%s
+%s;`,
+					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", recipesTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(recipesTableName, true, true, []string{}),
+					buildTotalCountSelect(recipesTableName, true, []string{}),
+					recipesTableName,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, eligibleForMealsColumn,
+					recipesTableName, statusColumn,
 					recipesTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(recipesTableName, true, false),
 					buildCursorLimitClause(recipesTableName),

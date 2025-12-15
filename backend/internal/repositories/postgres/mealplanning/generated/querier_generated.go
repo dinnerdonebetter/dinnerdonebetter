@@ -236,6 +236,7 @@ type Querier interface {
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
+	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error)

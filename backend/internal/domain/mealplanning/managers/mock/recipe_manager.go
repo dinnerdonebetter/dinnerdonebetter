@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )
+
+var _ managers.RecipeManager = (*MockRecipeManager)(nil)
 
 type MockRecipeManager struct {
 	mock.Mock
@@ -33,6 +36,12 @@ func (m *MockRecipeManager) ReadRecipe(ctx context.Context, recipeID string) (*m
 
 func (m *MockRecipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, query, useDatabase, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
+func (m *MockRecipeManager) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, query, filter)
 
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }

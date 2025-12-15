@@ -66,8 +66,10 @@ struct HomeView: View {
                 }
 
                 // Empty State
-                if viewModel.pendingVoteMealPlans.isEmpty && viewModel.upcomingMealPlans.isEmpty
-                  && viewModel.userTasks.isEmpty && viewModel.activeGroceryLists.isEmpty
+                if viewModel.pendingVoteMealPlans.isEmpty
+                  && viewModel.upcomingMealPlans.isEmpty
+                  && viewModel.userTasks.isEmpty
+                  && viewModel.activeGroceryLists.isEmpty
                 {
                   emptyStateView
                 }

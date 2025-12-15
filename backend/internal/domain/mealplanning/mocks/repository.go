@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var _ mealplanning.Repository = (*Repository)(nil)
+
 type Repository struct {
 	mock.Mock
 }
@@ -387,6 +389,12 @@ func (m *Repository) GetRecipe(ctx context.Context, recipeID string) (*mealplann
 
 // SearchForRecipes is a mock function.
 func (m *Repository) SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
+	returnValues := m.Called(ctx, query, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
+}
+
+// SearchForMealEligibleRecipes is a mock function.
+func (m *Repository) SearchForMealEligibleRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, query, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Error(1)
 }
