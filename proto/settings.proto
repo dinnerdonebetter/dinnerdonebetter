@@ -9,170 +9,170 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings";
 
 message DataCollection {
-  map<string, ServiceSettingConfiguration> ServiceSettingConfigurations = 1;
-  repeated ServiceSettingConfiguration UserServiceSettingConfigurations = 2;
+  map<string, ServiceSettingConfiguration> service_setting_configurations = 1;
+  repeated ServiceSettingConfiguration user_service_setting_configurations = 2;
 }
 
 // CreateServiceSetting
 message CreateServiceSettingRequest {
-  ServiceSettingCreationRequestInput Input = 1;
+  ServiceSettingCreationRequestInput input = 1;
 }
 
 message CreateServiceSettingResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ServiceSetting Created = 2;
+  common.ResponseDetails response_details = 1;
+  ServiceSetting created = 2;
 }
 
 // CreateServiceSettingConfiguration
 message CreateServiceSettingConfigurationRequest {
-  ServiceSettingConfigurationCreationRequestInput Input = 1;
+  ServiceSettingConfigurationCreationRequestInput input = 1;
 }
 
 message CreateServiceSettingConfigurationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ServiceSettingConfiguration Created = 2;
+  common.ResponseDetails response_details = 1;
+  ServiceSettingConfiguration created = 2;
 }
 
 // ArchiveServiceSetting
 message ArchiveServiceSettingRequest {
-  string serviceSettingID = 1;
+  string service_setting_id = 1;
 }
 
 message ArchiveServiceSettingResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveServiceSettingConfiguration
 message ArchiveServiceSettingConfigurationRequest {
-  string serviceSettingConfigurationID = 1;
+  string service_setting_configuration_id = 1;
 }
 
 message ArchiveServiceSettingConfigurationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // GetServiceSetting
 message GetServiceSettingRequest {
-  string serviceSettingID = 1;
+  string service_setting_id = 1;
 }
 
 message GetServiceSettingResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ServiceSetting Result = 2;
+  common.ResponseDetails response_details = 1;
+  ServiceSetting result = 2;
 }
 
 // GetServiceSettingConfigurationByName
 message GetServiceSettingConfigurationByNameRequest {
-  filtering.QueryFilter Filter = 1;
-  string serviceSettingConfigurationName = 2;
+  filtering.QueryFilter filter = 1;
+  string service_setting_configuration_name = 2;
 }
 
 message GetServiceSettingConfigurationByNameResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  ServiceSettingConfiguration Result = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  ServiceSettingConfiguration result = 3;
 }
 
 // GetServiceSettingConfigurationsForAccount
 message GetServiceSettingConfigurationsForAccountRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetServiceSettingConfigurationsForAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ServiceSettingConfiguration Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ServiceSettingConfiguration results = 3;
 }
 
 // GetServiceSettingConfigurationsForUser
 message GetServiceSettingConfigurationsForUserRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetServiceSettingConfigurationsForUserResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ServiceSettingConfiguration Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ServiceSettingConfiguration results = 3;
 }
 
 // GetServiceSettings
 message GetServiceSettingsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetServiceSettingsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ServiceSetting Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ServiceSetting results = 3;
 }
 
 // SearchForServiceSettings
 message SearchForServiceSettingsRequest {
-  filtering.QueryFilter Filter = 1;
-  string Query = 2;
+  filtering.QueryFilter filter = 1;
+  string query = 2;
 }
 
 message SearchForServiceSettingsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated ServiceSetting Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ServiceSetting results = 3;
 }
 
 // UpdateServiceSettingConfiguration
 message UpdateServiceSettingConfigurationRequest {
-  string serviceSettingConfigurationID = 1;
+  string service_setting_configuration_id = 1;
   ServiceSettingConfigurationUpdateRequestInput input = 2;
 }
 
 message UpdateServiceSettingConfigurationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  ServiceSettingConfiguration Updated = 2;
+  common.ResponseDetails response_details = 1;
+  ServiceSettingConfiguration updated = 2;
 }
 
 message ServiceSetting {
-  google.protobuf.Timestamp CreatedAt = 1;
-  optional string DefaultValue = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  string ID = 5;
-  string Name = 6;
-  string Type = 7;
-  string Description = 8;
-  repeated string Enumeration = 9;
-  bool AdminsOnly = 10;
+  google.protobuf.Timestamp created_at = 1;
+  optional string default_value = 2;
+  google.protobuf.Timestamp last_updated_at = 3;
+  google.protobuf.Timestamp archived_at = 4;
+  string id = 5;
+  string name = 6;
+  string type = 7;
+  string description = 8;
+  repeated string enumeration = 9;
+  bool admins_only = 10;
 }
 
 message ServiceSettingConfiguration {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
-  string ID = 4;
-  string Value = 5;
-  string Notes = 6;
-  string BelongsToUser = 7;
-  string BelongsToAccount = 8;
-  ServiceSetting ServiceSetting = 9;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp last_updated_at = 2;
+  google.protobuf.Timestamp archived_at = 3;
+  string id = 4;
+  string value = 5;
+  string notes = 6;
+  string belongs_to_user = 7;
+  string belongs_to_account = 8;
+  ServiceSetting service_setting = 9;
 }
 
 message ServiceSettingConfigurationCreationRequestInput {
-  string Value = 1;
-  string Notes = 2;
-  string ServiceSettingID = 3;
+  string value = 1;
+  string notes = 2;
+  string service_setting_id = 3;
 }
 
 message ServiceSettingConfigurationUpdateRequestInput {
-  optional string Value = 1;
-  optional string Notes = 2;
-  optional string ServiceSettingID = 3;
+  optional string value = 1;
+  optional string notes = 2;
+  optional string service_setting_id = 3;
 }
 
 message ServiceSettingCreationRequestInput {
-  optional string DefaultValue = 1;
-  string Name = 2;
-  string Type = 3;
-  string Description = 4;
-  repeated string Enumeration = 5;
-  bool AdminsOnly = 6;
+  optional string default_value = 1;
+  string name = 2;
+  string type = 3;
+  string description = 4;
+  repeated string enumeration = 5;
+  bool admins_only = 6;
 }
 
 service SettingsService {

@@ -44,9 +44,9 @@ func (s *serviceImpl) GetServiceSetting(ctx context.Context, request *settingssv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingID)
+	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
 
-	serviceSetting, err := s.serviceSettingsRepository.GetServiceSetting(ctx, request.ServiceSettingID)
+	serviceSetting, err := s.serviceSettingsRepository.GetServiceSetting(ctx, request.ServiceSettingId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting")
 	}
@@ -119,9 +119,9 @@ func (s *serviceImpl) ArchiveServiceSetting(ctx context.Context, request *settin
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingID)
+	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
 
-	if err := s.serviceSettingsRepository.ArchiveServiceSetting(ctx, request.ServiceSettingID); err != nil {
+	if err := s.serviceSettingsRepository.ArchiveServiceSetting(ctx, request.ServiceSettingId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting")
 	}
 
