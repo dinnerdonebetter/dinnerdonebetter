@@ -83,19 +83,13 @@ func getFieldsForStruct(structType *ast.StructType) map[string]string {
 	return structFields
 }
 
-// getPackageName extracts the last component of a package path
-func getPackageName(pkgPath string) string {
-	parts := strings.Split(pkgPath, "/")
-	return parts[len(parts)-1]
-}
-
-// getSourceImportPath converts a relative package path to a full import path
-// Assumes the module is github.com/dinnerdonebetter/backend
+// getSourceImportPath converts a relative package path to a full import path.
+// Assumes the module is github.com/dinnerdonebetter/backend.
 func getSourceImportPath(relativePath string) string {
 	return "github.com/dinnerdonebetter/backend/" + relativePath
 }
 
-// buildImportMap builds a map of import aliases to their package paths for a file
+// buildImportMap builds a map of import aliases to their package paths for a file.
 func buildImportMap(f *ast.File) map[string]string {
 	importMap := make(map[string]string)
 	for _, imp := range f.Imports {
@@ -113,7 +107,7 @@ func buildImportMap(f *ast.File) map[string]string {
 	return importMap
 }
 
-func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
+func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 	paramTypes := fetchTypesForPackage(config.SourcePkg, config.TypeFilter)
 	sourceImportPath := getSourceImportPath(config.SourcePkg)
 
@@ -126,6 +120,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 	errors := &multierror.Error{}
 	structCount := 0
 
+	var count int
 	for _, p := range astPkg {
 		for fileName, f := range p.Files {
 			importMap := buildImportMap(f)
@@ -133,7 +128,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 				switch config.PatternType {
 				case PatternTypeFunctionCallArgs:
 					if et, ok := n.(*ast.CallExpr); ok {
-						count, err := checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
+						count, err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
 						structCount += count
 						if err != nil {
 							errors = multierror.Append(errors, err)
@@ -141,7 +136,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 					}
 				case PatternTypeStructLiterals:
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						count, err := checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
+						count, err = checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
 						structCount += count
 						if err != nil {
 							errors = multierror.Append(errors, err)
@@ -150,14 +145,14 @@ func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 				default:
 					// Check both patterns for backward compatibility
 					if et, ok := n.(*ast.CallExpr); ok {
-						count, err := checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
+						count, err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
 						structCount += count
 						if err != nil {
 							errors = multierror.Append(errors, err)
 						}
 					}
 					if cl, ok := n.(*ast.CompositeLit); ok {
-						count, err := checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
+						count, err = checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
 						structCount += count
 						if err != nil {
 							errors = multierror.Append(errors, err)
@@ -169,7 +164,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (error, int) {
 		}
 	}
 
-	return errors.ErrorOrNil(), structCount
+	return structCount, errors.ErrorOrNil()
 }
 
 func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
@@ -401,7 +396,7 @@ func main() {
 	totalCount := 0
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			err, count := comparePackages(config, targetPkg)
+			count, err := comparePackages(config, targetPkg)
 			totalCount += count
 			if err != nil {
 				errors = multierror.Append(errors, err)
