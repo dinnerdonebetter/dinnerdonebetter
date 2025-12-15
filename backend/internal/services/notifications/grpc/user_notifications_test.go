@@ -79,7 +79,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil)
 
 		request := &notificationssvc.GetUserNotificationRequest{
-			UserNotificationID: notificationID,
+			UserNotificationId: notificationID,
 		}
 
 		response, err := service.GetUserNotification(ctx, request)
@@ -88,7 +88,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeNotification.ID, response.Result.ID)
+		assert.Equal(t, fakeNotification.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
@@ -100,7 +100,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &notificationssvc.GetUserNotificationRequest{
-			UserNotificationID: "test-notification-id",
+			UserNotificationId: "test-notification-id",
 		}
 
 		response, err := service.GetUserNotification(ctx, request)
@@ -122,7 +122,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
 
 		request := &notificationssvc.GetUserNotificationRequest{
-			UserNotificationID: notificationID,
+			UserNotificationId: notificationID,
 		}
 
 		response, err := service.GetUserNotification(ctx, request)
@@ -243,7 +243,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(&updatedNotification, nil).Once()
 
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: notificationID,
+			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
 				Status: &newStatus,
 			},
@@ -268,7 +268,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 
 		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: "test-notification-id",
+			UserNotificationId: "test-notification-id",
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
 				Status: &statusValue,
 			},
@@ -294,7 +294,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 
 		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: notificationID,
+			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
 				Status: &statusValue,
 			},
@@ -324,7 +324,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 
 		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: notificationID,
+			UserNotificationId: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
 				Status: &statusValue,
 			},

@@ -39,7 +39,7 @@ func TestUserNotifications_Reading(T *testing.T) {
 		user, testClient := createUserAndClientForTest(t)
 		created := createUserNotificationForTest(t, user.ID)
 
-		retrieved, err := testClient.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationID: created.ID})
+		retrieved, err := testClient.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCUserNotificationToUserNotification(retrieved.Result)
@@ -56,7 +56,7 @@ func TestUserNotifications_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationID: created.ID})
+		_, err := c.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -64,7 +64,7 @@ func TestUserNotifications_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationID: nonexistentID})
+		_, err := adminClient.GetUserNotification(ctx, &notificationssvc.GetUserNotificationRequest{UserNotificationId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -83,7 +83,7 @@ func TestUserNotifications_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := testClient.UpdateUserNotification(ctx, &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: created.ID,
+			UserNotificationId: created.ID,
 			Input:              grpcconverters.ConvertUserNotificationUpdateRequestInputToGRPCUserNotificationUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -108,7 +108,7 @@ func TestUserNotifications_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateUserNotification(ctx, &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: created.ID,
+			UserNotificationId: created.ID,
 			Input:              grpcconverters.ConvertUserNotificationUpdateRequestInputToGRPCUserNotificationUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)

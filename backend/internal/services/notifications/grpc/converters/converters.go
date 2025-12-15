@@ -10,7 +10,7 @@ func ConvertUserNotificationToGRPCUserNotification(notification *notifications.U
 	return &notificationssvc.UserNotification{
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(notification.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(notification.LastUpdatedAt),
-		ID:            notification.ID,
+		Id:            notification.ID,
 		Content:       notification.Content,
 		Status:        notification.Status,
 		BelongsToUser: notification.BelongsToUser,
@@ -21,7 +21,7 @@ func ConvertGRPCUserNotificationToUserNotification(notification *notificationssv
 	return &notifications.UserNotification{
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(notification.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(notification.LastUpdatedAt),
-		ID:            notification.ID,
+		ID:            notification.Id,
 		Content:       notification.Content,
 		Status:        notification.Status,
 		BelongsToUser: notification.BelongsToUser,
