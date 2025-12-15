@@ -59,7 +59,7 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 		Input: &authsvc.UserLoginInput{
 			Username:  loginInput.Username,
 			Password:  loginInput.Password,
-			TOTPToken: loginInput.TOTPToken,
+			TotpToken: loginInput.TOTPToken,
 		},
 	})
 	if err != nil {

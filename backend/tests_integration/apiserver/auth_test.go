@@ -54,7 +54,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  " ",
 			Password:  "1",
-			TOTPToken: "otp scode",
+			TotpToken: "otp scode",
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -77,7 +77,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  premadeAdminUser.Username,
 			Password:  adminUserPassword,
-			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
+			TotpToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -99,7 +99,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  user.Username,
 			Password:  user.HashedPassword,
-			TOTPToken: generateTOTPCodeForUserForTest(t, user),
+			TotpToken: generateTOTPCodeForUserForTest(t, user),
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -118,7 +118,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  premadeAdminUser.Username,
 			Password:  adminUserPassword + "blah",
-			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
+			TotpToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -137,7 +137,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  premadeAdminUser.Username,
 			Password:  adminUserPassword,
-			TOTPToken: "000000",
+			TotpToken: "000000",
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -156,7 +156,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		loginInput := &authsvc.UserLoginInput{
 			Username:  " ",
 			Password:  "1",
-			TOTPToken: "otp scode",
+			TotpToken: "otp scode",
 		}
 
 		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
@@ -192,7 +192,7 @@ func TestAuth_GetAuthStatus(T *testing.T) {
 		res, err := testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Equal(t, user.ID, res.UserID)
+		assert.Equal(t, user.ID, res.UserId)
 	})
 }
 
@@ -208,7 +208,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
 			NewPassword:     user.HashedPassword + "blah",
 			CurrentPassword: user.HashedPassword,
-			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+			TotpToken:       generateTOTPCodeForUserForTest(t, user),
 		})
 		require.NoError(t, err)
 
@@ -218,7 +218,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  user.Username,
 				Password:  user.HashedPassword + "blah",
-				TOTPToken: generateTOTPCodeForUserForTest(t, user),
+				TotpToken: generateTOTPCodeForUserForTest(t, user),
 			},
 		})
 		assert.NoError(t, err)
@@ -235,7 +235,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
 			NewPassword:     "b",
 			CurrentPassword: user.HashedPassword,
-			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+			TotpToken:       generateTOTPCodeForUserForTest(t, user),
 		})
 		assert.Error(t, err)
 	})
@@ -252,14 +252,14 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 
 		res, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword,
-			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+			TotpToken:       generateTOTPCodeForUserForTest(t, user),
 		})
 		require.NoError(t, err)
 		res.Result.TwoFactorSecret = user.TwoFactorSecret
 
 		_, err = testClient.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
-			TOTPToken: generateTOTPCodeForUserForTest(t, user),
-			UserID:    user.ID,
+			TotpToken: generateTOTPCodeForUserForTest(t, user),
+			UserId:    user.ID,
 		})
 		assert.NoError(t, err)
 	})
@@ -272,7 +272,7 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 
 		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword,
-			TOTPToken:       "000000",
+			TotpToken:       "000000",
 		})
 		assert.Error(t, err)
 	})
@@ -285,7 +285,7 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 
 		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword + "blah",
-			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+			TotpToken:       generateTOTPCodeForUserForTest(t, user),
 		})
 		assert.Error(t, err)
 	})
@@ -328,7 +328,7 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 			Input: &authsvc.UserLoginInput{
 				Username:  user.Username,
 				Password:  user.HashedPassword + "blah",
-				TOTPToken: generateTOTPCodeForUserForTest(t, user),
+				TotpToken: generateTOTPCodeForUserForTest(t, user),
 			},
 		})
 		require.NoError(t, err)

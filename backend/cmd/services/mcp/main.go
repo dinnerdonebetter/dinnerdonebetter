@@ -98,7 +98,7 @@ func main() {
 		Input: &authsvc.UserLoginInput{
 			Username:  tempUsername,
 			Password:  tempPassword,
-			TOTPToken: totpToken,
+			TotpToken: totpToken,
 		},
 	})
 	if err != nil {

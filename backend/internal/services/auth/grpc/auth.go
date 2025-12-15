@@ -32,7 +32,7 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		UserID:                   sessionContextData.GetUserID(),
+		UserId:                   sessionContextData.GetUserID(),
 		AccountStatus:            sessionContextData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionContextData.Requester.AccountStatusExplanation,
 		ActiveAccount:            sessionContextData.GetActiveAccountID(),
@@ -61,11 +61,11 @@ func (s *serviceImpl) ExchangeToken(ctx context.Context, request *authsvc.Exchan
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		UserID:       sessionContextData.GetUserID(),
-		AccountID:    sessionContextData.GetActiveAccountID(),
+		UserId:       sessionContextData.GetUserID(),
+		AccountId:    sessionContextData.GetActiveAccountID(),
 		RefreshToken: newToken.RefreshToken,
 		AccessToken:  newToken.AccessToken,
-		ExpiresUTC:   grpcconverters.ConvertTimeToPBTimestamp(newToken.ExpiresUTC),
+		ExpiresUtc:   grpcconverters.ConvertTimeToPBTimestamp(newToken.ExpiresUTC),
 	}
 
 	return x, nil
@@ -356,7 +356,7 @@ func (s *serviceImpl) VerifyTOTPSecret(ctx context.Context, request *authsvc.Ver
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserID)
+	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserId)
 
 	input := converters.ConvertGRPCVerifyTOTPSecretRequestToTOTPSecretVerificationInput(request)
 	if err := s.authManager.TOTPSecretVerification(ctx, input); err != nil {

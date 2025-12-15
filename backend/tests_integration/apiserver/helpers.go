@@ -138,8 +138,8 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 	}
 
 	if _, err := c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
-		TOTPToken: token,
-		UserID:    userID,
+		TotpToken: token,
+		UserId:    userID,
 	}); err != nil {
 		return fmt.Errorf("verifying totp code: %w", err)
 	}
@@ -223,7 +223,7 @@ func fetchLoginTokenForUser(ctx context.Context, user *identity.User) (string, e
 	loginInput := &authsvc.UserLoginInput{
 		Username:  user.Username,
 		Password:  user.HashedPassword,
-		TOTPToken: code,
+		TotpToken: code,
 	}
 
 	// wretched hack that unfortunately works

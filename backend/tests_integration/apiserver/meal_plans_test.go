@@ -149,7 +149,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
 				Username:  u.Username,
 				Password:  u.HashedPassword,
-				TOTPToken: generateTOTPCodeForUserForTest(t, u),
+				TotpToken: generateTOTPCodeForUserForTest(t, u),
 			}})
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
@@ -365,7 +365,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
 				Username:  u.Username,
 				Password:  u.HashedPassword,
-				TOTPToken: generateTOTPCodeForUserForTest(t, u),
+				TotpToken: generateTOTPCodeForUserForTest(t, u),
 			}})
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
