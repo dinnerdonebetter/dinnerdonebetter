@@ -26,7 +26,7 @@ type RowLinkGenerator[T any] func(item T) string
 type PaginationURLGenerator func(cursor string) string
 
 // CreateStatusFilter creates a status filter toggle that uses the search endpoint.
-func CreateStatusFilter(searchEndpoint string, currentStatus string, tableID string) g.Node {
+func CreateStatusFilter(searchEndpoint, currentStatus, tableID string) g.Node {
 	statusOptions := []struct {
 		Value string
 		Label string
@@ -36,7 +36,8 @@ func CreateStatusFilter(searchEndpoint string, currentStatus string, tableID str
 	}
 
 	var optionNodes []g.Node
-	for _, opt := range statusOptions {
+	for i := range statusOptions {
+		opt := &statusOptions[i]
 		optionNodes = append(optionNodes,
 			ghtml.Option(
 				g.If(opt.Value == currentStatus, ghtml.Selected()),

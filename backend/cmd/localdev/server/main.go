@@ -63,13 +63,13 @@ func main() {
 		}),
 		//// Create valid enumerations and bridge types
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			enums, err := createTestEnumerations(ctx, repo, logger)
-			if err != nil {
-				return err
+			enums, err2 := createTestEnumerations(ctx, repo, logger)
+			if err2 != nil {
+				return err2
 			}
-			recipeIDs, err := createTestRecipes(ctx, repo, logger, premadeAdminUser.ID, enums)
-			if err != nil {
-				return err
+			recipeIDs, err2 := createTestRecipes(ctx, repo, logger, premadeAdminUser.ID, enums)
+			if err2 != nil {
+				return err2
 			}
 			return createTestMeals(ctx, repo, logger, premadeAdminUser.ID, recipeIDs)
 		}),
@@ -327,7 +327,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create 75 ValidVessels
 	for i := 1; i <= count; i++ {
-		validVessel, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		validVessel, err2 := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 			ID:                             identifiers.New(),
 			Name:                           fmt.Sprintf("cutting board %d", i),
 			Description:                    "A flat surface for cutting ingredients",
@@ -342,8 +342,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			Shape:                          mealplanning.VesselShapeRectangle,
 			UsableForStorage:               true,
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err2)
 		}
 		if i == 1 {
 			firstValidVessel = validVessel
@@ -354,7 +354,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create 75 ValidIngredientStates
 	for i := 1; i <= count; i++ {
-		validIngredientState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		validIngredientState, err2 := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
 			ID:            identifiers.New(),
 			Name:          fmt.Sprintf("slice %d", i),
 			Description:   "a sliced ingredient",
@@ -362,8 +362,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			PastTense:     "sliced",
 			Slug:          fmt.Sprintf("slice-%d", i),
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err2)
 		}
 		if i == 1 {
 			firstValidIngredientState = validIngredientState
@@ -551,8 +551,9 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		{"mix", "Combine ingredients together", "mixed", "mix", false, false},
 	}
 
-	for _, prep := range prepInputs {
-		validPrep, err := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
+	for i := range prepInputs {
+		prep := &prepInputs[i]
+		validPrep, err2 := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
 			ID:                          identifiers.New(),
 			Name:                        prep.name,
 			Description:                 prep.description,
@@ -566,8 +567,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			ConsumesVessel:              false,
 			OnlyForVessels:              false,
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create preparation %s: %w", prep.name, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create preparation %s: %w", prep.name, err2)
 		}
 		enums.Preparations[prep.name] = validPrep
 		logger.Debug("Created ValidPreparation: " + validPrep.Name)
@@ -643,6 +644,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 	recipeIDs := make(map[string]string)
 
 	// Helper function to create a recipe
+	//nolint:unparam // maxPortions is always nil in test data, but kept for API consistency
 	createRecipe := func(name, description, slug, componentType, portionName, pluralPortionName string, minPortions float32, maxPortions *float32, steps []*mealplanning.RecipeStepDatabaseCreationInput) (string, error) {
 		recipeID := identifiers.New()
 
@@ -675,11 +677,12 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 		// Attempt to read the recipe back and convert to gRPC format to verify it works
 		logger.Info(fmt.Sprintf("CONVERTING: Attempting to convert recipe '%s' (ID: %s) to gRPC format...", name, recipe.ID))
 		readRecipe, readErr := repo.GetRecipe(ctx, recipe.ID)
-		if readErr != nil {
+		switch {
+		case readErr != nil:
 			logger.Debug(fmt.Sprintf("ERROR: Failed to read back recipe %s (ID: %s): %v", name, recipe.ID, readErr))
-		} else if readRecipe == nil {
+		case readRecipe == nil:
 			logger.Debug(fmt.Sprintf("ERROR: Recipe %s (ID: %s) was created but GetRecipe returned nil", name, recipe.ID))
-		} else {
+		default:
 			grpcRecipe := mealplanningconverters.ConvertRecipeToGRPCRecipe(readRecipe)
 			if grpcRecipe == nil {
 				logger.Debug(fmt.Sprintf("ERROR: Recipe '%s' (ID: %s) conversion returned nil", name, recipe.ID))
@@ -976,6 +979,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 
 func createTestMeals(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, userID string, recipeIDs map[string]string) error {
 	// Helper function to create a meal
+	//nolint:unparam // minPortions is always 1 in test data, but kept for API consistency
 	createMeal := func(name, description string, minPortions float32, maxPortions *float32, components []*mealplanning.MealComponentDatabaseCreationInput) error {
 		mealID := identifiers.New()
 

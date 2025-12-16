@@ -856,7 +856,7 @@ func (s *AdminFrontendServer) renderStepCompletionConditions(conditions []*mealp
 	return nodes
 }
 
-// findStepWithProduct finds the step that contains a product with the given ID
+// findStepWithProduct finds the step that contains a product with the given ID.
 func (s *AdminFrontendServer) findStepWithProduct(productID string, allSteps []*mealplanningsvc.RecipeStep) *mealplanningsvc.RecipeStep {
 	for _, step := range allSteps {
 		for _, product := range step.Products {
@@ -868,7 +868,7 @@ func (s *AdminFrontendServer) findStepWithProduct(productID string, allSteps []*
 	return nil
 }
 
-// formatProductType formats a RecipeStepProductType enum value into a readable string
+// formatProductType formats a RecipeStepProductType enum value into a readable string.
 func formatProductType(productType mealplanningsvc.RecipeStepProductType) string {
 	switch productType {
 	case mealplanningsvc.RecipeStepProductType_RECIPE_STEP_PRODUCT_TYPE_INGREDIENT:
@@ -882,7 +882,7 @@ func formatProductType(productType mealplanningsvc.RecipeStepProductType) string
 	}
 }
 
-// formatMeasurementUnitName formats a measurement unit name for display, removing test data numbering
+// formatMeasurementUnitName formats a measurement unit name for display, removing test data numbering.
 func formatMeasurementUnitName(unit *mealplanningsvc.ValidMeasurementUnit) string {
 	if unit == nil {
 		return ""
@@ -895,7 +895,7 @@ func formatMeasurementUnitName(unit *mealplanningsvc.ValidMeasurementUnit) strin
 	name := unit.Name
 	// Remove trailing space and number pattern (e.g., "gram 1" -> "gram")
 	// This is a simple approach - if the name ends with " <number>", remove it
-	if len(name) > 0 {
+	if name != "" {
 		// Check if it ends with a pattern like " 1", " 2", etc.
 		lastSpaceIdx := -1
 		for i := len(name) - 1; i >= 0; i-- {
