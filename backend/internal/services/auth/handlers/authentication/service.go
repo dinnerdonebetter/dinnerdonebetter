@@ -17,7 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 
@@ -67,7 +66,6 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
-	metricsProvider metrics.Provider,
 	queuesConfig *msgconfig.QueuesConfig,
 ) (auth.AuthDataService, error) {
 	if queuesConfig == nil {
