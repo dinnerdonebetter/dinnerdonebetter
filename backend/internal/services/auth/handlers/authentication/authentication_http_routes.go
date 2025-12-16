@@ -2,19 +2,14 @@ package authentication
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"net/http"
 	"net/url"
-	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -22,157 +17,6 @@ import (
 	"github.com/markbates/goth/gothic"
 	servertiming "github.com/mitchellh/go-server-timing"
 )
-
-// BuildLoginHandler is our login route.
-func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request) {
-	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := s.tracer.StartSpan(req.Context())
-		defer span.End()
-
-		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req).WithSpan(span)
-		tracing.AttachRequestToSpan(span, req)
-
-		responseDetails := types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		}
-
-		if adminOnly {
-			logger = logger.WithValue("admin_only", adminOnly)
-		}
-
-		loginData := new(auth.UserLoginInput)
-		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
-			observability.AcknowledgeError(err, logger, span, "decoding request body")
-			errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
-			return
-		}
-
-		loginData.TOTPToken = strings.TrimSpace(loginData.TOTPToken)
-		loginData.Password = strings.TrimSpace(loginData.Password)
-		loginData.Username = strings.TrimSpace(loginData.Username)
-
-		if err := loginData.ValidateWithContext(ctx); err != nil {
-			observability.AcknowledgeError(err, logger, span, "validating input")
-			errRes := types.NewAPIErrorResponse("invalid login body", types.ErrValidatingRequestInput, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
-			return
-		}
-
-		logger = logger.WithValue(keys.UsernameKey, loginData.Username)
-
-		userFunc := s.userDataManager.GetUserByUsername
-		if adminOnly {
-			userFunc = s.userDataManager.GetAdminUserByUsername
-		}
-
-		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-		user, err := userFunc(ctx, loginData.Username)
-		if err != nil || user == nil {
-			observability.AcknowledgeError(err, logger, span, "fetching user")
-			if errors.Is(err, sql.ErrNoRows) {
-				errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
-				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
-				return
-			}
-
-			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-			return
-		}
-		readTimer.Stop()
-
-		logger = logger.WithValue(keys.UserIDKey, user.ID)
-		tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
-
-		if user.IsBanned() {
-			errRes := types.NewAPIErrorResponse("user is banned", types.ErrUserIsBanned, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusForbidden)
-			return
-		}
-
-		loginValid, err := s.validateLogin(ctx, user, loginData)
-		logger.WithValue("login_valid", loginValid)
-
-		if err != nil {
-			if errors.Is(err, authentication.ErrInvalidTOTPToken) {
-				observability.AcknowledgeError(err, logger, span, "validating TOTP token")
-				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
-				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-				return
-			}
-
-			if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
-				observability.AcknowledgeError(err, logger, span, "validating password")
-				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
-				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-				return
-			}
-
-			observability.AcknowledgeError(err, logger, span, "validating login")
-			errRes := types.NewAPIErrorResponse(staticError, types.ErrValidatingRequestInput, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-			return
-		} else if !loginValid {
-			logger.Debug("login was invalid")
-			errorResponse := &types.APIResponse[any]{
-				Details: types.ResponseDetails{
-					TraceID: span.SpanContext().TraceID().String(),
-				},
-				Error: &types.APIError{
-					Message: "login was invalid",
-				},
-			}
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errorResponse, http.StatusUnauthorized)
-			return
-		}
-
-		if loginValid && user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
-			logger.Debug("user with two factor verification active attempted to log in without providing TOTP")
-			errRes := types.NewAPIErrorResponse("TOTP required", types.ErrValidatingRequestInput, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusResetContent)
-			return
-		}
-
-		defaultAccountID, err := s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, user.ID)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-			return
-		}
-		responseDetails.CurrentAccountID = defaultAccountID
-
-		responseCode, err := s.postLogin(ctx, user, defaultAccountID)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "handling login status")
-			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, responseCode)
-			return
-		}
-
-		var token string
-		token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "signing token")
-			errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, responseCode)
-			return
-		}
-
-		responseValue := &types.APIResponse[*identity.TokenResponse]{
-			Details: responseDetails,
-			Data: &identity.TokenResponse{
-				AccountID:   defaultAccountID,
-				UserID:      user.ID,
-				AccessToken: token,
-			},
-		}
-
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
-	}
-}
 
 func (s *service) postLogin(ctx context.Context, user *identity.User, defaultAccountID string) (int, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
@@ -463,47 +307,6 @@ func validateState(req *http.Request, sess goth.Session) error {
 		return errors.New("state token mismatch")
 	}
 	return nil
-}
-
-// StatusHandler returns the user info for the user making the request.
-func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
-
-	statusResponse := &identity.UserStatusResponse{
-		ActiveAccount:            sessionCtxData.ActiveAccountID,
-		AccountStatus:            sessionCtxData.Requester.AccountStatus,
-		AccountStatusExplanation: sessionCtxData.Requester.AccountStatusExplanation,
-		UserIsAuthenticated:      true,
-	}
-
-	responseValue := &types.APIResponse[*identity.UserStatusResponse]{
-		Details: responseDetails,
-		Data:    statusResponse,
-	}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 var _ oauth.OAuth2Service = (*service)(nil)

@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -93,19 +91,11 @@ type (
 
 	// AuthDataService describes a structure capable of handling passwords and authorization requests.
 	AuthDataService interface {
-		StatusHandler(http.ResponseWriter, *http.Request)
-		BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request)
-
 		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
 		TokenHandler(res http.ResponseWriter, req *http.Request)
 
 		SSOLoginHandler(http.ResponseWriter, *http.Request)
 		SSOLoginCallbackHandler(http.ResponseWriter, *http.Request)
-
-		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
-		UserAttributionMiddleware(next http.Handler) http.Handler
-		AuthorizationMiddleware(next http.Handler) http.Handler
-		ServiceAdminMiddleware(next http.Handler) http.Handler
 	}
 )
 

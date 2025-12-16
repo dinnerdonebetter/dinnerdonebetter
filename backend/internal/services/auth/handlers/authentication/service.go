@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
@@ -39,21 +38,19 @@ var useProvidersMutex = sync.Mutex{}
 type (
 	// service handles passwords service-wide.
 	service struct {
-		config                    *Config
-		logger                    logging.Logger
-		authenticator             authentication.Authenticator
-		analyticsReporter         analytics.EventReporter
-		featureFlagManager        featureflags.FeatureFlagManager
-		userDataManager           identity.UserDataManager
-		accountMembershipManager  identity.AccountUserMembershipDataManager
-		encoderDecoder            encoding.ServerEncoderDecoder
-		sessionContextDataFetcher func(*http.Request) (*sessions.ContextData, error)
-		authProviderFetcher       func(*http.Request) string
-		tracer                    tracing.Tracer
-		dataChangesPublisher      messagequeue.Publisher
-		oauth2Server              *server.Server
-		tokenIssuer               tokens.Issuer
-		rejectedRequestCounter    metrics.Int64Counter
+		config                   *Config
+		logger                   logging.Logger
+		authenticator            authentication.Authenticator
+		analyticsReporter        analytics.EventReporter
+		featureFlagManager       featureflags.FeatureFlagManager
+		userDataManager          identity.UserDataManager
+		accountMembershipManager identity.AccountUserMembershipDataManager
+		encoderDecoder           encoding.ServerEncoderDecoder
+		authProviderFetcher      func(*http.Request) string
+		tracer                   tracing.Tracer
+		dataChangesPublisher     messagequeue.Publisher
+		oauth2Server             *server.Server
+		tokenIssuer              tokens.Issuer
 	}
 )
 
@@ -87,29 +84,22 @@ func ProvideService(
 		return nil, fmt.Errorf("creating json web token signer: %w", err)
 	}
 
-	rejectedRequestCounter, err := metricsProvider.NewInt64Counter(rejectedRequestCounterName)
-	if err != nil {
-		return nil, fmt.Errorf("creating rejected request counter: %w", err)
-	}
-
 	manager := ProvideOAuth2ClientManager(logger, tracerProvider, &cfg.OAuth2, oauthRepo)
 
 	svc := &service{
-		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:            encoder,
-		config:                    cfg,
-		userDataManager:           identityRepo,
-		accountMembershipManager:  identityRepo,
-		authenticator:             authenticator,
-		sessionContextDataFetcher: sessions.FetchContextDataFromRequest,
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		dataChangesPublisher:      dataChangesPublisher,
-		featureFlagManager:        featureFlagManager,
-		analyticsReporter:         analyticsReporter,
-		tokenIssuer:               signer,
-		rejectedRequestCounter:    rejectedRequestCounter,
-		authProviderFetcher:       routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracerProvider, identityRepo, authenticator, signer, manager),
+		logger:                   logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:           encoder,
+		config:                   cfg,
+		userDataManager:          identityRepo,
+		accountMembershipManager: identityRepo,
+		authenticator:            authenticator,
+		tracer:                   tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataChangesPublisher:     dataChangesPublisher,
+		featureFlagManager:       featureFlagManager,
+		analyticsReporter:        analyticsReporter,
+		tokenIssuer:              signer,
+		authProviderFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
+		oauth2Server:             ProvideOAuth2ServerImplementation(logger, tracerProvider, identityRepo, authenticator, signer, manager),
 	}
 
 	useProvidersMutex.Lock()
