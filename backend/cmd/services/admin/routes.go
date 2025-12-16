@@ -133,6 +133,11 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/settings", ghttp.Adapt(s.SettingsList))
 	r.Get("/api/settings/search", ghttp.Adapt(s.SettingsSearch))
 
+	// Recipes
+	r.Get(fmt.Sprintf("/recipes/{%s}", recipeIDURLParamKey), ghttp.Adapt(s.RecipePage))
+	r.Get("/recipes", ghttp.Adapt(s.RecipesList))
+	r.Get("/api/recipes/search", ghttp.Adapt(s.RecipesSearch))
+
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))
 	r.Delete("/api/valid_preparation_vessels/{associationID}", ghttp.Adapt(s.DeletePreparationVessel))
