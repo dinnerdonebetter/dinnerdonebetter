@@ -87,7 +87,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	generator := random.NewGenerator(logger, tracerProvider)
 	builder := qrcodes.NewBuilder(tracerProvider, logger)
 	queuesConfig := &cfg.Queues
-	authManager, err := managers.ProvideAuthManager(logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder, queuesConfig)
+	authManagerInterface, err := managers.ProvideAuthManager(logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityRepository, authManager, authenticationManager)
+	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityRepository, authManagerInterface, authenticationManager)
 	dataPrivacyServiceServer := grpc3.NewDataPrivacyService(logger, tracerProvider)
 	v := sessions.ProvideContextDataFetcherFromContext()
 	hasher := authentication.ProvideHasher(authenticator)

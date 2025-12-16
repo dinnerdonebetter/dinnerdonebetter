@@ -59,7 +59,7 @@ func ProvideAuthManager(
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
 	queueConfig *msgconfig.QueuesConfig,
-) (*AuthManager, error) {
+) (AuthManagerInterface, error) {
 	if queueConfig == nil {
 		return nil, internalerrors.NilConfigError("queues config for auth manager")
 	}
