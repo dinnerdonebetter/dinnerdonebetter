@@ -2903,6 +2903,7 @@ message MealList {
 message MealListCreationRequestInput {
   string name = 1;
   string description = 2;
+  repeated MealListItemCreationRequestInput items = 3;
 }
 
 message MealListUpdateRequestInput {
@@ -2947,6 +2948,7 @@ message RecipeList {
 message RecipeListCreationRequestInput {
   string name = 1;
   string description = 2;
+  repeated RecipeListItemCreationRequestInput items = 3;
 }
 
 message RecipeListUpdateRequestInput {

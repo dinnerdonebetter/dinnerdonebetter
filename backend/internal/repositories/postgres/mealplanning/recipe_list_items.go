@@ -79,9 +79,9 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 	}
 
 	if len(recipeIDs) > 0 {
-		recipes, err := q.GetRecipesWithIDs(ctx, recipeIDs)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipes for recipe list items")
+		recipes, recipesFetchErr := q.GetRecipesWithIDs(ctx, recipeIDs)
+		if recipesFetchErr != nil {
+			return nil, observability.PrepareAndLogError(recipesFetchErr, logger, span, "fetching recipes for recipe list items")
 		}
 		recipesByID := map[string]*types.Recipe{}
 		for _, r := range recipes {

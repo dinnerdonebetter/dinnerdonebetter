@@ -35,20 +35,20 @@ type (
 	RecipeListCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name        string            `json:"name"`
-		Description string            `json:"description"`
-		Items       []*RecipeListItem `json:"items"`
+		Name        string                                `json:"name"`
+		Description string                                `json:"description"`
+		Items       []*RecipeListItemCreationRequestInput `json:"items"`
 	}
 
 	// RecipeListDatabaseCreationInput represents database input for creating recipe lists.
 	RecipeListDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID            string            `json:"-"`
-		Name          string            `json:"-"`
-		Description   string            `json:"-"`
-		BelongsToUser string            `json:"-"`
-		Items         []*RecipeListItem `json:"-"`
+		ID            string                                 `json:"-"`
+		Name          string                                 `json:"-"`
+		Description   string                                 `json:"-"`
+		BelongsToUser string                                 `json:"-"`
+		Items         []*RecipeListItemDatabaseCreationInput `json:"-"`
 	}
 
 	// RecipeListUpdateRequestInput represents input for updating recipe lists.

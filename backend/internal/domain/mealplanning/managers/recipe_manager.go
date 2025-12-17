@@ -552,12 +552,18 @@ func (m *recipeManager) CreateRecipeList(ctx context.Context, userID string, inp
 		return nil, observability.PrepareError(err, span, "validating recipe list input")
 	}
 
+	recipeListID := identifiers.New()
+	var items []*mealplanning.RecipeListItemDatabaseCreationInput
+	for _, item := range input.Items {
+		items = append(items, converters.ConvertRecipeListItemCreationRequestInputToRecipeListItemDatabaseCreationInput(item, recipeListID))
+	}
+
 	dbInput := &mealplanning.RecipeListDatabaseCreationInput{
-		ID:            identifiers.New(),
+		ID:            recipeListID,
 		Name:          input.Name,
 		Description:   input.Description,
 		BelongsToUser: userID,
-		Items:         input.Items,
+		Items:         items,
 	}
 
 	created, err := m.db.CreateRecipeList(ctx, dbInput)

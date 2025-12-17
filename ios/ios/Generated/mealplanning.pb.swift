@@ -14617,6 +14617,8 @@ public struct Mealplanning_MealListCreationRequestInput: Sendable {
 
   public var description_p: String = String()
 
+  public var items: [Mealplanning_MealListItemCreationRequestInput] = []
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -14837,6 +14839,8 @@ public struct Mealplanning_RecipeListCreationRequestInput: Sendable {
   public var name: String = String()
 
   public var description_p: String = String()
+
+  public var items: [Mealplanning_RecipeListItemCreationRequestInput] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -39095,7 +39099,7 @@ extension Mealplanning_MealList: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension Mealplanning_MealListCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealListCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{1}items\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39105,6 +39109,7 @@ extension Mealplanning_MealListCreationRequestInput: SwiftProtobuf.Message, Swif
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.items) }()
       default: break
       }
     }
@@ -39117,12 +39122,16 @@ extension Mealplanning_MealListCreationRequestInput: SwiftProtobuf.Message, Swif
     if !self.description_p.isEmpty {
       try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 2)
     }
+    if !self.items.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.items, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_MealListCreationRequestInput, rhs: Mealplanning_MealListCreationRequestInput) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.description_p != rhs.description_p {return false}
+    if lhs.items != rhs.items {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -39441,7 +39450,7 @@ extension Mealplanning_RecipeList: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Mealplanning_RecipeListCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeListCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}description\0\u{1}items\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39451,6 +39460,7 @@ extension Mealplanning_RecipeListCreationRequestInput: SwiftProtobuf.Message, Sw
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.items) }()
       default: break
       }
     }
@@ -39463,12 +39473,16 @@ extension Mealplanning_RecipeListCreationRequestInput: SwiftProtobuf.Message, Sw
     if !self.description_p.isEmpty {
       try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 2)
     }
+    if !self.items.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.items, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_RecipeListCreationRequestInput, rhs: Mealplanning_RecipeListCreationRequestInput) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.description_p != rhs.description_p {return false}
+    if lhs.items != rhs.items {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

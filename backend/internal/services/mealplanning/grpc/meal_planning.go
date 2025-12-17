@@ -286,8 +286,7 @@ func (s *serviceImpl) UpdateMealList(ctx context.Context, request *mealplannings
 	}
 
 	input := converters.ConvertGRPCMealListUpdateRequestInputToMealListUpdateRequestInput(request.Input)
-
-	if err := s.mealPlanningManager.UpdateMealList(ctx, request.MealListId, sessionContextData.GetUserID(), input); err != nil {
+	if err = s.mealPlanningManager.UpdateMealList(ctx, request.MealListId, sessionContextData.GetUserID(), input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating meal list")
 	}
 
@@ -313,7 +312,7 @@ func (s *serviceImpl) ArchiveMealList(ctx context.Context, request *mealplanning
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
 	}
 
-	if err := s.mealPlanningManager.ArchiveMealList(ctx, request.MealListId, sessionContextData.GetUserID()); err != nil {
+	if err = s.mealPlanningManager.ArchiveMealList(ctx, request.MealListId, sessionContextData.GetUserID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving meal list")
 	}
 

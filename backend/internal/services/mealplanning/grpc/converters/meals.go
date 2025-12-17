@@ -961,9 +961,15 @@ func ConvertMealListToGRPCMealList(input *mealplanning.MealList) *mealplanningsv
 }
 
 func ConvertGRPCMealListCreationRequestInputToMealListCreationRequestInput(input *mealplanningsvc.MealListCreationRequestInput) *mealplanning.MealListCreationRequestInput {
+	var items []*mealplanning.MealListItemCreationRequestInput
+	for _, item := range input.Items {
+		items = append(items, ConvertGRPCMealListItemCreationRequestInputToMealListItemCreationRequestInput(item))
+	}
+
 	return &mealplanning.MealListCreationRequestInput{
 		Name:        input.Name,
 		Description: input.Description,
+		Items:       items,
 	}
 }
 

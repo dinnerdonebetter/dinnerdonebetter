@@ -79,9 +79,9 @@ func (q *repository) GetMealListItems(ctx context.Context, mealListID string, fi
 	}
 
 	if len(mealIDs) > 0 {
-		meals, err := q.GetMealsWithIDs(ctx, mealIDs)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals for meal list items")
+		meals, mealsFetchErr := q.GetMealsWithIDs(ctx, mealIDs)
+		if mealsFetchErr != nil {
+			return nil, observability.PrepareAndLogError(mealsFetchErr, logger, span, "fetching meals for meal list items")
 		}
 		mealsByID := map[string]*types.Meal{}
 		for _, m := range meals {
