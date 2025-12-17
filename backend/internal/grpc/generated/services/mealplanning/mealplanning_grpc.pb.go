@@ -26,9 +26,13 @@ const (
 	MealPlanningService_ArchiveMealPlanGroceryListItem_FullMethodName                      = "/mealplanning.MealPlanningService/ArchiveMealPlanGroceryListItem"
 	MealPlanningService_ArchiveMealPlanOption_FullMethodName                               = "/mealplanning.MealPlanningService/ArchiveMealPlanOption"
 	MealPlanningService_ArchiveMealPlanOptionVote_FullMethodName                           = "/mealplanning.MealPlanningService/ArchiveMealPlanOptionVote"
+	MealPlanningService_ArchiveMealList_FullMethodName                                     = "/mealplanning.MealPlanningService/ArchiveMealList"
+	MealPlanningService_ArchiveMealListItem_FullMethodName                                 = "/mealplanning.MealPlanningService/ArchiveMealListItem"
 	MealPlanningService_ArchiveRecipe_FullMethodName                                       = "/mealplanning.MealPlanningService/ArchiveRecipe"
 	MealPlanningService_ArchiveRecipePrepTask_FullMethodName                               = "/mealplanning.MealPlanningService/ArchiveRecipePrepTask"
 	MealPlanningService_ArchiveRecipeRating_FullMethodName                                 = "/mealplanning.MealPlanningService/ArchiveRecipeRating"
+	MealPlanningService_ArchiveRecipeList_FullMethodName                                   = "/mealplanning.MealPlanningService/ArchiveRecipeList"
+	MealPlanningService_ArchiveRecipeListItem_FullMethodName                               = "/mealplanning.MealPlanningService/ArchiveRecipeListItem"
 	MealPlanningService_ArchiveRecipeStep_FullMethodName                                   = "/mealplanning.MealPlanningService/ArchiveRecipeStep"
 	MealPlanningService_ArchiveRecipeStepCompletionCondition_FullMethodName                = "/mealplanning.MealPlanningService/ArchiveRecipeStepCompletionCondition"
 	MealPlanningService_ArchiveRecipeStepIngredient_FullMethodName                         = "/mealplanning.MealPlanningService/ArchiveRecipeStepIngredient"
@@ -56,9 +60,13 @@ const (
 	MealPlanningService_CreateMealPlanOption_FullMethodName                                = "/mealplanning.MealPlanningService/CreateMealPlanOption"
 	MealPlanningService_CreateMealPlanOptionVote_FullMethodName                            = "/mealplanning.MealPlanningService/CreateMealPlanOptionVote"
 	MealPlanningService_CreateMealPlanTask_FullMethodName                                  = "/mealplanning.MealPlanningService/CreateMealPlanTask"
+	MealPlanningService_CreateMealList_FullMethodName                                      = "/mealplanning.MealPlanningService/CreateMealList"
+	MealPlanningService_CreateMealListItem_FullMethodName                                  = "/mealplanning.MealPlanningService/CreateMealListItem"
 	MealPlanningService_CreateRecipe_FullMethodName                                        = "/mealplanning.MealPlanningService/CreateRecipe"
 	MealPlanningService_CreateRecipePrepTask_FullMethodName                                = "/mealplanning.MealPlanningService/CreateRecipePrepTask"
 	MealPlanningService_CreateRecipeRating_FullMethodName                                  = "/mealplanning.MealPlanningService/CreateRecipeRating"
+	MealPlanningService_CreateRecipeList_FullMethodName                                    = "/mealplanning.MealPlanningService/CreateRecipeList"
+	MealPlanningService_CreateRecipeListItem_FullMethodName                                = "/mealplanning.MealPlanningService/CreateRecipeListItem"
 	MealPlanningService_CreateRecipeStep_FullMethodName                                    = "/mealplanning.MealPlanningService/CreateRecipeStep"
 	MealPlanningService_CreateRecipeStepCompletionCondition_FullMethodName                 = "/mealplanning.MealPlanningService/CreateRecipeStepCompletionCondition"
 	MealPlanningService_CreateRecipeStepIngredient_FullMethodName                          = "/mealplanning.MealPlanningService/CreateRecipeStepIngredient"
@@ -92,6 +100,7 @@ const (
 	MealPlanningService_GetMealPlanTask_FullMethodName                                     = "/mealplanning.MealPlanningService/GetMealPlanTask"
 	MealPlanningService_GetMealPlanTasks_FullMethodName                                    = "/mealplanning.MealPlanningService/GetMealPlanTasks"
 	MealPlanningService_GetMealPlansForAccount_FullMethodName                              = "/mealplanning.MealPlanningService/GetMealPlansForAccount"
+	MealPlanningService_GetMealLists_FullMethodName                                        = "/mealplanning.MealPlanningService/GetMealLists"
 	MealPlanningService_GetMeals_FullMethodName                                            = "/mealplanning.MealPlanningService/GetMeals"
 	MealPlanningService_GetMermaidDiagramForRecipe_FullMethodName                          = "/mealplanning.MealPlanningService/GetMermaidDiagramForRecipe"
 	MealPlanningService_GetRandomValidIngredient_FullMethodName                            = "/mealplanning.MealPlanningService/GetRandomValidIngredient"
@@ -116,6 +125,7 @@ const (
 	MealPlanningService_GetRecipeStepVessel_FullMethodName                                 = "/mealplanning.MealPlanningService/GetRecipeStepVessel"
 	MealPlanningService_GetRecipeStepVessels_FullMethodName                                = "/mealplanning.MealPlanningService/GetRecipeStepVessels"
 	MealPlanningService_GetRecipeSteps_FullMethodName                                      = "/mealplanning.MealPlanningService/GetRecipeSteps"
+	MealPlanningService_GetRecipeLists_FullMethodName                                      = "/mealplanning.MealPlanningService/GetRecipeLists"
 	MealPlanningService_GetRecipes_FullMethodName                                          = "/mealplanning.MealPlanningService/GetRecipes"
 	MealPlanningService_GetValidIngredient_FullMethodName                                  = "/mealplanning.MealPlanningService/GetValidIngredient"
 	MealPlanningService_GetValidIngredientGroup_FullMethodName                             = "/mealplanning.MealPlanningService/GetValidIngredientGroup"
@@ -174,10 +184,14 @@ const (
 	MealPlanningService_UpdateMealPlanOption_FullMethodName                                = "/mealplanning.MealPlanningService/UpdateMealPlanOption"
 	MealPlanningService_UpdateMealPlanOptionVote_FullMethodName                            = "/mealplanning.MealPlanningService/UpdateMealPlanOptionVote"
 	MealPlanningService_UpdateMealPlanTaskStatus_FullMethodName                            = "/mealplanning.MealPlanningService/UpdateMealPlanTaskStatus"
+	MealPlanningService_UpdateMealList_FullMethodName                                      = "/mealplanning.MealPlanningService/UpdateMealList"
+	MealPlanningService_UpdateMealListItem_FullMethodName                                  = "/mealplanning.MealPlanningService/UpdateMealListItem"
 	MealPlanningService_UpdateRecipe_FullMethodName                                        = "/mealplanning.MealPlanningService/UpdateRecipe"
 	MealPlanningService_UpdateRecipeStatus_FullMethodName                                  = "/mealplanning.MealPlanningService/UpdateRecipeStatus"
 	MealPlanningService_UpdateRecipePrepTask_FullMethodName                                = "/mealplanning.MealPlanningService/UpdateRecipePrepTask"
 	MealPlanningService_UpdateRecipeRating_FullMethodName                                  = "/mealplanning.MealPlanningService/UpdateRecipeRating"
+	MealPlanningService_UpdateRecipeList_FullMethodName                                    = "/mealplanning.MealPlanningService/UpdateRecipeList"
+	MealPlanningService_UpdateRecipeListItem_FullMethodName                                = "/mealplanning.MealPlanningService/UpdateRecipeListItem"
 	MealPlanningService_UpdateRecipeStep_FullMethodName                                    = "/mealplanning.MealPlanningService/UpdateRecipeStep"
 	MealPlanningService_UpdateRecipeStepCompletionCondition_FullMethodName                 = "/mealplanning.MealPlanningService/UpdateRecipeStepCompletionCondition"
 	MealPlanningService_UpdateRecipeStepIngredient_FullMethodName                          = "/mealplanning.MealPlanningService/UpdateRecipeStepIngredient"
@@ -219,9 +233,13 @@ type MealPlanningServiceClient interface {
 	ArchiveMealPlanGroceryListItem(ctx context.Context, in *ArchiveMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*ArchiveMealPlanGroceryListItemResponse, error)
 	ArchiveMealPlanOption(ctx context.Context, in *ArchiveMealPlanOptionRequest, opts ...grpc.CallOption) (*ArchiveMealPlanOptionResponse, error)
 	ArchiveMealPlanOptionVote(ctx context.Context, in *ArchiveMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*ArchiveMealPlanOptionVoteResponse, error)
+	ArchiveMealList(ctx context.Context, in *ArchiveMealListRequest, opts ...grpc.CallOption) (*ArchiveMealListResponse, error)
+	ArchiveMealListItem(ctx context.Context, in *ArchiveMealListItemRequest, opts ...grpc.CallOption) (*ArchiveMealListItemResponse, error)
 	ArchiveRecipe(ctx context.Context, in *ArchiveRecipeRequest, opts ...grpc.CallOption) (*ArchiveRecipeResponse, error)
 	ArchiveRecipePrepTask(ctx context.Context, in *ArchiveRecipePrepTaskRequest, opts ...grpc.CallOption) (*ArchiveRecipePrepTaskResponse, error)
 	ArchiveRecipeRating(ctx context.Context, in *ArchiveRecipeRatingRequest, opts ...grpc.CallOption) (*ArchiveRecipeRatingResponse, error)
+	ArchiveRecipeList(ctx context.Context, in *ArchiveRecipeListRequest, opts ...grpc.CallOption) (*ArchiveRecipeListResponse, error)
+	ArchiveRecipeListItem(ctx context.Context, in *ArchiveRecipeListItemRequest, opts ...grpc.CallOption) (*ArchiveRecipeListItemResponse, error)
 	ArchiveRecipeStep(ctx context.Context, in *ArchiveRecipeStepRequest, opts ...grpc.CallOption) (*ArchiveRecipeStepResponse, error)
 	ArchiveRecipeStepCompletionCondition(ctx context.Context, in *ArchiveRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*ArchiveRecipeStepCompletionConditionResponse, error)
 	ArchiveRecipeStepIngredient(ctx context.Context, in *ArchiveRecipeStepIngredientRequest, opts ...grpc.CallOption) (*ArchiveRecipeStepIngredientResponse, error)
@@ -249,9 +267,13 @@ type MealPlanningServiceClient interface {
 	CreateMealPlanOption(ctx context.Context, in *CreateMealPlanOptionRequest, opts ...grpc.CallOption) (*CreateMealPlanOptionResponse, error)
 	CreateMealPlanOptionVote(ctx context.Context, in *CreateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*CreateMealPlanOptionVoteResponse, error)
 	CreateMealPlanTask(ctx context.Context, in *CreateMealPlanTaskRequest, opts ...grpc.CallOption) (*CreateMealPlanTaskResponse, error)
+	CreateMealList(ctx context.Context, in *CreateMealListRequest, opts ...grpc.CallOption) (*CreateMealListResponse, error)
+	CreateMealListItem(ctx context.Context, in *CreateMealListItemRequest, opts ...grpc.CallOption) (*CreateMealListItemResponse, error)
 	CreateRecipe(ctx context.Context, in *CreateRecipeRequest, opts ...grpc.CallOption) (*CreateRecipeResponse, error)
 	CreateRecipePrepTask(ctx context.Context, in *CreateRecipePrepTaskRequest, opts ...grpc.CallOption) (*CreateRecipePrepTaskResponse, error)
 	CreateRecipeRating(ctx context.Context, in *CreateRecipeRatingRequest, opts ...grpc.CallOption) (*CreateRecipeRatingResponse, error)
+	CreateRecipeList(ctx context.Context, in *CreateRecipeListRequest, opts ...grpc.CallOption) (*CreateRecipeListResponse, error)
+	CreateRecipeListItem(ctx context.Context, in *CreateRecipeListItemRequest, opts ...grpc.CallOption) (*CreateRecipeListItemResponse, error)
 	CreateRecipeStep(ctx context.Context, in *CreateRecipeStepRequest, opts ...grpc.CallOption) (*CreateRecipeStepResponse, error)
 	CreateRecipeStepCompletionCondition(ctx context.Context, in *CreateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*CreateRecipeStepCompletionConditionResponse, error)
 	CreateRecipeStepIngredient(ctx context.Context, in *CreateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*CreateRecipeStepIngredientResponse, error)
@@ -285,6 +307,7 @@ type MealPlanningServiceClient interface {
 	GetMealPlanTask(ctx context.Context, in *GetMealPlanTaskRequest, opts ...grpc.CallOption) (*GetMealPlanTaskResponse, error)
 	GetMealPlanTasks(ctx context.Context, in *GetMealPlanTasksRequest, opts ...grpc.CallOption) (*GetMealPlanTasksResponse, error)
 	GetMealPlansForAccount(ctx context.Context, in *GetMealPlansForAccountRequest, opts ...grpc.CallOption) (*GetMealPlansForAccountResponse, error)
+	GetMealLists(ctx context.Context, in *GetMealListsRequest, opts ...grpc.CallOption) (*GetMealListsResponse, error)
 	GetMeals(ctx context.Context, in *GetMealsRequest, opts ...grpc.CallOption) (*GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(ctx context.Context, in *GetMermaidDiagramForRecipeRequest, opts ...grpc.CallOption) (*GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(ctx context.Context, in *GetRandomValidIngredientRequest, opts ...grpc.CallOption) (*GetRandomValidIngredientResponse, error)
@@ -309,6 +332,7 @@ type MealPlanningServiceClient interface {
 	GetRecipeStepVessel(ctx context.Context, in *GetRecipeStepVesselRequest, opts ...grpc.CallOption) (*GetRecipeStepVesselResponse, error)
 	GetRecipeStepVessels(ctx context.Context, in *GetRecipeStepVesselsRequest, opts ...grpc.CallOption) (*GetRecipeStepVesselsResponse, error)
 	GetRecipeSteps(ctx context.Context, in *GetRecipeStepsRequest, opts ...grpc.CallOption) (*GetRecipeStepsResponse, error)
+	GetRecipeLists(ctx context.Context, in *GetRecipeListsRequest, opts ...grpc.CallOption) (*GetRecipeListsResponse, error)
 	GetRecipes(ctx context.Context, in *GetRecipesRequest, opts ...grpc.CallOption) (*GetRecipesResponse, error)
 	GetValidIngredient(ctx context.Context, in *GetValidIngredientRequest, opts ...grpc.CallOption) (*GetValidIngredientResponse, error)
 	GetValidIngredientGroup(ctx context.Context, in *GetValidIngredientGroupRequest, opts ...grpc.CallOption) (*GetValidIngredientGroupResponse, error)
@@ -367,10 +391,14 @@ type MealPlanningServiceClient interface {
 	UpdateMealPlanOption(ctx context.Context, in *UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*UpdateMealPlanOptionResponse, error)
 	UpdateMealPlanOptionVote(ctx context.Context, in *UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*UpdateMealPlanOptionVoteResponse, error)
 	UpdateMealPlanTaskStatus(ctx context.Context, in *UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*UpdateMealPlanTaskStatusResponse, error)
+	UpdateMealList(ctx context.Context, in *UpdateMealListRequest, opts ...grpc.CallOption) (*UpdateMealListResponse, error)
+	UpdateMealListItem(ctx context.Context, in *UpdateMealListItemRequest, opts ...grpc.CallOption) (*UpdateMealListItemResponse, error)
 	UpdateRecipe(ctx context.Context, in *UpdateRecipeRequest, opts ...grpc.CallOption) (*UpdateRecipeResponse, error)
 	UpdateRecipeStatus(ctx context.Context, in *UpdateRecipeStatusRequest, opts ...grpc.CallOption) (*UpdateRecipeStatusResponse, error)
 	UpdateRecipePrepTask(ctx context.Context, in *UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*UpdateRecipePrepTaskResponse, error)
 	UpdateRecipeRating(ctx context.Context, in *UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*UpdateRecipeRatingResponse, error)
+	UpdateRecipeList(ctx context.Context, in *UpdateRecipeListRequest, opts ...grpc.CallOption) (*UpdateRecipeListResponse, error)
+	UpdateRecipeListItem(ctx context.Context, in *UpdateRecipeListItemRequest, opts ...grpc.CallOption) (*UpdateRecipeListItemResponse, error)
 	UpdateRecipeStep(ctx context.Context, in *UpdateRecipeStepRequest, opts ...grpc.CallOption) (*UpdateRecipeStepResponse, error)
 	UpdateRecipeStepCompletionCondition(ctx context.Context, in *UpdateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*UpdateRecipeStepCompletionConditionResponse, error)
 	UpdateRecipeStepIngredient(ctx context.Context, in *UpdateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*UpdateRecipeStepIngredientResponse, error)
@@ -470,6 +498,26 @@ func (c *mealPlanningServiceClient) ArchiveMealPlanOptionVote(ctx context.Contex
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) ArchiveMealList(ctx context.Context, in *ArchiveMealListRequest, opts ...grpc.CallOption) (*ArchiveMealListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveMealListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveMealList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) ArchiveMealListItem(ctx context.Context, in *ArchiveMealListItemRequest, opts ...grpc.CallOption) (*ArchiveMealListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveMealListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveMealListItem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) ArchiveRecipe(ctx context.Context, in *ArchiveRecipeRequest, opts ...grpc.CallOption) (*ArchiveRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveRecipeResponse)
@@ -494,6 +542,26 @@ func (c *mealPlanningServiceClient) ArchiveRecipeRating(ctx context.Context, in 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveRecipeRating_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) ArchiveRecipeList(ctx context.Context, in *ArchiveRecipeListRequest, opts ...grpc.CallOption) (*ArchiveRecipeListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveRecipeListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveRecipeList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) ArchiveRecipeListItem(ctx context.Context, in *ArchiveRecipeListItemRequest, opts ...grpc.CallOption) (*ArchiveRecipeListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveRecipeListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveRecipeListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -770,6 +838,26 @@ func (c *mealPlanningServiceClient) CreateMealPlanTask(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) CreateMealList(ctx context.Context, in *CreateMealListRequest, opts ...grpc.CallOption) (*CreateMealListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateMealListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_CreateMealList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) CreateMealListItem(ctx context.Context, in *CreateMealListItemRequest, opts ...grpc.CallOption) (*CreateMealListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateMealListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_CreateMealListItem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) CreateRecipe(ctx context.Context, in *CreateRecipeRequest, opts ...grpc.CallOption) (*CreateRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateRecipeResponse)
@@ -794,6 +882,26 @@ func (c *mealPlanningServiceClient) CreateRecipeRating(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_CreateRecipeRating_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) CreateRecipeList(ctx context.Context, in *CreateRecipeListRequest, opts ...grpc.CallOption) (*CreateRecipeListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRecipeListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_CreateRecipeList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) CreateRecipeListItem(ctx context.Context, in *CreateRecipeListItemRequest, opts ...grpc.CallOption) (*CreateRecipeListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRecipeListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_CreateRecipeListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1130,6 +1238,16 @@ func (c *mealPlanningServiceClient) GetMealPlansForAccount(ctx context.Context, 
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) GetMealLists(ctx context.Context, in *GetMealListsRequest, opts ...grpc.CallOption) (*GetMealListsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMealListsResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetMealLists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetMeals(ctx context.Context, in *GetMealsRequest, opts ...grpc.CallOption) (*GetMealsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMealsResponse)
@@ -1364,6 +1482,16 @@ func (c *mealPlanningServiceClient) GetRecipeSteps(ctx context.Context, in *GetR
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetRecipeStepsResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_GetRecipeSteps_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetRecipeLists(ctx context.Context, in *GetRecipeListsRequest, opts ...grpc.CallOption) (*GetRecipeListsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRecipeListsResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetRecipeLists_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1950,6 +2078,26 @@ func (c *mealPlanningServiceClient) UpdateMealPlanTaskStatus(ctx context.Context
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) UpdateMealList(ctx context.Context, in *UpdateMealListRequest, opts ...grpc.CallOption) (*UpdateMealListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateMealListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateMealList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) UpdateMealListItem(ctx context.Context, in *UpdateMealListItemRequest, opts ...grpc.CallOption) (*UpdateMealListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateMealListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateMealListItem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) UpdateRecipe(ctx context.Context, in *UpdateRecipeRequest, opts ...grpc.CallOption) (*UpdateRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateRecipeResponse)
@@ -1984,6 +2132,26 @@ func (c *mealPlanningServiceClient) UpdateRecipeRating(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_UpdateRecipeRating_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) UpdateRecipeList(ctx context.Context, in *UpdateRecipeListRequest, opts ...grpc.CallOption) (*UpdateRecipeListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateRecipeListResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateRecipeList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) UpdateRecipeListItem(ctx context.Context, in *UpdateRecipeListItemRequest, opts ...grpc.CallOption) (*UpdateRecipeListItemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateRecipeListItemResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateRecipeListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2290,9 +2458,13 @@ type MealPlanningServiceServer interface {
 	ArchiveMealPlanGroceryListItem(context.Context, *ArchiveMealPlanGroceryListItemRequest) (*ArchiveMealPlanGroceryListItemResponse, error)
 	ArchiveMealPlanOption(context.Context, *ArchiveMealPlanOptionRequest) (*ArchiveMealPlanOptionResponse, error)
 	ArchiveMealPlanOptionVote(context.Context, *ArchiveMealPlanOptionVoteRequest) (*ArchiveMealPlanOptionVoteResponse, error)
+	ArchiveMealList(context.Context, *ArchiveMealListRequest) (*ArchiveMealListResponse, error)
+	ArchiveMealListItem(context.Context, *ArchiveMealListItemRequest) (*ArchiveMealListItemResponse, error)
 	ArchiveRecipe(context.Context, *ArchiveRecipeRequest) (*ArchiveRecipeResponse, error)
 	ArchiveRecipePrepTask(context.Context, *ArchiveRecipePrepTaskRequest) (*ArchiveRecipePrepTaskResponse, error)
 	ArchiveRecipeRating(context.Context, *ArchiveRecipeRatingRequest) (*ArchiveRecipeRatingResponse, error)
+	ArchiveRecipeList(context.Context, *ArchiveRecipeListRequest) (*ArchiveRecipeListResponse, error)
+	ArchiveRecipeListItem(context.Context, *ArchiveRecipeListItemRequest) (*ArchiveRecipeListItemResponse, error)
 	ArchiveRecipeStep(context.Context, *ArchiveRecipeStepRequest) (*ArchiveRecipeStepResponse, error)
 	ArchiveRecipeStepCompletionCondition(context.Context, *ArchiveRecipeStepCompletionConditionRequest) (*ArchiveRecipeStepCompletionConditionResponse, error)
 	ArchiveRecipeStepIngredient(context.Context, *ArchiveRecipeStepIngredientRequest) (*ArchiveRecipeStepIngredientResponse, error)
@@ -2320,9 +2492,13 @@ type MealPlanningServiceServer interface {
 	CreateMealPlanOption(context.Context, *CreateMealPlanOptionRequest) (*CreateMealPlanOptionResponse, error)
 	CreateMealPlanOptionVote(context.Context, *CreateMealPlanOptionVoteRequest) (*CreateMealPlanOptionVoteResponse, error)
 	CreateMealPlanTask(context.Context, *CreateMealPlanTaskRequest) (*CreateMealPlanTaskResponse, error)
+	CreateMealList(context.Context, *CreateMealListRequest) (*CreateMealListResponse, error)
+	CreateMealListItem(context.Context, *CreateMealListItemRequest) (*CreateMealListItemResponse, error)
 	CreateRecipe(context.Context, *CreateRecipeRequest) (*CreateRecipeResponse, error)
 	CreateRecipePrepTask(context.Context, *CreateRecipePrepTaskRequest) (*CreateRecipePrepTaskResponse, error)
 	CreateRecipeRating(context.Context, *CreateRecipeRatingRequest) (*CreateRecipeRatingResponse, error)
+	CreateRecipeList(context.Context, *CreateRecipeListRequest) (*CreateRecipeListResponse, error)
+	CreateRecipeListItem(context.Context, *CreateRecipeListItemRequest) (*CreateRecipeListItemResponse, error)
 	CreateRecipeStep(context.Context, *CreateRecipeStepRequest) (*CreateRecipeStepResponse, error)
 	CreateRecipeStepCompletionCondition(context.Context, *CreateRecipeStepCompletionConditionRequest) (*CreateRecipeStepCompletionConditionResponse, error)
 	CreateRecipeStepIngredient(context.Context, *CreateRecipeStepIngredientRequest) (*CreateRecipeStepIngredientResponse, error)
@@ -2356,6 +2532,7 @@ type MealPlanningServiceServer interface {
 	GetMealPlanTask(context.Context, *GetMealPlanTaskRequest) (*GetMealPlanTaskResponse, error)
 	GetMealPlanTasks(context.Context, *GetMealPlanTasksRequest) (*GetMealPlanTasksResponse, error)
 	GetMealPlansForAccount(context.Context, *GetMealPlansForAccountRequest) (*GetMealPlansForAccountResponse, error)
+	GetMealLists(context.Context, *GetMealListsRequest) (*GetMealListsResponse, error)
 	GetMeals(context.Context, *GetMealsRequest) (*GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(context.Context, *GetMermaidDiagramForRecipeRequest) (*GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(context.Context, *GetRandomValidIngredientRequest) (*GetRandomValidIngredientResponse, error)
@@ -2380,6 +2557,7 @@ type MealPlanningServiceServer interface {
 	GetRecipeStepVessel(context.Context, *GetRecipeStepVesselRequest) (*GetRecipeStepVesselResponse, error)
 	GetRecipeStepVessels(context.Context, *GetRecipeStepVesselsRequest) (*GetRecipeStepVesselsResponse, error)
 	GetRecipeSteps(context.Context, *GetRecipeStepsRequest) (*GetRecipeStepsResponse, error)
+	GetRecipeLists(context.Context, *GetRecipeListsRequest) (*GetRecipeListsResponse, error)
 	GetRecipes(context.Context, *GetRecipesRequest) (*GetRecipesResponse, error)
 	GetValidIngredient(context.Context, *GetValidIngredientRequest) (*GetValidIngredientResponse, error)
 	GetValidIngredientGroup(context.Context, *GetValidIngredientGroupRequest) (*GetValidIngredientGroupResponse, error)
@@ -2438,10 +2616,14 @@ type MealPlanningServiceServer interface {
 	UpdateMealPlanOption(context.Context, *UpdateMealPlanOptionRequest) (*UpdateMealPlanOptionResponse, error)
 	UpdateMealPlanOptionVote(context.Context, *UpdateMealPlanOptionVoteRequest) (*UpdateMealPlanOptionVoteResponse, error)
 	UpdateMealPlanTaskStatus(context.Context, *UpdateMealPlanTaskStatusRequest) (*UpdateMealPlanTaskStatusResponse, error)
+	UpdateMealList(context.Context, *UpdateMealListRequest) (*UpdateMealListResponse, error)
+	UpdateMealListItem(context.Context, *UpdateMealListItemRequest) (*UpdateMealListItemResponse, error)
 	UpdateRecipe(context.Context, *UpdateRecipeRequest) (*UpdateRecipeResponse, error)
 	UpdateRecipeStatus(context.Context, *UpdateRecipeStatusRequest) (*UpdateRecipeStatusResponse, error)
 	UpdateRecipePrepTask(context.Context, *UpdateRecipePrepTaskRequest) (*UpdateRecipePrepTaskResponse, error)
 	UpdateRecipeRating(context.Context, *UpdateRecipeRatingRequest) (*UpdateRecipeRatingResponse, error)
+	UpdateRecipeList(context.Context, *UpdateRecipeListRequest) (*UpdateRecipeListResponse, error)
+	UpdateRecipeListItem(context.Context, *UpdateRecipeListItemRequest) (*UpdateRecipeListItemResponse, error)
 	UpdateRecipeStep(context.Context, *UpdateRecipeStepRequest) (*UpdateRecipeStepResponse, error)
 	UpdateRecipeStepCompletionCondition(context.Context, *UpdateRecipeStepCompletionConditionRequest) (*UpdateRecipeStepCompletionConditionResponse, error)
 	UpdateRecipeStepIngredient(context.Context, *UpdateRecipeStepIngredientRequest) (*UpdateRecipeStepIngredientResponse, error)
@@ -2499,6 +2681,12 @@ func (UnimplementedMealPlanningServiceServer) ArchiveMealPlanOption(context.Cont
 func (UnimplementedMealPlanningServiceServer) ArchiveMealPlanOptionVote(context.Context, *ArchiveMealPlanOptionVoteRequest) (*ArchiveMealPlanOptionVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlanOptionVote not implemented")
 }
+func (UnimplementedMealPlanningServiceServer) ArchiveMealList(context.Context, *ArchiveMealListRequest) (*ArchiveMealListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) ArchiveMealListItem(context.Context, *ArchiveMealListItemRequest) (*ArchiveMealListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealListItem not implemented")
+}
 func (UnimplementedMealPlanningServiceServer) ArchiveRecipe(context.Context, *ArchiveRecipeRequest) (*ArchiveRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipe not implemented")
 }
@@ -2507,6 +2695,12 @@ func (UnimplementedMealPlanningServiceServer) ArchiveRecipePrepTask(context.Cont
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveRecipeRating(context.Context, *ArchiveRecipeRatingRequest) (*ArchiveRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeRating not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) ArchiveRecipeList(context.Context, *ArchiveRecipeListRequest) (*ArchiveRecipeListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) ArchiveRecipeListItem(context.Context, *ArchiveRecipeListItemRequest) (*ArchiveRecipeListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeListItem not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveRecipeStep(context.Context, *ArchiveRecipeStepRequest) (*ArchiveRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStep not implemented")
@@ -2589,6 +2783,12 @@ func (UnimplementedMealPlanningServiceServer) CreateMealPlanOptionVote(context.C
 func (UnimplementedMealPlanningServiceServer) CreateMealPlanTask(context.Context, *CreateMealPlanTaskRequest) (*CreateMealPlanTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanTask not implemented")
 }
+func (UnimplementedMealPlanningServiceServer) CreateMealList(context.Context, *CreateMealListRequest) (*CreateMealListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMealList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) CreateMealListItem(context.Context, *CreateMealListItemRequest) (*CreateMealListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMealListItem not implemented")
+}
 func (UnimplementedMealPlanningServiceServer) CreateRecipe(context.Context, *CreateRecipeRequest) (*CreateRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipe not implemented")
 }
@@ -2597,6 +2797,12 @@ func (UnimplementedMealPlanningServiceServer) CreateRecipePrepTask(context.Conte
 }
 func (UnimplementedMealPlanningServiceServer) CreateRecipeRating(context.Context, *CreateRecipeRatingRequest) (*CreateRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeRating not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) CreateRecipeList(context.Context, *CreateRecipeListRequest) (*CreateRecipeListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) CreateRecipeListItem(context.Context, *CreateRecipeListItemRequest) (*CreateRecipeListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeListItem not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) CreateRecipeStep(context.Context, *CreateRecipeStepRequest) (*CreateRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStep not implemented")
@@ -2697,6 +2903,9 @@ func (UnimplementedMealPlanningServiceServer) GetMealPlanTasks(context.Context, 
 func (UnimplementedMealPlanningServiceServer) GetMealPlansForAccount(context.Context, *GetMealPlansForAccountRequest) (*GetMealPlansForAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlansForAccount not implemented")
 }
+func (UnimplementedMealPlanningServiceServer) GetMealLists(context.Context, *GetMealListsRequest) (*GetMealListsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMealLists not implemented")
+}
 func (UnimplementedMealPlanningServiceServer) GetMeals(context.Context, *GetMealsRequest) (*GetMealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeals not implemented")
 }
@@ -2768,6 +2977,9 @@ func (UnimplementedMealPlanningServiceServer) GetRecipeStepVessels(context.Conte
 }
 func (UnimplementedMealPlanningServiceServer) GetRecipeSteps(context.Context, *GetRecipeStepsRequest) (*GetRecipeStepsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeSteps not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetRecipeLists(context.Context, *GetRecipeListsRequest) (*GetRecipeListsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeLists not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetRecipes(context.Context, *GetRecipesRequest) (*GetRecipesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipes not implemented")
@@ -2943,6 +3155,12 @@ func (UnimplementedMealPlanningServiceServer) UpdateMealPlanOptionVote(context.C
 func (UnimplementedMealPlanningServiceServer) UpdateMealPlanTaskStatus(context.Context, *UpdateMealPlanTaskStatusRequest) (*UpdateMealPlanTaskStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanTaskStatus not implemented")
 }
+func (UnimplementedMealPlanningServiceServer) UpdateMealList(context.Context, *UpdateMealListRequest) (*UpdateMealListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UpdateMealListItem(context.Context, *UpdateMealListItemRequest) (*UpdateMealListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealListItem not implemented")
+}
 func (UnimplementedMealPlanningServiceServer) UpdateRecipe(context.Context, *UpdateRecipeRequest) (*UpdateRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipe not implemented")
 }
@@ -2954,6 +3172,12 @@ func (UnimplementedMealPlanningServiceServer) UpdateRecipePrepTask(context.Conte
 }
 func (UnimplementedMealPlanningServiceServer) UpdateRecipeRating(context.Context, *UpdateRecipeRatingRequest) (*UpdateRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeRating not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UpdateRecipeList(context.Context, *UpdateRecipeListRequest) (*UpdateRecipeListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeList not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UpdateRecipeListItem(context.Context, *UpdateRecipeListItemRequest) (*UpdateRecipeListItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeListItem not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) UpdateRecipeStep(context.Context, *UpdateRecipeStepRequest) (*UpdateRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStep not implemented")
@@ -3171,6 +3395,42 @@ func _MealPlanningService_ArchiveMealPlanOptionVote_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_ArchiveMealList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveMealListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).ArchiveMealList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_ArchiveMealList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).ArchiveMealList(ctx, req.(*ArchiveMealListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_ArchiveMealListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveMealListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).ArchiveMealListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_ArchiveMealListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).ArchiveMealListItem(ctx, req.(*ArchiveMealListItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_ArchiveRecipe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ArchiveRecipeRequest)
 	if err := dec(in); err != nil {
@@ -3221,6 +3481,42 @@ func _MealPlanningService_ArchiveRecipeRating_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).ArchiveRecipeRating(ctx, req.(*ArchiveRecipeRatingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_ArchiveRecipeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveRecipeListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).ArchiveRecipeList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_ArchiveRecipeList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).ArchiveRecipeList(ctx, req.(*ArchiveRecipeListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_ArchiveRecipeListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveRecipeListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).ArchiveRecipeListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_ArchiveRecipeListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).ArchiveRecipeListItem(ctx, req.(*ArchiveRecipeListItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3711,6 +4007,42 @@ func _MealPlanningService_CreateMealPlanTask_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_CreateMealList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMealListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).CreateMealList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_CreateMealList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).CreateMealList(ctx, req.(*CreateMealListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_CreateMealListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMealListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).CreateMealListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_CreateMealListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).CreateMealListItem(ctx, req.(*CreateMealListItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_CreateRecipe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRecipeRequest)
 	if err := dec(in); err != nil {
@@ -3761,6 +4093,42 @@ func _MealPlanningService_CreateRecipeRating_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).CreateRecipeRating(ctx, req.(*CreateRecipeRatingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_CreateRecipeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRecipeListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).CreateRecipeList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_CreateRecipeList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).CreateRecipeList(ctx, req.(*CreateRecipeListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_CreateRecipeListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRecipeListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).CreateRecipeListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_CreateRecipeListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).CreateRecipeListItem(ctx, req.(*CreateRecipeListItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4359,6 +4727,24 @@ func _MealPlanningService_GetMealPlansForAccount_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_GetMealLists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMealListsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetMealLists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetMealLists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetMealLists(ctx, req.(*GetMealListsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetMeals_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMealsRequest)
 	if err := dec(in); err != nil {
@@ -4787,6 +5173,24 @@ func _MealPlanningService_GetRecipeSteps_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).GetRecipeSteps(ctx, req.(*GetRecipeStepsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetRecipeLists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRecipeListsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetRecipeLists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetRecipeLists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetRecipeLists(ctx, req.(*GetRecipeListsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5835,6 +6239,42 @@ func _MealPlanningService_UpdateMealPlanTaskStatus_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_UpdateMealList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMealListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateMealList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateMealList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateMealList(ctx, req.(*UpdateMealListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_UpdateMealListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMealListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateMealListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateMealListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateMealListItem(ctx, req.(*UpdateMealListItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_UpdateRecipe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRecipeRequest)
 	if err := dec(in); err != nil {
@@ -5903,6 +6343,42 @@ func _MealPlanningService_UpdateRecipeRating_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).UpdateRecipeRating(ctx, req.(*UpdateRecipeRatingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_UpdateRecipeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRecipeListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateRecipeList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateRecipeList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateRecipeList(ctx, req.(*UpdateRecipeListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_UpdateRecipeListItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRecipeListItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateRecipeListItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateRecipeListItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateRecipeListItem(ctx, req.(*UpdateRecipeListItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6461,6 +6937,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_ArchiveMealPlanOptionVote_Handler,
 		},
 		{
+			MethodName: "ArchiveMealList",
+			Handler:    _MealPlanningService_ArchiveMealList_Handler,
+		},
+		{
+			MethodName: "ArchiveMealListItem",
+			Handler:    _MealPlanningService_ArchiveMealListItem_Handler,
+		},
+		{
 			MethodName: "ArchiveRecipe",
 			Handler:    _MealPlanningService_ArchiveRecipe_Handler,
 		},
@@ -6471,6 +6955,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArchiveRecipeRating",
 			Handler:    _MealPlanningService_ArchiveRecipeRating_Handler,
+		},
+		{
+			MethodName: "ArchiveRecipeList",
+			Handler:    _MealPlanningService_ArchiveRecipeList_Handler,
+		},
+		{
+			MethodName: "ArchiveRecipeListItem",
+			Handler:    _MealPlanningService_ArchiveRecipeListItem_Handler,
 		},
 		{
 			MethodName: "ArchiveRecipeStep",
@@ -6581,6 +7073,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_CreateMealPlanTask_Handler,
 		},
 		{
+			MethodName: "CreateMealList",
+			Handler:    _MealPlanningService_CreateMealList_Handler,
+		},
+		{
+			MethodName: "CreateMealListItem",
+			Handler:    _MealPlanningService_CreateMealListItem_Handler,
+		},
+		{
 			MethodName: "CreateRecipe",
 			Handler:    _MealPlanningService_CreateRecipe_Handler,
 		},
@@ -6591,6 +7091,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateRecipeRating",
 			Handler:    _MealPlanningService_CreateRecipeRating_Handler,
+		},
+		{
+			MethodName: "CreateRecipeList",
+			Handler:    _MealPlanningService_CreateRecipeList_Handler,
+		},
+		{
+			MethodName: "CreateRecipeListItem",
+			Handler:    _MealPlanningService_CreateRecipeListItem_Handler,
 		},
 		{
 			MethodName: "CreateRecipeStep",
@@ -6725,6 +7233,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_GetMealPlansForAccount_Handler,
 		},
 		{
+			MethodName: "GetMealLists",
+			Handler:    _MealPlanningService_GetMealLists_Handler,
+		},
+		{
 			MethodName: "GetMeals",
 			Handler:    _MealPlanningService_GetMeals_Handler,
 		},
@@ -6819,6 +7331,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRecipeSteps",
 			Handler:    _MealPlanningService_GetRecipeSteps_Handler,
+		},
+		{
+			MethodName: "GetRecipeLists",
+			Handler:    _MealPlanningService_GetRecipeLists_Handler,
 		},
 		{
 			MethodName: "GetRecipes",
@@ -7053,6 +7569,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_UpdateMealPlanTaskStatus_Handler,
 		},
 		{
+			MethodName: "UpdateMealList",
+			Handler:    _MealPlanningService_UpdateMealList_Handler,
+		},
+		{
+			MethodName: "UpdateMealListItem",
+			Handler:    _MealPlanningService_UpdateMealListItem_Handler,
+		},
+		{
 			MethodName: "UpdateRecipe",
 			Handler:    _MealPlanningService_UpdateRecipe_Handler,
 		},
@@ -7067,6 +7591,14 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateRecipeRating",
 			Handler:    _MealPlanningService_UpdateRecipeRating_Handler,
+		},
+		{
+			MethodName: "UpdateRecipeList",
+			Handler:    _MealPlanningService_UpdateRecipeList_Handler,
+		},
+		{
+			MethodName: "UpdateRecipeListItem",
+			Handler:    _MealPlanningService_UpdateRecipeListItem_Handler,
 		},
 		{
 			MethodName: "UpdateRecipeStep",

@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const archiveRecipe = `-- name: ArchiveRecipe :execrows
@@ -898,6 +900,214 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecipesWithIDs = `-- name: GetRecipesWithIDs :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.status,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	recipe_steps.id as recipe_step_id,
+	recipe_steps.index as recipe_step_index,
+	valid_preparations.id as recipe_step_preparation_id,
+	valid_preparations.name as recipe_step_preparation_name,
+	valid_preparations.description as recipe_step_preparation_description,
+	valid_preparations.icon_path as recipe_step_preparation_icon_path,
+	valid_preparations.yields_nothing as recipe_step_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as recipe_step_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as recipe_step_preparation_past_tense,
+	valid_preparations.slug as recipe_step_preparation_slug,
+	valid_preparations.minimum_ingredient_count as recipe_step_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as recipe_step_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as recipe_step_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as recipe_step_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as recipe_step_preparation_temperature_required,
+	valid_preparations.time_estimate_required as recipe_step_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as recipe_step_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
+	valid_preparations.last_indexed_at as recipe_step_preparation_last_indexed_at,
+	valid_preparations.created_at as recipe_step_preparation_created_at,
+	valid_preparations.last_updated_at as recipe_step_preparation_last_updated_at,
+	valid_preparations.archived_at as recipe_step_preparation_archived_at,
+	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
+	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
+	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
+	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
+	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
+	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
+	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
+	recipe_steps.created_at as recipe_step_created_at,
+	recipe_steps.last_updated_at as recipe_step_last_updated_at,
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
+FROM recipes
+	LEFT JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	LEFT JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+WHERE recipes.archived_at IS NULL
+	AND recipes.id = ANY($1::text[])
+ORDER BY recipes.id ASC
+`
+
+type GetRecipesWithIDsRow struct {
+	CreatedAt                                        time.Time
+	RecipeStepPreparationLastUpdatedAt               sql.NullTime
+	RecipeStepPreparationCreatedAt                   sql.NullTime
+	RecipeStepArchivedAt                             sql.NullTime
+	RecipeStepLastUpdatedAt                          sql.NullTime
+	RecipeStepCreatedAt                              sql.NullTime
+	RecipeStepPreparationArchivedAt                  sql.NullTime
+	RecipeStepPreparationLastIndexedAt               sql.NullTime
+	ArchivedAt                                       sql.NullTime
+	LastUpdatedAt                                    sql.NullTime
+	LastValidatedAt                                  sql.NullTime
+	LastIndexedAt                                    sql.NullTime
+	MinEstimatedPortions                             string
+	ID                                               string
+	PluralPortionName                                string
+	Name                                             string
+	PortionName                                      string
+	YieldsComponentType                              ComponentType
+	CreatedByUser                                    string
+	Slug                                             string
+	Source                                           string
+	Status                                           RecipeStatus
+	Description                                      string
+	RecipeStepPreparationIconPath                    sql.NullString
+	RecipeStepConditionExpression                    sql.NullString
+	RecipeStepPreparationName                        sql.NullString
+	RecipeStepPreparationID                          sql.NullString
+	RecipeStepID                                     sql.NullString
+	RecipeStepMinimumTemperatureInCelsius            sql.NullString
+	RecipeStepExplicitInstructions                   sql.NullString
+	RecipeStepPreparationDescription                 sql.NullString
+	RecipeStepNotes                                  sql.NullString
+	RecipeStepMaximumTemperatureInCelsius            sql.NullString
+	MaxEstimatedPortions                             sql.NullString
+	RecipeStepPreparationSlug                        sql.NullString
+	InspiredByRecipeID                               sql.NullString
+	RecipeStepBelongsToRecipe                        sql.NullString
+	RecipeStepPreparationPastTense                   sql.NullString
+	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
+	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
+	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
+	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepIndex                                  sql.NullInt32
+	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
+	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
+	RecipeStepPreparationMinimumInstrumentCount      sql.NullInt32
+	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
+	RecipeStepPreparationConditionExpressionRequired sql.NullBool
+	RecipeStepPreparationOnlyForVessels              sql.NullBool
+	RecipeStepPreparationRestrictToIngredients       sql.NullBool
+	RecipeStepPreparationTemperatureRequired         sql.NullBool
+	RecipeStepOptional                               sql.NullBool
+	RecipeStepStartTimerAutomatically                sql.NullBool
+	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
+	RecipeStepPreparationYieldsNothing               sql.NullBool
+	RecipeStepPreparationConsumesVessel              sql.NullBool
+	EligibleForMeals                                 bool
+}
+
+func (q *Queries) GetRecipesWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetRecipesWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipesWithIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipesWithIDsRow{}
+	for rows.Next() {
+		var i GetRecipesWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Slug,
+			&i.Source,
+			&i.Description,
+			&i.Status,
+			&i.InspiredByRecipeID,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.PortionName,
+			&i.PluralPortionName,
+			&i.EligibleForMeals,
+			&i.YieldsComponentType,
+			&i.LastIndexedAt,
+			&i.LastValidatedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.RecipeStepID,
+			&i.RecipeStepIndex,
+			&i.RecipeStepPreparationID,
+			&i.RecipeStepPreparationName,
+			&i.RecipeStepPreparationDescription,
+			&i.RecipeStepPreparationIconPath,
+			&i.RecipeStepPreparationYieldsNothing,
+			&i.RecipeStepPreparationRestrictToIngredients,
+			&i.RecipeStepPreparationPastTense,
+			&i.RecipeStepPreparationSlug,
+			&i.RecipeStepPreparationMinimumIngredientCount,
+			&i.RecipeStepPreparationMaximumIngredientCount,
+			&i.RecipeStepPreparationMinimumInstrumentCount,
+			&i.RecipeStepPreparationMaximumInstrumentCount,
+			&i.RecipeStepPreparationTemperatureRequired,
+			&i.RecipeStepPreparationTimeEstimateRequired,
+			&i.RecipeStepPreparationConditionExpressionRequired,
+			&i.RecipeStepPreparationConsumesVessel,
+			&i.RecipeStepPreparationOnlyForVessels,
+			&i.RecipeStepPreparationMinimumVesselCount,
+			&i.RecipeStepPreparationMaximumVesselCount,
+			&i.RecipeStepPreparationLastIndexedAt,
+			&i.RecipeStepPreparationCreatedAt,
+			&i.RecipeStepPreparationLastUpdatedAt,
+			&i.RecipeStepPreparationArchivedAt,
+			&i.RecipeStepMinimumEstimatedTimeInSeconds,
+			&i.RecipeStepMaximumEstimatedTimeInSeconds,
+			&i.RecipeStepMinimumTemperatureInCelsius,
+			&i.RecipeStepMaximumTemperatureInCelsius,
+			&i.RecipeStepNotes,
+			&i.RecipeStepExplicitInstructions,
+			&i.RecipeStepConditionExpression,
+			&i.RecipeStepOptional,
+			&i.RecipeStepStartTimerAutomatically,
+			&i.RecipeStepCreatedAt,
+			&i.RecipeStepLastUpdatedAt,
+			&i.RecipeStepArchivedAt,
+			&i.RecipeStepBelongsToRecipe,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

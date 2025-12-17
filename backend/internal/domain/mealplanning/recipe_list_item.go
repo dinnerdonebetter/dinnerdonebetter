@@ -19,15 +19,14 @@ func init() {
 type (
 	// RecipeListItem represents a single entry in a recipe list.
 	RecipeListItem struct {
-		_ struct{} `json:"-"`
-
+		_                   struct{}   `json:"-"`
 		CreatedAt           time.Time  `json:"createdAt"`
 		LastUpdatedAt       *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time `json:"archivedAt"`
 		ID                  string     `json:"id"`
-		RecipeID            string     `json:"recipeID"`
 		Notes               string     `json:"notes"`
 		BelongsToRecipeList string     `json:"belongsToRecipeList"`
+		Recipe              Recipe     `json:"recipe"`
 	}
 
 	// RecipeListItemCreationRequestInput represents input for creating recipe list items.

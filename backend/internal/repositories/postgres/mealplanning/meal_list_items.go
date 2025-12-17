@@ -41,6 +41,7 @@ func (q *repository) GetMealListItems(ctx context.Context, mealListID string, fi
 		filteredCount uint64
 		totalCount    uint64
 	)
+	mealIDs := []string{}
 
 	results, err := q.generatedQuerier.GetMealListItems(ctx, q.db, &generated.GetMealListItemsParams{
 		MealListID:      mealListID,
@@ -67,10 +68,30 @@ func (q *repository) GetMealListItems(ctx context.Context, mealListID string, fi
 			LastUpdatedAt:     database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:        database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:                result.ID,
-			MealID:            result.MealID,
+			Meal:              types.Meal{ID: result.MealID},
 			Notes:             result.Notes,
 			BelongsToMealList: result.BelongsToMealList,
 		})
+
+		if result.MealID != "" {
+			mealIDs = append(mealIDs, result.MealID)
+		}
+	}
+
+	if len(mealIDs) > 0 {
+		meals, err := q.GetMealsWithIDs(ctx, mealIDs)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals for meal list items")
+		}
+		mealsByID := map[string]*types.Meal{}
+		for _, m := range meals {
+			mealsByID[m.ID] = m
+		}
+		for i, item := range data {
+			if m, ok := mealsByID[item.Meal.ID]; ok && m != nil {
+				data[i].Meal = *m
+			}
+		}
 	}
 
 	x = filtering.NewQueryFilteredResult(
@@ -106,7 +127,7 @@ func (q *repository) CreateMealListItem(ctx context.Context, input *types.MealLi
 
 	x := &types.MealListItem{
 		ID:                input.ID,
-		MealID:            input.MealID,
+		Meal:              types.Meal{ID: input.MealID},
 		Notes:             input.Notes,
 		BelongsToMealList: input.BelongsToMealList,
 		CreatedAt:         q.CurrentTime(),
@@ -129,7 +150,7 @@ func (q *repository) UpdateMealListItem(ctx context.Context, updated *types.Meal
 	tracing.AttachToSpan(span, keys.MealListItemIDKey, updated.ID)
 
 	rowsAffected, err := q.generatedQuerier.UpdateMealListItem(ctx, q.db, &generated.UpdateMealListItemParams{
-		MealID:            updated.MealID,
+		MealID:            updated.Meal.ID,
 		Notes:             updated.Notes,
 		BelongsToMealList: updated.BelongsToMealList,
 		ID:                updated.ID,

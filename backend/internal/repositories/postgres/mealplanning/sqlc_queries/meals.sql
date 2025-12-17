@@ -117,6 +117,34 @@ WHERE
 ORDER BY meals.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
+-- name: GetMealsWithIDs :many
+SELECT
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at
+FROM meals
+	JOIN meal_components ON meal_components.meal_id=meals.id
+WHERE meals.archived_at IS NULL
+  AND meal_components.archived_at IS NULL
+  AND meals.id = ANY(sqlc.arg(ids)::text[])
+ORDER BY meals.id ASC;
+
 -- name: GetMealsCreatedByUser :many
 SELECT
 	meals.id,

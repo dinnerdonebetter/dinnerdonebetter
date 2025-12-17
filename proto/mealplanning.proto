@@ -2897,6 +2897,7 @@ message MealList {
   string name = 5;
   string description = 6;
   string belongs_to_user = 7;
+  repeated MealListItem items = 8;
 }
 
 message MealListCreationRequestInput {
@@ -2917,6 +2918,7 @@ message MealListItem {
   string meal_id = 5;
   string notes = 6;
   string belongs_to_meal_list = 7;
+  Meal meal = 8;
 }
 
 message MealListItemCreationRequestInput {
@@ -2939,6 +2941,7 @@ message RecipeList {
   string name = 5;
   string description = 6;
   string belongs_to_user = 7;
+  repeated RecipeListItem items = 8;
 }
 
 message RecipeListCreationRequestInput {
@@ -2959,6 +2962,7 @@ message RecipeListItem {
   string recipe_id = 5;
   string notes = 6;
   string belongs_to_recipe_list = 7;
+  Recipe recipe = 8;
 }
 
 message RecipeListItemCreationRequestInput {
@@ -3336,6 +3340,160 @@ message GetMealsResponse {
   repeated Meal results = 3;
 }
 
+// Meal Lists
+message GetMealListsRequest {
+  filtering.QueryFilter filter = 1;
+}
+
+message GetMealListsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealList results = 3;
+}
+
+message CreateMealListRequest {
+  MealListCreationRequestInput input = 1;
+}
+
+message CreateMealListResponse {
+  common.ResponseDetails response_details = 1;
+  MealList created = 2;
+}
+
+message UpdateMealListRequest {
+  string meal_list_id = 1;
+  MealListUpdateRequestInput input = 2;
+}
+
+message UpdateMealListResponse {
+  common.ResponseDetails response_details = 1;
+  MealList updated = 2;
+}
+
+message ArchiveMealListRequest {
+  string meal_list_id = 1;
+}
+
+message ArchiveMealListResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+// Meal List Items
+message GetMealListItemsRequest {
+  string meal_list_id = 1;
+  filtering.QueryFilter filter = 2;
+}
+
+message GetMealListItemsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated MealListItem results = 3;
+}
+
+message CreateMealListItemRequest {
+  MealListItemCreationRequestInput input = 1;
+}
+
+message CreateMealListItemResponse {
+  common.ResponseDetails response_details = 1;
+  MealListItem created = 2;
+}
+
+message UpdateMealListItemRequest {
+  string meal_list_item_id = 1;
+  MealListItemUpdateRequestInput input = 2;
+}
+
+message UpdateMealListItemResponse {
+  common.ResponseDetails response_details = 1;
+  MealListItem updated = 2;
+}
+
+message ArchiveMealListItemRequest {
+  string meal_list_item_id = 1;
+}
+
+message ArchiveMealListItemResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+// Recipe Lists
+message GetRecipeListsRequest {
+  filtering.QueryFilter filter = 1;
+}
+
+message GetRecipeListsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeList results = 3;
+}
+
+message CreateRecipeListRequest {
+  RecipeListCreationRequestInput input = 1;
+}
+
+message CreateRecipeListResponse {
+  common.ResponseDetails response_details = 1;
+  RecipeList created = 2;
+}
+
+message UpdateRecipeListRequest {
+  string recipe_list_id = 1;
+  RecipeListUpdateRequestInput input = 2;
+}
+
+message UpdateRecipeListResponse {
+  common.ResponseDetails response_details = 1;
+  RecipeList updated = 2;
+}
+
+message ArchiveRecipeListRequest {
+  string recipe_list_id = 1;
+}
+
+message ArchiveRecipeListResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+// Recipe List Items
+message GetRecipeListItemsRequest {
+  string recipe_list_id = 1;
+  filtering.QueryFilter filter = 2;
+}
+
+message GetRecipeListItemsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated RecipeListItem results = 3;
+}
+
+message CreateRecipeListItemRequest {
+  RecipeListItemCreationRequestInput input = 1;
+}
+
+message CreateRecipeListItemResponse {
+  common.ResponseDetails response_details = 1;
+  RecipeListItem created = 2;
+}
+
+message UpdateRecipeListItemRequest {
+  string recipe_list_item_id = 1;
+  RecipeListItemUpdateRequestInput input = 2;
+}
+
+message UpdateRecipeListItemResponse {
+  common.ResponseDetails response_details = 1;
+  RecipeListItem updated = 2;
+}
+
+message ArchiveRecipeListItemRequest {
+  string recipe_list_item_id = 1;
+}
+
+message ArchiveRecipeListItemResponse {
+  common.ResponseDetails response_details = 1;
+}
+
 // RunFinalizeMealPlanWorker
 message RunFinalizeMealPlanWorkerRequest {}
 
@@ -3542,9 +3700,13 @@ service MealPlanningService {
   rpc ArchiveMealPlanGroceryListItem(ArchiveMealPlanGroceryListItemRequest) returns (ArchiveMealPlanGroceryListItemResponse);
   rpc ArchiveMealPlanOption(ArchiveMealPlanOptionRequest) returns (ArchiveMealPlanOptionResponse);
   rpc ArchiveMealPlanOptionVote(ArchiveMealPlanOptionVoteRequest) returns (ArchiveMealPlanOptionVoteResponse);
+  rpc ArchiveMealList(ArchiveMealListRequest) returns (ArchiveMealListResponse);
+  rpc ArchiveMealListItem(ArchiveMealListItemRequest) returns (ArchiveMealListItemResponse);
   rpc ArchiveRecipe(ArchiveRecipeRequest) returns (ArchiveRecipeResponse);
   rpc ArchiveRecipePrepTask(ArchiveRecipePrepTaskRequest) returns (ArchiveRecipePrepTaskResponse);
   rpc ArchiveRecipeRating(ArchiveRecipeRatingRequest) returns (ArchiveRecipeRatingResponse);
+  rpc ArchiveRecipeList(ArchiveRecipeListRequest) returns (ArchiveRecipeListResponse);
+  rpc ArchiveRecipeListItem(ArchiveRecipeListItemRequest) returns (ArchiveRecipeListItemResponse);
   rpc ArchiveRecipeStep(ArchiveRecipeStepRequest) returns (ArchiveRecipeStepResponse);
   rpc ArchiveRecipeStepCompletionCondition(ArchiveRecipeStepCompletionConditionRequest) returns (ArchiveRecipeStepCompletionConditionResponse);
   rpc ArchiveRecipeStepIngredient(ArchiveRecipeStepIngredientRequest) returns (ArchiveRecipeStepIngredientResponse);
@@ -3572,9 +3734,13 @@ service MealPlanningService {
   rpc CreateMealPlanOption(CreateMealPlanOptionRequest) returns (CreateMealPlanOptionResponse);
   rpc CreateMealPlanOptionVote(CreateMealPlanOptionVoteRequest) returns (CreateMealPlanOptionVoteResponse);
   rpc CreateMealPlanTask(CreateMealPlanTaskRequest) returns (CreateMealPlanTaskResponse);
+  rpc CreateMealList(CreateMealListRequest) returns (CreateMealListResponse);
+  rpc CreateMealListItem(CreateMealListItemRequest) returns (CreateMealListItemResponse);
   rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse);
   rpc CreateRecipePrepTask(CreateRecipePrepTaskRequest) returns (CreateRecipePrepTaskResponse);
   rpc CreateRecipeRating(CreateRecipeRatingRequest) returns (CreateRecipeRatingResponse);
+  rpc CreateRecipeList(CreateRecipeListRequest) returns (CreateRecipeListResponse);
+  rpc CreateRecipeListItem(CreateRecipeListItemRequest) returns (CreateRecipeListItemResponse);
   rpc CreateRecipeStep(CreateRecipeStepRequest) returns (CreateRecipeStepResponse);
   rpc CreateRecipeStepCompletionCondition(CreateRecipeStepCompletionConditionRequest) returns (CreateRecipeStepCompletionConditionResponse);
   rpc CreateRecipeStepIngredient(CreateRecipeStepIngredientRequest) returns (CreateRecipeStepIngredientResponse);
@@ -3608,6 +3774,7 @@ service MealPlanningService {
   rpc GetMealPlanTask(GetMealPlanTaskRequest) returns (GetMealPlanTaskResponse);
   rpc GetMealPlanTasks(GetMealPlanTasksRequest) returns (GetMealPlanTasksResponse);
   rpc GetMealPlansForAccount(GetMealPlansForAccountRequest) returns (GetMealPlansForAccountResponse);
+  rpc GetMealLists(GetMealListsRequest) returns (GetMealListsResponse);
   rpc GetMeals(GetMealsRequest) returns (GetMealsResponse);
   rpc GetMermaidDiagramForRecipe(GetMermaidDiagramForRecipeRequest) returns (GetMermaidDiagramForRecipeResponse);
   rpc GetRandomValidIngredient(GetRandomValidIngredientRequest) returns (GetRandomValidIngredientResponse);
@@ -3632,6 +3799,7 @@ service MealPlanningService {
   rpc GetRecipeStepVessel(GetRecipeStepVesselRequest) returns (GetRecipeStepVesselResponse);
   rpc GetRecipeStepVessels(GetRecipeStepVesselsRequest) returns (GetRecipeStepVesselsResponse);
   rpc GetRecipeSteps(GetRecipeStepsRequest) returns (GetRecipeStepsResponse);
+  rpc GetRecipeLists(GetRecipeListsRequest) returns (GetRecipeListsResponse);
   rpc GetRecipes(GetRecipesRequest) returns (GetRecipesResponse);
   rpc GetValidIngredient(GetValidIngredientRequest) returns (GetValidIngredientResponse);
   rpc GetValidIngredientGroup(GetValidIngredientGroupRequest) returns (GetValidIngredientGroupResponse);
@@ -3690,10 +3858,14 @@ service MealPlanningService {
   rpc UpdateMealPlanOption(UpdateMealPlanOptionRequest) returns (UpdateMealPlanOptionResponse);
   rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);
   rpc UpdateMealPlanTaskStatus(UpdateMealPlanTaskStatusRequest) returns (UpdateMealPlanTaskStatusResponse);
+  rpc UpdateMealList(UpdateMealListRequest) returns (UpdateMealListResponse);
+  rpc UpdateMealListItem(UpdateMealListItemRequest) returns (UpdateMealListItemResponse);
   rpc UpdateRecipe(UpdateRecipeRequest) returns (UpdateRecipeResponse);
   rpc UpdateRecipeStatus(UpdateRecipeStatusRequest) returns (UpdateRecipeStatusResponse);
   rpc UpdateRecipePrepTask(UpdateRecipePrepTaskRequest) returns (UpdateRecipePrepTaskResponse);
   rpc UpdateRecipeRating(UpdateRecipeRatingRequest) returns (UpdateRecipeRatingResponse);
+  rpc UpdateRecipeList(UpdateRecipeListRequest) returns (UpdateRecipeListResponse);
+  rpc UpdateRecipeListItem(UpdateRecipeListItemRequest) returns (UpdateRecipeListItemResponse);
   rpc UpdateRecipeStep(UpdateRecipeStepRequest) returns (UpdateRecipeStepResponse);
   rpc UpdateRecipeStepCompletionCondition(UpdateRecipeStepCompletionConditionRequest) returns (UpdateRecipeStepCompletionConditionResponse);
   rpc UpdateRecipeStepIngredient(UpdateRecipeStepIngredientRequest) returns (UpdateRecipeStepIngredientResponse);

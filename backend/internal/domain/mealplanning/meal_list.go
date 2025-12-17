@@ -21,31 +21,34 @@ type (
 	MealList struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt     time.Time  `json:"createdAt"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		ID            string     `json:"id"`
-		Name          string     `json:"name"`
-		Description   string     `json:"description"`
-		BelongsToUser string     `json:"belongsToUser"`
+		CreatedAt     time.Time       `json:"createdAt"`
+		LastUpdatedAt *time.Time      `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time      `json:"archivedAt"`
+		ID            string          `json:"id"`
+		Name          string          `json:"name"`
+		Description   string          `json:"description"`
+		BelongsToUser string          `json:"belongsToUser"`
+		Items         []*MealListItem `json:"items"`
 	}
 
 	// MealListCreationRequestInput represents input for creating meal lists.
 	MealListCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Name        string                              `json:"name"`
+		Description string                              `json:"description"`
+		Items       []*MealListItemCreationRequestInput `json:"items"`
 	}
 
 	// MealListDatabaseCreationInput represents database input for creating meal lists.
 	MealListDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID            string `json:"-"`
-		Name          string `json:"-"`
-		Description   string `json:"-"`
-		BelongsToUser string `json:"-"`
+		ID            string                               `json:"-"`
+		Name          string                               `json:"-"`
+		Description   string                               `json:"-"`
+		BelongsToUser string                               `json:"-"`
+		Items         []*MealListItemDatabaseCreationInput `json:"-"`
 	}
 
 	// MealListUpdateRequestInput represents input for updating meal lists.

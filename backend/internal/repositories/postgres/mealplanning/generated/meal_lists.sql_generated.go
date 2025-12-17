@@ -63,6 +63,13 @@ const getMealLists = `-- name: GetMealLists :many
 SELECT
 	meal_lists.id,
 	meal_lists.name,
+	meal_list_items.id as meal_list_item_id,
+	meal_list_items.meal_id as meal_list_item_meal_id,
+	meal_list_items.notes as meal_list_item_notes,
+	meal_list_items.created_at as meal_list_item_created_at,
+	meal_list_items.last_updated_at as meal_list_item_last_updated_at,
+	meal_list_items.archived_at as meal_list_item_archived_at,
+	meal_list_items.belongs_to_meal_list as meal_list_item_belongs_to_meal_list,
 	meal_lists.description,
 	meal_lists.created_at,
 	meal_lists.last_updated_at,
@@ -91,7 +98,8 @@ SELECT
 		WHERE meal_lists.archived_at IS NULL
 	) AS total_count
 FROM meal_lists
-	WHERE meal_lists.archived_at IS NULL
+	LEFT JOIN meal_list_items ON meal_list_items.belongs_to_meal_list = meal_lists.id AND meal_list_items.archived_at IS NULL
+WHERE meal_lists.archived_at IS NULL
 	AND meal_lists.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND meal_lists.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -118,15 +126,22 @@ type GetMealListsParams struct {
 }
 
 type GetMealListsRow struct {
-	ID            string
-	Name          string
-	Description   string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	BelongsToUser string
-	FilteredCount int64
-	TotalCount    int64
+	CreatedAt                     time.Time
+	ArchivedAt                    sql.NullTime
+	MealListItemCreatedAt         sql.NullTime
+	MealListItemLastUpdatedAt     sql.NullTime
+	MealListItemArchivedAt        sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	Name                          string
+	BelongsToUser                 string
+	ID                            string
+	Description                   string
+	MealListItemNotes             sql.NullString
+	MealListItemBelongsToMealList sql.NullString
+	MealListItemMealID            sql.NullString
+	MealListItemID                sql.NullString
+	FilteredCount                 int64
+	TotalCount                    int64
 }
 
 func (q *Queries) GetMealLists(ctx context.Context, db DBTX, arg *GetMealListsParams) ([]*GetMealListsRow, error) {
@@ -149,6 +164,13 @@ func (q *Queries) GetMealLists(ctx context.Context, db DBTX, arg *GetMealListsPa
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.MealListItemID,
+			&i.MealListItemMealID,
+			&i.MealListItemNotes,
+			&i.MealListItemCreatedAt,
+			&i.MealListItemLastUpdatedAt,
+			&i.MealListItemArchivedAt,
+			&i.MealListItemBelongsToMealList,
 			&i.Description,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,

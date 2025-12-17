@@ -19,15 +19,14 @@ func init() {
 type (
 	// MealListItem represents a single entry in a meal list.
 	MealListItem struct {
-		_ struct{} `json:"-"`
-
+		_                 struct{}   `json:"-"`
 		CreatedAt         time.Time  `json:"createdAt"`
 		LastUpdatedAt     *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt        *time.Time `json:"archivedAt"`
 		ID                string     `json:"id"`
-		MealID            string     `json:"mealID"`
 		Notes             string     `json:"notes"`
 		BelongsToMealList string     `json:"belongsToMealList"`
+		Meal              Meal       `json:"meal"`
 	}
 
 	// MealListItemCreationRequestInput represents input for creating meal list items.

@@ -30,6 +30,15 @@ func buildRecipeListsQueries(database string) []*Query {
 	case postgres:
 
 		insertColumns := filterForInsert(recipeListsColumns)
+		fullSelectColumns := mergeColumns(
+			applyToEach(recipeListsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", recipeListsTableName, s)
+			}),
+			applyToEach(recipeListItemsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as recipe_list_item_%s", recipeListItemsTableName, s, s)
+			}),
+			2,
+		)
 
 		return []*Query{
 			{
@@ -72,15 +81,15 @@ func buildRecipeListsQueries(database string) []*Query {
 	%s,
 	%s
 FROM %s
-	WHERE %s.%s IS NULL
+	LEFT JOIN %s ON %s.%s = %s.%s AND %s.%s IS NULL
+WHERE %s.%s IS NULL
 	%s
 %s;`,
-					strings.Join(applyToEach(recipeListsColumns, func(i int, s string) string {
-						return fmt.Sprintf("%s.%s", recipeListsTableName, s)
-					}), ",\n\t"),
+					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(recipeListsTableName, true, true, []string{}),
 					buildTotalCountSelect(recipeListsTableName, true, []string{}),
 					recipeListsTableName,
+					recipeListItemsTableName, recipeListItemsTableName, "belongs_to_recipe_list", recipeListsTableName, idColumn, recipeListItemsTableName, archivedAtColumn,
 					recipeListsTableName, archivedAtColumn,
 					buildFilterConditions(recipeListsTableName, true, false),
 					buildCursorLimitClause(recipeListsTableName),

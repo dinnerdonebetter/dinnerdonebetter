@@ -30,6 +30,15 @@ func buildMealListsQueries(database string) []*Query {
 	case postgres:
 
 		insertColumns := filterForInsert(mealListsColumns)
+		fullSelectColumns := mergeColumns(
+			applyToEach(mealListsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", mealListsTableName, s)
+			}),
+			applyToEach(mealListItemsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as meal_list_item_%s", mealListItemsTableName, s, s)
+			}),
+			2,
+		)
 
 		return []*Query{
 			{
@@ -72,15 +81,15 @@ func buildMealListsQueries(database string) []*Query {
 	%s,
 	%s
 FROM %s
-	WHERE %s.%s IS NULL
+	LEFT JOIN %s ON %s.%s = %s.%s AND %s.%s IS NULL
+WHERE %s.%s IS NULL
 	%s
 %s;`,
-					strings.Join(applyToEach(mealListsColumns, func(i int, s string) string {
-						return fmt.Sprintf("%s.%s", mealListsTableName, s)
-					}), ",\n\t"),
+					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(mealListsTableName, true, true, []string{}),
 					buildTotalCountSelect(mealListsTableName, true, []string{}),
 					mealListsTableName,
+					mealListItemsTableName, mealListItemsTableName, "belongs_to_meal_list", mealListsTableName, idColumn, mealListItemsTableName, archivedAtColumn,
 					mealListsTableName, archivedAtColumn,
 					buildFilterConditions(mealListsTableName, true, false),
 					buildCursorLimitClause(mealListsTableName),

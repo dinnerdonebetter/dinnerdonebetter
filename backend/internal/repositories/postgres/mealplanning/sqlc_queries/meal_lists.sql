@@ -18,6 +18,13 @@ INSERT INTO meal_lists (
 SELECT
 	meal_lists.id,
 	meal_lists.name,
+	meal_list_items.id as meal_list_item_id,
+	meal_list_items.meal_id as meal_list_item_meal_id,
+	meal_list_items.notes as meal_list_item_notes,
+	meal_list_items.created_at as meal_list_item_created_at,
+	meal_list_items.last_updated_at as meal_list_item_last_updated_at,
+	meal_list_items.archived_at as meal_list_item_archived_at,
+	meal_list_items.belongs_to_meal_list as meal_list_item_belongs_to_meal_list,
 	meal_lists.description,
 	meal_lists.created_at,
 	meal_lists.last_updated_at,
@@ -46,7 +53,8 @@ SELECT
 		WHERE meal_lists.archived_at IS NULL
 	) AS total_count
 FROM meal_lists
-	WHERE meal_lists.archived_at IS NULL
+	LEFT JOIN meal_list_items ON meal_list_items.belongs_to_meal_list = meal_lists.id AND meal_list_items.archived_at IS NULL
+WHERE meal_lists.archived_at IS NULL
 	AND meal_lists.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND meal_lists.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (

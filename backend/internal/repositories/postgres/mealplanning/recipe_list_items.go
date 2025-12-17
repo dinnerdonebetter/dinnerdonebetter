@@ -41,6 +41,7 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 		filteredCount uint64
 		totalCount    uint64
 	)
+	recipeIDs := []string{}
 
 	results, err := q.generatedQuerier.GetRecipeListItems(ctx, q.db, &generated.GetRecipeListItemsParams{
 		RecipeListID:    recipeListID,
@@ -67,10 +68,30 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:                  result.ID,
-			RecipeID:            result.RecipeID,
+			Recipe:              types.Recipe{ID: result.RecipeID},
 			Notes:               result.Notes,
 			BelongsToRecipeList: result.BelongsToRecipeList,
 		})
+
+		if result.RecipeID != "" {
+			recipeIDs = append(recipeIDs, result.RecipeID)
+		}
+	}
+
+	if len(recipeIDs) > 0 {
+		recipes, err := q.GetRecipesWithIDs(ctx, recipeIDs)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipes for recipe list items")
+		}
+		recipesByID := map[string]*types.Recipe{}
+		for _, r := range recipes {
+			recipesByID[r.ID] = r
+		}
+		for i, item := range data {
+			if r, ok := recipesByID[item.Recipe.ID]; ok && r != nil {
+				data[i].Recipe = *r
+			}
+		}
 	}
 
 	x = filtering.NewQueryFilteredResult(
@@ -106,7 +127,7 @@ func (q *repository) CreateRecipeListItem(ctx context.Context, input *types.Reci
 
 	x := &types.RecipeListItem{
 		ID:                  input.ID,
-		RecipeID:            input.RecipeID,
+		Recipe:              types.Recipe{ID: input.RecipeID},
 		Notes:               input.Notes,
 		BelongsToRecipeList: input.BelongsToRecipeList,
 		CreatedAt:           q.CurrentTime(),
@@ -129,7 +150,7 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, updated.ID)
 
 	rowsAffected, err := q.generatedQuerier.UpdateRecipeListItem(ctx, q.db, &generated.UpdateRecipeListItemParams{
-		RecipeID:            updated.RecipeID,
+		RecipeID:            updated.Recipe.ID,
 		Notes:               updated.Notes,
 		BelongsToRecipeList: updated.BelongsToRecipeList,
 		ID:                  updated.ID,

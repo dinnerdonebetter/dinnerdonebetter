@@ -240,14 +240,49 @@ func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*meal
 
 	logger := q.logger.Clone()
 
-	meals := []*mealplanning.Meal{}
-	for _, id := range ids {
-		r, err := q.GetMeal(ctx, id)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "getting meal")
+	if len(ids) == 0 {
+		return []*mealplanning.Meal{}, nil
+	}
+
+	results, err := q.generatedQuerier.GetMealsWithIDs(ctx, q.db, ids)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval by ids")
+	}
+
+	mealsByID := map[string]*mealplanning.Meal{}
+	for _, result := range results {
+		m, exists := mealsByID[result.ID]
+		if !exists {
+			m = &mealplanning.Meal{
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:            result.ID,
+				Description:   result.Description,
+				CreatedByUser: result.CreatedByUser,
+				Name:          result.Name,
+				Components:    nil,
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				},
+				EligibleForMealPlans: result.EligibleForMealPlans,
+			}
+			mealsByID[result.ID] = m
 		}
 
-		meals = append(meals, r)
+		m.Components = append(m.Components, &mealplanning.MealComponent{
+			ComponentType: string(result.ComponentMealComponentType),
+			Recipe: mealplanning.Recipe{
+				ID: result.ComponentRecipeID,
+			},
+			RecipeScale: database.Float32FromString(result.ComponentRecipeScale),
+		})
+	}
+
+	meals := make([]*mealplanning.Meal, 0, len(mealsByID))
+	for _, m := range mealsByID {
+		meals = append(meals, m)
 	}
 
 	return meals, nil

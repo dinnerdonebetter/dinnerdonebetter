@@ -215,6 +215,28 @@ FROM %s
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetRecipesWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	LEFT JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[])
+ORDER BY %s.%s ASC;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					recipesTableName,
+					recipeStepsTableName, recipesTableName, idColumn, recipeStepsTableName, belongsToRecipeColumn,
+					validPreparationsTableName, recipeStepsTableName, preparationIDColumn, validPreparationsTableName, idColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn,
+					recipesTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "RecipeSearch",
 					Type: ManyType,
 				},

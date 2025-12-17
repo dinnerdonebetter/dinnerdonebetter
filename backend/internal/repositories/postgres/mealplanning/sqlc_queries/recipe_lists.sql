@@ -18,6 +18,13 @@ INSERT INTO recipe_lists (
 SELECT
 	recipe_lists.id,
 	recipe_lists.name,
+	recipe_list_items.id as recipe_list_item_id,
+	recipe_list_items.recipe_id as recipe_list_item_recipe_id,
+	recipe_list_items.notes as recipe_list_item_notes,
+	recipe_list_items.created_at as recipe_list_item_created_at,
+	recipe_list_items.last_updated_at as recipe_list_item_last_updated_at,
+	recipe_list_items.archived_at as recipe_list_item_archived_at,
+	recipe_list_items.belongs_to_recipe_list as recipe_list_item_belongs_to_recipe_list,
 	recipe_lists.description,
 	recipe_lists.created_at,
 	recipe_lists.last_updated_at,
@@ -46,7 +53,8 @@ SELECT
 		WHERE recipe_lists.archived_at IS NULL
 	) AS total_count
 FROM recipe_lists
-	WHERE recipe_lists.archived_at IS NULL
+	LEFT JOIN recipe_list_items ON recipe_list_items.belongs_to_recipe_list = recipe_lists.id AND recipe_list_items.archived_at IS NULL
+WHERE recipe_lists.archived_at IS NULL
 	AND recipe_lists.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipe_lists.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (

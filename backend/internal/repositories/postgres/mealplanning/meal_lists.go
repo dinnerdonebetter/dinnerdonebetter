@@ -35,6 +35,7 @@ func (q *repository) GetMealLists(ctx context.Context, filter *filtering.QueryFi
 		filteredCount uint64
 		totalCount    uint64
 	)
+	listsByID := map[string]*types.MealList{}
 
 	results, err := q.generatedQuerier.GetMealLists(ctx, q.db, &generated.GetMealListsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -55,15 +56,33 @@ func (q *repository) GetMealLists(ctx context.Context, filter *filtering.QueryFi
 			totalCount = uint64(result.TotalCount)
 		}
 
-		data = append(data, &types.MealList{
-			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			ID:            result.ID,
-			Name:          result.Name,
-			Description:   result.Description,
-			BelongsToUser: result.BelongsToUser,
-		})
+		ml, exists := listsByID[result.ID]
+		if !exists {
+			ml = &types.MealList{
+				CreatedAt:     result.CreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				ID:            result.ID,
+				Name:          result.Name,
+				Description:   result.Description,
+				BelongsToUser: result.BelongsToUser,
+				Items:         []*types.MealListItem{},
+			}
+			listsByID[result.ID] = ml
+			data = append(data, ml)
+		}
+
+		if result.MealListItemID.Valid && result.MealListItemID.String != "" {
+			ml.Items = append(ml.Items, &types.MealListItem{
+				CreatedAt:         database.TimeFromNullTime(result.MealListItemCreatedAt),
+				LastUpdatedAt:     database.TimePointerFromNullTime(result.MealListItemLastUpdatedAt),
+				ArchivedAt:        database.TimePointerFromNullTime(result.MealListItemArchivedAt),
+				ID:                result.MealListItemID.String,
+				Meal:              types.Meal{ID: result.MealListItemMealID.String},
+				Notes:             result.MealListItemNotes.String,
+				BelongsToMealList: result.MealListItemBelongsToMealList.String,
+			})
+		}
 	}
 
 	x = filtering.NewQueryFilteredResult(

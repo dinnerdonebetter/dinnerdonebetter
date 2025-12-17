@@ -63,6 +63,13 @@ const getRecipeLists = `-- name: GetRecipeLists :many
 SELECT
 	recipe_lists.id,
 	recipe_lists.name,
+	recipe_list_items.id as recipe_list_item_id,
+	recipe_list_items.recipe_id as recipe_list_item_recipe_id,
+	recipe_list_items.notes as recipe_list_item_notes,
+	recipe_list_items.created_at as recipe_list_item_created_at,
+	recipe_list_items.last_updated_at as recipe_list_item_last_updated_at,
+	recipe_list_items.archived_at as recipe_list_item_archived_at,
+	recipe_list_items.belongs_to_recipe_list as recipe_list_item_belongs_to_recipe_list,
 	recipe_lists.description,
 	recipe_lists.created_at,
 	recipe_lists.last_updated_at,
@@ -91,7 +98,8 @@ SELECT
 		WHERE recipe_lists.archived_at IS NULL
 	) AS total_count
 FROM recipe_lists
-	WHERE recipe_lists.archived_at IS NULL
+	LEFT JOIN recipe_list_items ON recipe_list_items.belongs_to_recipe_list = recipe_lists.id AND recipe_list_items.archived_at IS NULL
+WHERE recipe_lists.archived_at IS NULL
 	AND recipe_lists.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipe_lists.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -118,15 +126,22 @@ type GetRecipeListsParams struct {
 }
 
 type GetRecipeListsRow struct {
-	ID            string
-	Name          string
-	Description   string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	BelongsToUser string
-	FilteredCount int64
-	TotalCount    int64
+	CreatedAt                         time.Time
+	ArchivedAt                        sql.NullTime
+	RecipeListItemCreatedAt           sql.NullTime
+	RecipeListItemLastUpdatedAt       sql.NullTime
+	RecipeListItemArchivedAt          sql.NullTime
+	LastUpdatedAt                     sql.NullTime
+	Name                              string
+	BelongsToUser                     string
+	ID                                string
+	Description                       string
+	RecipeListItemNotes               sql.NullString
+	RecipeListItemBelongsToRecipeList sql.NullString
+	RecipeListItemRecipeID            sql.NullString
+	RecipeListItemID                  sql.NullString
+	FilteredCount                     int64
+	TotalCount                        int64
 }
 
 func (q *Queries) GetRecipeLists(ctx context.Context, db DBTX, arg *GetRecipeListsParams) ([]*GetRecipeListsRow, error) {
@@ -149,6 +164,13 @@ func (q *Queries) GetRecipeLists(ctx context.Context, db DBTX, arg *GetRecipeLis
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.RecipeListItemID,
+			&i.RecipeListItemRecipeID,
+			&i.RecipeListItemNotes,
+			&i.RecipeListItemCreatedAt,
+			&i.RecipeListItemLastUpdatedAt,
+			&i.RecipeListItemArchivedAt,
+			&i.RecipeListItemBelongsToRecipeList,
 			&i.Description,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,

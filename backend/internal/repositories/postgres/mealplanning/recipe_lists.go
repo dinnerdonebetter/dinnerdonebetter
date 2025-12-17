@@ -35,6 +35,7 @@ func (q *repository) GetRecipeLists(ctx context.Context, filter *filtering.Query
 		filteredCount uint64
 		totalCount    uint64
 	)
+	listsByID := map[string]*types.RecipeList{}
 
 	results, err := q.generatedQuerier.GetRecipeLists(ctx, q.db, &generated.GetRecipeListsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -55,15 +56,33 @@ func (q *repository) GetRecipeLists(ctx context.Context, filter *filtering.Query
 			totalCount = uint64(result.TotalCount)
 		}
 
-		data = append(data, &types.RecipeList{
-			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			ID:            result.ID,
-			Name:          result.Name,
-			Description:   result.Description,
-			BelongsToUser: result.BelongsToUser,
-		})
+		rl, exists := listsByID[result.ID]
+		if !exists {
+			rl = &types.RecipeList{
+				CreatedAt:     result.CreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				ID:            result.ID,
+				Name:          result.Name,
+				Description:   result.Description,
+				BelongsToUser: result.BelongsToUser,
+				Items:         []*types.RecipeListItem{},
+			}
+			listsByID[result.ID] = rl
+			data = append(data, rl)
+		}
+
+		if result.RecipeListItemID.Valid && result.RecipeListItemID.String != "" {
+			rl.Items = append(rl.Items, &types.RecipeListItem{
+				CreatedAt:           database.TimeFromNullTime(result.RecipeListItemCreatedAt),
+				LastUpdatedAt:       database.TimePointerFromNullTime(result.RecipeListItemLastUpdatedAt),
+				ArchivedAt:          database.TimePointerFromNullTime(result.RecipeListItemArchivedAt),
+				ID:                  result.RecipeListItemID.String,
+				Recipe:              types.Recipe{ID: result.RecipeListItemRecipeID.String},
+				Notes:               result.RecipeListItemNotes.String,
+				BelongsToRecipeList: result.RecipeListItemBelongsToRecipeList.String,
+			})
+		}
 	}
 
 	x = filtering.NewQueryFilteredResult(
