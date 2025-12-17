@@ -678,6 +678,42 @@ var (
 		webhooksServicePerm("ArchiveWebhookTriggerEvent"): {
 			authorization.ArchiveWebhookTriggerEventsPermission,
 		},
+		waitlistsServicePerm("CreateWaitlist"): {
+			authorization.CreateWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetWaitlist"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetWaitlists"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetActiveWaitlists"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("UpdateWaitlist"): {
+			authorization.UpdateWaitlistsPermission,
+		},
+		waitlistsServicePerm("ArchiveWaitlist"): {
+			authorization.ArchiveWaitlistsPermission,
+		},
+		waitlistsServicePerm("WaitlistIsNotExpired"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("CreateWaitlistSignup"): {
+			authorization.CreateWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("GetWaitlistSignup"): {
+			authorization.ReadWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("GetWaitlistSignupsForWaitlist"): {
+			authorization.ReadWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("UpdateWaitlistSignup"): {
+			authorization.UpdateWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("ArchiveWaitlistSignup"): {
+			authorization.ArchiveWaitlistSignupsPermission,
+		},
 		identityServicePerm("UpdateAccount"): {
 			authorization.UpdateAccountPermission,
 		},
@@ -770,4 +806,8 @@ func mealPlanningPerm(method string) string {
 
 func authPerm(method string) string {
 	return permString("auth", "AuthService", method)
+}
+
+func waitlistsServicePerm(method string) string {
+	return permString("waitlists", "WaitlistsService", method)
 }

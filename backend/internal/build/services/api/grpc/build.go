@@ -32,6 +32,7 @@ import (
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
@@ -47,6 +48,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	waitlistssvc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
 	"github.com/google/wire"
@@ -81,6 +83,7 @@ func Build(
 		webhooksrepo.WebhookProviders,
 		oauthrepo.OAuthRepoProviders,
 		mealplanningrepo.MPRepoProviders,
+		waitlistsrepo.WaitlistsRepoProviders,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,
@@ -93,6 +96,7 @@ func Build(
 		webhookssvc.WebhookSvcProviders,
 		oauthsvc.OAuthSvcProviders,
 		mealplanningsvc.MPSvcProviders,
+		waitlistssvc.WaitlistsSvcProviders,
 		// manager
 		identitymgr.IDManagerProviders,
 		oauthmgr.OAuthManagerProviders,

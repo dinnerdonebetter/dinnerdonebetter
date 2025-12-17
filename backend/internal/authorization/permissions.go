@@ -41,6 +41,9 @@ var (
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,
 		CreateMealPlanGroceryListItemsPermission,
+		CreateWaitlistsPermission,
+		UpdateWaitlistsPermission,
+		ArchiveWaitlistsPermission,
 	}
 
 	// ServiceDataAdminPermissions is every service admin permission.
@@ -224,6 +227,14 @@ var (
 		ArchiveRecipeRatingsPermission,
 		ReadUserNotificationsPermission,
 		UpdateUserNotificationsPermission,
+		CreateWaitlistSignupsPermission,
+		UpdateWaitlistSignupsPermission,
+		ArchiveWaitlistSignupsPermission,
+		ReadWaitlistsPermission,
+		ReadWaitlistSignupsPermission,
+		CreateWaitlistSignupsPermission,
+		UpdateWaitlistSignupsPermission,
+		ArchiveWaitlistSignupsPermission,
 	}
 )
 

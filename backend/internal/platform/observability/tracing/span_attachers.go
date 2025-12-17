@@ -128,7 +128,7 @@ func AttachQueryFilterToSpan(span trace.Span, filter *filtering.QueryFilter) {
 		}
 
 		if filter.Cursor != nil {
-			AttachToSpan(span, keys.FilterPageKey, *filter.Cursor)
+			AttachToSpan(span, keys.FilterCursorKey, *filter.Cursor)
 		}
 
 		if filter.CreatedAfter != nil {
