@@ -82,7 +82,7 @@ func buildRecipeListsQueries(database string) []*Query {
 	%s
 FROM %s
 	LEFT JOIN %s ON %s.%s = %s.%s AND %s.%s IS NULL
-WHERE %s.%s IS NULL
+	WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),

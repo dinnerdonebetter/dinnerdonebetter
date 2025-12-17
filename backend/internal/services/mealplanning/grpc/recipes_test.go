@@ -9,9 +9,11 @@ import (
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/fake"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -116,6 +118,250 @@ func TestServiceImpl_ArchiveRecipeRating(T *testing.T) {
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_GetRecipeLists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		list := &mealplanning.RecipeList{ID: mealplanningfakes.BuildFakeID()}
+		expected := &filtering.QueryFilteredResult[mealplanning.RecipeList]{Data: []*mealplanning.RecipeList{list}}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("ListRecipeLists", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+		s.recipeManager = mrm
+
+		res, err := s.GetRecipeLists(ctx, &mealplanninggrpc.GetRecipeListsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Len(t, res.Results, 1)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_CreateRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		input := &mealplanninggrpc.RecipeListCreationRequestInput{Name: t.Name(), Description: "desc"}
+		created := &mealplanning.RecipeList{ID: mealplanningfakes.BuildFakeID()}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("CreateRecipeList", testutils.ContextMatcher, userID, testutils.MatchType[*mealplanning.RecipeListCreationRequestInput]()).Return(created, nil)
+		s.recipeManager = mrm
+
+		res, err := s.CreateRecipeList(ctx, &mealplanninggrpc.CreateRecipeListRequest{Input: input})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, created.ID, res.Created.Id)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_UpdateRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		name := t.Name()
+		desc := "desc"
+		input := &mealplanninggrpc.RecipeListUpdateRequestInput{
+			Name:        &name,
+			Description: &desc,
+		}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("UpdateRecipeList", testutils.ContextMatcher, listID, userID, testutils.MatchType[*mealplanning.RecipeListUpdateRequestInput]()).Return(nil)
+		s.recipeManager = mrm
+
+		res, err := s.UpdateRecipeList(ctx, &mealplanninggrpc.UpdateRecipeListRequest{
+			RecipeListId: listID,
+			Input:        input,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_ArchiveRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("ArchiveRecipeList", testutils.ContextMatcher, listID, userID).Return(nil)
+		s.recipeManager = mrm
+
+		res, err := s.ArchiveRecipeList(ctx, &mealplanninggrpc.ArchiveRecipeListRequest{RecipeListId: listID})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_GetRecipeListItems(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		listID := mealplanningfakes.BuildFakeID()
+		item := &mealplanning.RecipeListItem{ID: mealplanningfakes.BuildFakeID(), Recipe: mealplanning.Recipe{ID: mealplanningfakes.BuildFakeID()}}
+		expected := &filtering.QueryFilteredResult[mealplanning.RecipeListItem]{Data: []*mealplanning.RecipeListItem{item}}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("ListRecipeListItems", testutils.ContextMatcher, listID, testutils.QueryFilterMatcher).Return(expected, nil)
+		s.recipeManager = mrm
+
+		res, err := s.GetRecipeListItems(ctx, &mealplanninggrpc.GetRecipeListItemsRequest{RecipeListId: listID})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Len(t, res.Results, 1)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_CreateRecipeListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		listID := mealplanningfakes.BuildFakeID()
+		recipeID := mealplanningfakes.BuildFakeID()
+		input := &mealplanninggrpc.RecipeListItemCreationRequestInput{
+			BelongsToRecipeList: listID,
+			RecipeId:            recipeID,
+			Notes:               t.Name(),
+		}
+
+		created := &mealplanning.RecipeListItem{ID: mealplanningfakes.BuildFakeID()}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("AddRecipeToRecipeList", testutils.ContextMatcher, listID, recipeID, input.Notes).Return(created, nil)
+		s.recipeManager = mrm
+
+		res, err := s.CreateRecipeListItem(ctx, &mealplanninggrpc.CreateRecipeListItemRequest{Input: input})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, created.ID, res.Created.Id)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_UpdateRecipeListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		itemID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		recipeID := mealplanningfakes.BuildFakeID()
+		notes := pointer.To(t.Name())
+		input := &mealplanninggrpc.RecipeListItemUpdateRequestInput{
+			BelongsToRecipeList: &listID,
+			RecipeId:            &recipeID,
+			Notes:               notes,
+		}
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("UpdateRecipeListItem", testutils.ContextMatcher, itemID, listID, recipeID, testutils.MatchType[*mealplanning.RecipeListItemUpdateRequestInput]()).Return(nil)
+		s.recipeManager = mrm
+
+		res, err := s.UpdateRecipeListItem(ctx, &mealplanninggrpc.UpdateRecipeListItemRequest{
+			RecipeListItemId: itemID,
+			Input:            input,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mrm)
+	})
+}
+
+func TestServiceImpl_ArchiveRecipeListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForRecipesTest(t)
+
+		itemID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+
+		mrm := &mockmanagers.MockRecipeManager{}
+		mrm.On("RemoveRecipeFromRecipeList", testutils.ContextMatcher, listID, itemID).Return(nil)
+		s.recipeManager = mrm
+
+		res, err := s.ArchiveRecipeListItem(ctx, &mealplanninggrpc.ArchiveRecipeListItemRequest{
+			RecipeListItemId: itemID,
+			RecipeListId:     listID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
 
 		mock.AssertExpectationsForObjects(t, mrm)
 	})

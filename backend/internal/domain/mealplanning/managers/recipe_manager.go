@@ -43,6 +43,15 @@ type (
 		CloneRecipe(ctx context.Context, recipeID, newOwnerID string) (*mealplanning.Recipe, error)
 		RecipeImageUpload(ctx context.Context) error
 
+		ListRecipeLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeList], error)
+		AddRecipeToRecipeList(ctx context.Context, recipeListID, recipeID, notes string) (*mealplanning.RecipeListItem, error)
+		RemoveRecipeFromRecipeList(ctx context.Context, recipeListID, recipeListItemID string) error
+		ListRecipeListItems(ctx context.Context, recipeListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeListItem], error)
+		CreateRecipeList(ctx context.Context, userID string, input *mealplanning.RecipeListCreationRequestInput) (*mealplanning.RecipeList, error)
+		UpdateRecipeList(ctx context.Context, recipeListID, userID string, input *mealplanning.RecipeListUpdateRequestInput) error
+		UpdateRecipeListItem(ctx context.Context, recipeListItemID, recipeListID, recipeID string, input *mealplanning.RecipeListItemUpdateRequestInput) error
+		ArchiveRecipeList(ctx context.Context, recipeListID, userID string) error
+
 		ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStep], error)
 		CreateRecipeStep(ctx context.Context, recipeID string, input *mealplanning.RecipeStepCreationRequestInput) (*mealplanning.RecipeStep, error)
 		ReadRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*mealplanning.RecipeStep, error)
@@ -510,6 +519,201 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 	}))
 
 	return newRecipe, nil
+}
+
+func (m *recipeManager) ListRecipeLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeList], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	res, err := m.db.GetRecipeLists(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "listing recipe lists")
+	}
+
+	return res, nil
+}
+
+func (m *recipeManager) CreateRecipeList(ctx context.Context, userID string, input *mealplanning.RecipeListCreationRequestInput) (*mealplanning.RecipeList, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+	if userID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating recipe list input")
+	}
+
+	dbInput := &mealplanning.RecipeListDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          input.Name,
+		Description:   input.Description,
+		BelongsToUser: userID,
+		Items:         input.Items,
+	}
+
+	created, err := m.db.CreateRecipeList(ctx, dbInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe list")
+	}
+
+	return created, nil
+}
+
+func (m *recipeManager) ArchiveRecipeList(ctx context.Context, recipeListID, userID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if recipeListID == "" || userID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := m.db.ArchiveRecipeList(ctx, recipeListID, userID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe list")
+	}
+
+	return nil
+}
+
+func (m *recipeManager) UpdateRecipeList(ctx context.Context, recipeListID, userID string, input *mealplanning.RecipeListUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		keys.RecipeListIDKey: recipeListID,
+		keys.UserIDKey:       userID,
+	})
+	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	if recipeListID == "" || userID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+	if input.Name == nil || input.Description == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+
+	updated := &mealplanning.RecipeList{
+		ID:            recipeListID,
+		BelongsToUser: userID,
+	}
+	updated.Update(input)
+
+	if err := m.db.UpdateRecipeList(ctx, updated); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe list")
+	}
+
+	return nil
+}
+
+func (m *recipeManager) UpdateRecipeListItem(ctx context.Context, recipeListItemID, recipeListID, recipeID string, input *mealplanning.RecipeListItemUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		keys.RecipeListIDKey:     recipeListID,
+		keys.RecipeListItemIDKey: recipeListItemID,
+		keys.RecipeIDKey:         recipeID,
+	})
+	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
+	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, recipeListItemID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	if recipeListItemID == "" || recipeListID == "" || recipeID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+	if input.Notes == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+
+	updated := &mealplanning.RecipeListItem{
+		ID:                  recipeListItemID,
+		BelongsToRecipeList: recipeListID,
+		Recipe:              mealplanning.Recipe{ID: recipeID},
+	}
+	updated.Update(input)
+
+	if err := m.db.UpdateRecipeListItem(ctx, updated); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe list item")
+	}
+
+	return nil
+}
+
+func (m *recipeManager) AddRecipeToRecipeList(ctx context.Context, recipeListID, recipeID, notes string) (*mealplanning.RecipeListItem, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if recipeListID == "" || recipeID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	input := &mealplanning.RecipeListItemDatabaseCreationInput{
+		ID:                  identifiers.New(),
+		RecipeID:            recipeID,
+		Notes:               notes,
+		BelongsToRecipeList: recipeListID,
+	}
+
+	item, err := m.db.CreateRecipeListItem(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "adding recipe to recipe list")
+	}
+
+	return item, nil
+}
+
+func (m *recipeManager) RemoveRecipeFromRecipeList(ctx context.Context, recipeListID, recipeListItemID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if recipeListID == "" || recipeListItemID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := m.db.ArchiveRecipeListItem(ctx, recipeListItemID, recipeListID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing recipe from recipe list")
+	}
+
+	return nil
+}
+
+func (m *recipeManager) ListRecipeListItems(ctx context.Context, recipeListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeListItem], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if recipeListID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	res, err := m.db.GetRecipeListItems(ctx, recipeListID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "listing recipe list items")
+	}
+
+	return res, nil
 }
 
 func (m *recipeManager) ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStep], error) {

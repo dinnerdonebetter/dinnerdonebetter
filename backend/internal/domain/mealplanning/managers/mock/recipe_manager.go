@@ -88,6 +88,54 @@ func (m *MockRecipeManager) RecipeImageUpload(ctx context.Context) error {
 	return returnValues.Error(0)
 }
 
+func (m *MockRecipeManager) ListRecipeLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeList], error) {
+	returnValues := m.Called(ctx, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeList]), returnValues.Error(1)
+}
+
+func (m *MockRecipeManager) CreateRecipeList(ctx context.Context, userID string, input *mealplanning.RecipeListCreationRequestInput) (*mealplanning.RecipeList, error) {
+	returnValues := m.Called(ctx, userID, input)
+
+	return returnValues.Get(0).(*mealplanning.RecipeList), returnValues.Error(1)
+}
+
+func (m *MockRecipeManager) UpdateRecipeList(ctx context.Context, recipeListID, userID string, input *mealplanning.RecipeListUpdateRequestInput) error {
+	returnValues := m.Called(ctx, recipeListID, userID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) ArchiveRecipeList(ctx context.Context, recipeListID, userID string) error {
+	returnValues := m.Called(ctx, recipeListID, userID)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) AddRecipeToRecipeList(ctx context.Context, recipeListID, recipeID, notes string) (*mealplanning.RecipeListItem, error) {
+	returnValues := m.Called(ctx, recipeListID, recipeID, notes)
+
+	return returnValues.Get(0).(*mealplanning.RecipeListItem), returnValues.Error(1)
+}
+
+func (m *MockRecipeManager) RemoveRecipeFromRecipeList(ctx context.Context, recipeListID, recipeListItemID string) error {
+	returnValues := m.Called(ctx, recipeListID, recipeListItemID)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) UpdateRecipeListItem(ctx context.Context, recipeListItemID, recipeListID, recipeID string, input *mealplanning.RecipeListItemUpdateRequestInput) error {
+	returnValues := m.Called(ctx, recipeListItemID, recipeListID, recipeID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockRecipeManager) ListRecipeListItems(ctx context.Context, recipeListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeListItem], error) {
+	returnValues := m.Called(ctx, recipeListID, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeListItem]), returnValues.Error(1)
+}
+
 func (m *MockRecipeManager) ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStep], error) {
 	returnValues := m.Called(ctx, recipeID, filter)
 

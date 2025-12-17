@@ -9,6 +9,8 @@ import (
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *mealplanningsvc.RecipeCreationRequestInput) *mealplanning.RecipeCreationRequestInput {
@@ -233,6 +235,87 @@ func ConvertGRPCRecipePrepTaskStepWithinRecipeCreationRequestInputToRecipePrepTa
 	return &mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		BelongsToRecipeStepIndex: input.BelongsToRecipeStepIndex,
 		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
+	}
+}
+
+func ConvertRecipeListItemToGRPCRecipeListItem(input *mealplanning.RecipeListItem) *mealplanningsvc.RecipeListItem {
+	return &mealplanningsvc.RecipeListItem{
+		CreatedAt:           timestamppb.New(input.CreatedAt),
+		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		Id:                  input.ID,
+		RecipeId:            input.Recipe.ID,
+		Notes:               input.Notes,
+		BelongsToRecipeList: input.BelongsToRecipeList,
+		Recipe:              ConvertRecipeToGRPCRecipe(&input.Recipe),
+	}
+}
+
+func ConvertRecipeListToGRPCRecipeList(input *mealplanning.RecipeList) *mealplanningsvc.RecipeList {
+	var items []*mealplanningsvc.RecipeListItem
+	for _, item := range input.Items {
+		items = append(items, ConvertRecipeListItemToGRPCRecipeListItem(item))
+	}
+
+	return &mealplanningsvc.RecipeList{
+		CreatedAt:     timestamppb.New(input.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		Id:            input.ID,
+		Name:          input.Name,
+		Description:   input.Description,
+		BelongsToUser: input.BelongsToUser,
+		Items:         items,
+	}
+}
+
+func ConvertGRPCRecipeListCreationRequestInputToRecipeListCreationRequestInput(input *mealplanningsvc.RecipeListCreationRequestInput) *mealplanning.RecipeListCreationRequestInput {
+	return &mealplanning.RecipeListCreationRequestInput{
+		Name:        input.Name,
+		Description: input.Description,
+	}
+}
+
+func ConvertGRPCRecipeListItemCreationRequestInputToRecipeListItemCreationRequestInput(input *mealplanningsvc.RecipeListItemCreationRequestInput) *mealplanning.RecipeListItemCreationRequestInput {
+	return &mealplanning.RecipeListItemCreationRequestInput{
+		RecipeID: input.RecipeId,
+		Notes:    input.Notes,
+	}
+}
+
+func ConvertGRPCRecipeListUpdateRequestInputToRecipeListUpdateRequestInput(input *mealplanningsvc.RecipeListUpdateRequestInput) *mealplanning.RecipeListUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	var name *string
+	if input.Name != nil {
+		name = pointer.To(input.GetName())
+	}
+
+	var desc *string
+	if input.Description != nil {
+		desc = pointer.To(input.GetDescription())
+	}
+
+	return &mealplanning.RecipeListUpdateRequestInput{
+		Name:        name,
+		Description: desc,
+	}
+}
+
+func ConvertGRPCRecipeListItemUpdateRequestInputToRecipeListItemUpdateRequestInput(input *mealplanningsvc.RecipeListItemUpdateRequestInput) *mealplanning.RecipeListItemUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	var notes *string
+	if input.Notes != nil {
+		notes = pointer.To(input.GetNotes())
+	}
+
+	return &mealplanning.RecipeListItemUpdateRequestInput{
+		Notes: notes,
 	}
 }
 

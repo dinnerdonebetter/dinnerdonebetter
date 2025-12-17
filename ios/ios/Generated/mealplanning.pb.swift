@@ -16957,6 +16957,8 @@ public struct Mealplanning_ArchiveMealListItemRequest: Sendable {
 
   public var mealListItemID: String = String()
 
+  public var mealListID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -17346,6 +17348,8 @@ public struct Mealplanning_ArchiveRecipeListItemRequest: Sendable {
   // methods supported on all messages.
 
   public var recipeListItemID: String = String()
+
+  public var recipeListID: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -42700,7 +42704,7 @@ extension Mealplanning_UpdateMealListItemResponse: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ArchiveMealListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveMealListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_list_item_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}meal_list_item_id\0\u{3}meal_list_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -42709,6 +42713,7 @@ extension Mealplanning_ArchiveMealListItemRequest: SwiftProtobuf.Message, SwiftP
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.mealListItemID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.mealListID) }()
       default: break
       }
     }
@@ -42718,11 +42723,15 @@ extension Mealplanning_ArchiveMealListItemRequest: SwiftProtobuf.Message, SwiftP
     if !self.mealListItemID.isEmpty {
       try visitor.visitSingularStringField(value: self.mealListItemID, fieldNumber: 1)
     }
+    if !self.mealListID.isEmpty {
+      try visitor.visitSingularStringField(value: self.mealListID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_ArchiveMealListItemRequest, rhs: Mealplanning_ArchiveMealListItemRequest) -> Bool {
     if lhs.mealListItemID != rhs.mealListItemID {return false}
+    if lhs.mealListID != rhs.mealListID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -43291,7 +43300,7 @@ extension Mealplanning_UpdateRecipeListItemResponse: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_ArchiveRecipeListItemRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveRecipeListItemRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_list_item_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_list_item_id\0\u{3}recipe_list_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -43300,6 +43309,7 @@ extension Mealplanning_ArchiveRecipeListItemRequest: SwiftProtobuf.Message, Swif
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.recipeListItemID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.recipeListID) }()
       default: break
       }
     }
@@ -43309,11 +43319,15 @@ extension Mealplanning_ArchiveRecipeListItemRequest: SwiftProtobuf.Message, Swif
     if !self.recipeListItemID.isEmpty {
       try visitor.visitSingularStringField(value: self.recipeListItemID, fieldNumber: 1)
     }
+    if !self.recipeListID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeListID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_ArchiveRecipeListItemRequest, rhs: Mealplanning_ArchiveRecipeListItemRequest) -> Bool {
     if lhs.recipeListItemID != rhs.recipeListItemID {return false}
+    if lhs.recipeListID != rhs.recipeListID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

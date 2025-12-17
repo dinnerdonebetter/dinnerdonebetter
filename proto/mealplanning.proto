@@ -3411,6 +3411,7 @@ message UpdateMealListItemResponse {
 
 message ArchiveMealListItemRequest {
   string meal_list_item_id = 1;
+  string meal_list_id = 2;
 }
 
 message ArchiveMealListItemResponse {
@@ -3488,6 +3489,7 @@ message UpdateRecipeListItemResponse {
 
 message ArchiveRecipeListItemRequest {
   string recipe_list_item_id = 1;
+  string recipe_list_id = 2;
 }
 
 message ArchiveRecipeListItemResponse {

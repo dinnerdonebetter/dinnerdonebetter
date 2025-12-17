@@ -996,6 +996,217 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	return x, nil
 }
 
+func (s *serviceImpl) GetRecipeLists(ctx context.Context, request *mealplanning.GetRecipeListsRequest) (*mealplanning.GetRecipeListsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	lists, err := s.recipeManager.ListRecipeLists(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching recipe lists")
+	}
+
+	x := &mealplanning.GetRecipeListsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(lists.Pagination, filter),
+	}
+
+	for _, l := range lists.Data {
+		x.Results = append(x.Results, converters.ConvertRecipeListToGRPCRecipeList(l))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateRecipeList(ctx context.Context, request *mealplanning.CreateRecipeListRequest) (*mealplanning.CreateRecipeListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
+	input := converters.ConvertGRPCRecipeListCreationRequestInputToRecipeListCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeList(ctx, sessionContextData.GetUserID(), input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe list")
+	}
+
+	x := &mealplanning.CreateRecipeListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeListToGRPCRecipeList(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateRecipeList(ctx context.Context, request *mealplanning.UpdateRecipeListRequest) (*mealplanning.UpdateRecipeListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListIDKey: request.RecipeListId,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
+	input := converters.ConvertGRPCRecipeListUpdateRequestInputToRecipeListUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating recipe list")
+	}
+
+	x := &mealplanning.UpdateRecipeListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveRecipeList(ctx context.Context, request *mealplanning.ArchiveRecipeListRequest) (*mealplanning.ArchiveRecipeListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListIDKey: request.RecipeListId,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
+	if err := s.recipeManager.ArchiveRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID()); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe list")
+	}
+
+	x := &mealplanning.ArchiveRecipeListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetRecipeListItems(ctx context.Context, request *mealplanning.GetRecipeListItemsRequest) (*mealplanning.GetRecipeListItemsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListIDKey: request.RecipeListId,
+	}, span, s.logger)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	items, err := s.recipeManager.ListRecipeListItems(ctx, request.RecipeListId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching recipe list items")
+	}
+
+	x := &mealplanning.GetRecipeListItemsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(items.Pagination, filter),
+	}
+
+	for _, item := range items.Data {
+		x.Results = append(x.Results, converters.ConvertRecipeListItemToGRPCRecipeListItem(item))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateRecipeListItem(ctx context.Context, request *mealplanning.CreateRecipeListItemRequest) (*mealplanning.CreateRecipeListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListIDKey: request.Input.BelongsToRecipeList,
+		keys.RecipeIDKey:     request.Input.RecipeId,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCRecipeListItemCreationRequestInputToRecipeListItemCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.AddRecipeToRecipeList(ctx, request.Input.BelongsToRecipeList, input.RecipeID, input.Notes)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe list item")
+	}
+
+	x := &mealplanning.CreateRecipeListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeListItemToGRPCRecipeListItem(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateRecipeListItem(ctx context.Context, request *mealplanning.UpdateRecipeListItemRequest) (*mealplanning.UpdateRecipeListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListItemIDKey: request.RecipeListItemId,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCRecipeListItemUpdateRequestInputToRecipeListItemUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeListItem(ctx, request.RecipeListItemId, request.Input.GetBelongsToRecipeList(), request.Input.GetRecipeId(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating recipe list item")
+	}
+
+	x := &mealplanning.UpdateRecipeListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveRecipeListItem(ctx context.Context, request *mealplanning.ArchiveRecipeListItemRequest) (*mealplanning.ArchiveRecipeListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.RecipeListItemIDKey: request.RecipeListItemId,
+		keys.RecipeListIDKey:     request.RecipeListId,
+	}, span, s.logger)
+
+	if err := s.recipeManager.RemoveRecipeFromRecipeList(ctx, request.RecipeListId, request.RecipeListItemId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe list item")
+	}
+
+	x := &mealplanning.ArchiveRecipeListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetRecipesRequest) (*mealplanning.GetRecipesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
