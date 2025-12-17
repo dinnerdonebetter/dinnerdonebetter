@@ -148,11 +148,19 @@ const (
 	MealKey = "meal"
 	// MealIDKey is the standard key for referring to a meal's ID.
 	MealIDKey = MealKey + idSuffix
+	// MealListIDKey is the standard key for referring to a meal list's ID.
+	MealListIDKey = "meal_list.id"
+	// MealListItemIDKey is the standard key for referring to a meal list item's ID.
+	MealListItemIDKey = "meal_list_item.id"
 
 	// RecipeKey is the standard key for referring to a recipe.
 	RecipeKey = "recipe"
 	// RecipeIDKey is the standard key for referring to a recipe's ID.
 	RecipeIDKey = RecipeKey + idSuffix
+	// RecipeListIDKey is the standard key for referring to a recipe list's ID.
+	RecipeListIDKey = "recipe_list.id"
+	// RecipeListItemIDKey is the standard key for referring to a recipe list item's ID.
+	RecipeListItemIDKey = "recipe_list_item.id"
 
 	// RecipeStepIDKey is the standard key for referring to a recipe step's ID.
 	RecipeStepIDKey = "recipe_step.id"

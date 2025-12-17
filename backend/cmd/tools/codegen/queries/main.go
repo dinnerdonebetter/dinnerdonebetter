@@ -65,6 +65,8 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_list_items.sql":                              buildMealListItemsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_list_items.sql":                            buildRecipeListItemsQueries(databaseToUse),
 		"internal/repositories/postgres/oauth/sqlc_queries/oauth2_client_tokens.sql":                                buildOAuth2ClientTokensQueries(databaseToUse),
 		"internal/repositories/postgres/oauth/sqlc_queries/oauth2_clients.sql":                                      buildOAuth2ClientsQueries(databaseToUse),
 		"internal/repositories/postgres/identity/sqlc_queries/account_invitations.sql":                              buildAccountInvitationsQueries(databaseToUse),
