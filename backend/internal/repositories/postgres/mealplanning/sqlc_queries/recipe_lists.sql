@@ -1,0 +1,71 @@
+-- name: ArchiveRecipeList :execrows
+UPDATE recipe_lists SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(belongs_to_user) AND id = sqlc.arg(id);
+
+-- name: CreateRecipeList :exec
+INSERT INTO recipe_lists (
+	id,
+	name,
+	description,
+	belongs_to_user
+) VALUES (
+	sqlc.arg(id),
+	sqlc.arg(name),
+	sqlc.arg(description),
+	sqlc.arg(belongs_to_user)
+);
+
+-- name: GetRecipeLists :many
+SELECT
+	recipe_lists.id,
+	recipe_lists.name,
+	recipe_lists.description,
+	recipe_lists.created_at,
+	recipe_lists.last_updated_at,
+	recipe_lists.archived_at,
+	recipe_lists.belongs_to_user,
+	(
+		SELECT COUNT(recipe_lists.id)
+		FROM recipe_lists
+		WHERE recipe_lists.archived_at IS NULL
+			AND
+			recipe_lists.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_lists.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_lists.last_updated_at IS NULL
+				OR recipe_lists.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_lists.last_updated_at IS NULL
+				OR recipe_lists.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipe_lists.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipe_lists.id)
+		FROM recipe_lists
+		WHERE recipe_lists.archived_at IS NULL
+	) AS total_count
+FROM recipe_lists
+	WHERE recipe_lists.archived_at IS NULL
+	AND recipe_lists.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_lists.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_lists.last_updated_at IS NULL
+		OR recipe_lists.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_lists.last_updated_at IS NULL
+		OR recipe_lists.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipe_lists.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipe_lists.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
+
+-- name: UpdateRecipeList :execrows
+UPDATE recipe_lists SET
+	name = sqlc.arg(name),
+	description = sqlc.arg(description),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);

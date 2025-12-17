@@ -56,6 +56,8 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_options.sql":                            buildMealPlanOptionsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_tasks.sql":                              buildMealPlanTasksQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipes.sql":                                      buildRecipesQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_lists.sql":                                 buildRecipeListsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_lists.sql":                                   buildMealListsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_products.sql":                         buildRecipeStepProductsQueries(databaseToUse),
