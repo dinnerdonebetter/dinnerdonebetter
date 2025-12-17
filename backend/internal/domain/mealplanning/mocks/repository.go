@@ -1511,3 +1511,91 @@ func (m *Repository) UpdateValidPreparationVessel(ctx context.Context, updated *
 func (m *Repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	return m.Called(ctx, validPreparationVesselID).Error(0)
 }
+
+// GetRecipeLists is a mock function.
+func (m *Repository) GetRecipeLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeList], error) {
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeList]), returnValues.Error(1)
+}
+
+// CreateRecipeList is a mock function.
+func (m *Repository) CreateRecipeList(ctx context.Context, input *mealplanning.RecipeListDatabaseCreationInput) (*mealplanning.RecipeList, error) {
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*mealplanning.RecipeList), returnValues.Error(1)
+}
+
+// UpdateRecipeList is a mock function.
+func (m *Repository) UpdateRecipeList(ctx context.Context, updated *mealplanning.RecipeList) error {
+	return m.Called(ctx, updated).Error(0)
+}
+
+// ArchiveRecipeList is a mock function.
+func (m *Repository) ArchiveRecipeList(ctx context.Context, recipeListID, userID string) error {
+	return m.Called(ctx, recipeListID, userID).Error(0)
+}
+
+// GetMealLists is a mock function.
+func (m *Repository) GetMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealList], error) {
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealList]), returnValues.Error(1)
+}
+
+// CreateMealList is a mock function.
+func (m *Repository) CreateMealList(ctx context.Context, input *mealplanning.MealListDatabaseCreationInput) (*mealplanning.MealList, error) {
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*mealplanning.MealList), returnValues.Error(1)
+}
+
+// UpdateMealList is a mock function.
+func (m *Repository) UpdateMealList(ctx context.Context, updated *mealplanning.MealList) error {
+	return m.Called(ctx, updated).Error(0)
+}
+
+// ArchiveMealList is a mock function.
+func (m *Repository) ArchiveMealList(ctx context.Context, mealListID, userID string) error {
+	return m.Called(ctx, mealListID, userID).Error(0)
+}
+
+// GetRecipeListItems is a mock function.
+func (m *Repository) GetRecipeListItems(ctx context.Context, recipeListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeListItem], error) {
+	returnValues := m.Called(ctx, recipeListID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeListItem]), returnValues.Error(1)
+}
+
+// CreateRecipeListItem is a mock function.
+func (m *Repository) CreateRecipeListItem(ctx context.Context, input *mealplanning.RecipeListItemDatabaseCreationInput) (*mealplanning.RecipeListItem, error) {
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*mealplanning.RecipeListItem), returnValues.Error(1)
+}
+
+// UpdateRecipeListItem is a mock function.
+func (m *Repository) UpdateRecipeListItem(ctx context.Context, updated *mealplanning.RecipeListItem) error {
+	return m.Called(ctx, updated).Error(0)
+}
+
+// ArchiveRecipeListItem is a mock function.
+func (m *Repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID, recipeListID string) error {
+	return m.Called(ctx, recipeListItemID, recipeListID).Error(0)
+}
+
+// GetMealListItems is a mock function.
+func (m *Repository) GetMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealListItem], error) {
+	returnValues := m.Called(ctx, mealListID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealListItem]), returnValues.Error(1)
+}
+
+// CreateMealListItem is a mock function.
+func (m *Repository) CreateMealListItem(ctx context.Context, input *mealplanning.MealListItemDatabaseCreationInput) (*mealplanning.MealListItem, error) {
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*mealplanning.MealListItem), returnValues.Error(1)
+}
+
+// UpdateMealListItem is a mock function.
+func (m *Repository) UpdateMealListItem(ctx context.Context, updated *mealplanning.MealListItem) error {
+	return m.Called(ctx, updated).Error(0)
+}
+
+// ArchiveMealListItem is a mock function.
+func (m *Repository) ArchiveMealListItem(ctx context.Context, mealListItemID, mealListID string) error {
+	return m.Called(ctx, mealListItemID, mealListID).Error(0)
+}

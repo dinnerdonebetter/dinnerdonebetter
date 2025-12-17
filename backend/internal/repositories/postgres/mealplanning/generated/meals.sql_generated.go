@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const archiveMeal = `-- name: ArchiveMeal :execrows
@@ -459,6 +461,100 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMealsWithIDs = `-- name: GetMealsWithIDs :many
+SELECT
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at
+FROM meals
+	JOIN meal_components ON meal_components.meal_id=meals.id
+WHERE meals.archived_at IS NULL
+  AND meal_components.archived_at IS NULL
+  AND meals.id = ANY($1::text[])
+ORDER BY meals.id ASC
+`
+
+type GetMealsWithIDsRow struct {
+	CreatedAt                  time.Time
+	ComponentCreatedAt         time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
+	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	LastIndexedAt              sql.NullTime
+	ComponentMealID            string
+	CreatedByUser              string
+	ComponentID                string
+	ID                         string
+	ComponentRecipeID          string
+	ComponentMealComponentType ComponentType
+	ComponentRecipeScale       string
+	MinEstimatedPortions       string
+	Description                string
+	Name                       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
+}
+
+func (q *Queries) GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getMealsWithIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealsWithIDsRow{}
+	for rows.Next() {
+		var i GetMealsWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.EligibleForMealPlans,
+			&i.LastIndexedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.ComponentID,
+			&i.ComponentMealID,
+			&i.ComponentRecipeID,
+			&i.ComponentMealComponentType,
+			&i.ComponentRecipeScale,
+			&i.ComponentCreatedAt,
+			&i.ComponentLastUpdatedAt,
+			&i.ComponentArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

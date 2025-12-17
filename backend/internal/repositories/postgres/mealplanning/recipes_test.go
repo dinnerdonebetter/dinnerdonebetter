@@ -225,6 +225,35 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	}
 }
 
+func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	r1 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	r2 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	res, err := dbc.GetRecipesWithIDs(ctx, []string{r1.ID, r2.ID})
+	require.NoError(t, err)
+	require.Len(t, res, 2)
+
+	found := map[string]*mealplanning.Recipe{}
+	for _, rec := range res {
+		found[rec.ID] = rec
+		require.NotEmpty(t, rec.Steps)
+	}
+
+	assert.Contains(t, found, r1.ID)
+	assert.Contains(t, found, r2.ID)
+}
+
 func TestQuerier_RecipeExists(T *testing.T) {
 	T.Parallel()
 

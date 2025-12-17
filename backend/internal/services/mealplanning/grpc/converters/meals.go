@@ -928,3 +928,90 @@ func ConvertGRPCMealPlanTaskToMealPlanTask(input *mealplanningsvc.MealPlanTask) 
 		MealPlanOption:      *ConvertGRPCMealPlanOptionToMealPlanOption(input.MealPlanOption),
 	}
 }
+
+func ConvertMealListItemToGRPCMealListItem(input *mealplanning.MealListItem) *mealplanningsvc.MealListItem {
+	return &mealplanningsvc.MealListItem{
+		CreatedAt:         timestamppb.New(input.CreatedAt),
+		LastUpdatedAt:     grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:        grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		Id:                input.ID,
+		MealId:            input.Meal.ID,
+		Notes:             input.Notes,
+		BelongsToMealList: input.BelongsToMealList,
+		Meal:              ConvertMealToGRPCMeal(&input.Meal),
+	}
+}
+
+func ConvertMealListToGRPCMealList(input *mealplanning.MealList) *mealplanningsvc.MealList {
+	var items []*mealplanningsvc.MealListItem
+	for _, item := range input.Items {
+		items = append(items, ConvertMealListItemToGRPCMealListItem(item))
+	}
+
+	return &mealplanningsvc.MealList{
+		CreatedAt:     timestamppb.New(input.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		Id:            input.ID,
+		Name:          input.Name,
+		Description:   input.Description,
+		BelongsToUser: input.BelongsToUser,
+		Items:         items,
+	}
+}
+
+func ConvertGRPCMealListCreationRequestInputToMealListCreationRequestInput(input *mealplanningsvc.MealListCreationRequestInput) *mealplanning.MealListCreationRequestInput {
+	var items []*mealplanning.MealListItemCreationRequestInput
+	for _, item := range input.Items {
+		items = append(items, ConvertGRPCMealListItemCreationRequestInputToMealListItemCreationRequestInput(item))
+	}
+
+	return &mealplanning.MealListCreationRequestInput{
+		Name:        input.Name,
+		Description: input.Description,
+		Items:       items,
+	}
+}
+
+func ConvertGRPCMealListItemCreationRequestInputToMealListItemCreationRequestInput(input *mealplanningsvc.MealListItemCreationRequestInput) *mealplanning.MealListItemCreationRequestInput {
+	return &mealplanning.MealListItemCreationRequestInput{
+		MealID: input.MealId,
+		Notes:  input.Notes,
+	}
+}
+
+func ConvertGRPCMealListUpdateRequestInputToMealListUpdateRequestInput(input *mealplanningsvc.MealListUpdateRequestInput) *mealplanning.MealListUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	var name *string
+	if input.Name != nil {
+		name = pointer.To(input.GetName())
+	}
+
+	var desc *string
+	if input.Description != nil {
+		desc = pointer.To(input.GetDescription())
+	}
+
+	return &mealplanning.MealListUpdateRequestInput{
+		Name:        name,
+		Description: desc,
+	}
+}
+
+func ConvertGRPCMealListItemUpdateRequestInputToMealListItemUpdateRequestInput(input *mealplanningsvc.MealListItemUpdateRequestInput) *mealplanning.MealListItemUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	var notes *string
+	if input.Notes != nil {
+		notes = pointer.To(input.GetNotes())
+	}
+
+	return &mealplanning.MealListItemUpdateRequestInput{
+		Notes: notes,
+	}
+}

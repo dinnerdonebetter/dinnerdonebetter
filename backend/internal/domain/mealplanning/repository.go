@@ -9,6 +9,10 @@ type Repository interface {
 	MealPlanOptionVoteDataManager
 	MealPlanTaskDataManager
 	MealPlanningDataManager
+	RecipeListDataManager
+	RecipeListItemDataManager
+	MealListDataManager
+	MealListItemDataManager
 	RecipeDataManager
 	RecipeManagementDataManager
 	RecipeMediaDataManager

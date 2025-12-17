@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -210,6 +211,216 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanningsvc.C
 			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: converters.ConvertMealToGRPCMeal(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetMealLists(ctx context.Context, request *mealplanningsvc.GetMealListsRequest) (*mealplanningsvc.GetMealListsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	lists, err := s.mealPlanningManager.ListMealLists(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching meal lists")
+	}
+
+	x := &mealplanningsvc.GetMealListsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(lists.Pagination, filter),
+	}
+
+	for _, l := range lists.Data {
+		x.Results = append(x.Results, converters.ConvertMealListToGRPCMealList(l))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateMealList(ctx context.Context, request *mealplanningsvc.CreateMealListRequest) (*mealplanningsvc.CreateMealListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+	}
+
+	input := converters.ConvertGRPCMealListCreationRequestInputToMealListCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealList(ctx, sessionContextData.GetUserID(), input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating meal list")
+	}
+
+	x := &mealplanningsvc.CreateMealListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealListToGRPCMealList(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateMealList(ctx context.Context, request *mealplanningsvc.UpdateMealListRequest) (*mealplanningsvc.UpdateMealListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListIDKey: request.MealListId,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
+	input := converters.ConvertGRPCMealListUpdateRequestInputToMealListUpdateRequestInput(request.Input)
+	if err = s.mealPlanningManager.UpdateMealList(ctx, request.MealListId, sessionContextData.GetUserID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating meal list")
+	}
+
+	x := &mealplanningsvc.UpdateMealListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveMealList(ctx context.Context, request *mealplanningsvc.ArchiveMealListRequest) (*mealplanningsvc.ArchiveMealListResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListIDKey: request.MealListId,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
+	if err = s.mealPlanningManager.ArchiveMealList(ctx, request.MealListId, sessionContextData.GetUserID()); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving meal list")
+	}
+
+	x := &mealplanningsvc.ArchiveMealListResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetMealListItems(ctx context.Context, request *mealplanningsvc.GetMealListItemsRequest) (*mealplanningsvc.GetMealListItemsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListIDKey: request.MealListId,
+	}, span, s.logger)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	items, err := s.mealPlanningManager.ListMealListItems(ctx, request.MealListId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching meal list items")
+	}
+
+	x := &mealplanningsvc.GetMealListItemsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(items.Pagination, filter),
+	}
+
+	for _, item := range items.Data {
+		x.Results = append(x.Results, converters.ConvertMealListItemToGRPCMealListItem(item))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateMealListItem(ctx context.Context, request *mealplanningsvc.CreateMealListItemRequest) (*mealplanningsvc.CreateMealListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListIDKey: request.Input.BelongsToMealList,
+		keys.MealIDKey:     request.Input.MealId,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCMealListItemCreationRequestInputToMealListItemCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.AddMealToMealList(ctx, request.Input.BelongsToMealList, input.MealID, input.Notes)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating meal list item")
+	}
+
+	x := &mealplanningsvc.CreateMealListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealListItemToGRPCMealListItem(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateMealListItem(ctx context.Context, request *mealplanningsvc.UpdateMealListItemRequest) (*mealplanningsvc.UpdateMealListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListItemIDKey: request.MealListItemId,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCMealListItemUpdateRequestInputToMealListItemUpdateRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.UpdateMealListItem(ctx, request.MealListItemId, request.Input.GetBelongsToMealList(), request.Input.GetMealId(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating meal list item")
+	}
+
+	x := &mealplanningsvc.UpdateMealListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveMealListItem(ctx context.Context, request *mealplanningsvc.ArchiveMealListItemRequest) (*mealplanningsvc.ArchiveMealListItemResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealListItemIDKey: request.MealListItemId,
+		keys.MealListIDKey:     request.MealListId,
+	}, span, s.logger)
+
+	if err := s.mealPlanningManager.RemoveMealFromMealList(ctx, request.MealListId, request.MealListItemId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving meal list item")
+	}
+
+	x := &mealplanningsvc.ArchiveMealListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
 	}
 
 	return x, nil

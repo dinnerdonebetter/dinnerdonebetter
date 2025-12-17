@@ -111,6 +111,14 @@ var (
 		ArchiveAccountInstrumentOwnershipsPermission,
 		CreateWebhookTriggerEventsPermission,
 		ArchiveWebhookTriggerEventsPermission,
+		CreateMealListsPermission,
+		ReadMealListsPermission,
+		UpdateMealListsPermission,
+		ArchiveMealListsPermission,
+		CreateRecipeListsPermission,
+		ReadRecipeListsPermission,
+		UpdateRecipeListsPermission,
+		ArchiveRecipeListsPermission,
 	}
 
 	// AccountMemberPermissions is every account member permission.

@@ -444,6 +444,48 @@ var (
 		mealPlanningPerm("ArchiveMealPlanGroceryListItem"): {
 			authorization.ArchiveMealPlanGroceryListItemsPermission,
 		},
+		mealPlanningPerm("ArchiveMealList"): {
+			authorization.ArchiveMealListsPermission,
+		},
+		mealPlanningPerm("ArchiveMealListItem"): {
+			authorization.ArchiveMealListsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeList"): {
+			authorization.ArchiveRecipeListsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeListItem"): {
+			authorization.ArchiveRecipeListsPermission,
+		},
+		mealPlanningPerm("CreateMealList"): {
+			authorization.CreateMealListsPermission,
+		},
+		mealPlanningPerm("CreateMealListItem"): {
+			authorization.CreateMealListsPermission,
+		},
+		mealPlanningPerm("CreateRecipeList"): {
+			authorization.CreateRecipeListsPermission,
+		},
+		mealPlanningPerm("CreateRecipeListItem"): {
+			authorization.CreateRecipeListsPermission,
+		},
+		mealPlanningPerm("GetMealLists"): {
+			authorization.ReadMealListsPermission,
+		},
+		mealPlanningPerm("GetRecipeLists"): {
+			authorization.ReadMealListsPermission,
+		},
+		mealPlanningPerm("UpdateMealList"): {
+			authorization.UpdateMealListsPermission,
+		},
+		mealPlanningPerm("UpdateMealListItem"): {
+			authorization.UpdateMealListsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeList"): {
+			authorization.UpdateRecipeListsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeListItem"): {
+			authorization.UpdateRecipeListsPermission,
+		},
 		mealPlanningPerm("CloneRecipe"): {
 			authorization.ReadRecipesPermission, // TODO: this should be its own perm
 		},

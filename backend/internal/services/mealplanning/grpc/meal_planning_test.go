@@ -9,9 +9,11 @@ import (
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/fake"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -247,6 +249,250 @@ func TestServiceImpl_ArchiveUserIngredientPreference(T *testing.T) {
 		})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_GetMealLists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		list := &mealplanning.MealList{ID: mealplanningfakes.BuildFakeID()}
+		expected := &filtering.QueryFilteredResult[mealplanning.MealList]{Data: []*mealplanning.MealList{list}}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("ListMealLists", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.GetMealLists(ctx, &mealplanninggrpc.GetMealListsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Len(t, res.Results, 1)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_CreateMealList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		input := &mealplanninggrpc.MealListCreationRequestInput{Name: t.Name(), Description: "desc"}
+		created := &mealplanning.MealList{ID: mealplanningfakes.BuildFakeID()}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("CreateMealList", testutils.ContextMatcher, userID, testutils.MatchType[*mealplanning.MealListCreationRequestInput]()).Return(created, nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.CreateMealList(ctx, &mealplanninggrpc.CreateMealListRequest{Input: input})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, created.ID, res.Created.Id)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_UpdateMealList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		name := t.Name()
+		desc := "desc"
+		input := &mealplanninggrpc.MealListUpdateRequestInput{
+			Name:        &name,
+			Description: &desc,
+		}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("UpdateMealList", testutils.ContextMatcher, listID, userID, testutils.MatchType[*mealplanning.MealListUpdateRequestInput]()).Return(nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.UpdateMealList(ctx, &mealplanninggrpc.UpdateMealListRequest{
+			MealListId: listID,
+			Input:      input,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_ArchiveMealList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		userID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{UserID: userID},
+			}, nil
+		}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("ArchiveMealList", testutils.ContextMatcher, listID, userID).Return(nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.ArchiveMealList(ctx, &mealplanninggrpc.ArchiveMealListRequest{MealListId: listID})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_GetMealListItems(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		listID := mealplanningfakes.BuildFakeID()
+		item := &mealplanning.MealListItem{ID: mealplanningfakes.BuildFakeID(), Meal: mealplanning.Meal{ID: mealplanningfakes.BuildFakeID()}}
+		expected := &filtering.QueryFilteredResult[mealplanning.MealListItem]{Data: []*mealplanning.MealListItem{item}}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("ListMealListItems", testutils.ContextMatcher, listID, testutils.QueryFilterMatcher).Return(expected, nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.GetMealListItems(ctx, &mealplanninggrpc.GetMealListItemsRequest{MealListId: listID})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Len(t, res.Results, 1)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_CreateMealListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		listID := mealplanningfakes.BuildFakeID()
+		mealID := mealplanningfakes.BuildFakeID()
+		input := &mealplanninggrpc.MealListItemCreationRequestInput{
+			BelongsToMealList: listID,
+			MealId:            mealID,
+			Notes:             t.Name(),
+		}
+
+		created := &mealplanning.MealListItem{ID: mealplanningfakes.BuildFakeID()}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("AddMealToMealList", testutils.ContextMatcher, listID, mealID, input.Notes).Return(created, nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.CreateMealListItem(ctx, &mealplanninggrpc.CreateMealListItemRequest{Input: input})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, created.ID, res.Created.Id)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_UpdateMealListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		itemID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+		mealID := mealplanningfakes.BuildFakeID()
+		notes := pointer.To(t.Name())
+		input := &mealplanninggrpc.MealListItemUpdateRequestInput{
+			BelongsToMealList: &listID,
+			MealId:            &mealID,
+			Notes:             notes,
+		}
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("UpdateMealListItem", testutils.ContextMatcher, itemID, listID, mealID, testutils.MatchType[*mealplanning.MealListItemUpdateRequestInput]()).Return(nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.UpdateMealListItem(ctx, &mealplanninggrpc.UpdateMealListItemRequest{
+			MealListItemId: itemID,
+			Input:          input,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		mock.AssertExpectationsForObjects(t, mmpm)
+	})
+}
+
+func TestServiceImpl_ArchiveMealListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForMealPlanningTest(t)
+
+		itemID := mealplanningfakes.BuildFakeID()
+		listID := mealplanningfakes.BuildFakeID()
+
+		mmpm := &mockmanagers.MockMealPlanningManager{}
+		mmpm.On("RemoveMealFromMealList", testutils.ContextMatcher, listID, itemID).Return(nil)
+		s.mealPlanningManager = mmpm
+
+		res, err := s.ArchiveMealListItem(ctx, &mealplanninggrpc.ArchiveMealListItemRequest{
+			MealListItemId: itemID,
+			MealListId:     listID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
 
 		mock.AssertExpectationsForObjects(t, mmpm)
 	})

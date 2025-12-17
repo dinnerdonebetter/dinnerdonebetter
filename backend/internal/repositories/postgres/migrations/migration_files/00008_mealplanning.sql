@@ -685,6 +685,46 @@ CREATE TABLE IF NOT EXISTS meal_plan_tasks (
     completed_at TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE IF NOT EXISTS meal_lists (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "belongs_to_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS meal_list_items (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "meal_id" TEXT NOT NULL REFERENCES meals("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    "notes" TEXT NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "belongs_to_meal_list" TEXT NOT NULL REFERENCES meal_lists("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS recipe_lists (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "belongs_to_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS recipe_list_items (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "recipe_id" TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    "notes" TEXT NOT NULL DEFAULT '',
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    "belongs_to_recipe_list" TEXT NOT NULL REFERENCES recipe_lists("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- =============================================================================
 -- INDEXES FOR MEAL PLANNING TABLES
 -- =============================================================================
