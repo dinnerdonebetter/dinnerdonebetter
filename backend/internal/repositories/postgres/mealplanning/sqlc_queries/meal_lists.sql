@@ -54,7 +54,7 @@ SELECT
 	) AS total_count
 FROM meal_lists
 	LEFT JOIN meal_list_items ON meal_list_items.belongs_to_meal_list = meal_lists.id AND meal_list_items.archived_at IS NULL
-WHERE meal_lists.archived_at IS NULL
+	WHERE meal_lists.archived_at IS NULL
 	AND meal_lists.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND meal_lists.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
