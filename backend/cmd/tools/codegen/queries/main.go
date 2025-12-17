@@ -81,6 +81,8 @@ func main() {
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhooks.sql":                                         buildWebhooksQueries(databaseToUse),
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhook_trigger_events.sql":                           buildWebhookTriggerEventsQueries(databaseToUse),
 		"internal/repositories/postgres/notifications/sqlc_queries/user_notifications.sql":                          buildUserNotificationQueries(databaseToUse),
+		"internal/repositories/postgres/waitlists/sqlc_queries/waitlists.sql":                                       buildWaitlistsQueries(databaseToUse),
+		"internal/repositories/postgres/waitlists/sqlc_queries/waitlist_signups.sql":                                buildWaitlistSignupsQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

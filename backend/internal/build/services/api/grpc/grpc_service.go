@@ -10,6 +10,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 )
@@ -24,6 +25,7 @@ type GRPCService struct {
 	notificationssvc.UserNotificationsServiceServer
 	oauthsvc.OAuthServiceServer
 	settingssvc.SettingsServiceServer
+	waitlistssvc.WaitlistsServiceServer
 	webhookssvc.WebhooksServiceServer
 	*grpc.Server
 }
@@ -39,6 +41,7 @@ func NewGRPCService(
 	oauthServiceServer oauthsvc.OAuthServiceServer,
 	settingsServiceServer settingssvc.SettingsServiceServer,
 	webhooksServiceServer webhookssvc.WebhooksServiceServer,
+	waitlistsServiceServer waitlistssvc.WaitlistsServiceServer,
 	server *grpc.Server,
 ) *GRPCService {
 	return &GRPCService{
@@ -53,5 +56,6 @@ func NewGRPCService(
 		OAuthServiceServer:             oauthServiceServer,
 		SettingsServiceServer:          settingsServiceServer,
 		WebhooksServiceServer:          webhooksServiceServer,
+		WaitlistsServiceServer:         waitlistsServiceServer,
 	}
 }

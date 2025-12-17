@@ -12,6 +12,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
@@ -34,6 +35,7 @@ func BuildRegistrationFuncs(
 	notificationsService notificationssvc.UserNotificationsServiceServer,
 	oauthService oauthsvc.OAuthServiceServer,
 	settingsService settingssvc.SettingsServiceServer,
+	waitlistsService waitlistssvc.WaitlistsServiceServer,
 	webhooksService webhookssvc.WebhooksServiceServer,
 ) []platformgrpc.RegistrationFunc {
 	return []platformgrpc.RegistrationFunc{
@@ -47,6 +49,7 @@ func BuildRegistrationFuncs(
 			notificationssvc.RegisterUserNotificationsServiceServer(server, notificationsService)
 			oauthsvc.RegisterOAuthServiceServer(server, oauthService)
 			settingssvc.RegisterSettingsServiceServer(server, settingsService)
+			waitlistssvc.RegisterWaitlistsServiceServer(server, waitlistsService)
 			webhookssvc.RegisterWebhooksServiceServer(server, webhooksService)
 		},
 	}

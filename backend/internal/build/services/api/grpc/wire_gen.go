@@ -26,7 +26,7 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	grpc11 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	grpc12 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -34,6 +34,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
@@ -49,6 +50,7 @@ import (
 	grpc7 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	grpc8 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	grpc9 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	grpc11 "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	grpc10 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 )
 
@@ -163,17 +165,19 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	settingsServiceServer := grpc9.NewService(logger, tracerProvider, settingsRepository)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
 	webhooksServiceServer := grpc10.NewService(logger, tracerProvider, webhooksRepository)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	waitlistsServiceServer := grpc11.NewService(logger, tracerProvider, waitlistsRepository)
 	grpcConfig := &cfg.GRPCServer
 	oAuth2Config := &authenticationConfig.OAuth2
 	manageManager := authentication2.ProvideOAuth2ClientManager(logger, tracerProvider, oAuth2Config, oauthRepository)
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityRepository, manageManager)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()
-	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer)
-	server, err := grpc11.NewGRPCServer(grpcConfig, logger, v2, v3, v4...)
+	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, waitlistsServiceServer, webhooksServiceServer)
+	server, err := grpc12.NewGRPCServer(grpcConfig, logger, v2, v3, v4...)
 	if err != nil {
 		return nil, err
 	}
-	grpcService := NewGRPCService(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer, server)
+	grpcService := NewGRPCService(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer, waitlistsServiceServer, server)
 	return grpcService, nil
 }
