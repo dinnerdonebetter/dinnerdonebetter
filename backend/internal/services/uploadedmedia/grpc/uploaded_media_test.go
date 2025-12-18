@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"io"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -15,20 +16,23 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository) {
+func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository, *mockuploads.MockUploadManager) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
 	uploadedMediaRepo := &uploadedmediamock.Repository{}
+	uploadManager := &mockuploads.MockUploadManager{}
 
 	service := &serviceImpl{
 		tracer: tracer,
@@ -42,9 +46,10 @@ func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository
 			}, nil
 		},
 		uploadedMediaRepository: uploadedMediaRepo,
+		uploadManager:           uploadManager,
 	}
 
-	return service, uploadedMediaRepo
+	return service, uploadedMediaRepo, uploadManager
 }
 
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
@@ -60,9 +65,57 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 			return nil, errors.New("session error")
 		},
 		uploadedMediaRepository: &uploadedmediamock.Repository{},
+		uploadManager:           &mockuploads.MockUploadManager{},
 	}
 
 	return service
+}
+
+// mockUploadStream is a mock implementation of the upload stream
+type mockUploadStream struct {
+	mock.Mock
+	ctx context.Context
+}
+
+func (m *mockUploadStream) Context() context.Context {
+	if m.ctx == nil {
+		return context.Background()
+	}
+	return m.ctx
+}
+
+func (m *mockUploadStream) SendMsg(msg interface{}) error {
+	args := m.Called(msg)
+	return args.Error(0)
+}
+
+func (m *mockUploadStream) RecvMsg(msg interface{}) error {
+	args := m.Called(msg)
+	return args.Error(0)
+}
+
+func (m *mockUploadStream) Recv() (*uploadedmediasvc.UploadRequest, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*uploadedmediasvc.UploadRequest), args.Error(1)
+}
+
+func (m *mockUploadStream) SendAndClose(response *uploadedmediasvc.UploadResponse) error {
+	args := m.Called(response)
+	return args.Error(0)
+}
+
+func (m *mockUploadStream) SendHeader(md metadata.MD) error {
+	return nil
+}
+
+func (m *mockUploadStream) SetHeader(md metadata.MD) error {
+	return nil
+}
+
+func (m *mockUploadStream) SetTrailer(md metadata.MD) {
 }
 
 func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
@@ -72,7 +125,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeInput := uploadedmediafakes.BuildFakeUploadedMediaCreationRequestInput()
@@ -116,7 +169,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeInput := uploadedmediafakes.BuildFakeUploadedMediaCreationRequestInput()
 
@@ -143,7 +196,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
@@ -185,7 +238,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
@@ -209,7 +262,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
@@ -234,7 +287,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia1 := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia1.CreatedByUser = "test-user-id"
@@ -267,7 +320,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia1 := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia1.CreatedByUser = "test-user-id"
@@ -318,7 +371,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, _ := buildTestService(t)
+		service, _, _ := buildTestService(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
 			Ids: []string{},
@@ -335,7 +388,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		ids := []string{"id1", "id2"}
 
@@ -362,7 +415,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMediaList := &filtering.QueryFilteredResult[uploadedmedia.UploadedMedia]{
 			Data: []*uploadedmedia.UploadedMedia{
@@ -413,7 +466,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, _ := buildTestService(t)
+		service, _, _ := buildTestService(t)
 
 		request := &uploadedmediasvc.GetUploadedMediaForUserRequest{
 			UserId: "different-user-id",
@@ -431,7 +484,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On("GetUploadedMediaForUser", testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, errors.New("repository error"))
 
@@ -457,7 +510,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
@@ -505,7 +558,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
@@ -530,7 +583,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
@@ -552,7 +605,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
@@ -582,7 +635,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
@@ -623,7 +676,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
@@ -647,7 +700,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
@@ -668,7 +721,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		service, mockRepo := buildTestService(t)
+		service, mockRepo, _ := buildTestService(t)
 
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
@@ -687,5 +740,359 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		assert.Equal(t, codes.Internal, status.Code(err))
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
+	})
+}
+
+func TestServiceImpl_Upload(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		service, mockRepo, mockUploadMgr := buildTestService(t)
+
+		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
+		fakeUploadedMedia.MimeType = uploadedmedia.MimeTypeImagePNG
+
+		// Create mock stream
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		// Setup metadata message
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "test-file.png",
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		// Setup chunk messages
+		chunk1 := []byte("test file content part 1")
+		chunk2 := []byte("test file content part 2")
+
+		chunkReq1 := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: chunk1,
+			},
+		}
+
+		chunkReq2 := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: chunk2,
+			},
+		}
+
+		// Setup mock stream expectations
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On("Recv").Return(chunkReq1, nil).Once()
+		mockStream.On("Recv").Return(chunkReq2, nil).Once()
+		mockStream.On("Recv").Return(nil, io.EOF).Once()
+		mockStream.On("SendAndClose", mock.AnythingOfType("*uploaded_media.UploadResponse")).Return(nil).Once()
+
+		// Setup mock upload manager expectation
+		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+
+		// Setup mock repo expectation
+		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
+
+		// Execute
+		err := service.Upload(mockStream)
+
+		// Assert
+		assert.NoError(t, err)
+		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr, mockRepo)
+	})
+
+	t.Run("session context error", func(t *testing.T) {
+		t.Parallel()
+
+		service := buildTestServiceWithSessionError(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
+	})
+
+	t.Run("missing metadata in first message", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		// First message is a chunk instead of metadata
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: []byte("some data"),
+			},
+		}
+
+		mockStream.On("Recv").Return(chunkReq, nil).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("missing object_name", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "", // Missing
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("missing content_type", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "test-file.png",
+			ContentType: "", // Missing
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("unsupported MIME type", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "test-file.pdf",
+			ContentType: "application/pdf", // Unsupported
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("file too large", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "large-file.png",
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		// Create a chunk that's larger than maxUploadSize (100 MB)
+		largeChunk := make([]byte, 101*1024*1024)
+
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: largeChunk,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On("Recv").Return(chunkReq, nil).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("no file data", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, _ := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "empty-file.png",
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On("Recv").Return(nil, io.EOF).Once()
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream)
+	})
+
+	t.Run("upload manager error", func(t *testing.T) {
+		t.Parallel()
+
+		service, _, mockUploadMgr := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "test-file.png",
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		chunk := []byte("test file content")
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: chunk,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On("Recv").Return(chunkReq, nil).Once()
+		mockStream.On("Recv").Return(nil, io.EOF).Once()
+
+		// Mock upload manager to return error
+		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(errors.New("storage error"))
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.Internal, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr)
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		t.Parallel()
+
+		service, mockRepo, mockUploadMgr := buildTestService(t)
+
+		mockStream := &mockUploadStream{
+			ctx: context.Background(),
+		}
+
+		uploadMetadata := &uploadedmediasvc.UploadMetadata{
+			Bucket:      "test-bucket",
+			ObjectName:  "test-file.png",
+			ContentType: uploadedmedia.MimeTypeImagePNG,
+		}
+
+		metadataReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Metadata{
+				Metadata: uploadMetadata,
+			},
+		}
+
+		chunk := []byte("test file content")
+		chunkReq := &uploadedmediasvc.UploadRequest{
+			Payload: &uploadedmediasvc.UploadRequest_Chunk{
+				Chunk: chunk,
+			},
+		}
+
+		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On("Recv").Return(chunkReq, nil).Once()
+		mockStream.On("Recv").Return(nil, io.EOF).Once()
+
+		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+
+		// Mock repo to return error
+		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("database error"))
+
+		err := service.Upload(mockStream)
+
+		assert.Error(t, err)
+		assert.Equal(t, codes.Internal, status.Code(err))
+		mock.AssertExpectationsForObjects(t, mockStream, mockUploadMgr, mockRepo)
 	})
 }

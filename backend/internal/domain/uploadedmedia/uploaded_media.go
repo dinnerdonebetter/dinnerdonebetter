@@ -27,6 +27,16 @@ const (
 	MimeTypeVideoMP4  = "video/mp4"
 )
 
+// IsValidMimeType checks if a MIME type is supported.
+func IsValidMimeType(mimeType string) bool {
+	switch mimeType {
+	case MimeTypeImagePNG, MimeTypeImageJPEG, MimeTypeImageGIF, MimeTypeVideoMP4:
+		return true
+	default:
+		return false
+	}
+}
+
 func init() {
 	gob.Register(new(UploadedMedia))
 	gob.Register(new(UploadedMediaCreationRequestInput))

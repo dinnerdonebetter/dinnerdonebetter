@@ -7,6 +7,7 @@ import (
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +22,7 @@ func TestNewService(t *testing.T) {
 		tracerProvider := tracing.NewNoopTracerProvider()
 		uploadedMediaRepo := &uploadedmediamock.Repository{}
 
-		service := NewService(logger, tracerProvider, uploadedMediaRepo)
+		service := NewService(logger, tracerProvider, uploadedMediaRepo, &mockuploads.MockUploadManager{})
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*uploadedmediasvc.UploadedMediaServiceServer)(nil), service)

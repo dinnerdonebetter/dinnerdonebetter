@@ -1,18 +1,195 @@
 package grpc
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"io"
+	"path/filepath"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
+
+const (
+	maxUploadSize = 100 * 1024 * 1024 // 100 MB
+)
+
+func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_UploadServer) error {
+	ctx := stream.Context()
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	// Verify authentication
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
+
+	// Receive first message which should contain metadata
+	firstReq, err := stream.Recv()
+	if err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to receive metadata")
+	}
+
+	metadata := firstReq.GetMetadata()
+	if metadata == nil {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("first message must contain metadata"),
+			logger,
+			span,
+			codes.InvalidArgument,
+			"first message must contain metadata",
+		)
+	}
+
+	logger = logger.WithValue("bucket", metadata.Bucket).
+		WithValue("object_name", metadata.ObjectName).
+		WithValue("content_type", metadata.ContentType)
+
+	// Validate metadata
+	if metadata.ObjectName == "" {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("object_name is required"),
+			logger,
+			span,
+			codes.InvalidArgument,
+			"object_name is required",
+		)
+	}
+
+	if metadata.ContentType == "" {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("content_type is required"),
+			logger,
+			span,
+			codes.InvalidArgument,
+			"content_type is required",
+		)
+	}
+
+	// Determine MIME type from content type
+	mimeType := metadata.ContentType
+	if !uploadedmedia.IsValidMimeType(mimeType) {
+		return observability.PrepareAndLogGRPCStatus(
+			fmt.Errorf("unsupported content type: %s", mimeType),
+			logger,
+			span,
+			codes.InvalidArgument,
+			"unsupported content type",
+		)
+	}
+
+	// Accumulate file chunks
+	var fileData bytes.Buffer
+	totalSize := int64(0)
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			// All chunks received
+			break
+		}
+		if err != nil {
+			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to receive chunk")
+		}
+
+		chunk := req.GetChunk()
+		if chunk == nil {
+			continue
+		}
+
+		chunkSize := int64(len(chunk))
+		if totalSize+chunkSize > maxUploadSize {
+			return observability.PrepareAndLogGRPCStatus(
+				fmt.Errorf("file size exceeds maximum allowed size of %d bytes", maxUploadSize),
+				logger,
+				span,
+				codes.InvalidArgument,
+				"file too large",
+			)
+		}
+
+		if _, err := fileData.Write(chunk); err != nil {
+			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
+		}
+
+		totalSize += chunkSize
+	}
+
+	if totalSize == 0 {
+		return observability.PrepareAndLogGRPCStatus(
+			errors.New("no file data received"),
+			logger,
+			span,
+			codes.InvalidArgument,
+			"no file data received",
+		)
+	}
+
+	logger = logger.WithValue("size_bytes", totalSize)
+
+	// Generate unique ID for the file
+	fileID := identifiers.New()
+
+	// Construct storage path: bucket/userID/fileID/objectName
+	storagePath := filepath.Join(
+		metadata.Bucket,
+		sessionContextData.Requester.UserID,
+		fileID,
+		metadata.ObjectName,
+	)
+
+	// Save file using upload manager
+	if err := s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
+	}
+
+	// Create database record
+	uploadedMediaInput := &uploadedmedia.UploadedMediaDatabaseCreationInput{
+		ID:            fileID,
+		StoragePath:   storagePath,
+		MimeType:      mimeType,
+		CreatedByUser: sessionContextData.Requester.UserID,
+	}
+
+	if err := uploadedMediaInput.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
+	}
+
+	created, err := s.uploadedMediaRepository.CreateUploadedMedia(ctx, uploadedMediaInput)
+	if err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
+	}
+
+	logger = logger.WithValue(keys.UploadedMediaIDKey, created.ID)
+
+	// Send response
+	response := &uploadedmediasvc.UploadResponse{
+		ObjectUrl: storagePath,
+		SizeBytes: totalSize,
+	}
+
+	if err := stream.SendAndClose(response); err != nil {
+		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
+	}
+
+	logger.Info("file uploaded successfully")
+
+	return nil
+}
 
 func (s *serviceImpl) CreateUploadedMedia(ctx context.Context, request *uploadedmediasvc.CreateUploadedMediaRequest) (*uploadedmediasvc.CreateUploadedMediaResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)

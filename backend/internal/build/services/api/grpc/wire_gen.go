@@ -27,6 +27,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	grpc14 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -170,7 +171,15 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
 	settingsServiceServer := grpc10.NewService(logger, tracerProvider, settingsRepository)
 	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
-	uploadedMediaServiceServer := grpc11.NewService(logger, tracerProvider, uploadedmediaRepository)
+	configConfig := &servicesConfig.UploadedMedia
+	config2 := &configConfig.Uploads
+	objectstorageConfig := &config2.Storage
+	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
+	if err != nil {
+		return nil, err
+	}
+	uploadManager := objectstorage.ProvideUploadManager(uploader)
+	uploadedMediaServiceServer := grpc11.NewService(logger, tracerProvider, uploadedmediaRepository, uploadManager)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
 	webhooksServiceServer := grpc12.NewService(logger, tracerProvider, webhooksRepository)
 	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)

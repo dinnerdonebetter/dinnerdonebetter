@@ -8,6 +8,7 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+import Foundation
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -72,6 +73,70 @@ public struct UploadedMedia_DataCollection: Sendable {
   // methods supported on all messages.
 
   public var uploadedMedia: Dictionary<String,UploadedMedia_UploadedMedia> = [:]
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct UploadedMedia_UploadRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var payload: UploadedMedia_UploadRequest.OneOf_Payload? = nil
+
+  public var metadata: UploadedMedia_UploadMetadata {
+    get {
+      if case .metadata(let v)? = payload {return v}
+      return UploadedMedia_UploadMetadata()
+    }
+    set {payload = .metadata(newValue)}
+  }
+
+  public var chunk: Data {
+    get {
+      if case .chunk(let v)? = payload {return v}
+      return Data()
+    }
+    set {payload = .chunk(newValue)}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum OneOf_Payload: Equatable, Sendable {
+    case metadata(UploadedMedia_UploadMetadata)
+    case chunk(Data)
+
+  }
+
+  public init() {}
+}
+
+public struct UploadedMedia_UploadMetadata: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var bucket: String = String()
+
+  public var objectName: String = String()
+
+  public var contentType: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct UploadedMedia_UploadResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var objectURL: String = String()
+
+  public var sizeBytes: Int64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -484,6 +549,143 @@ extension UploadedMedia_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Me
 
   public static func ==(lhs: UploadedMedia_DataCollection, rhs: UploadedMedia_DataCollection) -> Bool {
     if lhs.uploadedMedia != rhs.uploadedMedia {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension UploadedMedia_UploadRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0\u{1}chunk\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: UploadedMedia_UploadMetadata?
+        var hadOneofValue = false
+        if let current = self.payload {
+          hadOneofValue = true
+          if case .metadata(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .metadata(v)
+        }
+      }()
+      case 2: try {
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {
+          if self.payload != nil {try decoder.handleConflictingOneOf()}
+          self.payload = .chunk(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.payload {
+    case .metadata?: try {
+      guard case .metadata(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .chunk?: try {
+      guard case .chunk(let v)? = self.payload else { preconditionFailure() }
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: UploadedMedia_UploadRequest, rhs: UploadedMedia_UploadRequest) -> Bool {
+    if lhs.payload != rhs.payload {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension UploadedMedia_UploadMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadMetadata"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}bucket\0\u{3}object_name\0\u{3}content_type\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.bucket) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.objectName) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.contentType) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.bucket.isEmpty {
+      try visitor.visitSingularStringField(value: self.bucket, fieldNumber: 1)
+    }
+    if !self.objectName.isEmpty {
+      try visitor.visitSingularStringField(value: self.objectName, fieldNumber: 2)
+    }
+    if !self.contentType.isEmpty {
+      try visitor.visitSingularStringField(value: self.contentType, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: UploadedMedia_UploadMetadata, rhs: UploadedMedia_UploadMetadata) -> Bool {
+    if lhs.bucket != rhs.bucket {return false}
+    if lhs.objectName != rhs.objectName {return false}
+    if lhs.contentType != rhs.contentType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension UploadedMedia_UploadResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UploadResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}object_url\0\u{3}size_bytes\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.objectURL) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.sizeBytes) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.objectURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.objectURL, fieldNumber: 1)
+    }
+    if self.sizeBytes != 0 {
+      try visitor.visitSingularInt64Field(value: self.sizeBytes, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: UploadedMedia_UploadResponse, rhs: UploadedMedia_UploadResponse) -> Bool {
+    if lhs.objectURL != rhs.objectURL {return false}
+    if lhs.sizeBytes != rhs.sizeBytes {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

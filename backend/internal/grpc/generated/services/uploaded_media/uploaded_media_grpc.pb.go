@@ -20,6 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	UploadedMediaService_Upload_FullMethodName                  = "/uploaded_media.UploadedMediaService/Upload"
 	UploadedMediaService_CreateUploadedMedia_FullMethodName     = "/uploaded_media.UploadedMediaService/CreateUploadedMedia"
 	UploadedMediaService_GetUploadedMedia_FullMethodName        = "/uploaded_media.UploadedMediaService/GetUploadedMedia"
 	UploadedMediaService_GetUploadedMediaWithIDs_FullMethodName = "/uploaded_media.UploadedMediaService/GetUploadedMediaWithIDs"
@@ -32,6 +33,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UploadedMediaServiceClient interface {
+	Upload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRequest, UploadResponse], error)
 	CreateUploadedMedia(ctx context.Context, in *CreateUploadedMediaRequest, opts ...grpc.CallOption) (*CreateUploadedMediaResponse, error)
 	GetUploadedMedia(ctx context.Context, in *GetUploadedMediaRequest, opts ...grpc.CallOption) (*GetUploadedMediaResponse, error)
 	GetUploadedMediaWithIDs(ctx context.Context, in *GetUploadedMediaWithIDsRequest, opts ...grpc.CallOption) (*GetUploadedMediaWithIDsResponse, error)
@@ -47,6 +49,19 @@ type uploadedMediaServiceClient struct {
 func NewUploadedMediaServiceClient(cc grpc.ClientConnInterface) UploadedMediaServiceClient {
 	return &uploadedMediaServiceClient{cc}
 }
+
+func (c *uploadedMediaServiceClient) Upload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRequest, UploadResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &UploadedMediaService_ServiceDesc.Streams[0], UploadedMediaService_Upload_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[UploadRequest, UploadResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UploadedMediaService_UploadClient = grpc.ClientStreamingClient[UploadRequest, UploadResponse]
 
 func (c *uploadedMediaServiceClient) CreateUploadedMedia(ctx context.Context, in *CreateUploadedMediaRequest, opts ...grpc.CallOption) (*CreateUploadedMediaResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -112,6 +127,7 @@ func (c *uploadedMediaServiceClient) ArchiveUploadedMedia(ctx context.Context, i
 // All implementations must embed UnimplementedUploadedMediaServiceServer
 // for forward compatibility.
 type UploadedMediaServiceServer interface {
+	Upload(grpc.ClientStreamingServer[UploadRequest, UploadResponse]) error
 	CreateUploadedMedia(context.Context, *CreateUploadedMediaRequest) (*CreateUploadedMediaResponse, error)
 	GetUploadedMedia(context.Context, *GetUploadedMediaRequest) (*GetUploadedMediaResponse, error)
 	GetUploadedMediaWithIDs(context.Context, *GetUploadedMediaWithIDsRequest) (*GetUploadedMediaWithIDsResponse, error)
@@ -128,6 +144,9 @@ type UploadedMediaServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUploadedMediaServiceServer struct{}
 
+func (UnimplementedUploadedMediaServiceServer) Upload(grpc.ClientStreamingServer[UploadRequest, UploadResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
 func (UnimplementedUploadedMediaServiceServer) CreateUploadedMedia(context.Context, *CreateUploadedMediaRequest) (*CreateUploadedMediaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUploadedMedia not implemented")
 }
@@ -166,6 +185,13 @@ func RegisterUploadedMediaServiceServer(s grpc.ServiceRegistrar, srv UploadedMed
 	}
 	s.RegisterService(&UploadedMediaService_ServiceDesc, srv)
 }
+
+func _UploadedMediaService_Upload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(UploadedMediaServiceServer).Upload(&grpc.GenericServerStream[UploadRequest, UploadResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UploadedMediaService_UploadServer = grpc.ClientStreamingServer[UploadRequest, UploadResponse]
 
 func _UploadedMediaService_CreateUploadedMedia_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateUploadedMediaRequest)
@@ -307,6 +333,12 @@ var UploadedMediaService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UploadedMediaService_ArchiveUploadedMedia_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Upload",
+			Handler:       _UploadedMediaService_Upload_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "uploaded_media.proto",
 }

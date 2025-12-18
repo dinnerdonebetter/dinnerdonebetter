@@ -4,12 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 
 	s3v2 "github.com/aws/aws-sdk-go-v2/service/s3"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -34,10 +32,9 @@ var (
 type (
 	// Uploader implements our UploadManager struct.
 	Uploader struct {
-		bucket          *blob.Bucket
-		logger          logging.Logger
-		tracer          tracing.Tracer
-		filenameFetcher func(req *http.Request) string
+		bucket *blob.Bucket
+		logger logging.Logger
+		tracer tracing.Tracer
 	}
 
 	// Config configures our UploadManager.
@@ -68,16 +65,15 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // NewUploadManager provides a new uploads.UploadManager.
-func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, routeParamManager routing.RouteParamManager) (*Uploader, error) {
+func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (*Uploader, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
 
 	serviceName := fmt.Sprintf("%s_uploader", cfg.BucketName)
 	u := &Uploader{
-		logger:          logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		filenameFetcher: routeParamManager.BuildRouteParamStringIDFetcher(cfg.UploadFilenameKey),
+		logger: logging.EnsureLogger(logger).WithName(serviceName),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	if err := cfg.ValidateWithContext(ctx); err != nil {

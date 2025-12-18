@@ -738,6 +738,9 @@ var (
 		issueReportsServicePerm("ArchiveIssueReport"): {
 			authorization.ArchiveIssueReportsPermission,
 		},
+		uploadedMediaServicePerm("Upload"): {
+			authorization.CreateUploadedMediaPermission,
+		},
 		uploadedMediaServicePerm("CreateUploadedMedia"): {
 			authorization.CreateUploadedMediaPermission,
 		},

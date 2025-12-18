@@ -20,6 +20,24 @@ enum UploadedMediaMimeType {
   UPLOADED_MEDIA_MIME_TYPE_VIDEO_MP4 = 4;
 }
 
+message UploadRequest {
+  oneof payload {
+    UploadMetadata metadata = 1;
+    bytes chunk = 2;
+  }
+}
+
+message UploadMetadata {
+  string bucket = 1;
+  string object_name = 2;
+  string content_type = 3;
+}
+
+message UploadResponse {
+  string object_url = 1;
+  int64 size_bytes = 2;
+}
+
 message UploadedMedia {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp archived_at = 2;
@@ -103,6 +121,7 @@ message ArchiveUploadedMediaResponse {
 }
 
 service UploadedMediaService {
+  rpc Upload(stream UploadRequest) returns (UploadResponse);
   rpc CreateUploadedMedia(CreateUploadedMediaRequest) returns (CreateUploadedMediaResponse);
   rpc GetUploadedMedia(GetUploadedMediaRequest) returns (GetUploadedMediaResponse);
   rpc GetUploadedMediaWithIDs(GetUploadedMediaWithIDsRequest) returns (GetUploadedMediaWithIDsResponse);
@@ -110,4 +129,3 @@ service UploadedMediaService {
   rpc UpdateUploadedMedia(UpdateUploadedMediaRequest) returns (UpdateUploadedMediaResponse);
   rpc ArchiveUploadedMedia(ArchiveUploadedMediaRequest) returns (ArchiveUploadedMediaResponse);
 }
-

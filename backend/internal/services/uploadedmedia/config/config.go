@@ -1,9 +1,9 @@
-package dataprivacy
+package config
 
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -12,7 +12,7 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	Uploads uploads.Config `envPrefix:"UPLOADS_" json:"uploads"`
+	Uploads uploadscfg.Config `envPrefix:"UPLOADS_" json:"uploads"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

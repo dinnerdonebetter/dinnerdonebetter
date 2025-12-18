@@ -125,6 +125,200 @@ func (x *DataCollection) GetUploadedMedia() map[string]*UploadedMedia {
 	return nil
 }
 
+type UploadRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Payload:
+	//
+	//	*UploadRequest_Metadata
+	//	*UploadRequest_Chunk
+	Payload       isUploadRequest_Payload `protobuf_oneof:"payload"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadRequest) Reset() {
+	*x = UploadRequest{}
+	mi := &file_uploaded_media_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadRequest) ProtoMessage() {}
+
+func (x *UploadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_uploaded_media_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadRequest.ProtoReflect.Descriptor instead.
+func (*UploadRequest) Descriptor() ([]byte, []int) {
+	return file_uploaded_media_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *UploadRequest) GetPayload() isUploadRequest_Payload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+func (x *UploadRequest) GetMetadata() *UploadMetadata {
+	if x != nil {
+		if x, ok := x.Payload.(*UploadRequest_Metadata); ok {
+			return x.Metadata
+		}
+	}
+	return nil
+}
+
+func (x *UploadRequest) GetChunk() []byte {
+	if x != nil {
+		if x, ok := x.Payload.(*UploadRequest_Chunk); ok {
+			return x.Chunk
+		}
+	}
+	return nil
+}
+
+type isUploadRequest_Payload interface {
+	isUploadRequest_Payload()
+}
+
+type UploadRequest_Metadata struct {
+	Metadata *UploadMetadata `protobuf:"bytes,1,opt,name=metadata,proto3,oneof"`
+}
+
+type UploadRequest_Chunk struct {
+	Chunk []byte `protobuf:"bytes,2,opt,name=chunk,proto3,oneof"`
+}
+
+func (*UploadRequest_Metadata) isUploadRequest_Payload() {}
+
+func (*UploadRequest_Chunk) isUploadRequest_Payload() {}
+
+type UploadMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Bucket        string                 `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	ObjectName    string                 `protobuf:"bytes,2,opt,name=object_name,json=objectName,proto3" json:"object_name,omitempty"`
+	ContentType   string                 `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadMetadata) Reset() {
+	*x = UploadMetadata{}
+	mi := &file_uploaded_media_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadMetadata) ProtoMessage() {}
+
+func (x *UploadMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_uploaded_media_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadMetadata.ProtoReflect.Descriptor instead.
+func (*UploadMetadata) Descriptor() ([]byte, []int) {
+	return file_uploaded_media_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UploadMetadata) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+func (x *UploadMetadata) GetObjectName() string {
+	if x != nil {
+		return x.ObjectName
+	}
+	return ""
+}
+
+func (x *UploadMetadata) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+type UploadResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ObjectUrl     string                 `protobuf:"bytes,1,opt,name=object_url,json=objectUrl,proto3" json:"object_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	SizeBytes     int64 `protobuf:"varint,2,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadResponse) Reset() {
+	*x = UploadResponse{}
+	mi := &file_uploaded_media_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadResponse) ProtoMessage() {}
+
+func (x *UploadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_uploaded_media_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadResponse.ProtoReflect.Descriptor instead.
+func (*UploadResponse) Descriptor() ([]byte, []int) {
+	return file_uploaded_media_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *UploadResponse) GetObjectUrl() string {
+	if x != nil {
+		return x.ObjectUrl
+	}
+	return ""
+}
+
+func (x *UploadResponse) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
 type UploadedMedia struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -140,7 +334,7 @@ type UploadedMedia struct {
 
 func (x *UploadedMedia) Reset() {
 	*x = UploadedMedia{}
-	mi := &file_uploaded_media_proto_msgTypes[1]
+	mi := &file_uploaded_media_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -152,7 +346,7 @@ func (x *UploadedMedia) String() string {
 func (*UploadedMedia) ProtoMessage() {}
 
 func (x *UploadedMedia) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[1]
+	mi := &file_uploaded_media_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,7 +359,7 @@ func (x *UploadedMedia) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadedMedia.ProtoReflect.Descriptor instead.
 func (*UploadedMedia) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{1}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UploadedMedia) GetCreatedAt() *timestamppb.Timestamp {
@@ -227,7 +421,7 @@ type UploadedMediaCreationRequestInput struct {
 
 func (x *UploadedMediaCreationRequestInput) Reset() {
 	*x = UploadedMediaCreationRequestInput{}
-	mi := &file_uploaded_media_proto_msgTypes[2]
+	mi := &file_uploaded_media_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -239,7 +433,7 @@ func (x *UploadedMediaCreationRequestInput) String() string {
 func (*UploadedMediaCreationRequestInput) ProtoMessage() {}
 
 func (x *UploadedMediaCreationRequestInput) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[2]
+	mi := &file_uploaded_media_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -252,7 +446,7 @@ func (x *UploadedMediaCreationRequestInput) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UploadedMediaCreationRequestInput.ProtoReflect.Descriptor instead.
 func (*UploadedMediaCreationRequestInput) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{2}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UploadedMediaCreationRequestInput) GetStoragePath() string {
@@ -279,7 +473,7 @@ type UploadedMediaUpdateRequestInput struct {
 
 func (x *UploadedMediaUpdateRequestInput) Reset() {
 	*x = UploadedMediaUpdateRequestInput{}
-	mi := &file_uploaded_media_proto_msgTypes[3]
+	mi := &file_uploaded_media_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -291,7 +485,7 @@ func (x *UploadedMediaUpdateRequestInput) String() string {
 func (*UploadedMediaUpdateRequestInput) ProtoMessage() {}
 
 func (x *UploadedMediaUpdateRequestInput) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[3]
+	mi := &file_uploaded_media_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -304,7 +498,7 @@ func (x *UploadedMediaUpdateRequestInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadedMediaUpdateRequestInput.ProtoReflect.Descriptor instead.
 func (*UploadedMediaUpdateRequestInput) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{3}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UploadedMediaUpdateRequestInput) GetStoragePath() string {
@@ -331,7 +525,7 @@ type CreateUploadedMediaRequest struct {
 
 func (x *CreateUploadedMediaRequest) Reset() {
 	*x = CreateUploadedMediaRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[4]
+	mi := &file_uploaded_media_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +537,7 @@ func (x *CreateUploadedMediaRequest) String() string {
 func (*CreateUploadedMediaRequest) ProtoMessage() {}
 
 func (x *CreateUploadedMediaRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[4]
+	mi := &file_uploaded_media_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +550,7 @@ func (x *CreateUploadedMediaRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUploadedMediaRequest.ProtoReflect.Descriptor instead.
 func (*CreateUploadedMediaRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{4}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateUploadedMediaRequest) GetInput() *UploadedMediaCreationRequestInput {
@@ -376,7 +570,7 @@ type CreateUploadedMediaResponse struct {
 
 func (x *CreateUploadedMediaResponse) Reset() {
 	*x = CreateUploadedMediaResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[5]
+	mi := &file_uploaded_media_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +582,7 @@ func (x *CreateUploadedMediaResponse) String() string {
 func (*CreateUploadedMediaResponse) ProtoMessage() {}
 
 func (x *CreateUploadedMediaResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[5]
+	mi := &file_uploaded_media_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +595,7 @@ func (x *CreateUploadedMediaResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUploadedMediaResponse.ProtoReflect.Descriptor instead.
 func (*CreateUploadedMediaResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{5}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateUploadedMediaResponse) GetResponseDetails() *types.ResponseDetails {
@@ -428,7 +622,7 @@ type GetUploadedMediaRequest struct {
 
 func (x *GetUploadedMediaRequest) Reset() {
 	*x = GetUploadedMediaRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[6]
+	mi := &file_uploaded_media_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -440,7 +634,7 @@ func (x *GetUploadedMediaRequest) String() string {
 func (*GetUploadedMediaRequest) ProtoMessage() {}
 
 func (x *GetUploadedMediaRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[6]
+	mi := &file_uploaded_media_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -453,7 +647,7 @@ func (x *GetUploadedMediaRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaRequest.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{6}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetUploadedMediaRequest) GetUploadedMediaId() string {
@@ -473,7 +667,7 @@ type GetUploadedMediaResponse struct {
 
 func (x *GetUploadedMediaResponse) Reset() {
 	*x = GetUploadedMediaResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[7]
+	mi := &file_uploaded_media_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -485,7 +679,7 @@ func (x *GetUploadedMediaResponse) String() string {
 func (*GetUploadedMediaResponse) ProtoMessage() {}
 
 func (x *GetUploadedMediaResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[7]
+	mi := &file_uploaded_media_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +692,7 @@ func (x *GetUploadedMediaResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaResponse.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{7}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetUploadedMediaResponse) GetResponseDetails() *types.ResponseDetails {
@@ -525,7 +719,7 @@ type GetUploadedMediaWithIDsRequest struct {
 
 func (x *GetUploadedMediaWithIDsRequest) Reset() {
 	*x = GetUploadedMediaWithIDsRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[8]
+	mi := &file_uploaded_media_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -537,7 +731,7 @@ func (x *GetUploadedMediaWithIDsRequest) String() string {
 func (*GetUploadedMediaWithIDsRequest) ProtoMessage() {}
 
 func (x *GetUploadedMediaWithIDsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[8]
+	mi := &file_uploaded_media_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +744,7 @@ func (x *GetUploadedMediaWithIDsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaWithIDsRequest.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaWithIDsRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{8}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetUploadedMediaWithIDsRequest) GetIds() []string {
@@ -570,7 +764,7 @@ type GetUploadedMediaWithIDsResponse struct {
 
 func (x *GetUploadedMediaWithIDsResponse) Reset() {
 	*x = GetUploadedMediaWithIDsResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[9]
+	mi := &file_uploaded_media_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -582,7 +776,7 @@ func (x *GetUploadedMediaWithIDsResponse) String() string {
 func (*GetUploadedMediaWithIDsResponse) ProtoMessage() {}
 
 func (x *GetUploadedMediaWithIDsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[9]
+	mi := &file_uploaded_media_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -595,7 +789,7 @@ func (x *GetUploadedMediaWithIDsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaWithIDsResponse.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaWithIDsResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{9}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetUploadedMediaWithIDsResponse) GetResponseDetails() *types.ResponseDetails {
@@ -623,7 +817,7 @@ type GetUploadedMediaForUserRequest struct {
 
 func (x *GetUploadedMediaForUserRequest) Reset() {
 	*x = GetUploadedMediaForUserRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[10]
+	mi := &file_uploaded_media_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -635,7 +829,7 @@ func (x *GetUploadedMediaForUserRequest) String() string {
 func (*GetUploadedMediaForUserRequest) ProtoMessage() {}
 
 func (x *GetUploadedMediaForUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[10]
+	mi := &file_uploaded_media_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -648,7 +842,7 @@ func (x *GetUploadedMediaForUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaForUserRequest.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaForUserRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{10}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetUploadedMediaForUserRequest) GetUserId() string {
@@ -676,7 +870,7 @@ type GetUploadedMediaForUserResponse struct {
 
 func (x *GetUploadedMediaForUserResponse) Reset() {
 	*x = GetUploadedMediaForUserResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[11]
+	mi := &file_uploaded_media_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -688,7 +882,7 @@ func (x *GetUploadedMediaForUserResponse) String() string {
 func (*GetUploadedMediaForUserResponse) ProtoMessage() {}
 
 func (x *GetUploadedMediaForUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[11]
+	mi := &file_uploaded_media_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -701,7 +895,7 @@ func (x *GetUploadedMediaForUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadedMediaForUserResponse.ProtoReflect.Descriptor instead.
 func (*GetUploadedMediaForUserResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{11}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetUploadedMediaForUserResponse) GetResponseDetails() *types.ResponseDetails {
@@ -736,7 +930,7 @@ type UpdateUploadedMediaRequest struct {
 
 func (x *UpdateUploadedMediaRequest) Reset() {
 	*x = UpdateUploadedMediaRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[12]
+	mi := &file_uploaded_media_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +942,7 @@ func (x *UpdateUploadedMediaRequest) String() string {
 func (*UpdateUploadedMediaRequest) ProtoMessage() {}
 
 func (x *UpdateUploadedMediaRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[12]
+	mi := &file_uploaded_media_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +955,7 @@ func (x *UpdateUploadedMediaRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUploadedMediaRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUploadedMediaRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{12}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdateUploadedMediaRequest) GetUploadedMediaId() string {
@@ -788,7 +982,7 @@ type UpdateUploadedMediaResponse struct {
 
 func (x *UpdateUploadedMediaResponse) Reset() {
 	*x = UpdateUploadedMediaResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[13]
+	mi := &file_uploaded_media_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -800,7 +994,7 @@ func (x *UpdateUploadedMediaResponse) String() string {
 func (*UpdateUploadedMediaResponse) ProtoMessage() {}
 
 func (x *UpdateUploadedMediaResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[13]
+	mi := &file_uploaded_media_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -813,7 +1007,7 @@ func (x *UpdateUploadedMediaResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUploadedMediaResponse.ProtoReflect.Descriptor instead.
 func (*UpdateUploadedMediaResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{13}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdateUploadedMediaResponse) GetResponseDetails() *types.ResponseDetails {
@@ -840,7 +1034,7 @@ type ArchiveUploadedMediaRequest struct {
 
 func (x *ArchiveUploadedMediaRequest) Reset() {
 	*x = ArchiveUploadedMediaRequest{}
-	mi := &file_uploaded_media_proto_msgTypes[14]
+	mi := &file_uploaded_media_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -852,7 +1046,7 @@ func (x *ArchiveUploadedMediaRequest) String() string {
 func (*ArchiveUploadedMediaRequest) ProtoMessage() {}
 
 func (x *ArchiveUploadedMediaRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[14]
+	mi := &file_uploaded_media_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -865,7 +1059,7 @@ func (x *ArchiveUploadedMediaRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveUploadedMediaRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveUploadedMediaRequest) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{14}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ArchiveUploadedMediaRequest) GetUploadedMediaId() string {
@@ -884,7 +1078,7 @@ type ArchiveUploadedMediaResponse struct {
 
 func (x *ArchiveUploadedMediaResponse) Reset() {
 	*x = ArchiveUploadedMediaResponse{}
-	mi := &file_uploaded_media_proto_msgTypes[15]
+	mi := &file_uploaded_media_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +1090,7 @@ func (x *ArchiveUploadedMediaResponse) String() string {
 func (*ArchiveUploadedMediaResponse) ProtoMessage() {}
 
 func (x *ArchiveUploadedMediaResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_uploaded_media_proto_msgTypes[15]
+	mi := &file_uploaded_media_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +1103,7 @@ func (x *ArchiveUploadedMediaResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveUploadedMediaResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveUploadedMediaResponse) Descriptor() ([]byte, []int) {
-	return file_uploaded_media_proto_rawDescGZIP(), []int{15}
+	return file_uploaded_media_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ArchiveUploadedMediaResponse) GetResponseDetails() *types.ResponseDetails {
@@ -941,7 +1135,26 @@ var file_uploaded_media_proto_rawDesc = string([]byte{
 	0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x75, 0x70, 0x6c,
 	0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f,
 	0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x3a, 0x02, 0x38, 0x01, 0x22, 0xea, 0x02, 0x0a, 0x0d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
+	0x3a, 0x02, 0x38, 0x01, 0x22, 0x70, 0x0a, 0x0d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3c, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x48, 0x00, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x12, 0x16, 0x0a, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0c, 0x48, 0x00, 0x52, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x42, 0x09, 0x0a, 0x07, 0x70,
+	0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x6c, 0x0a, 0x0e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x16, 0x0a, 0x06, 0x62, 0x75, 0x63, 0x6b,
+	0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x62, 0x75, 0x63, 0x6b, 0x65, 0x74,
+	0x12, 0x1f, 0x0a, 0x0b, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x4e, 0x61, 0x6d,
+	0x65, 0x12, 0x21, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x22, 0x4e, 0x0a, 0x0e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x5f, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x55, 0x72, 0x6c, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x69, 0x7a, 0x65, 0x5f, 0x62, 0x79,
+	0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x73, 0x69, 0x7a, 0x65, 0x42,
+	0x79, 0x74, 0x65, 0x73, 0x22, 0xea, 0x02, 0x0a, 0x0d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
 	0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
 	0x64, 0x5f, 0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
@@ -1092,57 +1305,62 @@ var file_uploaded_media_proto_rawDesc = string([]byte{
 	0x47, 0x45, 0x5f, 0x47, 0x49, 0x46, 0x10, 0x03, 0x12, 0x26, 0x0a, 0x22, 0x55, 0x50, 0x4c, 0x4f,
 	0x41, 0x44, 0x45, 0x44, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x4d, 0x49, 0x4d, 0x45, 0x5f,
 	0x54, 0x59, 0x50, 0x45, 0x5f, 0x56, 0x49, 0x44, 0x45, 0x4f, 0x5f, 0x4d, 0x50, 0x34, 0x10, 0x04,
-	0x32, 0xc8, 0x05, 0x0a, 0x14, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64,
-	0x69, 0x61, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x6e, 0x0a, 0x13, 0x43, 0x72, 0x65,
+	0x32, 0x93, 0x06, 0x0a, 0x14, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64,
+	0x69, 0x61, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x49, 0x0a, 0x06, 0x55, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x12, 0x1d, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d,
+	0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65,
+	0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x28, 0x01, 0x12, 0x6e, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x55, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x2a, 0x2e, 0x75, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x43, 0x72, 0x65,
 	0x61, 0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61,
-	0x12, 0x2a, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69,
-	0x61, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64,
-	0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x75,
-	0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69,
-	0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x65, 0x0a, 0x10, 0x47, 0x65, 0x74,
-	0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x27, 0x2e,
-	0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47,
-	0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x55,
+	0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x65, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x27, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x28, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64,
+	0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65,
+	0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x17, 0x47,
+	0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x57,
+	0x69, 0x74, 0x68, 0x49, 0x44, 0x73, 0x12, 0x2e, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
 	0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61,
-	0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x7a, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d,
-	0x65, 0x64, 0x69, 0x61, 0x57, 0x69, 0x74, 0x68, 0x49, 0x44, 0x73, 0x12, 0x2e, 0x2e, 0x75, 0x70,
-	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74,
-	0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x57, 0x69, 0x74,
-	0x68, 0x49, 0x44, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x75, 0x70,
-	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74,
-	0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x57, 0x69, 0x74,
-	0x68, 0x49, 0x44, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x17,
-	0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61,
-	0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2e, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
-	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f,
-	0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64,
-	0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f,
-	0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12,
-	0x2a, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61,
-	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d,
-	0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x75, 0x70,
-	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x14, 0x41, 0x72, 0x63, 0x68,
-	0x69, 0x76, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61,
-	0x12, 0x2b, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69,
-	0x61, 0x2e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
-	0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e,
-	0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x41,
-	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65,
-	0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x55, 0x5a, 0x53, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72,
-	0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65,
-	0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63,
-	0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x73, 0x2f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64,
-	0x69, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x57, 0x69, 0x74, 0x68, 0x49, 0x44, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
+	0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x57, 0x69, 0x74, 0x68, 0x49, 0x44, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7a, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x55, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x46, 0x6f, 0x72, 0x55, 0x73,
+	0x65, 0x72, 0x12, 0x2e, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65,
+	0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d,
+	0x65, 0x64, 0x69, 0x61, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65,
+	0x64, 0x69, 0x61, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d,
+	0x65, 0x64, 0x69, 0x61, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x6e, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x2a, 0x2e, 0x75, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65,
+	0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x14, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x55, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x12, 0x2b, 0x2e, 0x75, 0x70,
+	0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x41, 0x72, 0x63,
+	0x68, 0x69, 0x76, 0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69,
+	0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x75, 0x70, 0x6c, 0x6f, 0x61,
+	0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x2e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76,
+	0x65, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x55, 0x5a, 0x53, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62,
+	0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e,
+	0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65,
+	0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x75,
+	0x70, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x5f, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -1158,72 +1376,78 @@ func file_uploaded_media_proto_rawDescGZIP() []byte {
 }
 
 var file_uploaded_media_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_uploaded_media_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_uploaded_media_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_uploaded_media_proto_goTypes = []any{
 	(UploadedMediaMimeType)(0),                // 0: uploaded_media.UploadedMediaMimeType
 	(*DataCollection)(nil),                    // 1: uploaded_media.DataCollection
-	(*UploadedMedia)(nil),                     // 2: uploaded_media.UploadedMedia
-	(*UploadedMediaCreationRequestInput)(nil), // 3: uploaded_media.UploadedMediaCreationRequestInput
-	(*UploadedMediaUpdateRequestInput)(nil),   // 4: uploaded_media.UploadedMediaUpdateRequestInput
-	(*CreateUploadedMediaRequest)(nil),        // 5: uploaded_media.CreateUploadedMediaRequest
-	(*CreateUploadedMediaResponse)(nil),       // 6: uploaded_media.CreateUploadedMediaResponse
-	(*GetUploadedMediaRequest)(nil),           // 7: uploaded_media.GetUploadedMediaRequest
-	(*GetUploadedMediaResponse)(nil),          // 8: uploaded_media.GetUploadedMediaResponse
-	(*GetUploadedMediaWithIDsRequest)(nil),    // 9: uploaded_media.GetUploadedMediaWithIDsRequest
-	(*GetUploadedMediaWithIDsResponse)(nil),   // 10: uploaded_media.GetUploadedMediaWithIDsResponse
-	(*GetUploadedMediaForUserRequest)(nil),    // 11: uploaded_media.GetUploadedMediaForUserRequest
-	(*GetUploadedMediaForUserResponse)(nil),   // 12: uploaded_media.GetUploadedMediaForUserResponse
-	(*UpdateUploadedMediaRequest)(nil),        // 13: uploaded_media.UpdateUploadedMediaRequest
-	(*UpdateUploadedMediaResponse)(nil),       // 14: uploaded_media.UpdateUploadedMediaResponse
-	(*ArchiveUploadedMediaRequest)(nil),       // 15: uploaded_media.ArchiveUploadedMediaRequest
-	(*ArchiveUploadedMediaResponse)(nil),      // 16: uploaded_media.ArchiveUploadedMediaResponse
-	nil,                                       // 17: uploaded_media.DataCollection.UploadedMediaEntry
-	(*timestamppb.Timestamp)(nil),             // 18: google.protobuf.Timestamp
-	(*types.ResponseDetails)(nil),             // 19: common.ResponseDetails
-	(*filtering.QueryFilter)(nil),             // 20: filtering.QueryFilter
-	(*filtering.Pagination)(nil),              // 21: filtering.Pagination
+	(*UploadRequest)(nil),                     // 2: uploaded_media.UploadRequest
+	(*UploadMetadata)(nil),                    // 3: uploaded_media.UploadMetadata
+	(*UploadResponse)(nil),                    // 4: uploaded_media.UploadResponse
+	(*UploadedMedia)(nil),                     // 5: uploaded_media.UploadedMedia
+	(*UploadedMediaCreationRequestInput)(nil), // 6: uploaded_media.UploadedMediaCreationRequestInput
+	(*UploadedMediaUpdateRequestInput)(nil),   // 7: uploaded_media.UploadedMediaUpdateRequestInput
+	(*CreateUploadedMediaRequest)(nil),        // 8: uploaded_media.CreateUploadedMediaRequest
+	(*CreateUploadedMediaResponse)(nil),       // 9: uploaded_media.CreateUploadedMediaResponse
+	(*GetUploadedMediaRequest)(nil),           // 10: uploaded_media.GetUploadedMediaRequest
+	(*GetUploadedMediaResponse)(nil),          // 11: uploaded_media.GetUploadedMediaResponse
+	(*GetUploadedMediaWithIDsRequest)(nil),    // 12: uploaded_media.GetUploadedMediaWithIDsRequest
+	(*GetUploadedMediaWithIDsResponse)(nil),   // 13: uploaded_media.GetUploadedMediaWithIDsResponse
+	(*GetUploadedMediaForUserRequest)(nil),    // 14: uploaded_media.GetUploadedMediaForUserRequest
+	(*GetUploadedMediaForUserResponse)(nil),   // 15: uploaded_media.GetUploadedMediaForUserResponse
+	(*UpdateUploadedMediaRequest)(nil),        // 16: uploaded_media.UpdateUploadedMediaRequest
+	(*UpdateUploadedMediaResponse)(nil),       // 17: uploaded_media.UpdateUploadedMediaResponse
+	(*ArchiveUploadedMediaRequest)(nil),       // 18: uploaded_media.ArchiveUploadedMediaRequest
+	(*ArchiveUploadedMediaResponse)(nil),      // 19: uploaded_media.ArchiveUploadedMediaResponse
+	nil,                                       // 20: uploaded_media.DataCollection.UploadedMediaEntry
+	(*timestamppb.Timestamp)(nil),             // 21: google.protobuf.Timestamp
+	(*types.ResponseDetails)(nil),             // 22: common.ResponseDetails
+	(*filtering.QueryFilter)(nil),             // 23: filtering.QueryFilter
+	(*filtering.Pagination)(nil),              // 24: filtering.Pagination
 }
 var file_uploaded_media_proto_depIdxs = []int32{
-	17, // 0: uploaded_media.DataCollection.uploaded_media:type_name -> uploaded_media.DataCollection.UploadedMediaEntry
-	18, // 1: uploaded_media.UploadedMedia.created_at:type_name -> google.protobuf.Timestamp
-	18, // 2: uploaded_media.UploadedMedia.archived_at:type_name -> google.protobuf.Timestamp
-	18, // 3: uploaded_media.UploadedMedia.last_updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 4: uploaded_media.UploadedMedia.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
-	0,  // 5: uploaded_media.UploadedMediaCreationRequestInput.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
-	0,  // 6: uploaded_media.UploadedMediaUpdateRequestInput.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
-	3,  // 7: uploaded_media.CreateUploadedMediaRequest.input:type_name -> uploaded_media.UploadedMediaCreationRequestInput
-	19, // 8: uploaded_media.CreateUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
-	2,  // 9: uploaded_media.CreateUploadedMediaResponse.created:type_name -> uploaded_media.UploadedMedia
-	19, // 10: uploaded_media.GetUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
-	2,  // 11: uploaded_media.GetUploadedMediaResponse.result:type_name -> uploaded_media.UploadedMedia
-	19, // 12: uploaded_media.GetUploadedMediaWithIDsResponse.response_details:type_name -> common.ResponseDetails
-	2,  // 13: uploaded_media.GetUploadedMediaWithIDsResponse.results:type_name -> uploaded_media.UploadedMedia
-	20, // 14: uploaded_media.GetUploadedMediaForUserRequest.filter:type_name -> filtering.QueryFilter
-	19, // 15: uploaded_media.GetUploadedMediaForUserResponse.response_details:type_name -> common.ResponseDetails
-	21, // 16: uploaded_media.GetUploadedMediaForUserResponse.pagination:type_name -> filtering.Pagination
-	2,  // 17: uploaded_media.GetUploadedMediaForUserResponse.results:type_name -> uploaded_media.UploadedMedia
-	4,  // 18: uploaded_media.UpdateUploadedMediaRequest.input:type_name -> uploaded_media.UploadedMediaUpdateRequestInput
-	19, // 19: uploaded_media.UpdateUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
-	2,  // 20: uploaded_media.UpdateUploadedMediaResponse.updated:type_name -> uploaded_media.UploadedMedia
-	19, // 21: uploaded_media.ArchiveUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
-	2,  // 22: uploaded_media.DataCollection.UploadedMediaEntry.value:type_name -> uploaded_media.UploadedMedia
-	5,  // 23: uploaded_media.UploadedMediaService.CreateUploadedMedia:input_type -> uploaded_media.CreateUploadedMediaRequest
-	7,  // 24: uploaded_media.UploadedMediaService.GetUploadedMedia:input_type -> uploaded_media.GetUploadedMediaRequest
-	9,  // 25: uploaded_media.UploadedMediaService.GetUploadedMediaWithIDs:input_type -> uploaded_media.GetUploadedMediaWithIDsRequest
-	11, // 26: uploaded_media.UploadedMediaService.GetUploadedMediaForUser:input_type -> uploaded_media.GetUploadedMediaForUserRequest
-	13, // 27: uploaded_media.UploadedMediaService.UpdateUploadedMedia:input_type -> uploaded_media.UpdateUploadedMediaRequest
-	15, // 28: uploaded_media.UploadedMediaService.ArchiveUploadedMedia:input_type -> uploaded_media.ArchiveUploadedMediaRequest
-	6,  // 29: uploaded_media.UploadedMediaService.CreateUploadedMedia:output_type -> uploaded_media.CreateUploadedMediaResponse
-	8,  // 30: uploaded_media.UploadedMediaService.GetUploadedMedia:output_type -> uploaded_media.GetUploadedMediaResponse
-	10, // 31: uploaded_media.UploadedMediaService.GetUploadedMediaWithIDs:output_type -> uploaded_media.GetUploadedMediaWithIDsResponse
-	12, // 32: uploaded_media.UploadedMediaService.GetUploadedMediaForUser:output_type -> uploaded_media.GetUploadedMediaForUserResponse
-	14, // 33: uploaded_media.UploadedMediaService.UpdateUploadedMedia:output_type -> uploaded_media.UpdateUploadedMediaResponse
-	16, // 34: uploaded_media.UploadedMediaService.ArchiveUploadedMedia:output_type -> uploaded_media.ArchiveUploadedMediaResponse
-	29, // [29:35] is the sub-list for method output_type
-	23, // [23:29] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	20, // 0: uploaded_media.DataCollection.uploaded_media:type_name -> uploaded_media.DataCollection.UploadedMediaEntry
+	3,  // 1: uploaded_media.UploadRequest.metadata:type_name -> uploaded_media.UploadMetadata
+	21, // 2: uploaded_media.UploadedMedia.created_at:type_name -> google.protobuf.Timestamp
+	21, // 3: uploaded_media.UploadedMedia.archived_at:type_name -> google.protobuf.Timestamp
+	21, // 4: uploaded_media.UploadedMedia.last_updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 5: uploaded_media.UploadedMedia.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
+	0,  // 6: uploaded_media.UploadedMediaCreationRequestInput.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
+	0,  // 7: uploaded_media.UploadedMediaUpdateRequestInput.mime_type:type_name -> uploaded_media.UploadedMediaMimeType
+	6,  // 8: uploaded_media.CreateUploadedMediaRequest.input:type_name -> uploaded_media.UploadedMediaCreationRequestInput
+	22, // 9: uploaded_media.CreateUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
+	5,  // 10: uploaded_media.CreateUploadedMediaResponse.created:type_name -> uploaded_media.UploadedMedia
+	22, // 11: uploaded_media.GetUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
+	5,  // 12: uploaded_media.GetUploadedMediaResponse.result:type_name -> uploaded_media.UploadedMedia
+	22, // 13: uploaded_media.GetUploadedMediaWithIDsResponse.response_details:type_name -> common.ResponseDetails
+	5,  // 14: uploaded_media.GetUploadedMediaWithIDsResponse.results:type_name -> uploaded_media.UploadedMedia
+	23, // 15: uploaded_media.GetUploadedMediaForUserRequest.filter:type_name -> filtering.QueryFilter
+	22, // 16: uploaded_media.GetUploadedMediaForUserResponse.response_details:type_name -> common.ResponseDetails
+	24, // 17: uploaded_media.GetUploadedMediaForUserResponse.pagination:type_name -> filtering.Pagination
+	5,  // 18: uploaded_media.GetUploadedMediaForUserResponse.results:type_name -> uploaded_media.UploadedMedia
+	7,  // 19: uploaded_media.UpdateUploadedMediaRequest.input:type_name -> uploaded_media.UploadedMediaUpdateRequestInput
+	22, // 20: uploaded_media.UpdateUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
+	5,  // 21: uploaded_media.UpdateUploadedMediaResponse.updated:type_name -> uploaded_media.UploadedMedia
+	22, // 22: uploaded_media.ArchiveUploadedMediaResponse.response_details:type_name -> common.ResponseDetails
+	5,  // 23: uploaded_media.DataCollection.UploadedMediaEntry.value:type_name -> uploaded_media.UploadedMedia
+	2,  // 24: uploaded_media.UploadedMediaService.Upload:input_type -> uploaded_media.UploadRequest
+	8,  // 25: uploaded_media.UploadedMediaService.CreateUploadedMedia:input_type -> uploaded_media.CreateUploadedMediaRequest
+	10, // 26: uploaded_media.UploadedMediaService.GetUploadedMedia:input_type -> uploaded_media.GetUploadedMediaRequest
+	12, // 27: uploaded_media.UploadedMediaService.GetUploadedMediaWithIDs:input_type -> uploaded_media.GetUploadedMediaWithIDsRequest
+	14, // 28: uploaded_media.UploadedMediaService.GetUploadedMediaForUser:input_type -> uploaded_media.GetUploadedMediaForUserRequest
+	16, // 29: uploaded_media.UploadedMediaService.UpdateUploadedMedia:input_type -> uploaded_media.UpdateUploadedMediaRequest
+	18, // 30: uploaded_media.UploadedMediaService.ArchiveUploadedMedia:input_type -> uploaded_media.ArchiveUploadedMediaRequest
+	4,  // 31: uploaded_media.UploadedMediaService.Upload:output_type -> uploaded_media.UploadResponse
+	9,  // 32: uploaded_media.UploadedMediaService.CreateUploadedMedia:output_type -> uploaded_media.CreateUploadedMediaResponse
+	11, // 33: uploaded_media.UploadedMediaService.GetUploadedMedia:output_type -> uploaded_media.GetUploadedMediaResponse
+	13, // 34: uploaded_media.UploadedMediaService.GetUploadedMediaWithIDs:output_type -> uploaded_media.GetUploadedMediaWithIDsResponse
+	15, // 35: uploaded_media.UploadedMediaService.GetUploadedMediaForUser:output_type -> uploaded_media.GetUploadedMediaForUserResponse
+	17, // 36: uploaded_media.UploadedMediaService.UpdateUploadedMedia:output_type -> uploaded_media.UpdateUploadedMediaResponse
+	19, // 37: uploaded_media.UploadedMediaService.ArchiveUploadedMedia:output_type -> uploaded_media.ArchiveUploadedMediaResponse
+	31, // [31:38] is the sub-list for method output_type
+	24, // [24:31] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_uploaded_media_proto_init() }
@@ -1231,14 +1455,18 @@ func file_uploaded_media_proto_init() {
 	if File_uploaded_media_proto != nil {
 		return
 	}
-	file_uploaded_media_proto_msgTypes[3].OneofWrappers = []any{}
+	file_uploaded_media_proto_msgTypes[1].OneofWrappers = []any{
+		(*UploadRequest_Metadata)(nil),
+		(*UploadRequest_Chunk)(nil),
+	}
+	file_uploaded_media_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_uploaded_media_proto_rawDesc), len(file_uploaded_media_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   17,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

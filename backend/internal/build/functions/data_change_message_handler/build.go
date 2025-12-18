@@ -55,7 +55,6 @@ func Build(
 		eatingindexing.Providers,
 		ConfigProviders,
 		SearcherProviders,
-		ProvidersMiscellaneous, // TODO: eliminate me
 	)
 
 	return nil, nil

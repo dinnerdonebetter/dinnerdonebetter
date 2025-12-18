@@ -20,6 +20,18 @@ internal enum UploadedMedia_UploadedMediaService {
     internal static let descriptor = GRPCCore.ServiceDescriptor(fullyQualifiedService: "uploaded_media.UploadedMediaService")
     /// Namespace for method metadata.
     internal enum Method {
+        /// Namespace for "Upload" metadata.
+        internal enum Upload {
+            /// Request type for "Upload".
+            internal typealias Input = UploadedMedia_UploadRequest
+            /// Response type for "Upload".
+            internal typealias Output = UploadedMedia_UploadResponse
+            /// Descriptor for "Upload".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "uploaded_media.UploadedMediaService"),
+                method: "Upload"
+            )
+        }
         /// Namespace for "CreateUploadedMedia" metadata.
         internal enum CreateUploadedMedia {
             /// Request type for "CreateUploadedMedia".
@@ -94,6 +106,7 @@ internal enum UploadedMedia_UploadedMediaService {
         }
         /// Descriptors for all methods in the "uploaded_media.UploadedMediaService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
+            Upload.descriptor,
             CreateUploadedMedia.descriptor,
             GetUploadedMedia.descriptor,
             GetUploadedMediaWithIDs.descriptor,
@@ -119,6 +132,25 @@ extension UploadedMedia_UploadedMediaService {
     /// You don't need to implement this protocol directly, use the generated
     /// implementation, ``Client``.
     internal protocol ClientProtocol: Sendable {
+        /// Call the "Upload" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
+        ///   - serializer: A serializer for `UploadedMedia_UploadRequest` messages.
+        ///   - deserializer: A deserializer for `UploadedMedia_UploadResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func upload<Result>(
+            request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
+            serializer: some GRPCCore.MessageSerializer<UploadedMedia_UploadRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<UploadedMedia_UploadResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<UploadedMedia_UploadResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "CreateUploadedMedia" method.
         ///
         /// - Parameters:
@@ -248,6 +280,36 @@ extension UploadedMedia_UploadedMediaService {
         ///   - client: A `GRPCCore.GRPCClient` providing a communication channel to the service.
         internal init(wrapping client: GRPCCore.GRPCClient<Transport>) {
             self.client = client
+        }
+
+        /// Call the "Upload" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
+        ///   - serializer: A serializer for `UploadedMedia_UploadRequest` messages.
+        ///   - deserializer: A deserializer for `UploadedMedia_UploadResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func upload<Result>(
+            request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
+            serializer: some GRPCCore.MessageSerializer<UploadedMedia_UploadRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<UploadedMedia_UploadResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<UploadedMedia_UploadResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.clientStreaming(
+                request: request,
+                descriptor: UploadedMedia_UploadedMediaService.Method.Upload.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
         }
 
         /// Call the "CreateUploadedMedia" method.
@@ -435,6 +497,31 @@ extension UploadedMedia_UploadedMediaService {
 // Helpers providing default arguments to 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension UploadedMedia_UploadedMediaService.ClientProtocol {
+    /// Call the "Upload" method.
+    ///
+    /// - Parameters:
+    ///   - request: A streaming request producing `UploadedMedia_UploadRequest` messages.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func upload<Result>(
+        request: GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<UploadedMedia_UploadResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.upload(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<UploadedMedia_UploadRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<UploadedMedia_UploadResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "CreateUploadedMedia" method.
     ///
     /// - Parameters:
@@ -589,6 +676,36 @@ extension UploadedMedia_UploadedMediaService.ClientProtocol {
 // Helpers providing sugared APIs for 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension UploadedMedia_UploadedMediaService.ClientProtocol {
+    /// Call the "Upload" method.
+    ///
+    /// - Parameters:
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - producer: A closure producing request messages to send to the server. The request
+    ///       stream is closed when the closure returns.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func upload<Result>(
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        requestProducer producer: @Sendable @escaping (GRPCCore.RPCWriter<UploadedMedia_UploadRequest>) async throws -> Void,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<UploadedMedia_UploadResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.StreamingClientRequest<UploadedMedia_UploadRequest>(
+            metadata: metadata,
+            producer: producer
+        )
+        return try await self.upload(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "CreateUploadedMedia" method.
     ///
     /// - Parameters:

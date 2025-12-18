@@ -1,16 +1,13 @@
 package objectstorage
 
 import (
-	"net/http"
 	"os"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -42,14 +39,10 @@ func TestNewUploadManager(T *testing.T) {
 			BucketName: t.Name(),
 			Provider:   MemoryProvider,
 		}
-		rpm := &mockrouting.RouteParamManager{}
-		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg)
 		assert.NotNil(t, x)
 		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, rpm)
 	})
 
 	T.Run("with nil config", func(t *testing.T) {
@@ -57,13 +50,10 @@ func TestNewUploadManager(T *testing.T) {
 
 		ctx := t.Context()
 		l := logging.NewNoopLogger()
-		rpm := &mockrouting.RouteParamManager{}
 
-		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), nil, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), nil)
 		assert.Nil(t, x)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, rpm)
 	})
 
 	T.Run("with invalid config", func(t *testing.T) {
@@ -72,14 +62,10 @@ func TestNewUploadManager(T *testing.T) {
 		ctx := t.Context()
 		l := logging.NewNoopLogger()
 		cfg := &Config{}
-		rpm := &mockrouting.RouteParamManager{}
-		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg)
 		assert.Nil(t, x)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, rpm)
 	})
 }
 
