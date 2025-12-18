@@ -175,7 +175,10 @@
 		},
 		"uploadedMedia": {
 			"uploads": {
-				"storageConfig": {},
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
 				"debug": false
 			}
 		},

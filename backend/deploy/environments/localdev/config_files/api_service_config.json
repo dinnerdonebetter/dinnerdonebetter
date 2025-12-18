@@ -197,8 +197,15 @@
 		},
 		"uploadedMedia": {
 			"uploads": {
-				"storageConfig": {},
-				"debug": false
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
+					"provider": "filesystem"
+				},
+				"debug": true
 			}
 		},
 		"mealPlanning": {

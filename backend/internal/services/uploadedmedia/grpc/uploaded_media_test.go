@@ -71,7 +71,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	return service
 }
 
-// mockUploadStream is a mock implementation of the upload stream
+// mockUploadStream is a mock implementation of the upload stream.
 type mockUploadStream struct {
 	ctx context.Context
 	mock.Mock

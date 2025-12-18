@@ -198,8 +198,16 @@
 		},
 		"uploadedMedia": {
 			"uploads": {
-				"storageConfig": {},
-				"debug": false
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "avatars/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "avatar",
+					"provider": "gcp"
+				},
+				"debug": true
 			}
 		},
 		"mealPlanning": {

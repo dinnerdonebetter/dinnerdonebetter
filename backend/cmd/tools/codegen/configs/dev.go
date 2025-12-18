@@ -35,6 +35,7 @@ import (
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 )
 
 const (
@@ -42,6 +43,19 @@ const (
 )
 
 func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
+	uploadsConfig := uploadscfg.Config{
+		Debug: true,
+		Storage: objectstorage.Config{
+			UploadFilenameKey: "avatar",
+			Provider:          objectstorage.GCPCloudStorageProvider,
+			BucketName:        "media.dinnerdonebetter.dev",
+			BucketPrefix:      "avatars/",
+			GCP: &objectstorage.GCPConfig{
+				BucketName: "media.dinnerdonebetter.dev",
+			},
+		},
+	}
+
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
@@ -187,18 +201,10 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			},
 			Users: identitycfg.Config{
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
-				Uploads: uploadscfg.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "avatar",
-						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.dinnerdonebetter.dev",
-						BucketPrefix:      "avatars/",
-						GCP: &objectstorage.GCPConfig{
-							BucketName: "media.dinnerdonebetter.dev",
-						},
-					},
-				},
+				Uploads:              uploadsConfig,
+			},
+			UploadedMedia: uploadedmediacfg.Config{
+				Uploads: uploadsConfig,
 			},
 			MealPlanning: mealplanningcfg.Config{
 				UseSearchService: true,

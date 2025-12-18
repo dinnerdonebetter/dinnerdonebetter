@@ -97,13 +97,13 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	totalSize := int64(0)
 
 	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
+		req, recvErr := stream.Recv()
+		if errors.Is(recvErr, io.EOF) {
 			// All chunks received
 			break
 		}
-		if err != nil {
-			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to receive chunk")
+		if recvErr != nil {
+			return observability.PrepareAndLogGRPCStatus(recvErr, logger, span, codes.Internal, "failed to receive chunk")
 		}
 
 		chunk := req.GetChunk()
@@ -122,7 +122,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 			)
 		}
 
-		if _, err := fileData.Write(chunk); err != nil {
+		if _, err = fileData.Write(chunk); err != nil {
 			return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to write chunk")
 		}
 
@@ -153,7 +153,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 	)
 
 	// Save file using upload manager
-	if err := s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
+	if err = s.uploadManager.SaveFile(ctx, storagePath, fileData.Bytes()); err != nil {
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to save file")
 	}
 
@@ -165,7 +165,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 		CreatedByUser: sessionContextData.Requester.UserID,
 	}
 
-	if err := uploadedMediaInput.ValidateWithContext(ctx); err != nil {
+	if err = uploadedMediaInput.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
@@ -182,7 +182,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 		SizeBytes: totalSize,
 	}
 
-	if err := stream.SendAndClose(response); err != nil {
+	if err = stream.SendAndClose(response); err != nil {
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to send response")
 	}
 
