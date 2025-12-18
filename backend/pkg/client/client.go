@@ -17,6 +17,7 @@ import (
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -45,6 +46,7 @@ type Client interface {
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	settingsgrpc.SettingsServiceClient
+	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
 }
@@ -60,6 +62,7 @@ type client struct {
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	settingsgrpc.SettingsServiceClient
+	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
 }
@@ -82,6 +85,7 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
 		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
 		SettingsServiceClient:          settingsgrpc.NewSettingsServiceClient(conn),
+		UploadedMediaServiceClient:     uploadedmediagrpc.NewUploadedMediaServiceClient(conn),
 		WaitlistsServiceClient:         waitlistsgrpc.NewWaitlistsServiceClient(conn),
 		WebhooksServiceClient:          webhooksgrpc.NewWebhooksServiceClient(conn),
 	}

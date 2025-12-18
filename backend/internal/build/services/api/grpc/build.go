@@ -33,6 +33,7 @@ import (
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	uploadedmediarepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
@@ -50,6 +51,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
@@ -83,6 +85,7 @@ func Build(
 		issuereportsrepo.IssueReportsRepoProviders,
 		notificationsrepo.NotifRepoProviders,
 		settingsrepo.SettingsRepoProviders,
+		uploadedmediarepo.UploadedMediaRepoProviders,
 		webhooksrepo.WebhookProviders,
 		oauthrepo.OAuthRepoProviders,
 		mealplanningrepo.MPRepoProviders,
@@ -97,6 +100,7 @@ func Build(
 		issuereportssvc.IssueReportSvcProviders,
 		notificationssvc.NotifsSvcProviders,
 		settingssvc.SettingSvcProviders,
+		uploadedmediasvc.UploadedMediaSvcProviders,
 		webhookssvc.WebhookSvcProviders,
 		oauthsvc.OAuthSvcProviders,
 		mealplanningsvc.MPSvcProviders,
