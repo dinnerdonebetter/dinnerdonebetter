@@ -41,6 +41,7 @@ var (
 			"MealPlanning",
 			"Auth",
 			"OAuth2Clients",
+			"UploadedMedia",
 		),
 	)
 )

@@ -25,6 +25,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -33,6 +35,7 @@ import (
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	uploadedmediarepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
@@ -50,6 +53,8 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
@@ -76,6 +81,8 @@ func Build(
 		qrcodes.QRCodeProviders,
 		tokenscfg.TokenIssuerProviders,
 		interceptors.InterceptorProviders,
+		uploadscfg.Providers,
+		objectstorage.Providers,
 		// repos
 		auditrepo.AuditRepoProviders,
 		authrepo.AuthRepoProviders,
@@ -83,6 +90,7 @@ func Build(
 		issuereportsrepo.IssueReportsRepoProviders,
 		notificationsrepo.NotifRepoProviders,
 		settingsrepo.SettingsRepoProviders,
+		uploadedmediarepo.UploadedMediaRepoProviders,
 		webhooksrepo.WebhookProviders,
 		oauthrepo.OAuthRepoProviders,
 		mealplanningrepo.MPRepoProviders,
@@ -97,10 +105,12 @@ func Build(
 		issuereportssvc.IssueReportSvcProviders,
 		notificationssvc.NotifsSvcProviders,
 		settingssvc.SettingSvcProviders,
+		uploadedmediasvc.UploadedMediaSvcProviders,
 		webhookssvc.WebhookSvcProviders,
 		oauthsvc.OAuthSvcProviders,
 		mealplanningsvc.MPSvcProviders,
 		waitlistssvc.WaitlistsSvcProviders,
+		uploadedmediacfg.UploadedMediaConfigProviders,
 		// manager
 		identitymgr.IDManagerProviders,
 		oauthmgr.OAuthManagerProviders,

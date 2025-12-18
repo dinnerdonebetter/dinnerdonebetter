@@ -11,6 +11,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
@@ -27,6 +28,7 @@ type GRPCService struct {
 	notificationssvc.UserNotificationsServiceServer
 	oauthsvc.OAuthServiceServer
 	settingssvc.SettingsServiceServer
+	uploadedmediasvc.UploadedMediaServiceServer
 	waitlistssvc.WaitlistsServiceServer
 	webhookssvc.WebhooksServiceServer
 	*grpc.Server
@@ -43,6 +45,7 @@ func NewGRPCService(
 	userNotificationsServiceServer notificationssvc.UserNotificationsServiceServer,
 	oauthServiceServer oauthsvc.OAuthServiceServer,
 	settingsServiceServer settingssvc.SettingsServiceServer,
+	uploadedMediaServiceServer uploadedmediasvc.UploadedMediaServiceServer,
 	webhooksServiceServer webhookssvc.WebhooksServiceServer,
 	waitlistsServiceServer waitlistssvc.WaitlistsServiceServer,
 	server *grpc.Server,
@@ -59,6 +62,7 @@ func NewGRPCService(
 		UserNotificationsServiceServer: userNotificationsServiceServer,
 		OAuthServiceServer:             oauthServiceServer,
 		SettingsServiceServer:          settingsServiceServer,
+		UploadedMediaServiceServer:     uploadedMediaServiceServer,
 		WebhooksServiceServer:          webhooksServiceServer,
 		WaitlistsServiceServer:         waitlistsServiceServer,
 	}

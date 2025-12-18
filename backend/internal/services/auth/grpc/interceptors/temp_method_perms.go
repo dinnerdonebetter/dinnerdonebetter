@@ -738,6 +738,27 @@ var (
 		issueReportsServicePerm("ArchiveIssueReport"): {
 			authorization.ArchiveIssueReportsPermission,
 		},
+		uploadedMediaServicePerm("Upload"): {
+			authorization.CreateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("CreateUploadedMedia"): {
+			authorization.CreateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMedia"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMediaWithIDs"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMediaForUser"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("UpdateUploadedMedia"): {
+			authorization.UpdateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("ArchiveUploadedMedia"): {
+			authorization.ArchiveUploadedMediaPermission,
+		},
 		identityServicePerm("UpdateAccount"): {
 			authorization.UpdateAccountPermission,
 		},
@@ -838,4 +859,8 @@ func waitlistsServicePerm(method string) string {
 
 func issueReportsServicePerm(method string) string {
 	return permString("issue_reports", "IssueReportsService", method)
+}
+
+func uploadedMediaServicePerm(method string) string {
+	return permString("uploaded_media", "UploadedMediaService", method)
 }

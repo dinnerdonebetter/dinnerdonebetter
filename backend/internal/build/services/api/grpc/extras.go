@@ -13,6 +13,7 @@ import (
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -37,6 +38,7 @@ func BuildRegistrationFuncs(
 	notificationsService notificationssvc.UserNotificationsServiceServer,
 	oauthService oauthsvc.OAuthServiceServer,
 	settingsService settingssvc.SettingsServiceServer,
+	uploadedMediaService uploadedmediasvc.UploadedMediaServiceServer,
 	waitlistsService waitlistssvc.WaitlistsServiceServer,
 	webhooksService webhookssvc.WebhooksServiceServer,
 ) []platformgrpc.RegistrationFunc {
@@ -52,6 +54,7 @@ func BuildRegistrationFuncs(
 			notificationssvc.RegisterUserNotificationsServiceServer(server, notificationsService)
 			oauthsvc.RegisterOAuthServiceServer(server, oauthService)
 			settingssvc.RegisterSettingsServiceServer(server, settingsService)
+			uploadedmediasvc.RegisterUploadedMediaServiceServer(server, uploadedMediaService)
 			waitlistssvc.RegisterWaitlistsServiceServer(server, waitlistsService)
 			webhookssvc.RegisterWebhooksServiceServer(server, webhooksService)
 		},

@@ -9,6 +9,7 @@ import (
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
 	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -16,13 +17,13 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_ struct{} `json:"-"`
-
-		Users         identitycfg.Config     `envPrefix:"USERS_"          json:"users,omitempty"`
-		DataPrivacy   dataprivacycfg.Config  `envPrefix:"DATA_PRIVACY_"   json:"dataPrivacy,omitempty"`
-		MealPlanning  mealplanningcfg.Config `envPrefix:"MEAL_PLANNING_"  json:"mealPlanning,omitempty"`
-		Auth          authentication.Config  `envPrefix:"AUTH_"           json:"auth,omitempty"`
-		OAuth2Clients oauthcfg.Config        `envPrefix:"OAUTH2_CLIENTS_" json:"oauth2Clients,omitempty"`
+		_             struct{}                `json:"-"`
+		Users         identitycfg.Config      `envPrefix:"USERS_"          json:"users,omitempty"`
+		DataPrivacy   dataprivacycfg.Config   `envPrefix:"DATA_PRIVACY_"   json:"dataPrivacy,omitempty"`
+		UploadedMedia uploadedmediacfg.Config `envPrefix:"UPLOADED_MEDIA_" json:"uploadedMedia,omitempty"`
+		MealPlanning  mealplanningcfg.Config  `envPrefix:"MEAL_PLANNING_"  json:"mealPlanning,omitempty"`
+		Auth          authentication.Config   `envPrefix:"AUTH_"           json:"auth,omitempty"`
+		OAuth2Clients oauthcfg.Config         `envPrefix:"OAUTH2_CLIENTS_" json:"oauth2Clients,omitempty"`
 	}
 )
 

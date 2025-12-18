@@ -35,6 +35,7 @@ var (
 			"DataPrivacy",
 			"MealPlanning",
 			"OAuth2Clients",
+			"UploadedMedia",
 		),
 		ProvideHTTPServerConfigFromAPIServiceConfig,
 		ProvideHTTPServerConfigFromAdminWebappConfig,

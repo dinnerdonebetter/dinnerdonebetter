@@ -32,6 +32,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 )
 
 const (
@@ -91,6 +92,18 @@ var (
 )
 
 func buildLocalDevConfig() *config.APIServiceConfig {
+	uploadsConfig := uploadscfg.Config{
+		Debug: true,
+		Storage: objectstorage.Config{
+			UploadFilenameKey: "avatar",
+			Provider:          objectstorage.FilesystemProvider,
+			BucketName:        "avatars",
+			FilesystemConfig: &objectstorage.FilesystemConfig{
+				RootDirectory: "/uploads",
+			},
+		},
+	}
+
 	return &config.APIServiceConfig{
 		Routing: localRoutingConfig,
 		Queues: msgconfig.QueuesConfig{
@@ -196,17 +209,10 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				},
 			},
 			Users: identitycfg.Config{
-				Uploads: uploadscfg.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "avatar",
-						Provider:          objectstorage.FilesystemProvider,
-						BucketName:        "avatars",
-						FilesystemConfig: &objectstorage.FilesystemConfig{
-							RootDirectory: "/uploads",
-						},
-					},
-				},
+				Uploads: uploadsConfig,
+			},
+			UploadedMedia: uploadedmediacfg.Config{
+				Uploads: uploadsConfig,
 			},
 		},
 	}
