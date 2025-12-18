@@ -28,6 +28,7 @@ import (
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	issuereportsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -41,6 +42,7 @@ import (
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
+	issuereportssvc "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
@@ -78,6 +80,7 @@ func Build(
 		auditrepo.AuditRepoProviders,
 		authrepo.AuthRepoProviders,
 		identityrepo.IDRepoProviders,
+		issuereportsrepo.IssueReportsRepoProviders,
 		notificationsrepo.NotifRepoProviders,
 		settingsrepo.SettingsRepoProviders,
 		webhooksrepo.WebhookProviders,
@@ -91,6 +94,7 @@ func Build(
 		dataprivacysvc.DataPrivSvcProviders,
 		identitysvc.IDSvcProviders,
 		internalopssvc.InternalOpsSvcProviders,
+		issuereportssvc.IssueReportSvcProviders,
 		notificationssvc.NotifsSvcProviders,
 		settingssvc.SettingSvcProviders,
 		webhookssvc.WebhookSvcProviders,

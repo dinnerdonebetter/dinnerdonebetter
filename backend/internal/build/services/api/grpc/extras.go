@@ -8,6 +8,7 @@ import (
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
@@ -31,6 +32,7 @@ func BuildRegistrationFuncs(
 	dataPrivacyServer dataprivacysvc.DataPrivacyServiceServer,
 	identityServiceServer identitysvc.IdentityServiceServer,
 	internalOpsService internalopssvc.InternalOperationsServer,
+	issueReportsService issuereportssvc.IssueReportsServiceServer,
 	mealPlanningService mealplanningsvc.MealPlanningServiceServer,
 	notificationsService notificationssvc.UserNotificationsServiceServer,
 	oauthService oauthsvc.OAuthServiceServer,
@@ -45,6 +47,7 @@ func BuildRegistrationFuncs(
 			dataprivacysvc.RegisterDataPrivacyServiceServer(server, dataPrivacyServer)
 			identitysvc.RegisterIdentityServiceServer(server, identityServiceServer)
 			internalopssvc.RegisterInternalOperationsServer(server, internalOpsService)
+			issuereportssvc.RegisterIssueReportsServiceServer(server, issueReportsService)
 			mealplanningsvc.RegisterMealPlanningServiceServer(server, mealPlanningService)
 			notificationssvc.RegisterUserNotificationsServiceServer(server, notificationsService)
 			oauthsvc.RegisterOAuthServiceServer(server, oauthService)

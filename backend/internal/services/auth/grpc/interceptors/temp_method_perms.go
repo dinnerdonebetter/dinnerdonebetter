@@ -714,6 +714,30 @@ var (
 		waitlistsServicePerm("ArchiveWaitlistSignup"): {
 			authorization.ArchiveWaitlistSignupsPermission,
 		},
+		issueReportsServicePerm("CreateIssueReport"): {
+			authorization.CreateIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReport"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReports"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForAccount"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForTable"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForRecord"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("UpdateIssueReport"): {
+			authorization.UpdateIssueReportsPermission,
+		},
+		issueReportsServicePerm("ArchiveIssueReport"): {
+			authorization.ArchiveIssueReportsPermission,
+		},
 		identityServicePerm("UpdateAccount"): {
 			authorization.UpdateAccountPermission,
 		},
@@ -810,4 +834,8 @@ func authPerm(method string) string {
 
 func waitlistsServicePerm(method string) string {
 	return permString("waitlists", "WaitlistsService", method)
+}
+
+func issueReportsServicePerm(method string) string {
+	return permString("issue_reports", "IssueReportsService", method)
 }

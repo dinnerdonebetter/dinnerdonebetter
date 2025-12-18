@@ -60,6 +60,8 @@ func header(config *LayoutConfig) g.Node {
 						navLink("Accounts", "/accounts", config.Palette),
 						navLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 						navLink("Recipes", "/recipes", config.Palette),
+						navLink("Waitlists", "/waitlists", config.Palette),
+						navLink("Issue Reports", "/issue_reports", config.Palette),
 						navLink("Settings", "/settings", config.Palette),
 						navDropdown("Enumerations", config.Palette, []*dropdownItem{
 							{Text: "Ingredients", Href: "/valid_ingredients"},
@@ -104,6 +106,8 @@ func header(config *LayoutConfig) g.Node {
 					mobileNavLink("Accounts", "/accounts", config.Palette),
 					mobileNavLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 					mobileNavLink("Recipes", "/recipes", config.Palette),
+					mobileNavLink("Waitlists", "/waitlists", config.Palette),
+					mobileNavLink("Issue Reports", "/issue_reports", config.Palette),
 					mobileNavLink("Settings", "/settings", config.Palette),
 					mobileNavDropdown("Enumerations", config.Palette, []*dropdownItem{
 						{Text: "Ingredients", Href: "/valid_ingredients"},

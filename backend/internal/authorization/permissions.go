@@ -100,6 +100,9 @@ var (
 		CreateWebhooksPermission,
 		UpdateWebhooksPermission,
 		ArchiveWebhooksPermission,
+		CreateIssueReportsPermission,
+		UpdateIssueReportsPermission,
+		ArchiveIssueReportsPermission,
 		CreateMealPlansPermission,
 		UpdateMealPlansPermission,
 		ArchiveMealPlansPermission,
@@ -127,6 +130,7 @@ var (
 	// AccountMemberPermissions is every account member permission.
 	AccountMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
+		ReadIssueReportsPermission,
 		ReadAuditLogEntriesPermission,
 		ReadOAuth2ClientsPermission,
 		ReadServiceSettingsPermission,

@@ -57,6 +57,8 @@ const (
 	WaitlistIDKey = "waitlist" + idSuffix
 	// WaitlistSignupIDKey is the standard key for referring to a waitlist signup ID.
 	WaitlistSignupIDKey = "waitlist_signup" + idSuffix
+	// IssueReportIDKey is the standard key for referring to an issue report ID.
+	IssueReportIDKey = "issue_report" + idSuffix
 	// AuditLogEntryIDKey is the standard key for referring to an audit log entry's ID.
 	AuditLogEntryIDKey = "audit_log_entry" + idSuffix
 	// AuditLogEntryResourceTypesKey is the standard key for referring to an audit log entry's resource type.

@@ -12,6 +12,7 @@ import (
 	dataprivacygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
@@ -39,6 +40,7 @@ type Client interface {
 	auditgrpc.AuditServiceClient
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
+	issuereportsgrpc.IssueReportsServiceClient
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
@@ -53,6 +55,7 @@ type client struct {
 	auditgrpc.AuditServiceClient
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
+	issuereportsgrpc.IssueReportsServiceClient
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
@@ -74,6 +77,7 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		AuditServiceClient:             auditgrpc.NewAuditServiceClient(conn),
 		DataPrivacyServiceClient:       dataprivacygrpc.NewDataPrivacyServiceClient(conn),
 		InternalOperationsClient:       internalopsgrpc.NewInternalOperationsClient(conn),
+		IssueReportsServiceClient:      issuereportsgrpc.NewIssueReportsServiceClient(conn),
 		MealPlanningServiceClient:      mealplanninggrpc.NewMealPlanningServiceClient(conn),
 		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
 		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
