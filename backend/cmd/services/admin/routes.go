@@ -138,6 +138,17 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/recipes", ghttp.Adapt(s.RecipesList))
 	r.Get("/api/recipes/search", ghttp.Adapt(s.RecipesSearch))
 
+	// Waitlists
+	r.Get(fmt.Sprintf("/waitlists/{%s}", waitlistIDURLParamKey), ghttp.Adapt(s.WaitlistPage))
+	r.Get("/waitlists", ghttp.Adapt(s.WaitlistsList))
+	r.Get("/api/waitlists/search", ghttp.Adapt(s.WaitlistsSearch))
+	r.Get(fmt.Sprintf("/api/waitlists/{%s}/signups", waitlistIDURLParamKey), ghttp.Adapt(s.WaitlistSignupsForWaitlist))
+
+	// Issue Reports
+	r.Get(fmt.Sprintf("/issue_reports/{%s}", issueReportIDURLParamKey), ghttp.Adapt(s.IssueReportPage))
+	r.Get("/issue_reports", ghttp.Adapt(s.IssueReportsList))
+	r.Get("/api/issue_reports/search", ghttp.Adapt(s.IssueReportsSearch))
+
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))
 	r.Delete("/api/valid_preparation_vessels/{associationID}", ghttp.Adapt(s.DeletePreparationVessel))

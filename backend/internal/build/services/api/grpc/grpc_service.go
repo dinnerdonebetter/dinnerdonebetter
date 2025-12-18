@@ -6,6 +6,7 @@ import (
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	issuereportssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
@@ -21,6 +22,7 @@ type GRPCService struct {
 	dataprivacysvc.DataPrivacyServiceServer
 	identitysvc.IdentityServiceServer
 	internalopssvc.InternalOperationsServer
+	issuereportssvc.IssueReportsServiceServer
 	mealplanningsvc.MealPlanningServiceServer
 	notificationssvc.UserNotificationsServiceServer
 	oauthsvc.OAuthServiceServer
@@ -36,6 +38,7 @@ func NewGRPCService(
 	dataPrivacyServiceServer dataprivacysvc.DataPrivacyServiceServer,
 	identityServiceServer identitysvc.IdentityServiceServer,
 	internalOperationsServer internalopssvc.InternalOperationsServer,
+	issueReportsServiceServer issuereportssvc.IssueReportsServiceServer,
 	mealPlanningServiceServer mealplanningsvc.MealPlanningServiceServer,
 	userNotificationsServiceServer notificationssvc.UserNotificationsServiceServer,
 	oauthServiceServer oauthsvc.OAuthServiceServer,
@@ -51,6 +54,7 @@ func NewGRPCService(
 		DataPrivacyServiceServer:       dataPrivacyServiceServer,
 		IdentityServiceServer:          identityServiceServer,
 		InternalOperationsServer:       internalOperationsServer,
+		IssueReportsServiceServer:      issueReportsServiceServer,
 		MealPlanningServiceServer:      mealPlanningServiceServer,
 		UserNotificationsServiceServer: userNotificationsServiceServer,
 		OAuthServiceServer:             oauthServiceServer,
