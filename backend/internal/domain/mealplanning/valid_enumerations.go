@@ -5,6 +5,7 @@ type (
 		ValidIngredientGroupDataManager
 		ValidIngredientMeasurementUnitDataManager
 		ValidIngredientPreparationDataManager
+		ValidPrepTaskConfigDataManager
 		ValidIngredientDataManager
 		ValidIngredientStateIngredientDataManager
 		ValidIngredientStateDataManager
@@ -21,6 +22,7 @@ type (
 		ValidIngredientGroupDataService
 		ValidIngredientMeasurementUnitDataService
 		ValidIngredientPreparationDataService
+		ValidPrepTaskConfigDataService
 		ValidIngredientDataService
 		ValidIngredientStateIngredientDataService
 		ValidIngredientStateDataService

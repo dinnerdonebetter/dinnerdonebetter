@@ -50,6 +50,15 @@ type (
 		SearchValidIngredientPreparationsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error)
 		SearchValidIngredientPreparationsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientPreparation], error)
 
+		ListValidPrepTaskConfigs(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error)
+		CreateValidPrepTaskConfig(ctx context.Context, input *types.ValidPrepTaskConfigCreationRequestInput) (*types.ValidPrepTaskConfig, error)
+		ReadValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) (*types.ValidPrepTaskConfig, error)
+		UpdateValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string, input *types.ValidPrepTaskConfigUpdateRequestInput) (*types.ValidPrepTaskConfig, error)
+		ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) error
+		SearchValidPrepTaskConfigsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error)
+		SearchValidPrepTaskConfigsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error)
+		SearchValidPrepTaskConfigsByIngredientAndPreparation(ctx context.Context, ingredientID, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error)
+
 		SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 		ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error)
 		CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*types.ValidIngredient, error)
@@ -660,6 +669,189 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation
 	results, err := m.db.GetValidIngredientPreparationsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient preparations for ingredient")
+	}
+
+	return results, nil
+}
+
+// ListValidPrepTaskConfigs implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) ListValidPrepTaskConfigs(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	logger := m.logger.WithSpan(span)
+
+	results, err := m.db.GetValidPrepTaskConfigs(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task configs")
+	}
+
+	return results, nil
+}
+
+// CreateValidPrepTaskConfig implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) CreateValidPrepTaskConfig(ctx context.Context, input *types.ValidPrepTaskConfigCreationRequestInput) (*types.ValidPrepTaskConfig, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
+	convertedInput := converters.ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput(input)
+	created, err := m.db.CreateValidPrepTaskConfig(ctx, convertedInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid prep task config")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigCreatedServiceEventType, map[string]any{
+		keys.ValidPrepTaskConfigIDKey: created.ID,
+	}))
+
+	return created, nil
+}
+
+// ReadValidPrepTaskConfig implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) ReadValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) (*types.ValidPrepTaskConfig, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+
+	result, err := m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task config")
+	}
+
+	return result, nil
+}
+
+// UpdateValidPrepTaskConfig implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) UpdateValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string, input *types.ValidPrepTaskConfigUpdateRequestInput) (*types.ValidPrepTaskConfig, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	existingValidPrepTaskConfig, err := m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task config")
+	}
+
+	existingValidPrepTaskConfig.Update(input)
+	if err = m.db.UpdateValidPrepTaskConfig(ctx, existingValidPrepTaskConfig); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid prep task config")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigUpdatedServiceEventType, map[string]any{
+		keys.ValidPrepTaskConfigIDKey: existingValidPrepTaskConfig.ID,
+	}))
+
+	existingValidPrepTaskConfig, err = m.db.GetValidPrepTaskConfig(ctx, validPrepTaskConfigID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid prep task config")
+	}
+
+	return existingValidPrepTaskConfig, nil
+}
+
+// ArchiveValidPrepTaskConfig implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
+
+	if err := m.db.ArchiveValidPrepTaskConfig(ctx, validPrepTaskConfigID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid prep task config")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPrepTaskConfigArchivedServiceEventType, map[string]any{
+		keys.ValidPrepTaskConfigIDKey: validPrepTaskConfigID,
+	}))
+
+	return nil
+}
+
+// SearchValidPrepTaskConfigsByIngredient implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) SearchValidPrepTaskConfigsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+
+	results, err := m.db.GetValidPrepTaskConfigsForIngredient(ctx, ingredientID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task configs for ingredient")
+	}
+
+	return results, nil
+}
+
+// SearchValidPrepTaskConfigsByPreparation implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) SearchValidPrepTaskConfigsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+
+	results, err := m.db.GetValidPrepTaskConfigsForPreparation(ctx, preparationID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task configs for preparation")
+	}
+
+	return results, nil
+}
+
+// SearchValidPrepTaskConfigsByIngredientAndPreparation implements the ValidEnumerationsManager interface.
+func (m *validEnumerationManager) SearchValidPrepTaskConfigsByIngredientAndPreparation(ctx context.Context, ingredientID, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPrepTaskConfig], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	logger := m.logger.WithSpan(span).
+		WithValue(keys.ValidIngredientIDKey, ingredientID).
+		WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
+
+	results, err := m.db.GetValidPrepTaskConfigsForIngredientAndPreparation(ctx, ingredientID, preparationID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid prep task configs for ingredient and preparation")
 	}
 
 	return results, nil

@@ -117,6 +117,29 @@ func TestServiceImpl_ArchiveValidIngredientPreparation(T *testing.T) {
 	})
 }
 
+func TestServiceImpl_ArchiveValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		exampleValidPrepTaskConfigID := mealplanningfakes.BuildFakeID()
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ArchiveValidPrepTaskConfig", testutils.ContextMatcher, exampleValidPrepTaskConfigID).Return(nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.ArchiveValidPrepTaskConfig(ctx, &mealplanninggrpc.ArchiveValidPrepTaskConfigRequest{ValidPrepTaskConfigId: exampleValidPrepTaskConfigID})
+		assert.NotNil(t, res)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
 func TestServiceImpl_ArchiveValidIngredientState(T *testing.T) {
 	T.Parallel()
 
@@ -415,6 +438,31 @@ func TestServiceImpl_CreateValidIngredientPreparation(T *testing.T) {
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateValidIngredientPreparationRequest](t)
 
 		actual, err := s.CreateValidIngredientPreparation(ctx, exampleInput)
+		assert.NotNil(t, actual)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_CreateValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		exampleValidPrepTaskConfig := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("CreateValidPrepTaskConfig", testutils.ContextMatcher, testutils.MatchType[*mealplanning.ValidPrepTaskConfigCreationRequestInput]()).Return(exampleValidPrepTaskConfig, nil)
+		s.validEnumerationsManager = mvem
+
+		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateValidPrepTaskConfigRequest](t)
+
+		actual, err := s.CreateValidPrepTaskConfig(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
@@ -1001,6 +1049,136 @@ func TestServiceImpl_GetValidIngredientPreparationsByPreparation(T *testing.T) {
 
 		result, err := s.GetValidIngredientPreparationsByPreparation(ctx, &mealplanninggrpc.GetValidIngredientPreparationsByPreparationRequest{
 			ValidPreparationId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ReadValidPrepTaskConfig", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfig(ctx, &mealplanninggrpc.GetValidPrepTaskConfigRequest{ValidPrepTaskConfigId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidPrepTaskConfigs", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigs(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByIngredient", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByIngredient(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientRequest{
+			ValidIngredientId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByPreparation", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByPreparationRequest{
+			ValidPreparationId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByIngredientAndPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleIngredientID := mealplanningfakes.BuildFakeID()
+		examplePreparationID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByIngredientAndPreparation", testutils.ContextMatcher, exampleIngredientID, examplePreparationID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientAndPreparationRequest{
+			ValidIngredientId:  exampleIngredientID,
+			ValidPreparationId: examplePreparationID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1936,6 +2114,30 @@ func TestServiceImpl_UpdateValidIngredientPreparation(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientPreparation(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_UpdateValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		exampleRequest := fake.BuildFakeForTest[mealplanninggrpc.UpdateValidPrepTaskConfigRequest](t)
+		exampleResponse := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidPrepTaskConfig", testutils.ContextMatcher, exampleRequest.ValidPrepTaskConfigId, testutils.MatchType[*mealplanning.ValidPrepTaskConfigUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidPrepTaskConfig(ctx, exampleRequest)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 

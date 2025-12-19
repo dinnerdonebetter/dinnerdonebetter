@@ -133,6 +133,11 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/settings", ghttp.Adapt(s.SettingsList))
 	r.Get("/api/settings/search", ghttp.Adapt(s.SettingsSearch))
 
+	// Valid Prep Task Configs
+	r.Get(fmt.Sprintf("/valid_prep_task_configs/{%s}", validPrepTaskConfigIDURLParamKey), ghttp.Adapt(s.ValidPrepTaskConfigPage))
+	r.Get("/valid_prep_task_configs", ghttp.Adapt(s.ValidPrepTaskConfigsList))
+	r.Get("/api/valid_prep_task_configs/search", ghttp.Adapt(s.ValidPrepTaskConfigsSearch))
+
 	// Recipes
 	r.Get(fmt.Sprintf("/recipes/{%s}", recipeIDURLParamKey), ghttp.Adapt(s.RecipePage))
 	r.Get("/recipes", ghttp.Adapt(s.RecipesList))

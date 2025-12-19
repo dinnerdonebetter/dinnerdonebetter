@@ -255,6 +255,36 @@ var (
 		mealPlanningPerm("GetValidIngredientPreparationsByIngredient"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
+		mealPlanningPerm("UpdateValidIngredientPreparation"): {
+			authorization.UpdateValidIngredientPreparationsPermission,
+		},
+		mealPlanningPerm("ArchiveValidIngredientPreparation"): {
+			authorization.ArchiveValidIngredientPreparationsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfig"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("CreateValidPrepTaskConfig"): {
+			authorization.CreateValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigs"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByPreparation"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByIngredient"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByIngredientAndPreparation"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("UpdateValidPrepTaskConfig"): {
+			authorization.UpdateValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("ArchiveValidPrepTaskConfig"): {
+			authorization.ArchiveValidPrepTaskConfigsPermission,
+		},
 		mealPlanningPerm("GetValidIngredientMeasurementUnit"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},

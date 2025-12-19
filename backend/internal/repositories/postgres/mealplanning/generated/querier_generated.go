@@ -42,6 +42,7 @@ type Querier interface {
 	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidPrepTaskConfig(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error)
@@ -75,6 +76,7 @@ type Querier interface {
 	CheckValidInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckValidPrepTaskConfigExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -116,6 +118,7 @@ type Querier interface {
 	CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error
 	CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error
 	CreateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitConversionParams) error
+	CreateValidPrepTaskConfig(ctx context.Context, db DBTX, arg *CreateValidPrepTaskConfigParams) error
 	CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error
 	CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error
 	CreateValidPreparationVessel(ctx context.Context, db DBTX, arg *CreateValidPreparationVesselParams) error
@@ -227,6 +230,11 @@ type Querier interface {
 	GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error)
 	GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidMeasurementUnitsWithIDsRow, error)
+	GetValidPrepTaskConfig(ctx context.Context, db DBTX, id string) (*GetValidPrepTaskConfigRow, error)
+	GetValidPrepTaskConfigs(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsParams) ([]*GetValidPrepTaskConfigsRow, error)
+	GetValidPrepTaskConfigsForIngredient(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForIngredientParams) ([]*GetValidPrepTaskConfigsForIngredientRow, error)
+	GetValidPrepTaskConfigsForIngredientAndPreparation(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForIngredientAndPreparationParams) ([]*GetValidPrepTaskConfigsForIngredientAndPreparationRow, error)
+	GetValidPrepTaskConfigsForPreparation(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForPreparationParams) ([]*GetValidPrepTaskConfigsForPreparationRow, error)
 	GetValidPreparation(ctx context.Context, db DBTX, id string) (*GetValidPreparationRow, error)
 	GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error)
 	GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error)
@@ -299,6 +307,7 @@ type Querier interface {
 	UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) (int64, error)
 	UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) (int64, error)
 	UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidPrepTaskConfig(ctx context.Context, db DBTX, arg *UpdateValidPrepTaskConfigParams) (int64, error)
 	UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) (int64, error)
 	UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) (int64, error)
 	UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)

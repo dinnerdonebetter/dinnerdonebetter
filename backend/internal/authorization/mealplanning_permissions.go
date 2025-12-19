@@ -100,6 +100,15 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateValidPrepTaskConfigsPermission is a permission.
+	CreateValidPrepTaskConfigsPermission Permission = "create.valid_prep_task_configs"
+	// ReadValidPrepTaskConfigsPermission is a permission.
+	ReadValidPrepTaskConfigsPermission Permission = "read.valid_prep_task_configs"
+	// UpdateValidPrepTaskConfigsPermission is a permission.
+	UpdateValidPrepTaskConfigsPermission Permission = "update.valid_prep_task_configs"
+	// ArchiveValidPrepTaskConfigsPermission is a permission.
+	ArchiveValidPrepTaskConfigsPermission Permission = "archive.valid_prep_task_configs"
+
 	// CreateValidIngredientStateIngredientsPermission is a permission.
 	CreateValidIngredientStateIngredientsPermission Permission = "create.valid_ingredient_state_ingredients"
 	// ReadValidIngredientStateIngredientsPermission is a permission.
@@ -393,6 +402,10 @@ var (
 		SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission,
+		CreateValidPrepTaskConfigsPermission,
+		ReadValidPrepTaskConfigsPermission,
+		UpdateValidPrepTaskConfigsPermission,
+		ArchiveValidPrepTaskConfigsPermission,
 		CreateValidIngredientStateIngredientsPermission,
 		ReadValidIngredientStateIngredientsPermission,
 		SearchValidIngredientStateIngredientsPermission,
