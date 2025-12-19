@@ -39,6 +39,7 @@ type AdminFrontendServer struct {
 	recipeIDRouteParamFetcher               func(req *http.Request) string
 	waitlistIDRouteParamFetcher             func(req *http.Request) string
 	issueReportIDRouteParamFetcher          func(req *http.Request) string
+	validPrepTaskConfigIDRouteParamFetcher  func(req *http.Request) string
 	config                                  *config.AdminWebappConfig
 	server                                  phttp.Server
 	componentRenderer                       *components.ComponentRenderer
@@ -89,6 +90,7 @@ func NewAdminFrontendServer(
 		recipeIDRouteParamFetcher:               rpm.BuildRouteParamStringIDFetcher(recipeIDURLParamKey),
 		waitlistIDRouteParamFetcher:             rpm.BuildRouteParamStringIDFetcher(waitlistIDURLParamKey),
 		issueReportIDRouteParamFetcher:          rpm.BuildRouteParamStringIDFetcher(issueReportIDURLParamKey),
+		validPrepTaskConfigIDRouteParamFetcher:  rpm.BuildRouteParamStringIDFetcher(validPrepTaskConfigIDURLParamKey),
 		cookieManager:                           cookieMan,
 		encoder:                                 encoder,
 		config:                                  cfg,
