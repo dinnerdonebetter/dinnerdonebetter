@@ -24,6 +24,7 @@ func TestNewIndexScheduler(T *testing.T) {
 	T.Run("successful creation", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		metricsProvider := &mockmetrics.MetricsProvider{}
@@ -43,7 +44,7 @@ func TestNewIndexScheduler(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		assert.NoError(t, err)
 		assert.NotNil(t, scheduler)
 		assert.Equal(t, []string{"test_type"}, scheduler.allIndexTypes)
@@ -55,6 +56,7 @@ func TestNewIndexScheduler(T *testing.T) {
 	T.Run("with nil index functions", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		metricsProvider := &mockmetrics.MetricsProvider{}
@@ -68,7 +70,7 @@ func TestNewIndexScheduler(T *testing.T) {
 		publisher := &mockpublishers.Publisher{}
 		messageQueueProvider.On("ProvidePublisher", "TODO").Return(publisher, nil)
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, scheduler)
 		assert.Empty(t, scheduler.allIndexTypes)
@@ -81,6 +83,7 @@ func TestNewIndexScheduler(T *testing.T) {
 	T.Run("metrics provider error", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		metricsProvider := &mockmetrics.MetricsProvider{}
@@ -90,7 +93,7 @@ func TestNewIndexScheduler(T *testing.T) {
 		int64Counter := &mockmetrics.Int64Counter{}
 		metricsProvider.On("NewInt64Counter", "indexer.handled_records", []metric.Int64CounterOption(nil)).Return(int64Counter, errors.New("metrics error"))
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
 		assert.Error(t, err)
 		assert.Nil(t, scheduler)
 		assert.Contains(t, err.Error(), "metrics error")
@@ -101,6 +104,7 @@ func TestNewIndexScheduler(T *testing.T) {
 	T.Run("message queue provider error", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		metricsProvider := &mockmetrics.MetricsProvider{}
@@ -114,7 +118,7 @@ func TestNewIndexScheduler(T *testing.T) {
 		publisher := &mockpublishers.Publisher{}
 		messageQueueProvider.On("ProvidePublisher", "TODO").Return(publisher, errors.New("message queue error"))
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
 		assert.Error(t, err)
 		assert.Nil(t, scheduler)
 		assert.Contains(t, err.Error(), "message queue error")
@@ -150,7 +154,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls
@@ -192,7 +196,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		// No publisher calls expected for empty results
@@ -229,7 +233,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		// sql.ErrNoRows should be handled gracefully and return nil
@@ -263,7 +267,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		err = scheduler.IndexTypes(ctx)
@@ -291,7 +295,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 		messageQueueProvider.On("ProvidePublisher", "TODO").Return(publisher, nil)
 
 		// Create scheduler with empty index functions
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, map[string]Function{})
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, map[string]Function{})
 		require.NoError(t, err)
 
 		// This should not happen in normal operation since random.Element would return empty string
@@ -329,7 +333,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls - some succeed, some fail
@@ -370,7 +374,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls - all fail

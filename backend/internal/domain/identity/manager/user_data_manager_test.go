@@ -26,6 +26,7 @@ import (
 func buildIdentityDataManagerForTest(t *testing.T) *manager {
 	t.Helper()
 
+	ctx := t.Context()
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: t.Name(),
 	}
@@ -34,6 +35,7 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	m, err := NewIdentityDataManager(
+		ctx,
 		tracing.NewNoopTracerProvider(),
 		logging.NewNoopLogger(),
 		mpp,

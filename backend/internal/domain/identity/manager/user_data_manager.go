@@ -67,6 +67,7 @@ type (
 )
 
 func NewIdentityDataManager(
+	ctx context.Context,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
@@ -76,7 +77,7 @@ func NewIdentityDataManager(
 	userSearchIndex indexing.UserTextSearcher,
 	cfg *msgconfig.QueuesConfig,
 ) (IdentityDataManager, error) {
-	publisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	publisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up data changes publisher: %w", err)
 	}

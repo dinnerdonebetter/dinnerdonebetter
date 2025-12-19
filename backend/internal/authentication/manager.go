@@ -47,6 +47,7 @@ type (
 )
 
 func NewManager(
+	ctx context.Context,
 	queuesConfig *msgconfig.QueuesConfig,
 	tokenIssuer tokens.Issuer,
 	authenticator Authenticator,
@@ -56,7 +57,7 @@ func NewManager(
 	userAuthDataManager identity.Repository,
 	cfg *tokenscfg.Config,
 ) (Manager, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "creating data changes publisher")
 	}

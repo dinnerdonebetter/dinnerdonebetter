@@ -45,7 +45,7 @@ func Build(ctx context.Context, cfg *config.MealPlanGroceryListInitializerConfig
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
 	queuesConfig := &cfg.Queues
-	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -55,7 +55,7 @@ func Build(ctx context.Context, cfg *config.SearchDataIndexSchedulerConfig) (*in
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	v := ProvideIndexFunctions(identityRepository, mealplanningRepository)
-	indexScheduler, err := indexing.NewIndexScheduler(logger, tracerProvider, provider, publisherProvider, v)
+	indexScheduler, err := indexing.NewIndexScheduler(ctx, logger, tracerProvider, provider, publisherProvider, v)
 	if err != nil {
 		return nil, err
 	}

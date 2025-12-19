@@ -33,19 +33,19 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
-		a, err := provider.ProvidePublisher(t.Name())
+		a, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
 		actual, ok := a.(*sqsPublisher)
 		require.True(t, ok)
 
-		ctx := t.Context()
 		inputData := &struct {
 			Name string `json:"name"`
 		}{
@@ -71,19 +71,19 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
-		a, err := provider.ProvidePublisher(t.Name())
+		a, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
 		actual, ok := a.(*sqsPublisher)
 		require.True(t, ok)
 
-		ctx := t.Context()
 		inputData := &struct {
 			Name json.Number `json:"name"`
 		}{
@@ -114,12 +114,13 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProvidePublisher(t.Name())
+		actual, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -127,16 +128,17 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProvidePublisher(t.Name())
+		actual, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		actual, err = provider.ProvidePublisher(t.Name())
+		actual, err = provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

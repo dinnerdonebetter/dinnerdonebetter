@@ -27,6 +27,7 @@ import (
 func buildTestService(t *testing.T) *service {
 	t.Helper()
 
+	ctx := t.Context()
 	logger := logging.NewNoopLogger()
 	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -49,6 +50,7 @@ func buildTestService(t *testing.T) *service {
 	).Return(func(*http.Request) string { return "" })
 
 	s, err := ProvideService(
+		ctx,
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
@@ -74,6 +76,8 @@ func TestProvideService(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -96,6 +100,7 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},

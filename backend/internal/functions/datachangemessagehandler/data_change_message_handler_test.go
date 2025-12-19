@@ -87,6 +87,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 		cfg := &config.AsyncMessageHandlerConfig{
@@ -124,6 +125,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		publisherProvider.On("ProvidePublisher", "webhook-execution-requests").Return(mockPublisher, nil)
 
 		handler, err := NewAsyncDataChangeMessageHandler(
+			ctx,
 			logger,
 			tracerProvider,
 			cfg,

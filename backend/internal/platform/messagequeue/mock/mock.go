@@ -36,7 +36,7 @@ type PublisherProvider struct {
 }
 
 // ProvidePublisher implements our interface.
-func (m *PublisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
+func (m *PublisherProvider) ProvidePublisher(ctx context.Context, topic string) (messagequeue.Publisher, error) {
 	args := m.Called(topic)
 
 	return args.Get(0).(messagequeue.Publisher), args.Error(1)

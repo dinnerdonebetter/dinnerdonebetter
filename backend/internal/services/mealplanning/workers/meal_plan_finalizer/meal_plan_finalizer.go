@@ -31,6 +31,7 @@ type Worker struct {
 }
 
 func NewMealPlanFinalizer(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	dataManager mealplanning.Repository,
@@ -43,7 +44,7 @@ func NewMealPlanFinalizer(
 		return nil, err
 	}
 
-	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, err
 	}

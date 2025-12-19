@@ -86,7 +86,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	authDataService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, oauthRepository, identityRepository, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, queuesConfig)
+	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, oauthRepository, identityRepository, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

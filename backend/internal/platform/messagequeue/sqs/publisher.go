@@ -122,7 +122,7 @@ func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.T
 }
 
 // ProvidePublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
+func (p *publisherProvider) ProvidePublisher(ctx context.Context, topic string) (messagequeue.Publisher, error) {
 	if topic == "" {
 		return nil, messagequeue.ErrEmptyTopicName
 	}

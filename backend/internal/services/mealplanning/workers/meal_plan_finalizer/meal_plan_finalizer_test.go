@@ -20,12 +20,14 @@ import (
 func buildNewMealPlanFinalizerForTest(t *testing.T) *Worker {
 	t.Helper()
 
+	ctx := t.Context()
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
 	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	x, err := NewMealPlanFinalizer(
+		ctx,
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		&mealplanningmock.Repository{},

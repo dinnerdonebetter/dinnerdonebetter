@@ -46,6 +46,7 @@ type manager struct {
 }
 
 func NewOAuth2Manager(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
@@ -58,7 +59,7 @@ func NewOAuth2Manager(
 		return nil, internalerrors.NilConfigError("queues config for OAuth2 manager")
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
 	}

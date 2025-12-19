@@ -34,6 +34,7 @@ type Worker struct {
 }
 
 func NewMealPlanTaskCreator(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	analyzer recipeanalysis.RecipeAnalyzer,
@@ -42,7 +43,7 @@ func NewMealPlanTaskCreator(
 	metricsProvider metrics.Provider,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
-	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, err
 	}

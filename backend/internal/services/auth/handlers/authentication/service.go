@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"sync"
@@ -55,6 +56,7 @@ type (
 
 // ProvideService builds a new AuthDataService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	authenticator authentication.Authenticator,
@@ -72,7 +74,7 @@ func ProvideService(
 		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
 	}
 
-	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
+	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(ctx, queuesConfig.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}

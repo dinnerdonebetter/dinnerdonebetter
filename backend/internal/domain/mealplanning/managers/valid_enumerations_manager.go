@@ -166,7 +166,7 @@ func NewValidEnumerationsManager(
 	searchConfig *textsearchcfg.Config,
 	metricsProvider metrics.Provider,
 ) (ValidEnumerationsManager, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
 	}

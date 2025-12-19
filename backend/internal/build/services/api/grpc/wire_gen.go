@@ -94,7 +94,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	generator := random.NewGenerator(logger, tracerProvider)
 	builder := qrcodes.NewBuilder(tracerProvider, logger)
 	queuesConfig := &cfg.Queues
-	authManagerInterface, err := managers.ProvideAuthManager(logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder, queuesConfig)
+	authManagerInterface, err := managers.ProvideAuthManager(ctx, logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	authenticationManager, err := authentication.NewManager(queuesConfig, issuer, authenticator, tracerProvider, logger, publisherProvider, identityRepository, tokenscfgConfig)
+	authenticationManager, err := authentication.NewManager(ctx, queuesConfig, issuer, authenticator, tracerProvider, logger, publisherProvider, identityRepository, tokenscfgConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	identityDataManager, err := manager.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	identityDataManager, err := manager.NewIdentityDataManager(ctx, tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -146,16 +146,16 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	worker, err := mealplanfinalizer.NewMealPlanFinalizer(ctx, logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(ctx, logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsRepository)
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
-	oAuth2Manager, err := manager2.NewOAuth2Manager(logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
+	oAuth2Manager, err := manager2.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
