@@ -247,6 +247,10 @@ mcp: $(ARTIFACTS_DIR) ensure_air_installed
 mcp_inspector:
 	npx @modelcontextprotocol/inspector --config mcp-server-config.json
 
+.PHONY: agent
+agent:
+	go run $(THIS)/cmd/tools/aiagent web api webui
+
 # OPERATIONS
 
 GCP_DEV_PROJECT_NAME := dinner-done-better-dev

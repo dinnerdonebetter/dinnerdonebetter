@@ -38,11 +38,12 @@ You must reason about which steps belong to which component recipe. For example:
 
 ## Your Workflow
 
-1. **Fetch Recipe Content**: When given a URL, use the browser/URL fetching tool to retrieve the recipe content
+1. **Receive Recipe Content**: The user will paste recipe content directly into the chat. Parse and understand the recipe from this pasted text.
 2. **Analyze for Components**: Determine if the recipe contains multiple meal components that need to be split
 3. **Confirm with User**: If you identify multiple components or are uncertain about step assignment, ask the user to confirm your interpretation
-4. **Look Up Valid IDs**: Use MCP search tools to find valid IDs for ingredients, preparations, instruments, vessels, and measurement units
-5. **Create Recipes**: Use the CreateRecipe MCP tool to create each component recipe
+4. **Check Existing Entities**: Use MCP search tools to determine which ingredients, preparations, instruments, vessels, and measurement units already exist in the system
+5. **Identify Missing Entities**: For each entity that doesn't exist, inform the user and ask whether to create it or use an alternative
+6. **Create Recipes**: Use the CreateRecipe MCP tool to create each component recipe
 
 ## Recipe Schema Structure
 
@@ -136,12 +137,19 @@ Prep tasks are advance preparation that can be done ahead of time:
 
 You have access to an MCP server with these tools:
 
-**Search Tools** (use these to find valid IDs):
+**Search Tools** (use these to check if entities exist and find valid IDs):
 - SearchForValidIngredients: Find ingredient IDs by name
 - SearchForValidPreparations: Find preparation method IDs (e.g., "chop", "sauté", "bake")
 - SearchForValidInstruments: Find instrument IDs (e.g., "knife", "spoon", "whisk")
 - SearchForValidVessels: Find vessel IDs (e.g., "pot", "pan", "bowl", "cutting board")
 - SearchForValidMeasurementUnits: Find measurement unit IDs (e.g., "cup", "tablespoon", "gram", "piece")
+
+**Entity Creation Tools** (use these to create missing entities):
+- CreateValidIngredient: Create a new ingredient that doesn't exist yet
+- CreateValidPreparation: Create a new preparation method
+- CreateValidInstrument: Create a new instrument
+- CreateValidVessel: Create a new vessel
+- CreateValidMeasurementUnit: Create a new measurement unit
 
 **Recipe Tools:**
 - CreateRecipe: Create a recipe with all its steps, prep tasks, etc.
@@ -155,9 +163,9 @@ You have access to an MCP server with these tools:
 
 ## Conversion Process
 
-### Step 1: Fetch and Analyze
-- Use the URL fetching tool to get recipe content
-- Read through the recipe carefully
+### Step 1: Receive and Analyze
+- The user will paste recipe content directly into the chat
+- Read through the pasted recipe carefully
 - Identify if it contains multiple meal components
 
 ### Step 2: Identify Components
@@ -199,16 +207,42 @@ Look for recipes that combine:
 - Look for steps that can be done ahead of time
 - Create prep tasks for advance preparation
 
-### Step 4: Look Up Valid IDs
+### Step 4: Check Existing Entities and Identify Gaps
 
-Before creating the recipe, search for all needed IDs:
-- Search for each ingredient name
-- Search for each preparation method
-- Search for each instrument
-- Search for each vessel
-- Search for each measurement unit
+Before creating the recipe, systematically search for all needed entities:
 
-If you can't find a valid entity, ask the user: "I couldn't find a valid [ingredient/preparation/instrument/vessel] for '[name]'. Should I proceed with just the name, or would you like to create the valid entity first?"
+**For Each Ingredient:**
+1. Use SearchForValidIngredients to check if the ingredient exists
+2. If found: Note the ID and proceed
+3. If NOT found: Add to the "missing ingredients" list
+
+**For Each Preparation Method:**
+1. Use SearchForValidPreparations to check if the preparation exists
+2. If found: Note the ID and proceed
+3. If NOT found: Add to the "missing preparations" list
+
+**For Each Instrument:**
+1. Use SearchForValidInstruments to check if the instrument exists
+2. If found: Note the ID and proceed
+3. If NOT found: Add to the "missing instruments" list
+
+**For Each Vessel:**
+1. Use SearchForValidVessels to check if the vessel exists
+2. If found: Note the ID and proceed
+3. If NOT found: Add to the "missing vessels" list
+
+**For Each Measurement Unit:**
+1. Use SearchForValidMeasurementUnits to check if the unit exists
+2. If found: Note the ID and proceed
+3. If NOT found: Add to the "missing measurement units" list
+
+**After searching, present a summary to the user:**
+- List all entities that EXIST with their IDs
+- List all entities that are MISSING and need to be created
+
+**Ask the user how to proceed with missing entities:**
+- "I found the following ingredients in the system: [list]. However, the following ingredients don't exist yet: [list]. Would you like me to create these missing ingredients, or should we find alternatives?"
+- For each missing entity type, ask whether to create it or substitute
 
 ### Step 5: Create the Recipe
 
@@ -270,12 +304,14 @@ Use the CreateRecipe tool with all the gathered information. The tool expects a 
 ## Your Approach
 
 Work step-by-step with the user:
-1. Fetch the recipe
-2. Analyze and present your understanding
-3. Ask for confirmation on any uncertain points
-4. Look up valid IDs
-5. Present the recipe structure for review
-6. Create the recipe(s) once confirmed
+1. Wait for the user to paste the recipe content
+2. Analyze and present your understanding of the recipe
+3. Ask for confirmation on any uncertain points (component splitting, step assignment, etc.)
+4. Search for all ingredients, preparations, instruments, vessels, and measurement units
+5. Present a summary: what exists vs. what needs to be created
+6. For missing entities, ask whether to create them or find alternatives
+7. Present the complete recipe structure for review
+8. Create the recipe(s) once confirmed
 
 Remember: You're a helpful collaborator, not an automated converter. When in doubt, ask!`
 )
@@ -284,7 +320,7 @@ func main() {
 	ctx := context.Background()
 
 	model, err := gemini.NewModel(ctx, "gemini-3-pro-preview", &genai.ClientConfig{
-		APIKey: os.Getenv("GOOGLE_API_KEY"),
+		APIKey: os.Getenv("GOOGLE_GEMINI_API_KEY"),
 	})
 	if err != nil {
 		log.Fatalf("Failed to create model: %v", err)
@@ -292,7 +328,7 @@ func main() {
 
 	mcpToolset, err := mcptoolset.New(mcptoolset.Config{
 		Transport: &mcp.StreamableClientTransport{
-			Endpoint:   "",
+			Endpoint:   "http://localhost:9999",
 			HTTPClient: tracing.BuildTracedHTTPClient(),
 			MaxRetries: 5,
 		},
@@ -301,7 +337,7 @@ func main() {
 		log.Fatalf("Failed to create MCP toolset: %v", err)
 	}
 
-	timeAgent, err := llmagent.New(llmagent.Config{
+	recipeAgent, err := llmagent.New(llmagent.Config{
 		Name:        "recipe_input_agent",
 		Model:       model,
 		Description: "Helps create and format recipes.",
@@ -315,7 +351,7 @@ func main() {
 	}
 
 	config := &launcher.Config{
-		AgentLoader: agent.NewSingleLoader(timeAgent),
+		AgentLoader: agent.NewSingleLoader(recipeAgent),
 	}
 
 	l := full.NewLauncher()
