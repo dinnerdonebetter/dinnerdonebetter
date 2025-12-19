@@ -96,8 +96,8 @@ func (h *mcpToolManager) GetValidPrepTaskConfigs() mcp.ToolHandlerFor[*GetValidP
 
 type (
 	GetValidPrepTaskConfigsByIngredientInvocation struct {
-		ValidIngredientID string `jsonschema:"description=The ingredient ID to filter by"`
 		Filter            *filtering.QueryFilter
+		ValidIngredientID string `jsonschema:"description=The ingredient ID to filter by"`
 	}
 )
 
@@ -134,8 +134,8 @@ func (h *mcpToolManager) GetValidPrepTaskConfigsByIngredient() mcp.ToolHandlerFo
 
 type (
 	GetValidPrepTaskConfigsByPreparationInvocation struct {
-		ValidPreparationID string `jsonschema:"description=The preparation ID to filter by"`
 		Filter             *filtering.QueryFilter
+		ValidPreparationID string `jsonschema:"description=The preparation ID to filter by"`
 	}
 )
 
@@ -172,9 +172,9 @@ func (h *mcpToolManager) GetValidPrepTaskConfigsByPreparation() mcp.ToolHandlerF
 
 type (
 	GetValidPrepTaskConfigsByIngredientAndPreparationInvocation struct {
+		Filter             *filtering.QueryFilter
 		ValidIngredientID  string `jsonschema:"description=The ingredient ID to filter by"`
 		ValidPreparationID string `jsonschema:"description=The preparation ID to filter by"`
-		Filter             *filtering.QueryFilter
 	}
 )
 
