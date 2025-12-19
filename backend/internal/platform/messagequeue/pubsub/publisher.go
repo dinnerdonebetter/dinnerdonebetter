@@ -12,7 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 type (
@@ -31,7 +32,7 @@ type (
 )
 
 // buildPubSubPublisher provides a Pub/Sub-backed pubSubPublisher.
-func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *pubSubPublisher {
+func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Publisher, tracerProvider tracing.TracerProvider, topic string) *pubSubPublisher {
 	return &pubSubPublisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -72,8 +73,8 @@ func (p *publisherProvider) Close() {
 }
 
 // ProvidePublisher returns a pubSubPublisher for a given topic.
-func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
-	if topic == "" {
+func (p *publisherProvider) ProvidePublisher(ctx context.Context, topicName string) (messagequeue.Publisher, error) {
+	if topicName == "" {
 		return nil, messagequeue.ErrEmptyTopicName
 	}
 
@@ -81,14 +82,19 @@ func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publish
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()
-	if cachedPub, ok := p.publisherCache[topic]; ok {
+	if cachedPub, ok := p.publisherCache[topicName]; ok {
 		return cachedPub, nil
 	}
 
-	t := p.pubsubClient.Topic(topic)
+	topic, err := p.pubsubClient.TopicAdminClient.GetTopic(ctx, &pubsubpb.GetTopicRequest{Topic: topicName})
+	if err != nil {
+		return nil, fmt.Errorf("error getting topic admin client: %w", err)
+	}
 
-	pub := buildPubSubPublisher(logger, t, p.tracerProvider, topic)
-	p.publisherCache[topic] = pub
+	publisher := p.pubsubClient.Publisher(topic.GetName())
+
+	pub := buildPubSubPublisher(logger, publisher, p.tracerProvider, topicName)
+	p.publisherCache[topicName] = pub
 
 	return pub, nil
 }

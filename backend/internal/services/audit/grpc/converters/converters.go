@@ -20,9 +20,9 @@ func ConvertAuditLogEntryToGRPCAuditLogEntry(entry *audit.AuditLogEntry) *audits
 		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(entry.CreatedAt),
 		Changes:          changes,
 		BelongsToAccount: pointer.Dereference(entry.BelongsToAccount),
-		ID:               entry.ID,
+		Id:               entry.ID,
 		ResourceType:     entry.ResourceType,
-		RelevantID:       entry.RelevantID,
+		RelevantId:       entry.RelevantID,
 		EventType:        entry.EventType,
 		BelongsToUser:    entry.BelongsToUser,
 	}

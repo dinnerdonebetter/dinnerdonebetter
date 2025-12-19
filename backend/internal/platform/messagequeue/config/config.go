@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
-	ps "cloud.google.com/go/pubsub"
+	ps "cloud.google.com/go/pubsub/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 

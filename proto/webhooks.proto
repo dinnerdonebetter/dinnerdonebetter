@@ -10,110 +10,123 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks";
 
 message DataCollection {
-  map<string, Webhook> Webhooks = 1;
+  map<string, Webhook> webhooks = 1;
+}
+
+enum WebhookContentType {
+  WEBHOOK_CONTENT_TYPE_JSON = 0;
+  WEBHOOK_CONTENT_TYPE_XML = 1;
+}
+
+enum WebhookMethod {
+  WEBHOOK_METHOD_GET = 0;
+  WEBHOOK_METHOD_PUT = 1;
+  WEBHOOK_METHOD_PATCH = 2;
+  WEBHOOK_METHOD_POST = 3;
+  WEBHOOK_METHOD_DELETE = 4;
 }
 
 message Webhook {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  string Name = 4;
-  string URL = 5;
-  string Method = 6;
-  string ID = 7;
-  string BelongsToAccount = 8;
-  string ContentType = 9;
-  repeated WebhookTriggerEvent Events = 10;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp archived_at = 2;
+  google.protobuf.Timestamp last_updated_at = 3;
+  string name = 4;
+  string url = 5;
+  WebhookMethod method = 6;
+  string id = 7;
+  string belongs_to_account = 8;
+  WebhookContentType content_type = 9;
+  repeated WebhookTriggerEvent events = 10;
 }
 
 message WebhookCreationRequestInput {
-  string Name = 1;
-  string ContentType = 2;
-  string URL = 3;
-  string Method = 4;
-  repeated string Events = 5;
+  string name = 1;
+  WebhookContentType content_type = 2;
+  string url = 3;
+  WebhookMethod method = 4;
+  repeated string events = 5;
 }
 
 message WebhookExecutionRequest {
-  string RequestID = 1;
-  google.protobuf.Any Payload = 2;
-  string WebhookID = 3;
-  string AccountID = 4;
-  string TriggerEvent = 5;
+  string request_id = 1;
+  google.protobuf.Any payload = 2;
+  string webhook_id = 3;
+  string account_id = 4;
+  string trigger_event = 5;
 }
 
 message WebhookTriggerEvent {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  string ID = 3;
-  string BelongsToWebhook = 4;
-  string TriggerEvent = 5;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp archived_at = 2;
+  string id = 3;
+  string belongs_to_webhook = 4;
+  string trigger_event = 5;
 }
 
 message WebhookTriggerEventCreationRequestInput {
-  string BelongsToWebhook = 1;
-  string TriggerEvent = 2;
+  string belongs_to_webhook = 1;
+  string trigger_event = 2;
 }
 
 // CreateWebhook
 message CreateWebhookRequest {
-  WebhookCreationRequestInput Input = 1;
+  WebhookCreationRequestInput input = 1;
 }
 
 message CreateWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Webhook Created = 2;
+  common.ResponseDetails response_details = 1;
+  Webhook created = 2;
 }
 
 // AddWebhookTriggerEvent
 message AddWebhookTriggerEventRequest {
-  string webhookID = 1;
+  string webhook_id = 1;
   WebhookTriggerEventCreationRequestInput input = 2;
 }
 
 message AddWebhookTriggerEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  WebhookTriggerEvent Created = 2;
+  common.ResponseDetails response_details = 1;
+  WebhookTriggerEvent created = 2;
 }
 
 // ArchiveWebhook
 message ArchiveWebhookRequest {
-  string webhookID = 1;
+  string webhook_id = 1;
 }
 
 message ArchiveWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // ArchiveWebhookTriggerEvent
 message ArchiveWebhookTriggerEventRequest {
-  string WebhookID = 1;
-  string WebhookTriggerEventID = 2;
+  string webhook_id = 1;
+  string webhook_trigger_event_id = 2;
 }
 
 message ArchiveWebhookTriggerEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // GetWebhook
 message GetWebhookRequest {
-  string webhookID = 1;
+  string webhook_id = 1;
 }
 
 message GetWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Webhook Result = 2;
+  common.ResponseDetails response_details = 1;
+  Webhook result = 2;
 }
 
 // GetWebhooks
 message GetWebhooksRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetWebhooksResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated Webhook Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated Webhook results = 3;
 }
 
 service WebhooksService {

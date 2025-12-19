@@ -63,6 +63,7 @@ func (a *AsyncDataChangeMessageHandler) SetNonWebhookEventTypes(nonWebhookEventT
 }
 
 func NewAsyncDataChangeMessageHandler(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	cfg *config.AsyncMessageHandlerConfig,
@@ -103,17 +104,17 @@ func NewAsyncDataChangeMessageHandler(
 		return nil, fmt.Errorf("setting up webhookExecutionRequests execution time histogram: %w", err)
 	}
 
-	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.OutboundEmailsTopicName)
+	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.Queues.OutboundEmailsTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("configuring outbound emails publisher: %w", err)
 	}
 
-	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
+	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.Queues.SearchIndexRequestsTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("configuring search indexing publisher: %w", err)
 	}
 
-	webhookExecutionRequestPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.WebhookExecutionRequestsTopicName)
+	webhookExecutionRequestPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.Queues.WebhookExecutionRequestsTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("configuring webhook execution requests publisher: %w", err)
 	}

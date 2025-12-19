@@ -29,9 +29,19 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
+	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 )
 
 func buildIntegrationTestsConfig() *config.APIServiceConfig {
+	uploadsConfig := uploadscfg.Config{
+		Debug: false,
+		Storage: objectstorage.Config{
+			Provider:   "memory",
+			BucketName: "avatars",
+			S3Config:   nil,
+		},
+	}
+
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
@@ -155,14 +165,10 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				},
 			},
 			Users: identitycfg.Config{
-				Uploads: uploadscfg.Config{
-					Debug: false,
-					Storage: objectstorage.Config{
-						Provider:   "memory",
-						BucketName: "avatars",
-						S3Config:   nil,
-					},
-				},
+				Uploads: uploadsConfig,
+			},
+			UploadedMedia: uploadedmediacfg.Config{
+				Uploads: uploadsConfig,
 			},
 		},
 	}

@@ -15,7 +15,6 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *mealplanning.Recipe) *mealpl
 		Description:         &input.Description,
 		InspiredByRecipeID:  input.InspiredByRecipeID,
 		YieldsComponentType: &input.YieldsComponentType,
-		SealOfApproval:      &input.SealOfApproval,
 		EstimatedPortions: types.Float32RangeWithOptionalMaxUpdateRequestInput{
 			Max: input.EstimatedPortions.Max,
 			Min: &input.EstimatedPortions.Min,
@@ -38,7 +37,6 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		Source:             input.Source,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		SealOfApproval:     input.SealOfApproval,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
@@ -94,7 +92,6 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 		Source:             input.Source,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		SealOfApproval:     input.SealOfApproval,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
@@ -129,7 +126,6 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *mealplanning.Recipe) *mea
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,
-		SealOfApproval:     input.SealOfApproval,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,

@@ -124,6 +124,37 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 	}
 }
 
+func TestQuerier_Integration_GetMealsWithIDs(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	meal1 := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	meal2 := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+
+	results, err := dbc.GetMealsWithIDs(ctx, []string{meal1.ID, meal2.ID})
+	require.NoError(t, err)
+	require.Len(t, results, 2)
+
+	found := map[string]*types.Meal{}
+	for _, m := range results {
+		found[m.ID] = m
+		require.NotEmpty(t, m.Components)
+	}
+
+	assert.Contains(t, found, meal1.ID)
+	assert.Contains(t, found, meal2.ID)
+}
+
 func TestQuerier_MealExists(T *testing.T) {
 	T.Parallel()
 

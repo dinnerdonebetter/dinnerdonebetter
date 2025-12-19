@@ -57,6 +57,7 @@ setup: ensure_yamlfmt_installed
 format: format_yaml
 	(cd backend && $(MAKE) format)
 	(cd frontend && $(MAKE) format)
+	(cd ios && $(MAKE) format)
 
 .PHONY: terraformat
 terraformat:
@@ -71,11 +72,13 @@ format_yaml: ensure_yamlfmt_installed
 lint:
 	(cd backend && $(MAKE) lint)
 	(cd frontend && $(MAKE) lint)
+	(cd ios && $(MAKE) lint)
 
 .PHONY: test
 test:
 	(cd backend && $(MAKE) test)
 	(cd frontend && $(MAKE) test)
+	(cd ios && $(MAKE) test)
 
 .PHONY: regit
 regit:
@@ -123,7 +126,7 @@ proto_swift: ensure_protoc-gen-swift_installed ensure_protoc-gen-grpc-swift_inst
 	mkdir -p $(PROTO_OUTPUT_IOS_PATH)
 	protoc --swift_out=$(PROTO_OUTPUT_IOS_PATH) \
 		--grpc-swift-2_out=$(PROTO_OUTPUT_IOS_PATH) \
-      	--grpc-swift_opt=Client=true,Server=false \
+      	--grpc-swift-2_opt=Client=true,Server=false \
       	--swift_opt=Visibility=Public \
 		--proto_path proto/ \
 		$(PROTO_FILES_PATH)

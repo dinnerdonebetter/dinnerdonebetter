@@ -1,18 +1,13 @@
 package objectstorage
 
 import (
-	"errors"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob/memblob"
 )
@@ -33,9 +28,6 @@ func TestUploader_ReadFile(T *testing.T) {
 			bucket: b,
 			logger: logging.NewNoopLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return t.Name()
-			},
 		}
 
 		x, err := u.ReadFile(ctx, exampleFilename)
@@ -53,9 +45,6 @@ func TestUploader_ReadFile(T *testing.T) {
 			bucket: memblob.OpenBucket(&memblob.Options{}),
 			logger: logging.NewNoopLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return t.Name()
-			},
 		}
 
 		x, err := u.ReadFile(ctx, exampleFilename)
@@ -78,91 +67,8 @@ func TestUploader_SaveFile(T *testing.T) {
 			bucket: memblob.OpenBucket(&memblob.Options{}),
 			logger: logging.NewNoopLogger(),
 			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return t.Name()
-			},
 		}
 
 		assert.NoError(t, u.SaveFile(ctx, tempFile.Name(), []byte(t.Name())))
-	})
-}
-
-func TestUploader_ServeFiles(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		exampleFilename := "hello_world.txt"
-
-		b := memblob.OpenBucket(&memblob.Options{})
-		require.NoError(t, b.WriteAll(ctx, exampleFilename, []byte(t.Name()), nil))
-
-		u := &Uploader{
-			bucket: b,
-			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return exampleFilename
-			},
-		}
-
-		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
-
-		u.ServeFiles(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
-
-	T.Run("with nonexistent file", func(t *testing.T) {
-		t.Parallel()
-
-		exampleFilename := "hello_world.txt"
-
-		u := &Uploader{
-			bucket: memblob.OpenBucket(&memblob.Options{}),
-			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return exampleFilename
-			},
-		}
-
-		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
-
-		u.ServeFiles(res, req)
-
-		assert.Equal(t, http.StatusNotFound, res.Code)
-	})
-
-	T.Run("with error writing file content", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		exampleFilename := "hello_world.txt"
-
-		b := memblob.OpenBucket(&memblob.Options{})
-		require.NoError(t, b.WriteAll(ctx, exampleFilename, []byte(t.Name()), nil))
-
-		u := &Uploader{
-			bucket: b,
-			logger: logging.NewNoopLogger(),
-			tracer: tracing.NewTracerForTest(t.Name()),
-			filenameFetcher: func(*http.Request) string {
-				return exampleFilename
-			},
-		}
-
-		res := &testutils.MockHTTPResponseWriter{}
-		res.On("Write", mock.IsType([]byte(nil))).Return(0, errors.New("blah"))
-		res.On("Header").Return(http.Header{})
-		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
-
-		u.ServeFiles(res, req)
-
-		mock.AssertExpectationsForObjects(t, res)
 	})
 }

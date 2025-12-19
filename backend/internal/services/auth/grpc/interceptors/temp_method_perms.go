@@ -255,6 +255,36 @@ var (
 		mealPlanningPerm("GetValidIngredientPreparationsByIngredient"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
+		mealPlanningPerm("UpdateValidIngredientPreparation"): {
+			authorization.UpdateValidIngredientPreparationsPermission,
+		},
+		mealPlanningPerm("ArchiveValidIngredientPreparation"): {
+			authorization.ArchiveValidIngredientPreparationsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfig"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("CreateValidPrepTaskConfig"): {
+			authorization.CreateValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigs"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByPreparation"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByIngredient"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("GetValidPrepTaskConfigsByIngredientAndPreparation"): {
+			authorization.ReadValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("UpdateValidPrepTaskConfig"): {
+			authorization.UpdateValidPrepTaskConfigsPermission,
+		},
+		mealPlanningPerm("ArchiveValidPrepTaskConfig"): {
+			authorization.ArchiveValidPrepTaskConfigsPermission,
+		},
 		mealPlanningPerm("GetValidIngredientMeasurementUnit"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},
@@ -329,6 +359,9 @@ var (
 		},
 		mealPlanningPerm("UpdateRecipe"): {
 			authorization.UpdateRecipesPermission,
+		},
+		mealPlanningPerm("UpdateRecipeStatus"): {
+			authorization.UpdateRecipesStatusPermission,
 		},
 		mealPlanningPerm("ArchiveRecipe"): {
 			authorization.ArchiveRecipesPermission,
@@ -440,6 +473,48 @@ var (
 		},
 		mealPlanningPerm("ArchiveMealPlanGroceryListItem"): {
 			authorization.ArchiveMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("ArchiveMealList"): {
+			authorization.ArchiveMealListsPermission,
+		},
+		mealPlanningPerm("ArchiveMealListItem"): {
+			authorization.ArchiveMealListsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeList"): {
+			authorization.ArchiveRecipeListsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeListItem"): {
+			authorization.ArchiveRecipeListsPermission,
+		},
+		mealPlanningPerm("CreateMealList"): {
+			authorization.CreateMealListsPermission,
+		},
+		mealPlanningPerm("CreateMealListItem"): {
+			authorization.CreateMealListsPermission,
+		},
+		mealPlanningPerm("CreateRecipeList"): {
+			authorization.CreateRecipeListsPermission,
+		},
+		mealPlanningPerm("CreateRecipeListItem"): {
+			authorization.CreateRecipeListsPermission,
+		},
+		mealPlanningPerm("GetMealLists"): {
+			authorization.ReadMealListsPermission,
+		},
+		mealPlanningPerm("GetRecipeLists"): {
+			authorization.ReadMealListsPermission,
+		},
+		mealPlanningPerm("UpdateMealList"): {
+			authorization.UpdateMealListsPermission,
+		},
+		mealPlanningPerm("UpdateMealListItem"): {
+			authorization.UpdateMealListsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeList"): {
+			authorization.UpdateRecipeListsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeListItem"): {
+			authorization.UpdateRecipeListsPermission,
 		},
 		mealPlanningPerm("CloneRecipe"): {
 			authorization.ReadRecipesPermission, // TODO: this should be its own perm
@@ -633,6 +708,87 @@ var (
 		webhooksServicePerm("ArchiveWebhookTriggerEvent"): {
 			authorization.ArchiveWebhookTriggerEventsPermission,
 		},
+		waitlistsServicePerm("CreateWaitlist"): {
+			authorization.CreateWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetWaitlist"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetWaitlists"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("GetActiveWaitlists"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("UpdateWaitlist"): {
+			authorization.UpdateWaitlistsPermission,
+		},
+		waitlistsServicePerm("ArchiveWaitlist"): {
+			authorization.ArchiveWaitlistsPermission,
+		},
+		waitlistsServicePerm("WaitlistIsNotExpired"): {
+			authorization.ReadWaitlistsPermission,
+		},
+		waitlistsServicePerm("CreateWaitlistSignup"): {
+			authorization.CreateWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("GetWaitlistSignup"): {
+			authorization.ReadWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("GetWaitlistSignupsForWaitlist"): {
+			authorization.ReadWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("UpdateWaitlistSignup"): {
+			authorization.UpdateWaitlistSignupsPermission,
+		},
+		waitlistsServicePerm("ArchiveWaitlistSignup"): {
+			authorization.ArchiveWaitlistSignupsPermission,
+		},
+		issueReportsServicePerm("CreateIssueReport"): {
+			authorization.CreateIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReport"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReports"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForAccount"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForTable"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("GetIssueReportsForRecord"): {
+			authorization.ReadIssueReportsPermission,
+		},
+		issueReportsServicePerm("UpdateIssueReport"): {
+			authorization.UpdateIssueReportsPermission,
+		},
+		issueReportsServicePerm("ArchiveIssueReport"): {
+			authorization.ArchiveIssueReportsPermission,
+		},
+		uploadedMediaServicePerm("Upload"): {
+			authorization.CreateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("CreateUploadedMedia"): {
+			authorization.CreateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMedia"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMediaWithIDs"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("GetUploadedMediaForUser"): {
+			authorization.ReadUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("UpdateUploadedMedia"): {
+			authorization.UpdateUploadedMediaPermission,
+		},
+		uploadedMediaServicePerm("ArchiveUploadedMedia"): {
+			authorization.ArchiveUploadedMediaPermission,
+		},
 		identityServicePerm("UpdateAccount"): {
 			authorization.UpdateAccountPermission,
 		},
@@ -725,4 +881,16 @@ func mealPlanningPerm(method string) string {
 
 func authPerm(method string) string {
 	return permString("auth", "AuthService", method)
+}
+
+func waitlistsServicePerm(method string) string {
+	return permString("waitlists", "WaitlistsService", method)
+}
+
+func issueReportsServicePerm(method string) string {
+	return permString("issue_reports", "IssueReportsService", method)
+}
+
+func uploadedMediaServicePerm(method string) string {
+	return permString("uploaded_media", "UploadedMediaService", method)
 }

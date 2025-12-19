@@ -126,7 +126,7 @@ func TestAccounts_Reading(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, createdAccount)
 
-		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: createdAccount.Created.ID})
+		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: createdAccount.Created.Id})
 		assert.NoError(t, err)
 		assert.NotNil(t, createdAccount)
 
@@ -149,7 +149,7 @@ func TestAccounts_Reading(T *testing.T) {
 
 		testClient = buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err = testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: account.Result.ID})
+		_, err = testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: account.Result.Id})
 		assert.Error(t, err)
 	})
 
@@ -159,7 +159,7 @@ func TestAccounts_Reading(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 
-		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: nonexistentID})
+		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, retrievedAccount)
 	})
@@ -184,17 +184,17 @@ func TestAccounts_Updating(T *testing.T) {
 		converted := identitygrpcconverters.ConvertGRPCAccountToAccount(createdAccount.Created)
 		converted.Name = "Updated name"
 
-		_, err = testClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: converted.ID})
+		_, err = testClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountId: converted.ID})
 		require.NoError(t, err)
 
 		updateInput := identityconverters.ConvertAccountToAccountUpdateRequestInput(converted)
 		_, err = testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{
-			AccountID: converted.ID,
+			AccountId: converted.ID,
 			Input:     identitygrpcconverters.ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
 
-		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: converted.ID})
+		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: converted.ID})
 		assert.NoError(t, err)
 		assert.NotNil(t, updatedClient)
 		assert.Equal(t, converted.Name, updatedClient.Result.Name)
@@ -214,7 +214,7 @@ func TestAccounts_Updating(T *testing.T) {
 
 		testClient = buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err = testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{AccountID: account.Result.ID})
+		_, err = testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{AccountId: account.Result.Id})
 		assert.Error(t, err)
 	})
 
@@ -236,12 +236,12 @@ func TestAccounts_Updating(T *testing.T) {
 		converted := fakes.BuildFakeAccount()
 		updateInput := identityconverters.ConvertAccountToAccountUpdateRequestInput(converted)
 		_, err := testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{
-			AccountID: nonexistentID,
+			AccountId: nonexistentID,
 			Input:     identitygrpcconverters.ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
 
-		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: converted.ID})
+		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: converted.ID})
 		assert.Error(t, err)
 		assert.Nil(t, updatedClient)
 	})
@@ -263,7 +263,7 @@ func TestAccounts_Archiving(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, createdAccount)
 
-		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: createdAccount.Created.ID})
+		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountId: createdAccount.Created.Id})
 		assert.NoError(t, err)
 	})
 
@@ -281,7 +281,7 @@ func TestAccounts_Archiving(T *testing.T) {
 
 		testClient = buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: account.Result.ID})
+		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountId: account.Result.Id})
 		assert.Error(t, err)
 	})
 
@@ -289,14 +289,10 @@ func TestAccounts_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: nonexistentID})
+		_, err := adminClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
-
-// TODO: do we need invite creation routes or do these tests account for all that? If not, please leave a comment
-
-// TODO: document the restrictions around invitations and then link them here
 
 func TestAccounts_Inviting(T *testing.T) {
 	T.Parallel()
@@ -309,7 +305,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
 		require.NoError(t, err)
-		accountID := accountRes.Result.ID
+		accountID := accountRes.Result.Id
 
 		// create a webhook (to demonstrate access with later)
 		createdWebhook := createWebhookForTest(t, testClient)
@@ -353,7 +349,7 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// accept the invitation
 		_, err = inviteeClient.AcceptAccountInvitation(ctx, &identitysvc.AcceptAccountInvitationRequest{
-			AccountInvitationID: invitation.Created.ID,
+			AccountInvitationId: invitation.Created.Id,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: invitation.Created.Token,
 				Note:  t.Name(),
@@ -380,17 +376,17 @@ func TestAccounts_Inviting(T *testing.T) {
 		var found bool
 		for _, account := range accounts.Results {
 			if !found {
-				found = account.ID == accountID
+				found = account.Id == accountID
 			}
 		}
 		require.True(t, found)
 
 		// change to the new account
-		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})
+		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountId: accountID})
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})
@@ -403,7 +399,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
 		require.NoError(t, err)
-		accountID := accountRes.Result.ID
+		accountID := accountRes.Result.Id
 
 		// create a webhook (to demonstrate access with later)
 		createdWebhook := createWebhookForTest(t, testClient)
@@ -433,7 +429,7 @@ func TestAccounts_Inviting(T *testing.T) {
 			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
-			InvitationID:          invitation.Created.ID,
+			InvitationID:          invitation.Created.Id,
 			InvitationToken:       invitation.Created.Token,
 			AcceptedPrivacyPolicy: true,
 			AcceptedTOS:           true,
@@ -461,17 +457,17 @@ func TestAccounts_Inviting(T *testing.T) {
 		var found bool
 		for _, account := range accounts.Results {
 			if !found {
-				found = account.ID == accountID
+				found = account.Id == accountID
 			}
 		}
 		require.True(t, found)
 
 		// change to the new account
-		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})
+		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountId: accountID})
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})
@@ -524,7 +520,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		assert.NotEmpty(t, invitations.Results)
 
 		_, err = testClient.CancelAccountInvitation(ctx, &identitysvc.CancelAccountInvitationRequest{
-			AccountInvitationID: invitation.Created.ID,
+			AccountInvitationId: invitation.Created.Id,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: invitation.Created.Token,
 				Note:  t.Name(),
@@ -534,7 +530,7 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// accept the invitation
 		_, err = inviteeClient.AcceptAccountInvitation(ctx, &identitysvc.AcceptAccountInvitationRequest{
-			AccountInvitationID: invitation.Created.ID,
+			AccountInvitationId: invitation.Created.Id,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: invitation.Created.Token,
 				Note:  t.Name(),
@@ -549,7 +545,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		assert.Empty(t, sentInvitations.Results)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		assert.Error(t, err)
 		assert.Nil(t, webhook)
 	})
@@ -600,7 +596,7 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// accept the invitation
 		_, err = inviteeClient.RejectAccountInvitation(ctx, &identitysvc.RejectAccountInvitationRequest{
-			AccountInvitationID: invitation.Created.ID,
+			AccountInvitationId: invitation.Created.Id,
 			Input: &identitysvc.AccountInvitationUpdateRequestInput{
 				Token: invitation.Created.Token,
 				Note:  t.Name(),
@@ -627,7 +623,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		ogUser, testClient := createUserAndClientForTest(t)
 		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
 		require.NoError(t, err)
-		accountID := accountRes.Result.ID
+		accountID := accountRes.Result.Id
 
 		// create a webhook (to demonstrate access with later)
 		createdWebhook := createWebhookForTest(t, testClient)
@@ -649,7 +645,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 
 		// create the invitation for the user
 		_, err = testClient.TransferAccountOwnership(ctx, &identitysvc.TransferAccountOwnershipRequest{
-			AccountID: accountID,
+			AccountId: accountID,
 			Input: &identitysvc.AccountOwnershipTransferInput{
 				Reason:       t.Name(),
 				CurrentOwner: ogUser.ID,
@@ -663,11 +659,11 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		require.NoError(t, err)
 
 		// change to the new account
-		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})
+		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountId: accountID})
 		require.NoError(t, err)
 
 		// validate we can see the webhook created before our user existed
-		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
 	})
@@ -684,7 +680,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 		testUser, testClient := createUserAndClientForTest(t)
 		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
 		require.NoError(t, err)
-		accountID := accountRes.Result.ID
+		accountID := accountRes.Result.Id
 
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		inviteRes, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
@@ -706,7 +702,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
-			InvitationID:          inviteRes.Created.ID,
+			InvitationID:          inviteRes.Created.Id,
 			InvitationToken:       inviteRes.Created.Token,
 			AcceptedPrivacyPolicy: true,
 			AcceptedTOS:           true,
@@ -718,7 +714,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 		require.Len(t, inviteeAccountsRes.Results, 2)
 
 		_, err = testClient.UpdateAccountMemberPermissions(ctx, &identitysvc.UpdateAccountMemberPermissionsRequest{
-			UserID: invitee.ID,
+			UserId: invitee.ID,
 			Input: &identitysvc.ModifyUserPermissionsInput{
 				Reason:  t.Name(),
 				NewRole: "account_admin",
@@ -734,12 +730,12 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 		)
 
 		for _, account := range inviteeAccountsRes.Results {
-			if account.ID == accountID {
+			if account.Id == accountID {
 				if !found {
 					found = true
 				}
 			} else {
-				otherAccountID = account.ID
+				otherAccountID = account.Id
 			}
 		}
 
@@ -747,8 +743,8 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 		require.True(t, found)
 
 		_, err = inviteeClient.ArchiveUserMembership(ctx, &identitysvc.ArchiveUserMembershipRequest{
-			AccountID: accountID,
-			UserID:    testUser.ID,
+			AccountId: accountID,
+			UserId:    testUser.ID,
 		})
 		require.NoError(t, err)
 

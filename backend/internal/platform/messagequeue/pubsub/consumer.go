@@ -8,18 +8,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 type (
-	messageConsumer interface {
-		Topic(string) *pubsub.Topic
-		CreateSubscription(ctx context.Context, id string, cfg pubsub.SubscriptionConfig) (*pubsub.Subscription, error)
-	}
-
 	pubSubConsumer struct {
 		logger      logging.Logger
-		consumer    messageConsumer
+		consumer    *pubsub.Client
 		handlerFunc func(context.Context, []byte) error
 		topic       string
 	}
@@ -46,22 +42,27 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	}
 
 	ctx := context.Background()
-	sub, err := c.consumer.Topic(c.topic).Subscriptions(ctx).Next()
+	sub, err := c.consumer.SubscriptionAdminClient.CreateSubscription(ctx, &pubsubpb.Subscription{
+		Name:  c.topic,
+		Topic: c.topic,
+	})
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("creating %s subscription", c.topic), err)
 		errors <- err
 		return
 	}
 
+	subscriber := c.consumer.Subscriber(sub.GetName())
+
 	go func() {
 		<-stopChan
-		if err = sub.Delete(ctx); err != nil {
+		if err = c.consumer.SubscriptionAdminClient.DeleteSubscription(ctx, &pubsubpb.DeleteSubscriptionRequest{Subscription: sub.GetName()}); err != nil {
 			c.logger.Error(fmt.Sprintf("deleting %s subscription", c.topic), err)
 			errors <- err
 		}
 	}()
 
-	if err = sub.Receive(ctx, func(receivedContext context.Context, m *pubsub.Message) {
+	if err = subscriber.Receive(ctx, func(receivedContext context.Context, m *pubsub.Message) {
 		if handleErr := c.handlerFunc(receivedContext, m.Data); handleErr != nil {
 			errors <- err
 		} else {

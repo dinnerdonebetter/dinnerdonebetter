@@ -29,7 +29,7 @@ func createValidPreparationForTest(t *testing.T) *mealplanning.ValidPreparation 
 	checkValidPreparationEquality(t, 0, exampleValidPreparation, converted)
 
 	retrieved, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{
-		ValidPreparationID: converted.ID,
+		ValidPreparationId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -130,7 +130,7 @@ func TestValidPreparations_Reading(T *testing.T) {
 
 		created := createValidPreparationForTest(t)
 
-		retrieved, err := testClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationID: created.ID})
+		retrieved, err := testClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidPreparationToValidPreparation(retrieved.Result)
@@ -146,7 +146,7 @@ func TestValidPreparations_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationID: created.ID})
+		_, err := c.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -154,7 +154,7 @@ func TestValidPreparations_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationID: nonexistentID})
+		_, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -172,7 +172,7 @@ func TestValidPreparations_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidPreparation(ctx, &mealplanningsvc.UpdateValidPreparationRequest{
-			ValidPreparationID: created.ID,
+			ValidPreparationId: created.ID,
 			Input:              grpcconverters.ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -196,7 +196,7 @@ func TestValidPreparations_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidPreparation(ctx, &mealplanningsvc.UpdateValidPreparationRequest{
-			ValidPreparationID: created.ID,
+			ValidPreparationId: created.ID,
 			Input:              grpcconverters.ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -220,7 +220,7 @@ func TestValidPreparations_Updating(T *testing.T) {
 		created := createValidPreparationForTest(t)
 
 		response, err := testClient.UpdateValidPreparation(ctx, &mealplanningsvc.UpdateValidPreparationRequest{
-			ValidPreparationID: created.ID,
+			ValidPreparationId: created.ID,
 			Input: &mealplanningsvc.ValidPreparationUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -239,10 +239,10 @@ func TestValidPreparations_Archiving(T *testing.T) {
 
 		created := createValidPreparationForTest(t)
 
-		_, err := adminClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationID: created.ID})
+		_, err := adminClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationID: created.ID})
+		x, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -255,7 +255,7 @@ func TestValidPreparations_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationID: created.ID})
+		_, err := c.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -263,7 +263,7 @@ func TestValidPreparations_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationID: nonexistentID})
+		_, err := adminClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -274,7 +274,7 @@ func TestValidPreparations_Archiving(T *testing.T) {
 		created := createValidPreparationForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationID: created.ID})
+		_, err := testClient.ArchiveValidPreparation(ctx, &mealplanningsvc.ArchiveValidPreparationRequest{ValidPreparationId: created.ID})
 		assert.Error(t, err)
 	})
 }

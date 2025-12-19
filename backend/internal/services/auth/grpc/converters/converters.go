@@ -10,14 +10,14 @@ func ConvertGRPCUpdatePasswordRequestToPasswordUpdateInput(request *authsvc.Upda
 	return &auth.PasswordUpdateInput{
 		NewPassword:     request.NewPassword,
 		CurrentPassword: request.CurrentPassword,
-		TOTPToken:       request.TOTPToken,
+		TOTPToken:       request.TotpToken,
 	}
 }
 
 func ConvertGRPCVerifyTOTPSecretRequestToTOTPSecretVerificationInput(request *authsvc.VerifyTOTPSecretRequest) *auth.TOTPSecretVerificationInput {
 	return &auth.TOTPSecretVerificationInput{
-		TOTPToken: request.TOTPToken,
-		UserID:    request.UserID,
+		TOTPToken: request.TotpToken,
+		UserID:    request.UserId,
 	}
 }
 
@@ -40,13 +40,13 @@ func ConvertGRPCRequestPasswordResetTokenRequestToPasswordResetTokenCreationRequ
 func ConvertGRPCRefreshTOTPSecretRequestToTOTPSecretRefreshInput(request *authsvc.RefreshTOTPSecretRequest) *auth.TOTPSecretRefreshInput {
 	return &auth.TOTPSecretRefreshInput{
 		CurrentPassword: request.CurrentPassword,
-		TOTPToken:       request.TOTPToken,
+		TOTPToken:       request.TotpToken,
 	}
 }
 
 func ConvertTOTPSecretRefreshResponseToGRPCTOTPSecretRefreshResponse(input *auth.TOTPSecretRefreshResponse) *authsvc.TOTPSecretRefreshResponse {
 	return &authsvc.TOTPSecretRefreshResponse{
-		TwoFactorQRCode: input.TwoFactorQRCode,
+		TwoFactorQrCode: input.TwoFactorQRCode,
 		TwoFactorSecret: input.TwoFactorSecret,
 	}
 }
@@ -68,16 +68,16 @@ func ConvertGRPCUserLoginInputToUserLoginInput(request *authsvc.UserLoginInput) 
 	return &auth.UserLoginInput{
 		Username:  request.Username,
 		Password:  request.Password,
-		TOTPToken: request.TOTPToken,
+		TOTPToken: request.TotpToken,
 	}
 }
 
 func ConvertTokenResponseToGRPCTokenResponse(input *auth.TokenResponse) *authsvc.TokenResponse {
 	return &authsvc.TokenResponse{
-		UserID:       input.UserID,
-		AccountID:    input.AccountID,
+		UserId:       input.UserID,
+		AccountId:    input.AccountID,
 		AccessToken:  input.AccessToken,
 		RefreshToken: input.RefreshToken,
-		ExpiresUTC:   grpcconverters.ConvertTimeToPBTimestamp(input.ExpiresUTC),
+		ExpiresUtc:   grpcconverters.ConvertTimeToPBTimestamp(input.ExpiresUTC),
 	}
 }

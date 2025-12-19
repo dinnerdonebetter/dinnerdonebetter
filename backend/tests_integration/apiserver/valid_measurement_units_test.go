@@ -46,7 +46,7 @@ func createValidMeasurementUnitForTest(t *testing.T) *mealplanning.ValidMeasurem
 	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, converted)
 
 	retrieved, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{
-		ValidMeasurementUnitID: converted.ID,
+		ValidMeasurementUnitId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -125,7 +125,7 @@ func TestValidMeasurementUnits_Reading(T *testing.T) {
 
 		created := createValidMeasurementUnitForTest(t)
 
-		retrieved, err := testClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		retrieved, err := testClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(retrieved.Result)
@@ -141,7 +141,7 @@ func TestValidMeasurementUnits_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		_, err := c.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -149,7 +149,7 @@ func TestValidMeasurementUnits_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: nonexistentID})
+		_, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -167,7 +167,7 @@ func TestValidMeasurementUnits_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidMeasurementUnit(ctx, &mealplanningsvc.UpdateValidMeasurementUnitRequest{
-			ValidMeasurementUnitID: created.ID,
+			ValidMeasurementUnitId: created.ID,
 			Input:                  grpcconverters.ConvertValidMeasurementUnitUpdateRequestInputToGRPCValidMeasurementUnitUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -191,7 +191,7 @@ func TestValidMeasurementUnits_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidMeasurementUnit(ctx, &mealplanningsvc.UpdateValidMeasurementUnitRequest{
-			ValidMeasurementUnitID: created.ID,
+			ValidMeasurementUnitId: created.ID,
 			Input:                  grpcconverters.ConvertValidMeasurementUnitUpdateRequestInputToGRPCValidMeasurementUnitUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -215,7 +215,7 @@ func TestValidMeasurementUnits_Updating(T *testing.T) {
 		created := createValidMeasurementUnitForTest(t)
 
 		response, err := testClient.UpdateValidMeasurementUnit(ctx, &mealplanningsvc.UpdateValidMeasurementUnitRequest{
-			ValidMeasurementUnitID: created.ID,
+			ValidMeasurementUnitId: created.ID,
 			Input: &mealplanningsvc.ValidMeasurementUnitUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -234,10 +234,10 @@ func TestValidMeasurementUnits_Archiving(T *testing.T) {
 
 		created := createValidMeasurementUnitForTest(t)
 
-		_, err := adminClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		_, err := adminClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		x, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -250,7 +250,7 @@ func TestValidMeasurementUnits_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		_, err := c.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -258,7 +258,7 @@ func TestValidMeasurementUnits_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitID: nonexistentID})
+		_, err := adminClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -269,7 +269,7 @@ func TestValidMeasurementUnits_Archiving(T *testing.T) {
 		created := createValidMeasurementUnitForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitID: created.ID})
+		_, err := testClient.ArchiveValidMeasurementUnit(ctx, &mealplanningsvc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitId: created.ID})
 		assert.Error(t, err)
 	})
 }

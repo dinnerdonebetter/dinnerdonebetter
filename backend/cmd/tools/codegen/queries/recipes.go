@@ -10,9 +10,11 @@ import (
 const (
 	recipesTableName = "recipes"
 
-	belongsToRecipeColumn = "belongs_to_recipe"
-	recipeIDColumn        = "recipe_id"
-	lastValidatedAtColumn = "last_validated_at"
+	belongsToRecipeColumn  = "belongs_to_recipe"
+	recipeIDColumn         = "recipe_id"
+	lastValidatedAtColumn  = "last_validated_at"
+	eligibleForMealsColumn = "eligible_for_meals"
+	statusColumn           = "status"
 )
 
 func init() {
@@ -25,13 +27,13 @@ var recipesColumns = []string{
 	slugColumn,
 	"source",
 	descriptionColumn,
+	statusColumn,
 	"inspired_by_recipe_id",
 	"min_estimated_portions",
 	"max_estimated_portions",
 	"portion_name",
 	"plural_portion_name",
-	"seal_of_approval",
-	"eligible_for_meals",
+	eligibleForMealsColumn,
 	"yields_component_type",
 	lastIndexedAtColumn,
 	lastValidatedAtColumn,
@@ -170,6 +172,7 @@ ORDER BY %s.%s;`,
 	%s
 FROM %s
 	WHERE %s.%s IS NULL
+	AND %s.%s = COALESCE(sqlc.narg(%s), 'approved')::recipe_status
 	%s
 %s;`,
 					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
@@ -179,6 +182,7 @@ FROM %s
 					buildTotalCountSelect(recipesTableName, true, []string{}),
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
+					recipesTableName, statusColumn, statusColumn,
 					buildFilterConditions(recipesTableName, true, false),
 					buildCursorLimitClause(recipesTableName),
 				)),
@@ -211,6 +215,28 @@ FROM %s
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetRecipesWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	LEFT JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[])
+ORDER BY %s.%s ASC;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					recipesTableName,
+					recipeStepsTableName, recipesTableName, idColumn, recipeStepsTableName, belongsToRecipeColumn,
+					validPreparationsTableName, recipeStepsTableName, preparationIDColumn, validPreparationsTableName, idColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn,
+					recipesTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "RecipeSearch",
 					Type: ManyType,
 				},
@@ -230,6 +256,36 @@ WHERE %s.%s IS NULL
 					buildTotalCountSelect(recipesTableName, true, []string{}),
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
+					recipesTableName, nameColumn, buildILIKEForArgument("query"),
+					buildFilterConditions(recipesTableName, true, false),
+					buildCursorLimitClause(recipesTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForMealEligibleRecipes",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = true 
+	AND %s.%s = 'approved'
+	AND %s.%s %s
+	%s
+%s;`,
+					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", recipesTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(recipesTableName, true, true, []string{}),
+					buildTotalCountSelect(recipesTableName, true, []string{}),
+					recipesTableName,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, eligibleForMealsColumn,
+					recipesTableName, statusColumn,
 					recipesTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(recipesTableName, true, false),
 					buildCursorLimitClause(recipesTableName),
@@ -290,12 +346,29 @@ WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 					recipesTableName,
-					strings.Join(applyToEach(filterForUpdate(recipesColumns, lastValidatedAtColumn, createdByUserColumn), func(i int, s string) string {
+					strings.Join(applyToEach(filterForUpdate(recipesColumns, statusColumn, lastValidatedAtColumn, createdByUserColumn), func(i int, s string) string {
 						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 					}), ",\n\t"),
 					lastUpdatedAtColumn, currentTimeExpression,
 					archivedAtColumn,
 					createdByUserColumn, createdByUserColumn,
+					idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateRecipeStatus",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = sqlc.arg(%s),
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+					recipesTableName,
+					statusColumn, statusColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
 					idColumn, idColumn,
 				)),
 			},

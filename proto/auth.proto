@@ -10,235 +10,235 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated
 
 // LoginForToken
 message LoginForTokenRequest {
-  UserLoginInput Input = 1;
+  UserLoginInput input = 1;
 }
 
 message LoginForTokenResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  TokenResponse Result = 2;
+  common.ResponseDetails response_details = 1;
+  TokenResponse result = 2;
 }
 
 // AdminLoginForToken
 message AdminLoginForTokenRequest {
-  UserLoginInput Input = 1;
+  UserLoginInput input = 1;
 }
 
 message AdminLoginForTokenResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  TokenResponse Result = 2;
+  common.ResponseDetails response_details = 1;
+  TokenResponse result = 2;
 }
 
 // ExchangeToken
 message ExchangeTokenRequest {
-  string RefreshToken = 1;
+  string refresh_token = 1;
 }
 
 message ExchangeTokenResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  string UserID = 2;
-  string AccountID = 3;
-  string AccessToken = 4;
-  string RefreshToken = 5;
-  google.protobuf.Timestamp ExpiresUTC = 6;
+  common.ResponseDetails response_details = 1;
+  string user_id = 2;
+  string account_id = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+  google.protobuf.Timestamp expires_utc = 6;
 }
 
 // GetActiveAccount
 message GetActiveAccountRequest {}
 
 message GetActiveAccountResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  identity.Account Result = 2;
+  common.ResponseDetails response_details = 1;
+  identity.Account result = 2;
 }
 
 // GetAuthStatus
 message GetAuthStatusRequest {}
 
 message GetAuthStatusResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  string UserID = 2;
-  string AccountStatus = 3;
-  string AccountStatusExplanation = 4;
-  string ActiveAccount = 5;
+  common.ResponseDetails response_details = 1;
+  string user_id = 2;
+  string account_status = 3;
+  string account_status_explanation = 4;
+  string active_account = 5;
 }
 
 // RedeemPasswordResetToken
 message RedeemPasswordResetTokenRequest {
-  string Token = 1;
-  string NewPassword = 2;
+  string token = 1;
+  string new_password = 2;
 }
 
 message RedeemPasswordResetTokenResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // RefreshTOTPSecret
 message RefreshTOTPSecretRequest {
-  string CurrentPassword = 1;
-  string TOTPToken = 2;
+  string current_password = 1;
+  string totp_token = 2;
 }
 
 message RefreshTOTPSecretResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  TOTPSecretRefreshResponse Result = 2;
+  common.ResponseDetails response_details = 1;
+  TOTPSecretRefreshResponse result = 2;
 }
 
 // RequestEmailVerificationEmail
 message RequestEmailVerificationEmailRequest {
-  string EmailAddress = 1;
+  string email_address = 1;
 }
 
 message RequestEmailVerificationEmailResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Submitted = 2;
+  common.ResponseDetails response_details = 1;
+  bool submitted = 2;
 }
 
 // RequestPasswordResetToken
 message RequestPasswordResetTokenRequest {
-  string EmailAddress = 1;
+  string email_address = 1;
 }
 
 message RequestPasswordResetTokenResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Accepted = 2;
+  common.ResponseDetails response_details = 1;
+  bool accepted = 2;
 }
 
 // RequestUsernameReminder
 message RequestUsernameReminderRequest {
-  string EmailAddress = 1;
+  string email_address = 1;
 }
 
 message RequestUsernameReminderResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Submitted = 2;
+  common.ResponseDetails response_details = 1;
+  bool submitted = 2;
 }
 
 // UpdatePassword
 message UpdatePasswordRequest {
-  string NewPassword = 1;
-  string CurrentPassword = 2;
-  string TOTPToken = 3;
+  string new_password = 1;
+  string current_password = 2;
+  string totp_token = 3;
 }
 
 message UpdatePasswordResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 // VerifyEmailAddress
 message VerifyEmailAddressRequest {
-  string Token = 1;
+  string token = 1;
 }
 
 message VerifyEmailAddressResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Verified = 2;
+  common.ResponseDetails response_details = 1;
+  bool verified = 2;
 }
 
 // VerifyTOTPSecret
 message VerifyTOTPSecretRequest {
-  string TOTPToken = 1;
-  string UserID = 2;
+  string totp_token = 1;
+  string user_id = 2;
 }
 
 message VerifyTOTPSecretResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Accepted = 2;
+  common.ResponseDetails response_details = 1;
+  bool accepted = 2;
 }
 
 message ChangeActiveAccountInput {
-  string AccountID = 1;
+  string account_id = 1;
 }
 
 message EmailAddressVerificationRequest {
-  string Token = 1;
+  string token = 1;
 }
 
 message EmailAddressVerificationResponse {
-  common.ResponseDetails ResponseDetails = 1;
+  common.ResponseDetails response_details = 1;
 }
 
 message PasswordResetResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Successful = 2;
+  common.ResponseDetails response_details = 1;
+  bool successful = 2;
 }
 
 message PasswordResetToken {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ExpiresAt = 2;
-  google.protobuf.Timestamp RedeemedAt = 3;
-  google.protobuf.Timestamp LastUpdatedAt = 4;
-  string ID = 5;
-  string Token = 6;
-  string BelongsToUser = 7;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp expires_at = 2;
+  google.protobuf.Timestamp redeemed_at = 3;
+  google.protobuf.Timestamp last_updated_at = 4;
+  string id = 5;
+  string token = 6;
+  string belongs_to_user = 7;
 }
 
 message PasswordResetTokenCreationRequestInput {
-  string EmailAddress = 1;
+  string email_address = 1;
 }
 
 message PasswordResetTokenRedemptionRequestInput {
-  string Token = 1;
-  string NewPassword = 2;
+  string token = 1;
+  string new_password = 2;
 }
 
 message PasswordUpdateInput {
-  string NewPassword = 1;
-  string CurrentPassword = 2;
-  string TOTPToken = 3;
+  string new_password = 1;
+  string current_password = 2;
+  string totp_token = 3;
 }
 
 message TOTPSecretRefreshInput {
-  string CurrentPassword = 1;
-  string TOTPToken = 2;
+  string current_password = 1;
+  string totp_token = 2;
 }
 
 message TOTPSecretRefreshResponse {
-  string TwoFactorQRCode = 2;
-  string TwoFactorSecret = 3;
+  string two_factor_qr_code = 2;
+  string two_factor_secret = 3;
 }
 
 message TOTPSecretVerificationInput {
-  string TOTPToken = 1;
-  string UserID = 2;
+  string totp_token = 1;
+  string user_id = 2;
 }
 
 message TOTPSecretVerificationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  bool Accepted = 2;
+  common.ResponseDetails response_details = 1;
+  bool accepted = 2;
 }
 
 message TokenResponse {
-  string UserID = 2;
-  string AccountID = 3;
-  string AccessToken = 4;
-  string RefreshToken = 5;
-  google.protobuf.Timestamp ExpiresUTC = 6;
+  string user_id = 2;
+  string account_id = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+  google.protobuf.Timestamp expires_utc = 6;
 }
 
 message UserLoginInput {
-  string Username = 1;
-  string Password = 2;
-  string TOTPToken = 3;
+  string username = 1;
+  string password = 2;
+  string totp_token = 3;
 }
 
 message UserPermissionsRequestInput {
-  repeated string Permissions = 1;
+  repeated string permissions = 1;
 }
 
 message UserPermissionsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  map<string, bool> Permissions = 2;
+  common.ResponseDetails response_details = 1;
+  map<string, bool> permissions = 2;
 }
 
 message UsernameReminderRequestInput {
-  string EmailAddress = 1;
+  string email_address = 1;
 }
 
 // GetSelf
 message GetSelfRequest {}
 
 message GetSelfResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  identity.User Result = 2;
+  common.ResponseDetails response_details = 1;
+  identity.User result = 2;
 }
 
 service AuthService {

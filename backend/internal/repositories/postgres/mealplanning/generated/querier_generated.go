@@ -12,12 +12,16 @@ import (
 type Querier interface {
 	ArchiveAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveAccountInstrumentOwnershipParams) (int64, error)
 	ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) (int64, error)
+	ArchiveMealList(ctx context.Context, db DBTX, arg *ArchiveMealListParams) (int64, error)
+	ArchiveMealListItem(ctx context.Context, db DBTX, arg *ArchiveMealListItemParams) (int64, error)
 	ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error)
 	ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) (int64, error)
 	ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error)
 	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error)
 	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error)
+	ArchiveRecipeList(ctx context.Context, db DBTX, arg *ArchiveRecipeListParams) (int64, error)
+	ArchiveRecipeListItem(ctx context.Context, db DBTX, arg *ArchiveRecipeListItemParams) (int64, error)
 	ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (int64, error)
@@ -38,6 +42,7 @@ type Querier interface {
 	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidPrepTaskConfig(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error)
@@ -71,6 +76,7 @@ type Querier interface {
 	CheckValidInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckValidPrepTaskConfigExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -79,6 +85,8 @@ type Querier interface {
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
+	CreateMealList(ctx context.Context, db DBTX, arg *CreateMealListParams) error
+	CreateMealListItem(ctx context.Context, db DBTX, arg *CreateMealListItemParams) error
 	CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error
 	CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateMealPlanEventParams) error
 	CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error
@@ -86,6 +94,8 @@ type Querier interface {
 	CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error
 	CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error
 	CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error
+	CreateRecipeList(ctx context.Context, db DBTX, arg *CreateRecipeListParams) error
+	CreateRecipeListItem(ctx context.Context, db DBTX, arg *CreateRecipeListItemParams) error
 	CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error
 	CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error
 	CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskStepParams) error
@@ -108,6 +118,7 @@ type Querier interface {
 	CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error
 	CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error
 	CreateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitConversionParams) error
+	CreateValidPrepTaskConfig(ctx context.Context, db DBTX, arg *CreateValidPrepTaskConfigParams) error
 	CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error
 	CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error
 	CreateValidPreparationVessel(ctx context.Context, db DBTX, arg *CreateValidPreparationVesselParams) error
@@ -125,6 +136,8 @@ type Querier interface {
 	GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error)
 	GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutGroceryListInitRow, error)
 	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
+	GetMealListItems(ctx context.Context, db DBTX, arg *GetMealListItemsParams) ([]*GetMealListItemsRow, error)
+	GetMealLists(ctx context.Context, db DBTX, arg *GetMealListsParams) ([]*GetMealListsRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
 	GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPlanEventsParams) ([]*GetMealPlanEventsRow, error)
@@ -142,6 +155,7 @@ type Querier interface {
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetMealsWithIDsRow, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)
@@ -150,6 +164,8 @@ type Querier interface {
 	GetRecipeByID(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeByIDRow, error)
 	GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error)
 	GetRecipeIDsForMeal(ctx context.Context, db DBTX, mealID string) ([]string, error)
+	GetRecipeListItems(ctx context.Context, db DBTX, arg *GetRecipeListItemsParams) ([]*GetRecipeListItemsRow, error)
+	GetRecipeLists(ctx context.Context, db DBTX, arg *GetRecipeListsParams) ([]*GetRecipeListsRow, error)
 	GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error)
 	GetRecipeMediaForRecipe(ctx context.Context, db DBTX, recipeID sql.NullString) ([]*GetRecipeMediaForRecipeRow, error)
 	GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error)
@@ -176,6 +192,7 @@ type Querier interface {
 	GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams) ([]*GetRecipesRow, error)
 	GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetRecipesWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetRecipesWithIDsRow, error)
 	GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error)
 	GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error)
 	GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error)
@@ -213,6 +230,11 @@ type Querier interface {
 	GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error)
 	GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidMeasurementUnitsWithIDsRow, error)
+	GetValidPrepTaskConfig(ctx context.Context, db DBTX, id string) (*GetValidPrepTaskConfigRow, error)
+	GetValidPrepTaskConfigs(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsParams) ([]*GetValidPrepTaskConfigsRow, error)
+	GetValidPrepTaskConfigsForIngredient(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForIngredientParams) ([]*GetValidPrepTaskConfigsForIngredientRow, error)
+	GetValidPrepTaskConfigsForIngredientAndPreparation(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForIngredientAndPreparationParams) ([]*GetValidPrepTaskConfigsForIngredientAndPreparationRow, error)
+	GetValidPrepTaskConfigsForPreparation(ctx context.Context, db DBTX, arg *GetValidPrepTaskConfigsForPreparationParams) ([]*GetValidPrepTaskConfigsForPreparationRow, error)
 	GetValidPreparation(ctx context.Context, db DBTX, id string) (*GetValidPreparationRow, error)
 	GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error)
 	GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error)
@@ -236,6 +258,7 @@ type Querier interface {
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
+	SearchForMealEligibleRecipes(ctx context.Context, db DBTX, arg *SearchForMealEligibleRecipesParams) ([]*SearchForMealEligibleRecipesRow, error)
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error)
@@ -249,6 +272,8 @@ type Querier interface {
 	SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error)
 	UpdateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateAccountInstrumentOwnershipParams) (int64, error)
 	UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateMealList(ctx context.Context, db DBTX, arg *UpdateMealListParams) (int64, error)
+	UpdateMealListItem(ctx context.Context, db DBTX, arg *UpdateMealListItemParams) (int64, error)
 	UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error)
 	UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) (int64, error)
 	UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) (int64, error)
@@ -256,9 +281,12 @@ type Querier interface {
 	UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) (int64, error)
 	UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) (int64, error)
 	UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateRecipeList(ctx context.Context, db DBTX, arg *UpdateRecipeListParams) (int64, error)
+	UpdateRecipeListItem(ctx context.Context, db DBTX, arg *UpdateRecipeListItemParams) (int64, error)
 	UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error)
 	UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) (int64, error)
 	UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error)
+	UpdateRecipeStatus(ctx context.Context, db DBTX, arg *UpdateRecipeStatusParams) (int64, error)
 	UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) (int64, error)
 	UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) (int64, error)
 	UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) (int64, error)
@@ -279,6 +307,7 @@ type Querier interface {
 	UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) (int64, error)
 	UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) (int64, error)
 	UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidPrepTaskConfig(ctx context.Context, db DBTX, arg *UpdateValidPrepTaskConfigParams) (int64, error)
 	UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) (int64, error)
 	UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) (int64, error)
 	UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)

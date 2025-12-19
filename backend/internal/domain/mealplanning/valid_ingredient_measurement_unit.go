@@ -44,23 +44,21 @@ type (
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
+		_                      struct{}                          `json:"-"`
+		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"allowableQuantity"`
 		Notes                  string                            `json:"notes"`
 		ValidMeasurementUnitID string                            `json:"validMeasurementUnitID"`
 		ValidIngredientID      string                            `json:"validIngredientID"`
-		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"allowableQuantity"`
 	}
 
 	// ValidIngredientMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitDatabaseCreationInput struct {
-		_ struct{} `json:"-"`
-
+		_                      struct{}                          `json:"-"`
+		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"-"`
 		ID                     string                            `json:"-"`
 		Notes                  string                            `json:"-"`
 		ValidMeasurementUnitID string                            `json:"-"`
 		ValidIngredientID      string                            `json:"-"`
-		AllowableQuantity      types.Float32RangeWithOptionalMax `json:"-"`
 	}
 
 	// ValidIngredientMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid ingredient measurement units.

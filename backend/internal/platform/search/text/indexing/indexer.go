@@ -41,6 +41,7 @@ type IndexScheduler struct {
 }
 
 func NewIndexScheduler(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
@@ -52,7 +53,7 @@ func NewIndexScheduler(
 		return nil, err
 	}
 
-	searchDataIndexPublisher, err := messageQueuePublisherProvider.ProvidePublisher("TODO")
+	searchDataIndexPublisher, err := messageQueuePublisherProvider.ProvidePublisher(ctx, "TODO")
 	if err != nil {
 		return nil, err
 	}

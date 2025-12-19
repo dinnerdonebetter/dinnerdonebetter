@@ -30,9 +30,9 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 
 	x := &authsvc.GetAuthStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
-		UserID:                   sessionContextData.GetUserID(),
+		UserId:                   sessionContextData.GetUserID(),
 		AccountStatus:            sessionContextData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionContextData.Requester.AccountStatusExplanation,
 		ActiveAccount:            sessionContextData.GetActiveAccountID(),
@@ -59,13 +59,13 @@ func (s *serviceImpl) ExchangeToken(ctx context.Context, request *authsvc.Exchan
 
 	x := &authsvc.ExchangeTokenResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
-		UserID:       sessionContextData.GetUserID(),
-		AccountID:    sessionContextData.GetActiveAccountID(),
+		UserId:       sessionContextData.GetUserID(),
+		AccountId:    sessionContextData.GetActiveAccountID(),
 		RefreshToken: newToken.RefreshToken,
 		AccessToken:  newToken.AccessToken,
-		ExpiresUTC:   grpcconverters.ConvertTimeToPBTimestamp(newToken.ExpiresUTC),
+		ExpiresUtc:   grpcconverters.ConvertTimeToPBTimestamp(newToken.ExpiresUTC),
 	}
 
 	return x, nil
@@ -98,7 +98,7 @@ func (s *serviceImpl) loginForToken(ctx context.Context, admin bool, input *auth
 
 	x := &authsvc.LoginForTokenResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertTokenResponseToGRPCTokenResponse(tokenResponse),
 	}
@@ -126,7 +126,7 @@ func (s *serviceImpl) CheckPermissions(ctx context.Context, request *authsvc.Use
 
 	x := &authsvc.UserPermissionsResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Permissions: result.Permissions,
 	}
@@ -156,7 +156,7 @@ func (s *serviceImpl) GetActiveAccount(ctx context.Context, request *authsvc.Get
 
 	x := &authsvc.GetActiveAccountResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: identityconverters.ConvertAccountToGRPCAccount(account),
 	}
@@ -186,7 +186,7 @@ func (s *serviceImpl) GetSelf(ctx context.Context, request *authsvc.GetSelfReque
 
 	x := &authsvc.GetSelfResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: identityconverters.ConvertUserToGRPCUser(user),
 	}
@@ -213,7 +213,7 @@ func (s *serviceImpl) RedeemPasswordResetToken(ctx context.Context, request *aut
 
 	x := &authsvc.RedeemPasswordResetTokenResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -240,7 +240,7 @@ func (s *serviceImpl) RefreshTOTPSecret(ctx context.Context, request *authsvc.Re
 
 	x := &authsvc.RefreshTOTPSecretResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: converters.ConvertTOTPSecretRefreshResponseToGRPCTOTPSecretRefreshResponse(totpSecretResponse),
 	}
@@ -266,7 +266,7 @@ func (s *serviceImpl) RequestEmailVerificationEmail(ctx context.Context, request
 
 	x := &authsvc.RequestEmailVerificationEmailResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -292,7 +292,7 @@ func (s *serviceImpl) RequestPasswordResetToken(ctx context.Context, request *au
 
 	x := &authsvc.RequestPasswordResetTokenResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -318,7 +318,7 @@ func (s *serviceImpl) RequestUsernameReminder(ctx context.Context, request *auth
 
 	x := &authsvc.RequestUsernameReminderResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -344,7 +344,7 @@ func (s *serviceImpl) VerifyEmailAddress(ctx context.Context, request *authsvc.V
 
 	x := &authsvc.VerifyEmailAddressResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Verified: true,
 	}
@@ -356,7 +356,7 @@ func (s *serviceImpl) VerifyTOTPSecret(ctx context.Context, request *authsvc.Ver
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserID)
+	logger := s.logger.WithSpan(span).WithValue(keys.UserIDKey, request.UserId)
 
 	input := converters.ConvertGRPCVerifyTOTPSecretRequestToTOTPSecretVerificationInput(request)
 	if err := s.authManager.TOTPSecretVerification(ctx, input); err != nil {
@@ -365,7 +365,7 @@ func (s *serviceImpl) VerifyTOTPSecret(ctx context.Context, request *authsvc.Ver
 
 	x := &authsvc.VerifyTOTPSecretResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Accepted: true,
 	}
@@ -392,7 +392,7 @@ func (s *serviceImpl) UpdatePassword(ctx context.Context, request *authsvc.Updat
 
 	x := &authsvc.UpdatePasswordResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 

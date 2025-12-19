@@ -34,13 +34,14 @@ func (m *mockMessagePublisher) Close() error {
 func buildRedisBackedPublisher(t *testing.T, cfg *Config, topic string) messagequeue.Publisher {
 	t.Helper()
 
+	ctx := t.Context()
 	provider := ProvideRedisPublisherProvider(
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		*cfg,
 	)
 
-	publisher, err := provider.ProvidePublisher(topic)
+	publisher, err := provider.ProvidePublisher(ctx, topic)
 	require.NoError(t, err)
 
 	return publisher
@@ -52,6 +53,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := Config{
@@ -60,14 +62,13 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		a, err := provider.ProvidePublisher(t.Name())
+		a, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
 		actual, ok := a.(*redisPublisher)
 		require.True(t, ok)
 
-		ctx := t.Context()
 		inputData := &struct {
 			Name string `json:"name"`
 		}{
@@ -93,6 +94,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := Config{
@@ -101,14 +103,13 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		a, err := provider.ProvidePublisher(t.Name())
+		a, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
 		actual, ok := a.(*redisPublisher)
 		require.True(t, ok)
 
-		ctx := t.Context()
 		inputData := &struct {
 			Name json.Number `json:"name"`
 		}{
@@ -142,6 +143,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := Config{
@@ -150,7 +152,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProvidePublisher(t.Name())
+		actual, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -158,6 +160,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := Config{
@@ -166,11 +169,11 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProvidePublisher(t.Name())
+		actual, err := provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		actual, err = provider.ProvidePublisher(t.Name())
+		actual, err = provider.ProvidePublisher(ctx, t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

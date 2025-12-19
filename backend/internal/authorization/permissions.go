@@ -36,10 +36,14 @@ var (
 		CreateUserNotificationsPermission,
 		ImpersonateUserPermission,
 		PublishArbitraryQueueMessagePermission,
+		UpdateRecipesStatusPermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,
 		CreateMealPlanGroceryListItemsPermission,
+		CreateWaitlistsPermission,
+		UpdateWaitlistsPermission,
+		ArchiveWaitlistsPermission,
 	}
 
 	// ServiceDataAdminPermissions is every service admin permission.
@@ -68,6 +72,9 @@ var (
 		CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission,
+		CreateValidPrepTaskConfigsPermission,
+		UpdateValidPrepTaskConfigsPermission,
+		ArchiveValidPrepTaskConfigsPermission,
 		CreateValidIngredientStateIngredientsPermission,
 		UpdateValidIngredientStateIngredientsPermission,
 		ArchiveValidIngredientStateIngredientsPermission,
@@ -96,6 +103,9 @@ var (
 		CreateWebhooksPermission,
 		UpdateWebhooksPermission,
 		ArchiveWebhooksPermission,
+		CreateIssueReportsPermission,
+		UpdateIssueReportsPermission,
+		ArchiveIssueReportsPermission,
 		CreateMealPlansPermission,
 		UpdateMealPlansPermission,
 		ArchiveMealPlansPermission,
@@ -110,15 +120,28 @@ var (
 		ArchiveAccountInstrumentOwnershipsPermission,
 		CreateWebhookTriggerEventsPermission,
 		ArchiveWebhookTriggerEventsPermission,
+		CreateMealListsPermission,
+		ReadMealListsPermission,
+		UpdateMealListsPermission,
+		ArchiveMealListsPermission,
+		CreateRecipeListsPermission,
+		ReadRecipeListsPermission,
+		UpdateRecipeListsPermission,
+		ArchiveRecipeListsPermission,
 	}
 
 	// AccountMemberPermissions is every account member permission.
 	AccountMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
+		ReadIssueReportsPermission,
 		ReadAuditLogEntriesPermission,
 		ReadOAuth2ClientsPermission,
 		ReadServiceSettingsPermission,
 		SearchServiceSettingsPermission,
+		CreateUploadedMediaPermission,
+		ReadUploadedMediaPermission,
+		UpdateUploadedMediaPermission,
+		ArchiveUploadedMediaPermission,
 		CreateMealsPermission,
 		ReadMealsPermission,
 		UpdateMealsPermission,
@@ -215,6 +238,15 @@ var (
 		ArchiveRecipeRatingsPermission,
 		ReadUserNotificationsPermission,
 		UpdateUserNotificationsPermission,
+		CreateWaitlistSignupsPermission,
+		UpdateWaitlistSignupsPermission,
+		ArchiveWaitlistSignupsPermission,
+		ReadWaitlistsPermission,
+		ReadWaitlistSignupsPermission,
+		CreateWaitlistSignupsPermission,
+		UpdateWaitlistSignupsPermission,
+		ArchiveWaitlistSignupsPermission,
+		ReadValidPrepTaskConfigsPermission,
 	}
 )
 

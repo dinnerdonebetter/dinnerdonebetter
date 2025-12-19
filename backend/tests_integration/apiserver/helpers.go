@@ -114,12 +114,12 @@ func createServiceUser(ctx context.Context, verifyTOTP bool, in *identity.UserRe
 	ucr := res.Created
 
 	if verifyTOTP {
-		if err = verifyTOTPSecretForUser(ctx, c, ucr.CreatedUserID, ucr.TwoFactorSecret); err != nil {
+		if err = verifyTOTPSecretForUser(ctx, c, ucr.CreatedUserId, ucr.TwoFactorSecret); err != nil {
 			return nil, fmt.Errorf("verifying totp code: %w", err)
 		}
 	}
 	u := &identity.User{
-		ID:              ucr.CreatedUserID,
+		ID:              ucr.CreatedUserId,
 		Username:        ucr.Username,
 		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
@@ -138,8 +138,8 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 	}
 
 	if _, err := c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
-		TOTPToken: token,
-		UserID:    userID,
+		TotpToken: token,
+		UserId:    userID,
 	}); err != nil {
 		return fmt.Errorf("verifying totp code: %w", err)
 	}
@@ -223,7 +223,7 @@ func fetchLoginTokenForUser(ctx context.Context, user *identity.User) (string, e
 	loginInput := &authsvc.UserLoginInput{
 		Username:  user.Username,
 		Password:  user.HashedPassword,
-		TOTPToken: code,
+		TotpToken: code,
 	}
 
 	// wretched hack that unfortunately works

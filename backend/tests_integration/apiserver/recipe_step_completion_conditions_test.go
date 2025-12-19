@@ -72,8 +72,8 @@ func TestRecipeStepCompletionConditions_CompleteLifecycle(T *testing.T) {
 		}
 
 		createdRecipeStepCompletionConditionRes, err := userClient.CreateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.CreateRecipeStepCompletionConditionRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStep.ID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
 			Input:        converters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(input),
 		})
 		require.NoError(t, err)
@@ -85,17 +85,17 @@ func TestRecipeStepCompletionConditions_CompleteLifecycle(T *testing.T) {
 		updateInput := mpconverters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput(createdRecipeStepCompletionCondition)
 
 		_, err = userClient.UpdateRecipeStepCompletionCondition(ctx, &mealplanninggrpc.UpdateRecipeStepCompletionConditionRequest{
-			RecipeID:                        createdRecipe.ID,
-			RecipeStepID:                    createdRecipeStep.ID,
-			RecipeStepCompletionConditionID: createdRecipeStepCompletionCondition.ID,
+			RecipeId:                        createdRecipe.ID,
+			RecipeStepId:                    createdRecipeStep.ID,
+			RecipeStepCompletionConditionId: createdRecipeStepCompletionCondition.ID,
 			Input:                           converters.ConvertRecipeStepCompletionConditionUpdateRequestInputToGRPCRecipeStepCompletionConditionUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
 		retrievedRes, err := userClient.GetRecipeStepCompletionCondition(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionRequest{
-			RecipeID:                        createdRecipe.ID,
-			RecipeStepID:                    createdRecipeStep.ID,
-			RecipeStepCompletionConditionID: createdRecipeStepCompletionCondition.ID,
+			RecipeId:                        createdRecipe.ID,
+			RecipeStepId:                    createdRecipeStep.ID,
+			RecipeStepCompletionConditionId: createdRecipeStepCompletionCondition.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, retrievedRes)
@@ -116,8 +116,8 @@ func TestRecipeStepCompletionConditions_CompleteLifecycle(T *testing.T) {
 
 		// assert recipe step completion condition list functionality works
 		listResponse, err := userClient.GetRecipeStepCompletionConditions(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionsRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStep.ID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actual)
@@ -130,19 +130,19 @@ func TestRecipeStepCompletionConditions_CompleteLifecycle(T *testing.T) {
 		)
 
 		_, err = userClient.ArchiveRecipeStepCompletionCondition(ctx, &mealplanninggrpc.ArchiveRecipeStepCompletionConditionRequest{
-			RecipeID:                        createdRecipe.ID,
-			RecipeStepID:                    createdRecipeStep.ID,
-			RecipeStepCompletionConditionID: createdRecipeStepCompletionCondition.ID,
+			RecipeId:                        createdRecipe.ID,
+			RecipeStepId:                    createdRecipeStep.ID,
+			RecipeStepCompletionConditionId: createdRecipeStepCompletionCondition.ID,
 		})
 		assert.NoError(t, err)
 
 		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
-			RecipeID:     createdRecipe.ID,
-			RecipeStepID: createdRecipeStep.ID,
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStep.ID,
 		})
 		assert.NoError(t, err)
 
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

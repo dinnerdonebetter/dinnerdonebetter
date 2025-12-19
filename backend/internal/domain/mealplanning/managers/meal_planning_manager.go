@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -81,6 +82,15 @@ type (
 		ReadAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) (*types.AccountInstrumentOwnership, error)
 		UpdateAccountInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.AccountInstrumentOwnershipUpdateRequestInput) error
 		ArchiveAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) error
+
+		ListMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealList], error)
+		CreateMealList(ctx context.Context, userID string, input *types.MealListCreationRequestInput) (*types.MealList, error)
+		UpdateMealList(ctx context.Context, mealListID, userID string, input *types.MealListUpdateRequestInput) error
+		ArchiveMealList(ctx context.Context, mealListID, userID string) error
+		AddMealToMealList(ctx context.Context, mealListID, mealID, notes string) (*types.MealListItem, error)
+		UpdateMealListItem(ctx context.Context, mealListItemID, mealListID, mealID string, input *types.MealListItemUpdateRequestInput) error
+		RemoveMealFromMealList(ctx context.Context, mealListID, mealListItemID string) error
+		ListMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealListItem], error)
 	}
 
 	mealPlanningManager struct {
@@ -106,7 +116,7 @@ func NewMealPlanningManager(
 	searchConfig *textsearchcfg.Config,
 	metricsProvider metrics.Provider,
 ) (MealPlanningManager, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
 	}
@@ -246,6 +256,213 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	}))
 
 	return nil
+}
+
+func (m *mealPlanningManager) ListMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealList], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	results, err := m.db.GetMealLists(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "listing meal lists")
+	}
+
+	return results, nil
+}
+
+func (m *mealPlanningManager) CreateMealList(ctx context.Context, userID string, input *types.MealListCreationRequestInput) (*types.MealList, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+	if userID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating meal list input")
+	}
+
+	dbInput := &types.MealListDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          input.Name,
+		Description:   input.Description,
+		BelongsToUser: userID,
+	}
+
+	for _, item := range input.Items {
+		if item == nil {
+			continue
+		}
+
+		dbInput.Items = append(dbInput.Items, &types.MealListItemDatabaseCreationInput{
+			ID:                identifiers.New(),
+			MealID:            item.MealID,
+			Notes:             item.Notes,
+			BelongsToMealList: dbInput.ID,
+		})
+	}
+
+	created, err := m.db.CreateMealList(ctx, dbInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal list")
+	}
+
+	return created, nil
+}
+
+func (m *mealPlanningManager) UpdateMealList(ctx context.Context, mealListID, userID string, input *types.MealListUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		keys.MealListIDKey: mealListID,
+		keys.UserIDKey:     userID,
+	})
+	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	if mealListID == "" || userID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+	if input.Name == nil || input.Description == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+
+	updated := &types.MealList{
+		ID:            mealListID,
+		BelongsToUser: userID,
+	}
+	updated.Update(input)
+
+	if err := m.db.UpdateMealList(ctx, updated); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating meal list")
+	}
+
+	return nil
+}
+
+func (m *mealPlanningManager) ArchiveMealList(ctx context.Context, mealListID, userID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if mealListID == "" || userID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := m.db.ArchiveMealList(ctx, mealListID, userID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal list")
+	}
+
+	return nil
+}
+
+func (m *mealPlanningManager) AddMealToMealList(ctx context.Context, mealListID, mealID, notes string) (*types.MealListItem, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if mealListID == "" || mealID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	input := &types.MealListItemDatabaseCreationInput{
+		ID:                identifiers.New(),
+		MealID:            mealID,
+		Notes:             notes,
+		BelongsToMealList: mealListID,
+	}
+
+	item, err := m.db.CreateMealListItem(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "adding meal to meal list")
+	}
+
+	return item, nil
+}
+
+func (m *mealPlanningManager) UpdateMealListItem(ctx context.Context, mealListItemID, mealListID, mealID string, input *types.MealListItemUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		keys.MealListIDKey:     mealListID,
+		keys.MealListItemIDKey: mealListItemID,
+		keys.MealIDKey:         mealID,
+	})
+	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
+	tracing.AttachToSpan(span, keys.MealListItemIDKey, mealListItemID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	if mealListItemID == "" || mealListID == "" || mealID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+	if input.Notes == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+
+	updated := &types.MealListItem{
+		ID:                mealListItemID,
+		BelongsToMealList: mealListID,
+		Meal:              types.Meal{ID: mealID},
+	}
+	updated.Update(input)
+
+	if err := m.db.UpdateMealListItem(ctx, updated); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating meal list item")
+	}
+
+	return nil
+}
+
+func (m *mealPlanningManager) RemoveMealFromMealList(ctx context.Context, mealListID, mealListItemID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if mealListID == "" || mealListItemID == "" {
+		return internalerrors.ErrEmptyInputParameter
+	}
+
+	if err := m.db.ArchiveMealListItem(ctx, mealListItemID, mealListID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing meal from meal list")
+	}
+
+	return nil
+}
+
+func (m *mealPlanningManager) ListMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealListItem], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span)
+
+	if mealListID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	results, err := m.db.GetMealListItems(ctx, mealListID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "listing meal list items")
+	}
+
+	return results, nil
 }
 
 func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {

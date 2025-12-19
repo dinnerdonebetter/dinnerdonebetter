@@ -149,7 +149,7 @@ func TestServiceSettingConfigurations_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		created := createServiceSettingConfigurationForTest(t, testClient)
 
-		_, err := adminClient.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationID: created.ID})
+		_, err := adminClient.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationId: created.ID})
 		assert.NoError(t, err)
 
 		x, err := adminClient.GetServiceSettingConfigurationByName(ctx, &settingssvc.GetServiceSettingConfigurationByNameRequest{ServiceSettingConfigurationName: created.ServiceSetting.Name})
@@ -166,7 +166,7 @@ func TestServiceSettingConfigurations_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationID: created.ID})
+		_, err := c.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -174,7 +174,7 @@ func TestServiceSettingConfigurations_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationID: nonexistentID})
+		_, err := adminClient.ArchiveServiceSettingConfiguration(ctx, &settingssvc.ArchiveServiceSettingConfigurationRequest{ServiceSettingConfigurationId: nonexistentID})
 		assert.Error(t, err)
 	})
 }

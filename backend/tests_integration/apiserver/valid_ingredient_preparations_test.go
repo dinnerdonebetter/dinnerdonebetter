@@ -30,7 +30,7 @@ func createValidIngredientPreparationForTest(t *testing.T) (*types.ValidIngredie
 	require.NotNil(t, createdValidIngredientPreparation)
 
 	validPrepPreparationRes, err := adminClient.GetValidIngredientPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationRequest{
-		ValidIngredientPreparationID: createdValidIngredientPreparation.Result.ID,
+		ValidIngredientPreparationId: createdValidIngredientPreparation.Result.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, validPrepPreparationRes.Result)
@@ -53,8 +53,8 @@ func TestValidIngredientPreparations_Creating(T *testing.T) {
 
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 		exampleValidIngredientPreparationInput := mealplanningconverters.ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation))
-		exampleValidIngredientPreparationInput.ValidPreparationID = ""
-		exampleValidIngredientPreparationInput.ValidIngredientID = ""
+		exampleValidIngredientPreparationInput.ValidPreparationId = ""
+		exampleValidIngredientPreparationInput.ValidIngredientId = ""
 
 		createdValidIngredientPreparation, err := adminClient.CreateValidIngredientPreparation(ctx, &mealplanningsvc.CreateValidIngredientPreparationRequest{Input: exampleValidIngredientPreparationInput})
 		require.Error(t, err)
@@ -81,8 +81,8 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 	for range exampleQuantity - 1 {
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 		exampleValidIngredientPreparationInput := mealplanningconverters.ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation))
-		exampleValidIngredientPreparationInput.ValidPreparationID = validPreparation.ID
-		exampleValidIngredientPreparationInput.ValidIngredientID = validIngredient.ID
+		exampleValidIngredientPreparationInput.ValidPreparationId = validPreparation.ID
+		exampleValidIngredientPreparationInput.ValidIngredientId = validIngredient.ID
 
 		createdValidIngredientPreparation, err := adminClient.CreateValidIngredientPreparation(T.Context(), &mealplanningsvc.CreateValidIngredientPreparationRequest{Input: exampleValidIngredientPreparationInput})
 		require.NoError(T, err)
@@ -105,7 +105,7 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{ValidPreparationID: validPreparation.ID})
+		results, err := adminClient.GetValidIngredientPreparationsByPreparation(ctx, &mealplanningsvc.GetValidIngredientPreparationsByPreparationRequest{ValidPreparationId: validPreparation.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientPreparations))
@@ -115,7 +115,7 @@ func TestValidIngredientPreparations_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		results, err := adminClient.GetValidIngredientPreparationsByIngredient(ctx, &mealplanningsvc.GetValidIngredientPreparationsByIngredientRequest{ValidIngredientID: validIngredient.ID})
+		results, err := adminClient.GetValidIngredientPreparationsByIngredient(ctx, &mealplanningsvc.GetValidIngredientPreparationsByIngredientRequest{ValidIngredientId: validIngredient.ID})
 		require.NoError(t, err)
 		require.NotNil(t, results)
 		assert.True(t, len(results.Results) >= len(createdValidIngredientPreparations))

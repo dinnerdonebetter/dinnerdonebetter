@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
@@ -9,7 +10,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go/modules/gcloud"
@@ -21,10 +23,10 @@ import (
 func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher messagequeue.Publisher, shutdownFunc func(context.Context) error) {
 	t.Helper()
 
-	projectID, err := random.GenerateHexEncodedString(ctx, 8)
+	randomID, err := random.GenerateHexEncodedString(ctx, 8)
 	require.NoError(t, err)
-	topicID, err := random.GenerateHexEncodedString(ctx, 8)
-	require.NoError(t, err)
+	projectID := "project-" + randomID
+	topicID := "topic-" + randomID
 
 	pubsubContainer, err := gcloud.RunPubsub(
 		ctx,
@@ -42,11 +44,16 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	client, err := pubsub.NewClient(ctx, projectID, option.WithGRPCConn(conn))
 	require.NoError(t, err)
 
+	topicName := fmt.Sprintf("projects/%s/topics/%s", projectID, topicID)
+	pubSubTopic, err := client.TopicAdminClient.CreateTopic(ctx, &pubsubpb.Topic{Name: topicName})
+	require.NoError(t, err)
+	require.NotNil(t, pubSubTopic)
+
 	logger := logging.NewNoopLogger()
 	provider := ProvidePubSubPublisherProvider(logger, tracing.NewNoopTracerProvider(), client)
 	require.NotNil(t, provider)
 
-	publisher, err = provider.ProvidePublisher(topicID)
+	publisher, err = provider.ProvidePublisher(ctx, pubSubTopic.GetName())
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 

@@ -20,7 +20,6 @@ import (
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -79,8 +78,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	objectstorageConfig := &cfg.Storage
-	routeParamManager := chi.NewRouteParamManager()
-	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig, routeParamManager)
+	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +126,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, webhooksRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
 	if err != nil {
 		return nil, err
 	}

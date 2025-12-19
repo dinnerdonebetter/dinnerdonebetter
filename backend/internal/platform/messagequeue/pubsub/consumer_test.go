@@ -9,7 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go/modules/gcloud"
@@ -41,11 +42,11 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	pubSubTopic, err := client.CreateTopic(ctx, topic)
+	pubSubTopic, err := client.TopicAdminClient.CreateTopic(ctx, &pubsubpb.Topic{Name: topic})
 	require.NoError(t, err)
 	require.NotNil(t, pubSubTopic)
 
-	subscription, err := client.CreateSubscription(ctx, topic, pubsub.SubscriptionConfig{Topic: pubSubTopic})
+	subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pubsubpb.Subscription{Topic: pubSubTopic.GetName()})
 	require.NoError(t, err)
 	require.NotNil(t, subscription)
 

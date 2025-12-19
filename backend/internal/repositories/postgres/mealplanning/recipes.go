@@ -75,7 +75,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 				},
-				SealOfApproval:   result.SealOfApproval,
+				Status:           string(result.Status),
 				EligibleForMeals: result.EligibleForMeals,
 			}
 		}
@@ -229,7 +229,7 @@ func (q *repository) GetRecipe(ctx context.Context, recipeID string) (*mealplann
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
-func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+func (q *repository) GetRecipes(ctx context.Context, status string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -241,6 +241,10 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
+	if status == "" {
+		status = mealplanning.RecipeStatusApproved
+	}
+
 	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -249,16 +253,17 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
 		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Status:          generated.NullRecipeStatus{RecipeStatus: generated.RecipeStatus(status), Valid: true},
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
+
 	var (
 		data          []*mealplanning.Recipe
 		filteredCount uint64
 		totalCount    uint64
 	)
-
 	for _, result := range results {
 		data = append(data, &mealplanning.Recipe{
 			CreatedAt:           result.CreatedAt,
@@ -278,7 +283,7 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -354,7 +359,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -379,17 +384,129 @@ func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*me
 
 	logger := q.logger.Clone()
 
-	recipes := []*mealplanning.Recipe{}
-	for _, id := range ids {
-		r, err := q.getRecipe(ctx, id)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
-		}
-
-		recipes = append(recipes, r)
+	if len(ids) == 0 {
+		return []*mealplanning.Recipe{}, nil
 	}
 
-	return recipes, nil
+	results, err := q.generatedQuerier.GetRecipesWithIDs(ctx, q.db, ids)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval by ids")
+	}
+
+	recipesByID := map[string]*mealplanning.Recipe{}
+	for _, result := range results {
+		r, exists := recipesByID[result.ID]
+		if !exists {
+			r = &mealplanning.Recipe{
+				CreatedAt:           result.CreatedAt,
+				InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
+				LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+				PluralPortionName:   result.PluralPortionName,
+				Description:         result.Description,
+				Name:                result.Name,
+				PortionName:         result.PortionName,
+				ID:                  result.ID,
+				CreatedByUser:       result.CreatedByUser,
+				Source:              result.Source,
+				Slug:                result.Slug,
+				YieldsComponentType: string(result.YieldsComponentType),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+				},
+				Status:           string(result.Status),
+				EligibleForMeals: result.EligibleForMeals,
+				Steps:            []*mealplanning.RecipeStep{},
+			}
+			recipesByID[result.ID] = r
+		}
+
+		// optional step
+		if result.RecipeStepID.Valid && result.RecipeStepID.String != "" {
+			var prep mealplanning.ValidPreparation
+			if result.RecipeStepPreparationID.Valid {
+				ingMin := uint16(0)
+				if result.RecipeStepPreparationMinimumIngredientCount.Valid {
+					ingMin = uint16(result.RecipeStepPreparationMinimumIngredientCount.Int32)
+				}
+				instMin := uint16(0)
+				if result.RecipeStepPreparationMinimumInstrumentCount.Valid {
+					instMin = uint16(result.RecipeStepPreparationMinimumInstrumentCount.Int32)
+				}
+				vesselMin := uint16(0)
+				if result.RecipeStepPreparationMinimumVesselCount.Valid {
+					vesselMin = uint16(result.RecipeStepPreparationMinimumVesselCount.Int32)
+				}
+
+				prep = mealplanning.ValidPreparation{
+					ID:                    result.RecipeStepPreparationID.String,
+					Name:                  result.RecipeStepPreparationName.String,
+					Slug:                  result.RecipeStepPreparationSlug.String,
+					Description:           result.RecipeStepPreparationDescription.String,
+					IconPath:              result.RecipeStepPreparationIconPath.String,
+					YieldsNothing:         database.BoolFromNullBool(result.RecipeStepPreparationYieldsNothing),
+					RestrictToIngredients: database.BoolFromNullBool(result.RecipeStepPreparationRestrictToIngredients),
+					PastTense:             result.RecipeStepPreparationPastTense.String,
+					IngredientCount: types.Uint16RangeWithOptionalMax{
+						Min: ingMin,
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
+					},
+					InstrumentCount: types.Uint16RangeWithOptionalMax{
+						Min: instMin,
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
+					},
+					TemperatureRequired:         database.BoolFromNullBool(result.RecipeStepPreparationTemperatureRequired),
+					TimeEstimateRequired:        database.BoolFromNullBool(result.RecipeStepPreparationTimeEstimateRequired),
+					ConditionExpressionRequired: database.BoolFromNullBool(result.RecipeStepPreparationConditionExpressionRequired),
+					ConsumesVessel:              database.BoolFromNullBool(result.RecipeStepPreparationConsumesVessel),
+					OnlyForVessels:              database.BoolFromNullBool(result.RecipeStepPreparationOnlyForVessels),
+					VesselCount: types.Uint16RangeWithOptionalMax{
+						Min: vesselMin,
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
+					},
+					CreatedAt:     database.TimeFromNullTime(result.RecipeStepPreparationCreatedAt),
+					LastUpdatedAt: database.TimePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
+					ArchivedAt:    database.TimePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
+				}
+			}
+
+			stepIndex := uint32(0)
+			if result.RecipeStepIndex.Valid {
+				stepIndex = uint32(result.RecipeStepIndex.Int32)
+			}
+
+			r.Steps = append(r.Steps, &mealplanning.RecipeStep{
+				ID:              result.RecipeStepID.String,
+				BelongsToRecipe: result.RecipeStepBelongsToRecipe.String,
+				Index:           stepIndex,
+				EstimatedTimeInSeconds: types.OptionalUint32Range{
+					Min: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
+					Max: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
+				},
+				TemperatureInCelsius: types.OptionalFloat32Range{
+					Min: database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
+					Max: database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
+				},
+				Notes:                   result.RecipeStepNotes.String,
+				ExplicitInstructions:    result.RecipeStepExplicitInstructions.String,
+				ConditionExpression:     result.RecipeStepConditionExpression.String,
+				Optional:                database.BoolFromNullBool(result.RecipeStepOptional),
+				StartTimerAutomatically: database.BoolFromNullBool(result.RecipeStepStartTimerAutomatically),
+				CreatedAt:               database.TimeFromNullTime(result.RecipeStepCreatedAt),
+				LastUpdatedAt:           database.TimePointerFromNullTime(result.RecipeStepLastUpdatedAt),
+				ArchivedAt:              database.TimePointerFromNullTime(result.RecipeStepArchivedAt),
+				Preparation:             prep,
+			})
+		}
+	}
+
+	out := make([]*mealplanning.Recipe, 0, len(recipesByID))
+	for _, r := range recipesByID {
+		out = append(out, r)
+	}
+
+	return out, nil
 }
 
 // GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
@@ -457,7 +574,77 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				Min: database.Float32FromString(result.MinEstimatedPortions),
 			},
-			SealOfApproval:   result.SealOfApproval,
+			Status:           string(result.Status),
+			EligibleForMeals: result.EligibleForMeals,
+		})
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(r *mealplanning.Recipe) string { return r.ID },
+		filter,
+	)
+
+	return x, nil
+}
+
+// SearchForMealEligibleRecipes fetches a list of recipes from the database that match a query.
+func (q *repository) SearchForMealEligibleRecipes(ctx context.Context, recipeNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	results, err := q.generatedQuerier.SearchForMealEligibleRecipes(ctx, q.db, &generated.SearchForMealEligibleRecipesParams{
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Query:           recipeNameQuery,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search query")
+	}
+
+	var (
+		data          []*mealplanning.Recipe
+		filteredCount uint64
+		totalCount    uint64
+	)
+
+	for _, result := range results {
+		data = append(data, &mealplanning.Recipe{
+			CreatedAt:           result.CreatedAt,
+			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			PluralPortionName:   result.PluralPortionName,
+			Description:         result.Description,
+			Name:                result.Name,
+			PortionName:         result.PortionName,
+			ID:                  result.ID,
+			CreatedByUser:       result.CreatedByUser,
+			Source:              result.Source,
+			Slug:                result.Slug,
+			YieldsComponentType: string(result.YieldsComponentType),
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				Min: database.Float32FromString(result.MinEstimatedPortions),
+			},
+			Status:           string(result.Status),
 			EligibleForMeals: result.EligibleForMeals,
 		})
 		filteredCount = uint64(result.FilteredCount)
@@ -505,7 +692,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		PluralPortionName:    input.PluralPortionName,
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
 		InspiredByRecipeID:   database.NullStringFromStringPointer(input.InspiredByRecipeID),
-		SealOfApproval:       input.SealOfApproval,
+		Status:               mealplanning.RecipeStatusSubmitted,
 		EligibleForMeals:     input.EligibleForMeals,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -524,7 +711,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
-		SealOfApproval:      input.SealOfApproval,
+		Status:              mealplanning.RecipeStatusSubmitted,
 		EligibleForMeals:    input.EligibleForMeals,
 		PortionName:         input.PortionName,
 		PluralPortionName:   input.PluralPortionName,
@@ -688,7 +875,6 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(updated.EstimatedPortions.Max),
 		PortionName:          updated.PortionName,
 		PluralPortionName:    updated.PluralPortionName,
-		SealOfApproval:       updated.SealOfApproval,
 		EligibleForMeals:     updated.EligibleForMeals,
 		YieldsComponentType:  generated.ComponentType(updated.YieldsComponentType),
 		CreatedByUser:        updated.CreatedByUser,
@@ -698,6 +884,29 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 	}
 
 	logger.Info("recipe updated")
+
+	return nil
+}
+
+// UpdateRecipeStatus updates a particular recipe's status exclusively.
+func (q *repository) UpdateRecipeStatus(ctx context.Context, recipeID, newStatus string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithSpan(span)
+
+	if recipeID == "" {
+		return database.ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
+	if _, err := q.generatedQuerier.UpdateRecipeStatus(ctx, q.db, &generated.UpdateRecipeStatusParams{
+		Status: generated.RecipeStatus(newStatus),
+		ID:     recipeID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe status")
+	}
 
 	return nil
 }

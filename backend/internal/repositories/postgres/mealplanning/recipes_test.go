@@ -194,7 +194,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	}
 
 	// fetch as list
-	recipes, err := dbc.GetRecipes(ctx, nil)
+	recipes, err := dbc.GetRecipes(ctx, mealplanning.RecipeStatusSubmitted, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, recipes.Data)
 	assert.Equal(t, len(createdRecipes), len(recipes.Data))
@@ -223,6 +223,35 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}
+}
+
+func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+	defer func() {
+		assert.NoError(t, container.Terminate(ctx))
+	}()
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	r1 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	r2 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	res, err := dbc.GetRecipesWithIDs(ctx, []string{r1.ID, r2.ID})
+	require.NoError(t, err)
+	require.Len(t, res, 2)
+
+	found := map[string]*mealplanning.Recipe{}
+	for _, rec := range res {
+		found[rec.ID] = rec
+		require.NotEmpty(t, rec.Steps)
+	}
+
+	assert.Contains(t, found, r1.ID)
+	assert.Contains(t, found, r2.ID)
 }
 
 func TestQuerier_RecipeExists(T *testing.T) {
@@ -637,7 +666,7 @@ func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
 			return createRecipeForTest(t, ctx, recipe, dbc, false)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
-			return dbc.GetRecipes(ctx, filter)
+			return dbc.GetRecipes(ctx, mealplanning.RecipeStatusSubmitted, filter)
 		},
 		GetID: func(recipe *mealplanning.Recipe) string {
 			return recipe.ID

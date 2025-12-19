@@ -63,7 +63,7 @@ func (s serviceImpl) PublishArbitraryQueueMessage(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
 	}
 
-	publisher, err := pp.ProvidePublisher(request.QueueName)
+	publisher, err := pp.ProvidePublisher(ctx, request.QueueName)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
 	}
@@ -74,7 +74,7 @@ func (s serviceImpl) PublishArbitraryQueueMessage(ctx context.Context, request *
 
 	x := &settingssvc.PublishArbitraryQueueMessageResponse{
 		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Success: true,
 	}

@@ -12,10 +12,13 @@ import (
 	dataprivacygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
+	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
@@ -38,10 +41,13 @@ type Client interface {
 	auditgrpc.AuditServiceClient
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
+	issuereportsgrpc.IssueReportsServiceClient
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	settingsgrpc.SettingsServiceClient
+	uploadedmediagrpc.UploadedMediaServiceClient
+	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
 }
 
@@ -51,10 +57,13 @@ type client struct {
 	auditgrpc.AuditServiceClient
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
+	issuereportsgrpc.IssueReportsServiceClient
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	settingsgrpc.SettingsServiceClient
+	uploadedmediagrpc.UploadedMediaServiceClient
+	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
 }
 
@@ -71,10 +80,13 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		AuditServiceClient:             auditgrpc.NewAuditServiceClient(conn),
 		DataPrivacyServiceClient:       dataprivacygrpc.NewDataPrivacyServiceClient(conn),
 		InternalOperationsClient:       internalopsgrpc.NewInternalOperationsClient(conn),
+		IssueReportsServiceClient:      issuereportsgrpc.NewIssueReportsServiceClient(conn),
 		MealPlanningServiceClient:      mealplanninggrpc.NewMealPlanningServiceClient(conn),
 		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
 		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
 		SettingsServiceClient:          settingsgrpc.NewSettingsServiceClient(conn),
+		UploadedMediaServiceClient:     uploadedmediagrpc.NewUploadedMediaServiceClient(conn),
+		WaitlistsServiceClient:         waitlistsgrpc.NewWaitlistsServiceClient(conn),
 		WebhooksServiceClient:          webhooksgrpc.NewWebhooksServiceClient(conn),
 	}
 

@@ -19,7 +19,7 @@ type (
 	// PublisherProvider is a function that provides a Publisher for a given topic.
 	PublisherProvider interface {
 		Close()
-		ProvidePublisher(topic string) (Publisher, error)
+		ProvidePublisher(ctx context.Context, topic string) (Publisher, error)
 	}
 )
 
@@ -47,7 +47,7 @@ func NewNoopPublisher() Publisher {
 type noopPublisherProvider struct{}
 
 // ProvidePublisher does nothing.
-func (n *noopPublisherProvider) ProvidePublisher(_ string) (Publisher, error) {
+func (n *noopPublisherProvider) ProvidePublisher(_ context.Context, _ string) (Publisher, error) {
 	return NewNoopPublisher(), nil
 }
 

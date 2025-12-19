@@ -95,7 +95,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 		})).Return(nil)
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: exampleUserID,
+			TargetUserId: exampleUserID,
 			NewStatus:    identity.GoodStandingUserAccountStatus.String(),
 			Reason:       "Admin update for testing",
 		}
@@ -113,7 +113,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 		service := buildTestServiceWithSessionError(t)
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: identityfakes.BuildFakeID(),
+			TargetUserId: identityfakes.BuildFakeID(),
 			NewStatus:    identity.GoodStandingUserAccountStatus.String(),
 		}
 
@@ -135,7 +135,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.AnythingOfType("*identity.UserAccountStatusUpdateInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: identityfakes.BuildFakeID(),
+			TargetUserId: identityfakes.BuildFakeID(),
 			NewStatus:    identity.GoodStandingUserAccountStatus.String(),
 		}
 
@@ -162,7 +162,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 		})).Return(nil)
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: exampleUserID,
+			TargetUserId: exampleUserID,
 			NewStatus:    identity.BannedUserAccountStatus.String(),
 			Reason:       "User violated terms of service",
 		}
@@ -187,7 +187,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 		})).Return(nil)
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
-			TargetUserID: exampleUserID,
+			TargetUserId: exampleUserID,
 			NewStatus:    identity.UnverifiedAccountStatus.String(),
 			Reason:       "Reset verification status",
 		}

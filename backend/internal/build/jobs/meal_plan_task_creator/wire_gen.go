@@ -57,7 +57,7 @@ func Build(ctx context.Context, cfg *config.MealPlanTaskCreatorConfig) (*mealpla
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	worker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	worker, err := mealplantaskcreator.NewMealPlanTaskCreator(ctx, logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

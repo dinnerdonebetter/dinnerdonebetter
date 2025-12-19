@@ -431,6 +431,67 @@ func AllPrepStepStatusValues() []PrepStepStatus {
 	}
 }
 
+type RecipeStatus string
+
+const (
+	RecipeStatusSubmitted     RecipeStatus = "submitted"
+	RecipeStatusApproved      RecipeStatus = "approved"
+	RecipeStatusNeedsrevision RecipeStatus = "needs revision"
+)
+
+func (e *RecipeStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = RecipeStatus(s)
+	case string:
+		*e = RecipeStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for RecipeStatus: %T", src)
+	}
+	return nil
+}
+
+type NullRecipeStatus struct {
+	RecipeStatus RecipeStatus
+	Valid        bool // Valid is true if RecipeStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullRecipeStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.RecipeStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.RecipeStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullRecipeStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.RecipeStatus), nil
+}
+
+func (e RecipeStatus) Valid() bool {
+	switch e {
+	case RecipeStatusSubmitted,
+		RecipeStatusApproved,
+		RecipeStatusNeedsrevision:
+		return true
+	}
+	return false
+}
+
+func AllRecipeStatusValues() []RecipeStatus {
+	return []RecipeStatus{
+		RecipeStatusSubmitted,
+		RecipeStatusApproved,
+		RecipeStatusNeedsrevision,
+	}
+}
+
 type RecipeStepProductType string
 
 const (

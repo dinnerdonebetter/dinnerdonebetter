@@ -168,6 +168,28 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetMealsWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+  AND %s.%s IS NULL
+  AND %s.%s = ANY(sqlc.arg(ids)::text[])
+ORDER BY %s.%s ASC;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealsTableName,
+					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealsTableName, archivedAtColumn,
+					mealComponentsTableName, archivedAtColumn,
+					mealsTableName, idColumn,
+					mealsTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetMealsCreatedByUser",
 					Type: ManyType,
 				},

@@ -44,11 +44,11 @@ func NewService(
 func (s *serviceImpl) buildResponseDetails(ctx context.Context, span tracing.Span) *types.ResponseDetails {
 	out := &types.ResponseDetails{}
 	if span != nil {
-		out.TraceID = span.SpanContext().TraceID().String()
+		out.TraceId = span.SpanContext().TraceID().String()
 	}
 
 	if sessionContextData, err := s.sessionContextDataFetcher(ctx); err == nil && sessionContextData != nil {
-		out.CurrentAccountID = sessionContextData.GetActiveAccountID()
+		out.CurrentAccountId = sessionContextData.GetActiveAccountID()
 	}
 
 	return out

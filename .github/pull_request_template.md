@@ -19,23 +19,24 @@ _PR description goes here_
     - [ ] Fakes
     - [ ] Converters
     - [ ] Mocks
-    - [ ] Added to UserDataCollection struct
   - [ ] Data Manager
     - [ ] Storage methods
     - [ ] Unit tests
     - [ ] Mocks
     - [ ] DB Manager interface
     - [ ] Wire providers
-  - [ ] Service
-    - [ ] Service routes
-    - [ ] Routes unit tests
-    - [ ] Hook service into server with wire
-    - [ ] Assign routes to paths
+  - [ ] gRPC
+    - [ ] Service methods
+    - [ ] Protobuf definitions
+    - [ ] Converters
+    - [ ] Service implementations
+    - [ ] gRPC Unit tests
+    - [ ] auth interceptor permission update
   - [ ] Permissions
   - [ ] Configs
     - [ ] Service config struct
     - [ ] Config generators
-  - [ ] API client
-    - [ ] Request executors
-    - [ ] Request executor tests
   - [ ] Integration tests
+  - [ ] Admin web app routes
+    - [ ] List view
+    - [ ] Edit view

@@ -40,7 +40,7 @@ func TestServiceImpl_ArchiveValidIngredient(T *testing.T) {
 		mvem.On("ArchiveValidIngredient", testutils.ContextMatcher, exampleValidIngredientID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredient(ctx, &mealplanninggrpc.ArchiveValidIngredientRequest{ValidIngredientID: exampleValidIngredientID})
+		res, err := s.ArchiveValidIngredient(ctx, &mealplanninggrpc.ArchiveValidIngredientRequest{ValidIngredientId: exampleValidIngredientID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -63,7 +63,7 @@ func TestServiceImpl_ArchiveValidIngredientGroup(T *testing.T) {
 		mvem.On("ArchiveValidIngredientGroup", testutils.ContextMatcher, exampleValidIngredientGroupID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredientGroup(ctx, &mealplanninggrpc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupID: exampleValidIngredientGroupID})
+		res, err := s.ArchiveValidIngredientGroup(ctx, &mealplanninggrpc.ArchiveValidIngredientGroupRequest{ValidIngredientGroupId: exampleValidIngredientGroupID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -86,7 +86,7 @@ func TestServiceImpl_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 		mvem.On("ArchiveValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleValidIngredientMeasurementUnitID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitID: exampleValidIngredientMeasurementUnitID})
+		res, err := s.ArchiveValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: exampleValidIngredientMeasurementUnitID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -109,7 +109,30 @@ func TestServiceImpl_ArchiveValidIngredientPreparation(T *testing.T) {
 		mvem.On("ArchiveValidIngredientPreparation", testutils.ContextMatcher, exampleValidIngredientPreparationID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredientPreparation(ctx, &mealplanninggrpc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationID: exampleValidIngredientPreparationID})
+		res, err := s.ArchiveValidIngredientPreparation(ctx, &mealplanninggrpc.ArchiveValidIngredientPreparationRequest{ValidIngredientPreparationId: exampleValidIngredientPreparationID})
+		assert.NotNil(t, res)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_ArchiveValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		exampleValidPrepTaskConfigID := mealplanningfakes.BuildFakeID()
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ArchiveValidPrepTaskConfig", testutils.ContextMatcher, exampleValidPrepTaskConfigID).Return(nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.ArchiveValidPrepTaskConfig(ctx, &mealplanninggrpc.ArchiveValidPrepTaskConfigRequest{ValidPrepTaskConfigId: exampleValidPrepTaskConfigID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -132,7 +155,7 @@ func TestServiceImpl_ArchiveValidIngredientState(T *testing.T) {
 		mvem.On("ArchiveValidIngredientState", testutils.ContextMatcher, exampleValidIngredientStateID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredientState(ctx, &mealplanninggrpc.ArchiveValidIngredientStateRequest{ValidIngredientStateID: exampleValidIngredientStateID})
+		res, err := s.ArchiveValidIngredientState(ctx, &mealplanninggrpc.ArchiveValidIngredientStateRequest{ValidIngredientStateId: exampleValidIngredientStateID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -155,7 +178,7 @@ func TestServiceImpl_ArchiveValidIngredientStateIngredient(T *testing.T) {
 		mvem.On("ArchiveValidIngredientStateIngredient", testutils.ContextMatcher, exampleValidIngredientStateIngredientID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidIngredientStateIngredient(ctx, &mealplanninggrpc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientID: exampleValidIngredientStateIngredientID})
+		res, err := s.ArchiveValidIngredientStateIngredient(ctx, &mealplanninggrpc.ArchiveValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: exampleValidIngredientStateIngredientID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -178,7 +201,7 @@ func TestServiceImpl_ArchiveValidInstrument(T *testing.T) {
 		mvem.On("ArchiveValidInstrument", testutils.ContextMatcher, exampleValidInstrumentID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidInstrument(ctx, &mealplanninggrpc.ArchiveValidInstrumentRequest{ValidInstrumentID: exampleValidInstrumentID})
+		res, err := s.ArchiveValidInstrument(ctx, &mealplanninggrpc.ArchiveValidInstrumentRequest{ValidInstrumentId: exampleValidInstrumentID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -201,7 +224,7 @@ func TestServiceImpl_ArchiveValidMeasurementUnit(T *testing.T) {
 		mvem.On("ArchiveValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnitID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidMeasurementUnit(ctx, &mealplanninggrpc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitID: exampleValidMeasurementUnitID})
+		res, err := s.ArchiveValidMeasurementUnit(ctx, &mealplanninggrpc.ArchiveValidMeasurementUnitRequest{ValidMeasurementUnitId: exampleValidMeasurementUnitID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -224,7 +247,7 @@ func TestServiceImpl_ArchiveValidMeasurementUnitConversion(T *testing.T) {
 		mvem.On("ArchiveValidMeasurementUnitConversion", testutils.ContextMatcher, exampleValidMeasurementUnitConversionID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidMeasurementUnitConversion(ctx, &mealplanninggrpc.ArchiveValidMeasurementUnitConversionRequest{ValidMeasurementUnitConversionID: exampleValidMeasurementUnitConversionID})
+		res, err := s.ArchiveValidMeasurementUnitConversion(ctx, &mealplanninggrpc.ArchiveValidMeasurementUnitConversionRequest{ValidMeasurementUnitConversionId: exampleValidMeasurementUnitConversionID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -247,7 +270,7 @@ func TestServiceImpl_ArchiveValidPreparation(T *testing.T) {
 		mvem.On("ArchiveValidPreparation", testutils.ContextMatcher, exampleValidPreparationID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidPreparation(ctx, &mealplanninggrpc.ArchiveValidPreparationRequest{ValidPreparationID: exampleValidPreparationID})
+		res, err := s.ArchiveValidPreparation(ctx, &mealplanninggrpc.ArchiveValidPreparationRequest{ValidPreparationId: exampleValidPreparationID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -270,7 +293,7 @@ func TestServiceImpl_ArchiveValidPreparationInstrument(T *testing.T) {
 		mvem.On("ArchiveValidPreparationInstrument", testutils.ContextMatcher, exampleValidPreparationInstrumentID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidPreparationInstrument(ctx, &mealplanninggrpc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentID: exampleValidPreparationInstrumentID})
+		res, err := s.ArchiveValidPreparationInstrument(ctx, &mealplanninggrpc.ArchiveValidPreparationInstrumentRequest{ValidPreparationInstrumentId: exampleValidPreparationInstrumentID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -293,7 +316,7 @@ func TestServiceImpl_ArchiveValidPreparationVessel(T *testing.T) {
 		mvem.On("ArchiveValidPreparationVessel", testutils.ContextMatcher, exampleValidPreparationVesselID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidPreparationVessel(ctx, &mealplanninggrpc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselID: exampleValidPreparationVesselID})
+		res, err := s.ArchiveValidPreparationVessel(ctx, &mealplanninggrpc.ArchiveValidPreparationVesselRequest{ValidPreparationVesselId: exampleValidPreparationVesselID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -316,7 +339,7 @@ func TestServiceImpl_ArchiveValidVessel(T *testing.T) {
 		mvem.On("ArchiveValidVessel", testutils.ContextMatcher, exampleValidVesselID).Return(nil)
 		s.validEnumerationsManager = mvem
 
-		res, err := s.ArchiveValidVessel(ctx, &mealplanninggrpc.ArchiveValidVesselRequest{ValidVesselID: exampleValidVesselID})
+		res, err := s.ArchiveValidVessel(ctx, &mealplanninggrpc.ArchiveValidVesselRequest{ValidVesselId: exampleValidVesselID})
 		assert.NotNil(t, res)
 		assert.NoError(t, err)
 
@@ -415,6 +438,31 @@ func TestServiceImpl_CreateValidIngredientPreparation(T *testing.T) {
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateValidIngredientPreparationRequest](t)
 
 		actual, err := s.CreateValidIngredientPreparation(ctx, exampleInput)
+		assert.NotNil(t, actual)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_CreateValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		exampleValidPrepTaskConfig := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("CreateValidPrepTaskConfig", testutils.ContextMatcher, testutils.MatchType[*mealplanning.ValidPrepTaskConfigCreationRequestInput]()).Return(exampleValidPrepTaskConfig, nil)
+		s.validEnumerationsManager = mvem
+
+		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateValidPrepTaskConfigRequest](t)
+
+		actual, err := s.CreateValidPrepTaskConfig(ctx, exampleInput)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
@@ -662,7 +710,7 @@ func TestServiceImpl_GetRandomValidIngredient(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetRandomValidIngredient(ctx, &mealplanninggrpc.GetRandomValidIngredientRequest{})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -685,7 +733,7 @@ func TestServiceImpl_GetRandomValidInstrument(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetRandomValidInstrument(ctx, &mealplanninggrpc.GetRandomValidInstrumentRequest{})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -708,7 +756,7 @@ func TestServiceImpl_GetRandomValidPreparation(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetRandomValidPreparation(ctx, &mealplanninggrpc.GetRandomValidPreparationRequest{})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -731,7 +779,7 @@ func TestServiceImpl_GetRandomValidVessel(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetRandomValidVessel(ctx, &mealplanninggrpc.GetRandomValidVesselRequest{})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -753,8 +801,8 @@ func TestServiceImpl_GetValidIngredient(T *testing.T) {
 		mvem.On("ReadValidIngredient", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredient(ctx, &mealplanninggrpc.GetValidIngredientRequest{ValidIngredientID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredient(ctx, &mealplanninggrpc.GetValidIngredientRequest{ValidIngredientId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -776,8 +824,8 @@ func TestServiceImpl_GetValidIngredientGroup(T *testing.T) {
 		mvem.On("ReadValidIngredientGroup", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredientGroup(ctx, &mealplanninggrpc.GetValidIngredientGroupRequest{ValidIngredientGroupID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredientGroup(ctx, &mealplanninggrpc.GetValidIngredientGroupRequest{ValidIngredientGroupId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -823,8 +871,8 @@ func TestServiceImpl_GetValidIngredientMeasurementUnit(T *testing.T) {
 		mvem.On("ReadValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredientMeasurementUnit(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -872,7 +920,7 @@ func TestServiceImpl_GetValidIngredientMeasurementUnitsByIngredient(T *testing.T
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientMeasurementUnitsByIngredient(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitsByIngredientRequest{
-			ValidIngredientID: exampleID,
+			ValidIngredientId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -899,7 +947,7 @@ func TestServiceImpl_GetValidIngredientMeasurementUnitsByMeasurementUnit(T *test
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, &mealplanninggrpc.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest{
-			ValidMeasurementUnitID: exampleID,
+			ValidMeasurementUnitId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -924,8 +972,8 @@ func TestServiceImpl_GetValidIngredientPreparation(T *testing.T) {
 		mvem.On("ReadValidIngredientPreparation", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredientPreparation(ctx, &mealplanninggrpc.GetValidIngredientPreparationRequest{ValidIngredientPreparationID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredientPreparation(ctx, &mealplanninggrpc.GetValidIngredientPreparationRequest{ValidIngredientPreparationId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -973,7 +1021,7 @@ func TestServiceImpl_GetValidIngredientPreparationsByIngredient(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientPreparationsByIngredient(ctx, &mealplanninggrpc.GetValidIngredientPreparationsByIngredientRequest{
-			ValidIngredientID: exampleID,
+			ValidIngredientId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1000,7 +1048,137 @@ func TestServiceImpl_GetValidIngredientPreparationsByPreparation(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientPreparationsByPreparation(ctx, &mealplanninggrpc.GetValidIngredientPreparationsByPreparationRequest{
-			ValidPreparationID: exampleID,
+			ValidPreparationId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ReadValidPrepTaskConfig", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfig(ctx, &mealplanninggrpc.GetValidPrepTaskConfigRequest{ValidPrepTaskConfigId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidPrepTaskConfigs", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigs(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByIngredient", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByIngredient(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientRequest{
+			ValidIngredientId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByPreparation", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByPreparationRequest{
+			ValidPreparationId: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_GetValidPrepTaskConfigsByIngredientAndPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleIngredientID := mealplanningfakes.BuildFakeID()
+		examplePreparationID := mealplanningfakes.BuildFakeID()
+		exampleResult := mealplanningfakes.BuildFakeValidPrepTaskConfigsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPrepTaskConfigsByIngredientAndPreparation", testutils.ContextMatcher, exampleIngredientID, examplePreparationID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, &mealplanninggrpc.GetValidPrepTaskConfigsByIngredientAndPreparationRequest{
+			ValidIngredientId:  exampleIngredientID,
+			ValidPreparationId: examplePreparationID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1025,8 +1203,8 @@ func TestServiceImpl_GetValidIngredientState(T *testing.T) {
 		mvem.On("ReadValidIngredientState", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateRequest{ValidIngredientStateID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateRequest{ValidIngredientStateId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1048,8 +1226,8 @@ func TestServiceImpl_GetValidIngredientStateIngredient(T *testing.T) {
 		mvem.On("ReadValidIngredientStateIngredient", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidIngredientStateIngredient(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientRequest{ValidIngredientStateIngredientID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidIngredientStateIngredient(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientRequest{ValidIngredientStateIngredientId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1097,7 +1275,7 @@ func TestServiceImpl_GetValidIngredientStateIngredientsByIngredient(T *testing.T
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientStateIngredientsByIngredient(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientsByIngredientRequest{
-			ValidIngredientID: exampleID,
+			ValidIngredientId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1124,7 +1302,7 @@ func TestServiceImpl_GetValidIngredientStateIngredientsByIngredientState(T *test
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanninggrpc.GetValidIngredientStateIngredientsByIngredientStateRequest{
-			ValidIngredientStateID: exampleID,
+			ValidIngredientStateId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1197,8 +1375,8 @@ func TestServiceImpl_GetValidInstrument(T *testing.T) {
 		mvem.On("ReadValidInstrument", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidInstrument(ctx, &mealplanninggrpc.GetValidInstrumentRequest{ValidInstrumentID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidInstrument(ctx, &mealplanninggrpc.GetValidInstrumentRequest{ValidInstrumentId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1244,8 +1422,8 @@ func TestServiceImpl_GetValidMeasurementUnit(T *testing.T) {
 		mvem.On("ReadValidMeasurementUnit", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidMeasurementUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitRequest{ValidMeasurementUnitID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidMeasurementUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1267,8 +1445,8 @@ func TestServiceImpl_GetValidMeasurementUnitConversion(T *testing.T) {
 		mvem.On("ReadValidMeasurementUnitConversion", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidMeasurementUnitConversion(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionRequest{ValidMeasurementUnitConversionID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidMeasurementUnitConversion(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionRequest{ValidMeasurementUnitConversionId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1292,7 +1470,7 @@ func TestServiceImpl_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidMeasurementUnitConversionsForUnit(ctx, &mealplanninggrpc.GetValidMeasurementUnitConversionsForUnitRequest{
-			ValidMeasurementUnitID: exampleID,
+			ValidMeasurementUnitId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1341,8 +1519,8 @@ func TestServiceImpl_GetValidPreparation(T *testing.T) {
 		mvem.On("ReadValidPreparation", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{ValidPreparationID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{ValidPreparationId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1364,8 +1542,8 @@ func TestServiceImpl_GetValidPreparationInstrument(T *testing.T) {
 		mvem.On("ReadValidPreparationInstrument", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidPreparationInstrument(ctx, &mealplanninggrpc.GetValidPreparationInstrumentRequest{ValidPreparationInstrumentID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidPreparationInstrument(ctx, &mealplanninggrpc.GetValidPreparationInstrumentRequest{ValidPreparationInstrumentId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1413,7 +1591,7 @@ func TestServiceImpl_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationInstrumentsByInstrument(ctx, &mealplanninggrpc.GetValidPreparationInstrumentsByInstrumentRequest{
-			ValidInstrumentID: exampleID,
+			ValidInstrumentId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1440,7 +1618,7 @@ func TestServiceImpl_GetValidPreparationInstrumentsByPreparation(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationInstrumentsByPreparation(ctx, &mealplanninggrpc.GetValidPreparationInstrumentsByPreparationRequest{
-			ValidPreparationID: exampleID,
+			ValidPreparationId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1465,8 +1643,8 @@ func TestServiceImpl_GetValidPreparationVessel(T *testing.T) {
 		mvem.On("ReadValidPreparationVessel", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidPreparationVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselRequest{ValidPreparationVesselID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidPreparationVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselRequest{ValidPreparationVesselId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1514,7 +1692,7 @@ func TestServiceImpl_GetValidPreparationVesselsByPreparation(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationVesselsByPreparation(ctx, &mealplanninggrpc.GetValidPreparationVesselsByPreparationRequest{
-			ValidPreparationID: exampleID,
+			ValidPreparationId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1541,7 +1719,7 @@ func TestServiceImpl_GetValidPreparationVesselsByVessel(T *testing.T) {
 		s.validEnumerationsManager = mvem
 
 		result, err := s.GetValidPreparationVesselsByVessel(ctx, &mealplanninggrpc.GetValidPreparationVesselsByVesselRequest{
-			ValidVesselID: exampleID,
+			ValidVesselId: exampleID,
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -1590,8 +1768,8 @@ func TestServiceImpl_GetValidVessel(T *testing.T) {
 		mvem.On("ReadValidVessel", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
-		result, err := s.GetValidVessel(ctx, &mealplanninggrpc.GetValidVesselRequest{ValidVesselID: exampleResult.ID})
-		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		result, err := s.GetValidVessel(ctx, &mealplanninggrpc.GetValidVesselRequest{ValidVesselId: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.Id)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mvem)
@@ -1810,7 +1988,7 @@ func TestServiceImpl_SearchValidIngredientsByPreparation(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidIngredientsByPreparationAndIngredientName", testutils.ContextMatcher, exampleRequest.ValidPreparationID, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mvem.On("SearchValidIngredientsByPreparationAndIngredientName", testutils.ContextMatcher, exampleRequest.ValidPreparationId, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchValidIngredientsByPreparation(ctx, exampleRequest)
@@ -1835,7 +2013,7 @@ func TestServiceImpl_SearchValidMeasurementUnitsByIngredient(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidMeasurementUnitsByIngredientID", testutils.ContextMatcher, exampleRequest.ValidIngredientID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mvem.On("SearchValidMeasurementUnitsByIngredientID", testutils.ContextMatcher, exampleRequest.ValidIngredientId, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchValidMeasurementUnitsByIngredient(ctx, exampleRequest)
@@ -1860,12 +2038,12 @@ func TestServiceImpl_UpdateValidIngredient(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientID, testutils.MatchType[*mealplanning.ValidIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientId, testutils.MatchType[*mealplanning.ValidIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredient(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -1884,12 +2062,12 @@ func TestServiceImpl_UpdateValidIngredientGroup(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredientGroup", testutils.ContextMatcher, exampleRequest.ValidIngredientGroupID, testutils.MatchType[*mealplanning.ValidIngredientGroupUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredientGroup", testutils.ContextMatcher, exampleRequest.ValidIngredientGroupId, testutils.MatchType[*mealplanning.ValidIngredientGroupUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientGroup(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -1908,12 +2086,12 @@ func TestServiceImpl_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidIngredientMeasurementUnitID, testutils.MatchType[*mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidIngredientMeasurementUnitId, testutils.MatchType[*mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientMeasurementUnit(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -1932,12 +2110,36 @@ func TestServiceImpl_UpdateValidIngredientPreparation(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredientPreparation", testutils.ContextMatcher, exampleRequest.ValidIngredientPreparationID, testutils.MatchType[*mealplanning.ValidIngredientPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredientPreparation", testutils.ContextMatcher, exampleRequest.ValidIngredientPreparationId, testutils.MatchType[*mealplanning.ValidIngredientPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientPreparation(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
+
+		mock.AssertExpectationsForObjects(t, mvem)
+	})
+}
+
+func TestServiceImpl_UpdateValidPrepTaskConfig(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		exampleRequest := fake.BuildFakeForTest[mealplanninggrpc.UpdateValidPrepTaskConfigRequest](t)
+		exampleResponse := mealplanningfakes.BuildFakeValidPrepTaskConfig()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidPrepTaskConfig", testutils.ContextMatcher, exampleRequest.ValidPrepTaskConfigId, testutils.MatchType[*mealplanning.ValidPrepTaskConfigUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidPrepTaskConfig(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -1956,12 +2158,12 @@ func TestServiceImpl_UpdateValidIngredientState(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredientState", testutils.ContextMatcher, exampleRequest.ValidIngredientStateID, testutils.MatchType[*mealplanning.ValidIngredientStateUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredientState", testutils.ContextMatcher, exampleRequest.ValidIngredientStateId, testutils.MatchType[*mealplanning.ValidIngredientStateUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientState(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -1980,12 +2182,12 @@ func TestServiceImpl_UpdateValidIngredientStateIngredient(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidIngredientStateIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientStateIngredientID, testutils.MatchType[*mealplanning.ValidIngredientStateIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidIngredientStateIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientStateIngredientId, testutils.MatchType[*mealplanning.ValidIngredientStateIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidIngredientStateIngredient(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2004,12 +2206,12 @@ func TestServiceImpl_UpdateValidInstrument(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidInstrument", testutils.ContextMatcher, exampleRequest.ValidInstrumentID, testutils.MatchType[*mealplanning.ValidInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidInstrument", testutils.ContextMatcher, exampleRequest.ValidInstrumentId, testutils.MatchType[*mealplanning.ValidInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidInstrument(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2028,12 +2230,12 @@ func TestServiceImpl_UpdateValidMeasurementUnit(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitID, testutils.MatchType[*mealplanning.ValidMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitId, testutils.MatchType[*mealplanning.ValidMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidMeasurementUnit(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2052,12 +2254,12 @@ func TestServiceImpl_UpdateValidMeasurementUnitConversion(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidMeasurementUnitConversion", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitConversionID, testutils.MatchType[*mealplanning.ValidMeasurementUnitConversionUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidMeasurementUnitConversion", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitConversionId, testutils.MatchType[*mealplanning.ValidMeasurementUnitConversionUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidMeasurementUnitConversion(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2076,12 +2278,12 @@ func TestServiceImpl_UpdateValidPreparation(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidPreparation", testutils.ContextMatcher, exampleRequest.ValidPreparationID, testutils.MatchType[*mealplanning.ValidPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidPreparation", testutils.ContextMatcher, exampleRequest.ValidPreparationId, testutils.MatchType[*mealplanning.ValidPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidPreparation(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2100,12 +2302,12 @@ func TestServiceImpl_UpdateValidPreparationInstrument(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidPreparationInstrument", testutils.ContextMatcher, exampleRequest.ValidPreparationInstrumentID, testutils.MatchType[*mealplanning.ValidPreparationInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidPreparationInstrument", testutils.ContextMatcher, exampleRequest.ValidPreparationInstrumentId, testutils.MatchType[*mealplanning.ValidPreparationInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidPreparationInstrument(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2124,12 +2326,12 @@ func TestServiceImpl_UpdateValidPreparationVessel(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidPreparationVessel", testutils.ContextMatcher, exampleRequest.ValidPreparationVesselID, testutils.MatchType[*mealplanning.ValidPreparationVesselUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidPreparationVessel", testutils.ContextMatcher, exampleRequest.ValidPreparationVesselId, testutils.MatchType[*mealplanning.ValidPreparationVesselUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidPreparationVessel(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})
@@ -2148,12 +2350,12 @@ func TestServiceImpl_UpdateValidVessel(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("UpdateValidVessel", testutils.ContextMatcher, exampleRequest.ValidVesselID, testutils.MatchType[*mealplanning.ValidVesselUpdateRequestInput]()).Return(exampleResponse, nil)
+		mvem.On("UpdateValidVessel", testutils.ContextMatcher, exampleRequest.ValidVesselId, testutils.MatchType[*mealplanning.ValidVesselUpdateRequestInput]()).Return(exampleResponse, nil)
 		s.validEnumerationsManager = mvem
 
 		res, err := s.UpdateValidVessel(ctx, exampleRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+		assert.Equal(t, exampleResponse.ID, res.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mvem)
 	})

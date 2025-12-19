@@ -1,13 +1,9 @@
 package objectstorage
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
-	"net/http"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 )
 
 // SaveFile saves a file to the blob.
@@ -44,28 +40,4 @@ func (u *Uploader) ReadFile(ctx context.Context, path string) ([]byte, error) {
 	}
 
 	return fileBytes, nil
-}
-
-// ServeFiles serves a blob from storage.
-func (u *Uploader) ServeFiles(res http.ResponseWriter, req *http.Request) {
-	ctx, span := u.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	fileName := u.filenameFetcher(req)
-
-	fileBytes, err := u.ReadFile(ctx, fileName)
-	if err != nil {
-		u.logger.Error("trying to read uploaded file", err)
-		res.WriteHeader(http.StatusNotFound)
-
-		return
-	}
-
-	if attrs, attrsErr := u.bucket.Attributes(ctx, fileName); attrs != nil && attrsErr == nil {
-		res.Header().Set(encoding.ContentTypeHeaderKey, attrs.ContentType)
-	}
-
-	if _, copyErr := io.Copy(res, bytes.NewReader(fileBytes)); copyErr != nil {
-		u.logger.Error("copying file bytes to response", copyErr)
-	}
 }

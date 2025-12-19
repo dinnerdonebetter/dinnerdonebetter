@@ -26,12 +26,14 @@ import (
 func buildNewMealPlanTaskCreatorForTest(t *testing.T) *Worker {
 	t.Helper()
 
+	ctx := t.Context()
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
 	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	x, err := NewMealPlanTaskCreator(
+		ctx,
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		&recipeanalysis.MockRecipeAnalyzer{},

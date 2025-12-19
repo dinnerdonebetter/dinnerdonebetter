@@ -50,6 +50,7 @@ type AuthManager struct {
 }
 
 func ProvideAuthManager(
+	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	passwordResetTokenDataManager auth.PasswordResetTokenDataManager,
@@ -59,12 +60,12 @@ func ProvideAuthManager(
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
 	queueConfig *msgconfig.QueuesConfig,
-) (*AuthManager, error) {
+) (AuthManagerInterface, error) {
 	if queueConfig == nil {
 		return nil, internalerrors.NilConfigError("queues config for auth manager")
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide data changes publisher: %w", err)
 	}

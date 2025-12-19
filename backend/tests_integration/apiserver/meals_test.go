@@ -56,7 +56,7 @@ func createMealForTest(t *testing.T, clientToUse client.Client, mealInput *types
 	createdMealRes, err := clientToUse.CreateMeal(ctx, &mealplanninggrpc.CreateMealRequest{Input: converters.ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(exampleMealInput)})
 	require.NoError(t, err)
 
-	fetchedMealRes, err := clientToUse.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: createdMealRes.Created.ID})
+	fetchedMealRes, err := clientToUse.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: createdMealRes.Created.Id})
 	require.NoError(t, err)
 
 	createdMeal := converters.ConvertGRPCMealToMeal(fetchedMealRes.Result)
@@ -83,7 +83,7 @@ func TestMeals_CompleteLifecycle(T *testing.T) {
 
 		createdMeal := createMealForTest(t, userClient, nil)
 
-		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: createdMeal.ID})
+		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 		assert.NoError(t, err)
 	})
 
@@ -132,7 +132,7 @@ func TestMeals_Listing(T *testing.T) {
 		)
 
 		for _, createdMeal := range expected {
-			_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: createdMeal.ID})
+			_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 			assert.NoError(t, err)
 		}
 	})
@@ -181,7 +181,7 @@ func TestMeals_Searching(T *testing.T) {
 		)
 
 		for _, createdMeal := range expected {
-			_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: createdMeal.ID})
+			_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 			assert.NoError(t, err)
 		}
 	})
@@ -211,12 +211,12 @@ func TestMeals_Reading(T *testing.T) {
 		createdMeal := createMealForTest(t, userClient, nil)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		meal, err := c.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: createdMeal.ID})
+		meal, err := c.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: createdMeal.ID})
 		assert.Error(t, err)
 		assert.Nil(t, meal)
 
 		// Clean up
-		_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: createdMeal.ID})
+		_, err = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 		assert.NoError(t, err)
 	})
 
@@ -226,7 +226,7 @@ func TestMeals_Reading(T *testing.T) {
 
 		_, userClient := createUserAndClientForTest(t)
 
-		meal, err := userClient.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: nonexistentID})
+		meal, err := userClient.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, meal)
 	})
@@ -243,7 +243,7 @@ func TestMeals_Archiving(T *testing.T) {
 		createdMeal := createMealForTest(t, userClient, nil)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		_, err := c.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: createdMeal.ID})
+		_, err := c.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 		assert.Error(t, err)
 	})
 
@@ -253,7 +253,7 @@ func TestMeals_Archiving(T *testing.T) {
 
 		_, userClient := createUserAndClientForTest(t)
 
-		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealID: nonexistentID})
+		_, err := userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: nonexistentID})
 		assert.Error(t, err)
 	})
 }

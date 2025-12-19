@@ -24,7 +24,7 @@ func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client
 	convertedInput := converters.ConvertRecipeRatingCreationRequestInputToGRPCRecipeRatingCreationRequestInput(exampleRecipeRatingInput)
 
 	createdRecipeRating, err := clientToUse.CreateRecipeRating(ctx, &mealplanninggrpc.CreateRecipeRatingRequest{
-		RecipeID: recipeID,
+		RecipeId: recipeID,
 		Input:    convertedInput,
 	})
 	require.NoError(t, err)
@@ -69,15 +69,15 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		exampleRecipeRating.Update(updateInput)
 
 		_, err := testClient.UpdateRecipeRating(ctx, &mealplanninggrpc.UpdateRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 			Input:          converters.ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
 
 		actualRes, err := testClient.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualRes)
@@ -89,8 +89,8 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		assert.NotNil(t, actual.LastUpdatedAt)
 
 		_, err = testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.NoError(t, err)
 	})
@@ -107,14 +107,14 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		created, err := c.CreateRecipeRating(ctx, &mealplanninggrpc.CreateRecipeRatingRequest{
-			RecipeID: createdRecipe.ID,
+			RecipeId: createdRecipe.ID,
 			Input:    convertedInput,
 		})
 		assert.Error(t, err)
 		assert.Nil(t, created)
 
 		// Clean up
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -132,19 +132,19 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		_, err := c.UpdateRecipeRating(ctx, &mealplanninggrpc.UpdateRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 			Input:          converters.ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
 
 		// Clean up
 		_, err = testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.NoError(t, err)
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -158,18 +158,18 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		_, err := c.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.Error(t, err)
 
 		// Clean up
 		_, err = testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.NoError(t, err)
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -185,14 +185,14 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		updateInput := mpconverters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating)
 
 		_, err := testClient.UpdateRecipeRating(ctx, &mealplanninggrpc.UpdateRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: nonexistentID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: nonexistentID,
 			Input:          converters.ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
 
 		// Clean up
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -204,13 +204,13 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		_, err := testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: nonexistentID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: nonexistentID,
 		})
 		assert.Error(t, err)
 
 		// Clean up
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -228,7 +228,7 @@ func TestRecipeRatings_Listing(T *testing.T) {
 
 		// assert recipe rating list equality
 		actualRes, err := testClient.GetRecipeRatingsForRecipe(ctx, &mealplanninggrpc.GetRecipeRatingsForRecipeRequest{
-			RecipeID: createdRecipe.ID,
+			RecipeId: createdRecipe.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualRes)
@@ -236,8 +236,8 @@ func TestRecipeRatings_Listing(T *testing.T) {
 		assert.Equal(t, len(actualRes.Results), 1, "expected %d to be <= %d", len(actualRes.Results), 1)
 
 		_, err = testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 
 		assert.NoError(t, err)
@@ -251,13 +251,13 @@ func TestRecipeRatings_Listing(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		ratings, err := c.GetRecipeRatingsForRecipe(ctx, &mealplanninggrpc.GetRecipeRatingsForRecipeRequest{
-			RecipeID: createdRecipe.ID,
+			RecipeId: createdRecipe.ID,
 		})
 		assert.Error(t, err)
 		assert.Nil(t, ratings)
 
 		// Clean up
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }
@@ -275,19 +275,19 @@ func TestRecipeRatings_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		rating, err := c.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.Error(t, err)
 		assert.Nil(t, rating)
 
 		// Clean up
 		_, err = testClient.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: exampleRecipeRating.ID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: exampleRecipeRating.ID,
 		})
 		assert.NoError(t, err)
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 
@@ -299,14 +299,14 @@ func TestRecipeRatings_Reading(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		rating, err := testClient.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
-			RecipeID:       createdRecipe.ID,
-			RecipeRatingID: nonexistentID,
+			RecipeId:       createdRecipe.ID,
+			RecipeRatingId: nonexistentID,
 		})
 		assert.Error(t, err)
 		assert.Nil(t, rating)
 
 		// Clean up
-		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.NoError(t, err)
 	})
 }

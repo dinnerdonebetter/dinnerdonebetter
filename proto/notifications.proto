@@ -10,53 +10,59 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated
 
 // GetUserNotification
 message GetUserNotificationRequest {
-  string userNotificationID = 1;
+  string user_notification_id = 1;
 }
 
 message GetUserNotificationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserNotification Result = 2;
+  common.ResponseDetails response_details = 1;
+  UserNotification result = 2;
 }
 
 // GetUserNotifications
 message GetUserNotificationsRequest {
-  filtering.QueryFilter Filter = 1;
+  filtering.QueryFilter filter = 1;
 }
 
 message GetUserNotificationsResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.Pagination Pagination = 2;
-  repeated UserNotification Results = 3;
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated UserNotification results = 3;
 }
 
 // UpdateUserNotification
 message UpdateUserNotificationRequest {
-  string userNotificationID = 1;
+  string user_notification_id = 1;
   UserNotificationUpdateRequestInput input = 2;
 }
 
 message UpdateUserNotificationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  UserNotification Updated = 2;
+  common.ResponseDetails response_details = 1;
+  UserNotification updated = 2;
+}
+
+enum UserNotificationStatus {
+  USER_NOTIFICATION_STATUS_UNREAD = 0;
+  USER_NOTIFICATION_STATUS_READ = 1;
+  USER_NOTIFICATION_STATUS_DISMISSED = 2;
 }
 
 message UserNotification {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  string ID = 3;
-  string Content = 4;
-  string Status = 5;
-  string BelongsToUser = 6;
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp last_updated_at = 2;
+  string id = 3;
+  string content = 4;
+  UserNotificationStatus status = 5;
+  string belongs_to_user = 6;
 }
 
 message UserNotificationCreationRequestInput {
-  string Content = 1;
-  string Status = 2;
-  string BelongsToUser = 3;
+  string content = 1;
+  UserNotificationStatus status = 2;
+  string belongs_to_user = 3;
 }
 
 message UserNotificationUpdateRequestInput {
-  optional string Status = 1;
+  optional UserNotificationStatus status = 1;
 }
 
 service UserNotificationsService {

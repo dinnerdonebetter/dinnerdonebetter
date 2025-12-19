@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 )
 
 const (
@@ -62,13 +63,13 @@ func main() {
 		}),
 		//// Create valid enumerations and bridge types
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			enums, err := createTestEnumerations(ctx, repo, logger)
-			if err != nil {
-				return err
+			enums, err2 := createTestEnumerations(ctx, repo, logger)
+			if err2 != nil {
+				return err2
 			}
-			recipeIDs, err := createTestRecipes(ctx, repo, logger, premadeAdminUser.ID, enums)
-			if err != nil {
-				return err
+			recipeIDs, err2 := createTestRecipes(ctx, repo, logger, premadeAdminUser.ID, enums)
+			if err2 != nil {
+				return err2
 			}
 			return createTestMeals(ctx, repo, logger, premadeAdminUser.ID, recipeIDs)
 		}),
@@ -306,9 +307,27 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		logger.Debug("Created ValidMeasurementUnit: " + validMeasurementUnitKilogram.Name)
 	}
 
+	// Create a "unit" measurement unit for recipe step products
+	validMeasurementUnitUnit, err := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
+		ID:          identifiers.New(),
+		Name:        "unit",
+		Description: "A generic unit of measurement for recipe products",
+		PluralName:  "units",
+		Slug:        "unit",
+		Volumetric:  false,
+		Universal:   true,
+		Metric:      false,
+		Imperial:    false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create valid measurement unit (unit): %w", err)
+	}
+	enums.MeasurementUnits["unit"] = validMeasurementUnitUnit
+	logger.Debug("Created ValidMeasurementUnit: unit")
+
 	// Create 75 ValidVessels
 	for i := 1; i <= count; i++ {
-		validVessel, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		validVessel, err2 := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 			ID:                             identifiers.New(),
 			Name:                           fmt.Sprintf("cutting board %d", i),
 			Description:                    "A flat surface for cutting ingredients",
@@ -323,8 +342,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			Shape:                          mealplanning.VesselShapeRectangle,
 			UsableForStorage:               true,
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err2)
 		}
 		if i == 1 {
 			firstValidVessel = validVessel
@@ -335,7 +354,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create 75 ValidIngredientStates
 	for i := 1; i <= count; i++ {
-		validIngredientState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		validIngredientState, err2 := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
 			ID:            identifiers.New(),
 			Name:          fmt.Sprintf("slice %d", i),
 			Description:   "a sliced ingredient",
@@ -343,8 +362,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			PastTense:     "sliced",
 			Slug:          fmt.Sprintf("slice-%d", i),
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err2)
 		}
 		if i == 1 {
 			firstValidIngredientState = validIngredientState
@@ -355,7 +374,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	// Create bridge types using first instances
 
 	// ValidPreparationInstrument (Slicing requires Chef's Knife)
-	_, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+	_, err = repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 		ID:                 identifiers.New(),
 		ValidPreparationID: firstValidPreparation.ID,
 		ValidInstrumentID:  firstValidInstrument.ID,
@@ -532,8 +551,9 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		{"mix", "Combine ingredients together", "mixed", "mix", false, false},
 	}
 
-	for _, prep := range prepInputs {
-		validPrep, err := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
+	for i := range prepInputs {
+		prep := &prepInputs[i]
+		validPrep, err2 := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
 			ID:                          identifiers.New(),
 			Name:                        prep.name,
 			Description:                 prep.description,
@@ -547,8 +567,8 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 			ConsumesVessel:              false,
 			OnlyForVessels:              false,
 		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create preparation %s: %w", prep.name, err)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to create preparation %s: %w", prep.name, err2)
 		}
 		enums.Preparations[prep.name] = validPrep
 		logger.Debug("Created ValidPreparation: " + validPrep.Name)
@@ -612,14 +632,19 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 	ingredientMap := enums.Ingredients
 	vessels := enums.Vessels
 	defaultUnit := enums.MeasurementUnits["gram"]
+	unitMeasurementUnit := enums.MeasurementUnits["unit"]
 
 	if defaultUnit == nil {
 		return nil, fmt.Errorf("gram measurement unit not found in enumerations")
+	}
+	if unitMeasurementUnit == nil {
+		return nil, fmt.Errorf("unit measurement unit not found in enumerations")
 	}
 
 	recipeIDs := make(map[string]string)
 
 	// Helper function to create a recipe
+	//nolint:unparam // maxPortions is always nil in test data, but kept for API consistency
 	createRecipe := func(name, description, slug, componentType, portionName, pluralPortionName string, minPortions float32, maxPortions *float32, steps []*mealplanning.RecipeStepDatabaseCreationInput) (string, error) {
 		recipeID := identifiers.New()
 
@@ -637,7 +662,6 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 				Min: minPortions,
 				Max: maxPortions,
 			},
-			SealOfApproval:   false,
 			EligibleForMeals: true,
 			Steps:            steps,
 			PrepTasks:        []*mealplanning.RecipePrepTaskDatabaseCreationInput{},
@@ -649,6 +673,25 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 			return "", fmt.Errorf("failed to create recipe %s: %w", name, err)
 		}
 		logger.Debug(fmt.Sprintf("Created recipe: %s (ID: %s)", recipe.Name, recipe.ID))
+
+		// Attempt to read the recipe back and convert to gRPC format to verify it works
+		logger.Info(fmt.Sprintf("CONVERTING: Attempting to convert recipe '%s' (ID: %s) to gRPC format...", name, recipe.ID))
+		readRecipe, readErr := repo.GetRecipe(ctx, recipe.ID)
+		switch {
+		case readErr != nil:
+			logger.Debug(fmt.Sprintf("ERROR: Failed to read back recipe %s (ID: %s): %v", name, recipe.ID, readErr))
+		case readRecipe == nil:
+			logger.Debug(fmt.Sprintf("ERROR: Recipe %s (ID: %s) was created but GetRecipe returned nil", name, recipe.ID))
+		default:
+			grpcRecipe := mealplanningconverters.ConvertRecipeToGRPCRecipe(readRecipe)
+			if grpcRecipe == nil {
+				logger.Debug(fmt.Sprintf("ERROR: Recipe '%s' (ID: %s) conversion returned nil", name, recipe.ID))
+			} else {
+				logger.Debug(fmt.Sprintf("SUCCESS: Recipe '%s' (ID: %s) converted successfully - Name: %s, Status: %s, Steps: %d",
+					name, recipe.ID, grpcRecipe.Name, grpcRecipe.Status, len(grpcRecipe.Steps)))
+			}
+		}
+
 		return recipe.ID, nil
 	}
 
@@ -667,7 +710,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["black pepper"].ID), Name: "black pepper", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}, ToTaste: true},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "seasoned chicken breast", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "seasoned chicken breast", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -684,7 +727,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), RecipeStepProductID: pointer.To("seasoned chicken breast from step 0"), Name: "seasoned chicken breast", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "grilled chicken breast", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "grilled chicken breast", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["pan"].ID), Name: "grill pan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -717,7 +760,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), IngredientID: &broccoli.ID, Name: "broccoli", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "broccoli florets", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "broccoli florets", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -733,7 +776,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "broccoli florets", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "steamed broccoli florets", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "steamed broccoli florets", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["steamer"].ID), Name: "steamer", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -768,7 +811,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), IngredientID: &garlic.ID, Name: "garlic", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 5}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "diced onion and minced garlic", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "diced onion and minced garlic", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["cutting board"].ID), Name: "cutting board", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -786,7 +829,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), IngredientID: &rice.ID, Name: "rice", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "toasted rice mixture", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "toasted rice mixture", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["pot"].ID), Name: "pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -802,7 +845,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "toasted rice mixture", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 320}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "spanish rice", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "spanish rice", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["pot"].ID), Name: "pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -840,7 +883,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), IngredientID: pointer.To(ingredientMap["black pepper"].ID), Name: "black pepper", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 1}, ToTaste: true},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "seasoned asparagus", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "seasoned asparagus", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -857,7 +900,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 						{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "seasoned asparagus", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 300}},
 					},
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-						{ID: identifiers.New(), Name: "roasted asparagus", Type: "ingredient", Index: 0},
+						{ID: identifiers.New(), Name: "roasted asparagus", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -894,7 +937,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 							{ID: identifiers.New(), IngredientID: pointer.To(salt.ID), Name: "salt", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 2}, ToTaste: true},
 						},
 						Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-							{ID: identifiers.New(), Name: "seasoned potatoes", Type: "ingredient", Index: 0},
+							{ID: identifiers.New(), Name: "seasoned potatoes", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 						},
 						Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 							{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -911,7 +954,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 							{ID: identifiers.New(), RecipeStepProductID: pointer.To(""), Name: "seasoned potatoes", MeasurementUnitID: defaultUnit.ID, Quantity: types.Float32RangeWithOptionalMax{Min: 200}},
 						},
 						Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-							{ID: identifiers.New(), Name: "baked potatoes", Type: "ingredient", Index: 0},
+							{ID: identifiers.New(), Name: "baked potatoes", Type: "ingredient", Index: 0, MeasurementUnitID: pointer.To(unitMeasurementUnit.ID)},
 						},
 						Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 							{ID: identifiers.New(), VesselID: pointer.To(vessels["baking sheet"].ID), Name: "baking sheet", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -936,6 +979,7 @@ func createTestRecipes(ctx context.Context, repo mealplanning.Repository, logger
 
 func createTestMeals(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, userID string, recipeIDs map[string]string) error {
 	// Helper function to create a meal
+	//nolint:unparam // minPortions is always 1 in test data, but kept for API consistency
 	createMeal := func(name, description string, minPortions float32, maxPortions *float32, components []*mealplanning.MealComponentDatabaseCreationInput) error {
 		mealID := identifiers.New()
 

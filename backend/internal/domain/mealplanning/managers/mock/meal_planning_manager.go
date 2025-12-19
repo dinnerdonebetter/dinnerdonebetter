@@ -51,6 +51,60 @@ func (m *MockMealPlanningManager) ArchiveMeal(ctx context.Context, mealID, owner
 	return returnValues.Error(0)
 }
 
+func (m *MockMealPlanningManager) ListMealLists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealList], error) {
+	returnValues := m.Called(ctx, filter)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealList]), returnValues.Error(1)
+}
+
+func (m *MockMealPlanningManager) CreateMealList(ctx context.Context, userID string, input *mealplanning.MealListCreationRequestInput) (*mealplanning.MealList, error) {
+	returnValues := m.Called(ctx, userID, input)
+
+	return returnValues.Get(0).(*mealplanning.MealList), returnValues.Error(1)
+}
+
+func (m *MockMealPlanningManager) UpdateMealList(ctx context.Context, mealListID, userID string, input *mealplanning.MealListUpdateRequestInput) error {
+	returnValues := m.Called(ctx, mealListID, userID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockMealPlanningManager) ArchiveMealList(ctx context.Context, mealListID, userID string) error {
+	returnValues := m.Called(ctx, mealListID, userID)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockMealPlanningManager) AddMealToMealList(ctx context.Context, mealListID, mealID, notes string) (*mealplanning.MealListItem, error) {
+	returnValues := m.Called(ctx, mealListID, mealID, notes)
+
+	return returnValues.Get(0).(*mealplanning.MealListItem), returnValues.Error(1)
+}
+
+func (m *MockMealPlanningManager) UpdateMealListItem(ctx context.Context, mealListItemID, mealListID, mealID string, input *mealplanning.MealListItemUpdateRequestInput) error {
+	returnValues := m.Called(ctx, mealListItemID, mealListID, mealID, input)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockMealPlanningManager) RemoveMealFromMealList(ctx context.Context, mealListID, mealListItemID string) error {
+	returnValues := m.Called(ctx, mealListID, mealListItemID)
+
+	return returnValues.Error(0)
+}
+
+func (m *MockMealPlanningManager) ListMealListItems(ctx context.Context, mealListID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealListItem], error) {
+	returnValues := m.Called(ctx, mealListID, filter)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealListItem]), returnValues.Error(1)
+}
+
 // ListMealPlans is a mock method.
 func (m *MockMealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlan], error) {
 	returnValues := m.Called(ctx, ownerID, filter)

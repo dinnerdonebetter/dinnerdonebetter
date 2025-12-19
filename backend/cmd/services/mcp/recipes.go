@@ -52,7 +52,7 @@ var getRecipeTool = &mcp.Tool{
 func (h *mcpToolManager) GetRecipe() mcp.ToolHandlerFor[*GetRecipeInvocation, *mealplanning.Recipe] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
 		result, err := h.client.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
-			RecipeID: x.RecipeID,
+			RecipeId: x.RecipeID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -306,7 +306,7 @@ var recipeUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateRecipe() mcp.ToolHandlerFor[*UpdateRecipeInvocation, *mealplanning.Recipe] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateRecipeInvocation) (*mcp.CallToolResult, *mealplanning.Recipe, error) {
 		result, err := h.client.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
-			RecipeID: x.RecipeID,
+			RecipeId: x.RecipeID,
 			Input:    mealplanningconverters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(x.RecipeUpdateRequestInput),
 		})
 		if err != nil {

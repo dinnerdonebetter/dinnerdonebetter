@@ -30,7 +30,7 @@ func createUserIngredientPreferenceForTest(t *testing.T, clientToUse client.Clie
 	converted := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(createdUserIngredientPreference.Created[0])
 	assertRoughEquality(t, exampleUserIngredientPreference, converted, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
 
-	res, err := clientToUse.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceID: createdUserIngredientPreference.Created[0].ID})
+	res, err := clientToUse.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: createdUserIngredientPreference.Created[0].Id})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
@@ -74,8 +74,8 @@ func TestUserIngredientPreferences_Creating(T *testing.T) {
 		creationRequestInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
 		convertedInput := settingsconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
 		// this is not allowed
-		convertedInput.ValidIngredientID = ""
-		convertedInput.ValidIngredientGroupID = ""
+		convertedInput.ValidIngredientId = ""
+		convertedInput.ValidIngredientGroupId = ""
 
 		created, err := testClient.CreateUserIngredientPreference(ctx, &settingssvc.CreateUserIngredientPreferenceRequest{
 			Input: convertedInput,
@@ -112,7 +112,7 @@ func TestUserIngredientPreferences_Reading(T *testing.T) {
 
 		created := createUserIngredientPreferenceForTest(t, testClient)
 
-		retrieved, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceID: created.ID})
+		retrieved, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: created.ID})
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 
@@ -129,7 +129,7 @@ func TestUserIngredientPreferences_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceID: created.ID})
+		_, err := c.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -137,7 +137,7 @@ func TestUserIngredientPreferences_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceID: nonexistentID})
+		_, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -152,10 +152,10 @@ func TestUserIngredientPreferences_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		created := createUserIngredientPreferenceForTest(t, testClient)
 
-		_, err := testClient.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceID: created.ID})
+		_, err := testClient.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceID: created.ID})
+		x, err := testClient.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -169,7 +169,7 @@ func TestUserIngredientPreferences_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceID: created.ID})
+		_, err := c.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -179,7 +179,7 @@ func TestUserIngredientPreferences_Archiving(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 
-		_, err := testClient.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceID: nonexistentID})
+		_, err := testClient.ArchiveUserIngredientPreference(ctx, &settingssvc.ArchiveUserIngredientPreferenceRequest{UserIngredientPreferenceId: nonexistentID})
 		assert.Error(t, err)
 	})
 }

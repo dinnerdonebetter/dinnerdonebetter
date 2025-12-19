@@ -33,14 +33,16 @@ type Worker struct {
 	groceryListCreator      grocerylistpreparation.GroceryListCreator
 }
 
-func NewMealPlanGroceryListInitializer(logger logging.Logger,
+func NewMealPlanGroceryListInitializer(
+	ctx context.Context,
+	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
-	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, err
 	}

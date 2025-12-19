@@ -56,7 +56,7 @@ func TestMealPlanGroceryListItems_CompleteLifecycle(T *testing.T) {
 		exampleMealPlanGroceryListItemInput.ValidMeasurementUnitID = createdValidMeasurementUnit.ID
 
 		createdMealPlanGroceryListItemRes, err := adminClient.CreateMealPlanGroceryListItem(ctx, &mealplanninggrpc.CreateMealPlanGroceryListItemRequest{
-			MealPlanID: createdMealPlan.ID,
+			MealPlanId: createdMealPlan.ID,
 			Input:      converters.ConvertMealPlanGroceryListItemCreationRequestInputToGRPCMealPlanGroceryListItemCreationRequestInput(exampleMealPlanGroceryListItemInput),
 		})
 		require.NoError(t, err)
@@ -65,8 +65,8 @@ func TestMealPlanGroceryListItems_CompleteLifecycle(T *testing.T) {
 		checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, createdMealPlanGroceryListItem)
 
 		actualRes, err := adminClient.GetMealPlanGroceryListItem(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemRequest{
-			MealPlanID:                createdMealPlan.ID,
-			MealPlanGroceryListItemID: createdMealPlanGroceryListItem.ID,
+			MealPlanId:                createdMealPlan.ID,
+			MealPlanGroceryListItemId: createdMealPlanGroceryListItem.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualRes)
@@ -77,12 +77,12 @@ func TestMealPlanGroceryListItems_CompleteLifecycle(T *testing.T) {
 
 		actualList, err := adminClient.GetMealPlanGroceryListItemsForMealPlan(ctx, &mealplanninggrpc.GetMealPlanGroceryListItemsForMealPlanRequest{
 			Filter:     nil,
-			MealPlanID: createdMealPlan.ID,
+			MealPlanId: createdMealPlan.ID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, actualList)
 
-		_, err = adminClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		_, err = adminClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		assert.NoError(t, err)
 
 		assert.Len(t, actualList.Results, 1)

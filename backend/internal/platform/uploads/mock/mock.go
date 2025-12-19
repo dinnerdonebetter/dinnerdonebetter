@@ -2,7 +2,6 @@ package mockuploads
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 
@@ -26,9 +25,4 @@ func (m *MockUploadManager) ReadFile(ctx context.Context, path string) ([]byte, 
 	args := m.Called(ctx, path)
 
 	return args.Get(0).([]byte), args.Error(1)
-}
-
-// ServeFiles satisfies the MockUploadManager interface.
-func (m *MockUploadManager) ServeFiles(res http.ResponseWriter, req *http.Request) {
-	m.Called(res, req)
 }

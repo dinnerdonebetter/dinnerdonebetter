@@ -54,7 +54,7 @@ func createValidVesselForTest(t *testing.T) *mealplanning.ValidVessel {
 	checkValidVesselEquality(t, exampleValidVessel, converted)
 
 	retrieved, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{
-		ValidVesselID: converted.ID,
+		ValidVesselId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -133,7 +133,7 @@ func TestValidVessels_Reading(T *testing.T) {
 
 		created := createValidVesselForTest(t)
 
-		retrieved, err := testClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselID: created.ID})
+		retrieved, err := testClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidVesselToValidVessel(retrieved.Result)
@@ -149,7 +149,7 @@ func TestValidVessels_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselID: created.ID})
+		_, err := c.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -157,7 +157,7 @@ func TestValidVessels_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselID: nonexistentID})
+		_, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -176,7 +176,7 @@ func TestValidVessels_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidVessel(ctx, &mealplanningsvc.UpdateValidVesselRequest{
-			ValidVesselID: created.ID,
+			ValidVesselId: created.ID,
 			Input:         grpcconverters.ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -200,7 +200,7 @@ func TestValidVessels_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidVessel(ctx, &mealplanningsvc.UpdateValidVesselRequest{
-			ValidVesselID: created.ID,
+			ValidVesselId: created.ID,
 			Input:         grpcconverters.ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -224,7 +224,7 @@ func TestValidVessels_Updating(T *testing.T) {
 		created := createValidVesselForTest(t)
 
 		response, err := testClient.UpdateValidVessel(ctx, &mealplanningsvc.UpdateValidVesselRequest{
-			ValidVesselID: created.ID,
+			ValidVesselId: created.ID,
 			Input: &mealplanningsvc.ValidVesselUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -243,10 +243,10 @@ func TestValidVessels_Archiving(T *testing.T) {
 
 		created := createValidVesselForTest(t)
 
-		_, err := adminClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselID: created.ID})
+		_, err := adminClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselID: created.ID})
+		x, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -259,7 +259,7 @@ func TestValidVessels_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselID: created.ID})
+		_, err := c.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -267,7 +267,7 @@ func TestValidVessels_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselID: nonexistentID})
+		_, err := adminClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -278,7 +278,7 @@ func TestValidVessels_Archiving(T *testing.T) {
 		created := createValidVesselForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselID: created.ID})
+		_, err := testClient.ArchiveValidVessel(ctx, &mealplanningsvc.ArchiveValidVesselRequest{ValidVesselId: created.ID})
 		assert.Error(t, err)
 	})
 }

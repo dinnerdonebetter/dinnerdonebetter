@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) ValidInstrumentCreate(res http.ResponseWriter, req
 	}
 
 	// Redirect to the newly created valid instrument's page
-	instrumentID := createRes.Result.ID
+	instrumentID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_instruments/%s", instrumentID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -149,7 +149,7 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 		return page("Valid Instruments", s.renderValidInstrumentsError("Error: No valid instrument ID provided")), nil
 	}
 
-	validInstrumentRes, err := c.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentID: validInstrumentID})
+	validInstrumentRes, err := c.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: validInstrumentID})
 	if err != nil {
 		return page("Valid Instruments", s.renderValidInstrumentsError(fmt.Sprintf("Error loading valid instrument: %v", err))), nil
 	}
@@ -175,7 +175,7 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidInstrument]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-instrument-form",
-			Action:  fmt.Sprintf("/api/valid_instruments/%s", validInstrument.ID),
+			Action:  fmt.Sprintf("/api/valid_instruments/%s", validInstrument.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -310,7 +310,7 @@ func (s *AdminFrontendServer) ValidInstrumentsList(_ http.ResponseWriter, req *h
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidInstrument) string {
-			return fmt.Sprintf("/valid_instruments/%s", data.ID)
+			return fmt.Sprintf("/valid_instruments/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid instruments found",
 		EmptyStateDescription: "No valid instruments have been created yet.",
@@ -414,7 +414,7 @@ func (s *AdminFrontendServer) ValidInstrumentsSearch(_ http.ResponseWriter, req 
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidInstrument) string {
-			return fmt.Sprintf("/valid_instruments/%s", data.ID)
+			return fmt.Sprintf("/valid_instruments/%s", data.Id)
 		},
 	})
 	if err != nil {

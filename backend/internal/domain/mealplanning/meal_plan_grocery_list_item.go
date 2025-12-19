@@ -61,8 +61,8 @@ type (
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
+		_                          struct{}                          `json:"-"`
+		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
 		PurchasedMeasurementUnitID *string                           `json:"purchasedMeasurementUnitID"`
 		PurchasedUPC               *string                           `json:"purchasedUPC"`
 		PurchasePrice              *float32                          `json:"purchasePrice"`
@@ -72,13 +72,12 @@ type (
 		ValidIngredientID          string                            `json:"validIngredientID"`
 		ValidMeasurementUnitID     string                            `json:"validMeasurementUnitID"`
 		StatusExplanation          string                            `json:"statusExplanation"`
-		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
 	}
 
 	// MealPlanGroceryListItemDatabaseCreationInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemDatabaseCreationInput struct {
-		_ struct{} `json:"-"`
-
+		_                          struct{}                          `json:"-"`
+		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"-"`
 		PurchasePrice              *float32                          `json:"-"`
 		PurchasedUPC               *string                           `json:"-"`
 		PurchasedMeasurementUnitID *string                           `json:"-"`
@@ -89,7 +88,6 @@ type (
 		BelongsToMealPlan          string                            `json:"-"`
 		ID                         string                            `json:"-"`
 		StatusExplanation          string                            `json:"-"`
-		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"-"`
 	}
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.

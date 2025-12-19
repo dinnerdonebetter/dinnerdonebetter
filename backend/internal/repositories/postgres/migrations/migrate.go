@@ -56,8 +56,21 @@ func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, d
 			RawQuery:    fetchMigration("00007_webhooks"),
 		},
 		{
+			Description: "waitlist tables",
+			RawQuery:    fetchMigration("00008_waitlists"),
+		},
+		{
+			Description: "issue reports table",
+			RawQuery:    fetchMigration("00009_issue_reports"),
+		},
+		{
+			Description: "uploaded media table",
+			RawQuery:    fetchMigration("00010_uploaded_media"),
+		},
+		// meal planning tables should always be last
+		{
 			Description: "meal planning tables",
-			RawQuery:    fetchMigration("00008_mealplanning"),
+			RawQuery:    fetchMigration("00015_mealplanning"),
 		},
 	}
 

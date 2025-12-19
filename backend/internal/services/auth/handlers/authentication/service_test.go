@@ -15,7 +15,6 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
@@ -23,12 +22,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/otel/metric"
 )
 
 func buildTestService(t *testing.T) *service {
 	t.Helper()
 
+	ctx := t.Context()
 	logger := logging.NewNoopLogger()
 	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -50,12 +49,8 @@ func buildTestService(t *testing.T) *service {
 		AuthProviderParamKey,
 	).Return(func(*http.Request) string { return "" })
 
-	mmp := &metrics.MockProvider{}
-	mmp.On("NewInt64Counter", rejectedRequestCounterName, []metric.Int64CounterOption(nil)).Return(
-		metrics.Int64CounterForTest(t.Name()), nil,
-	)
-
 	s, err := ProvideService(
+		ctx,
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
@@ -67,12 +62,11 @@ func buildTestService(t *testing.T) *service {
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
-		mmp,
 		queueCfg,
 	)
 	require.NoError(t, err)
 
-	mock.AssertExpectationsForObjects(t, pp, rpm, mmp)
+	mock.AssertExpectationsForObjects(t, pp, rpm)
 
 	return s.(*service)
 }
@@ -82,6 +76,8 @@ func TestProvideService(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -104,6 +100,7 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},
@@ -115,7 +112,6 @@ func TestProvideService(T *testing.T) {
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
-			metrics.NewNoopMetricsProvider(),
 			queueCfg,
 		)
 

@@ -44,8 +44,8 @@ func TestMealPlanOptionVotes_CompleteLifecycle(T *testing.T) {
 		exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 		exampleMealPlanOptionVoteInput := mpconverters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVote)
 		createdMealPlanOptionVotesRes, createErr := userClient.CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVoteInput),
 		})
 		require.NoError(t, createErr)
@@ -59,10 +59,10 @@ func TestMealPlanOptionVotes_CompleteLifecycle(T *testing.T) {
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
 			retrievedMealPlanOptionVoteRes, err := userClient.GetMealPlanOptionVote(ctx, &mealplanninggrpc.GetMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 			})
 			require.NoError(t, err)
 			require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
@@ -75,19 +75,19 @@ func TestMealPlanOptionVotes_CompleteLifecycle(T *testing.T) {
 			createdMealPlanOptionVote.Update(updateInput)
 
 			_, err = userClient.UpdateMealPlanOptionVote(ctx, &mealplanninggrpc.UpdateMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 				Input:                converters.ConvertMealPlanOptionVoteUpdateRequestInputToGRPCMealPlanOptionVoteUpdateRequestInput(updateInput),
 			})
 			assert.NoError(t, err)
 
 			actualRes, err := userClient.GetMealPlanOptionVote(ctx, &mealplanninggrpc.GetMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 			})
 			require.NoError(t, err)
 
@@ -98,28 +98,28 @@ func TestMealPlanOptionVotes_CompleteLifecycle(T *testing.T) {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			_, err = userClient.ArchiveMealPlanOptionVote(ctx, &mealplanninggrpc.ArchiveMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 			})
 			assert.NoError(t, err)
 		}
 
 		_, err := userClient.ArchiveMealPlanOption(ctx, &mealplanninggrpc.ArchiveMealPlanOptionRequest{
-			MealPlanID:       createdMealPlan.ID,
-			MealPlanEventID:  createdMealPlanEvent.ID,
-			MealPlanOptionID: createdMealPlanOption.ID,
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanEventId:  createdMealPlanEvent.ID,
+			MealPlanOptionId: createdMealPlanOption.ID,
 		})
 		require.NoError(t, err)
 
 		_, err = userClient.ArchiveMealPlanEvent(ctx, &mealplanninggrpc.ArchiveMealPlanEventRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 		})
 		require.NoError(t, err)
 
-		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		require.NoError(t, err)
 	})
 }
@@ -145,8 +145,8 @@ func TestMealPlanOptionVotes_Listing(T *testing.T) {
 		exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 		exampleMealPlanOptionVoteInput := mpconverters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVote)
 		createdMealPlanOptionVotesRes, createErr := userClient.CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVoteInput),
 		})
 		require.NoError(t, createErr)
@@ -160,10 +160,10 @@ func TestMealPlanOptionVotes_Listing(T *testing.T) {
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
 			retrievedMealPlanOptionVoteRes, err := userClient.GetMealPlanOptionVote(ctx, &mealplanninggrpc.GetMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 			})
 			require.NoError(t, err)
 
@@ -175,36 +175,36 @@ func TestMealPlanOptionVotes_Listing(T *testing.T) {
 			// assert meal plan option vote list equality
 			actual, err := userClient.GetMealPlanOptionVotes(ctx, &mealplanninggrpc.GetMealPlanOptionVotesRequest{
 				Filter:           nil,
-				MealPlanID:       createdMealPlan.ID,
-				MealPlanEventID:  createdMealPlanEvent.ID,
-				MealPlanOptionID: createdMealPlanOption.ID,
+				MealPlanId:       createdMealPlan.ID,
+				MealPlanEventId:  createdMealPlanEvent.ID,
+				MealPlanOptionId: createdMealPlanOption.ID,
 			})
 			require.NoError(t, err)
 			assert.NotEmpty(t, actual.Results)
 
 			_, err = userClient.ArchiveMealPlanOptionVote(ctx, &mealplanninggrpc.ArchiveMealPlanOptionVoteRequest{
-				MealPlanID:           createdMealPlan.ID,
-				MealPlanEventID:      createdMealPlanEvent.ID,
-				MealPlanOptionID:     createdMealPlanOption.ID,
-				MealPlanOptionVoteID: createdMealPlanOptionVote.ID,
+				MealPlanId:           createdMealPlan.ID,
+				MealPlanEventId:      createdMealPlanEvent.ID,
+				MealPlanOptionId:     createdMealPlanOption.ID,
+				MealPlanOptionVoteId: createdMealPlanOptionVote.ID,
 			})
 			assert.NoError(t, err)
 		}
 
 		_, err := userClient.ArchiveMealPlanOption(ctx, &mealplanninggrpc.ArchiveMealPlanOptionRequest{
-			MealPlanID:       createdMealPlan.ID,
-			MealPlanEventID:  createdMealPlanEvent.ID,
-			MealPlanOptionID: createdMealPlanOption.ID,
+			MealPlanId:       createdMealPlan.ID,
+			MealPlanEventId:  createdMealPlanEvent.ID,
+			MealPlanOptionId: createdMealPlanOption.ID,
 		})
 		assert.NoError(t, err)
 
 		_, err = userClient.ArchiveMealPlanEvent(ctx, &mealplanninggrpc.ArchiveMealPlanEventRequest{
-			MealPlanID:      createdMealPlan.ID,
-			MealPlanEventID: createdMealPlanEvent.ID,
+			MealPlanId:      createdMealPlan.ID,
+			MealPlanEventId: createdMealPlanEvent.ID,
 		})
 		require.NoError(t, err)
 
-		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 		assert.NoError(t, err)
 	})
 }

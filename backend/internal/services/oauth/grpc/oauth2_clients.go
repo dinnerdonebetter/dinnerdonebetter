@@ -17,13 +17,13 @@ func (s *serviceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := s.oauthDataManager.ArchiveOAuth2Client(ctx, request.OAuth2ClientID); err != nil {
+	if err := s.oauthDataManager.ArchiveOAuth2Client(ctx, request.Oauth2ClientId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "archiving oauth2 client")
 	}
 
 	x := &oauthsvc.ArchiveOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 	}
 
@@ -45,7 +45,7 @@ func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 
 	x := &oauthsvc.CreateOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Created: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(created),
 	}
@@ -57,16 +57,16 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.OAuth2ClientID)
+	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.Oauth2ClientId)
 
-	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.OAuth2ClientID)
+	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.Oauth2ClientId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}
 
 	x := &oauthsvc.GetOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Result: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(oauth2Client),
 	}
@@ -88,7 +88,7 @@ func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 
 	x := &oauthsvc.GetOAuth2ClientsResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
+			TraceId: span.SpanContext().TraceID().String(),
 		},
 		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(oauth2Clients.Pagination, filter),
 	}

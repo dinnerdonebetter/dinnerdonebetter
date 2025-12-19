@@ -129,7 +129,6 @@ func TestRecipe_Update(T *testing.T) {
 		input := &RecipeUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.SealOfApproval = pointer.To(true)
 		input.EligibleForMeals = pointer.To(true)
 
 		x.Update(input)
@@ -164,7 +163,6 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			SealOfApproval:    fake.Bool(),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
@@ -208,7 +206,6 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			SealOfApproval:    fake.Bool(),
 			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
@@ -318,7 +315,6 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 			Source:             pointer.To(t.Name()),
 			Description:        pointer.To(t.Name()),
 			InspiredByRecipeID: pointer.To(t.Name()),
-			SealOfApproval:     pointer.To(fake.Bool()),
 			EstimatedPortions:  types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
 		}
 

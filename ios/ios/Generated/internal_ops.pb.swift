@@ -21,39 +21,39 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// PublishArbitraryQueueMessage
-struct Internalops_PublishArbitraryQueueMessageRequest: Sendable {
+public struct Internalops_PublishArbitraryQueueMessageRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var queueName: String = String()
+  public var queueName: String = String()
 
-  var body: String = String()
+  public var body: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
+public struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var success: Bool = false
+  public var success: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
@@ -63,10 +63,10 @@ struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
 fileprivate let _protobuf_package = "internalops"
 
 extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}QueueName\0\u{1}Body\0")
+  public static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}queue_name\0\u{1}body\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -79,7 +79,7 @@ extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.queueName.isEmpty {
       try visitor.visitSingularStringField(value: self.queueName, fieldNumber: 1)
     }
@@ -89,7 +89,7 @@ extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Internalops_PublishArbitraryQueueMessageRequest, rhs: Internalops_PublishArbitraryQueueMessageRequest) -> Bool {
+  public static func ==(lhs: Internalops_PublishArbitraryQueueMessageRequest, rhs: Internalops_PublishArbitraryQueueMessageRequest) -> Bool {
     if lhs.queueName != rhs.queueName {return false}
     if lhs.body != rhs.body {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -98,10 +98,10 @@ extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message
 }
 
 extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Success\0")
+  public static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}success\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -114,7 +114,7 @@ extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Messag
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -128,7 +128,7 @@ extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Internalops_PublishArbitraryQueueMessageResponse, rhs: Internalops_PublishArbitraryQueueMessageResponse) -> Bool {
+  public static func ==(lhs: Internalops_PublishArbitraryQueueMessageResponse, rhs: Internalops_PublishArbitraryQueueMessageResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.success != rhs.success {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

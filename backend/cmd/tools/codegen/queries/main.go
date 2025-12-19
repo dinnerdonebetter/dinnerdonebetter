@@ -36,6 +36,7 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_vessels.sql":                                buildValidVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_groups.sql":                      buildValidIngredientGroupsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_preparations.sql":                buildValidIngredientPreparationsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_prep_task_configs.sql":                      buildValidPrepTaskConfigsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_preparation_vessels.sql":                    buildValidPreparationVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_measurement_units.sql":           buildValidIngredientMeasurementUnitsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_measurement_unit_conversions.sql":           buildValidMeasurementUnitConversionsQueries(databaseToUse),
@@ -56,6 +57,8 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_options.sql":                            buildMealPlanOptionsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_tasks.sql":                              buildMealPlanTasksQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipes.sql":                                      buildRecipesQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_lists.sql":                                 buildRecipeListsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_lists.sql":                                   buildMealListsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_products.sql":                         buildRecipeStepProductsQueries(databaseToUse),
@@ -63,6 +66,8 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/meal_list_items.sql":                              buildMealListItemsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/recipe_list_items.sql":                            buildRecipeListItemsQueries(databaseToUse),
 		"internal/repositories/postgres/oauth/sqlc_queries/oauth2_client_tokens.sql":                                buildOAuth2ClientTokensQueries(databaseToUse),
 		"internal/repositories/postgres/oauth/sqlc_queries/oauth2_clients.sql":                                      buildOAuth2ClientsQueries(databaseToUse),
 		"internal/repositories/postgres/identity/sqlc_queries/account_invitations.sql":                              buildAccountInvitationsQueries(databaseToUse),
@@ -77,6 +82,10 @@ func main() {
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhooks.sql":                                         buildWebhooksQueries(databaseToUse),
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhook_trigger_events.sql":                           buildWebhookTriggerEventsQueries(databaseToUse),
 		"internal/repositories/postgres/notifications/sqlc_queries/user_notifications.sql":                          buildUserNotificationQueries(databaseToUse),
+		"internal/repositories/postgres/waitlists/sqlc_queries/waitlists.sql":                                       buildWaitlistsQueries(databaseToUse),
+		"internal/repositories/postgres/waitlists/sqlc_queries/waitlist_signups.sql":                                buildWaitlistSignupsQueries(databaseToUse),
+		"internal/repositories/postgres/issuereports/sqlc_queries/issue_reports.sql":                                buildIssueReportsQueries(databaseToUse),
+		"internal/repositories/postgres/uploadedmedia/sqlc_queries/uploaded_media.sql":                              buildUploadedMediaQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

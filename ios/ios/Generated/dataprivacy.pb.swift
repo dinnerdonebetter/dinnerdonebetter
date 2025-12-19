@@ -21,171 +21,171 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// AggregateUserDataReport
-struct Dataprivacy_AggregateUserDataReportRequest: Sendable {
+public struct Dataprivacy_AggregateUserDataReportRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Dataprivacy_AggregateUserDataReportResponse: Sendable {
+public struct Dataprivacy_AggregateUserDataReportResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var reportID: String = String()
+  public var reportID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// DestroyAllUserData
-struct Dataprivacy_DestroyAllUserDataRequest: Sendable {
+public struct Dataprivacy_DestroyAllUserDataRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Dataprivacy_DestroyAllUserDataResponse: Sendable {
+public struct Dataprivacy_DestroyAllUserDataResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _responseDetails ?? Common_ResponseDetails()}
     set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return self._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {self._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
-  var successful: Bool = false
+  public var successful: Bool = false
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
 /// FetchUserDataReport
-struct Dataprivacy_FetchUserDataReportRequest: Sendable {
+public struct Dataprivacy_FetchUserDataReportRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var userDataAggregationReportID: String = String()
+  public var userDataAggregationReportID: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
-struct Dataprivacy_FetchUserDataReportResponse: @unchecked Sendable {
+public struct Dataprivacy_FetchUserDataReportResponse: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var responseDetails: Common_ResponseDetails {
+  public var responseDetails: Common_ResponseDetails {
     get {return _storage._responseDetails ?? Common_ResponseDetails()}
     set {_uniqueStorage()._responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  var hasResponseDetails: Bool {return _storage._responseDetails != nil}
+  public var hasResponseDetails: Bool {return _storage._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  mutating func clearResponseDetails() {_uniqueStorage()._responseDetails = nil}
+  public mutating func clearResponseDetails() {_uniqueStorage()._responseDetails = nil}
 
-  var userDataCollection: Dataprivacy_UserDataCollection {
+  public var userDataCollection: Dataprivacy_UserDataCollection {
     get {return _storage._userDataCollection ?? Dataprivacy_UserDataCollection()}
     set {_uniqueStorage()._userDataCollection = newValue}
   }
   /// Returns true if `userDataCollection` has been explicitly set.
-  var hasUserDataCollection: Bool {return _storage._userDataCollection != nil}
+  public var hasUserDataCollection: Bool {return _storage._userDataCollection != nil}
   /// Clears the value of `userDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearUserDataCollection() {_uniqueStorage()._userDataCollection = nil}
+  public mutating func clearUserDataCollection() {_uniqueStorage()._userDataCollection = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct Dataprivacy_UserDataCollection: Sendable {
+public struct Dataprivacy_UserDataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var reportID: String = String()
+  public var reportID: String = String()
 
-  var identityDataCollection: Identity_DataCollection {
+  public var identityDataCollection: Identity_DataCollection {
     get {return _identityDataCollection ?? Identity_DataCollection()}
     set {_identityDataCollection = newValue}
   }
   /// Returns true if `identityDataCollection` has been explicitly set.
-  var hasIdentityDataCollection: Bool {return self._identityDataCollection != nil}
+  public var hasIdentityDataCollection: Bool {return self._identityDataCollection != nil}
   /// Clears the value of `identityDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearIdentityDataCollection() {self._identityDataCollection = nil}
+  public mutating func clearIdentityDataCollection() {self._identityDataCollection = nil}
 
-  var auditDataCollection: Audit_DataCollection {
+  public var auditDataCollection: Audit_DataCollection {
     get {return _auditDataCollection ?? Audit_DataCollection()}
     set {_auditDataCollection = newValue}
   }
   /// Returns true if `auditDataCollection` has been explicitly set.
-  var hasAuditDataCollection: Bool {return self._auditDataCollection != nil}
+  public var hasAuditDataCollection: Bool {return self._auditDataCollection != nil}
   /// Clears the value of `auditDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearAuditDataCollection() {self._auditDataCollection = nil}
+  public mutating func clearAuditDataCollection() {self._auditDataCollection = nil}
 
-  var settingsDataCollection: Settings_DataCollection {
+  public var settingsDataCollection: Settings_DataCollection {
     get {return _settingsDataCollection ?? Settings_DataCollection()}
     set {_settingsDataCollection = newValue}
   }
   /// Returns true if `settingsDataCollection` has been explicitly set.
-  var hasSettingsDataCollection: Bool {return self._settingsDataCollection != nil}
+  public var hasSettingsDataCollection: Bool {return self._settingsDataCollection != nil}
   /// Clears the value of `settingsDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearSettingsDataCollection() {self._settingsDataCollection = nil}
+  public mutating func clearSettingsDataCollection() {self._settingsDataCollection = nil}
 
-  var webhooksDataCollection: Webhooks_DataCollection {
+  public var webhooksDataCollection: Webhooks_DataCollection {
     get {return _webhooksDataCollection ?? Webhooks_DataCollection()}
     set {_webhooksDataCollection = newValue}
   }
   /// Returns true if `webhooksDataCollection` has been explicitly set.
-  var hasWebhooksDataCollection: Bool {return self._webhooksDataCollection != nil}
+  public var hasWebhooksDataCollection: Bool {return self._webhooksDataCollection != nil}
   /// Clears the value of `webhooksDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearWebhooksDataCollection() {self._webhooksDataCollection = nil}
+  public mutating func clearWebhooksDataCollection() {self._webhooksDataCollection = nil}
 
-  var mealPlanningDataCollection: Mealplanning_DataCollection {
+  public var mealPlanningDataCollection: Mealplanning_DataCollection {
     get {return _mealPlanningDataCollection ?? Mealplanning_DataCollection()}
     set {_mealPlanningDataCollection = newValue}
   }
   /// Returns true if `mealPlanningDataCollection` has been explicitly set.
-  var hasMealPlanningDataCollection: Bool {return self._mealPlanningDataCollection != nil}
+  public var hasMealPlanningDataCollection: Bool {return self._mealPlanningDataCollection != nil}
   /// Clears the value of `mealPlanningDataCollection`. Subsequent reads from it will return its default value.
-  mutating func clearMealPlanningDataCollection() {self._mealPlanningDataCollection = nil}
+  public mutating func clearMealPlanningDataCollection() {self._mealPlanningDataCollection = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _identityDataCollection: Identity_DataCollection? = nil
   fileprivate var _auditDataCollection: Audit_DataCollection? = nil
@@ -199,29 +199,29 @@ struct Dataprivacy_UserDataCollection: Sendable {
 fileprivate let _protobuf_package = "dataprivacy"
 
 extension Dataprivacy_AggregateUserDataReportRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".AggregateUserDataReportRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let protoMessageName: String = _protobuf_package + ".AggregateUserDataReportRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     // Load everything into unknown fields
     while try decoder.nextFieldNumber() != nil {}
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_AggregateUserDataReportRequest, rhs: Dataprivacy_AggregateUserDataReportRequest) -> Bool {
+  public static func ==(lhs: Dataprivacy_AggregateUserDataReportRequest, rhs: Dataprivacy_AggregateUserDataReportRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
 extension Dataprivacy_AggregateUserDataReportResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".AggregateUserDataReportResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}ReportID\0")
+  public static let protoMessageName: String = _protobuf_package + ".AggregateUserDataReportResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}report_id\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -234,7 +234,7 @@ extension Dataprivacy_AggregateUserDataReportResponse: SwiftProtobuf.Message, Sw
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -248,7 +248,7 @@ extension Dataprivacy_AggregateUserDataReportResponse: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_AggregateUserDataReportResponse, rhs: Dataprivacy_AggregateUserDataReportResponse) -> Bool {
+  public static func ==(lhs: Dataprivacy_AggregateUserDataReportResponse, rhs: Dataprivacy_AggregateUserDataReportResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.reportID != rhs.reportID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -257,29 +257,29 @@ extension Dataprivacy_AggregateUserDataReportResponse: SwiftProtobuf.Message, Sw
 }
 
 extension Dataprivacy_DestroyAllUserDataRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DestroyAllUserDataRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  public static let protoMessageName: String = _protobuf_package + ".DestroyAllUserDataRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     // Load everything into unknown fields
     while try decoder.nextFieldNumber() != nil {}
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_DestroyAllUserDataRequest, rhs: Dataprivacy_DestroyAllUserDataRequest) -> Bool {
+  public static func ==(lhs: Dataprivacy_DestroyAllUserDataRequest, rhs: Dataprivacy_DestroyAllUserDataRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
 extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DestroyAllUserDataResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}Successful\0")
+  public static let protoMessageName: String = _protobuf_package + ".DestroyAllUserDataResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}successful\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -292,7 +292,7 @@ extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -306,7 +306,7 @@ extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_DestroyAllUserDataResponse, rhs: Dataprivacy_DestroyAllUserDataResponse) -> Bool {
+  public static func ==(lhs: Dataprivacy_DestroyAllUserDataResponse, rhs: Dataprivacy_DestroyAllUserDataResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.successful != rhs.successful {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -315,10 +315,10 @@ extension Dataprivacy_DestroyAllUserDataResponse: SwiftProtobuf.Message, SwiftPr
 }
 
 extension Dataprivacy_FetchUserDataReportRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportRequest"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}UserDataAggregationReportID\0")
+  public static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_data_aggregation_report_id\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -330,14 +330,14 @@ extension Dataprivacy_FetchUserDataReportRequest: SwiftProtobuf.Message, SwiftPr
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.userDataAggregationReportID.isEmpty {
       try visitor.visitSingularStringField(value: self.userDataAggregationReportID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_FetchUserDataReportRequest, rhs: Dataprivacy_FetchUserDataReportRequest) -> Bool {
+  public static func ==(lhs: Dataprivacy_FetchUserDataReportRequest, rhs: Dataprivacy_FetchUserDataReportRequest) -> Bool {
     if lhs.userDataAggregationReportID != rhs.userDataAggregationReportID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -345,8 +345,8 @@ extension Dataprivacy_FetchUserDataReportRequest: SwiftProtobuf.Message, SwiftPr
 }
 
 extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportResponse"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ResponseDetails\0\u{1}UserDataCollection\0")
+  public static let protoMessageName: String = _protobuf_package + ".FetchUserDataReportResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{3}user_data_collection\0")
 
   fileprivate class _StorageClass {
     var _responseDetails: Common_ResponseDetails? = nil
@@ -373,7 +373,7 @@ extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftP
     return _storage
   }
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
@@ -389,7 +389,7 @@ extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftP
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every if/case branch local when no optimizations
@@ -405,7 +405,7 @@ extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_FetchUserDataReportResponse, rhs: Dataprivacy_FetchUserDataReportResponse) -> Bool {
+  public static func ==(lhs: Dataprivacy_FetchUserDataReportResponse, rhs: Dataprivacy_FetchUserDataReportResponse) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
@@ -422,10 +422,10 @@ extension Dataprivacy_FetchUserDataReportResponse: SwiftProtobuf.Message, SwiftP
 }
 
 extension Dataprivacy_UserDataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UserDataCollection"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ReportID\0\u{1}IdentityDataCollection\0\u{1}AuditDataCollection\0\u{1}SettingsDataCollection\0\u{1}WebhooksDataCollection\0\u{1}MealPlanningDataCollection\0")
+  public static let protoMessageName: String = _protobuf_package + ".UserDataCollection"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}report_id\0\u{3}identity_data_collection\0\u{3}audit_data_collection\0\u{3}settings_data_collection\0\u{3}webhooks_data_collection\0\u{3}meal_planning_data_collection\0")
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -442,7 +442,7 @@ extension Dataprivacy_UserDataCollection: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -468,7 +468,7 @@ extension Dataprivacy_UserDataCollection: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Dataprivacy_UserDataCollection, rhs: Dataprivacy_UserDataCollection) -> Bool {
+  public static func ==(lhs: Dataprivacy_UserDataCollection, rhs: Dataprivacy_UserDataCollection) -> Bool {
     if lhs.reportID != rhs.reportID {return false}
     if lhs._identityDataCollection != rhs._identityDataCollection {return false}
     if lhs._auditDataCollection != rhs._auditDataCollection {return false}

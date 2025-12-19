@@ -45,7 +45,7 @@ func (s *AdminFrontendServer) ValidPreparationCreate(res http.ResponseWriter, re
 	}
 
 	// Redirect to the newly created valid preparation's page
-	preparationID := createRes.Result.ID
+	preparationID := createRes.Result.Id
 	http.Redirect(res, req, fmt.Sprintf("/valid_preparations/%s", preparationID), http.StatusSeeOther)
 
 	return g.El("div"), nil
@@ -153,7 +153,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 		return page("Valid Preparations", s.renderValidPreparationsError("Error: No valid preparation ID provided")), nil
 	}
 
-	validPreparationRes, err := c.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationID: validPreparationID})
+	validPreparationRes, err := c.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: validPreparationID})
 	if err != nil {
 		return page("Valid Preparations", s.renderValidPreparationsError(fmt.Sprintf("Error loading valid preparation: %v", err))), nil
 	}
@@ -189,7 +189,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 		FormOptions: &components.FormOptions[*mealplanningsvc.ValidPreparation]{
 			Palette: &design.StandardPalette,
 			FormID:  "view-valid-preparation-form",
-			Action:  fmt.Sprintf("/api/valid_preparations/%s", validPreparation.ID),
+			Action:  fmt.Sprintf("/api/valid_preparations/%s", validPreparation.Id),
 			Method:  "PUT",
 
 			// Fields that can be edited
@@ -350,7 +350,7 @@ func (s *AdminFrontendServer) ValidPreparationsList(_ http.ResponseWriter, req *
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidPreparation) string {
-			return fmt.Sprintf("/valid_preparations/%s", data.ID)
+			return fmt.Sprintf("/valid_preparations/%s", data.Id)
 		},
 		EmptyStateTitle:       "No valid preparations found",
 		EmptyStateDescription: "No valid preparations have been created yet.",
@@ -454,7 +454,7 @@ func (s *AdminFrontendServer) ValidPreparationsSearch(_ http.ResponseWriter, req
 			},
 		},
 		RowLinkGenerator: func(data *mealplanningsvc.ValidPreparation) string {
-			return fmt.Sprintf("/valid_preparations/%s", data.ID)
+			return fmt.Sprintf("/valid_preparations/%s", data.Id)
 		},
 	})
 	if err != nil {

@@ -100,6 +100,15 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateValidPrepTaskConfigsPermission is a permission.
+	CreateValidPrepTaskConfigsPermission Permission = "create.valid_prep_task_configs"
+	// ReadValidPrepTaskConfigsPermission is a permission.
+	ReadValidPrepTaskConfigsPermission Permission = "read.valid_prep_task_configs"
+	// UpdateValidPrepTaskConfigsPermission is a permission.
+	UpdateValidPrepTaskConfigsPermission Permission = "update.valid_prep_task_configs"
+	// ArchiveValidPrepTaskConfigsPermission is a permission.
+	ArchiveValidPrepTaskConfigsPermission Permission = "archive.valid_prep_task_configs"
+
 	// CreateValidIngredientStateIngredientsPermission is a permission.
 	CreateValidIngredientStateIngredientsPermission Permission = "create.valid_ingredient_state_ingredients"
 	// ReadValidIngredientStateIngredientsPermission is a permission.
@@ -163,6 +172,8 @@ const (
 	SearchRecipesPermission Permission = "search.recipes"
 	// UpdateRecipesPermission is a permission.
 	UpdateRecipesPermission Permission = "update.recipes"
+	// UpdateRecipesStatusPermission is a permission.
+	UpdateRecipesStatusPermission Permission = "update.recipe_status"
 	// ArchiveRecipesPermission is a permission.
 	ArchiveRecipesPermission Permission = "archive.recipes"
 
@@ -299,6 +310,24 @@ const (
 	// UpdateMealPlanTasksPermission is a permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
 
+	// CreateMealListsPermission is a permission.
+	CreateMealListsPermission Permission = "create.meal_lists"
+	// ReadMealListsPermission is a permission.
+	ReadMealListsPermission Permission = "read.meal_lists"
+	// UpdateMealListsPermission is a permission.
+	UpdateMealListsPermission Permission = "update.meal_lists"
+	// ArchiveMealListsPermission is a permission.
+	ArchiveMealListsPermission Permission = "archive.meal_lists"
+
+	// CreateRecipeListsPermission is a permission.
+	CreateRecipeListsPermission Permission = "create.recipe_lists"
+	// ReadRecipeListsPermission is a permission.
+	ReadRecipeListsPermission Permission = "read.recipe_lists"
+	// UpdateRecipeListsPermission is a permission.
+	UpdateRecipeListsPermission Permission = "update.recipe_lists"
+	// ArchiveRecipeListsPermission is a permission.
+	ArchiveRecipeListsPermission Permission = "archive.recipe_lists"
+
 	// CreateUserIngredientPreferencesPermission is a permission.
 	CreateUserIngredientPreferencesPermission Permission = "create.user_ingredient_preferences"
 	// ReadUserIngredientPreferencesPermission is a permission.
@@ -373,6 +402,10 @@ var (
 		SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission,
+		CreateValidPrepTaskConfigsPermission,
+		ReadValidPrepTaskConfigsPermission,
+		UpdateValidPrepTaskConfigsPermission,
+		ArchiveValidPrepTaskConfigsPermission,
 		CreateValidIngredientStateIngredientsPermission,
 		ReadValidIngredientStateIngredientsPermission,
 		SearchValidIngredientStateIngredientsPermission,

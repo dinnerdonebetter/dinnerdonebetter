@@ -7,12 +7,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
@@ -99,15 +101,16 @@ func TestRecipeManager_ListRecipes(T *testing.T) {
 		rm := buildRecipeManagerForTest(t)
 
 		expected := fakes.BuildFakeRecipesList()
+		status := types.RecipeStatusSubmitted
 
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
-				db.On(reflection.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+				db.On(reflection.GetMethodName(rm.db.GetRecipes), testutils.ContextMatcher, status, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
 		)
 
-		actual, err := rm.ListRecipes(ctx, nil)
+		actual, err := rm.ListRecipes(ctx, status, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -363,6 +366,246 @@ func TestRecipeManager_CloneRecipe(T *testing.T) {
 		actual, err := rm.CloneRecipe(ctx, expected.ID, exampleOwnerID)
 		assert.NoError(t, err)
 		assert.Equal(t, cloned, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_ListRecipeLists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		recipeList := &types.RecipeList{
+			ID:            fakes.BuildFakeID(),
+			Name:          t.Name(),
+			Description:   t.Name(),
+			BelongsToUser: fakes.BuildFakeID(),
+		}
+		expected := &filtering.QueryFilteredResult[types.RecipeList]{Data: []*types.RecipeList{recipeList}}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.GetRecipeLists), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := rm.ListRecipeLists(ctx, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_CreateRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		userID := fakes.BuildFakeID()
+		input := &types.RecipeListCreationRequestInput{
+			Name:        t.Name(),
+			Description: t.Name(),
+		}
+		expected := &types.RecipeList{ID: fakes.BuildFakeID(), Name: input.Name, Description: input.Description, BelongsToUser: userID}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeList), testutils.ContextMatcher, testutils.MatchType[*types.RecipeListDatabaseCreationInput]()).Return(expected, nil)
+			},
+		)
+
+		actual, err := rm.CreateRecipeList(ctx, userID, input)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_ArchiveRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		userID := fakes.BuildFakeID()
+		listID := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeList), testutils.ContextMatcher, listID, userID).Return(nil)
+			},
+		)
+
+		assert.NoError(t, rm.ArchiveRecipeList(ctx, listID, userID))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_UpdateRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		listID := fakes.BuildFakeID()
+		userID := fakes.BuildFakeID()
+		name := t.Name()
+		desc := "desc"
+		input := &types.RecipeListUpdateRequestInput{
+			Name:        &name,
+			Description: &desc,
+		}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeList), testutils.ContextMatcher, testutils.MatchType[*types.RecipeList]()).Return(nil)
+			},
+		)
+
+		assert.NoError(t, rm.UpdateRecipeList(ctx, listID, userID, input))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_UpdateRecipeListItem(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		itemID := fakes.BuildFakeID()
+		listID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		notes := pointer.To(t.Name())
+		input := &types.RecipeListItemUpdateRequestInput{
+			Notes: notes,
+		}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.UpdateRecipeListItem), testutils.ContextMatcher, testutils.MatchType[*types.RecipeListItem]()).Return(nil)
+			},
+		)
+
+		assert.NoError(t, rm.UpdateRecipeListItem(ctx, itemID, listID, recipeID, input))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_AddRecipeToRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		listID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		expected := &types.RecipeListItem{
+			ID:                  fakes.BuildFakeID(),
+			BelongsToRecipeList: listID,
+			Notes:               t.Name(),
+			Recipe:              types.Recipe{ID: recipeID},
+		}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.CreateRecipeListItem), testutils.ContextMatcher, testutils.MatchType[*types.RecipeListItemDatabaseCreationInput]()).Return(expected, nil)
+			},
+		)
+
+		actual, err := rm.AddRecipeToRecipeList(ctx, listID, recipeID, expected.Notes)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_RemoveRecipeFromRecipeList(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		listID := fakes.BuildFakeID()
+		itemID := fakes.BuildFakeID()
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.ArchiveRecipeListItem), testutils.ContextMatcher, itemID, listID).Return(nil)
+			},
+		)
+
+		assert.NoError(t, rm.RemoveRecipeFromRecipeList(ctx, listID, itemID))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
+	})
+}
+
+func TestRecipeManager_ListRecipeListItems(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		listID := fakes.BuildFakeID()
+		expectedItem := &types.RecipeListItem{
+			ID:                  fakes.BuildFakeID(),
+			BelongsToRecipeList: listID,
+			Notes:               t.Name(),
+			Recipe:              types.Recipe{ID: fakes.BuildFakeID()},
+		}
+		expected := &filtering.QueryFilteredResult[types.RecipeListItem]{Data: []*types.RecipeListItem{expectedItem}}
+
+		expectations := setupExpectationsForRecipeManager(
+			rm,
+			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.GetRecipeListItems), testutils.ContextMatcher, listID, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, err := rm.ListRecipeListItems(ctx, listID, nil)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

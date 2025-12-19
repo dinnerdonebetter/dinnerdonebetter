@@ -45,7 +45,7 @@ func createValidInstrumentForTest(t *testing.T) *mealplanning.ValidInstrument {
 	checkValidInstrumentEquality(t, exampleValidInstrument, converted)
 
 	retrieved, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{
-		ValidInstrumentID: converted.ID,
+		ValidInstrumentId: converted.ID,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, retrieved)
@@ -124,7 +124,7 @@ func TestValidInstruments_Reading(T *testing.T) {
 
 		created := createValidInstrumentForTest(t)
 
-		retrieved, err := testClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentID: created.ID})
+		retrieved, err := testClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.NoError(t, err)
 
 		converted := grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(retrieved.Result)
@@ -140,7 +140,7 @@ func TestValidInstruments_Reading(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentID: created.ID})
+		_, err := c.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -148,7 +148,7 @@ func TestValidInstruments_Reading(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentID: nonexistentID})
+		_, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: nonexistentID})
 		assert.Error(t, err)
 	})
 }
@@ -166,7 +166,7 @@ func TestValidInstruments_Updating(T *testing.T) {
 		created.Update(updateInput)
 
 		response, err := adminClient.UpdateValidInstrument(ctx, &mealplanningsvc.UpdateValidInstrumentRequest{
-			ValidInstrumentID: created.ID,
+			ValidInstrumentId: created.ID,
 			Input:             grpcconverters.ConvertValidInstrumentUpdateRequestInputToGRPCValidInstrumentUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
@@ -190,7 +190,7 @@ func TestValidInstruments_Updating(T *testing.T) {
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidInstrument(ctx, &mealplanningsvc.UpdateValidInstrumentRequest{
-			ValidInstrumentID: created.ID,
+			ValidInstrumentId: created.ID,
 			Input:             grpcconverters.ConvertValidInstrumentUpdateRequestInputToGRPCValidInstrumentUpdateRequestInput(updateInput),
 		})
 		assert.Error(t, err)
@@ -214,7 +214,7 @@ func TestValidInstruments_Updating(T *testing.T) {
 		created := createValidInstrumentForTest(t)
 
 		response, err := testClient.UpdateValidInstrument(ctx, &mealplanningsvc.UpdateValidInstrumentRequest{
-			ValidInstrumentID: created.ID,
+			ValidInstrumentId: created.ID,
 			Input: &mealplanningsvc.ValidInstrumentUpdateRequestInput{
 				Name: pointer.To("doesn't matter"),
 			},
@@ -233,10 +233,10 @@ func TestValidInstruments_Archiving(T *testing.T) {
 
 		created := createValidInstrumentForTest(t)
 
-		_, err := adminClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentID: created.ID})
+		_, err := adminClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.NoError(t, err)
 
-		x, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentID: created.ID})
+		x, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})
@@ -249,7 +249,7 @@ func TestValidInstruments_Archiving(T *testing.T) {
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 
-		_, err := c.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentID: created.ID})
+		_, err := c.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.Error(t, err)
 	})
 
@@ -257,7 +257,7 @@ func TestValidInstruments_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, err := adminClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentID: nonexistentID})
+		_, err := adminClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -268,7 +268,7 @@ func TestValidInstruments_Archiving(T *testing.T) {
 		created := createValidInstrumentForTest(t)
 		_, testClient := createUserAndClientForTest(T)
 
-		_, err := testClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentID: created.ID})
+		_, err := testClient.ArchiveValidInstrument(ctx, &mealplanningsvc.ArchiveValidInstrumentRequest{ValidInstrumentId: created.ID})
 		assert.Error(t, err)
 	})
 }

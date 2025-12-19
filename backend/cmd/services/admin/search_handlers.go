@@ -59,7 +59,7 @@ func (s *AdminFrontendServer) SearchValidMeasurementUnits(_ http.ResponseWriter,
 		}
 
 		results = append(results, &components.SearchResultItem{
-			ID:          unit.ID,
+			ID:          unit.Id,
 			Name:        unit.Name,
 			Description: unit.Description,
 			ExtraInfo:   extraInfo,
@@ -123,7 +123,7 @@ func (s *AdminFrontendServer) SearchValidIngredients(_ http.ResponseWriter, req 
 	var results []*components.SearchResultItem
 	for _, ingredient := range searchRes.Results {
 		results = append(results, &components.SearchResultItem{
-			ID:          ingredient.ID,
+			ID:          ingredient.Id,
 			Name:        ingredient.Name,
 			Description: ingredient.Description,
 		})

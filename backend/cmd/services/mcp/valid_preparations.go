@@ -52,7 +52,7 @@ var getValidPreparationTool = &mcp.Tool{
 func (h *mcpToolManager) GetValidPreparation() mcp.ToolHandlerFor[*GetValidPreparationInvocation, *mealplanning.ValidPreparation] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *GetValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
 		result, err := h.client.GetValidPreparation(ctx, &mealplanninggrpc.GetValidPreparationRequest{
-			ValidPreparationID: x.ValidPreparationID,
+			ValidPreparationId: x.ValidPreparationID,
 		})
 		if err != nil {
 			return nil, nil, err
@@ -181,7 +181,7 @@ var validPreparationUpdateTool = &mcp.Tool{
 func (h *mcpToolManager) UpdateValidPreparation() mcp.ToolHandlerFor[*UpdateValidPreparationInvocation, *mealplanning.ValidPreparation] {
 	return func(ctx context.Context, _ *mcp.CallToolRequest, x *UpdateValidPreparationInvocation) (*mcp.CallToolResult, *mealplanning.ValidPreparation, error) {
 		result, err := h.client.UpdateValidPreparation(ctx, &mealplanninggrpc.UpdateValidPreparationRequest{
-			ValidPreparationID: x.ValidPreparationID,
+			ValidPreparationId: x.ValidPreparationID,
 			Input:              mealplanningconverters.ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x.ValidPreparationUpdateRequestInput),
 		})
 		if err != nil {

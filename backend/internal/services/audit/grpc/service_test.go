@@ -203,7 +203,7 @@ func TestServiceImpl_GetAuditLogEntryByID(t *testing.T) {
 		mockRepo.On("GetAuditLogEntry", testutils.ContextMatcher, entryID).Return(fakeAuditLogEntry, nil)
 
 		request := &auditsvc.GetAuditLogEntryByIDRequest{
-			AuditLogEntryID: entryID,
+			AuditLogEntryId: entryID,
 		}
 
 		response, err := service.GetAuditLogEntryByID(ctx, request)
@@ -212,7 +212,7 @@ func TestServiceImpl_GetAuditLogEntryByID(t *testing.T) {
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, fakeAuditLogEntry.ID, response.Result.ID)
+		assert.Equal(t, fakeAuditLogEntry.ID, response.Result.Id)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
@@ -228,7 +228,7 @@ func TestServiceImpl_GetAuditLogEntryByID(t *testing.T) {
 		mockRepo.On("GetAuditLogEntry", testutils.ContextMatcher, entryID).Return((*audit.AuditLogEntry)(nil), errors.New("repository error"))
 
 		request := &auditsvc.GetAuditLogEntryByIDRequest{
-			AuditLogEntryID: entryID,
+			AuditLogEntryId: entryID,
 		}
 
 		response, err := service.GetAuditLogEntryByID(ctx, request)

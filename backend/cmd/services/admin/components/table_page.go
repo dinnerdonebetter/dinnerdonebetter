@@ -23,16 +23,17 @@ type TablePageProps[T any] struct {
 	SubtitleGenerator     func(metadata TablePageMetadata) string
 	Palette               *design.Palette
 	RowLinkGenerator      func(item T) string
-	HTMXSearchTarget      string
+	EmptyStateTitle       string
 	Title                 string
 	HTMXSearchTrigger     string
 	SearchPlaceholder     string
-	EmptyStateTitle       string
+	HTMXSearchTarget      string
 	EmptyStateDescription string
 	BaseSubtitle          string
 	Actions               []g.Node
 	Data                  []T
 	EmptyStateActions     []g.Node
+	SearchModifiers       []g.Node
 	ShowSearch            bool
 }
 
@@ -104,6 +105,7 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 		HTMXSearchTrigger: props.HTMXSearchTrigger,
 		Actions:           props.Actions,
 		PageSizeSelector:  pageSizeSelector,
+		SearchModifiers:   props.SearchModifiers,
 	},
 		// Wrap table in horizontally scrollable container for HTMX targeting
 		g.El("div",
