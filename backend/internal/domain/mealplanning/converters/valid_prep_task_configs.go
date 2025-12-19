@@ -1,0 +1,68 @@
+package converters
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
+)
+
+// ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput creates a ValidPrepTaskConfigDatabaseCreationInput from a ValidPrepTaskConfigCreationRequestInput.
+func ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput(input *mealplanning.ValidPrepTaskConfigCreationRequestInput) *mealplanning.ValidPrepTaskConfigDatabaseCreationInput {
+	return &mealplanning.ValidPrepTaskConfigDatabaseCreationInput{
+		ID:                          identifiers.New(),
+		StorageDurationInSeconds:    input.StorageDurationInSeconds,
+		StorageTemperatureInCelsius: input.StorageTemperatureInCelsius,
+		StorageType:                 input.StorageType,
+		StorageInstructions:         input.StorageInstructions,
+		Notes:                       input.Notes,
+		Source:                      input.Source,
+		ValidPreparationID:          input.ValidPreparationID,
+		ValidIngredientID:           input.ValidIngredientID,
+	}
+}
+
+// ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput builds a ValidPrepTaskConfigUpdateRequestInput from a ValidPrepTaskConfig.
+func ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
+	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
+		StorageDurationInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+			Min: &validPrepTaskConfig.StorageDurationInSeconds.Min,
+			Max: validPrepTaskConfig.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		StorageType:                 &validPrepTaskConfig.StorageType,
+		StorageInstructions:         &validPrepTaskConfig.StorageInstructions,
+		Notes:                       &validPrepTaskConfig.Notes,
+		Source:                      &validPrepTaskConfig.Source,
+		ValidPreparationID:          &validPrepTaskConfig.Preparation.ID,
+		ValidIngredientID:           &validPrepTaskConfig.Ingredient.ID,
+	}
+}
+
+// ConvertValidPrepTaskConfigToValidPrepTaskConfigCreationRequestInput builds a ValidPrepTaskConfigCreationRequestInput from a ValidPrepTaskConfig.
+func ConvertValidPrepTaskConfigToValidPrepTaskConfigCreationRequestInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigCreationRequestInput {
+	return &mealplanning.ValidPrepTaskConfigCreationRequestInput{
+		StorageDurationInSeconds:    validPrepTaskConfig.StorageDurationInSeconds,
+		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		StorageType:                 validPrepTaskConfig.StorageType,
+		StorageInstructions:         validPrepTaskConfig.StorageInstructions,
+		Notes:                       validPrepTaskConfig.Notes,
+		Source:                      validPrepTaskConfig.Source,
+		ValidPreparationID:          validPrepTaskConfig.Preparation.ID,
+		ValidIngredientID:           validPrepTaskConfig.Ingredient.ID,
+	}
+}
+
+// ConvertValidPrepTaskConfigToValidPrepTaskConfigDatabaseCreationInput builds a ValidPrepTaskConfigDatabaseCreationInput from a ValidPrepTaskConfig.
+func ConvertValidPrepTaskConfigToValidPrepTaskConfigDatabaseCreationInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigDatabaseCreationInput {
+	return &mealplanning.ValidPrepTaskConfigDatabaseCreationInput{
+		ID:                          validPrepTaskConfig.ID,
+		StorageDurationInSeconds:    validPrepTaskConfig.StorageDurationInSeconds,
+		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		StorageType:                 validPrepTaskConfig.StorageType,
+		StorageInstructions:         validPrepTaskConfig.StorageInstructions,
+		Notes:                       validPrepTaskConfig.Notes,
+		Source:                      validPrepTaskConfig.Source,
+		ValidPreparationID:          validPrepTaskConfig.Preparation.ID,
+		ValidIngredientID:           validPrepTaskConfig.Ingredient.ID,
+	}
+}

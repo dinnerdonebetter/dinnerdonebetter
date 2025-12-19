@@ -272,6 +272,31 @@ CREATE TABLE IF NOT EXISTS valid_ingredient_preparations (
     UNIQUE(valid_preparation_id, valid_ingredient_id, archived_at)
 );
 
+CREATE TABLE IF NOT EXISTS valid_prep_task_configs (
+    id TEXT NOT NULL PRIMARY KEY,
+    valid_ingredient_id TEXT NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE,
+    valid_preparation_id TEXT NOT NULL REFERENCES valid_preparations("id") ON DELETE CASCADE,
+    minimum_storage_duration_in_seconds INTEGER NOT NULL,
+    maximum_storage_duration_in_seconds INTEGER,
+    storage_container_type storage_container_type NOT NULL DEFAULT 'covered',
+    minimum_storage_temperature_in_celsius NUMERIC(14,2),
+    maximum_storage_temperature_in_celsius NUMERIC(14,2),
+    storage_instructions TEXT DEFAULT ''::TEXT NOT NULL,
+    notes TEXT DEFAULT ''::TEXT NOT NULL,
+    source TEXT DEFAULT ''::TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    last_updated_at TIMESTAMP WITH TIME ZONE,
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE NULLS NOT DISTINCT (
+        valid_ingredient_id,
+        valid_preparation_id,
+        storage_container_type,
+        minimum_storage_temperature_in_celsius,
+        maximum_storage_temperature_in_celsius,
+        archived_at
+    )
+);
+
 CREATE TABLE IF NOT EXISTS valid_instruments (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -956,3 +981,11 @@ CREATE INDEX idx_meal_plan_tasks_prep_task ON meal_plan_tasks (belongs_to_recipe
 CREATE INDEX idx_meal_plan_tasks_assigned_user ON meal_plan_tasks (assigned_to_user);
 CREATE INDEX idx_meal_plan_tasks_status ON meal_plan_tasks (status);
 CREATE INDEX idx_meal_plan_tasks_user_status ON meal_plan_tasks (assigned_to_user, status);
+
+-- Valid prep task configs indexes
+CREATE INDEX idx_valid_prep_task_configs_ingredient ON valid_prep_task_configs (valid_ingredient_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_prep_task_configs_preparation ON valid_prep_task_configs (valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_prep_task_configs_combo ON valid_prep_task_configs (valid_ingredient_id, valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_prep_task_configs_container_type ON valid_prep_task_configs (storage_container_type) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_prep_task_configs_temp_range ON valid_prep_task_configs (minimum_storage_temperature_in_celsius, maximum_storage_temperature_in_celsius) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_prep_task_configs_archived_at ON valid_prep_task_configs (archived_at) WHERE archived_at IS NULL;

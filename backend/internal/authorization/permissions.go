@@ -72,6 +72,9 @@ var (
 		CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission,
+		CreateValidPrepTaskConfigsPermission,
+		UpdateValidPrepTaskConfigsPermission,
+		ArchiveValidPrepTaskConfigsPermission,
 		CreateValidIngredientStateIngredientsPermission,
 		UpdateValidIngredientStateIngredientsPermission,
 		ArchiveValidIngredientStateIngredientsPermission,
@@ -243,6 +246,7 @@ var (
 		CreateWaitlistSignupsPermission,
 		UpdateWaitlistSignupsPermission,
 		ArchiveWaitlistSignupsPermission,
+		ReadValidPrepTaskConfigsPermission,
 	}
 )
 

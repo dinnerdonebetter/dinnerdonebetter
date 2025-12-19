@@ -1215,6 +1215,240 @@ public struct Mealplanning_ValidIngredientPreparationUpdateRequestInput: Sendabl
   fileprivate var _validIngredientID: String? = nil
 }
 
+public struct Mealplanning_ValidPrepTaskConfig: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _storage._createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._createdAt = newValue}
+  }
+  /// Returns true if `createdAt` has been explicitly set.
+  public var hasCreatedAt: Bool {return _storage._createdAt != nil}
+  /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
+  public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
+
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _storage._lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._lastUpdatedAt = newValue}
+  }
+  /// Returns true if `lastUpdatedAt` has been explicitly set.
+  public var hasLastUpdatedAt: Bool {return _storage._lastUpdatedAt != nil}
+  /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearLastUpdatedAt() {_uniqueStorage()._lastUpdatedAt = nil}
+
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._archivedAt = newValue}
+  }
+  /// Returns true if `archivedAt` has been explicitly set.
+  public var hasArchivedAt: Bool {return _storage._archivedAt != nil}
+  /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
+
+  public var storageDurationInSeconds: Common_Uint32RangeWithOptionalMax {
+    get {return _storage._storageDurationInSeconds ?? Common_Uint32RangeWithOptionalMax()}
+    set {_uniqueStorage()._storageDurationInSeconds = newValue}
+  }
+  /// Returns true if `storageDurationInSeconds` has been explicitly set.
+  public var hasStorageDurationInSeconds: Bool {return _storage._storageDurationInSeconds != nil}
+  /// Clears the value of `storageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageDurationInSeconds() {_uniqueStorage()._storageDurationInSeconds = nil}
+
+  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
+    get {return _storage._storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
+    set {_uniqueStorage()._storageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
+  public var hasStorageTemperatureInCelsius: Bool {return _storage._storageTemperatureInCelsius != nil}
+  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageTemperatureInCelsius() {_uniqueStorage()._storageTemperatureInCelsius = nil}
+
+  public var id: String {
+    get {return _storage._id}
+    set {_uniqueStorage()._id = newValue}
+  }
+
+  public var storageType: String {
+    get {return _storage._storageType}
+    set {_uniqueStorage()._storageType = newValue}
+  }
+
+  public var storageInstructions: String {
+    get {return _storage._storageInstructions}
+    set {_uniqueStorage()._storageInstructions = newValue}
+  }
+
+  public var notes: String {
+    get {return _storage._notes}
+    set {_uniqueStorage()._notes = newValue}
+  }
+
+  public var source: String {
+    get {return _storage._source}
+    set {_uniqueStorage()._source = newValue}
+  }
+
+  public var preparation: Mealplanning_ValidPreparation {
+    get {return _storage._preparation ?? Mealplanning_ValidPreparation()}
+    set {_uniqueStorage()._preparation = newValue}
+  }
+  /// Returns true if `preparation` has been explicitly set.
+  public var hasPreparation: Bool {return _storage._preparation != nil}
+  /// Clears the value of `preparation`. Subsequent reads from it will return its default value.
+  public mutating func clearPreparation() {_uniqueStorage()._preparation = nil}
+
+  public var ingredient: Mealplanning_ValidIngredient {
+    get {return _storage._ingredient ?? Mealplanning_ValidIngredient()}
+    set {_uniqueStorage()._ingredient = newValue}
+  }
+  /// Returns true if `ingredient` has been explicitly set.
+  public var hasIngredient: Bool {return _storage._ingredient != nil}
+  /// Clears the value of `ingredient`. Subsequent reads from it will return its default value.
+  public mutating func clearIngredient() {_uniqueStorage()._ingredient = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+public struct Mealplanning_ValidPrepTaskConfigCreationRequestInput: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var storageDurationInSeconds: Common_Uint32RangeWithOptionalMax {
+    get {return _storageDurationInSeconds ?? Common_Uint32RangeWithOptionalMax()}
+    set {_storageDurationInSeconds = newValue}
+  }
+  /// Returns true if `storageDurationInSeconds` has been explicitly set.
+  public var hasStorageDurationInSeconds: Bool {return self._storageDurationInSeconds != nil}
+  /// Clears the value of `storageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageDurationInSeconds() {self._storageDurationInSeconds = nil}
+
+  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
+    get {return _storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
+    set {_storageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
+  public var hasStorageTemperatureInCelsius: Bool {return self._storageTemperatureInCelsius != nil}
+  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageTemperatureInCelsius() {self._storageTemperatureInCelsius = nil}
+
+  public var storageType: String = String()
+
+  public var storageInstructions: String = String()
+
+  public var notes: String = String()
+
+  public var source: String = String()
+
+  public var validPreparationID: String = String()
+
+  public var validIngredientID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storageDurationInSeconds: Common_Uint32RangeWithOptionalMax? = nil
+  fileprivate var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
+}
+
+public struct Mealplanning_ValidPrepTaskConfigUpdateRequestInput: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var storageDurationInSeconds: Common_Uint32RangeWithOptionalMaxUpdateRequestInput {
+    get {return _storageDurationInSeconds ?? Common_Uint32RangeWithOptionalMaxUpdateRequestInput()}
+    set {_storageDurationInSeconds = newValue}
+  }
+  /// Returns true if `storageDurationInSeconds` has been explicitly set.
+  public var hasStorageDurationInSeconds: Bool {return self._storageDurationInSeconds != nil}
+  /// Clears the value of `storageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageDurationInSeconds() {self._storageDurationInSeconds = nil}
+
+  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
+    get {return _storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
+    set {_storageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
+  public var hasStorageTemperatureInCelsius: Bool {return self._storageTemperatureInCelsius != nil}
+  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageTemperatureInCelsius() {self._storageTemperatureInCelsius = nil}
+
+  public var storageType: String {
+    get {return _storageType ?? String()}
+    set {_storageType = newValue}
+  }
+  /// Returns true if `storageType` has been explicitly set.
+  public var hasStorageType: Bool {return self._storageType != nil}
+  /// Clears the value of `storageType`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageType() {self._storageType = nil}
+
+  public var storageInstructions: String {
+    get {return _storageInstructions ?? String()}
+    set {_storageInstructions = newValue}
+  }
+  /// Returns true if `storageInstructions` has been explicitly set.
+  public var hasStorageInstructions: Bool {return self._storageInstructions != nil}
+  /// Clears the value of `storageInstructions`. Subsequent reads from it will return its default value.
+  public mutating func clearStorageInstructions() {self._storageInstructions = nil}
+
+  public var notes: String {
+    get {return _notes ?? String()}
+    set {_notes = newValue}
+  }
+  /// Returns true if `notes` has been explicitly set.
+  public var hasNotes: Bool {return self._notes != nil}
+  /// Clears the value of `notes`. Subsequent reads from it will return its default value.
+  public mutating func clearNotes() {self._notes = nil}
+
+  public var source: String {
+    get {return _source ?? String()}
+    set {_source = newValue}
+  }
+  /// Returns true if `source` has been explicitly set.
+  public var hasSource: Bool {return self._source != nil}
+  /// Clears the value of `source`. Subsequent reads from it will return its default value.
+  public mutating func clearSource() {self._source = nil}
+
+  public var validPreparationID: String {
+    get {return _validPreparationID ?? String()}
+    set {_validPreparationID = newValue}
+  }
+  /// Returns true if `validPreparationID` has been explicitly set.
+  public var hasValidPreparationID: Bool {return self._validPreparationID != nil}
+  /// Clears the value of `validPreparationID`. Subsequent reads from it will return its default value.
+  public mutating func clearValidPreparationID() {self._validPreparationID = nil}
+
+  public var validIngredientID: String {
+    get {return _validIngredientID ?? String()}
+    set {_validIngredientID = newValue}
+  }
+  /// Returns true if `validIngredientID` has been explicitly set.
+  public var hasValidIngredientID: Bool {return self._validIngredientID != nil}
+  /// Clears the value of `validIngredientID`. Subsequent reads from it will return its default value.
+  public mutating func clearValidIngredientID() {self._validIngredientID = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storageDurationInSeconds: Common_Uint32RangeWithOptionalMaxUpdateRequestInput? = nil
+  fileprivate var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
+  fileprivate var _storageType: String? = nil
+  fileprivate var _storageInstructions: String? = nil
+  fileprivate var _notes: String? = nil
+  fileprivate var _source: String? = nil
+  fileprivate var _validPreparationID: String? = nil
+  fileprivate var _validIngredientID: String? = nil
+}
+
 public struct Mealplanning_ValidIngredientState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3531,6 +3765,40 @@ public struct Mealplanning_ArchiveValidIngredientPreparationResponse: Sendable {
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
+/// ArchiveValidPrepTaskConfig
+public struct Mealplanning_ArchiveValidPrepTaskConfigRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var validPrepTaskConfigID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Mealplanning_ArchiveValidPrepTaskConfigResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+}
+
 /// ArchiveValidIngredientState
 public struct Mealplanning_ArchiveValidIngredientStateRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -4047,6 +4315,59 @@ public struct Mealplanning_CreateValidIngredientPreparationResponse: Sendable {
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Mealplanning_ValidIngredientPreparation? = nil
+}
+
+/// CreateValidPrepTaskConfig
+public struct Mealplanning_CreateValidPrepTaskConfigRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var input: Mealplanning_ValidPrepTaskConfigCreationRequestInput {
+    get {return _input ?? Mealplanning_ValidPrepTaskConfigCreationRequestInput()}
+    set {_input = newValue}
+  }
+  /// Returns true if `input` has been explicitly set.
+  public var hasInput: Bool {return self._input != nil}
+  /// Clears the value of `input`. Subsequent reads from it will return its default value.
+  public mutating func clearInput() {self._input = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _input: Mealplanning_ValidPrepTaskConfigCreationRequestInput? = nil
+}
+
+public struct Mealplanning_CreateValidPrepTaskConfigResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var result: Mealplanning_ValidPrepTaskConfig {
+    get {return _result ?? Mealplanning_ValidPrepTaskConfig()}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  public var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  public mutating func clearResult() {self._result = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _result: Mealplanning_ValidPrepTaskConfig? = nil
 }
 
 /// CreateValidIngredientState
@@ -5251,6 +5572,278 @@ public struct Mealplanning_GetValidIngredientPreparationsByPreparationResponse: 
   public mutating func clearPagination() {self._pagination = nil}
 
   public var results: [Mealplanning_ValidIngredientPreparation] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _pagination: Filtering_Pagination? = nil
+}
+
+/// GetValidPrepTaskConfig
+public struct Mealplanning_GetValidPrepTaskConfigRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var validPrepTaskConfigID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Mealplanning_GetValidPrepTaskConfigResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var result: Mealplanning_ValidPrepTaskConfig {
+    get {return _result ?? Mealplanning_ValidPrepTaskConfig()}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  public var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  public mutating func clearResult() {self._result = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _result: Mealplanning_ValidPrepTaskConfig? = nil
+}
+
+/// GetValidPrepTaskConfigs
+public struct Mealplanning_GetValidPrepTaskConfigsRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var filter: Filtering_QueryFilter {
+    get {return _filter ?? Filtering_QueryFilter()}
+    set {_filter = newValue}
+  }
+  /// Returns true if `filter` has been explicitly set.
+  public var hasFilter: Bool {return self._filter != nil}
+  /// Clears the value of `filter`. Subsequent reads from it will return its default value.
+  public mutating func clearFilter() {self._filter = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _filter: Filtering_QueryFilter? = nil
+}
+
+public struct Mealplanning_GetValidPrepTaskConfigsResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var pagination: Filtering_Pagination {
+    get {return _pagination ?? Filtering_Pagination()}
+    set {_pagination = newValue}
+  }
+  /// Returns true if `pagination` has been explicitly set.
+  public var hasPagination: Bool {return self._pagination != nil}
+  /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
+  public mutating func clearPagination() {self._pagination = nil}
+
+  public var results: [Mealplanning_ValidPrepTaskConfig] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _pagination: Filtering_Pagination? = nil
+}
+
+/// GetValidPrepTaskConfigsByIngredient
+public struct Mealplanning_GetValidPrepTaskConfigsByIngredientRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var filter: Filtering_QueryFilter {
+    get {return _filter ?? Filtering_QueryFilter()}
+    set {_filter = newValue}
+  }
+  /// Returns true if `filter` has been explicitly set.
+  public var hasFilter: Bool {return self._filter != nil}
+  /// Clears the value of `filter`. Subsequent reads from it will return its default value.
+  public mutating func clearFilter() {self._filter = nil}
+
+  public var validIngredientID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _filter: Filtering_QueryFilter? = nil
+}
+
+public struct Mealplanning_GetValidPrepTaskConfigsByIngredientResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var pagination: Filtering_Pagination {
+    get {return _pagination ?? Filtering_Pagination()}
+    set {_pagination = newValue}
+  }
+  /// Returns true if `pagination` has been explicitly set.
+  public var hasPagination: Bool {return self._pagination != nil}
+  /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
+  public mutating func clearPagination() {self._pagination = nil}
+
+  public var results: [Mealplanning_ValidPrepTaskConfig] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _pagination: Filtering_Pagination? = nil
+}
+
+/// GetValidPrepTaskConfigsByPreparation
+public struct Mealplanning_GetValidPrepTaskConfigsByPreparationRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var filter: Filtering_QueryFilter {
+    get {return _filter ?? Filtering_QueryFilter()}
+    set {_filter = newValue}
+  }
+  /// Returns true if `filter` has been explicitly set.
+  public var hasFilter: Bool {return self._filter != nil}
+  /// Clears the value of `filter`. Subsequent reads from it will return its default value.
+  public mutating func clearFilter() {self._filter = nil}
+
+  public var validPreparationID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _filter: Filtering_QueryFilter? = nil
+}
+
+public struct Mealplanning_GetValidPrepTaskConfigsByPreparationResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var pagination: Filtering_Pagination {
+    get {return _pagination ?? Filtering_Pagination()}
+    set {_pagination = newValue}
+  }
+  /// Returns true if `pagination` has been explicitly set.
+  public var hasPagination: Bool {return self._pagination != nil}
+  /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
+  public mutating func clearPagination() {self._pagination = nil}
+
+  public var results: [Mealplanning_ValidPrepTaskConfig] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _pagination: Filtering_Pagination? = nil
+}
+
+/// GetValidPrepTaskConfigsByIngredientAndPreparation
+public struct Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var filter: Filtering_QueryFilter {
+    get {return _filter ?? Filtering_QueryFilter()}
+    set {_filter = newValue}
+  }
+  /// Returns true if `filter` has been explicitly set.
+  public var hasFilter: Bool {return self._filter != nil}
+  /// Clears the value of `filter`. Subsequent reads from it will return its default value.
+  public mutating func clearFilter() {self._filter = nil}
+
+  public var validIngredientID: String = String()
+
+  public var validPreparationID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _filter: Filtering_QueryFilter? = nil
+}
+
+public struct Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var pagination: Filtering_Pagination {
+    get {return _pagination ?? Filtering_Pagination()}
+    set {_pagination = newValue}
+  }
+  /// Returns true if `pagination` has been explicitly set.
+  public var hasPagination: Bool {return self._pagination != nil}
+  /// Clears the value of `pagination`. Subsequent reads from it will return its default value.
+  public mutating func clearPagination() {self._pagination = nil}
+
+  public var results: [Mealplanning_ValidPrepTaskConfig] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -7297,6 +7890,61 @@ public struct Mealplanning_UpdateValidIngredientPreparationResponse: Sendable {
 
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
   fileprivate var _result: Mealplanning_ValidIngredientPreparation? = nil
+}
+
+/// UpdateValidPrepTaskConfig
+public struct Mealplanning_UpdateValidPrepTaskConfigRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var validPrepTaskConfigID: String = String()
+
+  public var input: Mealplanning_ValidPrepTaskConfigUpdateRequestInput {
+    get {return _input ?? Mealplanning_ValidPrepTaskConfigUpdateRequestInput()}
+    set {_input = newValue}
+  }
+  /// Returns true if `input` has been explicitly set.
+  public var hasInput: Bool {return self._input != nil}
+  /// Clears the value of `input`. Subsequent reads from it will return its default value.
+  public mutating func clearInput() {self._input = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _input: Mealplanning_ValidPrepTaskConfigUpdateRequestInput? = nil
+}
+
+public struct Mealplanning_UpdateValidPrepTaskConfigResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var result: Mealplanning_ValidPrepTaskConfig {
+    get {return _result ?? Mealplanning_ValidPrepTaskConfig()}
+    set {_result = newValue}
+  }
+  /// Returns true if `result` has been explicitly set.
+  public var hasResult: Bool {return self._result != nil}
+  /// Clears the value of `result`. Subsequent reads from it will return its default value.
+  public mutating func clearResult() {self._result = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _result: Mealplanning_ValidPrepTaskConfig? = nil
 }
 
 /// UpdateValidIngredientState
@@ -19593,6 +20241,291 @@ extension Mealplanning_ValidIngredientPreparationUpdateRequestInput: SwiftProtob
   }
 }
 
+extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ValidPrepTaskConfig"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_duration_in_seconds\0\u{3}storage_temperature_in_celsius\0\u{1}id\0\u{3}storage_type\0\u{3}storage_instructions\0\u{1}notes\0\u{1}source\0\u{1}preparation\0\u{1}ingredient\0")
+
+  fileprivate class _StorageClass {
+    var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _storageDurationInSeconds: Common_Uint32RangeWithOptionalMax? = nil
+    var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
+    var _id: String = String()
+    var _storageType: String = String()
+    var _storageInstructions: String = String()
+    var _notes: String = String()
+    var _source: String = String()
+    var _preparation: Mealplanning_ValidPreparation? = nil
+    var _ingredient: Mealplanning_ValidIngredient? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _createdAt = source._createdAt
+      _lastUpdatedAt = source._lastUpdatedAt
+      _archivedAt = source._archivedAt
+      _storageDurationInSeconds = source._storageDurationInSeconds
+      _storageTemperatureInCelsius = source._storageTemperatureInCelsius
+      _id = source._id
+      _storageType = source._storageType
+      _storageInstructions = source._storageInstructions
+      _notes = source._notes
+      _source = source._source
+      _preparation = source._preparation
+      _ingredient = source._ingredient
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._storageDurationInSeconds) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._storageTemperatureInCelsius) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
+        case 7: try { try decoder.decodeSingularStringField(value: &_storage._storageType) }()
+        case 8: try { try decoder.decodeSingularStringField(value: &_storage._storageInstructions) }()
+        case 9: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
+        case 10: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._preparation) }()
+        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._createdAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._lastUpdatedAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._archivedAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._storageDurationInSeconds {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._storageTemperatureInCelsius {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      } }()
+      if !_storage._id.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 6)
+      }
+      if !_storage._storageType.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._storageType, fieldNumber: 7)
+      }
+      if !_storage._storageInstructions.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._storageInstructions, fieldNumber: 8)
+      }
+      if !_storage._notes.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._notes, fieldNumber: 9)
+      }
+      if !_storage._source.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._source, fieldNumber: 10)
+      }
+      try { if let v = _storage._preparation {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      } }()
+      try { if let v = _storage._ingredient {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_ValidPrepTaskConfig, rhs: Mealplanning_ValidPrepTaskConfig) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._createdAt != rhs_storage._createdAt {return false}
+        if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
+        if _storage._archivedAt != rhs_storage._archivedAt {return false}
+        if _storage._storageDurationInSeconds != rhs_storage._storageDurationInSeconds {return false}
+        if _storage._storageTemperatureInCelsius != rhs_storage._storageTemperatureInCelsius {return false}
+        if _storage._id != rhs_storage._id {return false}
+        if _storage._storageType != rhs_storage._storageType {return false}
+        if _storage._storageInstructions != rhs_storage._storageInstructions {return false}
+        if _storage._notes != rhs_storage._notes {return false}
+        if _storage._source != rhs_storage._source {return false}
+        if _storage._preparation != rhs_storage._preparation {return false}
+        if _storage._ingredient != rhs_storage._ingredient {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_ValidPrepTaskConfigCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ValidPrepTaskConfigCreationRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_duration_in_seconds\0\u{3}storage_temperature_in_celsius\0\u{3}storage_type\0\u{3}storage_instructions\0\u{1}notes\0\u{1}source\0\u{3}valid_preparation_id\0\u{3}valid_ingredient_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._storageDurationInSeconds) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._storageTemperatureInCelsius) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.storageType) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.storageInstructions) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.notes) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.source) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.validPreparationID) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._storageDurationInSeconds {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._storageTemperatureInCelsius {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.storageType.isEmpty {
+      try visitor.visitSingularStringField(value: self.storageType, fieldNumber: 3)
+    }
+    if !self.storageInstructions.isEmpty {
+      try visitor.visitSingularStringField(value: self.storageInstructions, fieldNumber: 4)
+    }
+    if !self.notes.isEmpty {
+      try visitor.visitSingularStringField(value: self.notes, fieldNumber: 5)
+    }
+    if !self.source.isEmpty {
+      try visitor.visitSingularStringField(value: self.source, fieldNumber: 6)
+    }
+    if !self.validPreparationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPreparationID, fieldNumber: 7)
+    }
+    if !self.validIngredientID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validIngredientID, fieldNumber: 8)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_ValidPrepTaskConfigCreationRequestInput, rhs: Mealplanning_ValidPrepTaskConfigCreationRequestInput) -> Bool {
+    if lhs._storageDurationInSeconds != rhs._storageDurationInSeconds {return false}
+    if lhs._storageTemperatureInCelsius != rhs._storageTemperatureInCelsius {return false}
+    if lhs.storageType != rhs.storageType {return false}
+    if lhs.storageInstructions != rhs.storageInstructions {return false}
+    if lhs.notes != rhs.notes {return false}
+    if lhs.source != rhs.source {return false}
+    if lhs.validPreparationID != rhs.validPreparationID {return false}
+    if lhs.validIngredientID != rhs.validIngredientID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_ValidPrepTaskConfigUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ValidPrepTaskConfigUpdateRequestInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}storage_duration_in_seconds\0\u{3}storage_temperature_in_celsius\0\u{3}storage_type\0\u{3}storage_instructions\0\u{1}notes\0\u{1}source\0\u{3}valid_preparation_id\0\u{3}valid_ingredient_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._storageDurationInSeconds) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._storageTemperatureInCelsius) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._storageType) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._storageInstructions) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._notes) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._source) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self._validPreparationID) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._validIngredientID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._storageDurationInSeconds {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._storageTemperatureInCelsius {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._storageType {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._storageInstructions {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._notes {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._source {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._validPreparationID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._validIngredientID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_ValidPrepTaskConfigUpdateRequestInput, rhs: Mealplanning_ValidPrepTaskConfigUpdateRequestInput) -> Bool {
+    if lhs._storageDurationInSeconds != rhs._storageDurationInSeconds {return false}
+    if lhs._storageTemperatureInCelsius != rhs._storageTemperatureInCelsius {return false}
+    if lhs._storageType != rhs._storageType {return false}
+    if lhs._storageInstructions != rhs._storageInstructions {return false}
+    if lhs._notes != rhs._notes {return false}
+    if lhs._source != rhs._source {return false}
+    if lhs._validPreparationID != rhs._validPreparationID {return false}
+    if lhs._validIngredientID != rhs._validIngredientID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Mealplanning_ValidIngredientState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientState"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}past_tense\0\u{1}description\0\u{3}icon_path\0\u{1}id\0\u{1}name\0\u{3}attribute_type\0\u{1}slug\0")
@@ -22656,6 +23589,70 @@ extension Mealplanning_ArchiveValidIngredientPreparationResponse: SwiftProtobuf.
   }
 }
 
+extension Mealplanning_ArchiveValidPrepTaskConfigRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPrepTaskConfigRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_prep_task_config_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.validPrepTaskConfigID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.validPrepTaskConfigID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPrepTaskConfigID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_ArchiveValidPrepTaskConfigRequest, rhs: Mealplanning_ArchiveValidPrepTaskConfigRequest) -> Bool {
+    if lhs.validPrepTaskConfigID != rhs.validPrepTaskConfigID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_ArchiveValidPrepTaskConfigResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ArchiveValidPrepTaskConfigResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_ArchiveValidPrepTaskConfigResponse, rhs: Mealplanning_ArchiveValidPrepTaskConfigResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Mealplanning_ArchiveValidIngredientStateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ArchiveValidIngredientStateRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_ingredient_state_id\0")
@@ -23517,6 +24514,79 @@ extension Mealplanning_CreateValidIngredientPreparationResponse: SwiftProtobuf.M
   }
 
   public static func ==(lhs: Mealplanning_CreateValidIngredientPreparationResponse, rhs: Mealplanning_CreateValidIngredientPreparationResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_CreateValidPrepTaskConfigRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateValidPrepTaskConfigRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}input\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._input) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._input {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_CreateValidPrepTaskConfigRequest, rhs: Mealplanning_CreateValidPrepTaskConfigRequest) -> Bool {
+    if lhs._input != rhs._input {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_CreateValidPrepTaskConfigResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateValidPrepTaskConfigResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._result {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_CreateValidPrepTaskConfigResponse, rhs: Mealplanning_CreateValidPrepTaskConfigResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -25361,6 +26431,407 @@ extension Mealplanning_GetValidIngredientPreparationsByPreparationResponse: Swif
   }
 
   public static func ==(lhs: Mealplanning_GetValidIngredientPreparationsByPreparationResponse, rhs: Mealplanning_GetValidIngredientPreparationsByPreparationResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._pagination != rhs._pagination {return false}
+    if lhs.results != rhs.results {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_prep_task_config_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.validPrepTaskConfigID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.validPrepTaskConfigID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPrepTaskConfigID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigRequest, rhs: Mealplanning_GetValidPrepTaskConfigRequest) -> Bool {
+    if lhs.validPrepTaskConfigID != rhs.validPrepTaskConfigID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._result {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigResponse, rhs: Mealplanning_GetValidPrepTaskConfigResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._filter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsRequest, rhs: Mealplanning_GetValidPrepTaskConfigsRequest) -> Bool {
+    if lhs._filter != rhs._filter {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._pagination) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._pagination {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsResponse, rhs: Mealplanning_GetValidPrepTaskConfigsResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._pagination != rhs._pagination {return false}
+    if lhs.results != rhs.results {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByIngredientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByIngredientRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._filter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.validIngredientID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validIngredientID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByIngredientRequest, rhs: Mealplanning_GetValidPrepTaskConfigsByIngredientRequest) -> Bool {
+    if lhs._filter != rhs._filter {return false}
+    if lhs.validIngredientID != rhs.validIngredientID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByIngredientResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByIngredientResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._pagination) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._pagination {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByIngredientResponse, rhs: Mealplanning_GetValidPrepTaskConfigsByIngredientResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._pagination != rhs._pagination {return false}
+    if lhs.results != rhs.results {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByPreparationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_preparation_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.validPreparationID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._filter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.validPreparationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPreparationID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByPreparationRequest, rhs: Mealplanning_GetValidPrepTaskConfigsByPreparationRequest) -> Bool {
+    if lhs._filter != rhs._filter {return false}
+    if lhs.validPreparationID != rhs.validPreparationID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByPreparationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._pagination) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._pagination {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByPreparationResponse, rhs: Mealplanning_GetValidPrepTaskConfigsByPreparationResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._pagination != rhs._pagination {return false}
+    if lhs.results != rhs.results {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByIngredientAndPreparationRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}valid_ingredient_id\0\u{3}valid_preparation_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.validIngredientID) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.validPreparationID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._filter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.validIngredientID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validIngredientID, fieldNumber: 2)
+    }
+    if !self.validPreparationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPreparationID, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest, rhs: Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest) -> Bool {
+    if lhs._filter != rhs._filter {return false}
+    if lhs.validIngredientID != rhs.validIngredientID {return false}
+    if lhs.validPreparationID != rhs.validPreparationID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetValidPrepTaskConfigsByIngredientAndPreparationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}pagination\0\u{1}results\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._pagination) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._pagination {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse, rhs: Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._pagination != rhs._pagination {return false}
     if lhs.results != rhs.results {return false}
@@ -28446,6 +29917,84 @@ extension Mealplanning_UpdateValidIngredientPreparationResponse: SwiftProtobuf.M
   }
 
   public static func ==(lhs: Mealplanning_UpdateValidIngredientPreparationResponse, rhs: Mealplanning_UpdateValidIngredientPreparationResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._result != rhs._result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UpdateValidPrepTaskConfigRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateValidPrepTaskConfigRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}valid_prep_task_config_id\0\u{1}input\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.validPrepTaskConfigID) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._input) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.validPrepTaskConfigID.isEmpty {
+      try visitor.visitSingularStringField(value: self.validPrepTaskConfigID, fieldNumber: 1)
+    }
+    try { if let v = self._input {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UpdateValidPrepTaskConfigRequest, rhs: Mealplanning_UpdateValidPrepTaskConfigRequest) -> Bool {
+    if lhs.validPrepTaskConfigID != rhs.validPrepTaskConfigID {return false}
+    if lhs._input != rhs._input {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_UpdateValidPrepTaskConfigResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateValidPrepTaskConfigResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._result) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._result {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_UpdateValidPrepTaskConfigResponse, rhs: Mealplanning_UpdateValidPrepTaskConfigResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

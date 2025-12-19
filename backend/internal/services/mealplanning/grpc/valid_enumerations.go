@@ -77,6 +77,22 @@ func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, req
 	return res, nil
 }
 
+func (s *serviceImpl) ArchiveValidPrepTaskConfig(ctx context.Context, request *mealplanning.ArchiveValidPrepTaskConfigRequest) (*mealplanning.ArchiveValidPrepTaskConfigResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+
+	if err := s.validEnumerationsManager.ArchiveValidPrepTaskConfig(ctx, request.ValidPrepTaskConfigId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid prep task config")
+	}
+
+	res := &mealplanning.ArchiveValidPrepTaskConfigResponse{}
+
+	return res, nil
+}
+
 func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateRequest) (*mealplanning.ArchiveValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -292,6 +308,25 @@ func (s *serviceImpl) CreateValidIngredientPreparation(ctx context.Context, requ
 
 	result := &mealplanning.CreateValidIngredientPreparationResponse{
 		Result: mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(created),
+	}
+
+	return result, nil
+}
+
+func (s *serviceImpl) CreateValidPrepTaskConfig(ctx context.Context, request *mealplanning.CreateValidPrepTaskConfigRequest) (*mealplanning.CreateValidPrepTaskConfigResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	created, err := s.validEnumerationsManager.CreateValidPrepTaskConfig(ctx, mealplanningconverters.ConvertGRPCValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigCreationRequestInput(request.Input))
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid prep task config")
+	}
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, created.ID)
+
+	result := &mealplanning.CreateValidPrepTaskConfigResponse{
+		Result: mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(created),
 	}
 
 	return result, nil
@@ -785,6 +820,127 @@ func (s *serviceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Co
 
 	for _, y := range x.Data {
 		res.Results = append(res.Results, mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidPrepTaskConfig(ctx context.Context, request *mealplanning.GetValidPrepTaskConfigRequest) (*mealplanning.GetValidPrepTaskConfigResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+
+	x, err := s.validEnumerationsManager.ReadValidPrepTaskConfig(ctx, request.ValidPrepTaskConfigId)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid prep task config")
+	}
+
+	res := &mealplanning.GetValidPrepTaskConfigResponse{
+		Result: mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(x),
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidPrepTaskConfigs(ctx context.Context, request *mealplanning.GetValidPrepTaskConfigsRequest) (*mealplanning.GetValidPrepTaskConfigsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x, err := s.validEnumerationsManager.ListValidPrepTaskConfigs(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid prep task configs")
+	}
+
+	res := &mealplanning.GetValidPrepTaskConfigsResponse{
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+
+	for _, y := range x.Data {
+		res.Results = append(res.Results, mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(y))
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidPrepTaskConfigsByIngredient(ctx context.Context, request *mealplanning.GetValidPrepTaskConfigsByIngredientRequest) (*mealplanning.GetValidPrepTaskConfigsByIngredientResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x, err := s.validEnumerationsManager.SearchValidPrepTaskConfigsByIngredient(ctx, request.ValidIngredientId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid prep task configs by ingredient")
+	}
+
+	res := &mealplanning.GetValidPrepTaskConfigsByIngredientResponse{
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+
+	for _, y := range x.Data {
+		res.Results = append(res.Results, mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(y))
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidPrepTaskConfigsByPreparation(ctx context.Context, request *mealplanning.GetValidPrepTaskConfigsByPreparationRequest) (*mealplanning.GetValidPrepTaskConfigsByPreparationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x, err := s.validEnumerationsManager.SearchValidPrepTaskConfigsByPreparation(ctx, request.ValidPreparationId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid prep task configs by preparation")
+	}
+
+	res := &mealplanning.GetValidPrepTaskConfigsByPreparationResponse{
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+
+	for _, y := range x.Data {
+		res.Results = append(res.Results, mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(y))
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) GetValidPrepTaskConfigsByIngredientAndPreparation(ctx context.Context, request *mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationRequest) (*mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).
+		WithValue(keys.ValidIngredientIDKey, request.ValidIngredientId).
+		WithValue(keys.ValidPreparationIDKey, request.ValidPreparationId)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientId)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationId)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x, err := s.validEnumerationsManager.SearchValidPrepTaskConfigsByIngredientAndPreparation(ctx, request.ValidIngredientId, request.ValidPreparationId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid prep task configs by ingredient and preparation")
+	}
+
+	res := &mealplanning.GetValidPrepTaskConfigsByIngredientAndPreparationResponse{
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(x.Pagination, filter),
+	}
+
+	for _, y := range x.Data {
+		res.Results = append(res.Results, mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(y))
 	}
 
 	return res, nil
@@ -1650,6 +1806,27 @@ func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, requ
 
 	res := &mealplanning.UpdateValidIngredientPreparationResponse{
 		Result: mealplanningconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(updated),
+	}
+
+	return res, nil
+}
+
+func (s *serviceImpl) UpdateValidPrepTaskConfig(ctx context.Context, request *mealplanning.UpdateValidPrepTaskConfigRequest) (*mealplanning.UpdateValidPrepTaskConfigResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span).WithValue(keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, request.ValidPrepTaskConfigId)
+
+	input := mealplanningconverters.ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidPrepTaskConfig(ctx, request.ValidPrepTaskConfigId, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid prep task config")
+	}
+
+	res := &mealplanning.UpdateValidPrepTaskConfigResponse{
+		Result: mealplanningconverters.ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(updated),
 	}
 
 	return res, nil

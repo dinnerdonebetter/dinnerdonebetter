@@ -36,6 +36,7 @@ func main() {
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_vessels.sql":                                buildValidVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_groups.sql":                      buildValidIngredientGroupsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_preparations.sql":                buildValidIngredientPreparationsQueries(databaseToUse),
+		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_prep_task_configs.sql":                      buildValidPrepTaskConfigsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_preparation_vessels.sql":                    buildValidPreparationVesselsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredient_measurement_units.sql":           buildValidIngredientMeasurementUnitsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_measurement_unit_conversions.sql":           buildValidMeasurementUnitConversionsQueries(databaseToUse),

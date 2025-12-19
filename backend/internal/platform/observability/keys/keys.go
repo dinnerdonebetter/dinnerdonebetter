@@ -140,6 +140,11 @@ const (
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid preparation ingredient's ID.
 	ValidIngredientPreparationIDKey = ValidIngredientPreparationKey + idSuffix
 
+	// ValidPrepTaskConfigKey is the standard key for referring to a valid prep task config.
+	ValidPrepTaskConfigKey = "valid_prep_task_config"
+	// ValidPrepTaskConfigIDKey is the standard key for referring to a valid prep task config's ID.
+	ValidPrepTaskConfigIDKey = ValidPrepTaskConfigKey + idSuffix
+
 	// ValidPreparationInstrumentKey is the standard key for referring to a valid preparation instrument.
 	ValidPreparationInstrumentKey = "valid_preparation_instrument"
 	// ValidPreparationInstrumentIDKey is the standard key for referring to a valid preparation instrument's ID.

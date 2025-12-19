@@ -176,6 +176,43 @@ message ValidIngredientPreparationUpdateRequestInput {
   optional string valid_ingredient_id = 3;
 }
 
+message ValidPrepTaskConfig {
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  optional google.protobuf.Timestamp archived_at = 3;
+  common.Uint32RangeWithOptionalMax storage_duration_in_seconds = 4;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 5;
+  string id = 6;
+  string storage_type = 7;
+  string storage_instructions = 8;
+  string notes = 9;
+  string source = 10;
+  ValidPreparation preparation = 11;
+  ValidIngredient ingredient = 12;
+}
+
+message ValidPrepTaskConfigCreationRequestInput {
+  common.Uint32RangeWithOptionalMax storage_duration_in_seconds = 1;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  string storage_type = 3;
+  string storage_instructions = 4;
+  string notes = 5;
+  string source = 6;
+  string valid_preparation_id = 7;
+  string valid_ingredient_id = 8;
+}
+
+message ValidPrepTaskConfigUpdateRequestInput {
+  common.Uint32RangeWithOptionalMaxUpdateRequestInput storage_duration_in_seconds = 1;
+  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  optional string storage_type = 3;
+  optional string storage_instructions = 4;
+  optional string notes = 5;
+  optional string source = 6;
+  optional string valid_preparation_id = 7;
+  optional string valid_ingredient_id = 8;
+}
+
 enum ValidIngredientStateAttributeType {
   VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_TEXTURE = 0;
   VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE_CONSISTENCY = 1;
@@ -612,6 +649,15 @@ message ArchiveValidIngredientPreparationResponse {
   common.ResponseDetails response_details = 1;
 }
 
+// ArchiveValidPrepTaskConfig
+message ArchiveValidPrepTaskConfigRequest {
+  string valid_prep_task_config_id = 1;
+}
+
+message ArchiveValidPrepTaskConfigResponse {
+  common.ResponseDetails response_details = 1;
+}
+
 // ArchiveValidIngredientState
 message ArchiveValidIngredientStateRequest {
   string valid_ingredient_state_id = 1;
@@ -731,6 +777,16 @@ message CreateValidIngredientPreparationRequest {
 message CreateValidIngredientPreparationResponse {
   common.ResponseDetails response_details = 1;
   ValidIngredientPreparation result = 2;
+}
+
+// CreateValidPrepTaskConfig
+message CreateValidPrepTaskConfigRequest {
+  ValidPrepTaskConfigCreationRequestInput input = 1;
+}
+
+message CreateValidPrepTaskConfigResponse {
+  common.ResponseDetails response_details = 1;
+  ValidPrepTaskConfig result = 2;
 }
 
 // CreateValidIngredientState
@@ -974,6 +1030,64 @@ message GetValidIngredientPreparationsByPreparationResponse {
   common.ResponseDetails response_details = 1;
   filtering.Pagination pagination = 2;
   repeated ValidIngredientPreparation results = 3;
+}
+
+// GetValidPrepTaskConfig
+message GetValidPrepTaskConfigRequest {
+  string valid_prep_task_config_id = 1;
+}
+
+message GetValidPrepTaskConfigResponse {
+  common.ResponseDetails response_details = 1;
+  ValidPrepTaskConfig result = 2;
+}
+
+// GetValidPrepTaskConfigs
+message GetValidPrepTaskConfigsRequest {
+  filtering.QueryFilter filter = 1;
+}
+
+message GetValidPrepTaskConfigsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPrepTaskConfig results = 3;
+}
+
+// GetValidPrepTaskConfigsByIngredient
+message GetValidPrepTaskConfigsByIngredientRequest {
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_id = 2;
+}
+
+message GetValidPrepTaskConfigsByIngredientResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPrepTaskConfig results = 3;
+}
+
+// GetValidPrepTaskConfigsByPreparation
+message GetValidPrepTaskConfigsByPreparationRequest {
+  filtering.QueryFilter filter = 1;
+  string valid_preparation_id = 2;
+}
+
+message GetValidPrepTaskConfigsByPreparationResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPrepTaskConfig results = 3;
+}
+
+// GetValidPrepTaskConfigsByIngredientAndPreparation
+message GetValidPrepTaskConfigsByIngredientAndPreparationRequest {
+  filtering.QueryFilter filter = 1;
+  string valid_ingredient_id = 2;
+  string valid_preparation_id = 3;
+}
+
+message GetValidPrepTaskConfigsByIngredientAndPreparationResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated ValidPrepTaskConfig results = 3;
 }
 
 // GetValidIngredientState
@@ -1408,6 +1522,17 @@ message UpdateValidIngredientPreparationRequest {
 message UpdateValidIngredientPreparationResponse {
   common.ResponseDetails response_details = 1;
   ValidIngredientPreparation result = 2;
+}
+
+// UpdateValidPrepTaskConfig
+message UpdateValidPrepTaskConfigRequest {
+  string valid_prep_task_config_id = 1;
+  ValidPrepTaskConfigUpdateRequestInput input = 2;
+}
+
+message UpdateValidPrepTaskConfigResponse {
+  common.ResponseDetails response_details = 1;
+  ValidPrepTaskConfig result = 2;
 }
 
 // UpdateValidIngredientState
@@ -3721,6 +3846,7 @@ service MealPlanningService {
   rpc ArchiveValidIngredientGroup(ArchiveValidIngredientGroupRequest) returns (ArchiveValidIngredientGroupResponse);
   rpc ArchiveValidIngredientMeasurementUnit(ArchiveValidIngredientMeasurementUnitRequest) returns (ArchiveValidIngredientMeasurementUnitResponse);
   rpc ArchiveValidIngredientPreparation(ArchiveValidIngredientPreparationRequest) returns (ArchiveValidIngredientPreparationResponse);
+  rpc ArchiveValidPrepTaskConfig(ArchiveValidPrepTaskConfigRequest) returns (ArchiveValidPrepTaskConfigResponse);
   rpc ArchiveValidIngredientState(ArchiveValidIngredientStateRequest) returns (ArchiveValidIngredientStateResponse);
   rpc ArchiveValidIngredientStateIngredient(ArchiveValidIngredientStateIngredientRequest) returns (ArchiveValidIngredientStateIngredientResponse);
   rpc ArchiveValidInstrument(ArchiveValidInstrumentRequest) returns (ArchiveValidInstrumentResponse);
@@ -3755,6 +3881,7 @@ service MealPlanningService {
   rpc CreateValidIngredientGroup(CreateValidIngredientGroupRequest) returns (CreateValidIngredientGroupResponse);
   rpc CreateValidIngredientMeasurementUnit(CreateValidIngredientMeasurementUnitRequest) returns (CreateValidIngredientMeasurementUnitResponse);
   rpc CreateValidIngredientPreparation(CreateValidIngredientPreparationRequest) returns (CreateValidIngredientPreparationResponse);
+  rpc CreateValidPrepTaskConfig(CreateValidPrepTaskConfigRequest) returns (CreateValidPrepTaskConfigResponse);
   rpc CreateValidIngredientState(CreateValidIngredientStateRequest) returns (CreateValidIngredientStateResponse);
   rpc CreateValidIngredientStateIngredient(CreateValidIngredientStateIngredientRequest) returns (CreateValidIngredientStateIngredientResponse);
   rpc CreateValidInstrument(CreateValidInstrumentRequest) returns (CreateValidInstrumentResponse);
@@ -3816,6 +3943,11 @@ service MealPlanningService {
   rpc GetValidIngredientPreparations(GetValidIngredientPreparationsRequest) returns (GetValidIngredientPreparationsResponse);
   rpc GetValidIngredientPreparationsByIngredient(GetValidIngredientPreparationsByIngredientRequest) returns (GetValidIngredientPreparationsByIngredientResponse);
   rpc GetValidIngredientPreparationsByPreparation(GetValidIngredientPreparationsByPreparationRequest) returns (GetValidIngredientPreparationsByPreparationResponse);
+  rpc GetValidPrepTaskConfig(GetValidPrepTaskConfigRequest) returns (GetValidPrepTaskConfigResponse);
+  rpc GetValidPrepTaskConfigs(GetValidPrepTaskConfigsRequest) returns (GetValidPrepTaskConfigsResponse);
+  rpc GetValidPrepTaskConfigsByIngredient(GetValidPrepTaskConfigsByIngredientRequest) returns (GetValidPrepTaskConfigsByIngredientResponse);
+  rpc GetValidPrepTaskConfigsByPreparation(GetValidPrepTaskConfigsByPreparationRequest) returns (GetValidPrepTaskConfigsByPreparationResponse);
+  rpc GetValidPrepTaskConfigsByIngredientAndPreparation(GetValidPrepTaskConfigsByIngredientAndPreparationRequest) returns (GetValidPrepTaskConfigsByIngredientAndPreparationResponse);
   rpc GetValidIngredientState(GetValidIngredientStateRequest) returns (GetValidIngredientStateResponse);
   rpc GetValidIngredientStateIngredient(GetValidIngredientStateIngredientRequest) returns (GetValidIngredientStateIngredientResponse);
   rpc GetValidIngredientStateIngredients(GetValidIngredientStateIngredientsRequest) returns (GetValidIngredientStateIngredientsResponse);
@@ -3880,6 +4012,7 @@ service MealPlanningService {
   rpc UpdateValidIngredientGroup(UpdateValidIngredientGroupRequest) returns (UpdateValidIngredientGroupResponse);
   rpc UpdateValidIngredientMeasurementUnit(UpdateValidIngredientMeasurementUnitRequest) returns (UpdateValidIngredientMeasurementUnitResponse);
   rpc UpdateValidIngredientPreparation(UpdateValidIngredientPreparationRequest) returns (UpdateValidIngredientPreparationResponse);
+  rpc UpdateValidPrepTaskConfig(UpdateValidPrepTaskConfigRequest) returns (UpdateValidPrepTaskConfigResponse);
   rpc UpdateValidIngredientState(UpdateValidIngredientStateRequest) returns (UpdateValidIngredientStateResponse);
   rpc UpdateValidIngredientStateIngredient(UpdateValidIngredientStateIngredientRequest) returns (UpdateValidIngredientStateIngredientResponse);
   rpc UpdateValidInstrument(UpdateValidInstrumentRequest) returns (UpdateValidInstrumentResponse);

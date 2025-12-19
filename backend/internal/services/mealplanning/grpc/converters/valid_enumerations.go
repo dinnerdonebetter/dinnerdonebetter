@@ -1430,3 +1430,125 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 		UsableForStorage:               x.UsableForStorage,
 	}
 }
+
+func ConvertGRPCValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigCreationRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput) *mealplanning.ValidPrepTaskConfigCreationRequestInput {
+	return &mealplanning.ValidPrepTaskConfigCreationRequestInput{
+		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		ValidPreparationID:  x.ValidPreparationId,
+		ValidIngredientID:   x.ValidIngredientId,
+	}
+}
+
+func ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCreationRequestInput(x *mealplanning.ValidPrepTaskConfigCreationRequestInput) *mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput {
+	return &mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput{
+		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		ValidPreparationId:  x.ValidPreparationID,
+		ValidIngredientId:   x.ValidIngredientID,
+	}
+}
+
+func ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdateRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
+	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
+		StorageDurationInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		ValidPreparationID:  x.ValidPreparationId,
+		ValidIngredientID:   x.ValidIngredientId,
+	}
+}
+
+func ConvertValidPrepTaskConfigUpdateRequestInputToGRPCValidPrepTaskConfigUpdateRequestInput(x *mealplanning.ValidPrepTaskConfigUpdateRequestInput) *mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput {
+	return &mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput{
+		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		ValidPreparationId:  x.ValidPreparationID,
+		ValidIngredientId:   x.ValidIngredientID,
+	}
+}
+
+func ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(x *mealplanning.ValidPrepTaskConfig) *mealplanninggrpc.ValidPrepTaskConfig {
+	return &mealplanninggrpc.ValidPrepTaskConfig{
+		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		Id:                  x.ID,
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		Preparation:         ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
+		Ingredient:          ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
+}
+
+func ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(x *mealplanninggrpc.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfig {
+	return &mealplanning.ValidPrepTaskConfig{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		StorageDurationInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: x.StorageDurationInSeconds.Min,
+			Max: x.StorageDurationInSeconds.Max,
+		},
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		ID:                  x.Id,
+		StorageType:         x.StorageType,
+		StorageInstructions: x.StorageInstructions,
+		Notes:               x.Notes,
+		Source:              x.Source,
+		Preparation:         *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
+		Ingredient:          *ConvertGRPCValidIngredientToValidIngredient(x.Ingredient),
+	}
+}

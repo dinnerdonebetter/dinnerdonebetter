@@ -43,6 +43,7 @@ const (
 	MealPlanningService_ArchiveValidIngredientGroup_FullMethodName                         = "/mealplanning.MealPlanningService/ArchiveValidIngredientGroup"
 	MealPlanningService_ArchiveValidIngredientMeasurementUnit_FullMethodName               = "/mealplanning.MealPlanningService/ArchiveValidIngredientMeasurementUnit"
 	MealPlanningService_ArchiveValidIngredientPreparation_FullMethodName                   = "/mealplanning.MealPlanningService/ArchiveValidIngredientPreparation"
+	MealPlanningService_ArchiveValidPrepTaskConfig_FullMethodName                          = "/mealplanning.MealPlanningService/ArchiveValidPrepTaskConfig"
 	MealPlanningService_ArchiveValidIngredientState_FullMethodName                         = "/mealplanning.MealPlanningService/ArchiveValidIngredientState"
 	MealPlanningService_ArchiveValidIngredientStateIngredient_FullMethodName               = "/mealplanning.MealPlanningService/ArchiveValidIngredientStateIngredient"
 	MealPlanningService_ArchiveValidInstrument_FullMethodName                              = "/mealplanning.MealPlanningService/ArchiveValidInstrument"
@@ -77,6 +78,7 @@ const (
 	MealPlanningService_CreateValidIngredientGroup_FullMethodName                          = "/mealplanning.MealPlanningService/CreateValidIngredientGroup"
 	MealPlanningService_CreateValidIngredientMeasurementUnit_FullMethodName                = "/mealplanning.MealPlanningService/CreateValidIngredientMeasurementUnit"
 	MealPlanningService_CreateValidIngredientPreparation_FullMethodName                    = "/mealplanning.MealPlanningService/CreateValidIngredientPreparation"
+	MealPlanningService_CreateValidPrepTaskConfig_FullMethodName                           = "/mealplanning.MealPlanningService/CreateValidPrepTaskConfig"
 	MealPlanningService_CreateValidIngredientState_FullMethodName                          = "/mealplanning.MealPlanningService/CreateValidIngredientState"
 	MealPlanningService_CreateValidIngredientStateIngredient_FullMethodName                = "/mealplanning.MealPlanningService/CreateValidIngredientStateIngredient"
 	MealPlanningService_CreateValidInstrument_FullMethodName                               = "/mealplanning.MealPlanningService/CreateValidInstrument"
@@ -138,6 +140,11 @@ const (
 	MealPlanningService_GetValidIngredientPreparations_FullMethodName                      = "/mealplanning.MealPlanningService/GetValidIngredientPreparations"
 	MealPlanningService_GetValidIngredientPreparationsByIngredient_FullMethodName          = "/mealplanning.MealPlanningService/GetValidIngredientPreparationsByIngredient"
 	MealPlanningService_GetValidIngredientPreparationsByPreparation_FullMethodName         = "/mealplanning.MealPlanningService/GetValidIngredientPreparationsByPreparation"
+	MealPlanningService_GetValidPrepTaskConfig_FullMethodName                              = "/mealplanning.MealPlanningService/GetValidPrepTaskConfig"
+	MealPlanningService_GetValidPrepTaskConfigs_FullMethodName                             = "/mealplanning.MealPlanningService/GetValidPrepTaskConfigs"
+	MealPlanningService_GetValidPrepTaskConfigsByIngredient_FullMethodName                 = "/mealplanning.MealPlanningService/GetValidPrepTaskConfigsByIngredient"
+	MealPlanningService_GetValidPrepTaskConfigsByPreparation_FullMethodName                = "/mealplanning.MealPlanningService/GetValidPrepTaskConfigsByPreparation"
+	MealPlanningService_GetValidPrepTaskConfigsByIngredientAndPreparation_FullMethodName   = "/mealplanning.MealPlanningService/GetValidPrepTaskConfigsByIngredientAndPreparation"
 	MealPlanningService_GetValidIngredientState_FullMethodName                             = "/mealplanning.MealPlanningService/GetValidIngredientState"
 	MealPlanningService_GetValidIngredientStateIngredient_FullMethodName                   = "/mealplanning.MealPlanningService/GetValidIngredientStateIngredient"
 	MealPlanningService_GetValidIngredientStateIngredients_FullMethodName                  = "/mealplanning.MealPlanningService/GetValidIngredientStateIngredients"
@@ -202,6 +209,7 @@ const (
 	MealPlanningService_UpdateValidIngredientGroup_FullMethodName                          = "/mealplanning.MealPlanningService/UpdateValidIngredientGroup"
 	MealPlanningService_UpdateValidIngredientMeasurementUnit_FullMethodName                = "/mealplanning.MealPlanningService/UpdateValidIngredientMeasurementUnit"
 	MealPlanningService_UpdateValidIngredientPreparation_FullMethodName                    = "/mealplanning.MealPlanningService/UpdateValidIngredientPreparation"
+	MealPlanningService_UpdateValidPrepTaskConfig_FullMethodName                           = "/mealplanning.MealPlanningService/UpdateValidPrepTaskConfig"
 	MealPlanningService_UpdateValidIngredientState_FullMethodName                          = "/mealplanning.MealPlanningService/UpdateValidIngredientState"
 	MealPlanningService_UpdateValidIngredientStateIngredient_FullMethodName                = "/mealplanning.MealPlanningService/UpdateValidIngredientStateIngredient"
 	MealPlanningService_UpdateValidInstrument_FullMethodName                               = "/mealplanning.MealPlanningService/UpdateValidInstrument"
@@ -250,6 +258,7 @@ type MealPlanningServiceClient interface {
 	ArchiveValidIngredientGroup(ctx context.Context, in *ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientGroupResponse, error)
 	ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientMeasurementUnitResponse, error)
 	ArchiveValidIngredientPreparation(ctx context.Context, in *ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientPreparationResponse, error)
+	ArchiveValidPrepTaskConfig(ctx context.Context, in *ArchiveValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*ArchiveValidPrepTaskConfigResponse, error)
 	ArchiveValidIngredientState(ctx context.Context, in *ArchiveValidIngredientStateRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientStateResponse, error)
 	ArchiveValidIngredientStateIngredient(ctx context.Context, in *ArchiveValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientStateIngredientResponse, error)
 	ArchiveValidInstrument(ctx context.Context, in *ArchiveValidInstrumentRequest, opts ...grpc.CallOption) (*ArchiveValidInstrumentResponse, error)
@@ -284,6 +293,7 @@ type MealPlanningServiceClient interface {
 	CreateValidIngredientGroup(ctx context.Context, in *CreateValidIngredientGroupRequest, opts ...grpc.CallOption) (*CreateValidIngredientGroupResponse, error)
 	CreateValidIngredientMeasurementUnit(ctx context.Context, in *CreateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*CreateValidIngredientMeasurementUnitResponse, error)
 	CreateValidIngredientPreparation(ctx context.Context, in *CreateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*CreateValidIngredientPreparationResponse, error)
+	CreateValidPrepTaskConfig(ctx context.Context, in *CreateValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*CreateValidPrepTaskConfigResponse, error)
 	CreateValidIngredientState(ctx context.Context, in *CreateValidIngredientStateRequest, opts ...grpc.CallOption) (*CreateValidIngredientStateResponse, error)
 	CreateValidIngredientStateIngredient(ctx context.Context, in *CreateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*CreateValidIngredientStateIngredientResponse, error)
 	CreateValidInstrument(ctx context.Context, in *CreateValidInstrumentRequest, opts ...grpc.CallOption) (*CreateValidInstrumentResponse, error)
@@ -345,6 +355,11 @@ type MealPlanningServiceClient interface {
 	GetValidIngredientPreparations(ctx context.Context, in *GetValidIngredientPreparationsRequest, opts ...grpc.CallOption) (*GetValidIngredientPreparationsResponse, error)
 	GetValidIngredientPreparationsByIngredient(ctx context.Context, in *GetValidIngredientPreparationsByIngredientRequest, opts ...grpc.CallOption) (*GetValidIngredientPreparationsByIngredientResponse, error)
 	GetValidIngredientPreparationsByPreparation(ctx context.Context, in *GetValidIngredientPreparationsByPreparationRequest, opts ...grpc.CallOption) (*GetValidIngredientPreparationsByPreparationResponse, error)
+	GetValidPrepTaskConfig(ctx context.Context, in *GetValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigResponse, error)
+	GetValidPrepTaskConfigs(ctx context.Context, in *GetValidPrepTaskConfigsRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsResponse, error)
+	GetValidPrepTaskConfigsByIngredient(ctx context.Context, in *GetValidPrepTaskConfigsByIngredientRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByIngredientResponse, error)
+	GetValidPrepTaskConfigsByPreparation(ctx context.Context, in *GetValidPrepTaskConfigsByPreparationRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByPreparationResponse, error)
+	GetValidPrepTaskConfigsByIngredientAndPreparation(ctx context.Context, in *GetValidPrepTaskConfigsByIngredientAndPreparationRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByIngredientAndPreparationResponse, error)
 	GetValidIngredientState(ctx context.Context, in *GetValidIngredientStateRequest, opts ...grpc.CallOption) (*GetValidIngredientStateResponse, error)
 	GetValidIngredientStateIngredient(ctx context.Context, in *GetValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*GetValidIngredientStateIngredientResponse, error)
 	GetValidIngredientStateIngredients(ctx context.Context, in *GetValidIngredientStateIngredientsRequest, opts ...grpc.CallOption) (*GetValidIngredientStateIngredientsResponse, error)
@@ -409,6 +424,7 @@ type MealPlanningServiceClient interface {
 	UpdateValidIngredientGroup(ctx context.Context, in *UpdateValidIngredientGroupRequest, opts ...grpc.CallOption) (*UpdateValidIngredientGroupResponse, error)
 	UpdateValidIngredientMeasurementUnit(ctx context.Context, in *UpdateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*UpdateValidIngredientMeasurementUnitResponse, error)
 	UpdateValidIngredientPreparation(ctx context.Context, in *UpdateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*UpdateValidIngredientPreparationResponse, error)
+	UpdateValidPrepTaskConfig(ctx context.Context, in *UpdateValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*UpdateValidPrepTaskConfigResponse, error)
 	UpdateValidIngredientState(ctx context.Context, in *UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*UpdateValidIngredientStateResponse, error)
 	UpdateValidIngredientStateIngredient(ctx context.Context, in *UpdateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*UpdateValidIngredientStateIngredientResponse, error)
 	UpdateValidInstrument(ctx context.Context, in *UpdateValidInstrumentRequest, opts ...grpc.CallOption) (*UpdateValidInstrumentResponse, error)
@@ -662,6 +678,16 @@ func (c *mealPlanningServiceClient) ArchiveValidIngredientPreparation(ctx contex
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveValidIngredientPreparation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) ArchiveValidPrepTaskConfig(ctx context.Context, in *ArchiveValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*ArchiveValidPrepTaskConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ArchiveValidPrepTaskConfigResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveValidPrepTaskConfig_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1002,6 +1028,16 @@ func (c *mealPlanningServiceClient) CreateValidIngredientPreparation(ctx context
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_CreateValidIngredientPreparation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) CreateValidPrepTaskConfig(ctx context.Context, in *CreateValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*CreateValidPrepTaskConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateValidPrepTaskConfigResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_CreateValidPrepTaskConfig_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1612,6 +1648,56 @@ func (c *mealPlanningServiceClient) GetValidIngredientPreparationsByPreparation(
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetValidIngredientPreparationsByPreparationResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_GetValidIngredientPreparationsByPreparation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetValidPrepTaskConfig(ctx context.Context, in *GetValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidPrepTaskConfigResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidPrepTaskConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetValidPrepTaskConfigs(ctx context.Context, in *GetValidPrepTaskConfigsRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidPrepTaskConfigsResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidPrepTaskConfigs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetValidPrepTaskConfigsByIngredient(ctx context.Context, in *GetValidPrepTaskConfigsByIngredientRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByIngredientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidPrepTaskConfigsByIngredientResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidPrepTaskConfigsByIngredient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetValidPrepTaskConfigsByPreparation(ctx context.Context, in *GetValidPrepTaskConfigsByPreparationRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByPreparationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidPrepTaskConfigsByPreparationResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidPrepTaskConfigsByPreparation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mealPlanningServiceClient) GetValidPrepTaskConfigsByIngredientAndPreparation(ctx context.Context, in *GetValidPrepTaskConfigsByIngredientAndPreparationRequest, opts ...grpc.CallOption) (*GetValidPrepTaskConfigsByIngredientAndPreparationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetValidPrepTaskConfigsByIngredientAndPreparationResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetValidPrepTaskConfigsByIngredientAndPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2258,6 +2344,16 @@ func (c *mealPlanningServiceClient) UpdateValidIngredientPreparation(ctx context
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) UpdateValidPrepTaskConfig(ctx context.Context, in *UpdateValidPrepTaskConfigRequest, opts ...grpc.CallOption) (*UpdateValidPrepTaskConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateValidPrepTaskConfigResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_UpdateValidPrepTaskConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) UpdateValidIngredientState(ctx context.Context, in *UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*UpdateValidIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateValidIngredientStateResponse)
@@ -2475,6 +2571,7 @@ type MealPlanningServiceServer interface {
 	ArchiveValidIngredientGroup(context.Context, *ArchiveValidIngredientGroupRequest) (*ArchiveValidIngredientGroupResponse, error)
 	ArchiveValidIngredientMeasurementUnit(context.Context, *ArchiveValidIngredientMeasurementUnitRequest) (*ArchiveValidIngredientMeasurementUnitResponse, error)
 	ArchiveValidIngredientPreparation(context.Context, *ArchiveValidIngredientPreparationRequest) (*ArchiveValidIngredientPreparationResponse, error)
+	ArchiveValidPrepTaskConfig(context.Context, *ArchiveValidPrepTaskConfigRequest) (*ArchiveValidPrepTaskConfigResponse, error)
 	ArchiveValidIngredientState(context.Context, *ArchiveValidIngredientStateRequest) (*ArchiveValidIngredientStateResponse, error)
 	ArchiveValidIngredientStateIngredient(context.Context, *ArchiveValidIngredientStateIngredientRequest) (*ArchiveValidIngredientStateIngredientResponse, error)
 	ArchiveValidInstrument(context.Context, *ArchiveValidInstrumentRequest) (*ArchiveValidInstrumentResponse, error)
@@ -2509,6 +2606,7 @@ type MealPlanningServiceServer interface {
 	CreateValidIngredientGroup(context.Context, *CreateValidIngredientGroupRequest) (*CreateValidIngredientGroupResponse, error)
 	CreateValidIngredientMeasurementUnit(context.Context, *CreateValidIngredientMeasurementUnitRequest) (*CreateValidIngredientMeasurementUnitResponse, error)
 	CreateValidIngredientPreparation(context.Context, *CreateValidIngredientPreparationRequest) (*CreateValidIngredientPreparationResponse, error)
+	CreateValidPrepTaskConfig(context.Context, *CreateValidPrepTaskConfigRequest) (*CreateValidPrepTaskConfigResponse, error)
 	CreateValidIngredientState(context.Context, *CreateValidIngredientStateRequest) (*CreateValidIngredientStateResponse, error)
 	CreateValidIngredientStateIngredient(context.Context, *CreateValidIngredientStateIngredientRequest) (*CreateValidIngredientStateIngredientResponse, error)
 	CreateValidInstrument(context.Context, *CreateValidInstrumentRequest) (*CreateValidInstrumentResponse, error)
@@ -2570,6 +2668,11 @@ type MealPlanningServiceServer interface {
 	GetValidIngredientPreparations(context.Context, *GetValidIngredientPreparationsRequest) (*GetValidIngredientPreparationsResponse, error)
 	GetValidIngredientPreparationsByIngredient(context.Context, *GetValidIngredientPreparationsByIngredientRequest) (*GetValidIngredientPreparationsByIngredientResponse, error)
 	GetValidIngredientPreparationsByPreparation(context.Context, *GetValidIngredientPreparationsByPreparationRequest) (*GetValidIngredientPreparationsByPreparationResponse, error)
+	GetValidPrepTaskConfig(context.Context, *GetValidPrepTaskConfigRequest) (*GetValidPrepTaskConfigResponse, error)
+	GetValidPrepTaskConfigs(context.Context, *GetValidPrepTaskConfigsRequest) (*GetValidPrepTaskConfigsResponse, error)
+	GetValidPrepTaskConfigsByIngredient(context.Context, *GetValidPrepTaskConfigsByIngredientRequest) (*GetValidPrepTaskConfigsByIngredientResponse, error)
+	GetValidPrepTaskConfigsByPreparation(context.Context, *GetValidPrepTaskConfigsByPreparationRequest) (*GetValidPrepTaskConfigsByPreparationResponse, error)
+	GetValidPrepTaskConfigsByIngredientAndPreparation(context.Context, *GetValidPrepTaskConfigsByIngredientAndPreparationRequest) (*GetValidPrepTaskConfigsByIngredientAndPreparationResponse, error)
 	GetValidIngredientState(context.Context, *GetValidIngredientStateRequest) (*GetValidIngredientStateResponse, error)
 	GetValidIngredientStateIngredient(context.Context, *GetValidIngredientStateIngredientRequest) (*GetValidIngredientStateIngredientResponse, error)
 	GetValidIngredientStateIngredients(context.Context, *GetValidIngredientStateIngredientsRequest) (*GetValidIngredientStateIngredientsResponse, error)
@@ -2634,6 +2737,7 @@ type MealPlanningServiceServer interface {
 	UpdateValidIngredientGroup(context.Context, *UpdateValidIngredientGroupRequest) (*UpdateValidIngredientGroupResponse, error)
 	UpdateValidIngredientMeasurementUnit(context.Context, *UpdateValidIngredientMeasurementUnitRequest) (*UpdateValidIngredientMeasurementUnitResponse, error)
 	UpdateValidIngredientPreparation(context.Context, *UpdateValidIngredientPreparationRequest) (*UpdateValidIngredientPreparationResponse, error)
+	UpdateValidPrepTaskConfig(context.Context, *UpdateValidPrepTaskConfigRequest) (*UpdateValidPrepTaskConfigResponse, error)
 	UpdateValidIngredientState(context.Context, *UpdateValidIngredientStateRequest) (*UpdateValidIngredientStateResponse, error)
 	UpdateValidIngredientStateIngredient(context.Context, *UpdateValidIngredientStateIngredientRequest) (*UpdateValidIngredientStateIngredientResponse, error)
 	UpdateValidInstrument(context.Context, *UpdateValidInstrumentRequest) (*UpdateValidInstrumentResponse, error)
@@ -2731,6 +2835,9 @@ func (UnimplementedMealPlanningServiceServer) ArchiveValidIngredientMeasurementU
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveValidIngredientPreparation(context.Context, *ArchiveValidIngredientPreparationRequest) (*ArchiveValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientPreparation not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) ArchiveValidPrepTaskConfig(context.Context, *ArchiveValidPrepTaskConfigRequest) (*ArchiveValidPrepTaskConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidPrepTaskConfig not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveValidIngredientState(context.Context, *ArchiveValidIngredientStateRequest) (*ArchiveValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientState not implemented")
@@ -2833,6 +2940,9 @@ func (UnimplementedMealPlanningServiceServer) CreateValidIngredientMeasurementUn
 }
 func (UnimplementedMealPlanningServiceServer) CreateValidIngredientPreparation(context.Context, *CreateValidIngredientPreparationRequest) (*CreateValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientPreparation not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) CreateValidPrepTaskConfig(context.Context, *CreateValidPrepTaskConfigRequest) (*CreateValidPrepTaskConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateValidPrepTaskConfig not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) CreateValidIngredientState(context.Context, *CreateValidIngredientStateRequest) (*CreateValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientState not implemented")
@@ -3016,6 +3126,21 @@ func (UnimplementedMealPlanningServiceServer) GetValidIngredientPreparationsByIn
 }
 func (UnimplementedMealPlanningServiceServer) GetValidIngredientPreparationsByPreparation(context.Context, *GetValidIngredientPreparationsByPreparationRequest) (*GetValidIngredientPreparationsByPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientPreparationsByPreparation not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetValidPrepTaskConfig(context.Context, *GetValidPrepTaskConfigRequest) (*GetValidPrepTaskConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidPrepTaskConfig not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetValidPrepTaskConfigs(context.Context, *GetValidPrepTaskConfigsRequest) (*GetValidPrepTaskConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidPrepTaskConfigs not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetValidPrepTaskConfigsByIngredient(context.Context, *GetValidPrepTaskConfigsByIngredientRequest) (*GetValidPrepTaskConfigsByIngredientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidPrepTaskConfigsByIngredient not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetValidPrepTaskConfigsByPreparation(context.Context, *GetValidPrepTaskConfigsByPreparationRequest) (*GetValidPrepTaskConfigsByPreparationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidPrepTaskConfigsByPreparation not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetValidPrepTaskConfigsByIngredientAndPreparation(context.Context, *GetValidPrepTaskConfigsByIngredientAndPreparationRequest) (*GetValidPrepTaskConfigsByIngredientAndPreparationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidPrepTaskConfigsByIngredientAndPreparation not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetValidIngredientState(context.Context, *GetValidIngredientStateRequest) (*GetValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientState not implemented")
@@ -3208,6 +3333,9 @@ func (UnimplementedMealPlanningServiceServer) UpdateValidIngredientMeasurementUn
 }
 func (UnimplementedMealPlanningServiceServer) UpdateValidIngredientPreparation(context.Context, *UpdateValidIngredientPreparationRequest) (*UpdateValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientPreparation not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) UpdateValidPrepTaskConfig(context.Context, *UpdateValidPrepTaskConfigRequest) (*UpdateValidPrepTaskConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidPrepTaskConfig not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) UpdateValidIngredientState(context.Context, *UpdateValidIngredientStateRequest) (*UpdateValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientState not implemented")
@@ -3697,6 +3825,24 @@ func _MealPlanningService_ArchiveValidIngredientPreparation_Handler(srv interfac
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).ArchiveValidIngredientPreparation(ctx, req.(*ArchiveValidIngredientPreparationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_ArchiveValidPrepTaskConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArchiveValidPrepTaskConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).ArchiveValidPrepTaskConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_ArchiveValidPrepTaskConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).ArchiveValidPrepTaskConfig(ctx, req.(*ArchiveValidPrepTaskConfigRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4309,6 +4455,24 @@ func _MealPlanningService_CreateValidIngredientPreparation_Handler(srv interface
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).CreateValidIngredientPreparation(ctx, req.(*CreateValidIngredientPreparationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_CreateValidPrepTaskConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateValidPrepTaskConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).CreateValidPrepTaskConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_CreateValidPrepTaskConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).CreateValidPrepTaskConfig(ctx, req.(*CreateValidPrepTaskConfigRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5407,6 +5571,96 @@ func _MealPlanningService_GetValidIngredientPreparationsByPreparation_Handler(sr
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).GetValidIngredientPreparationsByPreparation(ctx, req.(*GetValidIngredientPreparationsByPreparationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetValidPrepTaskConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidPrepTaskConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidPrepTaskConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfig(ctx, req.(*GetValidPrepTaskConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetValidPrepTaskConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidPrepTaskConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidPrepTaskConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigs(ctx, req.(*GetValidPrepTaskConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetValidPrepTaskConfigsByIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidPrepTaskConfigsByIngredientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByIngredient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidPrepTaskConfigsByIngredient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByIngredient(ctx, req.(*GetValidPrepTaskConfigsByIngredientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetValidPrepTaskConfigsByPreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidPrepTaskConfigsByPreparationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByPreparation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidPrepTaskConfigsByPreparation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByPreparation(ctx, req.(*GetValidPrepTaskConfigsByPreparationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MealPlanningService_GetValidPrepTaskConfigsByIngredientAndPreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidPrepTaskConfigsByIngredientAndPreparationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetValidPrepTaskConfigsByIngredientAndPreparation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetValidPrepTaskConfigsByIngredientAndPreparation(ctx, req.(*GetValidPrepTaskConfigsByIngredientAndPreparationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6563,6 +6817,24 @@ func _MealPlanningService_UpdateValidIngredientPreparation_Handler(srv interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_UpdateValidPrepTaskConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateValidPrepTaskConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).UpdateValidPrepTaskConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_UpdateValidPrepTaskConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).UpdateValidPrepTaskConfig(ctx, req.(*UpdateValidPrepTaskConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_UpdateValidIngredientState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateValidIngredientStateRequest)
 	if err := dec(in); err != nil {
@@ -7005,6 +7277,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_ArchiveValidIngredientPreparation_Handler,
 		},
 		{
+			MethodName: "ArchiveValidPrepTaskConfig",
+			Handler:    _MealPlanningService_ArchiveValidPrepTaskConfig_Handler,
+		},
+		{
 			MethodName: "ArchiveValidIngredientState",
 			Handler:    _MealPlanningService_ArchiveValidIngredientState_Handler,
 		},
@@ -7139,6 +7415,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateValidIngredientPreparation",
 			Handler:    _MealPlanningService_CreateValidIngredientPreparation_Handler,
+		},
+		{
+			MethodName: "CreateValidPrepTaskConfig",
+			Handler:    _MealPlanningService_CreateValidPrepTaskConfig_Handler,
 		},
 		{
 			MethodName: "CreateValidIngredientState",
@@ -7383,6 +7663,26 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetValidIngredientPreparationsByPreparation",
 			Handler:    _MealPlanningService_GetValidIngredientPreparationsByPreparation_Handler,
+		},
+		{
+			MethodName: "GetValidPrepTaskConfig",
+			Handler:    _MealPlanningService_GetValidPrepTaskConfig_Handler,
+		},
+		{
+			MethodName: "GetValidPrepTaskConfigs",
+			Handler:    _MealPlanningService_GetValidPrepTaskConfigs_Handler,
+		},
+		{
+			MethodName: "GetValidPrepTaskConfigsByIngredient",
+			Handler:    _MealPlanningService_GetValidPrepTaskConfigsByIngredient_Handler,
+		},
+		{
+			MethodName: "GetValidPrepTaskConfigsByPreparation",
+			Handler:    _MealPlanningService_GetValidPrepTaskConfigsByPreparation_Handler,
+		},
+		{
+			MethodName: "GetValidPrepTaskConfigsByIngredientAndPreparation",
+			Handler:    _MealPlanningService_GetValidPrepTaskConfigsByIngredientAndPreparation_Handler,
 		},
 		{
 			MethodName: "GetValidIngredientState",
@@ -7639,6 +7939,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateValidIngredientPreparation",
 			Handler:    _MealPlanningService_UpdateValidIngredientPreparation_Handler,
+		},
+		{
+			MethodName: "UpdateValidPrepTaskConfig",
+			Handler:    _MealPlanningService_UpdateValidPrepTaskConfig_Handler,
 		},
 		{
 			MethodName: "UpdateValidIngredientState",

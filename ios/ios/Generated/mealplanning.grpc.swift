@@ -296,6 +296,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "ArchiveValidIngredientPreparation"
             )
         }
+        /// Namespace for "ArchiveValidPrepTaskConfig" metadata.
+        internal enum ArchiveValidPrepTaskConfig {
+            /// Request type for "ArchiveValidPrepTaskConfig".
+            internal typealias Input = Mealplanning_ArchiveValidPrepTaskConfigRequest
+            /// Response type for "ArchiveValidPrepTaskConfig".
+            internal typealias Output = Mealplanning_ArchiveValidPrepTaskConfigResponse
+            /// Descriptor for "ArchiveValidPrepTaskConfig".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "ArchiveValidPrepTaskConfig"
+            )
+        }
         /// Namespace for "ArchiveValidIngredientState" metadata.
         internal enum ArchiveValidIngredientState {
             /// Request type for "ArchiveValidIngredientState".
@@ -702,6 +714,18 @@ internal enum Mealplanning_MealPlanningService {
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
                 method: "CreateValidIngredientPreparation"
+            )
+        }
+        /// Namespace for "CreateValidPrepTaskConfig" metadata.
+        internal enum CreateValidPrepTaskConfig {
+            /// Request type for "CreateValidPrepTaskConfig".
+            internal typealias Input = Mealplanning_CreateValidPrepTaskConfigRequest
+            /// Response type for "CreateValidPrepTaskConfig".
+            internal typealias Output = Mealplanning_CreateValidPrepTaskConfigResponse
+            /// Descriptor for "CreateValidPrepTaskConfig".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "CreateValidPrepTaskConfig"
             )
         }
         /// Namespace for "CreateValidIngredientState" metadata.
@@ -1434,6 +1458,66 @@ internal enum Mealplanning_MealPlanningService {
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
                 method: "GetValidIngredientPreparationsByPreparation"
+            )
+        }
+        /// Namespace for "GetValidPrepTaskConfig" metadata.
+        internal enum GetValidPrepTaskConfig {
+            /// Request type for "GetValidPrepTaskConfig".
+            internal typealias Input = Mealplanning_GetValidPrepTaskConfigRequest
+            /// Response type for "GetValidPrepTaskConfig".
+            internal typealias Output = Mealplanning_GetValidPrepTaskConfigResponse
+            /// Descriptor for "GetValidPrepTaskConfig".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidPrepTaskConfig"
+            )
+        }
+        /// Namespace for "GetValidPrepTaskConfigs" metadata.
+        internal enum GetValidPrepTaskConfigs {
+            /// Request type for "GetValidPrepTaskConfigs".
+            internal typealias Input = Mealplanning_GetValidPrepTaskConfigsRequest
+            /// Response type for "GetValidPrepTaskConfigs".
+            internal typealias Output = Mealplanning_GetValidPrepTaskConfigsResponse
+            /// Descriptor for "GetValidPrepTaskConfigs".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidPrepTaskConfigs"
+            )
+        }
+        /// Namespace for "GetValidPrepTaskConfigsByIngredient" metadata.
+        internal enum GetValidPrepTaskConfigsByIngredient {
+            /// Request type for "GetValidPrepTaskConfigsByIngredient".
+            internal typealias Input = Mealplanning_GetValidPrepTaskConfigsByIngredientRequest
+            /// Response type for "GetValidPrepTaskConfigsByIngredient".
+            internal typealias Output = Mealplanning_GetValidPrepTaskConfigsByIngredientResponse
+            /// Descriptor for "GetValidPrepTaskConfigsByIngredient".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidPrepTaskConfigsByIngredient"
+            )
+        }
+        /// Namespace for "GetValidPrepTaskConfigsByPreparation" metadata.
+        internal enum GetValidPrepTaskConfigsByPreparation {
+            /// Request type for "GetValidPrepTaskConfigsByPreparation".
+            internal typealias Input = Mealplanning_GetValidPrepTaskConfigsByPreparationRequest
+            /// Response type for "GetValidPrepTaskConfigsByPreparation".
+            internal typealias Output = Mealplanning_GetValidPrepTaskConfigsByPreparationResponse
+            /// Descriptor for "GetValidPrepTaskConfigsByPreparation".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidPrepTaskConfigsByPreparation"
+            )
+        }
+        /// Namespace for "GetValidPrepTaskConfigsByIngredientAndPreparation" metadata.
+        internal enum GetValidPrepTaskConfigsByIngredientAndPreparation {
+            /// Request type for "GetValidPrepTaskConfigsByIngredientAndPreparation".
+            internal typealias Input = Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest
+            /// Response type for "GetValidPrepTaskConfigsByIngredientAndPreparation".
+            internal typealias Output = Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse
+            /// Descriptor for "GetValidPrepTaskConfigsByIngredientAndPreparation".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "GetValidPrepTaskConfigsByIngredientAndPreparation"
             )
         }
         /// Namespace for "GetValidIngredientState" metadata.
@@ -2204,6 +2288,18 @@ internal enum Mealplanning_MealPlanningService {
                 method: "UpdateValidIngredientPreparation"
             )
         }
+        /// Namespace for "UpdateValidPrepTaskConfig" metadata.
+        internal enum UpdateValidPrepTaskConfig {
+            /// Request type for "UpdateValidPrepTaskConfig".
+            internal typealias Input = Mealplanning_UpdateValidPrepTaskConfigRequest
+            /// Response type for "UpdateValidPrepTaskConfig".
+            internal typealias Output = Mealplanning_UpdateValidPrepTaskConfigResponse
+            /// Descriptor for "UpdateValidPrepTaskConfig".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "UpdateValidPrepTaskConfig"
+            )
+        }
         /// Namespace for "UpdateValidIngredientState" metadata.
         internal enum UpdateValidIngredientState {
             /// Request type for "UpdateValidIngredientState".
@@ -2457,6 +2553,7 @@ internal enum Mealplanning_MealPlanningService {
             ArchiveValidIngredientGroup.descriptor,
             ArchiveValidIngredientMeasurementUnit.descriptor,
             ArchiveValidIngredientPreparation.descriptor,
+            ArchiveValidPrepTaskConfig.descriptor,
             ArchiveValidIngredientState.descriptor,
             ArchiveValidIngredientStateIngredient.descriptor,
             ArchiveValidInstrument.descriptor,
@@ -2491,6 +2588,7 @@ internal enum Mealplanning_MealPlanningService {
             CreateValidIngredientGroup.descriptor,
             CreateValidIngredientMeasurementUnit.descriptor,
             CreateValidIngredientPreparation.descriptor,
+            CreateValidPrepTaskConfig.descriptor,
             CreateValidIngredientState.descriptor,
             CreateValidIngredientStateIngredient.descriptor,
             CreateValidInstrument.descriptor,
@@ -2552,6 +2650,11 @@ internal enum Mealplanning_MealPlanningService {
             GetValidIngredientPreparations.descriptor,
             GetValidIngredientPreparationsByIngredient.descriptor,
             GetValidIngredientPreparationsByPreparation.descriptor,
+            GetValidPrepTaskConfig.descriptor,
+            GetValidPrepTaskConfigs.descriptor,
+            GetValidPrepTaskConfigsByIngredient.descriptor,
+            GetValidPrepTaskConfigsByPreparation.descriptor,
+            GetValidPrepTaskConfigsByIngredientAndPreparation.descriptor,
             GetValidIngredientState.descriptor,
             GetValidIngredientStateIngredient.descriptor,
             GetValidIngredientStateIngredients.descriptor,
@@ -2616,6 +2719,7 @@ internal enum Mealplanning_MealPlanningService {
             UpdateValidIngredientGroup.descriptor,
             UpdateValidIngredientMeasurementUnit.descriptor,
             UpdateValidIngredientPreparation.descriptor,
+            UpdateValidPrepTaskConfig.descriptor,
             UpdateValidIngredientState.descriptor,
             UpdateValidIngredientStateIngredient.descriptor,
             UpdateValidInstrument.descriptor,
@@ -3089,6 +3193,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveValidIngredientPreparationResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidIngredientPreparationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ArchiveValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_ArchiveValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_ArchiveValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_ArchiveValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func archiveValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_ArchiveValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_ArchiveValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidPrepTaskConfigResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "ArchiveValidIngredientState" method.
@@ -3735,6 +3858,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_CreateValidIngredientPreparationResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidIngredientPreparationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "CreateValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_CreateValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_CreateValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_CreateValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func createValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_CreateValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_CreateValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_CreateValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidPrepTaskConfigResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "CreateValidIngredientState" method.
@@ -4894,6 +5036,101 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidIngredientPreparationsByPreparationResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidIngredientPreparationsByPreparationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidPrepTaskConfigs" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidPrepTaskConfigs<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidPrepTaskConfigsByIngredient" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidPrepTaskConfigsByIngredient<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidPrepTaskConfigsByPreparation" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByPreparationRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByPreparationRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByPreparationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidPrepTaskConfigsByPreparation<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetValidPrepTaskConfigsByIngredientAndPreparation" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getValidPrepTaskConfigsByIngredientAndPreparation<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetValidIngredientState" method.
@@ -6112,6 +6349,25 @@ extension Mealplanning_MealPlanningService {
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateValidIngredientPreparationResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
+        /// Call the "UpdateValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_UpdateValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_UpdateValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UpdateValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func updateValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_UpdateValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UpdateValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UpdateValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateValidPrepTaskConfigResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "UpdateValidIngredientState" method.
         ///
         /// - Parameters:
@@ -7180,6 +7436,36 @@ extension Mealplanning_MealPlanningService {
             )
         }
 
+        /// Call the "ArchiveValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_ArchiveValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_ArchiveValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_ArchiveValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func archiveValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_ArchiveValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_ArchiveValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidPrepTaskConfigResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.ArchiveValidPrepTaskConfig.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
         /// Call the "ArchiveValidIngredientState" method.
         ///
         /// - Parameters:
@@ -8193,6 +8479,36 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.CreateValidIngredientPreparation.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "CreateValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_CreateValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_CreateValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_CreateValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func createValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_CreateValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_CreateValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_CreateValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.CreateValidPrepTaskConfig.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -10023,6 +10339,156 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.GetValidIngredientPreparationsByPreparation.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidPrepTaskConfig.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidPrepTaskConfigs" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidPrepTaskConfigs<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidPrepTaskConfigs.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidPrepTaskConfigsByIngredient" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidPrepTaskConfigsByIngredient<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidPrepTaskConfigsByIngredient.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidPrepTaskConfigsByPreparation" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByPreparationRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByPreparationRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByPreparationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidPrepTaskConfigsByPreparation<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidPrepTaskConfigsByPreparation.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetValidPrepTaskConfigsByIngredientAndPreparation" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getValidPrepTaskConfigsByIngredientAndPreparation<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.GetValidPrepTaskConfigsByIngredientAndPreparation.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -11950,6 +12416,36 @@ extension Mealplanning_MealPlanningService {
             )
         }
 
+        /// Call the "UpdateValidPrepTaskConfig" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Mealplanning_UpdateValidPrepTaskConfigRequest` message.
+        ///   - serializer: A serializer for `Mealplanning_UpdateValidPrepTaskConfigRequest` messages.
+        ///   - deserializer: A deserializer for `Mealplanning_UpdateValidPrepTaskConfigResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func updateValidPrepTaskConfig<Result>(
+            request: GRPCCore.ClientRequest<Mealplanning_UpdateValidPrepTaskConfigRequest>,
+            serializer: some GRPCCore.MessageSerializer<Mealplanning_UpdateValidPrepTaskConfigRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UpdateValidPrepTaskConfigResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.UpdateValidPrepTaskConfig.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
         /// Call the "UpdateValidIngredientState" method.
         ///
         /// - Parameters:
@@ -13100,6 +13596,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
+    /// Call the "ArchiveValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_ArchiveValidPrepTaskConfigRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveValidPrepTaskConfig<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_ArchiveValidPrepTaskConfigRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.archiveValidPrepTaskConfig(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_ArchiveValidPrepTaskConfigRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_ArchiveValidPrepTaskConfigResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "ArchiveValidIngredientState" method.
     ///
     /// - Parameters:
@@ -13945,6 +14466,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_CreateValidIngredientPreparationRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_CreateValidIngredientPreparationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "CreateValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_CreateValidPrepTaskConfigRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func createValidPrepTaskConfig<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_CreateValidPrepTaskConfigRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.createValidPrepTaskConfig(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_CreateValidPrepTaskConfigRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_CreateValidPrepTaskConfigResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -15470,6 +16016,131 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidIngredientPreparationsByPreparationRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidIngredientPreparationsByPreparationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfig<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidPrepTaskConfig(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidPrepTaskConfigRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidPrepTaskConfigResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigs" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigs<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidPrepTaskConfigs(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidPrepTaskConfigsRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidPrepTaskConfigsResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByIngredient" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByIngredient<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidPrepTaskConfigsByIngredient(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByPreparation" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByPreparationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByPreparation<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidPrepTaskConfigsByPreparation(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByIngredientAndPreparation" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByIngredientAndPreparation<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getValidPrepTaskConfigsByIngredientAndPreparation(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -17075,6 +17746,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
+    /// Call the "UpdateValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Mealplanning_UpdateValidPrepTaskConfigRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func updateValidPrepTaskConfig<Result>(
+        request: GRPCCore.ClientRequest<Mealplanning_UpdateValidPrepTaskConfigRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.updateValidPrepTaskConfig(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UpdateValidPrepTaskConfigRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UpdateValidPrepTaskConfigResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "UpdateValidIngredientState" method.
     ///
     /// - Parameters:
@@ -18221,6 +18917,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
+    /// Call the "ArchiveValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveValidPrepTaskConfig<Result>(
+        _ message: Mealplanning_ArchiveValidPrepTaskConfigRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_ArchiveValidPrepTaskConfigRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.archiveValidPrepTaskConfig(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "ArchiveValidIngredientState" method.
     ///
     /// - Parameters:
@@ -19201,6 +19926,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.createValidIngredientPreparation(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "CreateValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func createValidPrepTaskConfig<Result>(
+        _ message: Mealplanning_CreateValidPrepTaskConfigRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_CreateValidPrepTaskConfigRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.createValidPrepTaskConfig(
             request: request,
             options: options,
             onResponse: handleResponse
@@ -20970,6 +21724,151 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.getValidIngredientPreparationsByPreparation(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfig<Result>(
+        _ message: Mealplanning_GetValidPrepTaskConfigRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidPrepTaskConfig(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigs" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigs<Result>(
+        _ message: Mealplanning_GetValidPrepTaskConfigsRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidPrepTaskConfigs(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByIngredient" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByIngredient<Result>(
+        _ message: Mealplanning_GetValidPrepTaskConfigsByIngredientRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidPrepTaskConfigsByIngredient(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByPreparation" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByPreparation<Result>(
+        _ message: Mealplanning_GetValidPrepTaskConfigsByPreparationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByPreparationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByPreparationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidPrepTaskConfigsByPreparation(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetValidPrepTaskConfigsByIngredientAndPreparation" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getValidPrepTaskConfigsByIngredientAndPreparation<Result>(
+        _ message: Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_GetValidPrepTaskConfigsByIngredientAndPreparationRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getValidPrepTaskConfigsByIngredientAndPreparation(
             request: request,
             options: options,
             onResponse: handleResponse
@@ -22826,6 +23725,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.updateValidIngredientPreparation(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "UpdateValidPrepTaskConfig" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func updateValidPrepTaskConfig<Result>(
+        _ message: Mealplanning_UpdateValidPrepTaskConfigRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateValidPrepTaskConfigResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Mealplanning_UpdateValidPrepTaskConfigRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.updateValidPrepTaskConfig(
             request: request,
             options: options,
             onResponse: handleResponse
