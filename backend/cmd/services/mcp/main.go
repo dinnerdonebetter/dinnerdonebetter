@@ -214,6 +214,14 @@ func (h *mcpToolManager) setupServer() *mcp.Server {
 	mcp.AddTool(mcpServer, validIngredientPreparationCreationTool, h.CreateValidIngredientPreparation())
 	mcp.AddTool(mcpServer, validIngredientPreparationUpdateTool, h.UpdateValidIngredientPreparation())
 
+	mcp.AddTool(mcpServer, getValidPrepTaskConfigTool, h.GetValidPrepTaskConfig())
+	mcp.AddTool(mcpServer, getValidPrepTaskConfigsTool, h.GetValidPrepTaskConfigs())
+	mcp.AddTool(mcpServer, getValidPrepTaskConfigsByIngredientTool, h.GetValidPrepTaskConfigsByIngredient())
+	mcp.AddTool(mcpServer, getValidPrepTaskConfigsByPreparationTool, h.GetValidPrepTaskConfigsByPreparation())
+	mcp.AddTool(mcpServer, getValidPrepTaskConfigsByIngredientAndPreparationTool, h.GetValidPrepTaskConfigsByIngredientAndPreparation())
+	mcp.AddTool(mcpServer, validPrepTaskConfigCreationTool, h.CreateValidPrepTaskConfig())
+	mcp.AddTool(mcpServer, validPrepTaskConfigUpdateTool, h.UpdateValidPrepTaskConfig())
+
 	mcp.AddTool(mcpServer, getValidIngredientMeasurementUnitTool, h.GetValidIngredientMeasurementUnit())
 	mcp.AddTool(mcpServer, getValidIngredientMeasurementUnitsTool, h.GetValidIngredientMeasurementUnits())
 	mcp.AddTool(mcpServer, validIngredientMeasurementUnitCreationTool, h.CreateValidIngredientMeasurementUnit())
