@@ -181,26 +181,26 @@ instead of raw component IDs.
 
 ### 4.1 Update Recipe Repository
 
-- [ ] `postgres/mealplanning/recipes.go`
-  - [ ] In `CreateRecipe`, after receiving input:
-    - [ ] Collect bridge table IDs using helper methods
-    - [ ] Only proceed with validation if any bridge table IDs are present
-    - [ ] Batch fetch bridge table records
-    - [ ] Create `RecipeValidator` with fetched maps
-    - [ ] Call `validator.ValidateAndPopulate(input)`
-    - [ ] If validation fails, return error
-    - [ ] If validation passes, derived IDs are now populated, continue with existing insert logic
+- [x] `postgres/mealplanning/recipes.go`
+  - [x] In `CreateRecipe`, after receiving input:
+    - [x] Collect bridge table IDs using helper methods
+    - [x] Only proceed with validation if any bridge table IDs are present
+    - [x] Batch fetch bridge table records
+    - [x] Create `RecipeValidator` with fetched maps
+    - [x] Call `validator.ValidateAndPopulate(input)`
+    - [x] If validation fails, return error
+    - [x] If validation passes, derived IDs are now populated, continue with existing insert logic
 
 ### 4.2 Update Repository Dependencies
 
-- [ ] Ensure recipe repository has access to bridge table query methods
-  - [ ] May need to inject additional repository dependencies or use a shared querier
+- [x] Ensure recipe repository has access to bridge table query methods
+  - [x] Already available - all methods are on the same `repository` struct
 
 ### 4.3 Verify Phase 4 (Backward Compatible)
 
-- [ ] Run `make format lint` - should pass
-- [ ] Run unit tests - should pass
-- [ ] Run integration tests - should pass (still using old fields, new fields optional)
+- [x] Run `make format lint` - should pass
+- [x] Run unit tests - should pass
+- [x] Run integration tests - should pass (still using old fields, new fields optional)
 
 ---
 

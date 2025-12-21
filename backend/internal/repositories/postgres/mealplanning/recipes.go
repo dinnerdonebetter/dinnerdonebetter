@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -662,6 +663,53 @@ func (q *repository) SearchForMealEligibleRecipes(ctx context.Context, recipeNam
 	return x, nil
 }
 
+// validateAndPopulateRecipeInput validates bridge table IDs and populates derived fields.
+// This is a no-op if no bridge table IDs are present (backward compatible).
+func (q *repository) validateAndPopulateRecipeInput(ctx context.Context, input *mealplanning.RecipeDatabaseCreationInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	// Collect bridge table IDs using helper methods
+	vipIDs := input.GetAllValidIngredientPreparationIDs()
+	vimuIDs := input.GetAllValidIngredientMeasurementUnitIDs()
+	vpiIDs := input.GetAllValidPreparationInstrumentIDs()
+	vpvIDs := input.GetAllValidPreparationVesselIDs()
+
+	// Only proceed with validation if any bridge table IDs are present
+	if len(vipIDs) == 0 && len(vimuIDs) == 0 && len(vpiIDs) == 0 && len(vpvIDs) == 0 {
+		return nil
+	}
+
+	// Batch fetch bridge table records
+	vipMap, err := q.GetValidIngredientPreparationsByIDs(ctx, vipIDs)
+	if err != nil {
+		return observability.PrepareError(err, span, "fetching valid ingredient preparations")
+	}
+
+	vimuMap, err := q.GetValidIngredientMeasurementUnitsByIDs(ctx, vimuIDs)
+	if err != nil {
+		return observability.PrepareError(err, span, "fetching valid ingredient measurement units")
+	}
+
+	vpiMap, err := q.GetValidPreparationInstrumentsByIDs(ctx, vpiIDs)
+	if err != nil {
+		return observability.PrepareError(err, span, "fetching valid preparation instruments")
+	}
+
+	vpvMap, err := q.GetValidPreparationVesselsByIDs(ctx, vpvIDs)
+	if err != nil {
+		return observability.PrepareError(err, span, "fetching valid preparation vessels")
+	}
+
+	// Create validator and validate/populate the input
+	validator := recipevalidator.NewRecipeValidator(vipMap, vimuMap, vpiMap, vpvMap)
+	if err = validator.ValidateAndPopulate(input); err != nil {
+		return observability.PrepareError(err, span, "validating recipe input")
+	}
+
+	return nil
+}
+
 // CreateRecipe creates a recipe in the database.
 func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.RecipeDatabaseCreationInput) (*mealplanning.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -672,6 +720,11 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	}
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, input.ID)
+
+	// Validate and populate bridge table IDs if any are present
+	if err := q.validateAndPopulateRecipeInput(ctx, input); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating recipe input")
+	}
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
