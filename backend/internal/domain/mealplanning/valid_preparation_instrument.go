@@ -75,6 +75,7 @@ type (
 		GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
 		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
 		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationInstrument, error)
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error

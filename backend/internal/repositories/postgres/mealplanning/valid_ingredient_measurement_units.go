@@ -493,6 +493,96 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	return x, nil
 }
 
+// GetValidIngredientMeasurementUnitsByIDs fetches valid ingredient measurement units by their IDs from the database.
+func (q *repository) GetValidIngredientMeasurementUnitsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidIngredientMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if len(ids) == 0 {
+		return map[string]*mealplanning.ValidIngredientMeasurementUnit{}, nil
+	}
+
+	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsByIDs(ctx, q.db, ids)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient measurement units by IDs")
+	}
+
+	resultMap := make(map[string]*mealplanning.ValidIngredientMeasurementUnit, len(results))
+	for _, result := range results {
+		resultMap[result.ValidIngredientMeasurementUnitID] = &mealplanning.ValidIngredientMeasurementUnit{
+			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			AllowableQuantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			},
+			Notes: result.ValidIngredientMeasurementUnitNotes,
+			ID:    result.ValidIngredientMeasurementUnitID,
+			MeasurementUnit: mealplanning.ValidMeasurementUnit{
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				Name:          result.ValidMeasurementUnitName,
+				IconPath:      result.ValidMeasurementUnitIconPath,
+				ID:            result.ValidMeasurementUnitID,
+				Description:   result.ValidMeasurementUnitDescription,
+				PluralName:    result.ValidMeasurementUnitPluralName,
+				Slug:          result.ValidMeasurementUnitSlug,
+				Volumetric:    database.BoolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Universal:     result.ValidMeasurementUnitUniversal,
+				Metric:        result.ValidMeasurementUnitMetric,
+				Imperial:      result.ValidMeasurementUnitImperial,
+			},
+			Ingredient: mealplanning.ValidIngredient{
+				CreatedAt:     result.ValidIngredientCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				},
+				IconPath:               result.ValidIngredientIconPath,
+				Warning:                result.ValidIngredientWarning,
+				PluralName:             result.ValidIngredientPluralName,
+				StorageInstructions:    result.ValidIngredientStorageInstructions,
+				Name:                   result.ValidIngredientName,
+				ID:                     result.ValidIngredientID,
+				Description:            result.ValidIngredientDescription,
+				Slug:                   result.ValidIngredientSlug,
+				ShoppingSuggestions:    result.ValidIngredientShoppingSuggestions,
+				ContainsShellfish:      result.ValidIngredientContainsShellfish,
+				IsLiquid:               database.BoolFromNullBool(result.ValidIngredientIsLiquid),
+				ContainsPeanut:         result.ValidIngredientContainsPeanut,
+				ContainsTreeNut:        result.ValidIngredientContainsTreeNut,
+				ContainsEgg:            result.ValidIngredientContainsEgg,
+				ContainsWheat:          result.ValidIngredientContainsWheat,
+				ContainsSoy:            result.ValidIngredientContainsSoy,
+				AnimalDerived:          result.ValidIngredientAnimalDerived,
+				RestrictToPreparations: result.ValidIngredientRestrictToPreparations,
+				ContainsSesame:         result.ValidIngredientContainsSesame,
+				ContainsFish:           result.ValidIngredientContainsFish,
+				ContainsGluten:         result.ValidIngredientContainsGluten,
+				ContainsDairy:          result.ValidIngredientContainsDairy,
+				ContainsAlcohol:        result.ValidIngredientContainsAlcohol,
+				AnimalFlesh:            result.ValidIngredientAnimalFlesh,
+				IsStarch:               result.ValidIngredientIsStarch,
+				IsProtein:              result.ValidIngredientIsProtein,
+				IsGrain:                result.ValidIngredientIsGrain,
+				IsFruit:                result.ValidIngredientIsFruit,
+				IsSalt:                 result.ValidIngredientIsSalt,
+				IsFat:                  result.ValidIngredientIsFat,
+				IsAcid:                 result.ValidIngredientIsAcid,
+				IsHeat:                 result.ValidIngredientIsHeat,
+			},
+		}
+	}
+
+	return resultMap, nil
+}
+
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
 func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, input *mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput) (*mealplanning.ValidIngredientMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

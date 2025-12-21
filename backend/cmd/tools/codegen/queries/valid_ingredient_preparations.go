@@ -255,6 +255,43 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetValidIngredientPreparationsByIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validIngredientPreparationsTableName,
+					validIngredientsTableName,
+					validIngredientPreparationsTableName,
+					validIngredientIDColumn,
+					validIngredientsTableName,
+					idColumn,
+					validPreparationsTableName,
+					validIngredientPreparationsTableName,
+					validPreparationIDColumn,
+					validPreparationsTableName,
+					idColumn,
+					validIngredientPreparationsTableName,
+					archivedAtColumn,
+					validIngredientsTableName,
+					archivedAtColumn,
+					validPreparationsTableName,
+					archivedAtColumn,
+					validIngredientPreparationsTableName,
+					idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ValidIngredientPreparationPairIsValid",
 					Type: OneType,
 				},

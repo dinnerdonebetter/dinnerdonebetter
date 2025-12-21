@@ -526,6 +526,105 @@ func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 	return x, nil
 }
 
+// GetValidPreparationVesselsByIDs fetches valid preparation vessels by their IDs from the database.
+func (q *repository) GetValidPreparationVesselsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidPreparationVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if len(ids) == 0 {
+		return map[string]*mealplanning.ValidPreparationVessel{}, nil
+	}
+
+	results, err := q.generatedQuerier.GetValidPreparationVesselsByIDs(ctx, q.db, ids)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation vessels by IDs")
+	}
+
+	resultMap := make(map[string]*mealplanning.ValidPreparationVessel, len(results))
+	for _, result := range results {
+		validPreparationVessel := &mealplanning.ValidPreparationVessel{
+			CreatedAt:     result.ValidPreparationVesselCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationVesselLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationVesselArchivedAt),
+			ID:            result.ValidPreparationVesselID,
+			Notes:         result.ValidPreparationVesselNotes,
+			Vessel: mealplanning.ValidVessel{
+				CreatedAt:     result.ValidVesselCreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidVesselArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidVesselLastUpdatedAt),
+				CapacityUnit: &mealplanning.ValidMeasurementUnit{
+					CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
+					LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+					ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+					Name:          result.ValidMeasurementUnitName.String,
+					IconPath:      result.ValidMeasurementUnitIconPath.String,
+					ID:            result.ValidMeasurementUnitID.String,
+					Description:   result.ValidMeasurementUnitDescription.String,
+					PluralName:    result.ValidMeasurementUnitPluralName.String,
+					Slug:          result.ValidMeasurementUnitSlug.String,
+					Volumetric:    result.ValidMeasurementUnitVolumetric.Bool,
+					Universal:     result.ValidMeasurementUnitUniversal.Bool,
+					Metric:        result.ValidMeasurementUnitMetric.Bool,
+					Imperial:      result.ValidMeasurementUnitImperial.Bool,
+				},
+				IconPath:                       result.ValidVesselIconPath,
+				PluralName:                     result.ValidVesselPluralName,
+				Description:                    result.ValidVesselDescription,
+				Name:                           result.ValidVesselName,
+				Slug:                           result.ValidVesselSlug,
+				Shape:                          string(result.ValidVesselShape),
+				ID:                             result.ValidVesselID,
+				WidthInMillimeters:             database.Float32FromNullString(result.ValidVesselWidthInMillimeters),
+				LengthInMillimeters:            database.Float32FromNullString(result.ValidVesselLengthInMillimeters),
+				HeightInMillimeters:            database.Float32FromNullString(result.ValidVesselHeightInMillimeters),
+				Capacity:                       database.Float32FromString(result.ValidVesselCapacity),
+				IncludeInGeneratedInstructions: result.ValidVesselIncludeInGeneratedInstructions,
+				DisplayInSummaryLists:          result.ValidVesselDisplayInSummaryLists,
+				UsableForStorage:               result.ValidVesselUsableForStorage,
+			},
+			Preparation: mealplanning.ValidPreparation{
+				CreatedAt: result.ValidPreparationCreatedAt,
+				InstrumentCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				},
+				IngredientCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				},
+				VesselCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+					Min: uint16(result.ValidPreparationMinimumVesselCount),
+				},
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				IconPath:                    result.ValidPreparationIconPath,
+				PastTense:                   result.ValidPreparationPastTense,
+				ID:                          result.ValidPreparationID,
+				Name:                        result.ValidPreparationName,
+				Description:                 result.ValidPreparationDescription,
+				Slug:                        result.ValidPreparationSlug,
+				RestrictToIngredients:       result.ValidPreparationRestrictToIngredients,
+				TemperatureRequired:         result.ValidPreparationTemperatureRequired,
+				TimeEstimateRequired:        result.ValidPreparationTimeEstimateRequired,
+				ConditionExpressionRequired: result.ValidPreparationConditionExpressionRequired,
+				ConsumesVessel:              result.ValidPreparationConsumesVessel,
+				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
+				YieldsNothing:               result.ValidPreparationYieldsNothing,
+			},
+		}
+		if validPreparationVessel.Vessel.CapacityUnit.ID == "" {
+			validPreparationVessel.Vessel.CapacityUnit = nil
+		}
+
+		resultMap[result.ValidPreparationVesselID] = validPreparationVessel
+	}
+
+	return resultMap, nil
+}
+
 // CreateValidPreparationVessel creates a valid preparation vessel in the database.
 func (q *repository) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselDatabaseCreationInput) (*mealplanning.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

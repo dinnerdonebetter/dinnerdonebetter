@@ -537,6 +537,107 @@ func (q *repository) GetValidIngredientPreparationsForIngredient(ctx context.Con
 	return x, nil
 }
 
+// GetValidIngredientPreparationsByIDs fetches valid ingredient preparations by their IDs from the database.
+func (q *repository) GetValidIngredientPreparationsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidIngredientPreparation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if len(ids) == 0 {
+		return map[string]*mealplanning.ValidIngredientPreparation{}, nil
+	}
+
+	results, err := q.generatedQuerier.GetValidIngredientPreparationsByIDs(ctx, q.db, ids)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient preparations by IDs")
+	}
+
+	resultMap := make(map[string]*mealplanning.ValidIngredientPreparation, len(results))
+	for _, result := range results {
+		resultMap[result.ValidIngredientPreparationID] = &mealplanning.ValidIngredientPreparation{
+			CreatedAt:     result.ValidIngredientPreparationCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
+			Notes:         result.ValidIngredientPreparationNotes,
+			ID:            result.ValidIngredientPreparationID,
+			Ingredient: mealplanning.ValidIngredient{
+				CreatedAt:     result.ValidIngredientCreatedAt,
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				},
+				IconPath:               result.ValidIngredientIconPath,
+				Warning:                result.ValidIngredientWarning,
+				PluralName:             result.ValidIngredientPluralName,
+				StorageInstructions:    result.ValidIngredientStorageInstructions,
+				Name:                   result.ValidIngredientName,
+				ID:                     result.ValidIngredientID,
+				Description:            result.ValidIngredientDescription,
+				Slug:                   result.ValidIngredientSlug,
+				ShoppingSuggestions:    result.ValidIngredientShoppingSuggestions,
+				ContainsShellfish:      result.ValidIngredientContainsShellfish,
+				IsLiquid:               database.BoolFromNullBool(result.ValidIngredientIsLiquid),
+				ContainsPeanut:         result.ValidIngredientContainsPeanut,
+				ContainsTreeNut:        result.ValidIngredientContainsTreeNut,
+				ContainsEgg:            result.ValidIngredientContainsEgg,
+				ContainsWheat:          result.ValidIngredientContainsWheat,
+				ContainsSoy:            result.ValidIngredientContainsSoy,
+				AnimalDerived:          result.ValidIngredientAnimalDerived,
+				RestrictToPreparations: result.ValidIngredientRestrictToPreparations,
+				ContainsSesame:         result.ValidIngredientContainsSesame,
+				ContainsFish:           result.ValidIngredientContainsFish,
+				ContainsGluten:         result.ValidIngredientContainsGluten,
+				ContainsDairy:          result.ValidIngredientContainsDairy,
+				ContainsAlcohol:        result.ValidIngredientContainsAlcohol,
+				AnimalFlesh:            result.ValidIngredientAnimalFlesh,
+				IsStarch:               result.ValidIngredientIsStarch,
+				IsProtein:              result.ValidIngredientIsProtein,
+				IsGrain:                result.ValidIngredientIsGrain,
+				IsFruit:                result.ValidIngredientIsFruit,
+				IsSalt:                 result.ValidIngredientIsSalt,
+				IsFat:                  result.ValidIngredientIsFat,
+				IsAcid:                 result.ValidIngredientIsAcid,
+				IsHeat:                 result.ValidIngredientIsHeat,
+			},
+			Preparation: mealplanning.ValidPreparation{
+				CreatedAt: result.ValidPreparationCreatedAt,
+				InstrumentCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				},
+				IngredientCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				},
+				VesselCount: types.Uint16RangeWithOptionalMax{
+					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+					Min: uint16(result.ValidPreparationMinimumVesselCount),
+				},
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				IconPath:                    result.ValidPreparationIconPath,
+				PastTense:                   result.ValidPreparationPastTense,
+				ID:                          result.ValidPreparationID,
+				Name:                        result.ValidPreparationName,
+				Description:                 result.ValidPreparationDescription,
+				Slug:                        result.ValidPreparationSlug,
+				RestrictToIngredients:       result.ValidPreparationRestrictToIngredients,
+				TemperatureRequired:         result.ValidPreparationTemperatureRequired,
+				TimeEstimateRequired:        result.ValidPreparationTimeEstimateRequired,
+				ConditionExpressionRequired: result.ValidPreparationConditionExpressionRequired,
+				ConsumesVessel:              result.ValidPreparationConsumesVessel,
+				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
+				YieldsNothing:               result.ValidPreparationYieldsNothing,
+			},
+		}
+	}
+
+	return resultMap, nil
+}
+
 // CreateValidIngredientPreparation creates a valid ingredient preparation in the database.
 func (q *repository) CreateValidIngredientPreparation(ctx context.Context, input *mealplanning.ValidIngredientPreparationDatabaseCreationInput) (*mealplanning.ValidIngredientPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

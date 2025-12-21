@@ -75,6 +75,7 @@ type (
 		GetValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
 		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
 		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparationsByIDs(ctx context.Context, ids []string) (map[string]*ValidIngredientPreparation, error)
 		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
 		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation) error
 		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error

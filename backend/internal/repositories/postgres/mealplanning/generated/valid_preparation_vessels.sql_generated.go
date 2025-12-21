@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const archiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :execrows
@@ -538,6 +540,227 @@ func (q *Queries) GetValidPreparationVessels(ctx context.Context, db DBTX, arg *
 			&i.ValidVesselArchivedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getValidPreparationVesselsByIDs = `-- name: GetValidPreparationVesselsByIDs :many
+SELECT
+	valid_preparation_vessels.id as valid_preparation_vessel_id,
+	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
+	valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
+	valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.last_indexed_at as valid_vessel_last_indexed_at,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at
+FROM valid_preparation_vessels
+	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+WHERE
+	valid_preparation_vessels.archived_at IS NULL
+	AND valid_vessels.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_preparation_vessels.id = ANY($1::text[])
+`
+
+type GetValidPreparationVesselsByIDsRow struct {
+	ValidVesselCreatedAt                        time.Time
+	ValidPreparationVesselCreatedAt             time.Time
+	ValidPreparationCreatedAt                   time.Time
+	ValidVesselLastUpdatedAt                    sql.NullTime
+	ValidVesselLastIndexedAt                    sql.NullTime
+	ValidPreparationVesselArchivedAt            sql.NullTime
+	ValidVesselArchivedAt                       sql.NullTime
+	ValidPreparationVesselLastUpdatedAt         sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationLastIndexedAt               sql.NullTime
+	ValidMeasurementUnitLastIndexedAt           sql.NullTime
+	ValidMeasurementUnitCreatedAt               sql.NullTime
+	ValidMeasurementUnitArchivedAt              sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
+	ValidVesselShape                            VesselShape
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidVesselCapacity                         string
+	ValidVesselSlug                             string
+	ValidVesselIconPath                         string
+	ValidPreparationVesselID                    string
+	ValidPreparationDescription                 string
+	ValidPreparationSlug                        string
+	ValidPreparationPastTense                   string
+	ValidPreparationVesselNotes                 string
+	ValidVesselDescription                      string
+	ValidPreparationIconPath                    string
+	ValidVesselID                               string
+	ValidVesselName                             string
+	ValidVesselPluralName                       string
+	ValidVesselWidthInMillimeters               sql.NullString
+	ValidMeasurementUnitID                      sql.NullString
+	ValidMeasurementUnitSlug                    sql.NullString
+	ValidMeasurementUnitPluralName              sql.NullString
+	ValidVesselLengthInMillimeters              sql.NullString
+	ValidVesselHeightInMillimeters              sql.NullString
+	ValidMeasurementUnitIconPath                sql.NullString
+	ValidMeasurementUnitDescription             sql.NullString
+	ValidMeasurementUnitName                    sql.NullString
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMinimumVesselCount          int32
+	ValidMeasurementUnitMetric                  sql.NullBool
+	ValidMeasurementUnitImperial                sql.NullBool
+	ValidMeasurementUnitUniversal               sql.NullBool
+	ValidMeasurementUnitVolumetric              sql.NullBool
+	ValidVesselIncludeInGeneratedInstructions   bool
+	ValidVesselDisplayInSummaryLists            bool
+	ValidVesselUsableForStorage                 bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationYieldsNothing               bool
+}
+
+func (q *Queries) GetValidPreparationVesselsByIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidPreparationVesselsByIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidPreparationVesselsByIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidPreparationVesselsByIDsRow{}
+	for rows.Next() {
+		var i GetValidPreparationVesselsByIDsRow
+		if err := rows.Scan(
+			&i.ValidPreparationVesselID,
+			&i.ValidPreparationVesselNotes,
+			&i.ValidPreparationID,
+			&i.ValidPreparationName,
+			&i.ValidPreparationDescription,
+			&i.ValidPreparationIconPath,
+			&i.ValidPreparationYieldsNothing,
+			&i.ValidPreparationRestrictToIngredients,
+			&i.ValidPreparationPastTense,
+			&i.ValidPreparationSlug,
+			&i.ValidPreparationMinimumIngredientCount,
+			&i.ValidPreparationMaximumIngredientCount,
+			&i.ValidPreparationMinimumInstrumentCount,
+			&i.ValidPreparationMaximumInstrumentCount,
+			&i.ValidPreparationTemperatureRequired,
+			&i.ValidPreparationTimeEstimateRequired,
+			&i.ValidPreparationConditionExpressionRequired,
+			&i.ValidPreparationConsumesVessel,
+			&i.ValidPreparationOnlyForVessels,
+			&i.ValidPreparationMinimumVesselCount,
+			&i.ValidPreparationMaximumVesselCount,
+			&i.ValidPreparationLastIndexedAt,
+			&i.ValidPreparationCreatedAt,
+			&i.ValidPreparationLastUpdatedAt,
+			&i.ValidPreparationArchivedAt,
+			&i.ValidPreparationVesselCreatedAt,
+			&i.ValidPreparationVesselLastUpdatedAt,
+			&i.ValidPreparationVesselArchivedAt,
+			&i.ValidVesselID,
+			&i.ValidVesselName,
+			&i.ValidVesselPluralName,
+			&i.ValidVesselDescription,
+			&i.ValidVesselIconPath,
+			&i.ValidVesselUsableForStorage,
+			&i.ValidVesselSlug,
+			&i.ValidVesselDisplayInSummaryLists,
+			&i.ValidVesselIncludeInGeneratedInstructions,
+			&i.ValidVesselCapacity,
+			&i.ValidMeasurementUnitID,
+			&i.ValidMeasurementUnitName,
+			&i.ValidMeasurementUnitDescription,
+			&i.ValidMeasurementUnitVolumetric,
+			&i.ValidMeasurementUnitIconPath,
+			&i.ValidMeasurementUnitUniversal,
+			&i.ValidMeasurementUnitMetric,
+			&i.ValidMeasurementUnitImperial,
+			&i.ValidMeasurementUnitSlug,
+			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
+			&i.ValidMeasurementUnitCreatedAt,
+			&i.ValidMeasurementUnitLastUpdatedAt,
+			&i.ValidMeasurementUnitArchivedAt,
+			&i.ValidVesselWidthInMillimeters,
+			&i.ValidVesselLengthInMillimeters,
+			&i.ValidVesselHeightInMillimeters,
+			&i.ValidVesselShape,
+			&i.ValidVesselLastIndexedAt,
+			&i.ValidVesselCreatedAt,
+			&i.ValidVesselLastUpdatedAt,
+			&i.ValidVesselArchivedAt,
 		); err != nil {
 			return nil, err
 		}

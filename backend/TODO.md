@@ -58,9 +58,9 @@ instead of raw component IDs.
 
 ### 1.5 Verify Phase 1
 
-- [ ] Run `make format lint` - should pass
-- [ ] Run unit tests - should pass (new fields are optional)
-- [ ] Run integration tests - should pass (new fields are optional)
+- [x] Run `make format lint` - should pass
+- [x] Run unit tests - should pass (new fields are optional)
+- [x] Run integration tests - should pass (new fields are optional)
 
 ---
 
@@ -68,63 +68,76 @@ instead of raw component IDs.
 
 ### 2.1 Update Data Manager Interfaces
 
-- [ ] `valid_ingredient_preparation.go`
-  - [ ] Add `GetValidIngredientPreparationsByIDs(ctx context.Context, ids []string) (map[string]*ValidIngredientPreparation, error)` to interface
+- [x] `valid_ingredient_preparation.go`
+  - [x] Add `GetValidIngredientPreparationsByIDs(ctx context.Context, ids []string) (map[string]*ValidIngredientPreparation, error)` to interface
 
-- [ ] `valid_ingredient_measurement_unit.go`
-  - [ ] Add `GetValidIngredientMeasurementUnitsByIDs(ctx context.Context, ids []string) (map[string]*ValidIngredientMeasurementUnit, error)` to interface
+- [x] `valid_ingredient_measurement_unit.go`
+  - [x] Add `GetValidIngredientMeasurementUnitsByIDs(ctx context.Context, ids []string) (map[string]*ValidIngredientMeasurementUnit, error)` to interface
 
-- [ ] `valid_preparation_instrument.go`
-  - [ ] Add `GetValidPreparationInstrumentsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationInstrument, error)` to interface
+- [x] `valid_preparation_instrument.go`
+  - [x] Add `GetValidPreparationInstrumentsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationInstrument, error)` to interface
 
-- [ ] `valid_preparation_vessel.go`
-  - [ ] Add `GetValidPreparationVesselsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationVessel, error)` to interface
+- [x] `valid_preparation_vessel.go`
+  - [x] Add `GetValidPreparationVesselsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationVessel, error)` to interface
 
 ### 2.2 Add SQL Queries
 
-- [ ] `codegen/queries/valid_ingredient_preparations.go`
-  - [ ] Add query for `GetValidIngredientPreparationsByIDs` (using `ANY($1::text[])`)
+- [x] `codegen/queries/valid_ingredient_preparations.go`
+  - [x] Add query for `GetValidIngredientPreparationsByIDs` (using `ANY($1::text[])`)
 
-- [ ] `codegen/queries/valid_ingredient_measurement_units.go`
-  - [ ] Add query for `GetValidIngredientMeasurementUnitsByIDs`
+- [x] `codegen/queries/valid_ingredient_measurement_units.go`
+  - [x] Add query for `GetValidIngredientMeasurementUnitsByIDs`
 
-- [ ] `codegen/queries/valid_preparation_instruments.go`
-  - [ ] Add query for `GetValidPreparationInstrumentsByIDs`
+- [x] `codegen/queries/valid_preparation_instruments.go`
+  - [x] Add query for `GetValidPreparationInstrumentsByIDs`
 
-- [ ] `codegen/queries/valid_preparation_vessels.go`
-  - [ ] Add query for `GetValidPreparationVesselsByIDs`
+- [x] `codegen/queries/valid_preparation_vessels.go`
+  - [x] Add query for `GetValidPreparationVesselsByIDs`
 
-- [ ] Run codegen to generate query code
+- [x] Run codegen to generate query code
 
 ### 2.3 Implement Repository Methods
 
-- [ ] `postgres/mealplanning/valid_ingredient_preparations.go`
-  - [ ] Implement `GetValidIngredientPreparationsByIDs`
-  - [ ] Return `map[string]*ValidIngredientPreparation` keyed by ID
+- [x] `postgres/mealplanning/valid_ingredient_preparations.go`
+  - [x] Implement `GetValidIngredientPreparationsByIDs`
+  - [x] Return `map[string]*ValidIngredientPreparation` keyed by ID
 
-- [ ] `postgres/mealplanning/valid_ingredient_measurement_units.go`
-  - [ ] Implement `GetValidIngredientMeasurementUnitsByIDs`
+- [x] `postgres/mealplanning/valid_ingredient_measurement_units.go`
+  - [x] Implement `GetValidIngredientMeasurementUnitsByIDs`
 
-- [ ] `postgres/mealplanning/valid_preparation_instruments.go`
-  - [ ] Implement `GetValidPreparationInstrumentsByIDs`
+- [x] `postgres/mealplanning/valid_preparation_instruments.go`
+  - [x] Implement `GetValidPreparationInstrumentsByIDs`
 
-- [ ] `postgres/mealplanning/valid_preparation_vessels.go`
-  - [ ] Implement `GetValidPreparationVesselsByIDs`
+- [x] `postgres/mealplanning/valid_preparation_vessels.go`
+  - [x] Implement `GetValidPreparationVesselsByIDs`
 
 ### 2.4 Add Unit Tests for Batch Query Methods
 
-- [ ] `postgres/mealplanning/valid_ingredient_preparations_test.go`
-  - [ ] Test `GetValidIngredientPreparationsByIDs` with valid IDs
-  - [ ] Test with empty list
-  - [ ] Test with non-existent IDs (should return partial results)
+- [x] `postgres/mealplanning/valid_ingredient_preparations_test.go`
+  - [x] Test `GetValidIngredientPreparationsByIDs` with valid IDs
+  - [x] Test with empty list
+  - [x] Test with non-existent IDs (should return partial results)
 
-- [ ] Same for other three bridge tables
+- [x] `postgres/mealplanning/valid_ingredient_measurement_units_test.go`
+  - [x] Test `GetValidIngredientMeasurementUnitsByIDs` with valid IDs
+  - [x] Test with empty list
+  - [x] Test with non-existent IDs (should return partial results)
+
+- [x] `postgres/mealplanning/valid_preparation_instruments_test.go`
+  - [x] Test `GetValidPreparationInstrumentsByIDs` with valid IDs
+  - [x] Test with empty list
+  - [x] Test with non-existent IDs (should return partial results)
+
+- [x] `postgres/mealplanning/valid_preparation_vessels_test.go`
+  - [x] Test `GetValidPreparationVesselsByIDs` with valid IDs
+  - [x] Test with empty list
+  - [x] Test with non-existent IDs (should return partial results)
 
 ### 2.5 Verify Phase 2
 
-- [ ] Run `make format lint` - should pass
-- [ ] Run unit tests - should pass
-- [ ] Run integration tests - should pass
+- [x] Run `make format lint` - should pass
+- [x] Run unit tests - should pass
+- [x] Run integration tests - should pass
 
 ---
 
