@@ -145,35 +145,35 @@ instead of raw component IDs.
 
 ### 3.1 Create Validator
 
-- [ ] Create `recipe_validator.go` in `internal/domain/mealplanning/`
-  - [ ] Define `RecipeValidator` struct with map fields for each bridge table type
-  - [ ] Implement `NewRecipeValidator(...)` constructor
-  - [ ] Implement `ValidateAndPopulate(input *RecipeDatabaseCreationInput) error`
-  - [ ] Implement `validateStep(...)` 
-  - [ ] Implement `validateAndPopulateIngredient(...)` - validates VIP + VIMU, populates IngredientID + MeasurementUnitID
-  - [ ] Implement `validateAndPopulateInstrument(...)` - validates VPI, populates InstrumentID
-  - [ ] Implement `validateAndPopulateVessel(...)` - validates VPV, populates VesselID
-  - [ ] Handle skip logic for recipe step products (outputs from previous steps)
+- [x] Create `recipe_validator.go` in `internal/domain/mealplanning/recipevalidator`
+  - [x] Define `RecipeValidator` struct with map fields for each bridge table type
+  - [x] Implement `NewRecipeValidator(...)` constructor
+  - [x] Implement `ValidateAndPopulate(input *RecipeDatabaseCreationInput) error`
+  - [x] Implement `validateStep(...)` 
+  - [x] Implement `validateAndPopulateIngredient(...)` - validates VIP + VIMU, populates IngredientID + MeasurementUnitID
+  - [x] Implement `validateAndPopulateInstrument(...)` - validates VPI, populates InstrumentID
+  - [x] Implement `validateAndPopulateVessel(...)` - validates VPV, populates VesselID
+  - [x] Handle skip logic for recipe step products (outputs from previous steps)
 
 ### 3.2 Write Validator Unit Tests
 
-- [ ] Create `recipe_validator_test.go`
-  - [ ] Test valid recipe with all bridge IDs present and matching
-  - [ ] Test missing ValidIngredientPreparationID
-  - [ ] Test ValidIngredientPreparation with wrong preparation
-  - [ ] Test ValidIngredientMeasurementUnit for wrong ingredient
-  - [ ] Test missing ValidPreparationInstrumentID
-  - [ ] Test ValidPreparationInstrument with wrong preparation
-  - [ ] Test missing ValidPreparationVesselID
-  - [ ] Test ValidPreparationVessel with wrong preparation
-  - [ ] Test recipe step products are skipped (no validation required)
-  - [ ] Test that derived IDs are correctly populated after validation
+- [x] Create `recipe_validator_test.go`
+  - [x] Test valid recipe with all bridge IDs present and matching
+  - [x] Test missing ValidIngredientPreparationID
+  - [x] Test ValidIngredientPreparation with wrong preparation
+  - [x] Test ValidIngredientMeasurementUnit for wrong ingredient
+  - [x] Test missing ValidPreparationInstrumentID
+  - [x] Test ValidPreparationInstrument with wrong preparation
+  - [x] Test missing ValidPreparationVesselID
+  - [x] Test ValidPreparationVessel with wrong preparation
+  - [x] Test recipe step products are skipped (no validation required)
+  - [x] Test that derived IDs are correctly populated after validation
 
 ### 3.3 Verify Phase 3
 
-- [ ] Run `make format lint` - should pass
-- [ ] Run unit tests - should pass
-- [ ] Run integration tests - should pass (validator not yet wired up)
+- [x] Run `make format lint` - should pass
+- [x] Run unit tests - should pass
+- [x] Run integration tests - should pass (validator not yet wired up)
 
 ---
 
