@@ -58,3 +58,11 @@ func BuildFakeRecipeStepIngredientCreationRequestInput() *types.RecipeStepIngred
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	return converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient)
 }
+
+// BuildFakeRecipeStepIngredientCreationRequestInputWithBridgeIDs builds a faked RecipeStepIngredientCreationRequestInput with bridge table IDs.
+func BuildFakeRecipeStepIngredientCreationRequestInputWithBridgeIDs() *types.RecipeStepIngredientCreationRequestInput {
+	input := BuildFakeRecipeStepIngredientCreationRequestInput()
+	input.ValidIngredientPreparationID = pointer.To(BuildFakeID())
+	input.ValidIngredientMeasurementUnitID = pointer.To(BuildFakeID())
+	return input
+}

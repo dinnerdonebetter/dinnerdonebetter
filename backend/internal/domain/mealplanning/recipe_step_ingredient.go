@@ -54,43 +54,47 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                               struct{}                          `json:"-"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"quantity"`
-		RecipeStepProductRecipeID       *string                           `json:"productOfRecipeID"`
-		ProductOfRecipeStepProductIndex *uint64                           `json:"productOfRecipeStepProductIndex"`
-		VesselIndex                     *uint16                           `json:"vesselIndex"`
-		ProductPercentageToUse          *float32                          `json:"productPercentageToUse"`
-		ProductOfRecipeStepIndex        *uint64                           `json:"productOfRecipeStepIndex"`
-		IngredientID                    *string                           `json:"ingredientID"`
-		IngredientNotes                 string                            `json:"ingredientNotes"`
-		MeasurementUnitID               string                            `json:"measurementUnitID"`
-		Name                            string                            `json:"name"`
-		QuantityNotes                   string                            `json:"quantityNotes"`
-		OptionIndex                     uint16                            `json:"optionIndex"`
-		Optional                        bool                              `json:"optional"`
-		ToTaste                         bool                              `json:"toTaste"`
+		_                                struct{}                          `json:"-"`
+		Quantity                         types.Float32RangeWithOptionalMax `json:"quantity"`
+		RecipeStepProductRecipeID        *string                           `json:"productOfRecipeID"`
+		ProductOfRecipeStepProductIndex  *uint64                           `json:"productOfRecipeStepProductIndex"`
+		VesselIndex                      *uint16                           `json:"vesselIndex"`
+		ProductPercentageToUse           *float32                          `json:"productPercentageToUse"`
+		ProductOfRecipeStepIndex         *uint64                           `json:"productOfRecipeStepIndex"`
+		IngredientID                     *string                           `json:"ingredientID"`
+		ValidIngredientPreparationID     *string                           `json:"validIngredientPreparationID"`
+		ValidIngredientMeasurementUnitID *string                           `json:"validIngredientMeasurementUnitID"`
+		IngredientNotes                  string                            `json:"ingredientNotes"`
+		MeasurementUnitID                string                            `json:"measurementUnitID"`
+		Name                             string                            `json:"name"`
+		QuantityNotes                    string                            `json:"quantityNotes"`
+		OptionIndex                      uint16                            `json:"optionIndex"`
+		Optional                         bool                              `json:"optional"`
+		ToTaste                          bool                              `json:"toTaste"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                               struct{}                          `json:"-"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"-"`
-		RecipeStepProductRecipeID       *string                           `json:"-"`
-		IngredientID                    *string                           `json:"-"`
-		RecipeStepProductID             *string                           `json:"-"`
-		ProductOfRecipeStepIndex        *uint64                           `json:"-"`
-		ProductOfRecipeStepProductIndex *uint64                           `json:"-"`
-		VesselIndex                     *uint16                           `json:"-"`
-		ProductPercentageToUse          *float32                          `json:"-"`
-		ID                              string                            `json:"-"`
-		BelongsToRecipeStep             string                            `json:"-"`
-		Name                            string                            `json:"-"`
-		IngredientNotes                 string                            `json:"-"`
-		QuantityNotes                   string                            `json:"-"`
-		MeasurementUnitID               string                            `json:"-"`
-		OptionIndex                     uint16                            `json:"-"`
-		Optional                        bool                              `json:"-"`
-		ToTaste                         bool                              `json:"-"`
+		_                                struct{}                          `json:"-"`
+		Quantity                         types.Float32RangeWithOptionalMax `json:"-"`
+		RecipeStepProductRecipeID        *string                           `json:"-"`
+		IngredientID                     *string                           `json:"-"`
+		RecipeStepProductID              *string                           `json:"-"`
+		ProductOfRecipeStepIndex         *uint64                           `json:"-"`
+		ProductOfRecipeStepProductIndex  *uint64                           `json:"-"`
+		VesselIndex                      *uint16                           `json:"-"`
+		ProductPercentageToUse           *float32                          `json:"-"`
+		ValidIngredientPreparationID     *string                           `json:"-"`
+		ValidIngredientMeasurementUnitID *string                           `json:"-"`
+		ID                               string                            `json:"-"`
+		BelongsToRecipeStep              string                            `json:"-"`
+		Name                             string                            `json:"-"`
+		IngredientNotes                  string                            `json:"-"`
+		QuantityNotes                    string                            `json:"-"`
+		MeasurementUnitID                string                            `json:"-"`
+		OptionIndex                      uint16                            `json:"-"`
+		Optional                         bool                              `json:"-"`
+		ToTaste                          bool                              `json:"-"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.

@@ -57,6 +57,7 @@ type (
 		_ struct{} `json:"-"`
 
 		InstrumentID                    *string                          `json:"instrumentID"`
+		ValidPreparationInstrumentID    *string                          `json:"validPreparationInstrumentID"`
 		RecipeStepProductID             *string                          `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"productOfRecipeStepProductIndex"`
@@ -76,6 +77,7 @@ type (
 		RecipeStepProductID             *string                          `json:"-"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"-"`
 		InstrumentID                    *string                          `json:"-"`
+		ValidPreparationInstrumentID    *string                          `json:"-"`
 		BelongsToRecipeStep             string                           `json:"-"`
 		Name                            string                           `json:"-"`
 		ID                              string                           `json:"-"`

@@ -54,6 +54,7 @@ type (
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"productOfRecipeStepProductIndex"`
 		VesselID                        *string                          `json:"vesselID"`
+		ValidPreparationVesselID        *string                          `json:"validPreparationVesselID"`
 		Quantity                        types.Uint16RangeWithOptionalMax `json:"quantity"`
 		Name                            string                           `json:"name"`
 		Notes                           string                           `json:"notes"`
@@ -66,6 +67,7 @@ type (
 		_ struct{} `json:"-"`
 
 		VesselID                        *string                          `json:"-"`
+		ValidPreparationVesselID        *string                          `json:"-"`
 		RecipeStepProductID             *string                          `json:"-"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"-"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"-"`

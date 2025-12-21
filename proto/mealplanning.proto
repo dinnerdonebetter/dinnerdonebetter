@@ -1997,6 +1997,8 @@ message RecipeStepIngredientCreationRequestInput {
   uint32 option_index = 12;
   bool optional = 13;
   bool to_taste = 14;
+  optional string valid_ingredient_preparation_id = 15;
+  optional string valid_ingredient_measurement_unit_id = 16;
 }
 
 message RecipeStepIngredientUpdateRequestInput {
@@ -2043,6 +2045,7 @@ message RecipeStepInstrumentCreationRequestInput {
   uint32 option_index = 8;
   bool optional = 9;
   uint32 preference_rank = 10;
+  optional string valid_preparation_instrument_id = 11;
 }
 
 message RecipeStepInstrumentUpdateRequestInput {
@@ -2155,6 +2158,7 @@ message RecipeStepVesselCreationRequestInput {
   string notes = 7;
   string vessel_preposition = 8;
   bool unavailable_after_step = 9;
+  optional string valid_preparation_vessel_id = 10;
 }
 
 message RecipeStepVesselUpdateRequestInput {

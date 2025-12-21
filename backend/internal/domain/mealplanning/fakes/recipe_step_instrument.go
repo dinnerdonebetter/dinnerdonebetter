@@ -4,6 +4,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -53,4 +54,11 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 func BuildFakeRecipeStepInstrumentCreationRequestInput() *types.RecipeStepInstrumentCreationRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
 	return converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
+}
+
+// BuildFakeRecipeStepInstrumentCreationRequestInputWithBridgeIDs builds a faked RecipeStepInstrumentCreationRequestInput with bridge table IDs.
+func BuildFakeRecipeStepInstrumentCreationRequestInputWithBridgeIDs() *types.RecipeStepInstrumentCreationRequestInput {
+	input := BuildFakeRecipeStepInstrumentCreationRequestInput()
+	input.ValidPreparationInstrumentID = pointer.To(BuildFakeID())
+	return input
 }

@@ -31,6 +31,7 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 	x := &mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		InstrumentID:                    input.InstrumentID,
+		ValidPreparationInstrumentID:    input.ValidPreparationInstrumentID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,

@@ -278,6 +278,262 @@ func TestRecipeDatabaseCreationInput_FindStepByID(T *testing.T) {
 	})
 }
 
+func TestRecipeDatabaseCreationInput_GetAllValidIngredientPreparationIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns IDs from multiple steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientPreparationID: pointer.To("vip-1")},
+						{ValidIngredientPreparationID: pointer.To("vip-2")},
+					},
+				},
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientPreparationID: pointer.To("vip-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientPreparationIDs()
+		assert.Equal(t, []string{"vip-1", "vip-2", "vip-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientPreparationID: pointer.To("vip-1")},
+						{ValidIngredientPreparationID: nil},
+						{ValidIngredientPreparationID: pointer.To("")},
+						{ValidIngredientPreparationID: pointer.To("vip-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientPreparationIDs()
+		assert.Equal(t, []string{"vip-1", "vip-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no IDs present", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientPreparationID: nil},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientPreparationIDs()
+		assert.Empty(t, ids)
+	})
+}
+
+func TestRecipeDatabaseCreationInput_GetAllValidIngredientMeasurementUnitIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns IDs from multiple steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientMeasurementUnitID: pointer.To("vimu-1")},
+						{ValidIngredientMeasurementUnitID: pointer.To("vimu-2")},
+					},
+				},
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientMeasurementUnitID: pointer.To("vimu-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientMeasurementUnitIDs()
+		assert.Equal(t, []string{"vimu-1", "vimu-2", "vimu-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientMeasurementUnitID: pointer.To("vimu-1")},
+						{ValidIngredientMeasurementUnitID: nil},
+						{ValidIngredientMeasurementUnitID: pointer.To("")},
+						{ValidIngredientMeasurementUnitID: pointer.To("vimu-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientMeasurementUnitIDs()
+		assert.Equal(t, []string{"vimu-1", "vimu-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no IDs present", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{ValidIngredientMeasurementUnitID: nil},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidIngredientMeasurementUnitIDs()
+		assert.Empty(t, ids)
+	})
+}
+
+func TestRecipeDatabaseCreationInput_GetAllValidPreparationInstrumentIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns IDs from multiple steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
+						{ValidPreparationInstrumentID: pointer.To("vpi-1")},
+						{ValidPreparationInstrumentID: pointer.To("vpi-2")},
+					},
+				},
+				{
+					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
+						{ValidPreparationInstrumentID: pointer.To("vpi-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationInstrumentIDs()
+		assert.Equal(t, []string{"vpi-1", "vpi-2", "vpi-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
+						{ValidPreparationInstrumentID: pointer.To("vpi-1")},
+						{ValidPreparationInstrumentID: nil},
+						{ValidPreparationInstrumentID: pointer.To("")},
+						{ValidPreparationInstrumentID: pointer.To("vpi-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationInstrumentIDs()
+		assert.Equal(t, []string{"vpi-1", "vpi-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no IDs present", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
+						{ValidPreparationInstrumentID: nil},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationInstrumentIDs()
+		assert.Empty(t, ids)
+	})
+}
+
+func TestRecipeDatabaseCreationInput_GetAllValidPreparationVesselIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns IDs from multiple steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Vessels: []*RecipeStepVesselDatabaseCreationInput{
+						{ValidPreparationVesselID: pointer.To("vpv-1")},
+						{ValidPreparationVesselID: pointer.To("vpv-2")},
+					},
+				},
+				{
+					Vessels: []*RecipeStepVesselDatabaseCreationInput{
+						{ValidPreparationVesselID: pointer.To("vpv-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationVesselIDs()
+		assert.Equal(t, []string{"vpv-1", "vpv-2", "vpv-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Vessels: []*RecipeStepVesselDatabaseCreationInput{
+						{ValidPreparationVesselID: pointer.To("vpv-1")},
+						{ValidPreparationVesselID: nil},
+						{ValidPreparationVesselID: pointer.To("")},
+						{ValidPreparationVesselID: pointer.To("vpv-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationVesselIDs()
+		assert.Equal(t, []string{"vpv-1", "vpv-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no IDs present", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					Vessels: []*RecipeStepVesselDatabaseCreationInput{
+						{ValidPreparationVesselID: nil},
+					},
+				},
+			},
+		}
+
+		ids := x.GetAllValidPreparationVesselIDs()
+		assert.Empty(t, ids)
+	})
+}
+
 func TestRecipeDatabaseCreationInput_Validate(T *testing.T) {
 	T.Parallel()
 

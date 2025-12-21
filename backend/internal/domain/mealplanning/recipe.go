@@ -312,6 +312,58 @@ func (x *RecipeDatabaseCreationInput) FindStepByID(id string) *RecipeStepDatabas
 	return nil
 }
 
+// GetAllValidIngredientPreparationIDs returns all ValidIngredientPreparationIDs from all steps' ingredients.
+func (x *RecipeDatabaseCreationInput) GetAllValidIngredientPreparationIDs() []string {
+	var ids []string
+	for _, step := range x.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.ValidIngredientPreparationID != nil && *ingredient.ValidIngredientPreparationID != "" {
+				ids = append(ids, *ingredient.ValidIngredientPreparationID)
+			}
+		}
+	}
+	return ids
+}
+
+// GetAllValidIngredientMeasurementUnitIDs returns all ValidIngredientMeasurementUnitIDs from all steps' ingredients.
+func (x *RecipeDatabaseCreationInput) GetAllValidIngredientMeasurementUnitIDs() []string {
+	var ids []string
+	for _, step := range x.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.ValidIngredientMeasurementUnitID != nil && *ingredient.ValidIngredientMeasurementUnitID != "" {
+				ids = append(ids, *ingredient.ValidIngredientMeasurementUnitID)
+			}
+		}
+	}
+	return ids
+}
+
+// GetAllValidPreparationInstrumentIDs returns all ValidPreparationInstrumentIDs from all steps' instruments.
+func (x *RecipeDatabaseCreationInput) GetAllValidPreparationInstrumentIDs() []string {
+	var ids []string
+	for _, step := range x.Steps {
+		for _, instrument := range step.Instruments {
+			if instrument.ValidPreparationInstrumentID != nil && *instrument.ValidPreparationInstrumentID != "" {
+				ids = append(ids, *instrument.ValidPreparationInstrumentID)
+			}
+		}
+	}
+	return ids
+}
+
+// GetAllValidPreparationVesselIDs returns all ValidPreparationVesselIDs from all steps' vessels.
+func (x *RecipeDatabaseCreationInput) GetAllValidPreparationVesselIDs() []string {
+	var ids []string
+	for _, step := range x.Steps {
+		for _, vessel := range step.Vessels {
+			if vessel.ValidPreparationVesselID != nil && *vessel.ValidPreparationVesselID != "" {
+				ids = append(ids, *vessel.ValidPreparationVesselID)
+			}
+		}
+	}
+	return ids
+}
+
 var _ validation.ValidatableWithContext = (*RecipeDatabaseCreationInput)(nil)
 
 // ValidateWithContext validates a RecipeDatabaseCreationInput.

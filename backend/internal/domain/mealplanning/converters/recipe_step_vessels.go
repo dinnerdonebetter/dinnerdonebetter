@@ -30,6 +30,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 	x := &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		VesselID:                        input.VesselID,
+		ValidPreparationVesselID:        input.ValidPreparationVesselID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,

@@ -9,10 +9,12 @@ import (
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
 func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
 	x := &mealplanning.RecipeStepIngredientDatabaseCreationInput{
-		ID:                identifiers.New(),
-		IngredientID:      input.IngredientID,
-		Name:              input.Name,
-		MeasurementUnitID: input.MeasurementUnitID,
+		ID:                               identifiers.New(),
+		IngredientID:                     input.IngredientID,
+		ValidIngredientPreparationID:     input.ValidIngredientPreparationID,
+		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitID,
+		Name:                             input.Name,
+		MeasurementUnitID:                input.MeasurementUnitID,
 		Quantity: types.Float32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
