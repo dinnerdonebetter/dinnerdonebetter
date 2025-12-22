@@ -975,9 +975,13 @@ func TestRecipeManager_CreateRecipeStepInstrument(T *testing.T) {
 		expected := fakes.BuildFakeRecipeStepInstrument()
 		fakeInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
 
+		// Create a fake ValidPreparationInstrument for the bridge table lookup
+		fakeValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
+
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.GetValidPreparationInstrument), testutils.ContextMatcher, *fakeInput.ValidPreparationInstrumentID).Return(fakeValidPreparationInstrument, nil)
 				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepInstrument), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepInstrumentDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
@@ -1135,9 +1139,15 @@ func TestRecipeManager_CreateRecipeStepIngredient(T *testing.T) {
 		expected := fakes.BuildFakeRecipeStepIngredient()
 		fakeInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInput()
 
+		// Create fake bridge table entries for the lookups
+		fakeValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+		fakeValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
+
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.GetValidIngredientPreparation), testutils.ContextMatcher, *fakeInput.ValidIngredientPreparationID).Return(fakeValidIngredientPreparation, nil)
+				db.On(reflection.GetMethodName(rm.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, *fakeInput.ValidIngredientMeasurementUnitID).Return(fakeValidIngredientMeasurementUnit, nil)
 				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepIngredient), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepIngredientDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
@@ -1607,9 +1617,13 @@ func TestRecipeManager_CreateRecipeStepVessel(T *testing.T) {
 		expected := fakes.BuildFakeRecipeStepVessel()
 		fakeInput := fakes.BuildFakeRecipeStepVesselCreationRequestInput()
 
+		// Create a fake ValidPreparationVessel for the bridge table lookup
+		fakeValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
+
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
+				db.On(reflection.GetMethodName(rm.db.GetValidPreparationVessel), testutils.ContextMatcher, *fakeInput.ValidPreparationVesselID).Return(fakeValidPreparationVessel, nil)
 				db.On(reflection.GetMethodName(rm.db.CreateRecipeStepVessel), testutils.ContextMatcher, testutils.MatchType[*types.RecipeStepVesselDatabaseCreationInput]()).Return(expected, nil)
 			},
 			map[string][]string{
