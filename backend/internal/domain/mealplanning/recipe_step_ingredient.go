@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,6 +11,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
+)
+
+var (
+	errValidIngredientPreparationIDRequired     = errors.New("validIngredientPreparationID is required when not referencing a recipe step product")
+	errValidIngredientMeasurementUnitIDRequired = errors.New("validIngredientMeasurementUnitID is required when not referencing a recipe step product")
 )
 
 const (
@@ -54,43 +61,45 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                               struct{}                          `json:"-"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"quantity"`
-		RecipeStepProductRecipeID       *string                           `json:"productOfRecipeID"`
-		ProductOfRecipeStepProductIndex *uint64                           `json:"productOfRecipeStepProductIndex"`
-		VesselIndex                     *uint16                           `json:"vesselIndex"`
-		ProductPercentageToUse          *float32                          `json:"productPercentageToUse"`
-		ProductOfRecipeStepIndex        *uint64                           `json:"productOfRecipeStepIndex"`
-		IngredientID                    *string                           `json:"ingredientID"`
-		IngredientNotes                 string                            `json:"ingredientNotes"`
-		MeasurementUnitID               string                            `json:"measurementUnitID"`
-		Name                            string                            `json:"name"`
-		QuantityNotes                   string                            `json:"quantityNotes"`
-		OptionIndex                     uint16                            `json:"optionIndex"`
-		Optional                        bool                              `json:"optional"`
-		ToTaste                         bool                              `json:"toTaste"`
+		_                                struct{}                          `json:"-"`
+		Quantity                         types.Float32RangeWithOptionalMax `json:"quantity"`
+		RecipeStepProductRecipeID        *string                           `json:"productOfRecipeID"`
+		ProductOfRecipeStepProductIndex  *uint64                           `json:"productOfRecipeStepProductIndex"`
+		VesselIndex                      *uint16                           `json:"vesselIndex"`
+		ProductPercentageToUse           *float32                          `json:"productPercentageToUse"`
+		ProductOfRecipeStepIndex         *uint64                           `json:"productOfRecipeStepIndex"`
+		ValidIngredientPreparationID     *string                           `json:"validIngredientPreparationID"`
+		ValidIngredientMeasurementUnitID *string                           `json:"validIngredientMeasurementUnitID"`
+		IngredientNotes                  string                            `json:"ingredientNotes"`
+		Name                             string                            `json:"name"`
+		QuantityNotes                    string                            `json:"quantityNotes"`
+		OptionIndex                      uint16                            `json:"optionIndex"`
+		Optional                         bool                              `json:"optional"`
+		ToTaste                          bool                              `json:"toTaste"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                               struct{}                          `json:"-"`
-		Quantity                        types.Float32RangeWithOptionalMax `json:"-"`
-		RecipeStepProductRecipeID       *string                           `json:"-"`
-		IngredientID                    *string                           `json:"-"`
-		RecipeStepProductID             *string                           `json:"-"`
-		ProductOfRecipeStepIndex        *uint64                           `json:"-"`
-		ProductOfRecipeStepProductIndex *uint64                           `json:"-"`
-		VesselIndex                     *uint16                           `json:"-"`
-		ProductPercentageToUse          *float32                          `json:"-"`
-		ID                              string                            `json:"-"`
-		BelongsToRecipeStep             string                            `json:"-"`
-		Name                            string                            `json:"-"`
-		IngredientNotes                 string                            `json:"-"`
-		QuantityNotes                   string                            `json:"-"`
-		MeasurementUnitID               string                            `json:"-"`
-		OptionIndex                     uint16                            `json:"-"`
-		Optional                        bool                              `json:"-"`
-		ToTaste                         bool                              `json:"-"`
+		_                                struct{}                          `json:"-"`
+		Quantity                         types.Float32RangeWithOptionalMax `json:"-"`
+		RecipeStepProductRecipeID        *string                           `json:"-"`
+		IngredientID                     *string                           `json:"-"`
+		RecipeStepProductID              *string                           `json:"-"`
+		ProductOfRecipeStepIndex         *uint64                           `json:"-"`
+		ProductOfRecipeStepProductIndex  *uint64                           `json:"-"`
+		VesselIndex                      *uint16                           `json:"-"`
+		ProductPercentageToUse           *float32                          `json:"-"`
+		ValidIngredientPreparationID     *string                           `json:"-"`
+		ValidIngredientMeasurementUnitID *string                           `json:"-"`
+		ID                               string                            `json:"-"`
+		BelongsToRecipeStep              string                            `json:"-"`
+		Name                             string                            `json:"-"`
+		IngredientNotes                  string                            `json:"-"`
+		QuantityNotes                    string                            `json:"-"`
+		MeasurementUnitID                string                            `json:"-"`
+		OptionIndex                      uint16                            `json:"-"`
+		Optional                         bool                              `json:"-"`
+		ToTaste                          bool                              `json:"-"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -196,12 +205,28 @@ var _ validation.ValidatableWithContext = (*RecipeStepIngredientCreationRequestI
 
 // ValidateWithContext validates a RecipeStepIngredientCreationRequestInput.
 func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	err := &multierror.Error{}
+
+	// When not referencing a recipe step product, bridge table IDs are required
+	if isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil; !isRecipeStepProduct {
+		if x.ValidIngredientPreparationID == nil || *x.ValidIngredientPreparationID == "" {
+			err = multierror.Append(err, errValidIngredientPreparationIDRequired)
+		}
+		if x.ValidIngredientMeasurementUnitID == nil || *x.ValidIngredientMeasurementUnitID == "" {
+			err = multierror.Append(err, errValidIngredientMeasurementUnitIDRequired)
+		}
+	}
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.Quantity, validation.Required),
 	)
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	return err.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepIngredientDatabaseCreationInput)(nil)

@@ -53,6 +53,11 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 	createdValidIngredientState := createValidIngredientStateForTest(t)
 	createdValidVessel := createValidVesselForTest(t)
 
+	// Create bridge table entries for preparation+instrument and preparation+vessel
+	// These are shared across all steps since we use the same preparation, instrument, and vessel
+	createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
+	createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
+
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
 		exampleRecipe = recipe
@@ -60,10 +65,20 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 	exampleRecipe.Media = []*mealplanning.RecipeMedia{}
 
 	createdValidIngredients := []*mealplanning.ValidIngredient{}
+	ingredientPreparationIDs := make(map[string]string)
+	ingredientMeasurementUnitIDs := make(map[string]string)
+
 	for i, recipeStep := range exampleRecipe.Steps {
 		for j := range recipeStep.Ingredients {
 			createdValidIngredient := createValidIngredientForTest(t)
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
+
+			// Create bridge table entries for this ingredient
+			createdVIP := createValidIngredientPreparationWithEntitiesForTest(t, createdValidIngredient, createdValidPreparation)
+			createdVIMU := createValidIngredientMeasurementUnitWithEntitiesForTest(t, createdValidIngredient, createdValidMeasurementUnit)
+
+			ingredientPreparationIDs[createdValidIngredient.ID] = createdVIP.ID
+			ingredientMeasurementUnitIDs[createdValidIngredient.ID] = createdVIMU.ID
 
 			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
 			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
@@ -91,8 +106,29 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 
 	exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 	exampleRecipeInput.AlsoCreateMeal = true
+	// Set bridge table IDs
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+		for j := range exampleRecipeInput.Steps[i].Ingredients {
+			// Use the ingredient ID from the original recipe (which we've already set)
+			if exampleRecipe.Steps[i].Ingredients[j].Ingredient != nil {
+				ingredientID := exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID
+				if vipID, ok := ingredientPreparationIDs[ingredientID]; ok {
+					exampleRecipeInput.Steps[i].Ingredients[j].ValidIngredientPreparationID = &vipID
+				}
+				if vimuID, ok := ingredientMeasurementUnitIDs[ingredientID]; ok {
+					exampleRecipeInput.Steps[i].Ingredients[j].ValidIngredientMeasurementUnitID = &vimuID
+				}
+			}
+		}
+
+		for j := range exampleRecipeInput.Steps[i].Instruments {
+			exampleRecipeInput.Steps[i].Instruments[j].ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
+		}
+
+		for j := range exampleRecipeInput.Steps[i].Vessels {
+			exampleRecipeInput.Steps[i].Vessels[j].ValidPreparationVesselID = &createdValidPreparationVessel.ID
+		}
 	}
 
 	examplePrepTask := fakes.BuildFakeRecipePrepTask()
@@ -150,6 +186,21 @@ func TestRecipes_Creating(T *testing.T) {
 		water := createValidIngredientForTest(t)
 		garlicPaste := createValidIngredientForTest(t)
 		createdValidInstrument := createValidInstrumentForTest(t)
+
+		// Create bridge table entries
+		// ValidIngredientPreparations: ingredient+preparation combos
+		vipPintoSoak := createValidIngredientPreparationWithEntitiesForTest(t, pintoBeans, soak)
+		vipWaterSoak := createValidIngredientPreparationWithEntitiesForTest(t, water, soak)
+		vipGarlicMix := createValidIngredientPreparationWithEntitiesForTest(t, garlicPaste, mix)
+
+		// ValidIngredientMeasurementUnits: ingredient+unit combos
+		vimuPintoGrams := createValidIngredientMeasurementUnitWithEntitiesForTest(t, pintoBeans, grams)
+		vimuWaterCups := createValidIngredientMeasurementUnitWithEntitiesForTest(t, water, cups)
+		vimuGarlicGrams := createValidIngredientMeasurementUnitWithEntitiesForTest(t, garlicPaste, grams)
+
+		// ValidPreparationInstruments: preparation+instrument combos
+		vpiSoakInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, soak, createdValidInstrument)
+		vpiMixInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, mix, createdValidInstrument)
 
 		expected := &mealplanning.Recipe{
 			Name:                "sopa de frijol",
@@ -276,24 +327,24 @@ func TestRecipes_Creating(T *testing.T) {
 					PreparationID: expected.Steps[0].Preparation.ID,
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
-							Name:         "whatever",
-							InstrumentID: pointer.To(createdValidInstrument.ID),
+							Name:                         "whatever",
+							ValidPreparationInstrumentID: &vpiSoakInstrument.ID,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 						{
-							IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
-							Name:              expected.Steps[0].Ingredients[0].Name,
-							MeasurementUnitID: expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
+							Name:                             expected.Steps[0].Ingredients[0].Name,
+							ValidIngredientPreparationID:     &vipPintoSoak.ID,
+							ValidIngredientMeasurementUnitID: &vimuPintoGrams.ID,
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: nil,
 								Min: expected.Steps[0].Ingredients[0].Quantity.Min,
 							},
 						},
 						{
-							IngredientID:      &expected.Steps[0].Ingredients[1].Ingredient.ID,
-							Name:              expected.Steps[0].Ingredients[1].Name,
-							MeasurementUnitID: expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
+							Name:                             expected.Steps[0].Ingredients[1].Name,
+							ValidIngredientPreparationID:     &vipWaterSoak.ID,
+							ValidIngredientMeasurementUnitID: &vimuWaterCups.ID,
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: nil,
 								Min: expected.Steps[0].Ingredients[1].Quantity.Min,
@@ -317,14 +368,14 @@ func TestRecipes_Creating(T *testing.T) {
 					PreparationID: expected.Steps[1].Preparation.ID,
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
-							Name:         "whatever",
-							InstrumentID: pointer.To(createdValidInstrument.ID),
+							Name:                         "whatever",
+							ValidPreparationInstrumentID: &vpiMixInstrument.ID,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 						{
+							// This is a recipe step product (from step 0), no bridge table IDs needed
 							Name:                            expected.Steps[1].Ingredients[0].Name,
-							MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
 							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							Quantity: types.Float32RangeWithOptionalMax{
@@ -333,9 +384,9 @@ func TestRecipes_Creating(T *testing.T) {
 							},
 						},
 						{
-							IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
-							Name:              expected.Steps[1].Ingredients[1].Name,
-							MeasurementUnitID: expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
+							Name:                             expected.Steps[1].Ingredients[1].Name,
+							ValidIngredientPreparationID:     &vipGarlicMix.ID,
+							ValidIngredientMeasurementUnitID: &vimuGarlicGrams.ID,
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: nil,
 								Min: expected.Steps[1].Ingredients[1].Quantity.Min,
@@ -625,6 +676,12 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 		createdValidInstrument := createValidInstrumentForTest(t)
 		sautee := createValidPreparationForTest(t)
 
+		// Create bridge table entries
+		vipChickenDice := createValidIngredientPreparationWithEntitiesForTest(t, chickenBreast, dice)
+		vimuChickenGrams := createValidIngredientMeasurementUnitWithEntitiesForTest(t, chickenBreast, grams)
+		vpiDiceInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, dice, createdValidInstrument)
+		vpiSauteeInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, sautee, createdValidInstrument)
+
 		expected := &mealplanning.Recipe{
 			Name:                "sopa de frijol",
 			Slug:                "whatever-who-cares-sopa-de-frijol",
@@ -730,16 +787,16 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 					PreparationID: dice.ID,
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
-							Name:         "whatever",
-							InstrumentID: pointer.To(createdValidInstrument.ID),
+							Name:                         "whatever",
+							ValidPreparationInstrumentID: &vpiDiceInstrument.ID,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 						{
-							IngredientID:      &chickenBreast.ID,
-							Name:              "pinto beans",
-							MeasurementUnitID: grams.ID,
-							Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
+							Name:                             "pinto beans",
+							ValidIngredientPreparationID:     &vipChickenDice.ID,
+							ValidIngredientMeasurementUnitID: &vimuChickenGrams.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 500},
 						},
 					},
 					Index: 0,
@@ -758,14 +815,14 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 					PreparationID: sautee.ID,
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
-							Name:         "whatever",
-							InstrumentID: pointer.To(createdValidInstrument.ID),
+							Name:                         "whatever",
+							ValidPreparationInstrumentID: &vpiSauteeInstrument.ID,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 						{
+							// This is a recipe step product (from step 0), no bridge table IDs needed
 							Name:                            "diced chicken breast",
-							MeasurementUnitID:               grams.ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
 							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),

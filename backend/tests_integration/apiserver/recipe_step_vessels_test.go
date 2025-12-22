@@ -51,17 +51,25 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
+		var createdRecipeStepPreparationID string
 		for _, step := range createdRecipe.Steps {
 			createdRecipeStepID = step.ID
+			createdRecipeStepPreparationID = step.Preparation.ID
 			break
 		}
 
 		createdValidVessel := createValidVesselForTest(t)
 
+		// Create bridge table entry for preparation+vessel
+		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
+		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
+
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 		exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 		exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
+		// Set bridge table ID (required)
+		exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 
 		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 			RecipeId:     createdRecipe.ID,
@@ -145,6 +153,15 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		unit := createValidMeasurementUnitForTest(t)
 		aluminumFoil := createValidIngredientForTest(t)
 		garlic := createValidIngredientForTest(t)
+
+		// Create bridge table entries
+		// Step 0: aluminumFoil ingredient with line preparation, bakingSheet vessel with line preparation
+		vipAluminumFoilLine := createValidIngredientPreparationWithEntitiesForTest(t, aluminumFoil, line)
+		vimuAluminumFoilSheets := createValidIngredientMeasurementUnitWithEntitiesForTest(t, aluminumFoil, sheets)
+		vpvBakingSheetLine := createValidPreparationVesselWithEntitiesForTest(t, line, bakingSheet)
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		vipGarlicRoast := createValidIngredientPreparationWithEntitiesForTest(t, garlic, roast)
+		vimuGarlicHead := createValidIngredientMeasurementUnitWithEntitiesForTest(t, garlic, head)
 
 		linedBakingSheetName := "lined baking sheet"
 
@@ -239,6 +256,15 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
 		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
 
+		// Set bridge table IDs
+		// Step 0: aluminumFoil ingredient and bakingSheet vessel with line preparation
+		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientPreparationID = &vipAluminumFoilLine.ID
+		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuAluminumFoilSheets.ID
+		exampleRecipeInput.Steps[0].Vessels[0].ValidPreparationVesselID = &vpvBakingSheetLine.ID
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientPreparationID = &vipGarlicRoast.ID
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuGarlicHead.ID
+
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
 		require.NoError(t, err)
 
@@ -275,12 +301,18 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
+		var createdRecipeStepPreparationID string
 		for _, step := range createdRecipe.Steps {
 			createdRecipeStepID = step.ID
+			createdRecipeStepPreparationID = step.Preparation.ID
 			break
 		}
 
 		createdValidVessel := createValidVesselForTest(t)
+
+		// Create bridge table entry for preparation+vessel
+		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
+		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
 		var expected []*mealplanning.RecipeStepVessel
 		for i := 0; i < 5; i++ {
@@ -288,6 +320,8 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
+			// Set bridge table ID (required)
+			exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 			createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

@@ -15,14 +15,21 @@ import (
 
 func createValidPreparationVesselForTest(t *testing.T) (*types.ValidPreparation, *types.ValidVessel, *types.ValidPreparationVessel) {
 	t.Helper()
-	ctx := t.Context()
 
 	createdValidPreparation := createValidPreparationForTest(t)
 	createdValidVessel := createValidVesselForTest(t)
 
+	return createdValidPreparation, createdValidVessel, createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
+}
+
+// createValidPreparationVesselWithEntitiesForTest creates a ValidPreparationVessel with specific entities.
+func createValidPreparationVesselWithEntitiesForTest(t *testing.T, preparation *types.ValidPreparation, vessel *types.ValidVessel) *types.ValidPreparationVessel {
+	t.Helper()
+	ctx := t.Context()
+
 	exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-	exampleValidPreparationVessel.Vessel = *createdValidVessel
-	exampleValidPreparationVessel.Preparation = *createdValidPreparation
+	exampleValidPreparationVessel.Vessel = *vessel
+	exampleValidPreparationVessel.Preparation = *preparation
 
 	exampleValidPreparationVesselInput := mealplanningconverters.ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel))
 	createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(ctx, &mealplanningsvc.CreateValidPreparationVesselRequest{Input: exampleValidPreparationVesselInput})
@@ -35,7 +42,7 @@ func createValidPreparationVesselForTest(t *testing.T) (*types.ValidPreparation,
 	require.NoError(t, err)
 	require.NotNil(t, validPrepVesselRes.Result)
 
-	return createdValidPreparation, createdValidVessel, mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(validPrepVesselRes.Result)
+	return mealplanningconverters.ConvertGRPCValidPreparationVesselToValidPreparationVessel(validPrepVesselRes.Result)
 }
 
 func TestValidPreparationVessels_Creating(T *testing.T) {

@@ -9,10 +9,10 @@ import (
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
 func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
 	x := &mealplanning.RecipeStepIngredientDatabaseCreationInput{
-		ID:                identifiers.New(),
-		IngredientID:      input.IngredientID,
-		Name:              input.Name,
-		MeasurementUnitID: input.MeasurementUnitID,
+		ID:                               identifiers.New(),
+		ValidIngredientPreparationID:     input.ValidIngredientPreparationID,
+		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitID,
+		Name:                             input.Name,
 		Quantity: types.Float32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
@@ -56,17 +56,11 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 }
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
+// Note: This conversion loses bridge table ID information since RecipeStepIngredient doesn't store them.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientCreationRequestInput {
-	var ingredientID *string
-	if input.Ingredient != nil {
-		ingredientID = &input.Ingredient.ID
-	}
-
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
-		Name:              input.Name,
-		Optional:          input.Optional,
-		IngredientID:      ingredientID,
-		MeasurementUnitID: input.MeasurementUnit.ID,
+		Name:     input.Name,
+		Optional: input.Optional,
 		Quantity: types.Float32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,

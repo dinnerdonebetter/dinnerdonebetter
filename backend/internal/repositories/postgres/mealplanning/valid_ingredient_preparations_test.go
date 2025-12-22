@@ -222,6 +222,71 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidIngredientPreparationsByIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("with empty list", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		c := buildInertClientForTest(t)
+
+		actual, err := c.GetValidIngredientPreparationsByIDs(ctx, []string{})
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+		assert.Empty(t, actual)
+	})
+}
+
+func TestQuerier_Integration_GetValidIngredientPreparationsByIDs(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create multiple valid ingredient preparations
+	created1 := createValidIngredientPreparationForTest(t, ctx, nil, dbc)
+	created2 := createValidIngredientPreparationForTest(t, ctx, nil, dbc)
+	created3 := createValidIngredientPreparationForTest(t, ctx, nil, dbc)
+
+	// Test fetching by IDs
+	ids := []string{created1.ID, created2.ID, created3.ID}
+	results, err := dbc.GetValidIngredientPreparationsByIDs(ctx, ids)
+	assert.NoError(t, err)
+	assert.Len(t, results, 3)
+	assert.NotNil(t, results[created1.ID])
+	assert.NotNil(t, results[created2.ID])
+	assert.NotNil(t, results[created3.ID])
+
+	// Test with partial IDs (some exist, some don't)
+	partialIDs := []string{created1.ID, "nonexistent-id"}
+	partialResults, err := dbc.GetValidIngredientPreparationsByIDs(ctx, partialIDs)
+	assert.NoError(t, err)
+	assert.Len(t, partialResults, 1)
+	assert.NotNil(t, partialResults[created1.ID])
+
+	// Test with empty list
+	emptyResults, err := dbc.GetValidIngredientPreparationsByIDs(ctx, []string{})
+	assert.NoError(t, err)
+	assert.Empty(t, emptyResults)
+
+	// Cleanup
+	assert.NoError(t, dbc.ArchiveValidIngredientPreparation(ctx, created1.ID))
+	assert.NoError(t, dbc.ArchiveValidIngredientPreparation(ctx, created2.ID))
+	assert.NoError(t, dbc.ArchiveValidIngredientPreparation(ctx, created3.ID))
+}
+
 func TestQuerier_Integration_ValidIngredientPreparations_CursorBasedPagination(t *testing.T) {
 	if !pgtesting.RunContainerTests {
 		t.SkipNow()

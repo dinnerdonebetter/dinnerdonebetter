@@ -75,6 +75,7 @@ type (
 		GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
 		GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
 		GetValidPreparationVesselsForVessel(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
+		GetValidPreparationVesselsByIDs(ctx context.Context, ids []string) (map[string]*ValidPreparationVessel, error)
 		CreateValidPreparationVessel(ctx context.Context, input *ValidPreparationVesselDatabaseCreationInput) (*ValidPreparationVessel, error)
 		UpdateValidPreparationVessel(ctx context.Context, updated *ValidPreparationVessel) error
 		ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error

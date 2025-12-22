@@ -334,8 +334,8 @@ func ConvertRecipePrepTaskStepWithinRecipeCreationRequestInputToGRPCRecipePrepTa
 
 func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCreationRequestInput(input *mealplanningsvc.RecipeStepInstrumentCreationRequestInput) *mealplanning.RecipeStepInstrumentCreationRequestInput {
 	return &mealplanning.RecipeStepInstrumentCreationRequestInput{
-		InstrumentID:                    input.InstrumentId,
 		RecipeStepProductID:             input.RecipeStepProductId,
+		ValidPreparationInstrumentID:    input.ValidPreparationInstrumentId,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		Notes:                           input.Notes,
@@ -352,7 +352,7 @@ func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCr
 
 func ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCreationRequestInput(input *mealplanning.RecipeStepInstrumentCreationRequestInput) *mealplanningsvc.RecipeStepInstrumentCreationRequestInput {
 	return &mealplanningsvc.RecipeStepInstrumentCreationRequestInput{
-		InstrumentId:                    input.InstrumentID,
+		ValidPreparationInstrumentId:    input.ValidPreparationInstrumentID,
 		RecipeStepProductId:             input.RecipeStepProductID,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
@@ -373,7 +373,7 @@ func ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRe
 		RecipeStepProductID:             input.RecipeStepProductId,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		VesselID:                        input.VesselId,
+		ValidPreparationVesselID:        input.ValidPreparationVesselId,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
 		VesselPreposition:               input.VesselPreposition,
@@ -390,7 +390,7 @@ func ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRe
 		RecipeStepProductId:             input.RecipeStepProductID,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		VesselId:                        input.VesselID,
+		ValidPreparationVesselId:        input.ValidPreparationVesselID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
 		VesselPreposition:               input.VesselPreposition,
@@ -486,19 +486,19 @@ func ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreation
 
 func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCreationRequestInput(input *mealplanningsvc.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientCreationRequestInput {
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
-		IngredientID:                    input.IngredientId,
-		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
-		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		VesselIndex:                     grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
-		ProductPercentageToUse:          input.ProductPercentageToUse,
-		RecipeStepProductRecipeID:       input.RecipeStepProductRecipeId,
-		IngredientNotes:                 input.IngredientNotes,
-		MeasurementUnitID:               input.MeasurementUnitId,
-		Name:                            input.Name,
-		QuantityNotes:                   input.QuantityNotes,
-		OptionIndex:                     uint16(input.OptionIndex),
-		Optional:                        input.Optional,
-		ToTaste:                         input.ToTaste,
+		ValidIngredientPreparationID:     input.ValidIngredientPreparationId,
+		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitId,
+		ProductOfRecipeStepIndex:         input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex:  input.ProductOfRecipeStepProductIndex,
+		VesselIndex:                      grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
+		ProductPercentageToUse:           input.ProductPercentageToUse,
+		RecipeStepProductRecipeID:        input.RecipeStepProductRecipeId,
+		IngredientNotes:                  input.IngredientNotes,
+		Name:                             input.Name,
+		QuantityNotes:                    input.QuantityNotes,
+		OptionIndex:                      uint16(input.OptionIndex),
+		Optional:                         input.Optional,
+		ToTaste:                          input.ToTaste,
 		Quantity: types.Float32RangeWithOptionalMax{
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
@@ -508,19 +508,19 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 
 func ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredientCreationRequestInput) *mealplanningsvc.RecipeStepIngredientCreationRequestInput {
 	return &mealplanningsvc.RecipeStepIngredientCreationRequestInput{
-		IngredientId:                    input.IngredientID,
-		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
-		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		VesselIndex:                     grpcconverters.ConvertUint16PointerToUint32Pointer(input.VesselIndex),
-		ProductPercentageToUse:          input.ProductPercentageToUse,
-		RecipeStepProductRecipeId:       input.RecipeStepProductRecipeID,
-		IngredientNotes:                 input.IngredientNotes,
-		MeasurementUnitId:               input.MeasurementUnitID,
-		Name:                            input.Name,
-		QuantityNotes:                   input.QuantityNotes,
-		OptionIndex:                     uint32(input.OptionIndex),
-		Optional:                        input.Optional,
-		ToTaste:                         input.ToTaste,
+		ValidIngredientPreparationId:     input.ValidIngredientPreparationID,
+		ValidIngredientMeasurementUnitId: input.ValidIngredientMeasurementUnitID,
+		ProductOfRecipeStepIndex:         input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex:  input.ProductOfRecipeStepProductIndex,
+		VesselIndex:                      grpcconverters.ConvertUint16PointerToUint32Pointer(input.VesselIndex),
+		ProductPercentageToUse:           input.ProductPercentageToUse,
+		RecipeStepProductRecipeId:        input.RecipeStepProductRecipeID,
+		IngredientNotes:                  input.IngredientNotes,
+		Name:                             input.Name,
+		QuantityNotes:                    input.QuantityNotes,
+		OptionIndex:                      uint32(input.OptionIndex),
+		Optional:                         input.Optional,
+		ToTaste:                          input.ToTaste,
 		Quantity: &grpctypes.Float32RangeWithOptionalMax{
 			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,

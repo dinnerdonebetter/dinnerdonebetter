@@ -15,14 +15,21 @@ import (
 
 func createValidIngredientPreparationForTest(t *testing.T) (*types.ValidIngredient, *types.ValidPreparation, *types.ValidIngredientPreparation) {
 	t.Helper()
-	ctx := t.Context()
 
 	createdValidIngredient := createValidIngredientForTest(t)
 	createdValidPreparation := createValidPreparationForTest(t)
 
+	return createdValidIngredient, createdValidPreparation, createValidIngredientPreparationWithEntitiesForTest(t, createdValidIngredient, createdValidPreparation)
+}
+
+// createValidIngredientPreparationWithEntitiesForTest creates a ValidIngredientPreparation with specific entities.
+func createValidIngredientPreparationWithEntitiesForTest(t *testing.T, ingredient *types.ValidIngredient, preparation *types.ValidPreparation) *types.ValidIngredientPreparation {
+	t.Helper()
+	ctx := t.Context()
+
 	exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-	exampleValidIngredientPreparation.Preparation = *createdValidPreparation
-	exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
+	exampleValidIngredientPreparation.Preparation = *preparation
+	exampleValidIngredientPreparation.Ingredient = *ingredient
 
 	exampleValidIngredientPreparationInput := mealplanningconverters.ConvertCreateValidIngredientPreparationRequestToGRPCValidIngredientPreparationCreationRequestInput(converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation))
 	createdValidIngredientPreparation, err := adminClient.CreateValidIngredientPreparation(ctx, &mealplanningsvc.CreateValidIngredientPreparationRequest{Input: exampleValidIngredientPreparationInput})
@@ -35,7 +42,7 @@ func createValidIngredientPreparationForTest(t *testing.T) (*types.ValidIngredie
 	require.NoError(t, err)
 	require.NotNil(t, validPrepPreparationRes.Result)
 
-	return createdValidIngredient, createdValidPreparation, mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(validPrepPreparationRes.Result)
+	return mealplanningconverters.ConvertGRPCValidIngredientPreparationToValidIngredientPreparation(validPrepPreparationRes.Result)
 }
 
 func TestValidIngredientPreparations_Creating(T *testing.T) {

@@ -136,10 +136,12 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var (
-			createdRecipeStepID string
+			createdRecipeStepID            string
+			createdRecipeStepPreparationID string
 		)
 		for _, step := range createdRecipe.Steps {
 			createdRecipeStepID = step.ID
+			createdRecipeStepPreparationID = step.Preparation.ID
 			break
 		}
 
@@ -149,12 +151,21 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		for i := 0; i < 5; i++ {
 			x, _, _ := createRecipeForTest(t, nil)
 
+			// Create bridge table entries for this ingredient
+			createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
+			createdValidIngredient := &mealplanning.ValidIngredient{ID: x[0].ID}
+			createdVIP := createValidIngredientPreparationWithEntitiesForTest(t, createdValidIngredient, createdValidPreparation)
+			createdVIMU := createValidIngredientMeasurementUnitWithEntitiesForTest(t, createdValidIngredient, createdValidMeasurementUnit)
+
 			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-			exampleRecipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{ID: x[0].ID}
+			exampleRecipeStepIngredient.Ingredient = createdValidIngredient
 			exampleRecipeStepIngredient.MeasurementUnit = mealplanning.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 			exampleRecipeStepIngredientInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
+			// Set bridge table IDs (required)
+			exampleRecipeStepIngredientInput.ValidIngredientPreparationID = &createdVIP.ID
+			exampleRecipeStepIngredientInput.ValidIngredientMeasurementUnitID = &createdVIMU.ID
 			createdRecipeStepIngredientRes, err := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

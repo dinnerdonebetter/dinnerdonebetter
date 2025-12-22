@@ -30,7 +30,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input *mealplanning.RecipeStepInstrumentCreationRequestInput) *mealplanning.RecipeStepInstrumentDatabaseCreationInput {
 	x := &mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 		ID:                              identifiers.New(),
-		InstrumentID:                    input.InstrumentID,
+		ValidPreparationInstrumentID:    input.ValidPreparationInstrumentID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
@@ -46,14 +46,9 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput builds a RecipeStepInstrumentCreationRequestInput from a RecipeStepInstrument.
+// Note: This conversion loses bridge table ID information since RecipeStepInstrument doesn't store them.
 func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input *mealplanning.RecipeStepInstrument) *mealplanning.RecipeStepInstrumentCreationRequestInput {
-	var instrumentID *string
-	if input.Instrument != nil {
-		instrumentID = &input.Instrument.ID
-	}
-
 	return &mealplanning.RecipeStepInstrumentCreationRequestInput{
-		InstrumentID:        instrumentID,
 		Name:                input.Name,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Notes:               input.Notes,

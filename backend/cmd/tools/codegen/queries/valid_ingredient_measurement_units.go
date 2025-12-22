@@ -226,6 +226,31 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetValidIngredientMeasurementUnitsByIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validIngredientMeasurementUnitsTableName,
+					validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+					validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+					validIngredientMeasurementUnitsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validIngredientsTableName, archivedAtColumn,
+					validIngredientMeasurementUnitsTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ValidIngredientMeasurementUnitPairIsValid",
 					Type: OneType,
 				},

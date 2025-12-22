@@ -147,12 +147,109 @@ Recipe search is currently implemented through a `RecipeSearchSubset` type that 
 ## Common Patterns and Usage
 
 ### Creating a New Recipe
+
 1. Set basic metadata (name, description, source)
 2. Define portion information (estimated portions, portion names)
 3. Set meal component type and eligibility
 4. Add at least 2 cooking steps with ingredients and instruments and/or vessels
 5. Optionally add prep tasks for advance preparation
 6. Add media attachments if available
+
+#### Bridge Table ID Requirements
+
+When creating recipe steps, you must use **bridge table IDs** to specify ingredients, instruments, and vessels. These bridge tables define which combinations of entities are valid together.
+
+**For Recipe Step Ingredients:**
+- `ValidIngredientPreparationID` (required) - References a `ValidIngredientPreparation` that defines which ingredient can be used with which preparation method
+- `ValidIngredientMeasurementUnitID` (required) - References a `ValidIngredientMeasurementUnit` that defines which measurement unit can be used with which ingredient
+
+**For Recipe Step Instruments:**
+- `ValidPreparationInstrumentID` (required) - References a `ValidPreparationInstrument` that defines which instrument can be used with which preparation method
+
+**For Recipe Step Vessels:**
+- `ValidPreparationVesselID` (required) - References a `ValidPreparationVessel` that defines which vessel can be used with which preparation method
+
+**Exception - Recipe Step Products:**
+When an ingredient, instrument, or vessel is the **output of a previous recipe step** (a "recipe step product"), you don't need bridge table IDs. Instead, set `ProductOfRecipeStepIndex` and `ProductOfRecipeStepProductIndex` to reference the previous step's output. This is common for multi-step recipes where one step's output becomes another step's input (e.g., "soaked beans" from step 1 used in step 2).
+
+#### Example Request Format
+
+```json
+{
+  "name": "Sopa de Frijol",
+  "slug": "sopa-de-frijol",
+  "yieldsComponentType": "main",
+  "portionName": "serving",
+  "pluralPortionName": "servings",
+  "estimatedPortions": { "min": 4 },
+  "steps": [
+    {
+      "preparationId": "prep-soak-id",
+      "notes": "Soak the beans overnight",
+      "index": 0,
+      "ingredients": [
+        {
+          "name": "pinto beans",
+          "validIngredientPreparationId": "vip-pinto-soak-id",
+          "validIngredientMeasurementUnitId": "vimu-pinto-grams-id",
+          "quantity": { "min": 500 }
+        }
+      ],
+      "instruments": [
+        {
+          "name": "large bowl",
+          "validPreparationInstrumentId": "vpi-bowl-soak-id"
+        }
+      ],
+      "vessels": [
+        {
+          "name": "container",
+          "validPreparationVesselId": "vpv-container-soak-id"
+        }
+      ],
+      "products": [
+        {
+          "name": "soaked pinto beans",
+          "type": "ingredient",
+          "measurementUnitId": "grams-id",
+          "quantity": { "min": 1000 }
+        }
+      ]
+    },
+    {
+      "preparationId": "prep-cook-id",
+      "notes": "Cook the beans",
+      "index": 1,
+      "ingredients": [
+        {
+          "name": "soaked pinto beans",
+          "productOfRecipeStepIndex": 0,
+          "productOfRecipeStepProductIndex": 0,
+          "quantity": { "min": 1000 }
+        }
+      ],
+      "instruments": [
+        {
+          "name": "pot",
+          "validPreparationInstrumentId": "vpi-pot-cook-id"
+        }
+      ],
+      "products": [
+        {
+          "name": "cooked beans",
+          "type": "ingredient",
+          "measurementUnitId": "grams-id",
+          "quantity": { "min": 1000 }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Note in the example above:
+- Step 0's ingredient uses `validIngredientPreparationId` and `validIngredientMeasurementUnitId`
+- Step 1's ingredient uses `productOfRecipeStepIndex` and `productOfRecipeStepProductIndex` (referencing step 0's product)
 
 ### Recipe Cloning Workflow
 1. User finds a recipe they like
@@ -168,6 +265,33 @@ Recipe search is currently implemented through a `RecipeSearchSubset` type that 
 - **Required Fields**: Name, slug, estimated portions, portion names, and yields component type are required
 - **Step Requirements**: Each step must have at least one instrument OR vessel (not necessarily both), and a preparation method
 - **Component Type**: Must be one of the predefined meal component types
+- **Bridge Table ID Requirements**: See below
+
+### Bridge Table Validation
+
+The system validates bridge table IDs during recipe creation to ensure data integrity:
+
+**Validation Checks:**
+1. **Existence**: The bridge table entry must exist
+2. **Preparation Matching**: The bridge table entry's preparation must match the step's preparation
+3. **Ingredient Matching**: For `ValidIngredientMeasurementUnit`, the ingredient must match the one from `ValidIngredientPreparation`
+
+**Error Messages:**
+Validation errors follow this format:
+```
+step {stepIndex} ingredient {ingredientIndex}: {specific error}
+step {stepIndex} instrument {instrumentIndex}: {specific error}
+step {stepIndex} vessel {vesselIndex}: {specific error}
+```
+
+**Example Errors:**
+- `step 0 ingredient 0: ValidIngredientPreparation "abc123" not found`
+- `step 0 ingredient 0: ValidIngredientPreparation "abc123" is for preparation "chop", but step uses preparation "soak"`
+- `step 0 ingredient 0: ValidIngredientMeasurementUnit "xyz789" is for ingredient "flour", but ingredient "sugar" was specified`
+- `step 0 instrument 0: ValidPreparationInstrument "def456" is for preparation "chop", but step uses preparation "soak"`
+
+**Recipe Step Products (No Validation):**
+Ingredients, instruments, or vessels that come from previous recipe steps (identified by `ProductOfRecipeStepIndex` or `RecipeStepProductID`) skip bridge table validation. Their validity was established when the original product was created.
 
 ### Data Flow
 - Recipes are created through the API using [`RecipeCreationRequestInput`](../internal/domain/mealplanning/recipe.go)

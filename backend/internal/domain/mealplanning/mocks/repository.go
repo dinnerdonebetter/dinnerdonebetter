@@ -307,6 +307,12 @@ func (m *Repository) ArchiveValidIngredientPreparation(ctx context.Context, vali
 	return m.Called(ctx, validIngredientPreparationID).Error(0)
 }
 
+// GetValidIngredientPreparationsByIDs is a mock function.
+func (m *Repository) GetValidIngredientPreparationsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidIngredientPreparation, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).(map[string]*mealplanning.ValidIngredientPreparation), returnValues.Error(1)
+}
+
 // ValidPrepTaskConfigExists is a mock function.
 func (m *Repository) ValidPrepTaskConfigExists(ctx context.Context, validIngredientPreparationStorageConfigID string) (bool, error) {
 	returnValues := m.Called(ctx, validIngredientPreparationStorageConfigID)
@@ -884,6 +890,12 @@ func (m *Repository) ArchiveValidPreparationInstrument(ctx context.Context, vali
 	return m.Called(ctx, validPreparationInstrumentID).Error(0)
 }
 
+// GetValidPreparationInstrumentsByIDs is a mock function.
+func (m *Repository) GetValidPreparationInstrumentsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidPreparationInstrument, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).(map[string]*mealplanning.ValidPreparationInstrument), returnValues.Error(1)
+}
+
 // ValidIngredientMeasurementUnitExists is a mock function.
 func (m *Repository) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error) {
 	returnValues := m.Called(ctx, validIngredientMeasurementUnitID)
@@ -928,6 +940,12 @@ func (m *Repository) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 // ArchiveValidIngredientMeasurementUnit is a mock function.
 func (m *Repository) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
 	return m.Called(ctx, validIngredientMeasurementUnitID).Error(0)
+}
+
+// GetValidIngredientMeasurementUnitsByIDs is a mock function.
+func (m *Repository) GetValidIngredientMeasurementUnitsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidIngredientMeasurementUnit, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).(map[string]*mealplanning.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 // MealPlanEventIsEligibleForVoting is a mock function.
@@ -1562,6 +1580,12 @@ func (m *Repository) UpdateValidPreparationVessel(ctx context.Context, updated *
 // ArchiveValidPreparationVessel is a mock function.
 func (m *Repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	return m.Called(ctx, validPreparationVesselID).Error(0)
+}
+
+// GetValidPreparationVesselsByIDs is a mock function.
+func (m *Repository) GetValidPreparationVesselsByIDs(ctx context.Context, ids []string) (map[string]*mealplanning.ValidPreparationVessel, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).(map[string]*mealplanning.ValidPreparationVessel), returnValues.Error(1)
 }
 
 // GetRecipeLists is a mock function.

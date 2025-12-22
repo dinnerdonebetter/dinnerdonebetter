@@ -15,14 +15,21 @@ import (
 
 func createValidIngredientMeasurementUnitForTest(t *testing.T) (*types.ValidIngredient, *types.ValidMeasurementUnit, *types.ValidIngredientMeasurementUnit) {
 	t.Helper()
-	ctx := t.Context()
 
 	createdValidIngredient := createValidIngredientForTest(t)
 	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
 
+	return createdValidIngredient, createdValidMeasurementUnit, createValidIngredientMeasurementUnitWithEntitiesForTest(t, createdValidIngredient, createdValidMeasurementUnit)
+}
+
+// createValidIngredientMeasurementUnitWithEntitiesForTest creates a ValidIngredientMeasurementUnit with specific entities.
+func createValidIngredientMeasurementUnitWithEntitiesForTest(t *testing.T, ingredient *types.ValidIngredient, measurementUnit *types.ValidMeasurementUnit) *types.ValidIngredientMeasurementUnit {
+	t.Helper()
+	ctx := t.Context()
+
 	exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
-	exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
-	exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
+	exampleValidIngredientMeasurementUnit.MeasurementUnit = *measurementUnit
+	exampleValidIngredientMeasurementUnit.Ingredient = *ingredient
 
 	exampleValidIngredientMeasurementUnitInput := mealplanningconverters.ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit))
 	createdValidIngredientMeasurementUnit, err := adminClient.CreateValidIngredientMeasurementUnit(ctx, &mealplanningsvc.CreateValidIngredientMeasurementUnitRequest{Input: exampleValidIngredientMeasurementUnitInput})
@@ -35,7 +42,7 @@ func createValidIngredientMeasurementUnitForTest(t *testing.T) (*types.ValidIngr
 	require.NoError(t, err)
 	require.NotNil(t, validPrepMeasurementUnitRes.Result)
 
-	return createdValidIngredient, createdValidMeasurementUnit, mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(validPrepMeasurementUnitRes.Result)
+	return mealplanningconverters.ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(validPrepMeasurementUnitRes.Result)
 }
 
 func TestValidIngredientMeasurementUnits_Creating(T *testing.T) {

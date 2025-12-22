@@ -15,14 +15,21 @@ import (
 
 func createValidPreparationInstrumentForTest(t *testing.T) (*types.ValidPreparation, *types.ValidInstrument, *types.ValidPreparationInstrument) {
 	t.Helper()
-	ctx := t.Context()
 
 	createdValidPreparation := createValidPreparationForTest(t)
 	createdValidInstrument := createValidInstrumentForTest(t)
 
+	return createdValidPreparation, createdValidInstrument, createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
+}
+
+// createValidPreparationInstrumentWithEntitiesForTest creates a ValidPreparationInstrument with specific entities.
+func createValidPreparationInstrumentWithEntitiesForTest(t *testing.T, preparation *types.ValidPreparation, instrument *types.ValidInstrument) *types.ValidPreparationInstrument {
+	t.Helper()
+	ctx := t.Context()
+
 	exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-	exampleValidPreparationInstrument.Instrument = *createdValidInstrument
-	exampleValidPreparationInstrument.Preparation = *createdValidPreparation
+	exampleValidPreparationInstrument.Instrument = *instrument
+	exampleValidPreparationInstrument.Preparation = *preparation
 
 	exampleValidPreparationInstrumentInput := mealplanningconverters.ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument))
 	createdValidPreparationInstrument, err := adminClient.CreateValidPreparationInstrument(ctx, &mealplanningsvc.CreateValidPreparationInstrumentRequest{Input: exampleValidPreparationInstrumentInput})
@@ -35,7 +42,7 @@ func createValidPreparationInstrumentForTest(t *testing.T) (*types.ValidPreparat
 	require.NoError(t, err)
 	require.NotNil(t, validPrepInstrumentRes.Result)
 
-	return createdValidPreparation, createdValidInstrument, mealplanningconverters.ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(validPrepInstrumentRes.Result)
+	return mealplanningconverters.ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(validPrepInstrumentRes.Result)
 }
 
 func TestValidPreparationInstruments_Creating(T *testing.T) {

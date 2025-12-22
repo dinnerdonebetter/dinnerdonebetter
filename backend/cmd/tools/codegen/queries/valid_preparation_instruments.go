@@ -318,6 +318,32 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetValidPreparationInstrumentsByIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM
+	%s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validPreparationInstrumentsTableName,
+					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+					validPreparationInstrumentsTableName, archivedAtColumn,
+					validInstrumentsTableName, archivedAtColumn,
+					validPreparationsTableName, archivedAtColumn,
+					validPreparationInstrumentsTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ValidPreparationInstrumentPairIsValid",
 					Type: OneType,
 				},

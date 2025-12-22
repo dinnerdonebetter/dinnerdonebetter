@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,6 +11,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
+)
+
+var (
+	errValidPreparationVesselIDRequired = errors.New("validPreparationVesselID is required when not referencing a recipe step product")
 )
 
 const (
@@ -53,7 +59,7 @@ type (
 		RecipeStepProductID             *string                          `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"productOfRecipeStepProductIndex"`
-		VesselID                        *string                          `json:"vesselID"`
+		ValidPreparationVesselID        *string                          `json:"validPreparationVesselID"`
 		Quantity                        types.Uint16RangeWithOptionalMax `json:"quantity"`
 		Name                            string                           `json:"name"`
 		Notes                           string                           `json:"notes"`
@@ -66,6 +72,7 @@ type (
 		_ struct{} `json:"-"`
 
 		VesselID                        *string                          `json:"-"`
+		ValidPreparationVesselID        *string                          `json:"-"`
 		RecipeStepProductID             *string                          `json:"-"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"-"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"-"`
@@ -155,12 +162,26 @@ var _ validation.ValidatableWithContext = (*RecipeStepVesselCreationRequestInput
 
 // ValidateWithContext validates a RecipeStepVesselCreationRequestInput.
 func (x *RecipeStepVesselCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	err := &multierror.Error{}
+
+	// When not referencing a recipe step product, bridge table ID is required
+	if isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil; !isRecipeStepProduct {
+		if x.ValidPreparationVesselID == nil || *x.ValidPreparationVesselID == "" {
+			err = multierror.Append(err, errValidPreparationVesselIDRequired)
+		}
+	}
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Quantity, validation.Required),
 	)
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	return err.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepVesselDatabaseCreationInput)(nil)

@@ -242,6 +242,35 @@ WHERE
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetValidPreparationVesselsByIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
+WHERE
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validPreparationVesselsTableName,
+					validVesselsTableName, validPreparationVesselsTableName, validVesselIDColumn, validVesselsTableName, idColumn,
+					validPreparationsTableName, validPreparationVesselsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+					validMeasurementUnitsTableName, validVesselsTableName, capacityUnitColumn, validMeasurementUnitsTableName, idColumn,
+					validPreparationVesselsTableName, archivedAtColumn,
+					validVesselsTableName, archivedAtColumn,
+					validPreparationsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validPreparationVesselsTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ValidPreparationVesselPairIsValid",
 					Type: OneType,
 				},

@@ -4,6 +4,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -50,7 +51,21 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 }
 
 // BuildFakeRecipeStepInstrumentCreationRequestInput builds a faked RecipeStepInstrumentCreationRequestInput.
+// Note: This now includes bridge table IDs since they are required.
 func BuildFakeRecipeStepInstrumentCreationRequestInput() *types.RecipeStepInstrumentCreationRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
-	return converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
+	input := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
+	// Bridge table ID is now required
+	input.ValidPreparationInstrumentID = pointer.To(BuildFakeID())
+	return input
+}
+
+// BuildFakeRecipeStepInstrumentCreationRequestInputForRecipeStepProduct builds a faked RecipeStepInstrumentCreationRequestInput
+// for a recipe step product (no bridge table IDs required).
+func BuildFakeRecipeStepInstrumentCreationRequestInputForRecipeStepProduct() *types.RecipeStepInstrumentCreationRequestInput {
+	recipeStepInstrument := BuildFakeRecipeStepInstrument()
+	input := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
+	input.ProductOfRecipeStepIndex = pointer.To(uint64(0))
+	input.ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+	return input
 }

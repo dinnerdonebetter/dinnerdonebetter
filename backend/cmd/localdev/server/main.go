@@ -92,6 +92,12 @@ type testEnumerations struct {
 	MeasurementUnits map[string]*mealplanning.ValidMeasurementUnit
 	Instruments      map[string]*mealplanning.ValidInstrument
 	Vessels          map[string]*mealplanning.ValidVessel
+
+	// Bridge table lookups (keyed by [first entity ID][second entity ID])
+	IngredientPreparations     map[string]map[string]*mealplanning.ValidIngredientPreparation     // [preparationID][ingredientID]
+	IngredientMeasurementUnits map[string]map[string]*mealplanning.ValidIngredientMeasurementUnit // [ingredientID][unitID]
+	PreparationInstruments     map[string]map[string]*mealplanning.ValidPreparationInstrument     // [preparationID][instrumentID]
+	PreparationVessels         map[string]map[string]*mealplanning.ValidPreparationVessel         // [preparationID][vesselID]
 }
 
 func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, logger logging.Logger) (*testEnumerations, error) {
@@ -103,6 +109,12 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		MeasurementUnits: make(map[string]*mealplanning.ValidMeasurementUnit),
 		Instruments:      make(map[string]*mealplanning.ValidInstrument),
 		Vessels:          make(map[string]*mealplanning.ValidVessel),
+
+		// Bridge table lookups
+		IngredientPreparations:     make(map[string]map[string]*mealplanning.ValidIngredientPreparation),
+		IngredientMeasurementUnits: make(map[string]map[string]*mealplanning.ValidIngredientMeasurementUnit),
+		PreparationInstruments:     make(map[string]map[string]*mealplanning.ValidPreparationInstrument),
+		PreparationVessels:         make(map[string]map[string]*mealplanning.ValidPreparationVessel),
 	}
 
 	// Store first instances for bridge relationships
@@ -374,7 +386,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	// Create bridge types using first instances
 
 	// ValidPreparationInstrument (Slicing requires Chef's Knife)
-	_, err = repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+	createdVPI, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 		ID:                 identifiers.New(),
 		ValidPreparationID: firstValidPreparation.ID,
 		ValidInstrumentID:  firstValidInstrument.ID,
@@ -383,10 +395,15 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return nil, fmt.Errorf("failed to create valid preparation instrument: %w", err)
 	}
+	// Store in lookup map
+	if enums.PreparationInstruments[firstValidPreparation.ID] == nil {
+		enums.PreparationInstruments[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidPreparationInstrument)
+	}
+	enums.PreparationInstruments[firstValidPreparation.ID][firstValidInstrument.ID] = createdVPI
 	logger.Debug("Created ValidPreparationInstrument: slicing + chef's knife")
 
 	// ValidIngredientMeasurementUnit (Garlic can be measured in Grams)
-	_, err = repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+	createdVIMU, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 		ID:                     identifiers.New(),
 		ValidIngredientID:      firstValidIngredient.ID,
 		ValidMeasurementUnitID: firstValidMeasurementUnitGram.ID,
@@ -394,6 +411,11 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return nil, fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
 	}
+	// Store in lookup map
+	if enums.IngredientMeasurementUnits[firstValidIngredient.ID] == nil {
+		enums.IngredientMeasurementUnits[firstValidIngredient.ID] = make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
+	}
+	enums.IngredientMeasurementUnits[firstValidIngredient.ID][firstValidMeasurementUnitGram.ID] = createdVIMU
 	logger.Debug("Created ValidIngredientMeasurementUnit: garlic + gram")
 
 	// ValidIngredientStateIngredient (Garlic can be in Whole state)
@@ -409,7 +431,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	logger.Debug("Created ValidIngredientStateIngredient: garlic + whole")
 
 	// ValidPreparationVessel (Slicing can be done on a Cutting Board)
-	_, err = repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+	createdVPV, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 		ID:                 identifiers.New(),
 		ValidPreparationID: firstValidPreparation.ID,
 		ValidVesselID:      firstValidVessel.ID,
@@ -418,6 +440,11 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return nil, fmt.Errorf("failed to create valid preparation vessel: %w", err)
 	}
+	// Store in lookup map
+	if enums.PreparationVessels[firstValidPreparation.ID] == nil {
+		enums.PreparationVessels[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidPreparationVessel)
+	}
+	enums.PreparationVessels[firstValidPreparation.ID][firstValidVessel.ID] = createdVPV
 	logger.Debug("Created ValidPreparationVessel: slicing + cutting board")
 
 	// ValidMeasurementUnitConversion (Gram to Kilogram)
@@ -433,7 +460,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	}
 	logger.Debug("Created ValidMeasurementUnitConversion: gram -> kilogram")
 
-	_, err = repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+	createdVIP, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 		ID:                 identifiers.New(),
 		Notes:              "",
 		ValidPreparationID: firstValidPreparation.ID,
@@ -442,6 +469,11 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	if err != nil {
 		return nil, fmt.Errorf("failed to create valid ingredient preparation: %w", err)
 	}
+	// Store in lookup map
+	if enums.IngredientPreparations[firstValidPreparation.ID] == nil {
+		enums.IngredientPreparations[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidIngredientPreparation)
+	}
+	enums.IngredientPreparations[firstValidPreparation.ID][firstValidIngredient.ID] = createdVIP
 	logger.Debug("Created CreateValidIngredientPreparation: garlic -> slice")
 
 	// Create additional vessels needed for recipes

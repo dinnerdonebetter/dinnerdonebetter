@@ -44,9 +44,28 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselCreationRequestInput{
-			Name:                t.Name(),
-			RecipeStepProductID: pointer.To(t.Name()),
-			Notes:               t.Name(),
+			ValidPreparationVesselID: pointer.To(t.Name()),
+			Name:                     t.Name(),
+			RecipeStepProductID:      pointer.To(t.Name()),
+			Notes:                    t.Name(),
+			Quantity: types.Uint16RangeWithOptionalMax{
+				Max: pointer.To(fake.Uint16()),
+				Min: fake.Uint16(),
+			},
+		}
+
+		actual := x.ValidateWithContext(t.Context())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("recipe step product does not require bridge IDs", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepVesselCreationRequestInput{
+			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			Name:                            t.Name(),
+			Notes:                           t.Name(),
 			Quantity: types.Uint16RangeWithOptionalMax{
 				Max: pointer.To(fake.Uint16()),
 				Min: fake.Uint16(),
