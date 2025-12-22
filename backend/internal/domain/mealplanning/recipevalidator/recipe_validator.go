@@ -109,12 +109,7 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 	preparationID string,
 	ingredient *mealplanning.RecipeStepIngredientDatabaseCreationInput,
 ) error {
-	if ingredient == nil {
-		return nil
-	}
-
-	// Skip validation for recipe step products (outputs from previous steps)
-	if isRecipeStepProductIngredient(ingredient) {
+	if ingredient == nil || isRecipeStepProductIngredient(ingredient) {
 		return nil
 	}
 
@@ -131,8 +126,6 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 			return fmt.Errorf("step %d ingredient %d: ValidIngredientPreparation %q is for preparation %q, but step uses preparation %q",
 				stepIdx, ingredientIdx, vipID, vip.Preparation.ID, preparationID)
 		}
-
-		// Populate IngredientID from the VIP
 		ingredient.IngredientID = &vip.Ingredient.ID
 	}
 
@@ -155,7 +148,6 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 			ingredient.IngredientID = &vimu.Ingredient.ID
 		}
 
-		// Populate MeasurementUnitID from the VIMU
 		ingredient.MeasurementUnitID = vimu.MeasurementUnit.ID
 	}
 
@@ -168,12 +160,7 @@ func (v *RecipeValidator) validateAndPopulateInstrument(
 	preparationID string,
 	instrument *mealplanning.RecipeStepInstrumentDatabaseCreationInput,
 ) error {
-	if instrument == nil {
-		return nil
-	}
-
-	// Skip validation for recipe step products (outputs from previous steps)
-	if isRecipeStepProductInstrument(instrument) {
+	if instrument == nil || isRecipeStepProductInstrument(instrument) {
 		return nil
 	}
 
@@ -204,12 +191,7 @@ func (v *RecipeValidator) validateAndPopulateVessel(
 	preparationID string,
 	vessel *mealplanning.RecipeStepVesselDatabaseCreationInput,
 ) error {
-	if vessel == nil {
-		return nil
-	}
-
-	// Skip validation for recipe step products (outputs from previous steps)
-	if isRecipeStepProductVessel(vessel) {
+	if vessel == nil || isRecipeStepProductVessel(vessel) {
 		return nil
 	}
 

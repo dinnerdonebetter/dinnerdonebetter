@@ -65,9 +65,8 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 	exampleRecipe.Media = []*mealplanning.RecipeMedia{}
 
 	createdValidIngredients := []*mealplanning.ValidIngredient{}
-	// Track bridge table entries for each ingredient
-	ingredientPreparationIDs := make(map[string]string)     // ingredientID -> ValidIngredientPreparation.ID
-	ingredientMeasurementUnitIDs := make(map[string]string) // ingredientID -> ValidIngredientMeasurementUnit.ID
+	ingredientPreparationIDs := make(map[string]string)
+	ingredientMeasurementUnitIDs := make(map[string]string)
 
 	for i, recipeStep := range exampleRecipe.Steps {
 		for j := range recipeStep.Ingredients {
@@ -107,10 +106,9 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 
 	exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 	exampleRecipeInput.AlsoCreateMeal = true
+	// Set bridge table IDs
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
-
-		// Set bridge table IDs for ingredients using the ingredient from the exampleRecipe
 		for j := range exampleRecipeInput.Steps[i].Ingredients {
 			// Use the ingredient ID from the original recipe (which we've already set)
 			if exampleRecipe.Steps[i].Ingredients[j].Ingredient != nil {
@@ -124,12 +122,10 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 			}
 		}
 
-		// Set bridge table IDs for instruments
 		for j := range exampleRecipeInput.Steps[i].Instruments {
 			exampleRecipeInput.Steps[i].Instruments[j].ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 		}
 
-		// Set bridge table IDs for vessels
 		for j := range exampleRecipeInput.Steps[i].Vessels {
 			exampleRecipeInput.Steps[i].Vessels[j].ValidPreparationVesselID = &createdValidPreparationVessel.ID
 		}

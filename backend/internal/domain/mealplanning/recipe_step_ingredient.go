@@ -208,8 +208,7 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 	err := &multierror.Error{}
 
 	// When not referencing a recipe step product, bridge table IDs are required
-	isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil
-	if !isRecipeStepProduct {
+	if isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil; !isRecipeStepProduct {
 		if x.ValidIngredientPreparationID == nil || *x.ValidIngredientPreparationID == "" {
 			err = multierror.Append(err, errValidIngredientPreparationIDRequired)
 		}
