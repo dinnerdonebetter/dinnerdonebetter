@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,6 +11,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
+)
+
+var (
+	errValidIngredientPreparationIDRequired     = errors.New("validIngredientPreparationID is required when not referencing a recipe step product")
+	errValidIngredientMeasurementUnitIDRequired = errors.New("validIngredientMeasurementUnitID is required when not referencing a recipe step product")
 )
 
 const (
@@ -61,11 +68,9 @@ type (
 		VesselIndex                      *uint16                           `json:"vesselIndex"`
 		ProductPercentageToUse           *float32                          `json:"productPercentageToUse"`
 		ProductOfRecipeStepIndex         *uint64                           `json:"productOfRecipeStepIndex"`
-		IngredientID                     *string                           `json:"ingredientID"`
 		ValidIngredientPreparationID     *string                           `json:"validIngredientPreparationID"`
 		ValidIngredientMeasurementUnitID *string                           `json:"validIngredientMeasurementUnitID"`
 		IngredientNotes                  string                            `json:"ingredientNotes"`
-		MeasurementUnitID                string                            `json:"measurementUnitID"`
 		Name                             string                            `json:"name"`
 		QuantityNotes                    string                            `json:"quantityNotes"`
 		OptionIndex                      uint16                            `json:"optionIndex"`
@@ -200,12 +205,29 @@ var _ validation.ValidatableWithContext = (*RecipeStepIngredientCreationRequestI
 
 // ValidateWithContext validates a RecipeStepIngredientCreationRequestInput.
 func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	err := &multierror.Error{}
+
+	// When not referencing a recipe step product, bridge table IDs are required
+	isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil
+	if !isRecipeStepProduct {
+		if x.ValidIngredientPreparationID == nil || *x.ValidIngredientPreparationID == "" {
+			err = multierror.Append(err, errValidIngredientPreparationIDRequired)
+		}
+		if x.ValidIngredientMeasurementUnitID == nil || *x.ValidIngredientMeasurementUnitID == "" {
+			err = multierror.Append(err, errValidIngredientMeasurementUnitIDRequired)
+		}
+	}
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.Quantity, validation.Required),
 	)
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	return err.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepIngredientDatabaseCreationInput)(nil)

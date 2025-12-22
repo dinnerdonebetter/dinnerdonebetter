@@ -29,7 +29,6 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplan
 func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVesselCreationRequestInput) *mealplanning.RecipeStepVesselDatabaseCreationInput {
 	x := &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                              identifiers.New(),
-		VesselID:                        input.VesselID,
 		ValidPreparationVesselID:        input.ValidPreparationVesselID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
@@ -45,14 +44,9 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
+// Note: This conversion loses bridge table ID information since RecipeStepVessel doesn't store them.
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
-	var vesselID *string
-	if input.Vessel != nil {
-		vesselID = &input.Vessel.ID
-	}
-
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
-		VesselID:             vesselID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,

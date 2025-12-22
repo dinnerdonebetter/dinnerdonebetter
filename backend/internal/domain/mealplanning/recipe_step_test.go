@@ -25,9 +25,9 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		ExplicitInstructions: "ExplicitInstructions",
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
-				InstrumentID: pointer.To("InstrumentID"),
-				Name:         "Name",
-				Quantity:     types.Uint32RangeWithOptionalMax{Min: fake.Uint32()},
+				ValidPreparationInstrumentID: pointer.To("ValidPreparationInstrumentID"),
+				Name:                         "Name",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: fake.Uint32()},
 			},
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
@@ -41,11 +41,11 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
 			{
-				IngredientID:      func(s string) *string { return &s }("IngredientID"),
-				MeasurementUnitID: "MeasurementUnitID",
-				QuantityNotes:     "QuantityNotes",
-				IngredientNotes:   "IngredientNotes",
-				Quantity:          types.Float32RangeWithOptionalMax{Min: 1},
+				ValidIngredientPreparationID:     pointer.To("ValidIngredientPreparationID"),
+				ValidIngredientMeasurementUnitID: pointer.To("ValidIngredientMeasurementUnitID"),
+				QuantityNotes:                    "QuantityNotes",
+				IngredientNotes:                  "IngredientNotes",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
 			},
 		},
 	}
@@ -118,11 +118,11 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		for i := 0; i < maxIngredientsPerStep*2; i++ {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
-				IngredientID:      func(s string) *string { return &s }(t.Name()),
-				MeasurementUnitID: t.Name(),
-				QuantityNotes:     t.Name(),
-				IngredientNotes:   t.Name(),
-				Quantity:          types.Float32RangeWithOptionalMax{Min: 1},
+				ValidIngredientPreparationID:     pointer.To(t.Name()),
+				ValidIngredientMeasurementUnitID: pointer.To(t.Name()),
+				QuantityNotes:                    t.Name(),
+				IngredientNotes:                  t.Name(),
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
 			})
 		}
 

@@ -50,14 +50,21 @@ func BuildFakeRecipeStepVesselUpdateRequestInput() *types.RecipeStepVesselUpdate
 }
 
 // BuildFakeRecipeStepVesselCreationRequestInput builds a faked RecipeStepVesselCreationRequestInput.
+// Note: This now includes bridge table IDs since they are required.
 func BuildFakeRecipeStepVesselCreationRequestInput() *types.RecipeStepVesselCreationRequestInput {
-	recipeStepInstrument := BuildFakeRecipeStepVessel()
-	return converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepInstrument)
+	recipeStepVessel := BuildFakeRecipeStepVessel()
+	input := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepVessel)
+	// Bridge table ID is now required
+	input.ValidPreparationVesselID = pointer.To(BuildFakeID())
+	return input
 }
 
-// BuildFakeRecipeStepVesselCreationRequestInputWithBridgeIDs builds a faked RecipeStepVesselCreationRequestInput with bridge table IDs.
-func BuildFakeRecipeStepVesselCreationRequestInputWithBridgeIDs() *types.RecipeStepVesselCreationRequestInput {
-	input := BuildFakeRecipeStepVesselCreationRequestInput()
-	input.ValidPreparationVesselID = pointer.To(BuildFakeID())
+// BuildFakeRecipeStepVesselCreationRequestInputForRecipeStepProduct builds a faked RecipeStepVesselCreationRequestInput
+// for a recipe step product (no bridge table IDs required).
+func BuildFakeRecipeStepVesselCreationRequestInputForRecipeStepProduct() *types.RecipeStepVesselCreationRequestInput {
+	recipeStepVessel := BuildFakeRecipeStepVessel()
+	input := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepVessel)
+	input.ProductOfRecipeStepIndex = pointer.To(uint64(0))
+	input.ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
 	return input
 }

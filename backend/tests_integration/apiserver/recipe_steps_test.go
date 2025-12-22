@@ -120,6 +120,24 @@ func TestRecipeSteps_Listing(T *testing.T) {
 		createdValidIngredientState := createValidIngredientStateForTest(t)
 		createdValidVessel := createValidVesselForTest(t)
 
+		// Create bridge table entries for the new preparation
+		// ValidIngredientPreparation entries for each ingredient
+		var validIngredientPreparations []*mealplanning.ValidIngredientPreparation
+		var validIngredientMeasurementUnits []*mealplanning.ValidIngredientMeasurementUnit
+		for _, ingredient := range createdValidIngredients {
+			vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, createdValidPreparation)
+			validIngredientPreparations = append(validIngredientPreparations, vip)
+
+			vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, createdValidMeasurementUnit)
+			validIngredientMeasurementUnits = append(validIngredientMeasurementUnits, vimu)
+		}
+
+		// Create bridge table entry for preparation+instrument
+		createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
+
+		// Create bridge table entry for preparation+vessel
+		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
+
 		var expected []*mealplanning.RecipeStep
 		for i := 0; i < 5; i++ {
 			t.Logf("creating recipe step #%d", i+1)
@@ -153,6 +171,22 @@ func TestRecipeSteps_Listing(T *testing.T) {
 
 			exampleRecipeStepInput := mpconverters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 			exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
+
+			// Set bridge table IDs for ingredients
+			for j := range exampleRecipeStepInput.Ingredients {
+				exampleRecipeStepInput.Ingredients[j].ValidIngredientPreparationID = &validIngredientPreparations[j].ID
+				exampleRecipeStepInput.Ingredients[j].ValidIngredientMeasurementUnitID = &validIngredientMeasurementUnits[j].ID
+			}
+
+			// Set bridge table IDs for instruments
+			for j := range exampleRecipeStepInput.Instruments {
+				exampleRecipeStepInput.Instruments[j].ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
+			}
+
+			// Set bridge table IDs for vessels
+			for j := range exampleRecipeStepInput.Vessels {
+				exampleRecipeStepInput.Vessels[j].ValidPreparationVesselID = &createdValidPreparationVessel.ID
+			}
 
 			// Set the preparation on the example recipe step for comparison
 			exampleRecipeStep.Preparation = *createdValidPreparation

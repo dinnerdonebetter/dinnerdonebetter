@@ -866,7 +866,12 @@ func findCreatedRecipeStepProductsForIngredients(recipe *mealplanning.RecipeData
 				enoughRecipeStepProducts := len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products) > int(*ingredient.ProductOfRecipeStepProductIndex)
 				relevantProductIsIngredient := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductIngredientType
 				if enoughSteps && enoughRecipeStepProducts && relevantProductIsIngredient {
-					ingredient.RecipeStepProductID = &recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].ID
+					product := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex]
+					ingredient.RecipeStepProductID = &product.ID
+					// Inherit measurement unit from the product if not already set
+					if ingredient.MeasurementUnitID == "" && product.MeasurementUnitID != nil {
+						ingredient.MeasurementUnitID = *product.MeasurementUnitID
+					}
 				}
 			}
 		}

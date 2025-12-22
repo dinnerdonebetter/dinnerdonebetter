@@ -52,17 +52,25 @@ func TestRecipeStepInstruments_CompleteLifecycle(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
+		var createdRecipeStepPreparationID string
 		for _, step := range createdRecipe.Steps {
 			createdRecipeStepID = step.ID
+			createdRecipeStepPreparationID = step.Preparation.ID
 			break
 		}
 
 		createdValidInstrument := createValidInstrumentForTest(t)
 
+		// Create bridge table entry for preparation+instrument
+		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
+		createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
+
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 		exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
 		exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
+		// Set bridge table ID (required)
+		exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 		createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
@@ -268,12 +276,18 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
+		var createdRecipeStepPreparationID string
 		for _, step := range createdRecipe.Steps {
 			createdRecipeStepID = step.ID
+			createdRecipeStepPreparationID = step.Preparation.ID
 			break
 		}
 
 		createdValidInstrument := createValidInstrumentForTest(t)
+
+		// Create bridge table entry for preparation+instrument
+		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
+		createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
 
 		var expected []*mealplanning.RecipeStepInstrument
 		for i := 0; i < 5; i++ {
@@ -281,6 +295,8 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
+			// Set bridge table ID (required)
+			exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 			createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

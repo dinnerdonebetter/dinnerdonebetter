@@ -37,12 +37,28 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:      pointer.To(t.Name()),
-			MeasurementUnitID: t.Name(),
-			Quantity:          types.Float32RangeWithOptionalMax{Min: fake.Float32()},
-			QuantityNotes:     t.Name(),
-			IngredientNotes:   t.Name(),
-			Optional:          fake.Bool(),
+			ValidIngredientPreparationID:     pointer.To(t.Name()),
+			ValidIngredientMeasurementUnitID: pointer.To(t.Name()),
+			Quantity:                         types.Float32RangeWithOptionalMax{Min: fake.Float32()},
+			QuantityNotes:                    t.Name(),
+			IngredientNotes:                  t.Name(),
+			Optional:                         fake.Bool(),
+		}
+
+		actual := x.ValidateWithContext(t.Context())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("recipe step product does not require bridge IDs", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepIngredientCreationRequestInput{
+			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			Quantity:                        types.Float32RangeWithOptionalMax{Min: fake.Float32()},
+			QuantityNotes:                   t.Name(),
+			IngredientNotes:                 t.Name(),
+			Optional:                        fake.Bool(),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

@@ -759,6 +759,46 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 	logger = logger.WithValue(keys.RecipeStepIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, convertedInput.ID)
 
+	// Populate derived IDs from bridge table entries for ingredients
+	for _, ingredient := range convertedInput.Ingredients {
+		if ingredient.ValidIngredientPreparationID != nil && *ingredient.ValidIngredientPreparationID != "" {
+			vip, err := m.db.GetValidIngredientPreparation(ctx, *ingredient.ValidIngredientPreparationID)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient preparation")
+			}
+			ingredient.IngredientID = &vip.Ingredient.ID
+		}
+		if ingredient.ValidIngredientMeasurementUnitID != nil && *ingredient.ValidIngredientMeasurementUnitID != "" {
+			vimu, err := m.db.GetValidIngredientMeasurementUnit(ctx, *ingredient.ValidIngredientMeasurementUnitID)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient measurement unit")
+			}
+			ingredient.MeasurementUnitID = vimu.MeasurementUnit.ID
+		}
+	}
+
+	// Populate derived IDs from bridge table entries for instruments
+	for _, instrument := range convertedInput.Instruments {
+		if instrument.ValidPreparationInstrumentID != nil && *instrument.ValidPreparationInstrumentID != "" {
+			vpi, err := m.db.GetValidPreparationInstrument(ctx, *instrument.ValidPreparationInstrumentID)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation instrument")
+			}
+			instrument.InstrumentID = &vpi.Instrument.ID
+		}
+	}
+
+	// Populate derived IDs from bridge table entries for vessels
+	for _, vessel := range convertedInput.Vessels {
+		if vessel.ValidPreparationVesselID != nil && *vessel.ValidPreparationVesselID != "" {
+			vpv, err := m.db.GetValidPreparationVessel(ctx, *vessel.ValidPreparationVesselID)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation vessel")
+			}
+			vessel.VesselID = &vpv.Vessel.ID
+		}
+	}
+
 	created, err := m.db.CreateRecipeStep(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step")
@@ -1042,6 +1082,15 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, convertedInput.ID)
 
+	// If ValidPreparationInstrumentID is provided, look it up and populate InstrumentID
+	if convertedInput.ValidPreparationInstrumentID != nil && *convertedInput.ValidPreparationInstrumentID != "" {
+		vpi, err := m.db.GetValidPreparationInstrument(ctx, *convertedInput.ValidPreparationInstrumentID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation instrument")
+		}
+		convertedInput.InstrumentID = &vpi.Instrument.ID
+	}
+
 	created, err := m.db.CreateRecipeStepInstrument(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step instrument")
@@ -1184,6 +1233,24 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, convertedInput.ID)
+
+	// If ValidIngredientPreparationID is provided, look it up and populate IngredientID
+	if convertedInput.ValidIngredientPreparationID != nil && *convertedInput.ValidIngredientPreparationID != "" {
+		vip, err := m.db.GetValidIngredientPreparation(ctx, *convertedInput.ValidIngredientPreparationID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient preparation")
+		}
+		convertedInput.IngredientID = &vip.Ingredient.ID
+	}
+
+	// If ValidIngredientMeasurementUnitID is provided, look it up and populate MeasurementUnitID
+	if convertedInput.ValidIngredientMeasurementUnitID != nil && *convertedInput.ValidIngredientMeasurementUnitID != "" {
+		vimu, err := m.db.GetValidIngredientMeasurementUnit(ctx, *convertedInput.ValidIngredientMeasurementUnitID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient measurement unit")
+		}
+		convertedInput.MeasurementUnitID = vimu.MeasurementUnit.ID
+	}
 
 	created, err := m.db.CreateRecipeStepIngredient(ctx, convertedInput)
 	if err != nil {
@@ -1594,6 +1661,15 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, convertedInput.ID)
+
+	// If ValidPreparationVesselID is provided, look it up and populate VesselID
+	if convertedInput.ValidPreparationVesselID != nil && *convertedInput.ValidPreparationVesselID != "" {
+		vpv, err := m.db.GetValidPreparationVessel(ctx, *convertedInput.ValidPreparationVesselID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation vessel")
+		}
+		convertedInput.VesselID = &vpv.Vessel.ID
+	}
 
 	created, err := m.db.CreateRecipeStepVessel(ctx, convertedInput)
 	if err != nil {

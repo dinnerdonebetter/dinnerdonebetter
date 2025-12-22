@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	errInstrumentIDOrProductIndicesRequired = errors.New("either instrumentID or productOfRecipeStepIndex and productOfRecipeStepProductIndex must be set")
+	errValidPreparationInstrumentIDRequired = errors.New("validPreparationInstrumentID is required when not referencing a recipe step product")
 )
 
 func init() {
@@ -56,7 +56,6 @@ type (
 	RecipeStepInstrumentCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentID                    *string                          `json:"instrumentID"`
 		ValidPreparationInstrumentID    *string                          `json:"validPreparationInstrumentID"`
 		RecipeStepProductID             *string                          `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
@@ -167,8 +166,12 @@ var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestI
 func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	err := &multierror.Error{}
 
-	if x.InstrumentID == nil && x.ProductOfRecipeStepIndex == nil && x.ProductOfRecipeStepProductIndex == nil {
-		err = multierror.Append(err, errInstrumentIDOrProductIndicesRequired)
+	// When not referencing a recipe step product, bridge table ID is required
+	isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil
+	if !isRecipeStepProduct {
+		if x.ValidPreparationInstrumentID == nil || *x.ValidPreparationInstrumentID == "" {
+			err = multierror.Append(err, errValidPreparationInstrumentIDRequired)
+		}
 	}
 
 	validationErr := validation.ValidateStructWithContext(

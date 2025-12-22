@@ -39,12 +39,32 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			InstrumentID:        pointer.To(t.Name()),
-			Name:                t.Name(),
-			RecipeStepProductID: pointer.To(t.Name()),
-			Notes:               t.Name(),
-			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
-			Optional:            fake.Bool(),
+			ValidPreparationInstrumentID: pointer.To(t.Name()),
+			Name:                         t.Name(),
+			RecipeStepProductID:          pointer.To(t.Name()),
+			Notes:                        t.Name(),
+			PreferenceRank:               uint8(fake.Number(1, math.MaxUint8)),
+			Optional:                     fake.Bool(),
+			Quantity: types.Uint32RangeWithOptionalMax{
+				Max: pointer.To(fake.Uint32()),
+				Min: fake.Uint32(),
+			},
+		}
+
+		actual := x.ValidateWithContext(t.Context())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("recipe step product does not require bridge IDs", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepInstrumentCreationRequestInput{
+			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			Name:                            t.Name(),
+			Notes:                           t.Name(),
+			PreferenceRank:                  uint8(fake.Number(1, math.MaxUint8)),
+			Optional:                        fake.Bool(),
 			Quantity: types.Uint32RangeWithOptionalMax{
 				Max: pointer.To(fake.Uint32()),
 				Min: fake.Uint32(),

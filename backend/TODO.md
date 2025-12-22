@@ -264,92 +264,50 @@ instead of raw component IDs.
 
 ---
 
-## Phase 6: Update Bootstrap Code
-
-### 6.1 Update Enumerations
-
-- [ ] `bootstrapping/enumerations.go`
-  - [ ] Add maps for bridge table lookups:
-    - [ ] `IngredientPreparations map[string]map[string]*ValidIngredientPreparation` (keyed by [preparation][ingredient])
-    - [ ] `IngredientMeasurementUnits map[string]map[string]*ValidIngredientMeasurementUnit` (keyed by [ingredient][unit])
-    - [ ] `PreparationInstruments map[string]map[string]*ValidPreparationInstrument` (keyed by [preparation][instrument])
-    - [ ] `PreparationVessels map[string]map[string]*ValidPreparationVessel` (keyed by [preparation][vessel])
-  - [ ] Populate these maps during enumeration loading
-
-### 6.2 Update Bootstrap Recipes
-
-- [ ] `bootstrapping/recipe_refried_beans.go`
-  - [ ] Replace `IngredientID: pointer.To(ingredientMap["garlic"].ID)` with bridge table ID lookups
-  - [ ] Replace `MeasurementUnitID: unitMeasurementUnit.ID` with bridge table ID lookups
-  - [ ] Replace `InstrumentID: pointer.To(instruments["knife"].ID)` with bridge table ID lookups
-  - [ ] Replace `VesselID: pointer.To(vessels["pot"].ID)` with bridge table ID lookups
-
-- [ ] `bootstrapping/recipe_pay_de_elote.go`
-  - [ ] Same updates
-
-- [ ] Any other bootstrap recipes
-
-### 6.3 Ensure Bridge Table Seed Data Exists
-
-- [ ] Audit what ingredient+preparation combinations are used in bootstrap recipes
-- [ ] Audit what ingredient+unit combinations are used
-- [ ] Audit what preparation+instrument combinations are used
-- [ ] Audit what preparation+vessel combinations are used
-- [ ] Add any missing bridge table entries to seed data
-
-### 6.4 Verify Phase 6
-
-- [ ] Run bootstrap code locally
-- [ ] Verify recipes are created successfully
-- [ ] Run full test suite
-
----
 
 ## Phase 7: Make Bridge Table IDs Required, Remove Old Fields
 
 ### 7.1 Update Validation to Require Bridge Table IDs
 
-- [ ] `recipe_step_ingredient.go`
-  - [ ] Update `ValidateWithContext` to require `ValidIngredientPreparationID` (when not a recipe step product)
-  - [ ] Update `ValidateWithContext` to require `ValidIngredientMeasurementUnitID` (when not a recipe step product)
-  - [ ] Remove `IngredientID` requirement from validation
-  - [ ] Remove `MeasurementUnitID` requirement from validation
+- [x] `recipe_step_ingredient.go`
+  - [x] Update `ValidateWithContext` to require `ValidIngredientPreparationID` (when not a recipe step product)
+  - [x] Update `ValidateWithContext` to require `ValidIngredientMeasurementUnitID` (when not a recipe step product)
+  - [x] Remove `MeasurementUnitID` requirement from validation
 
-- [ ] `recipe_step_instrument.go`
-  - [ ] Update `ValidateWithContext` to require `ValidPreparationInstrumentID` (when not a recipe step product)
-  - [ ] Remove `InstrumentID` requirement from validation
+- [x] `recipe_step_instrument.go`
+  - [x] Update `ValidateWithContext` to require `ValidPreparationInstrumentID` (when not a recipe step product)
+  - [x] Remove old `InstrumentID` or product indices requirement from validation
 
-- [ ] `recipe_step_vessel.go`
-  - [ ] Update `ValidateWithContext` to require `ValidPreparationVesselID` (when not a recipe step product)
-  - [ ] Remove `VesselID` requirement from validation
+- [x] `recipe_step_vessel.go`
+  - [x] Update `ValidateWithContext` to require `ValidPreparationVesselID` (when not a recipe step product)
 
 ### 7.2 Remove Old Fields from Request Inputs
 
-- [ ] `recipe_step_ingredient.go`
-  - [ ] Remove `IngredientID *string` from `RecipeStepIngredientCreationRequestInput`
-  - [ ] Remove `MeasurementUnitID string` from `RecipeStepIngredientCreationRequestInput`
+- [x] `recipe_step_ingredient.go`
+  - [x] Remove `IngredientID *string` from `RecipeStepIngredientCreationRequestInput`
+  - [x] Remove `MeasurementUnitID string` from `RecipeStepIngredientCreationRequestInput`
 
-- [ ] `recipe_step_instrument.go`
-  - [ ] Remove `InstrumentID *string` from `RecipeStepInstrumentCreationRequestInput`
+- [x] `recipe_step_instrument.go`
+  - [x] Remove `InstrumentID *string` from `RecipeStepInstrumentCreationRequestInput`
 
-- [ ] `recipe_step_vessel.go`
-  - [ ] Remove `VesselID *string` from `RecipeStepVesselCreationRequestInput`
+- [x] `recipe_step_vessel.go`
+  - [x] Remove `VesselID *string` from `RecipeStepVesselCreationRequestInput`
 
 ### 7.3 Update Converters
 
-- [ ] Remove code that copies old fields
-- [ ] Ensure only bridge table IDs are passed through
+- [x] Remove code that copies old fields (done as part of 7.2)
+- [x] Ensure only bridge table IDs are passed through
 
 ### 7.4 Update All Tests
 
-- [ ] Fix any unit tests still using old fields
-- [ ] Fix any integration tests still using old fields
-- [ ] Update fakes to not generate old fields
+- [x] Fix any unit tests still using old fields
+- [x] Fix any integration tests still using old fields (integration tests already updated in Phase 5)
+- [x] Update fakes to include bridge table IDs by default
 
 ### 7.5 Final Verification
 
-- [ ] Run `make format lint` - should pass
-- [ ] Run all unit tests - should pass
+- [x] Run `make format lint` - should pass
+- [x] Run all unit tests - should pass
 - [ ] Run all integration tests - should pass
 - [ ] Manual testing of recipe creation flow
 
