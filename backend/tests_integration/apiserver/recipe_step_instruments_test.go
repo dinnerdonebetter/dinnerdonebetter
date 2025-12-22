@@ -149,6 +149,11 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 		unit := createValidMeasurementUnitForTest(t)
 		butter := createValidIngredientForTest(t)
 
+		// Create bridge table entries
+		vpiKnifePreheat := createValidPreparationInstrumentWithEntitiesForTest(t, preheat, knife)
+		vipButterCut := createValidIngredientPreparationWithEntitiesForTest(t, butter, cut)
+		vimuButterStick := createValidIngredientMeasurementUnitWithEntitiesForTest(t, butter, stick)
+
 		preheatedKnife := "preheated knife"
 
 		expected := &mealplanning.Recipe{
@@ -219,6 +224,13 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 		exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
 		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
 		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+
+		// Set bridge table IDs
+		// Step 0: knife with preheat preparation
+		exampleRecipeInput.Steps[0].Instruments[0].ValidPreparationInstrumentID = &vpiKnifePreheat.ID
+		// Step 1: butter ingredient with cut preparation (the instrument is a recipe step product, no bridge ID needed)
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientPreparationID = &vipButterCut.ID
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuButterStick.ID
 
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
 		require.NoError(t, err)

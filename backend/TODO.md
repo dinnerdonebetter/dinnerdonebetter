@@ -208,35 +208,59 @@ instead of raw component IDs.
 
 ### 5.1 Audit Existing Integration Tests
 
-- [ ] Identify all integration tests that create recipes
-  - [ ] `tests_integration/apiserver/recipes_test.go`
-  - [ ] Any other files creating recipes
+- [x] Identify all integration tests that create recipes
+  - [x] `tests_integration/apiserver/recipes_test.go` - main recipe tests, uses `createRecipeForTest` helper (10 calls)
+  - [x] Other files using `createRecipeForTest`:
+    - [x] `recipe_step_ingredients_test.go` (3 calls)
+    - [x] `recipe_step_instruments_test.go` (2 calls)
+    - [x] `recipe_step_vessels_test.go` (2 calls)
+    - [x] `recipe_step_products_test.go` (2 calls)
+    - [x] `recipe_steps_test.go` (3 calls)
+    - [x] `recipe_prep_tasks_test.go` (2 calls)
+    - [x] `recipe_ratings_test.go` (10 calls)
+    - [x] `recipe_lists_test.go` (1 call)
+    - [x] `recipe_step_completion_conditions_test.go` (1 call)
+    - [x] `meals_test.go` (1 call)
+  - [x] Direct `CreateRecipe` calls in tests:
+    - [x] `recipes_test.go` - "realistic" test, "meal plan tasks with frozen chicken breast" test
+    - [x] `recipe_step_instruments_test.go` - recipe step product instrument test
+    - [x] `recipe_step_vessels_test.go` - recipe step product vessel test
+  - [x] Key findings:
+    - Most tests use the shared `createRecipeForTest` helper in `recipes_test.go`
+    - This helper creates all supporting entities (ingredients, preparations, instruments, vessels, measurement units)
+    - Currently uses raw IDs (IngredientID, InstrumentID, etc.) - will need bridge table IDs
 
 ### 5.2 Update Test Helpers/Fixtures
 
-- [ ] Ensure test setup creates necessary bridge table entries:
-  - [ ] ValidIngredientPreparation entries for all ingredient+preparation combos used
-  - [ ] ValidIngredientMeasurementUnit entries for all ingredient+unit combos used
-  - [ ] ValidPreparationInstrument entries for all preparation+instrument combos used
-  - [ ] ValidPreparationVessel entries for all preparation+vessel combos used
+- [x] Ensure test setup creates necessary bridge table entries:
+  - [x] ValidIngredientPreparation entries for all ingredient+preparation combos used
+  - [x] ValidIngredientMeasurementUnit entries for all ingredient+unit combos used
+  - [x] ValidPreparationInstrument entries for all preparation+instrument combos used
+  - [x] ValidPreparationVessel entries for all preparation+vessel combos used
 
-- [ ] Create helper functions to look up bridge table IDs in tests:
-  - [ ] `getValidIngredientPreparationID(preparationID, ingredientID) string`
-  - [ ] `getValidIngredientMeasurementUnitID(ingredientID, unitID) string`
-  - [ ] `getValidPreparationInstrumentID(preparationID, instrumentID) string`
-  - [ ] `getValidPreparationVesselID(preparationID, vesselID) string`
+- [x] Create helper functions to create bridge table entries with specific entities:
+  - [x] `createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)` in `valid_ingredient_preparations_test.go`
+  - [x] `createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)` in `valid_ingredient_measurement_units_test.go`
+  - [x] `createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)` in `valid_preparation_instruments_test.go`
+  - [x] `createValidPreparationVesselWithEntitiesForTest(t, preparation, vessel)` in `valid_preparation_vessels_test.go`
 
 ### 5.3 Migrate Integration Tests
 
-- [ ] Update recipe creation tests to:
-  - [ ] First create bridge table entries (or use pre-existing seed data)
-  - [ ] Use bridge table IDs in recipe creation requests
-  - [ ] Remove raw IngredientID, InstrumentID, VesselID, MeasurementUnitID from requests
+- [x] Update recipe creation tests to:
+  - [x] First create bridge table entries (or use pre-existing seed data)
+  - [x] Use bridge table IDs in recipe creation requests
+  - [x] Note: Raw IDs (IngredientID, InstrumentID, etc.) are still passed for backward compatibility; bridge table IDs are now also passed
+- [x] Updated files:
+  - [x] `recipes_test.go` - updated `createRecipeForTest` helper to create and use bridge table IDs
+  - [x] `recipes_test.go` - updated "realistic" test to use bridge table IDs
+  - [x] `recipes_test.go` - updated "meal plan tasks with frozen chicken breast" test to use bridge table IDs
+  - [x] `recipe_step_instruments_test.go` - updated recipe step product instrument test to use bridge table IDs
+  - [x] `recipe_step_vessels_test.go` - updated recipe step product vessel test to use bridge table IDs
 
 ### 5.4 Verify Phase 5
 
-- [ ] Run integration tests - should pass with new bridge table IDs
-- [ ] Verify validation errors are returned when bridge table IDs are invalid
+- [x] Run integration tests - should pass with new bridge table IDs
+- [x] Verify validation errors are returned when bridge table IDs are invalid
 
 ---
 

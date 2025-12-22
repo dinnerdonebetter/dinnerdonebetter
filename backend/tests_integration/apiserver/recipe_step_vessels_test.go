@@ -146,6 +146,15 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		aluminumFoil := createValidIngredientForTest(t)
 		garlic := createValidIngredientForTest(t)
 
+		// Create bridge table entries
+		// Step 0: aluminumFoil ingredient with line preparation, bakingSheet vessel with line preparation
+		vipAluminumFoilLine := createValidIngredientPreparationWithEntitiesForTest(t, aluminumFoil, line)
+		vimuAluminumFoilSheets := createValidIngredientMeasurementUnitWithEntitiesForTest(t, aluminumFoil, sheets)
+		vpvBakingSheetLine := createValidPreparationVesselWithEntitiesForTest(t, line, bakingSheet)
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		vipGarlicRoast := createValidIngredientPreparationWithEntitiesForTest(t, garlic, roast)
+		vimuGarlicHead := createValidIngredientMeasurementUnitWithEntitiesForTest(t, garlic, head)
+
 		linedBakingSheetName := "lined baking sheet"
 
 		expected := &mealplanning.Recipe{
@@ -238,6 +247,15 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
 		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
 		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+
+		// Set bridge table IDs
+		// Step 0: aluminumFoil ingredient and bakingSheet vessel with line preparation
+		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientPreparationID = &vipAluminumFoilLine.ID
+		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuAluminumFoilSheets.ID
+		exampleRecipeInput.Steps[0].Vessels[0].ValidPreparationVesselID = &vpvBakingSheetLine.ID
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientPreparationID = &vipGarlicRoast.ID
+		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuGarlicHead.ID
 
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
 		require.NoError(t, err)
