@@ -188,7 +188,7 @@ func (x *Recipe) FindStepIndexByID(id string) int {
 	return -1
 }
 
-// Update merges an RecipeUpdateRequestInput with a recipe.
+// Update merges a RecipeUpdateRequestInput with a recipe.
 func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
