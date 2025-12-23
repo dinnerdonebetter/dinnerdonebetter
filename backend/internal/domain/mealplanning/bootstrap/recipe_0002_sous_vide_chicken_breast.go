@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
-func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -80,8 +80,8 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	_ = enums.PreparationVessels[sousVidePrep.ID][waterBath.ID] // validated but not used
 
 	// Dry preparation bridges (for patting dry after sous vide)
-	_ = enums.IngredientPreparations[dryPrep.ID][chickenBreast.ID]    // validated but not used
-	_ = enums.PreparationInstruments[dryPrep.ID][paperTowels.ID] // validated but not used
+	_ = enums.IngredientPreparations[dryPrep.ID][chickenBreast.ID] // validated but not used
+	_ = enums.PreparationInstruments[dryPrep.ID][paperTowels.ID]   // validated but not used
 
 	// Pan-sear preparation bridges (for finishing)
 	_ = enums.IngredientPreparations[panSearPrep.ID][chickenBreast.ID] // validated but not used
@@ -105,7 +105,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	// Step 0: Preheat water bath
 	step0ID := identifiers.New()
 	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step0ID,
+		ID:              step0ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   heatPrep.ID,
 		Index:           0,
@@ -116,11 +116,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step0ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step0ID,
 				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
-				InstrumentID:                &sousVideCooker.ID,
-				Name:                        "sous vide cooker",
+				InstrumentID:                 &sousVideCooker.ID,
+				Name:                         "sous vide cooker",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -128,11 +128,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step0ID,
-				ValidPreparationVesselID:  &heatWaterBathVPV.ID,
-				VesselID:                  &waterBath.ID,
-				Name:                      "water bath",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step0ID,
+				ValidPreparationVesselID: &heatWaterBathVPV.ID,
+				VesselID:                 &waterBath.ID,
+				Name:                     "water bath",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -140,7 +140,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step0ID,
 				Name:                "preheated water bath",
 				Type:                mealplanning.RecipeStepProductVesselType,
@@ -152,7 +152,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	// Step 1: Season chicken
 	step1ID := identifiers.New()
 	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step1ID,
+		ID:              step1ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
 		Index:           1,
@@ -211,7 +211,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step1ID,
 				Name:                "seasoned chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -227,20 +227,20 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	// Step 2: Bag chicken
 	step2ID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step2ID,
+		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   bagPrep.ID,
 		Index:           2,
 		Notes:           "Place chicken in zipper-lock bags or vacuum bags and add thyme or rosemary sprigs, if using. If using zipper-lock bags: Remove air by closing bags, leaving the last inch of the top unsealed. Slowly lower into preheated water bath, sealing bag completely just before it fully submerges. If using vacuum bags: Seal according to manufacturer's instructions.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step2ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "seasoned chicken breasts",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "seasoned chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -274,21 +274,21 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step2ID,
-				ValidPreparationVesselID:  &bagPlasticBagVPV.ID,
-				VesselID:                  &plasticBag.ID,
-				Name:                      "zipper-lock bag",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2ID,
+				ValidPreparationVesselID: &bagPlasticBagVPV.ID,
+				VesselID:                 &plasticBag.ID,
+				Name:                     "zipper-lock bag",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step2ID,
-				ValidPreparationVesselID:  &bagVacuumBagVPV.ID,
-				VesselID:                  &vacuumBag.ID,
-				Name:                      "vacuum bag",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2ID,
+				ValidPreparationVesselID: &bagVacuumBagVPV.ID,
+				VesselID:                 &vacuumBag.ID,
+				Name:                     "vacuum bag",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -296,7 +296,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step2ID,
 				Name:                "bagged seasoned chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -314,7 +314,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	step3ChickenIngredientID := identifiers.New()
 	step3CompletionConditionID := identifiers.New()
 	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step3ID,
+		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   sousVidePrep.ID,
 		Index:           3,
@@ -329,13 +329,13 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               step3ChickenIngredientID,
-				BelongsToRecipeStep:              step3ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "bagged seasoned chicken breasts",
+				ID:                              step3ChickenIngredientID,
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "bagged seasoned chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -343,11 +343,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step3ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step3ID,
 				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
-				InstrumentID:                &sousVideCooker.ID,
-				Name:                        "sous vide cooker",
+				InstrumentID:                 &sousVideCooker.ID,
+				Name:                         "sous vide cooker",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -355,11 +355,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step3ID,
-				ProductOfRecipeStepIndex:  pointer.To[uint64](0),
-				VesselID:                  &waterBath.ID,
-				Name:                      "preheated water bath",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step3ID,
+				ProductOfRecipeStepIndex: pointer.To[uint64](0),
+				VesselID:                 &waterBath.ID,
+				Name:                     "preheated water bath",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -367,7 +367,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step3ID,
 				Name:                "sous vide cooked chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -400,7 +400,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	step4aID := identifiers.New()
 	step4aCompletionConditionID := identifiers.New()
 	step4a := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step4aID,
+		ID:              step4aID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   panSearPrep.ID,
 		Index:           4,
@@ -414,13 +414,13 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step4aID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "sous vide cooked chicken breasts",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step4aID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "sous vide cooked chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -440,31 +440,31 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4aID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4aID,
 				ValidPreparationInstrumentID: &panSearPaperTowelsVPI.ID,
-				InstrumentID:                &paperTowels.ID,
-				Name:                        "paper towels",
+				InstrumentID:                 &paperTowels.ID,
+				Name:                         "paper towels",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4aID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4aID,
 				ValidPreparationInstrumentID: &panSearSpatulaVPI.ID,
-				InstrumentID:                &spatula.ID,
-				Name:                        "flexible metal spatula",
+				InstrumentID:                 &spatula.ID,
+				Name:                         "flexible metal spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4aID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4aID,
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -472,11 +472,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step4aID,
-				ValidPreparationVesselID:  &panSearSkilletVPV.ID,
-				VesselID:                  &castIronSkillet.ID,
-				Name:                      "cast iron or stainless steel skillet",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step4aID,
+				ValidPreparationVesselID: &panSearSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "cast iron or stainless steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -484,7 +484,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step4aID,
 				Name:                "pan-seared sous vide chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -520,7 +520,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	// Step 4b: Finish on grill (optional)
 	step4bID := identifiers.New()
 	step4b := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step4bID,
+		ID:              step4bID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   grillPrep.ID,
 		Index:           5,
@@ -534,13 +534,13 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step4bID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "sous vide cooked chicken breasts",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step4bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "sous vide cooked chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -548,21 +548,21 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4bID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4bID,
 				ValidPreparationInstrumentID: &grillPaperTowelsVPI.ID,
-				InstrumentID:                &paperTowels.ID,
-				Name:                        "paper towels",
+				InstrumentID:                 &paperTowels.ID,
+				Name:                         "paper towels",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4bID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4bID,
 				ValidPreparationInstrumentID: &grillTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -570,11 +570,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step4bID,
-				ValidPreparationVesselID:  &grillGrillVPV.ID,
-				VesselID:                  &grillVessel.ID,
-				Name:                      "grill",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step4bID,
+				ValidPreparationVesselID: &grillGrillVPV.ID,
+				VesselID:                 &grillVessel.ID,
+				Name:                     "grill",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -582,7 +582,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step4bID,
 				Name:                "grilled sous vide chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -598,33 +598,33 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 	// Step 6: Rest and serve
 	step6ID := identifiers.New()
 	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step6ID,
+		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   restPrep.ID,
 		Index:           6,
 		Notes:           "Slice chicken and serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "pan-seared sous vide chicken breasts",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "pan-seared sous vide chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 				Optional: true, // From step 4a if pan finishing chosen
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "grilled sous vide chicken breasts",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &chickenBreast.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "grilled sous vide chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -633,11 +633,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step6ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step6ID,
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -645,11 +645,11 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step6ID,
-				ValidPreparationVesselID:  &restPlateVPV.ID,
-				VesselID:                  &servingPlate.ID,
-				Name:                      "serving plate",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step6ID,
+				ValidPreparationVesselID: &restPlateVPV.ID,
+				VesselID:                 &servingPlate.ID,
+				Name:                     "serving plate",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -657,7 +657,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step6ID,
 				Name:                "sliced sous vide chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -670,20 +670,22 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) *mealplanni
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                 recipeID,
-		CreatedByUser:      userID,
-		Name:               "Sous Vide Chicken Breast",
-		Slug:               "sous-vide-chicken-breast",
-		Source:             "https://www.seriouseats.com/the-food-lab-complete-guide-to-sous-vide-chicken-breast",
-		Description:        "Perfectly cooked chicken breast using sous vide precision cooking at 150°F (66°C). Cooking chicken breasts in bags with an immersion circulator set to this temperature gives you precise, consistent, tender and juicy results with little to no gradient in the doneness of the breast. This temperature is ideal for chicken salad when served cold, or slightly stringy texture when served hot. Cook for 1 to 4 hours.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 2,
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Sous Vide Chicken Breast",
+			Slug:                "sous-vide-chicken-breast",
+			Source:              "https://www.seriouseats.com/the-food-lab-complete-guide-to-sous-vide-chicken-breast",
+			Description:         "",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 2,
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4a, step4b, step6},
 		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4a, step4b, step6},
 	}
 }

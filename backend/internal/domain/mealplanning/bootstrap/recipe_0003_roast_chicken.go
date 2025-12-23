@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
-func PerfectRoastChickenRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -694,21 +694,23 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) *mealplanning
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Perfect Roast Chicken",
-		Slug:                "perfect-roast-chicken",
-		Source:              "https://www.seriouseats.com/perfect-roast-chicken-recipe-8384377",
-		Description:         "A dry-brine fully seasons the chicken and allows the skin to dehydrate, improving browning and crisping during cooking. Measuring the internal temperature of the chicken to determine doneness leads to more reliable and superior results than going by time. Rubbing the chicken skin with oil before roasting, instead of basting with watery drippings, ensures even browning and a crisp skin.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 4,
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Perfect Roast Chicken",
+			Slug:                "perfect-roast-chicken",
+			Source:              "https://www.seriouseats.com/perfect-roast-chicken-recipe-8384377",
+			Description:         "A dry-brine fully seasons the chicken and allows the skin to dehydrate, improving browning and crisping during cooking. Measuring the internal temperature of the chicken to determine doneness leads to more reliable and superior results than going by time. Rubbing the chicken skin with oil before roasting, instead of basting with watery drippings, ensures even browning and a crisp skin.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4, step5, step6, step7, step8},
 		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4, step5, step6, step7, step8},
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
-func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -643,21 +643,23 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) *mealp
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                 recipeID,
-		CreatedByUser:      userID,
-		Name:               "Pan-Seared Butter-Basted Steak",
-		Slug:               "pan-seared-butter-basted-steak",
-		Source:             "https://www.seriouseats.com/butter-basted-pan-seared-steaks-recipe",
-		Description:        "Thick and meaty pan-seared steak, slicked with butter and infused with flavor from aromatics. This recipe is designed for very large steaks, at least one and a half inches thick and weighing 24 to 32 ounces (700 to 900g) with the bone in.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 2,
-			Max: pointer.To[float32](3),
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Pan-Seared Butter-Basted Steak",
+			Slug:                "pan-seared-butter-basted-steak",
+			Source:              "https://www.seriouseats.com/butter-basted-pan-seared-steaks-recipe",
+			Description:         "Thick and meaty pan-seared steak, slicked with butter and infused with flavor from aromatics. This recipe is designed for very large steaks, at least one and a half inches thick and weighing 24 to 32 ounces (700 to 900g) with the bone in.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 2,
+				Max: pointer.To[float32](3),
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4, step5, step6},
 		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4, step5, step6},
 	}
 }

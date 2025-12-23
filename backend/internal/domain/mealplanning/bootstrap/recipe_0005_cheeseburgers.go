@@ -8,7 +8,7 @@ import (
 )
 
 // ClassicSmashBurgersRecipe creates the Classic Smashed Burgers recipe from Serious Eats.
-func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -752,22 +752,24 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) *mealplanning
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Classic Smashed Burgers",
-		Slug:                "classic-smashed-burgers",
-		Source:              "https://www.seriouseats.com/classic-smashed-burgers-recipe",
-		Description:         "Classic smashed cheeseburgers with maximum juiciness and a deep-brown, beefy crust. Smashing down on the burger patties within the first 30 seconds of hitting a hot skillet ensures maximum juiciness and a flavorful, well-browned crust.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 4,
-		},
-		PortionName:       "burger",
-		PluralPortionName: "burgers",
-		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10,
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Classic Smashed Burgers",
+			Slug:                "classic-smashed-burgers",
+			Source:              "https://www.seriouseats.com/classic-smashed-burgers-recipe",
+			Description:         "Classic smashed cheeseburgers with maximum juiciness and a deep-brown, beefy crust. Smashing down on the burger patties within the first 30 seconds of hitting a hot skillet ensures maximum juiciness and a flavorful, well-browned crust.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			PortionName:       "burger",
+			PluralPortionName: "burgers",
+			EligibleForMeals:  true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10,
+			},
 		},
 	}
 }

@@ -151,6 +151,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "American cheese", Description: "Processed American cheese slices", PluralName: "American cheese slices", StorageInstructions: "Keep refrigerated", Slug: "american-cheese", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "burger bun", Description: "Soft white burger bun", PluralName: "burger buns", StorageInstructions: "Store at room temperature in a sealed bag", Slug: "burger-bun", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "pickle", Description: "Pickled cucumber slices or chips", PluralName: "pickles", StorageInstructions: "Keep refrigerated after opening", Slug: "pickle", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Caesar roasted broccoli recipe ingredients
+		{ID: identifiers.New(), Name: "anchovy paste", Description: "Concentrated anchovy paste for seasoning", PluralName: "anchovy paste", StorageInstructions: "Keep refrigerated after opening", Slug: "anchovy-paste", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "breadcrumbs", Description: "Plain dry breadcrumbs", PluralName: "breadcrumbs", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "breadcrumbs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "salted butter", Description: "Salted butter", PluralName: "salted butter", StorageInstructions: "Keep refrigerated, can be kept at room temperature for short periods", Slug: "salted-butter", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -191,6 +195,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"wide spatula", "A wide, flexible spatula for flipping and pressing food", "wide spatulas", "wide-spatula", "wide spatula"},
 		// Rice recipe instruments
 		{"fork", "A standard eating fork for fluffing rice and other tasks", "forks", "fork", "fork"},
+		{"wooden spoon", "A wooden spoon for stirring", "wooden spoons", "wooden-spoon", "wooden spoon"},
+		// Mashed potatoes recipe instruments
+		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
+		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
+		{"rubber spatula", "A flexible rubber spatula for folding and scraping", "rubber spatulas", "rubber-spatula", "rubber spatula"},
+		// Caesar roasted broccoli recipe instruments
+		{"aluminum foil", "Aluminum foil for lining pans and wrapping food", "aluminum foil", "aluminum-foil", "aluminum foil"},
+		{"microplane", "A fine grater for zesting citrus and grating hard cheeses", "microplanes", "microplane", "microplane"},
 	}
 	for i, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
@@ -298,6 +310,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"teaspoon", "A volumetric measurement equal to 5 milliliters", "teaspoons", "teaspoon", true, false},
 		{"ounce", "Imperial unit of weight equal to approximately 28 grams", "ounces", "ounce", false, false},
 		{"slice", "A thin, flat piece cut from something", "slices", "slice", false, false},
+		{"pinch", "A small amount picked up between thumb and forefinger", "pinches", "pinch", false, false},
+		{"pound", "Imperial unit of weight equal to approximately 454 grams", "pounds", "pound", false, false},
 	}
 	for _, unit := range measurementUnits {
 		validUnit, err2 := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
@@ -902,6 +916,88 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["fine-mesh strainer"] = fineMeshStrainer
 
+	// Create colander for mashed potatoes recipe
+	colander, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "colander",
+		Description:                    "A bowl-shaped strainer with holes for draining food",
+		PluralName:                     "colanders",
+		Slug:                           "colander",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             250,
+		LengthInMillimeters:            250,
+		HeightInMillimeters:            120,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create colander vessel: %w", err)
+	}
+	enums.Vessels["colander"] = colander
+
+	// Caesar roasted broccoli recipe vessels
+	smallNonstickSkillet, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "small nonstick skillet",
+		Description:                    "A small nonstick frying pan for delicate cooking tasks",
+		PluralName:                     "small nonstick skillets",
+		Slug:                           "small-nonstick-skillet",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            40,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create small nonstick skillet vessel: %w", err)
+	}
+	enums.Vessels["small nonstick skillet"] = smallNonstickSkillet
+
+	servingPlatter, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "serving platter",
+		Description:                    "A large flat platter for serving food",
+		PluralName:                     "serving platters",
+		Slug:                           "serving-platter",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             350,
+		LengthInMillimeters:            450,
+		HeightInMillimeters:            25,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create serving platter vessel: %w", err)
+	}
+	enums.Vessels["serving platter"] = servingPlatter
+
+	oven, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "oven",
+		Description:                    "A kitchen oven for baking and roasting",
+		PluralName:                     "ovens",
+		Slug:                           "oven",
+		IncludeInGeneratedInstructions: false,
+		DisplayInSummaryLists:          false,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             600,
+		LengthInMillimeters:            600,
+		HeightInMillimeters:            400,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create oven vessel: %w", err)
+	}
+	enums.Vessels["oven"] = oven
+
 	freezer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "freezer",
@@ -1002,6 +1098,17 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"drain", "Remove liquid using a strainer or colander", "drained", "drain", false, false},
 		{"cover", "Place a lid, wrap, or foil over a vessel", "covered", "cover", false, false},
 		{"fluff", "Gently separate grains or fibers with a fork", "fluffed", "fluff", false, false},
+		// Mashed potatoes recipe preparations
+		{"peel", "Remove the outer skin from vegetables or fruits", "peeled", "peel", false, false},
+		{"fold", "Gently combine ingredients by lifting from the bottom and folding over", "folded", "fold", false, false},
+		{"rice", "Press cooked food through a ricer or food mill to create a smooth texture", "riced", "rice", false, false},
+		{"submerge", "Cover completely with liquid", "submerged", "submerge", false, false},
+		// Caesar roasted broccoli recipe preparations
+		{"melt", "Heat a solid ingredient until it becomes liquid", "melted", "melt", false, false},
+		{"preheat", "Heat an oven, vessel, or equipment to a specified temperature before use", "preheated", "preheat", true, true},
+		{"toss", "Mix ingredients by lifting and turning", "tossed", "toss", false, false},
+		{"zest", "Grate the outer peel of citrus fruit", "zested", "zest", false, false},
+		{"transfer", "Move ingredients from one vessel to another", "transferred", "transfer", false, false},
 	}
 
 	for i := range prepInputs {
@@ -2250,6 +2357,399 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(riceOliveOil, tablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === ULTRA-FLUFFY MASHED POTATOES RECIPE BRIDGE ENTRIES ===
+	// Get preparations for mashed potatoes recipe
+	peelPrep := enums.Preparations["peel"]
+	cubePrep = enums.Preparations["cube"]
+	rinsePrep := enums.Preparations["rinse"]
+	submergePrep := enums.Preparations["submerge"]
+	boilPrep := enums.Preparations["boil"]
+	drainPrep := enums.Preparations["drain"]
+	mashedRestPrep := enums.Preparations["rest"]
+	ricePrep := enums.Preparations["rice"]
+	foldPrep := enums.Preparations["fold"]
+	mashedSeasonPrep := enums.Preparations["season"]
+	mashedSimmerPrep := enums.Preparations["simmer"]
+
+	// Get ingredients for mashed potatoes recipe
+	potato := enums.Ingredients["potato"]
+	mashedPepper := enums.Ingredients["black pepper"]
+	mashedButter := enums.Ingredients["butter"]
+	milk := enums.Ingredients["milk"]
+	mashedWater := enums.Ingredients["water"]
+
+	// Get instruments for mashed potatoes recipe
+	vegetablePeeler := enums.Instruments["vegetable peeler"]
+	potatoRicer := enums.Instruments["potato ricer"]
+	rubberSpatula := enums.Instruments["rubber spatula"]
+	mashedKnife := enums.Instruments["knife"]
+
+	// Get vessels for mashed potatoes recipe
+	mashedCuttingBoard := enums.Vessels["cutting board"]
+	mashedPot := enums.Vessels["pot"]
+	mashedColander := enums.Vessels["colander"]
+
+	// Get measurement units for mashed potatoes recipe
+	poundMeasurement := enums.MeasurementUnits["pound"]
+	mashedCupMeasurement := enums.MeasurementUnits["cup"]
+	mashedTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+
+	// === PEEL PREPARATION ===
+	if err := createVIP(peelPrep, potato); err != nil {
+		return err
+	}
+	if err := createVPI(peelPrep, vegetablePeeler); err != nil {
+		return err
+	}
+	if err := createVPV(peelPrep, mashedCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CUBE PREPARATION for potato ===
+	if err := createVIP(cubePrep, potato); err != nil {
+		return err
+	}
+	if err := createVPI(cubePrep, mashedKnife); err != nil {
+		return err
+	}
+	if err := createVPV(cubePrep, mashedCuttingBoard); err != nil {
+		return err
+	}
+
+	// === RINSE PREPARATION ===
+	if err := createVIP(rinsePrep, potato); err != nil {
+		return err
+	}
+	if err := createVPV(rinsePrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === SUBMERGE PREPARATION ===
+	if err := createVIP(submergePrep, potato); err != nil {
+		return err
+	}
+	if err := createVIP(submergePrep, mashedWater); err != nil {
+		return err
+	}
+	if err := createVPV(submergePrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for pot (seasoning water) ===
+	if err := createVPV(mashedSeasonPrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === BOIL PREPARATION ===
+	if err := createVIP(boilPrep, potato); err != nil {
+		return err
+	}
+	if err := createVPV(boilPrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === DRAIN PREPARATION ===
+	if err := createVIP(drainPrep, potato); err != nil {
+		return err
+	}
+	if err := createVPV(drainPrep, mashedColander); err != nil {
+		return err
+	}
+
+	// === RINSE PREPARATION for colander ===
+	if err := createVPV(rinsePrep, mashedColander); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for potato ===
+	if err := createVIP(mashedRestPrep, potato); err != nil {
+		return err
+	}
+	if err := createVPV(mashedRestPrep, mashedColander); err != nil {
+		return err
+	}
+
+	// === RICE PREPARATION ===
+	if err := createVIP(ricePrep, potato); err != nil {
+		return err
+	}
+	if err := createVPI(ricePrep, potatoRicer); err != nil {
+		return err
+	}
+	if err := createVPV(ricePrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === FOLD PREPARATION ===
+	if err := createVIP(foldPrep, potato); err != nil {
+		return err
+	}
+	if err := createVIP(foldPrep, mashedButter); err != nil {
+		return err
+	}
+	if err := createVIP(foldPrep, milk); err != nil {
+		return err
+	}
+	if err := createVPI(foldPrep, rubberSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(foldPrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === SIMMER PREPARATION for milk ===
+	if err := createVIP(mashedSimmerPrep, milk); err != nil {
+		return err
+	}
+	if err := createVPV(mashedSimmerPrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for mashed potatoes ===
+	if err := createVIP(mashedSeasonPrep, potato); err != nil {
+		return err
+	}
+	if err := createVIP(mashedSeasonPrep, mashedPepper); err != nil {
+		return err
+	}
+	if err := createVPV(mashedSeasonPrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === POTATO MEASUREMENT UNITS ===
+	if err := createVIMU(potato, poundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(milk, mashedCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mashedButter, mashedTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === CAESAR ROASTED BROCCOLI RECIPE BRIDGE ENTRIES ===
+	// Get preparations for caesar roasted broccoli recipe
+	caesarMeltPrep := enums.Preparations["melt"]
+	caesarStirPrep := enums.Preparations["stir"]
+	caesarCookPrep := enums.Preparations["cook"]
+	caesarToastPrep := enums.Preparations["toast"]
+	caesarSeasonPrep := enums.Preparations["season"]
+	caesarTransferPrep := enums.Preparations["transfer"]
+	caesarLinePrep := enums.Preparations["line"]
+	caesarPreheatPrep := enums.Preparations["preheat"]
+	caesarTossPrep := enums.Preparations["toss"]
+	caesarRoastPrep := enums.Preparations["roast"]
+	caesarTopPrep := enums.Preparations["top"]
+	caesarZestPrep := enums.Preparations["zest"]
+
+	// Get ingredients for caesar roasted broccoli recipe
+	caesarSaltedButter := enums.Ingredients["salted butter"]
+	caesarBreadcrumbs := enums.Ingredients["breadcrumbs"]
+	caesarAnchovyPaste := enums.Ingredients["anchovy paste"]
+	caesarGarlic := enums.Ingredients["garlic"]
+	caesarLemon := enums.Ingredients["lemon"]
+	caesarBroccoli := enums.Ingredients["broccoli"]
+	caesarOliveOil := enums.Ingredients["olive oil"]
+	caesarSalt := enums.Ingredients["salt"]
+	caesarPepper := enums.Ingredients["black pepper"]
+	caesarParmesan := enums.Ingredients["parmesan cheese"]
+
+	// Get instruments for caesar roasted broccoli recipe
+	caesarRubberSpatula := enums.Instruments["rubber spatula"]
+	caesarAluminumFoil := enums.Instruments["aluminum foil"]
+	caesarMicroplane := enums.Instruments["microplane"]
+
+	// Get vessels for caesar roasted broccoli recipe
+	caesarSmallNonstickSkillet := enums.Vessels["small nonstick skillet"]
+	caesarSmallBowl := enums.Vessels["small bowl"]
+	caesarBakingSheet := enums.Vessels["baking sheet"]
+	caesarLargeBowl := enums.Vessels["large bowl"]
+	caesarServingPlatter := enums.Vessels["serving platter"]
+	caesarOven := enums.Vessels["oven"]
+
+	// Get measurement units for caesar roasted broccoli recipe
+	caesarTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	caesarTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	caesarCupMeasurement := enums.MeasurementUnits["cup"]
+	caesarPoundMeasurement := enums.MeasurementUnits["pound"]
+	caesarGramMeasurement := enums.MeasurementUnits["gram"]
+	caesarUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// === MELT PREPARATION ===
+	if err := createVIP(caesarMeltPrep, caesarSaltedButter); err != nil {
+		return err
+	}
+	if err := createVPV(caesarMeltPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION for anchovy paste and garlic ===
+	if err := createVIP(caesarStirPrep, caesarAnchovyPaste); err != nil {
+		return err
+	}
+	if err := createVIP(caesarStirPrep, caesarGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(caesarStirPrep, caesarBreadcrumbs); err != nil {
+		return err
+	}
+	if err := createVIP(caesarStirPrep, caesarLemon); err != nil {
+		return err
+	}
+	if err := createVPV(caesarStirPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(caesarStirPrep, caesarRubberSpatula); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for breadcrumbs ===
+	if err := createVIP(caesarCookPrep, caesarAnchovyPaste); err != nil {
+		return err
+	}
+	if err := createVIP(caesarCookPrep, caesarGarlic); err != nil {
+		return err
+	}
+	if err := createVPV(caesarCookPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+
+	// === TOAST PREPARATION for breadcrumbs ===
+	if err := createVIP(caesarToastPrep, caesarBreadcrumbs); err != nil {
+		return err
+	}
+	if err := createVPV(caesarToastPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(caesarToastPrep, caesarRubberSpatula); err != nil {
+		return err
+	}
+
+	// === ZEST PREPARATION for lemon ===
+	if err := createVIP(caesarZestPrep, caesarLemon); err != nil {
+		return err
+	}
+	if err := createVPI(caesarZestPrep, caesarMicroplane); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for breadcrumbs ===
+	if err := createVIP(caesarSeasonPrep, caesarBreadcrumbs); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for breadcrumbs ===
+	if err := createVIP(caesarTransferPrep, caesarBreadcrumbs); err != nil {
+		return err
+	}
+	if err := createVPV(caesarTransferPrep, caesarSmallBowl); err != nil {
+		return err
+	}
+	if err := createVPV(caesarTransferPrep, caesarServingPlatter); err != nil {
+		return err
+	}
+
+	// === LINE PREPARATION for baking sheet ===
+	if err := createVPI(caesarLinePrep, caesarAluminumFoil); err != nil {
+		return err
+	}
+	if err := createVPV(caesarLinePrep, caesarBakingSheet); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for oven ===
+	if err := createVPV(caesarPreheatPrep, caesarOven); err != nil {
+		return err
+	}
+	if err := createVPV(caesarPreheatPrep, caesarBakingSheet); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION for broccoli ===
+	if err := createVIP(caesarTossPrep, caesarBroccoli); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTossPrep, caesarOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTossPrep, caesarSalt); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTossPrep, caesarPepper); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTossPrep, caesarLemon); err != nil {
+		return err
+	}
+	if err := createVPV(caesarTossPrep, caesarLargeBowl); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for broccoli ===
+	if err := createVIP(caesarTransferPrep, caesarBroccoli); err != nil {
+		return err
+	}
+	if err := createVPV(caesarTransferPrep, caesarBakingSheet); err != nil {
+		return err
+	}
+
+	// === ROAST PREPARATION for broccoli ===
+	if err := createVIP(caesarRoastPrep, caesarBroccoli); err != nil {
+		return err
+	}
+	if err := createVPV(caesarRoastPrep, caesarBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(caesarRoastPrep, caesarOven); err != nil {
+		return err
+	}
+
+	// === TOP PREPARATION for broccoli ===
+	if err := createVIP(caesarTopPrep, caesarBroccoli); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTopPrep, caesarBreadcrumbs); err != nil {
+		return err
+	}
+	if err := createVIP(caesarTopPrep, caesarParmesan); err != nil {
+		return err
+	}
+	if err := createVPV(caesarTopPrep, caesarServingPlatter); err != nil {
+		return err
+	}
+
+	// === CAESAR BROCCOLI INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(caesarSaltedButter, caesarTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarBreadcrumbs, caesarCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarAnchovyPaste, caesarTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarGarlic, caesarUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarLemon, caesarTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarBroccoli, caesarPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarParmesan, caesarTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarOliveOil, caesarTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarSalt, caesarTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caesarPepper, caesarGramMeasurement); err != nil {
 		return err
 	}
 

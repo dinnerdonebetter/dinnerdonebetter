@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
-func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func SousVidePorkChopsRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -874,23 +874,25 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Sous Vide Pork Chops",
-		Slug:                "sous-vide-pork-chops",
-		Source:              "https://www.seriouseats.com/sous-vide-pork-chops-recipe",
-		Description:         "Using an immersion sous vide cooker is the easy, foolproof way to guarantee extra-juicy pork chops. Cooking sous vide ensures pork chops are perfectly cooked from edge to edge by maintaining a precise water temperature that precludes overcooking and preserves moisture. The method allows for greater control over texture by adjusting the cooking temperature, offering options from a pink and tender medium-rare to a traditional well-done chop. A high-heat finish, in a skillet or on the grill, gives the chops a crisp, browned crust and keeps the interior juicy.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 4,
-		},
-		PortionName:       "pork chop",
-		PluralPortionName: "pork chops",
-		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4,
-			step5, step6, step7, step8, step9,
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Sous Vide Pork Chops",
+			Slug:                "sous-vide-pork-chops",
+			Source:              "https://www.seriouseats.com/sous-vide-pork-chops-recipe",
+			Description:         "Using an immersion sous vide cooker is the easy, foolproof way to guarantee extra-juicy pork chops. Cooking sous vide ensures pork chops are perfectly cooked from edge to edge by maintaining a precise water temperature that precludes overcooking and preserves moisture. The method allows for greater control over texture by adjusting the cooking temperature, offering options from a pink and tender medium-rare to a traditional well-done chop. A high-heat finish, in a skillet or on the grill, gives the chops a crisp, browned crust and keeps the interior juicy.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			PortionName:       "pork chop",
+			PluralPortionName: "pork chops",
+			EligibleForMeals:  true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				step0, step1, step2, step3, step4,
+				step5, step6, step7, step8, step9,
+			},
 		},
 	}
 }

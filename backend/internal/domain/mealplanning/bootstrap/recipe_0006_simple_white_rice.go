@@ -9,7 +9,7 @@ import (
 
 // SimpleWhiteRiceRecipe creates the Simple White Rice recipe.
 // Source: https://www.seriouseats.com/essentials-how-to-cook-rice
-func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) *mealplanning.RecipeDatabaseCreationInput {
+func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
 	recipeID := identifiers.New()
 
 	// Get preparations
@@ -385,23 +385,25 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) *mealplanning.Rec
 		},
 	}
 
-	return &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Simple White Rice",
-		Slug:                "simple-white-rice",
-		Source:              "https://www.seriouseats.com/essentials-how-to-cook-rice",
-		Description:         "A foolproof method for perfect white rice every time. No rinsing required - just combine, simmer, cover, and rest.",
-		YieldsComponentType: mealplanning.MealComponentTypesSide,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 3,
-			Max: pointer.To[float32](4),
-		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4,
+	return []*mealplanning.RecipeDatabaseCreationInput{
+		{
+			ID:                  recipeID,
+			CreatedByUser:       userID,
+			Name:                "Simple White Rice",
+			Slug:                "simple-white-rice",
+			Source:              "https://www.seriouseats.com/essentials-how-to-cook-rice",
+			Description:         "",
+			YieldsComponentType: mealplanning.MealComponentTypesSide,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 3,
+				Max: pointer.To[float32](4),
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				step0, step1, step2, step3, step4,
+			},
 		},
 	}
 }
