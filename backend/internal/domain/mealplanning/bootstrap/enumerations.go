@@ -1497,5 +1497,173 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === SOUS VIDE PORK CHOPS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for pork chops recipe
+	porkSeasonPrep := enums.Preparations["season"]
+	porkDryPrep := enums.Preparations["dry"]
+	porkBagPrep := enums.Preparations["bag"]
+	porkSousVidePrep := enums.Preparations["sous-vide"]
+	porkPanSearPrep := enums.Preparations["pan-sear"]
+	porkBastePrep := enums.Preparations["baste"]
+	porkGrillPrep := enums.Preparations["grill"]
+	porkRestPrep := enums.Preparations["rest"]
+	porkHeatPrep := enums.Preparations["heat"]
+
+	// Get ingredients for pork chops recipe
+	porkChop := enums.Ingredients["pork chop"]
+	porkGarlic := enums.Ingredients["garlic"]
+	porkVegOil := enums.Ingredients["vegetable oil"]
+	porkButter := enums.Ingredients["butter"]
+
+	// Get measurement units for pork chops recipe
+	porkUnitMeasurement := enums.MeasurementUnits["unit"]
+	porkTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+
+	// Get instruments for pork chops recipe
+	porkPaperTowels := enums.Instruments["paper towels"]
+	porkTongs := enums.Instruments["tongs"]
+	porkSpoon := enums.Instruments["spoon"]
+	porkSousVideCooker := enums.Instruments["sous vide cooker"]
+	porkBareHands := enums.Instruments["bare hands"]
+
+	// Get vessels for pork chops recipe
+	porkCastIronSkillet := enums.Vessels["cast iron skillet"]
+	porkWaterBath := enums.Vessels["water bath"]
+	porkPlasticBag := enums.Vessels["plastic bag"]
+	porkVacuumBag := enums.Vessels["vacuum bag"]
+	porkGrillVessel := enums.Vessels["grill"]
+	porkWireRack := enums.Vessels["wire rack"]
+	porkBakingSheet := enums.Vessels["baking sheet"]
+	porkServingPlate := enums.Vessels["serving plate"]
+
+	// === PORK CHOP INGREDIENT-PREPARATION LINKS ===
+	if err := createVIP(porkSeasonPrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkDryPrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkBagPrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkSousVidePrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkPanSearPrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkBastePrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkGrillPrep, porkChop); err != nil {
+		return err
+	}
+	if err := createVIP(porkRestPrep, porkChop); err != nil {
+		return err
+	}
+
+	// Garlic for baste step
+	if err := createVIP(porkBastePrep, porkGarlic); err != nil {
+		return err
+	}
+
+	// === PORK CHOP INGREDIENT-MEASUREMENT UNIT LINKS ===
+	if err := createVIMU(porkChop, porkUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(porkGarlic, porkUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(porkButter, porkTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(porkVegOil, porkTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === PORK CHOP PREPARATION-INSTRUMENT LINKS ===
+	// Season with bare hands
+	if err := createVPI(porkSeasonPrep, porkBareHands); err != nil {
+		return err
+	}
+	// Dry with paper towels
+	if err := createVPI(porkDryPrep, porkPaperTowels); err != nil {
+		return err
+	}
+	// Heat with sous vide cooker
+	if err := createVPI(porkHeatPrep, porkSousVideCooker); err != nil {
+		return err
+	}
+	// Sous vide with sous vide cooker
+	if err := createVPI(porkSousVidePrep, porkSousVideCooker); err != nil {
+		return err
+	}
+	// Pan-sear with tongs
+	if err := createVPI(porkPanSearPrep, porkTongs); err != nil {
+		return err
+	}
+	// Baste with tongs and spoon
+	if err := createVPI(porkBastePrep, porkTongs); err != nil {
+		return err
+	}
+	if err := createVPI(porkBastePrep, porkSpoon); err != nil {
+		return err
+	}
+	// Grill with tongs and paper towels
+	if err := createVPI(porkGrillPrep, porkTongs); err != nil {
+		return err
+	}
+	if err := createVPI(porkGrillPrep, porkPaperTowels); err != nil {
+		return err
+	}
+	// Rest with tongs
+	if err := createVPI(porkRestPrep, porkTongs); err != nil {
+		return err
+	}
+
+	// === PORK CHOP PREPARATION-VESSEL LINKS ===
+	// Heat for water bath
+	if err := createVPV(porkHeatPrep, porkWaterBath); err != nil {
+		return err
+	}
+	// Bag with plastic bag or vacuum bag
+	if err := createVPV(porkBagPrep, porkPlasticBag); err != nil {
+		return err
+	}
+	if err := createVPV(porkBagPrep, porkVacuumBag); err != nil {
+		return err
+	}
+	// Sous vide in water bath
+	if err := createVPV(porkSousVidePrep, porkWaterBath); err != nil {
+		return err
+	}
+	// Heat cast iron skillet
+	if err := createVPV(porkHeatPrep, porkCastIronSkillet); err != nil {
+		return err
+	}
+	// Pan-sear in cast iron skillet
+	if err := createVPV(porkPanSearPrep, porkCastIronSkillet); err != nil {
+		return err
+	}
+	// Baste in cast iron skillet
+	if err := createVPV(porkBastePrep, porkCastIronSkillet); err != nil {
+		return err
+	}
+	// Grill on grill
+	if err := createVPV(porkGrillPrep, porkGrillVessel); err != nil {
+		return err
+	}
+	// Rest on wire rack set over baking sheet
+	if err := createVPV(porkRestPrep, porkWireRack); err != nil {
+		return err
+	}
+	if err := createVPV(porkRestPrep, porkBakingSheet); err != nil {
+		return err
+	}
+	// Also rest on serving plate (for final serve)
+	if err := createVPV(porkRestPrep, porkServingPlate); err != nil {
+		return err
+	}
+
 	return nil
 }
