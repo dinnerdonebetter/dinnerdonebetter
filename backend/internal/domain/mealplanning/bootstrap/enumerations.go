@@ -189,6 +189,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Burger recipe instruments
 		{"meat grinder", "A grinder for processing meat, with feed shaft, blade, and die", "meat grinders", "meat-grinder", "meat grinder"},
 		{"wide spatula", "A wide, flexible spatula for flipping and pressing food", "wide spatulas", "wide-spatula", "wide spatula"},
+		// Rice recipe instruments
+		{"fork", "A standard eating fork for fluffing rice and other tasks", "forks", "fork", "fork"},
 	}
 	for i, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
@@ -290,6 +292,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"unit", "A generic unit of measurement for recipe products", "units", "unit", false, false},
 		{"milliliter", "Metric unit of volume", "milliliters", "milliliter", true, true},
 		{"liter", "Metric unit of volume equal to 1000 milliliters", "liters", "liter", true, true},
+		{"cup", "A volumetric measurement equal to 240 milliliters", "cups", "cup", true, false},
 		{"sprig", "A small stem with leaves, typically herbs", "sprigs", "sprig", false, false},
 		{"tablespoon", "A volumetric measurement equal to 15 milliliters", "tablespoons", "tablespoon", true, false},
 		{"teaspoon", "A volumetric measurement equal to 5 milliliters", "teaspoons", "teaspoon", true, false},
@@ -410,6 +413,19 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create browned ingredient state: %w", err)
 	}
 	enums.IngredientStates["browned"] = brownedState
+
+	clearState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "clear",
+		Description:   "Liquid is transparent or translucent, free of cloudiness",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeAppearance,
+		PastTense:     "cleared",
+		Slug:          "clear",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create clear ingredient state: %w", err)
+	}
+	enums.IngredientStates["clear"] = clearState
 
 	// Create bridge types using first instances
 
@@ -844,6 +860,48 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["sauté pan"] = sautePan
 
+	// Create saucepan for rice recipe
+	saucepan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "saucepan",
+		Description:                    "A 2-quart saucepan with lid",
+		PluralName:                     "saucepans",
+		Slug:                           "saucepan",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             180,
+		LengthInMillimeters:            180,
+		HeightInMillimeters:            100,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create saucepan vessel: %w", err)
+	}
+	enums.Vessels["saucepan"] = saucepan
+
+	// Create fine-mesh strainer for rice recipe
+	fineMeshStrainer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "fine-mesh strainer",
+		Description:                    "A strainer with fine mesh for draining rice and other small grains",
+		PluralName:                     "fine-mesh strainers",
+		Slug:                           "fine-mesh-strainer",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            80,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create fine-mesh strainer vessel: %w", err)
+	}
+	enums.Vessels["fine-mesh strainer"] = fineMeshStrainer
+
 	freezer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "freezer",
@@ -939,6 +997,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Smash burger recipe preparations
 		{"smash", "Press down firmly to flatten", "smashed", "smash", false, false},
 		{"divide", "Separate into portions", "divided", "divide", false, false},
+		// Rice recipe preparations
+		{"rinse", "Wash with water to remove starch or impurities", "rinsed", "rinse", false, false},
+		{"drain", "Remove liquid using a strainer or colander", "drained", "drain", false, false},
+		{"cover", "Place a lid, wrap, or foil over a vessel", "covered", "cover", false, false},
+		{"fluff", "Gently separate grains or fibers with a fork", "fluffed", "fluff", false, false},
 	}
 
 	for i := range prepInputs {
@@ -2095,6 +2158,98 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Ground beef measurement unit (ounces)
 	if err := createVIMU(groundBeef, ounceMeasurement); err != nil {
+		return err
+	}
+
+	// === SIMPLE WHITE RICE RECIPE BRIDGE ENTRIES ===
+	// Get preparations for rice recipe
+	simmerPrep := enums.Preparations["simmer"]
+	stirPrep := enums.Preparations["stir"]
+	coverPrep := enums.Preparations["cover"]
+	fluffPrep := enums.Preparations["fluff"]
+	riceRestPrep := enums.Preparations["rest"]
+
+	// Get ingredients for rice recipe
+	rice := enums.Ingredients["rice"]
+	riceWater := enums.Ingredients["water"]
+	riceSalt := enums.Ingredients["salt"]
+	riceOliveOil := enums.Ingredients["olive oil"]
+
+	// Get vessels for rice recipe
+	saucepan := enums.Vessels["saucepan"]
+
+	// Get instruments for rice recipe
+	fork := enums.Instruments["fork"]
+	woodenSpoon := enums.Instruments["wooden spoon"]
+
+	// Get measurement units for rice recipe
+	cupMeasurement := enums.MeasurementUnits["cup"]
+	pinchMeasurement := enums.MeasurementUnits["pinch"]
+	tablespoonMeasurement = enums.MeasurementUnits["tablespoon"]
+
+	// === SIMMER PREPARATION (combine ingredients and bring to simmer) ===
+	if err := createVIP(simmerPrep, rice); err != nil {
+		return err
+	}
+	if err := createVIP(simmerPrep, riceWater); err != nil {
+		return err
+	}
+	if err := createVIP(simmerPrep, riceSalt); err != nil {
+		return err
+	}
+	if err := createVIP(simmerPrep, riceOliveOil); err != nil {
+		return err
+	}
+	if err := createVPV(simmerPrep, saucepan); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION ===
+	if err := createVIP(stirPrep, rice); err != nil {
+		return err
+	}
+	if err := createVPI(stirPrep, woodenSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(stirPrep, saucepan); err != nil {
+		return err
+	}
+
+	// === COVER PREPARATION ===
+	if err := createVPV(coverPrep, saucepan); err != nil {
+		return err
+	}
+
+	// === FLUFF PREPARATION ===
+	if err := createVIP(fluffPrep, rice); err != nil {
+		return err
+	}
+	if err := createVPI(fluffPrep, fork); err != nil {
+		return err
+	}
+	if err := createVPV(fluffPrep, saucepan); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for rice ===
+	if err := createVIP(riceRestPrep, rice); err != nil {
+		return err
+	}
+	if err := createVPV(riceRestPrep, saucepan); err != nil {
+		return err
+	}
+
+	// Rice measurement units
+	if err := createVIMU(rice, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(riceWater, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(riceSalt, pinchMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(riceOliveOil, tablespoonMeasurement); err != nil {
 		return err
 	}
 
