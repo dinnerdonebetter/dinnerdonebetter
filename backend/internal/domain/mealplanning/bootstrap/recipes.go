@@ -12,6 +12,7 @@ func AllRecipes(userID string, enums *Enumerations) []*mealplanning.RecipeDataba
 		SousVideChickenBreastRecipe(userID, enums),
 		PerfectRoastChickenRecipe(userID, enums),
 		SousVidePorkChopsRecipe(userID, enums),
+		ClassicSmashBurgersRecipe(userID, enums),
 	}
 }
 

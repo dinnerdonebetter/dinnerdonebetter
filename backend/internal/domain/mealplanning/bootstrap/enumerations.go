@@ -144,6 +144,13 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "water", Description: "Water", PluralName: "water", StorageInstructions: "Store at room temperature", Slug: "water", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "whole chicken", Description: "A whole chicken, about 4-5 pounds, with giblets removed and wing tips trimmed", PluralName: "whole chickens", StorageInstructions: "Keep refrigerated at or below 40°F", Slug: "whole-chicken", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "baking powder", Description: "Double-acting baking powder for leavening and crisping", PluralName: "baking powder", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "baking-powder", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Burger recipe ingredients
+		{ID: identifiers.New(), Name: "beef sirloin", Description: "Lean beef from the sirloin section", PluralName: "beef sirloin", StorageInstructions: "Keep refrigerated at or below 40°F, use within 3-5 days", Slug: "beef-sirloin", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "beef brisket", Description: "Beef cut from the breast section, rich in connective tissue and fat", PluralName: "beef brisket", StorageInstructions: "Keep refrigerated at or below 40°F, use within 3-5 days", Slug: "beef-brisket", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "oxtail", Description: "Beef tail with bone, fat, and meat", PluralName: "oxtails", StorageInstructions: "Keep refrigerated at or below 40°F, use within 3-5 days", Slug: "oxtail", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "American cheese", Description: "Processed American cheese slices", PluralName: "American cheese slices", StorageInstructions: "Keep refrigerated", Slug: "american-cheese", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "burger bun", Description: "Soft white burger bun", PluralName: "burger buns", StorageInstructions: "Store at room temperature in a sealed bag", Slug: "burger-bun", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "pickle", Description: "Pickled cucumber slices or chips", PluralName: "pickles", StorageInstructions: "Keep refrigerated after opening", Slug: "pickle", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -179,6 +186,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Additional instruments for roast chicken recipe
 		{"butcher's twine", "Kitchen string for trussing meat and poultry", "butcher's twine", "butchers-twine", "butcher's twine"},
 		{"bare hands", "Using clean bare hands to handle or apply ingredients", "bare hands", "bare-hands", "bare hands"},
+		// Burger recipe instruments
+		{"meat grinder", "A grinder for processing meat, with feed shaft, blade, and die", "meat grinders", "meat-grinder", "meat grinder"},
+		{"wide spatula", "A wide, flexible spatula for flipping and pressing food", "wide spatulas", "wide-spatula", "wide spatula"},
 	}
 	for i, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
@@ -283,6 +293,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"sprig", "A small stem with leaves, typically herbs", "sprigs", "sprig", false, false},
 		{"tablespoon", "A volumetric measurement equal to 15 milliliters", "tablespoons", "tablespoon", true, false},
 		{"teaspoon", "A volumetric measurement equal to 5 milliliters", "teaspoons", "teaspoon", true, false},
+		{"ounce", "Imperial unit of weight equal to approximately 28 grams", "ounces", "ounce", false, false},
+		{"slice", "A thin, flat piece cut from something", "slices", "slice", false, false},
 	}
 	for _, unit := range measurementUnits {
 		validUnit, err2 := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
@@ -791,6 +803,87 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["carving board"] = carvingBoard
 
+	// Create additional vessels for burger recipe
+	largeBowl, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "large bowl",
+		Description:                    "A large mixing bowl",
+		PluralName:                     "large bowls",
+		Slug:                           "large-bowl",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             300,
+		LengthInMillimeters:            300,
+		HeightInMillimeters:            150,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create large bowl vessel: %w", err)
+	}
+	enums.Vessels["large bowl"] = largeBowl
+
+	sautePan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "sauté pan",
+		Description:                    "A heavy-bottomed sauté pan or skillet",
+		PluralName:                     "sauté pans",
+		Slug:                           "saute-pan",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            50,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sauté pan vessel: %w", err)
+	}
+	enums.Vessels["sauté pan"] = sautePan
+
+	freezer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "freezer",
+		Description:                    "A freezer compartment for chilling items",
+		PluralName:                     "freezers",
+		Slug:                           "freezer",
+		IncludeInGeneratedInstructions: false,
+		DisplayInSummaryLists:          false,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             500,
+		LengthInMillimeters:            500,
+		HeightInMillimeters:            400,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create freezer vessel: %w", err)
+	}
+	enums.Vessels["freezer"] = freezer
+
+	refrigerator, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "refrigerator",
+		Description:                    "A refrigerator for keeping items cold",
+		PluralName:                     "refrigerators",
+		Slug:                           "refrigerator",
+		IncludeInGeneratedInstructions: false,
+		DisplayInSummaryLists:          false,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             600,
+		LengthInMillimeters:            600,
+		HeightInMillimeters:            1500,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create refrigerator vessel: %w", err)
+	}
+	enums.Vessels["refrigerator"] = refrigerator
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -830,6 +923,22 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Additional preparations for roast chicken recipe
 		{"truss", "Tie meat or poultry with string to maintain shape during cooking", "trussed", "truss", false, false},
 		{"rub", "Apply a seasoning or oil by rubbing onto the surface of food", "rubbed", "rub", false, false},
+		// Burger recipe preparations
+		{"chill", "Place in freezer or refrigerator to reduce temperature", "chilled", "chill", false, true},
+		{"trim", "Remove unwanted parts such as gristle, silverskin, or fat", "trimmed", "trim", false, false},
+		{"cube", "Cut into cube shapes, typically 1-inch or similar", "cubed", "cube", false, false},
+		{"grind", "Process through a meat grinder to break down into smaller pieces", "ground", "grind", false, false},
+		{"form", "Shape ingredients into a specific form such as patties or balls", "formed", "form", false, false},
+		{"line", "Cover a surface with parchment, foil, or similar material", "lined", "line", false, false},
+		{"flip", "Turn food over to expose the other side", "flipped", "flip", false, false},
+		{"top", "Place ingredients on top of other ingredients", "topped", "top", false, false},
+		{"assemble", "Put together components of a dish", "assembled", "assemble", false, false},
+		{"toast", "Lightly brown with dry heat", "toasted", "toast", false, true},
+		{"refrigerate", "Store in the refrigerator to keep cold", "refrigerated", "refrigerate", false, true},
+		{"debone", "Remove bones from meat or poultry", "deboned", "debone", false, false},
+		// Smash burger recipe preparations
+		{"smash", "Press down firmly to flatten", "smashed", "smash", false, false},
+		{"divide", "Separate into portions", "divided", "divide", false, false},
 	}
 
 	for i := range prepInputs {
@@ -1662,6 +1771,330 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 	// Also rest on serving plate (for final serve)
 	if err := createVPV(porkRestPrep, porkServingPlate); err != nil {
+		return err
+	}
+
+	// === CHEESEBURGER RECIPE BRIDGE ENTRIES ===
+	// Get preparations for burger recipe
+	chillPrep := enums.Preparations["chill"]
+	trimPrep := enums.Preparations["trim"]
+	cubePrep := enums.Preparations["cube"]
+	grindPrep := enums.Preparations["grind"]
+	formPrep := enums.Preparations["form"]
+	linePrep := enums.Preparations["line"]
+	burgerSeasonPrep := enums.Preparations["season"]
+	flipPrep := enums.Preparations["flip"]
+	refrigeratePrep := enums.Preparations["refrigerate"]
+	burgerHeatPrep := enums.Preparations["heat"]
+	burgerPanSearPrep := enums.Preparations["pan-sear"]
+	topPrep := enums.Preparations["top"]
+	assemblePrep := enums.Preparations["assemble"]
+	toastPrep := enums.Preparations["toast"]
+	debonePrep := enums.Preparations["debone"]
+
+	// Get ingredients for burger recipe
+	beefSirloin := enums.Ingredients["beef sirloin"]
+	beefBrisket := enums.Ingredients["beef brisket"]
+	oxtail := enums.Ingredients["oxtail"]
+	americanCheese := enums.Ingredients["American cheese"]
+	burgerBun := enums.Ingredients["burger bun"]
+	pickle := enums.Ingredients["pickle"]
+	burgerOnion := enums.Ingredients["onion"]
+	burgerSalt := enums.Ingredients["salt"]
+	burgerPepper := enums.Ingredients["black pepper"]
+	burgerVegOil := enums.Ingredients["vegetable oil"]
+
+	// Get instruments for burger recipe
+	meatGrinder := enums.Instruments["meat grinder"]
+	wideSpatula := enums.Instruments["wide spatula"]
+	burgerBareHands := enums.Instruments["bare hands"]
+	knife := enums.Instruments["knife"]
+
+	// Get vessels for burger recipe
+	largeBowl := enums.Vessels["large bowl"]
+	sautePan := enums.Vessels["sauté pan"]
+	freezer := enums.Vessels["freezer"]
+	refrigerator := enums.Vessels["refrigerator"]
+	burgerBakingSheet := enums.Vessels["baking sheet"]
+	burgerCuttingBoard := enums.Vessels["cutting board"]
+	burgerServingPlate := enums.Vessels["serving plate"]
+
+	// Get measurement units for burger recipe
+	ounceMeasurement := enums.MeasurementUnits["ounce"]
+	sliceMeasurement := enums.MeasurementUnits["slice"]
+	burgerUnitMeasurement := enums.MeasurementUnits["unit"]
+	burgerTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+
+	// === TRIM PREPARATION ===
+	if err := createVIP(trimPrep, beefSirloin); err != nil {
+		return err
+	}
+	if err := createVIP(trimPrep, beefBrisket); err != nil {
+		return err
+	}
+	if err := createVIP(trimPrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVIMU(beefSirloin, ounceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(beefBrisket, ounceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(oxtail, ounceMeasurement); err != nil {
+		return err
+	}
+	if err := createVPI(trimPrep, knife); err != nil {
+		return err
+	}
+	if err := createVPV(trimPrep, burgerCuttingBoard); err != nil {
+		return err
+	}
+
+	// === DEBONE PREPARATION ===
+	if err := createVIP(debonePrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVPI(debonePrep, knife); err != nil {
+		return err
+	}
+	if err := createVPV(debonePrep, burgerCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CUBE PREPARATION ===
+	if err := createVIP(cubePrep, beefSirloin); err != nil {
+		return err
+	}
+	if err := createVIP(cubePrep, beefBrisket); err != nil {
+		return err
+	}
+	if err := createVIP(cubePrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVPI(cubePrep, knife); err != nil {
+		return err
+	}
+	if err := createVPV(cubePrep, burgerCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CHILL PREPARATION ===
+	if err := createVIP(chillPrep, beefSirloin); err != nil {
+		return err
+	}
+	if err := createVIP(chillPrep, beefBrisket); err != nil {
+		return err
+	}
+	if err := createVIP(chillPrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVPV(chillPrep, freezer); err != nil {
+		return err
+	}
+	if err := createVPV(chillPrep, burgerBakingSheet); err != nil {
+		return err
+	}
+	// Chill preparation for meat grinder instrument
+	if err := createVPI(chillPrep, meatGrinder); err != nil {
+		return err
+	}
+
+	// === MIX/COMBINE PREPARATION (using existing mix) ===
+	burgerMixPrep := enums.Preparations["mix"]
+	if err := createVIP(burgerMixPrep, beefSirloin); err != nil {
+		return err
+	}
+	if err := createVIP(burgerMixPrep, beefBrisket); err != nil {
+		return err
+	}
+	if err := createVIP(burgerMixPrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVPV(burgerMixPrep, largeBowl); err != nil {
+		return err
+	}
+	if err := createVPI(burgerMixPrep, burgerBareHands); err != nil {
+		return err
+	}
+
+	// === LINE PREPARATION ===
+	if err := createVPV(linePrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === GRIND PREPARATION ===
+	if err := createVIP(grindPrep, beefSirloin); err != nil {
+		return err
+	}
+	if err := createVIP(grindPrep, beefBrisket); err != nil {
+		return err
+	}
+	if err := createVIP(grindPrep, oxtail); err != nil {
+		return err
+	}
+	if err := createVPI(grindPrep, meatGrinder); err != nil {
+		return err
+	}
+	if err := createVPV(grindPrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === FORM PREPARATION ===
+	if err := createVPI(formPrep, burgerBareHands); err != nil {
+		return err
+	}
+	if err := createVPV(formPrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for burger ingredients ===
+	if err := createVIP(burgerSeasonPrep, burgerSalt); err != nil {
+		return err
+	}
+	if err := createVIP(burgerSeasonPrep, burgerPepper); err != nil {
+		return err
+	}
+	if err := createVPV(burgerSeasonPrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === FLIP PREPARATION ===
+	if err := createVPI(flipPrep, wideSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(flipPrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === REFRIGERATE PREPARATION ===
+	if err := createVPV(refrigeratePrep, refrigerator); err != nil {
+		return err
+	}
+	if err := createVPV(refrigeratePrep, burgerBakingSheet); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for sauté pan ===
+	if err := createVIP(burgerHeatPrep, burgerVegOil); err != nil {
+		return err
+	}
+	if err := createVIMU(burgerVegOil, burgerTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVPV(burgerHeatPrep, sautePan); err != nil {
+		return err
+	}
+
+	// === PAN-SEAR PREPARATION ===
+	if err := createVPI(burgerPanSearPrep, wideSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(burgerPanSearPrep, sautePan); err != nil {
+		return err
+	}
+
+	// === TOP PREPARATION (adding cheese) ===
+	if err := createVIP(topPrep, americanCheese); err != nil {
+		return err
+	}
+	if err := createVIMU(americanCheese, sliceMeasurement); err != nil {
+		return err
+	}
+	if err := createVPV(topPrep, sautePan); err != nil {
+		return err
+	}
+
+	// === TOAST PREPARATION ===
+	if err := createVIP(toastPrep, burgerBun); err != nil {
+		return err
+	}
+	if err := createVIMU(burgerBun, burgerUnitMeasurement); err != nil {
+		return err
+	}
+
+	// === ASSEMBLE PREPARATION ===
+	if err := createVIP(assemblePrep, burgerBun); err != nil {
+		return err
+	}
+	if err := createVIP(assemblePrep, pickle); err != nil {
+		return err
+	}
+	if err := createVIP(assemblePrep, burgerOnion); err != nil {
+		return err
+	}
+	if err := createVIMU(pickle, burgerUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(burgerOnion, sliceMeasurement); err != nil {
+		return err
+	}
+	if err := createVPV(assemblePrep, burgerServingPlate); err != nil {
+		return err
+	}
+
+	// === SMASH BURGER RECIPE BRIDGE ENTRIES ===
+	// Get new preparations
+	smashPrep := enums.Preparations["smash"]
+	dividePrep := enums.Preparations["divide"]
+
+	// Get ground beef ingredient
+	groundBeef := enums.Ingredients["ground beef"]
+
+	// Get cast iron skillet (reuse from earlier)
+	smashBurgerSkillet := enums.Vessels["cast iron skillet"]
+
+	// === DIVIDE PREPARATION ===
+	if err := createVIP(dividePrep, groundBeef); err != nil {
+		return err
+	}
+	if err := createVPI(dividePrep, burgerBareHands); err != nil {
+		return err
+	}
+
+	// === FORM PREPARATION for ground beef ===
+	if err := createVIP(formPrep, groundBeef); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for ground beef ===
+	if err := createVIP(burgerSeasonPrep, groundBeef); err != nil {
+		return err
+	}
+
+	// === SMASH PREPARATION ===
+	if err := createVIP(smashPrep, groundBeef); err != nil {
+		return err
+	}
+	if err := createVPI(smashPrep, wideSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(smashPrep, smashBurgerSkillet); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for cast iron skillet ===
+	if err := createVPV(burgerHeatPrep, smashBurgerSkillet); err != nil {
+		return err
+	}
+
+	// === PAN-SEAR PREPARATION for cast iron skillet ===
+	if err := createVPV(burgerPanSearPrep, smashBurgerSkillet); err != nil {
+		return err
+	}
+
+	// === FLIP PREPARATION for cast iron skillet ===
+	if err := createVPV(flipPrep, smashBurgerSkillet); err != nil {
+		return err
+	}
+
+	// === TOP PREPARATION for cast iron skillet ===
+	if err := createVPV(topPrep, smashBurgerSkillet); err != nil {
+		return err
+	}
+
+	// Ground beef measurement unit (ounces)
+	if err := createVIMU(groundBeef, ounceMeasurement); err != nil {
 		return err
 	}
 

@@ -18,7 +18,6 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 	dryPrep := enums.Preparations["dry"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	bastePrep := enums.Preparations["baste"]
-	grillPrep := enums.Preparations["grill"]
 	restPrep := enums.Preparations["rest"]
 
 	// Get ingredients
@@ -49,7 +48,6 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 	waterBath := enums.Vessels["water bath"]
 	vacuumBag := enums.Vessels["vacuum bag"]
 	castIronSkillet := enums.Vessels["cast iron skillet"]
-	grillVessel := enums.Vessels["grill"]
 	wireRack := enums.Vessels["wire rack"]
 	bakingSheet := enums.Vessels["baking sheet"]
 	servingPlate := enums.Vessels["serving plate"]
@@ -118,12 +116,6 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 	restWireRackVPV := enums.PreparationVessels[restPrep.ID][wireRack.ID]
 	restBakingSheetVPV := enums.PreparationVessels[restPrep.ID][bakingSheet.ID]
 	restServingPlateVPV := enums.PreparationVessels[restPrep.ID][servingPlate.ID]
-
-	// Grill preparation bridges
-	grillPorkChopVIP := enums.IngredientPreparations[grillPrep.ID][porkChop.ID]
-	grillTongsVPI := enums.PreparationInstruments[grillPrep.ID][tongs.ID]
-	grillPaperTowelsVPI := enums.PreparationInstruments[grillPrep.ID][paperTowels.ID]
-	grillGrillVPV := enums.PreparationVessels[grillPrep.ID][grillVessel.ID]
 
 	// Step 0: Preheat water bath
 	step0ID := identifiers.New()
@@ -544,12 +536,12 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step6ID,
-				ProductOfRecipeStepIndex:  pointer.To[uint64](5),
-				ValidPreparationVesselID:  &panSearSkilletVPV.ID,
-				VesselID:                  &castIronSkillet.ID,
-				Name:                      "heated skillet with smoking oil",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step6ID,
+				ProductOfRecipeStepIndex: pointer.To[uint64](5),
+				ValidPreparationVesselID: &panSearSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "heated skillet with smoking oil",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -902,4 +894,3 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) *mealplanning.R
 		},
 	}
 }
-
