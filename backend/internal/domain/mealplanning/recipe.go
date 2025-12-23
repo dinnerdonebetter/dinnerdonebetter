@@ -177,6 +177,28 @@ func (x *Recipe) FindStepForRecipeStepProductID(recipeStepProductID string) *Rec
 	return nil
 }
 
+// GetRelatedRecipeIDs returns all recipe IDs that this recipe references as components.
+// It iterates through all steps and their ingredients to find any that reference other recipes
+// via RecipeStepProductRecipeID.
+func (x *Recipe) GetRelatedRecipeIDs() []string {
+	seen := make(map[string]struct{})
+	var relatedIDs []string
+
+	for _, step := range x.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" {
+				recipeID := *ingredient.RecipeStepProductRecipeID
+				if _, exists := seen[recipeID]; !exists {
+					seen[recipeID] = struct{}{}
+					relatedIDs = append(relatedIDs, recipeID)
+				}
+			}
+		}
+	}
+
+	return relatedIDs
+}
+
 // FindStepIndexByID finds a step for a given ID.
 func (x *Recipe) FindStepIndexByID(id string) int {
 	for i, step := range x.Steps {
@@ -362,6 +384,28 @@ func (x *RecipeDatabaseCreationInput) GetAllValidPreparationVesselIDs() []string
 		}
 	}
 	return ids
+}
+
+// GetRelatedRecipeIDs returns all recipe IDs that this recipe references as components.
+// It iterates through all steps and their ingredients to find any that reference other recipes
+// via RecipeStepProductRecipeID.
+func (x *RecipeDatabaseCreationInput) GetRelatedRecipeIDs() []string {
+	seen := make(map[string]struct{})
+	var relatedIDs []string
+
+	for _, step := range x.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" {
+				recipeID := *ingredient.RecipeStepProductRecipeID
+				if _, exists := seen[recipeID]; !exists {
+					seen[recipeID] = struct{}{}
+					relatedIDs = append(relatedIDs, recipeID)
+				}
+			}
+		}
+	}
+
+	return relatedIDs
 }
 
 var _ validation.ValidatableWithContext = (*RecipeDatabaseCreationInput)(nil)
