@@ -153,6 +153,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "pickle", Description: "Pickled cucumber slices or chips", PluralName: "pickles", StorageInstructions: "Keep refrigerated after opening", Slug: "pickle", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Caesar roasted broccoli recipe ingredients
 		{ID: identifiers.New(), Name: "anchovy paste", Description: "Concentrated anchovy paste for seasoning", PluralName: "anchovy paste", StorageInstructions: "Keep refrigerated after opening", Slug: "anchovy-paste", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		// Haricots verts amandine recipe ingredients
+		{ID: identifiers.New(), Name: "slivered almonds", Description: "Blanched almonds sliced into thin slivers", PluralName: "slivered almonds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "slivered-almonds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: true, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "breadcrumbs", Description: "Plain dry breadcrumbs", PluralName: "breadcrumbs", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "breadcrumbs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "salted butter", Description: "Salted butter", PluralName: "salted butter", StorageInstructions: "Keep refrigerated, can be kept at room temperature for short periods", Slug: "salted-butter", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 	}
@@ -203,6 +205,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Caesar roasted broccoli recipe instruments
 		{"aluminum foil", "Aluminum foil for lining pans and wrapping food", "aluminum foil", "aluminum-foil", "aluminum foil"},
 		{"microplane", "A fine grater for zesting citrus and grating hard cheeses", "microplanes", "microplane", "microplane"},
+		// Haricots verts amandine recipe instruments
+		{"wire mesh spider", "A wide shallow wire-mesh strainer on a long handle for scooping food from hot liquids", "wire mesh spiders", "wire-mesh-spider", "wire mesh spider"},
+		{"kitchen towels", "Absorbent towels for drying ingredients", "kitchen towels", "kitchen-towels", "kitchen towels"},
 	}
 	for i, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
@@ -427,6 +432,19 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create browned ingredient state: %w", err)
 	}
 	enums.IngredientStates["browned"] = brownedState
+
+	toastedState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "toasted",
+		Description:   "Ingredient has been dry-roasted until deeply browned and fragrant",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeAppearance,
+		PastTense:     "toasted",
+		Slug:          "toasted",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create toasted ingredient state: %w", err)
+	}
+	enums.IngredientStates["toasted"] = toastedState
 
 	clearState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
 		ID:            identifiers.New(),
@@ -1018,6 +1036,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["freezer"] = freezer
 
+	// Haricots verts amandine recipe vessels
+	mediumSkillet, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "medium skillet",
+		Description:                    "A medium-sized frying pan, typically 10 inches in diameter",
+		PluralName:                     "medium skillets",
+		Slug:                           "medium-skillet",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             250,
+		LengthInMillimeters:            250,
+		HeightInMillimeters:            50,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create medium skillet vessel: %w", err)
+	}
+	enums.Vessels["medium skillet"] = mediumSkillet
+
 	refrigerator, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "refrigerator",
@@ -1109,6 +1148,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"toss", "Mix ingredients by lifting and turning", "tossed", "toss", false, false},
 		{"zest", "Grate the outer peel of citrus fruit", "zested", "zest", false, false},
 		{"transfer", "Move ingredients from one vessel to another", "transferred", "transfer", false, false},
+		// Haricots verts amandine recipe preparations
+		{"blanch", "Cook briefly in boiling water then shock in ice water", "blanched", "blanch", false, true},
+		{"emulsify", "Combine fat and water-based liquids into a smooth, glossy sauce by rapid stirring or shaking", "emulsified", "emulsify", false, false},
+		{"shock", "Immediately transfer hot food to ice water to stop cooking", "shocked", "shock", false, false},
 	}
 
 	for i := range prepInputs {
@@ -2750,6 +2793,228 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(caesarPepper, caesarGramMeasurement); err != nil {
+		return err
+	}
+
+	// === HARICOTS VERTS AMANDINE RECIPE BRIDGE ENTRIES ===
+	// Get preparations for haricots verts amandine recipe
+	hvaBoilPrep := enums.Preparations["boil"]
+	hvaBlanch := enums.Preparations["blanch"]
+	hvaShockPrep := enums.Preparations["shock"]
+	hvaDrainPrep := enums.Preparations["drain"]
+	hvaDryPrep := enums.Preparations["dry"]
+	hvaHeatPrep := enums.Preparations["heat"]
+	hvaToastPrep := enums.Preparations["toast"]
+	hvaCookPrep := enums.Preparations["cook"]
+	hvaStirPrep := enums.Preparations["stir"]
+	hvaEmulsifyPrep := enums.Preparations["emulsify"]
+	hvaSeasonPrep := enums.Preparations["season"]
+	hvaTossPrep := enums.Preparations["toss"]
+	hvaTransferPrep := enums.Preparations["transfer"]
+	hvaTrimPrep := enums.Preparations["trim"]
+
+	// Get ingredients for haricots verts amandine recipe
+	hvaGreenBeans := enums.Ingredients["green beans"]
+	hvaButter := enums.Ingredients["butter"]
+	hvaSliveredAlmonds := enums.Ingredients["slivered almonds"]
+	hvaGarlic := enums.Ingredients["garlic"]
+	hvaShallot := enums.Ingredients["shallot"]
+	hvaLemon := enums.Ingredients["lemon"]
+	hvaSalt := enums.Ingredients["salt"]
+	hvaPepper := enums.Ingredients["black pepper"]
+	hvaWater := enums.Ingredients["water"]
+
+	// Get instruments for haricots verts amandine recipe
+	hvaWireMeshSpider := enums.Instruments["wire mesh spider"]
+	hvaTongs := enums.Instruments["tongs"]
+	hvaPaperTowels := enums.Instruments["paper towels"]
+	hvaKitchenTowels := enums.Instruments["kitchen towels"]
+	hvaRubberSpatula := enums.Instruments["rubber spatula"]
+
+	// Get vessels for haricots verts amandine recipe
+	hvaPot := enums.Vessels["pot"]
+	hvaLargeBowl := enums.Vessels["large bowl"]
+	hvaMediumSkillet := enums.Vessels["medium skillet"]
+	hvaServingPlatter := enums.Vessels["serving platter"]
+	hvaColander := enums.Vessels["colander"]
+
+	// Get measurement units for haricots verts amandine recipe
+	hvaPoundMeasurement := enums.MeasurementUnits["pound"]
+	hvaTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	hvaOunceMeasurement := enums.MeasurementUnits["ounce"]
+	hvaUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// === BOIL PREPARATION for water ===
+	if err := createVIP(hvaBoilPrep, hvaWater); err != nil {
+		return err
+	}
+	if err := createVIP(hvaBoilPrep, hvaSalt); err != nil {
+		return err
+	}
+	if err := createVPV(hvaBoilPrep, hvaPot); err != nil {
+		return err
+	}
+
+	// === BLANCH PREPARATION for green beans ===
+	if err := createVIP(hvaBlanch, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPI(hvaBlanch, hvaWireMeshSpider); err != nil {
+		return err
+	}
+	if err := createVPI(hvaBlanch, hvaTongs); err != nil {
+		return err
+	}
+	if err := createVPV(hvaBlanch, hvaPot); err != nil {
+		return err
+	}
+
+	// === SHOCK PREPARATION for green beans ===
+	if err := createVIP(hvaShockPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPI(hvaShockPrep, hvaWireMeshSpider); err != nil {
+		return err
+	}
+	if err := createVPI(hvaShockPrep, hvaTongs); err != nil {
+		return err
+	}
+	if err := createVPV(hvaShockPrep, hvaLargeBowl); err != nil {
+		return err
+	}
+
+	// === DRAIN PREPARATION for green beans ===
+	if err := createVIP(hvaDrainPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPV(hvaDrainPrep, hvaColander); err != nil {
+		return err
+	}
+
+	// === DRY PREPARATION for green beans ===
+	if err := createVIP(hvaDryPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPI(hvaDryPrep, hvaPaperTowels); err != nil {
+		return err
+	}
+	if err := createVPI(hvaDryPrep, hvaKitchenTowels); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for butter and skillet ===
+	if err := createVIP(hvaHeatPrep, hvaButter); err != nil {
+		return err
+	}
+	if err := createVIP(hvaHeatPrep, hvaSliveredAlmonds); err != nil {
+		return err
+	}
+	if err := createVPV(hvaHeatPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(hvaHeatPrep, hvaRubberSpatula); err != nil {
+		return err
+	}
+
+	// === TOAST PREPARATION for almonds ===
+	if err := createVIP(hvaToastPrep, hvaSliveredAlmonds); err != nil {
+		return err
+	}
+	if err := createVPI(hvaToastPrep, hvaRubberSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(hvaToastPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for garlic and shallot ===
+	if err := createVIP(hvaCookPrep, hvaGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(hvaCookPrep, hvaShallot); err != nil {
+		return err
+	}
+	if err := createVPI(hvaCookPrep, hvaRubberSpatula); err != nil {
+		return err
+	}
+	if err := createVPV(hvaCookPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION for lemon juice and water ===
+	if err := createVIP(hvaStirPrep, hvaLemon); err != nil {
+		return err
+	}
+	if err := createVIP(hvaStirPrep, hvaWater); err != nil {
+		return err
+	}
+	if err := createVPV(hvaStirPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === EMULSIFY PREPARATION for sauce ===
+	if err := createVIP(hvaEmulsifyPrep, hvaButter); err != nil {
+		return err
+	}
+	if err := createVIP(hvaEmulsifyPrep, hvaLemon); err != nil {
+		return err
+	}
+	if err := createVIP(hvaEmulsifyPrep, hvaWater); err != nil {
+		return err
+	}
+	if err := createVPV(hvaEmulsifyPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for sauce ===
+	if err := createVIP(hvaSeasonPrep, hvaPepper); err != nil {
+		return err
+	}
+	if err := createVPV(hvaSeasonPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION for green beans with sauce ===
+	if err := createVIP(hvaTossPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPV(hvaTossPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for finished dish ===
+	if err := createVIP(hvaTransferPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+	if err := createVPV(hvaTransferPrep, hvaServingPlatter); err != nil {
+		return err
+	}
+
+	// === TRIM PREPARATION for green beans ===
+	if err := createVIP(hvaTrimPrep, hvaGreenBeans); err != nil {
+		return err
+	}
+
+	// === HARICOTS VERTS AMANDINE INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(hvaGreenBeans, hvaPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaButter, hvaTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaSliveredAlmonds, hvaOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaGarlic, hvaUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaShallot, hvaUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaLemon, hvaTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(hvaWater, hvaTablespoonMeasurement); err != nil {
 		return err
 	}
 

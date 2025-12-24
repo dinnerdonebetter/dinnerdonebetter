@@ -7,6 +7,8 @@ You can verify the quality of the code by running `go run github.com/dinnerdoneb
 
 I need you to create a new recipe file with a text recipe that I will provide. Please separate every recipe into a step involving a single valid preparation, with its requisite ingredients/vessels/instruments per step. Be precise, if not fickle: If an instruction says "pat dry the steak and then season it," that's two steps: one to dry, and one to season. If there's an instruction that prepares a cooking vessel, i.e. lining a baking sheet with aluminum foil, that is its own step. If you encounter a preparation or ingredient that you don't already have, add it to the already-existing lists of ingredients in the enumerations file here: @backend/internal/domain/mealplanning/bootstrap/enumerations.go
 
+If the recipe presents you with any ahead-of-time prep steps, please use them to create RecipePrepTasks associated with the recipe.
+
 If you feel uncertain about anything, please feel free to ask clarifying questions.
 
 The recipe is titled "TITLE", it's source is LINK:
@@ -29,8 +31,8 @@ I basically need a Go file that adds a ton of recipes. Here's some recipes:
     - [x] [Cheeseburgers](https://www.seriouseats.com/ultra-crispy-burgers-recipe)
     - [x] [Basic white rice](https://www.seriouseats.com/essentials-how-to-cook-rice)
     - [x] [Mashed potatoes](https://www.seriouseats.com/ultra-fluffy-mashed-potatoes-recipe)
-    - [ ] [Roasted broccoli](https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043)
-    - [ ] [Haricots Verts Amandine](https://www.seriouseats.com/green-beans-amandine-french-almondine-recipe)
+    - [x] [Roasted broccoli](https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043)
+    - [x] [Haricots Verts Amandine](https://www.seriouseats.com/green-beans-amandine-french-almondine-recipe)
     - [ ] [Green salad](https://www.seriouseats.com/roman-mixed-green-salad-misticanza-recipe)
     - [ ] [Soy sauce braised chicken thighs](https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800)
     - [ ] [Pork tenderloin](https://www.seriouseats.com/grilled-pork-tenderloin-recipe-7505776)
