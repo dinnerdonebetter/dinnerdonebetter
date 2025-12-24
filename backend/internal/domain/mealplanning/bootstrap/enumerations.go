@@ -177,6 +177,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "cassia bark", Description: "Cassia bark or cinnamon stick", PluralName: "cassia bark", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cassia-bark", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "light soy sauce", Description: "Light soy sauce", PluralName: "light soy sauce", StorageInstructions: "Store in a cool, dark place", Slug: "light-soy-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: true, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "Shaoxing wine", Description: "Shaoxing cooking wine", PluralName: "Shaoxing wine", StorageInstructions: "Store in a cool, dark place", Slug: "shaoxing-wine", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Grilled pork tenderloin recipe ingredients
+		{ID: identifiers.New(), Name: "pork tenderloin", Description: "Pork tenderloin, trimmed of silverskin", PluralName: "pork tenderloins", StorageInstructions: "Store in the refrigerator", Slug: "pork-tenderloin", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		// Pan-seared salmon fillets recipe ingredients
+		{ID: identifiers.New(), Name: "salmon fillet", Description: "Skin-on salmon fillet", PluralName: "salmon fillets", StorageInstructions: "Store in the refrigerator", Slug: "salmon-fillet", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		// Roasted Brussels sprouts recipe ingredients
+		{ID: identifiers.New(), Name: "Brussels sprouts", Description: "Fresh Brussels sprouts", PluralName: "Brussels sprouts", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "brussels-sprouts", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "balsamic vinegar", Description: "Balsamic vinegar", PluralName: "balsamic vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "balsamic-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "aged sherry vinegar", Description: "Aged sherry vinegar", PluralName: "aged sherry vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "aged-sherry-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -220,6 +228,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"wooden spoon", "A wooden spoon for stirring", "wooden spoons", "wooden-spoon", "wooden spoon"},
 		// Soy sauce braised chicken thighs recipe instruments
 		{"whisk", "A wire whisk for beating or stirring ingredients", "whisks", "whisk", "whisk"},
+		// Grilled pork tenderloin recipe instruments
+		{"carving knife", "A long, thin knife for slicing cooked meat", "carving knives", "carving-knife", "carving knife"},
+		{"grill brush", "A wire brush for cleaning grilling grates", "grill brushes", "grill-brush", "grill brush"},
+		// Pan-seared salmon fillets recipe instruments
+		{"fish spatula", "A flexible slotted spatula for handling fish", "fish spatulas", "fish-spatula", "fish spatula"},
+		// Roasted Brussels sprouts recipe instruments
+		{"oven mitt", "A protective mitt for handling hot items from the oven", "oven mitts", "oven-mitt", "oven mitt"},
+		{"dish towel", "A cloth towel for handling hot items", "dish towels", "dish-towel", "dish towel"},
 		// Mashed potatoes recipe instruments
 		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
@@ -1175,6 +1191,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["large plate"] = largePlate
 
+	// Grilled pork tenderloin recipe vessels
+	grillingGrate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "grilling grate",
+		Description:                    "The metal grate that sits over the heat source on a grill",
+		PluralName:                     "grilling grates",
+		Slug:                           "grilling-grate",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             500,
+		LengthInMillimeters:            500,
+		HeightInMillimeters:            10,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create grilling grate vessel: %w", err)
+	}
+	enums.Vessels["grilling grate"] = grillingGrate
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1254,6 +1291,23 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"combine", "Mix or blend ingredients together", "combined", "combine", false, false},
 		{"whisk", "Beat or stir ingredients together rapidly with a whisk", "whisked", "whisk", false, false},
 		{"braise", "Cook slowly in a covered pot with liquid", "braised", "braise", true, true},
+		// Grilled pork tenderloin recipe preparations
+		{"carve", "Cut cooked meat into slices for serving", "carved", "carve", false, false},
+		{"turn", "Rotate food while cooking to cook evenly on all sides", "turned", "turn", false, false},
+		{"oil", "Apply oil to a surface using a brush, cloth, or paper towel", "oiled", "oil", false, false},
+		{"clean", "Remove debris or residue from a surface", "cleaned", "clean", false, false},
+		// Pan-seared salmon fillets recipe preparations
+		{"press", "Apply pressure to food to keep it flat or in contact with cooking surface", "pressed", "press", false, false},
+		// Roasted Brussels sprouts recipe preparations
+		{"halve", "Cut into two equal halves", "halved", "halve", false, false},
+		{"drizzle", "Pour a thin stream of liquid over food", "drizzled", "drizzle", false, false},
+		{"shake", "Move vessel back and forth to distribute or mix contents", "shook", "shake", false, false},
+		{"rotate", "Turn or move to a different position", "rotated", "rotate", false, false},
+		{"swap", "Exchange positions of two items", "swapped", "swap", false, false},
+		{"adjust", "Change the position or setting of something", "adjusted", "adjust", false, false},
+		{"place", "Put something in a specific location", "placed", "place", false, false},
+		{"remove", "Take something away from its current location", "removed", "remove", false, false},
+		{"return", "Put something back to its previous location", "returned", "return", false, false},
 	}
 
 	for i := range prepInputs {
@@ -3688,6 +3742,542 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(ssbWater, ssbCupMeasurement); err != nil {
+		return err
+	}
+
+	// === GRILLED PORK TENDERLOIN RECIPE BRIDGE ENTRIES ===
+	// Get preparations for grilled pork tenderloin recipe
+	gptTrimPrep := enums.Preparations["trim"]
+	gptSeasonPrep := enums.Preparations["season"]
+	gptTransferPrep := enums.Preparations["transfer"]
+	gptRefrigeratePrep := enums.Preparations["refrigerate"]
+	gptPreheatPrep := enums.Preparations["preheat"]
+	gptCleanPrep := enums.Preparations["clean"]
+	gptOilPrep := enums.Preparations["oil"]
+	gptGrillPrep := enums.Preparations["grill"]
+	gptTurnPrep := enums.Preparations["turn"]
+	gptRestPrep := enums.Preparations["rest"]
+	gptCarvePrep := enums.Preparations["carve"]
+
+	// Get ingredients for grilled pork tenderloin recipe
+	gptPorkTenderloin := enums.Ingredients["pork tenderloin"]
+	gptSalt := enums.Ingredients["salt"]
+	gptBlackPepper := enums.Ingredients["black pepper"]
+	gptVegetableOil := enums.Ingredients["vegetable oil"]
+
+	// Get vessels for grilled pork tenderloin recipe
+	gptWireRack := enums.Vessels["wire rack"]
+	gptBakingSheet := enums.Vessels["baking sheet"]
+	gptGrill := enums.Vessels["grill"]
+	gptGrillingGrate := enums.Vessels["grilling grate"]
+	gptCarvingBoard := enums.Vessels["carving board"]
+
+	// Get measurement units for grilled pork tenderloin recipe
+	gptPoundMeasurement := enums.MeasurementUnits["pound"]
+	gptTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	gptTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+
+	// Get instruments for grilled pork tenderloin recipe
+	gptChefsKnife := enums.Instruments["chef's knife"]
+	gptGrillBrush := enums.Instruments["grill brush"]
+	gptTongs := enums.Instruments["tongs"]
+	gptThermometer := enums.Instruments["instant-read thermometer"]
+	gptCarvingKnife := enums.Instruments["carving knife"]
+	gptBareHands := enums.Instruments["bare hands"]
+	gptBrush := enums.Instruments["brush"]
+
+	// === TRIM PREPARATION for pork tenderloin ===
+	if err := createVIP(gptTrimPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPI(gptTrimPrep, gptChefsKnife); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for pork tenderloin ===
+	if err := createVIP(gptSeasonPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVIP(gptSeasonPrep, gptSalt); err != nil {
+		return err
+	}
+	if err := createVIP(gptSeasonPrep, gptBlackPepper); err != nil {
+		return err
+	}
+	if err := createVPI(gptSeasonPrep, gptBareHands); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for pork tenderloin ===
+	if err := createVIP(gptTransferPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptTransferPrep, gptWireRack); err != nil {
+		return err
+	}
+	if err := createVPV(gptTransferPrep, gptBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(gptTransferPrep, gptGrill); err != nil {
+		return err
+	}
+	if err := createVPV(gptTransferPrep, gptCarvingBoard); err != nil {
+		return err
+	}
+
+	// === REFRIGERATE PREPARATION for pork tenderloin ===
+	if err := createVIP(gptRefrigeratePrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptRefrigeratePrep, gptWireRack); err != nil {
+		return err
+	}
+	if err := createVPV(gptRefrigeratePrep, gptBakingSheet); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for grill ===
+	if err := createVPV(gptPreheatPrep, gptGrill); err != nil {
+		return err
+	}
+
+	// === CLEAN PREPARATION for grilling grate ===
+	if err := createVPV(gptCleanPrep, gptGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(gptCleanPrep, gptGrillBrush); err != nil {
+		return err
+	}
+
+	// === OIL PREPARATION for grilling grate ===
+	if err := createVIP(gptOilPrep, gptVegetableOil); err != nil {
+		return err
+	}
+	if err := createVPV(gptOilPrep, gptGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(gptOilPrep, gptBrush); err != nil {
+		return err
+	}
+
+	// === GRILL PREPARATION for pork tenderloin ===
+	if err := createVIP(gptGrillPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptGrillPrep, gptGrill); err != nil {
+		return err
+	}
+	if err := createVPV(gptGrillPrep, gptGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(gptGrillPrep, gptTongs); err != nil {
+		return err
+	}
+	if err := createVPI(gptGrillPrep, gptThermometer); err != nil {
+		return err
+	}
+
+	// === TURN PREPARATION for pork tenderloin ===
+	if err := createVIP(gptTurnPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptTurnPrep, gptGrill); err != nil {
+		return err
+	}
+	if err := createVPV(gptTurnPrep, gptGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(gptTurnPrep, gptTongs); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for pork tenderloin ===
+	if err := createVIP(gptRestPrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptRestPrep, gptCarvingBoard); err != nil {
+		return err
+	}
+
+	// === CARVE PREPARATION for pork tenderloin ===
+	if err := createVIP(gptCarvePrep, gptPorkTenderloin); err != nil {
+		return err
+	}
+	if err := createVPV(gptCarvePrep, gptCarvingBoard); err != nil {
+		return err
+	}
+	if err := createVPI(gptCarvePrep, gptCarvingKnife); err != nil {
+		return err
+	}
+
+	// === GRILLED PORK TENDERLOIN INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(gptPorkTenderloin, gptPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gptSalt, gptTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gptBlackPepper, gptTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gptVegetableOil, gptTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === PAN-SEARED SALMON FILLETS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for pan-seared salmon fillets recipe
+	pssfDryPrep := enums.Preparations["dry"]
+	pssfSeasonPrep := enums.Preparations["season"]
+	pssfHeatPrep := enums.Preparations["heat"]
+	pssfPanSearPrep := enums.Preparations["pan-sear"]
+	pssfPressPrep := enums.Preparations["press"]
+	pssfFlipPrep := enums.Preparations["flip"]
+	pssfTransferPrep := enums.Preparations["transfer"]
+	pssfDrainPrep := enums.Preparations["drain"]
+
+	// Get ingredients for pan-seared salmon fillets recipe
+	pssfSalmonFillet := enums.Ingredients["salmon fillet"]
+	pssfSalt := enums.Ingredients["salt"]
+	pssfBlackPepper := enums.Ingredients["black pepper"]
+	pssfVegetableOil := enums.Ingredients["vegetable oil"]
+
+	// Get vessels for pan-seared salmon fillets recipe
+	pssfSkillet := enums.Vessels["cast iron skillet"]
+	pssfPlate := enums.Vessels["large plate"]
+
+	// Get measurement units for pan-seared salmon fillets recipe
+	pssfOunceMeasurement := enums.MeasurementUnits["ounce"]
+	pssfTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	pssfTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+
+	// Get instruments for pan-seared salmon fillets recipe
+	pssfPaperTowels := enums.Instruments["paper towels"]
+	pssfFishSpatula := enums.Instruments["fish spatula"]
+	pssfThermometer := enums.Instruments["instant-read thermometer"]
+	pssfFork := enums.Instruments["fork"]
+	pssfBareHands := enums.Instruments["bare hands"]
+
+	// === DRY PREPARATION for salmon ===
+	if err := createVIP(pssfDryPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPI(pssfDryPrep, pssfPaperTowels); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for salmon ===
+	if err := createVIP(pssfSeasonPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVIP(pssfSeasonPrep, pssfSalt); err != nil {
+		return err
+	}
+	if err := createVIP(pssfSeasonPrep, pssfBlackPepper); err != nil {
+		return err
+	}
+	if err := createVPI(pssfSeasonPrep, pssfBareHands); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for oil ===
+	if err := createVIP(pssfHeatPrep, pssfVegetableOil); err != nil {
+		return err
+	}
+	if err := createVPV(pssfHeatPrep, pssfSkillet); err != nil {
+		return err
+	}
+
+	// === PAN-SEAR PREPARATION for salmon ===
+	if err := createVIP(pssfPanSearPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPV(pssfPanSearPrep, pssfSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(pssfPanSearPrep, pssfFishSpatula); err != nil {
+		return err
+	}
+	if err := createVPI(pssfPanSearPrep, pssfThermometer); err != nil {
+		return err
+	}
+
+	// === PRESS PREPARATION for salmon ===
+	if err := createVIP(pssfPressPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPV(pssfPressPrep, pssfSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(pssfPressPrep, pssfFishSpatula); err != nil {
+		return err
+	}
+
+	// === FLIP PREPARATION for salmon ===
+	if err := createVIP(pssfFlipPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPV(pssfFlipPrep, pssfSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(pssfFlipPrep, pssfFishSpatula); err != nil {
+		return err
+	}
+	if err := createVPI(pssfFlipPrep, pssfFork); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for salmon ===
+	if err := createVIP(pssfTransferPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPV(pssfTransferPrep, pssfPlate); err != nil {
+		return err
+	}
+
+	// === DRAIN PREPARATION for salmon ===
+	if err := createVIP(pssfDrainPrep, pssfSalmonFillet); err != nil {
+		return err
+	}
+	if err := createVPV(pssfDrainPrep, pssfPlate); err != nil {
+		return err
+	}
+
+	// === PAN-SEARED SALMON FILLETS INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(pssfSalmonFillet, pssfOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(pssfSalt, pssfTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(pssfBlackPepper, pssfTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(pssfVegetableOil, pssfTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === ROASTED BRUSSELS SPROUTS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for roasted Brussels sprouts recipe
+	rbsTrimPrep := enums.Preparations["trim"]
+	rbsHalvePrep := enums.Preparations["halve"]
+	rbsTossPrep := enums.Preparations["toss"]
+	rbsAdjustPrep := enums.Preparations["adjust"]
+	rbsPlacePrep := enums.Preparations["place"]
+	rbsPreheatPrep := enums.Preparations["preheat"]
+	rbsRemovePrep := enums.Preparations["remove"]
+	rbsDividePrep := enums.Preparations["divide"]
+	rbsShakePrep := enums.Preparations["shake"]
+	rbsReturnPrep := enums.Preparations["return"]
+	rbsRoastPrep := enums.Preparations["roast"]
+	rbsStirPrep := enums.Preparations["stir"]
+	rbsRotatePrep := enums.Preparations["rotate"]
+	rbsSwapPrep := enums.Preparations["swap"]
+	rbsDrizzlePrep := enums.Preparations["drizzle"]
+	rbsSeasonPrep := enums.Preparations["season"]
+
+	// Get ingredients for roasted Brussels sprouts recipe
+	rbsBrusselsSprouts := enums.Ingredients["Brussels sprouts"]
+	rbsOliveOil := enums.Ingredients["olive oil"]
+	rbsSalt := enums.Ingredients["salt"]
+	rbsBlackPepper := enums.Ingredients["black pepper"]
+	rbsShallots := enums.Ingredients["shallot"]
+	rbsBalsamicVinegar := enums.Ingredients["balsamic vinegar"]
+
+	// Get vessels for roasted Brussels sprouts recipe
+	rbsBakingSheet := enums.Vessels["baking sheet"]
+	rbsOven := enums.Vessels["oven"]
+	rbsLargeBowl := enums.Vessels["large bowl"]
+
+	// Get measurement units for roasted Brussels sprouts recipe
+	rbsPoundMeasurement := enums.MeasurementUnits["pound"]
+	rbsTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	rbsTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	rbsUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// Get instruments for roasted Brussels sprouts recipe
+	rbsChefsKnife := enums.Instruments["chef's knife"]
+	rbsOvenMitt := enums.Instruments["oven mitt"]
+	rbsDishTowel := enums.Instruments["dish towel"]
+	rbsBareHands := enums.Instruments["bare hands"]
+
+	// === TRIM PREPARATION for Brussels sprouts ===
+	if err := createVIP(rbsTrimPrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVPI(rbsTrimPrep, rbsChefsKnife); err != nil {
+		return err
+	}
+
+	// === HALVE PREPARATION for Brussels sprouts ===
+	if err := createVIP(rbsHalvePrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVPI(rbsHalvePrep, rbsChefsKnife); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION for Brussels sprouts and shallots ===
+	if err := createVIP(rbsTossPrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVIP(rbsTossPrep, rbsOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(rbsTossPrep, rbsSalt); err != nil {
+		return err
+	}
+	if err := createVIP(rbsTossPrep, rbsBlackPepper); err != nil {
+		return err
+	}
+	if err := createVIP(rbsTossPrep, rbsShallots); err != nil {
+		return err
+	}
+	if err := createVPV(rbsTossPrep, rbsLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPI(rbsTossPrep, rbsBareHands); err != nil {
+		return err
+	}
+
+	// === ADJUST PREPARATION for oven racks ===
+	if err := createVPV(rbsAdjustPrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === PLACE PREPARATION for baking sheets ===
+	if err := createVPV(rbsPlacePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(rbsPlacePrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for oven ===
+	if err := createVPV(rbsPreheatPrep, rbsOven); err != nil {
+		return err
+	}
+	if err := createVPV(rbsPreheatPrep, rbsBakingSheet); err != nil {
+		return err
+	}
+
+	// === REMOVE PREPARATION for baking sheets ===
+	if err := createVPV(rbsRemovePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPI(rbsRemovePrep, rbsOvenMitt); err != nil {
+		return err
+	}
+	if err := createVPI(rbsRemovePrep, rbsDishTowel); err != nil {
+		return err
+	}
+
+	// === DIVIDE PREPARATION for Brussels sprouts ===
+	if err := createVIP(rbsDividePrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVPV(rbsDividePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+
+	// === SHAKE PREPARATION for baking sheets ===
+	if err := createVPV(rbsShakePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPI(rbsShakePrep, rbsBareHands); err != nil {
+		return err
+	}
+
+	// === RETURN PREPARATION for baking sheets ===
+	if err := createVPV(rbsReturnPrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(rbsReturnPrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === ROAST PREPARATION for Brussels sprouts ===
+	if err := createVIP(rbsRoastPrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVIP(rbsRoastPrep, rbsShallots); err != nil {
+		return err
+	}
+	if err := createVPV(rbsRoastPrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(rbsRoastPrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION for Brussels sprouts and shallots ===
+	if err := createVIP(rbsStirPrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVIP(rbsStirPrep, rbsShallots); err != nil {
+		return err
+	}
+	if err := createVPV(rbsStirPrep, rbsBakingSheet); err != nil {
+		return err
+	}
+
+	// === ROTATE PREPARATION for baking sheets ===
+	if err := createVPV(rbsRotatePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(rbsRotatePrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === SWAP PREPARATION for baking sheets ===
+	if err := createVPV(rbsSwapPrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(rbsSwapPrep, rbsOven); err != nil {
+		return err
+	}
+
+	// === DRIZZLE PREPARATION for balsamic vinegar ===
+	if err := createVIP(rbsDrizzlePrep, rbsBalsamicVinegar); err != nil {
+		return err
+	}
+	if err := createVIP(rbsDrizzlePrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVPV(rbsDrizzlePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for Brussels sprouts ===
+	if err := createVIP(rbsSeasonPrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	if err := createVIP(rbsSeasonPrep, rbsSalt); err != nil {
+		return err
+	}
+	if err := createVIP(rbsSeasonPrep, rbsBlackPepper); err != nil {
+		return err
+	}
+	if err := createVPI(rbsSeasonPrep, rbsBareHands); err != nil {
+		return err
+	}
+
+	// === ROASTED BRUSSELS SPROUTS INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(rbsBrusselsSprouts, rbsPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbsOliveOil, rbsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbsSalt, rbsTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbsBlackPepper, rbsTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbsShallots, rbsUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbsBalsamicVinegar, rbsTablespoonMeasurement); err != nil {
 		return err
 	}
 
