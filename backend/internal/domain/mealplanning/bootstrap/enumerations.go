@@ -185,6 +185,12 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "Brussels sprouts", Description: "Fresh Brussels sprouts", PluralName: "Brussels sprouts", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "brussels-sprouts", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "balsamic vinegar", Description: "Balsamic vinegar", PluralName: "balsamic vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "balsamic-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "aged sherry vinegar", Description: "Aged sherry vinegar", PluralName: "aged sherry vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "aged-sherry-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Refried beans recipe ingredients
+		{ID: identifiers.New(), Name: "pinto beans", Description: "Dried pinto beans", PluralName: "pinto beans", StorageInstructions: "Store in a cool, dry place", Slug: "pinto-beans", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "black beans", Description: "Dried black beans", PluralName: "black beans", StorageInstructions: "Store in a cool, dry place", Slug: "black-beans", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "epazote", Description: "Fresh epazote, a Mexican herb", PluralName: "epazote", StorageInstructions: "Store in the refrigerator", Slug: "epazote", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "lard", Description: "Rendered pork fat", PluralName: "lard", StorageInstructions: "Store in the refrigerator", Slug: "lard", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "bacon drippings", Description: "Rendered fat from cooking bacon", PluralName: "bacon drippings", StorageInstructions: "Store in the refrigerator", Slug: "bacon-drippings", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -236,6 +242,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Roasted Brussels sprouts recipe instruments
 		{"oven mitt", "A protective mitt for handling hot items from the oven", "oven mitts", "oven-mitt", "oven mitt"},
 		{"dish towel", "A cloth towel for handling hot items", "dish towels", "dish-towel", "dish towel"},
+		// Refried beans recipe instruments
+		{"bean masher", "A tool for mashing beans", "bean mashers", "bean-masher", "bean masher"},
+		{"potato masher", "A tool for mashing potatoes and other soft foods", "potato mashers", "potato-masher", "potato masher"},
+		{"stick blender", "An immersion blender for puréeing food", "stick blenders", "stick-blender", "stick blender"},
 		// Mashed potatoes recipe instruments
 		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
@@ -510,6 +520,19 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create shimmering ingredient state: %w", err)
 	}
 	enums.IngredientStates["shimmering"] = shimmeringState
+
+	desiredConsistencyState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "at desired consistency",
+		Description:   "Ingredient has reached the desired thickness or consistency",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeConsistency,
+		PastTense:     "at desired consistency",
+		Slug:          "at-desired-consistency",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create at desired consistency ingredient state: %w", err)
+	}
+	enums.IngredientStates["at desired consistency"] = desiredConsistencyState
 
 	// Create bridge types using first instances
 
@@ -1308,6 +1331,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"place", "Put something in a specific location", "placed", "place", false, false},
 		{"remove", "Take something away from its current location", "removed", "remove", false, false},
 		{"return", "Put something back to its previous location", "returned", "return", false, false},
+		// Refried beans recipe preparations
+		{"reserve", "Set aside for later use", "reserved", "reserve", false, false},
+		{"measure", "Determine the quantity or size of something", "measured", "measure", false, false},
+		{"discard", "Throw away or remove unwanted items", "discarded", "discard", false, false},
+		{"thin", "Add liquid to reduce thickness or consistency", "thinned", "thin", false, false},
 	}
 
 	for i := range prepInputs {
@@ -4278,6 +4306,288 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(rbsBalsamicVinegar, rbsTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === REFRIED BEANS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for refried beans recipe
+	rbCoverPrep := enums.Preparations["cover"]
+	rbAddPrep := enums.Preparations["add"]
+	rbBoilPrep := enums.Preparations["boil"]
+	rbReducePrep := enums.Preparations["reduce"]
+	rbSimmerPrep := enums.Preparations["simmer"]
+	rbSeasonPrep := enums.Preparations["season"]
+	rbDrainPrep := enums.Preparations["drain"]
+	rbReservePrep := enums.Preparations["reserve"]
+	rbMeasurePrep := enums.Preparations["measure"]
+	rbDiscardPrep := enums.Preparations["discard"]
+	rbHeatPrep := enums.Preparations["heat"]
+	rbSautPrep := enums.Preparations["sauté"]
+	rbStirPrep := enums.Preparations["stir"]
+	rbSmashPrep := enums.Preparations["smash"]
+	rbThinPrep := enums.Preparations["thin"]
+
+	// Get ingredients for refried beans recipe
+	rbPintoBeans := enums.Ingredients["pinto beans"]
+	rbBlackBeans := enums.Ingredients["black beans"]
+	rbWater := enums.Ingredients["water"]
+	rbEpazote := enums.Ingredients["epazote"]
+	rbOregano := enums.Ingredients["oregano"]
+	rbWhiteOnion := enums.Ingredients["white onion"]
+	rbGarlic := enums.Ingredients["garlic"]
+	rbSalt := enums.Ingredients["salt"]
+	rbLard := enums.Ingredients["lard"]
+	rbBaconDrippings := enums.Ingredients["bacon drippings"]
+	rbVegetableOil := enums.Ingredients["vegetable oil"]
+	rbButter := enums.Ingredients["butter"]
+
+	// Get vessels for refried beans recipe
+	rbLargePot := enums.Vessels["large pot"]
+	rbLargeSkillet := enums.Vessels["large skillet"]
+	rbBowl := enums.Vessels["large bowl"]
+
+	// Get measurement units for refried beans recipe
+	rbPoundMeasurement := enums.MeasurementUnits["pound"]
+	rbCupMeasurement := enums.MeasurementUnits["cup"]
+	rbTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	rbSprigMeasurement := enums.MeasurementUnits["sprig"]
+	rbCloveMeasurement := enums.MeasurementUnits["clove"]
+	rbTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	rbUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// Get instruments for refried beans recipe
+	rbBeanMasher := enums.Instruments["bean masher"]
+	rbPotatoMasher := enums.Instruments["potato masher"]
+	rbStickBlender := enums.Instruments["stick blender"]
+	rbWoodenSpoon := enums.Instruments["wooden spoon"]
+
+	// === COVER PREPARATION for beans ===
+	if err := createVIP(rbCoverPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbCoverPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbCoverPrep, rbWater); err != nil {
+		return err
+	}
+	if err := createVPV(rbCoverPrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for aromatics ===
+	if err := createVIP(rbAddPrep, rbEpazote); err != nil {
+		return err
+	}
+	if err := createVIP(rbAddPrep, rbOregano); err != nil {
+		return err
+	}
+	if err := createVIP(rbAddPrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVIP(rbAddPrep, rbGarlic); err != nil {
+		return err
+	}
+	if err := createVPV(rbAddPrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === BOIL PREPARATION for beans ===
+	if err := createVIP(rbBoilPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbBoilPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVPV(rbBoilPrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === REDUCE PREPARATION for heat ===
+	if err := createVPV(rbReducePrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === SIMMER PREPARATION for beans ===
+	if err := createVIP(rbSimmerPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbSimmerPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVPV(rbSimmerPrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for beans ===
+	if err := createVIP(rbSeasonPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbSeasonPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbSeasonPrep, rbSalt); err != nil {
+		return err
+	}
+
+	// === DRAIN PREPARATION for beans ===
+	if err := createVIP(rbDrainPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbDrainPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVPV(rbDrainPrep, rbLargePot); err != nil {
+		return err
+	}
+
+	// === RESERVE PREPARATION for liquid ===
+	if err := createVIP(rbReservePrep, rbWater); err != nil {
+		return err
+	}
+	if err := createVPV(rbReservePrep, rbBowl); err != nil {
+		return err
+	}
+
+	// === MEASURE PREPARATION for beans ===
+	if err := createVIP(rbMeasurePrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbMeasurePrep, rbBlackBeans); err != nil {
+		return err
+	}
+
+	// === DISCARD PREPARATION for aromatics ===
+	if err := createVIP(rbDiscardPrep, rbEpazote); err != nil {
+		return err
+	}
+	if err := createVIP(rbDiscardPrep, rbOregano); err != nil {
+		return err
+	}
+	if err := createVIP(rbDiscardPrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVIP(rbDiscardPrep, rbGarlic); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for fat ===
+	if err := createVIP(rbHeatPrep, rbLard); err != nil {
+		return err
+	}
+	if err := createVIP(rbHeatPrep, rbBaconDrippings); err != nil {
+		return err
+	}
+	if err := createVIP(rbHeatPrep, rbVegetableOil); err != nil {
+		return err
+	}
+	if err := createVIP(rbHeatPrep, rbButter); err != nil {
+		return err
+	}
+	if err := createVPV(rbHeatPrep, rbLargeSkillet); err != nil {
+		return err
+	}
+
+	// === SAUTÉ PREPARATION for onion ===
+	if err := createVIP(rbSautPrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVPV(rbSautPrep, rbLargeSkillet); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION for beans ===
+	if err := createVIP(rbStirPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbStirPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbStirPrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVIP(rbStirPrep, rbWater); err != nil {
+		return err
+	}
+	if err := createVPV(rbStirPrep, rbLargeSkillet); err != nil {
+		return err
+	}
+
+	// === SMASH PREPARATION for beans ===
+	if err := createVIP(rbSmashPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbSmashPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVPV(rbSmashPrep, rbLargeSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(rbSmashPrep, rbBeanMasher); err != nil {
+		return err
+	}
+	if err := createVPI(rbSmashPrep, rbPotatoMasher); err != nil {
+		return err
+	}
+	if err := createVPI(rbSmashPrep, rbStickBlender); err != nil {
+		return err
+	}
+	if err := createVPI(rbSmashPrep, rbWoodenSpoon); err != nil {
+		return err
+	}
+
+	// === THIN PREPARATION for beans ===
+	if err := createVIP(rbThinPrep, rbPintoBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbThinPrep, rbBlackBeans); err != nil {
+		return err
+	}
+	if err := createVIP(rbThinPrep, rbWater); err != nil {
+		return err
+	}
+	if err := createVPV(rbThinPrep, rbLargeSkillet); err != nil {
+		return err
+	}
+
+	// === REFRIED BEANS INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(rbPintoBeans, rbPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbPintoBeans, rbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbBlackBeans, rbPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbBlackBeans, rbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbEpazote, rbSprigMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbOregano, rbSprigMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbWhiteOnion, rbUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbGarlic, rbCloveMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbSalt, rbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbLard, rbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbBaconDrippings, rbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbVegetableOil, rbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(rbButter, rbTablespoonMeasurement); err != nil {
 		return err
 	}
 
