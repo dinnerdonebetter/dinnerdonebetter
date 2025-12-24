@@ -100,22 +100,23 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 	transferSkirtSteakVIP := enums.IngredientPreparations[transferPrep.ID][skirtSteak.ID]
 	transferCuttingBoardVPV := enums.PreparationVessels[transferPrep.ID][cuttingBoard.ID]
 
-	// Add
-	addChipotlePeppersVIP := enums.IngredientPreparations[addPrep.ID][chipotlePeppers.ID]
-	addOrangeJuiceVIP := enums.IngredientPreparations[addPrep.ID][orangeJuice.ID]
-	addLimeJuiceVIP := enums.IngredientPreparations[addPrep.ID][limeJuice.ID]
-	addOliveOilVIP := enums.IngredientPreparations[addPrep.ID][oliveOil.ID]
-	addSoySauceVIP := enums.IngredientPreparations[addPrep.ID][soySauce.ID]
-	addFishSauceVIP := enums.IngredientPreparations[addPrep.ID][fishSauce.ID]
-	addDarkBrownSugarVIP := enums.IngredientPreparations[addPrep.ID][darkBrownSugar.ID]
-	addCilantroVIP := enums.IngredientPreparations[addPrep.ID][cilantro.ID]
-	addGarlicVIP := enums.IngredientPreparations[addPrep.ID][garlic.ID]
-	addCuminSeedsVIP := enums.IngredientPreparations[addPrep.ID][cuminSeeds.ID]
-	addCorianderSeedsVIP := enums.IngredientPreparations[addPrep.ID][corianderSeeds.ID]
+	// Add (only salt is used elsewhere)
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 
 	// Blend
 	blendAnchoChilesVIP := enums.IngredientPreparations[blendPrep.ID][anchoChiles.ID]
+	blendGuajilloChilesVIP := enums.IngredientPreparations[blendPrep.ID][guajilloChiles.ID]
+	blendChipotlePeppersVIP := enums.IngredientPreparations[blendPrep.ID][chipotlePeppers.ID]
+	blendOrangeJuiceVIP := enums.IngredientPreparations[blendPrep.ID][orangeJuice.ID]
+	blendLimeJuiceVIP := enums.IngredientPreparations[blendPrep.ID][limeJuice.ID]
+	blendOliveOilVIP := enums.IngredientPreparations[blendPrep.ID][oliveOil.ID]
+	blendSoySauceVIP := enums.IngredientPreparations[blendPrep.ID][soySauce.ID]
+	blendFishSauceVIP := enums.IngredientPreparations[blendPrep.ID][fishSauce.ID]
+	blendDarkBrownSugarVIP := enums.IngredientPreparations[blendPrep.ID][darkBrownSugar.ID]
+	blendCilantroVIP := enums.IngredientPreparations[blendPrep.ID][cilantro.ID]
+	blendGarlicVIP := enums.IngredientPreparations[blendPrep.ID][garlic.ID]
+	blendCuminSeedsVIP := enums.IngredientPreparations[blendPrep.ID][cuminSeeds.ID]
+	blendCorianderSeedsVIP := enums.IngredientPreparations[blendPrep.ID][corianderSeeds.ID]
 	blendBlenderJarVPV := enums.PreparationVessels[blendPrep.ID][blenderJar.ID]
 	blendBlenderVPI := enums.PreparationInstruments[blendPrep.ID][blender.ID]
 
@@ -455,7 +456,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &blendAnchoChilesVIP.ID,
+				ValidIngredientPreparationID:    &blendGuajilloChilesVIP.ID,
 				IngredientID:                    &guajilloChiles.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "toasted and pliable guajillo chiles",
@@ -466,7 +467,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addChipotlePeppersVIP.ID,
+				ValidIngredientPreparationID:     &blendChipotlePeppersVIP.ID,
 				ValidIngredientMeasurementUnitID: &chipotlePeppersUnitVIMU.ID,
 				IngredientID:                     &chipotlePeppers.ID,
 				MeasurementUnitID:                unitMeasurement.ID,
@@ -478,7 +479,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addOrangeJuiceVIP.ID,
+				ValidIngredientPreparationID:     &blendOrangeJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &orangeJuiceCupVIMU.ID,
 				IngredientID:                     &orangeJuice.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -490,7 +491,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addLimeJuiceVIP.ID,
+				ValidIngredientPreparationID:     &blendLimeJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &limeJuiceTablespoonVIMU.ID,
 				IngredientID:                     &limeJuice.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
@@ -502,7 +503,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addOliveOilVIP.ID,
+				ValidIngredientPreparationID:     &blendOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				IngredientID:                     &oliveOil.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
@@ -514,7 +515,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addSoySauceVIP.ID,
+				ValidIngredientPreparationID:     &blendSoySauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &soySauceTablespoonVIMU.ID,
 				IngredientID:                     &soySauce.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
@@ -526,7 +527,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addFishSauceVIP.ID,
+				ValidIngredientPreparationID:     &blendFishSauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fishSauceTablespoonVIMU.ID,
 				IngredientID:                     &fishSauce.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
@@ -538,7 +539,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addDarkBrownSugarVIP.ID,
+				ValidIngredientPreparationID:     &blendDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
 				IngredientID:                     &darkBrownSugar.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
@@ -550,7 +551,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addCilantroVIP.ID,
+				ValidIngredientPreparationID:     &blendCilantroVIP.ID,
 				ValidIngredientMeasurementUnitID: &cilantroUnitVIMU.ID,
 				IngredientID:                     &cilantro.ID,
 				MeasurementUnitID:                unitMeasurement.ID,
@@ -562,7 +563,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addGarlicVIP.ID,
+				ValidIngredientPreparationID:     &blendGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				IngredientID:                     &garlic.ID,
 				MeasurementUnitID:                cloveMeasurement.ID,
@@ -576,7 +577,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addCuminSeedsVIP.ID,
+				ValidIngredientPreparationID:    &blendCuminSeedsVIP.ID,
 				IngredientID:                    &cuminSeeds.ID,
 				MeasurementUnitID:               tablespoonMeasurement.ID,
 				Name:                            "toasted and ground cumin seeds",
@@ -589,7 +590,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &addCorianderSeedsVIP.ID,
+				ValidIngredientPreparationID:    &blendCorianderSeedsVIP.ID,
 				IngredientID:                    &corianderSeeds.ID,
 				MeasurementUnitID:               teaspoonMeasurement.ID,
 				Name:                            "toasted and ground coriander seeds",

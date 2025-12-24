@@ -20,7 +20,6 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	simmerPrep := enums.Preparations["simmer"]
 	seasonPrep := enums.Preparations["season"]
 	drainPrep := enums.Preparations["drain"]
-	reservePrep := enums.Preparations["reserve"]
 	measurePrep := enums.Preparations["measure"]
 	discardPrep := enums.Preparations["discard"]
 	heatPrep := enums.Preparations["heat"]
@@ -87,9 +86,9 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	// Drain
 	drainPintoBeansVIP := enums.IngredientPreparations[drainPrep.ID][pintoBeans.ID]
 	drainLargePotVPV := enums.PreparationVessels[drainPrep.ID][largePot.ID]
+	drainLargeBowlVPV := enums.PreparationVessels[drainPrep.ID][largeBowl.ID]
 
-	// Reserve
-	reserveLargeBowlVPV := enums.PreparationVessels[reservePrep.ID][largeBowl.ID]
+	// Reserve (not used in this recipe, but bridge table entry exists)
 
 	// Measure
 	measurePintoBeansVIP := enums.IngredientPreparations[measurePrep.ID][pintoBeans.ID]
@@ -532,7 +531,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step6ID,
-				ValidPreparationVesselID: &reserveLargeBowlVPV.ID,
+				ValidPreparationVesselID: &drainLargeBowlVPV.ID,
 				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{

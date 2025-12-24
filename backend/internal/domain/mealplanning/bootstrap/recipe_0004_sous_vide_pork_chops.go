@@ -109,13 +109,13 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) []*mealplanning
 	basteTongsVPI := enums.PreparationInstruments[bastePrep.ID][tongs.ID]
 	basteSpoonVPI := enums.PreparationInstruments[bastePrep.ID][spoon.ID]
 	basteSkilletVPV := enums.PreparationVessels[bastePrep.ID][castIronSkillet.ID]
+	basteServingPlateVPV := enums.PreparationVessels[bastePrep.ID][servingPlate.ID]
 
 	// Rest preparation bridges
 	restPorkChopVIP := enums.IngredientPreparations[restPrep.ID][porkChop.ID]
 	restTongsVPI := enums.PreparationInstruments[restPrep.ID][tongs.ID]
 	restWireRackVPV := enums.PreparationVessels[restPrep.ID][wireRack.ID]
 	restBakingSheetVPV := enums.PreparationVessels[restPrep.ID][bakingSheet.ID]
-	restServingPlateVPV := enums.PreparationVessels[restPrep.ID][servingPlate.ID]
 
 	// Step 0: Preheat water bath
 	step0ID := identifiers.New()
@@ -851,7 +851,7 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) []*mealplanning
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step9ID,
-				ValidPreparationVesselID: &restServingPlateVPV.ID,
+				ValidPreparationVesselID: &basteServingPlateVPV.ID,
 				VesselID:                 &servingPlate.ID,
 				Name:                     "serving plate",
 				Quantity: types.Uint16RangeWithOptionalMax{

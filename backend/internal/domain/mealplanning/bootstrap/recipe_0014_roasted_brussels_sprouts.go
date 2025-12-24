@@ -21,7 +21,6 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 	preheatPrep := enums.Preparations["preheat"]
 	removePrep := enums.Preparations["remove"]
 	dividePrep := enums.Preparations["divide"]
-	shakePrep := enums.Preparations["shake"]
 	returnPrep := enums.Preparations["return"]
 	roastPrep := enums.Preparations["roast"]
 	stirPrep := enums.Preparations["stir"]
@@ -86,16 +85,16 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 
 	// Remove
 	removeBakingSheetVPV := enums.PreparationVessels[removePrep.ID][bakingSheet.ID]
-	removeOvenMittVPI := enums.PreparationInstruments[removePrep.ID][ovenMitt.ID]
-	removeDishTowelVPI := enums.PreparationInstruments[removePrep.ID][dishTowel.ID]
 
 	// Divide
 	divideBrusselsSproutsVIP := enums.IngredientPreparations[dividePrep.ID][brusselsSprouts.ID]
 	divideShallotsVIP := enums.IngredientPreparations[dividePrep.ID][shallots.ID]
 	divideBakingSheetVPV := enums.PreparationVessels[dividePrep.ID][bakingSheet.ID]
+	divideOvenMittVPI := enums.PreparationInstruments[dividePrep.ID][ovenMitt.ID]
+	divideDishTowelVPI := enums.PreparationInstruments[dividePrep.ID][dishTowel.ID]
+	divideBareHandsVPI := enums.PreparationInstruments[dividePrep.ID][bareHands.ID]
 
-	// Shake
-	shakeBareHandsVPI := enums.PreparationInstruments[shakePrep.ID][bareHands.ID]
+	// Shake (not used in this recipe, but bridge table entry exists)
 
 	// Return
 	returnOvenVPV := enums.PreparationVessels[returnPrep.ID][oven.ID]
@@ -120,6 +119,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 	drizzleBalsamicVinegarVIP := enums.IngredientPreparations[drizzlePrep.ID][balsamicVinegar.ID]
 	drizzleBrusselsSproutsVIP := enums.IngredientPreparations[drizzlePrep.ID][brusselsSprouts.ID]
 	drizzleBakingSheetVPV := enums.PreparationVessels[drizzlePrep.ID][bakingSheet.ID]
+	drizzleBareHandsVPI := enums.PreparationInstruments[drizzlePrep.ID][bareHands.ID]
 
 	// Season
 	seasonBrusselsSproutsVIP := enums.IngredientPreparations[seasonPrep.ID][brusselsSprouts.ID]
@@ -491,7 +491,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step6ID,
-				ValidPreparationInstrumentID: &removeOvenMittVPI.ID,
+				ValidPreparationInstrumentID: &divideOvenMittVPI.ID,
 				InstrumentID:                 &ovenMitt.ID,
 				Name:                         "oven mitt",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -501,7 +501,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step6ID,
-				ValidPreparationInstrumentID: &removeDishTowelVPI.ID,
+				ValidPreparationInstrumentID: &divideDishTowelVPI.ID,
 				InstrumentID:                 &dishTowel.ID,
 				Name:                         "dish towel",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -511,7 +511,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step6ID,
-				ValidPreparationInstrumentID: &shakeBareHandsVPI.ID,
+				ValidPreparationInstrumentID: &divideBareHandsVPI.ID,
 				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -968,7 +968,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step11ID,
-				ValidPreparationInstrumentID: &shakeBareHandsVPI.ID,
+				ValidPreparationInstrumentID: &drizzleBareHandsVPI.ID,
 				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{

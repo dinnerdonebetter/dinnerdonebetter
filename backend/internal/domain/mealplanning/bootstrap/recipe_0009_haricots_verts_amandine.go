@@ -109,6 +109,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	stirLemonVIP := enums.IngredientPreparations[stirPrep.ID][lemon.ID]
 	stirWaterVIP := enums.IngredientPreparations[stirPrep.ID][water.ID]
 	stirSkilletVPV := enums.PreparationVessels[stirPrep.ID][mediumSkillet.ID]
+	stirLargeBowlVPV := enums.PreparationVessels[stirPrep.ID][largeBowl.ID]
 
 	// Emulsify
 	emulsifySkilletVPV := enums.PreparationVessels[emulsifyPrep.ID][mediumSkillet.ID]
@@ -227,7 +228,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step1ID,
-				ValidPreparationVesselID: &shockLargeBowlVPV.ID,
+				ValidPreparationVesselID: &stirLargeBowlVPV.ID,
 				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{

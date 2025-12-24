@@ -54,6 +54,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 
 	// Get bridge table entries
 	// Heat preparation bridges (for preheating water bath)
+	heatSousVideCookerVPI := enums.PreparationInstruments[heatPrep.ID][sousVideCooker.ID]
 	heatWaterBathVPV := enums.PreparationVessels[heatPrep.ID][waterBath.ID]
 
 	// Season preparation bridges
@@ -118,7 +119,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step0ID,
-				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
+				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
 				InstrumentID:                 &sousVideCooker.ID,
 				Name:                         "sous vide cooker",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -609,7 +610,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				BelongsToRecipeStep:             step6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &chickenBreast.ID,
+				IngredientID:                    nil, // Will be resolved via RecipeStepProductID
 				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "pan-seared sous vide chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -622,7 +623,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				BelongsToRecipeStep:             step6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &chickenBreast.ID,
+				IngredientID:                    nil, // Will be resolved via RecipeStepProductID
 				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "grilled sous vide chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{

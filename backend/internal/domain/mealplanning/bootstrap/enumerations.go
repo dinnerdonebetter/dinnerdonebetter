@@ -2073,6 +2073,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	waterBath := enums.Vessels["water bath"]
 
 	// === HEAT PREPARATION (for water bath) ===
+	// Preparation-Instrument links
+	if err := createVPI(heatPrep, sousVideCooker); err != nil {
+		return err
+	}
 	// Preparation-Vessel links
 	if err := createVPV(heatPrep, waterBath); err != nil {
 		return err
@@ -2456,6 +2460,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 	// Baste in cast iron skillet
 	if err := createVPV(porkBastePrep, porkCastIronSkillet); err != nil {
+		return err
+	}
+	// Baste on serving plate
+	if err := createVPV(porkBastePrep, porkServingPlate); err != nil {
 		return err
 	}
 	// Grill on grill
@@ -3180,6 +3188,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIP(caesarSeasonPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
+	if err := createVPV(caesarSeasonPrep, caesarSmallNonstickSkillet); err != nil {
+		return err
+	}
 
 	// === TRANSFER PREPARATION for breadcrumbs ===
 	if err := createVIP(caesarTransferPrep, caesarBreadcrumbs); err != nil {
@@ -3446,6 +3457,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVPV(hvaStirPrep, hvaMediumSkillet); err != nil {
+		return err
+	}
+	if err := createVPV(hvaStirPrep, hvaLargeBowl); err != nil {
 		return err
 	}
 
@@ -4570,6 +4584,15 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVPV(rbsDividePrep, rbsBakingSheet); err != nil {
 		return err
 	}
+	if err := createVPI(rbsDividePrep, rbsOvenMitt); err != nil {
+		return err
+	}
+	if err := createVPI(rbsDividePrep, rbsDishTowel); err != nil {
+		return err
+	}
+	if err := createVPI(rbsDividePrep, rbsBareHands); err != nil {
+		return err
+	}
 
 	// === SHAKE PREPARATION for baking sheets ===
 	if err := createVPV(rbsShakePrep, rbsBakingSheet); err != nil {
@@ -4636,6 +4659,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVPV(rbsDrizzlePrep, rbsBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPI(rbsDrizzlePrep, rbsBareHands); err != nil {
 		return err
 	}
 
@@ -4901,6 +4927,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVPV(rbDrainPrep, rbLargePot); err != nil {
+		return err
+	}
+	if err := createVPV(rbDrainPrep, rbBowl); err != nil {
 		return err
 	}
 

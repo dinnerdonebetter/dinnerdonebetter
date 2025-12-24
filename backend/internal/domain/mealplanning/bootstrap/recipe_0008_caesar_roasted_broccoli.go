@@ -62,6 +62,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 
 	seasonBreadcrumbsVIP := enums.IngredientPreparations[seasonPrep.ID][breadcrumbs.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
+	seasonSkilletVPV := enums.PreparationVessels[seasonPrep.ID][smallNonstickSkillet.ID]
 
 	transferBreadcrumbsVIP := enums.IngredientPreparations[transferPrep.ID][breadcrumbs.ID]
 	transferSmallBowlVPV := enums.PreparationVessels[transferPrep.ID][smallBowl.ID]
@@ -514,7 +515,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      bcStep6ID,
-				ValidPreparationVesselID: &stirSkilletVPV.ID,
+				ValidPreparationVesselID: &seasonSkilletVPV.ID,
 				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
