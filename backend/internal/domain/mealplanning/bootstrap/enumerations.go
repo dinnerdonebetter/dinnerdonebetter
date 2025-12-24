@@ -157,6 +157,26 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "slivered almonds", Description: "Blanched almonds sliced into thin slivers", PluralName: "slivered almonds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "slivered-almonds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: true, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "breadcrumbs", Description: "Plain dry breadcrumbs", PluralName: "breadcrumbs", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "breadcrumbs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "salted butter", Description: "Salted butter", PluralName: "salted butter", StorageInstructions: "Keep refrigerated, can be kept at room temperature for short periods", Slug: "salted-butter", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		// Mixed green salad recipe ingredients
+		{ID: identifiers.New(), Name: "radicchio", Description: "Fresh radicchio, a bitter leafy vegetable", PluralName: "radicchio", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "radicchio", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "endive", Description: "Fresh Belgian endive, a crisp bitter green", PluralName: "endive", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "endive", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "frisée", Description: "Fresh frisée lettuce, a curly endive", PluralName: "frisée", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "frisee", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "kale", Description: "Fresh kale leaves", PluralName: "kale", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "kale", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dandelion greens", Description: "Fresh dandelion greens", PluralName: "dandelion greens", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "dandelion-greens", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "purslane", Description: "Fresh purslane, a succulent leafy green", PluralName: "purslane", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "purslane", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fennel fronds", Description: "Fresh fennel fronds, the feathery green leaves from fennel", PluralName: "fennel fronds", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "fennel-fronds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "tarragon", Description: "Fresh tarragon leaves", PluralName: "tarragon", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "tarragon", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "chervil", Description: "Fresh chervil leaves", PluralName: "chervil", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "chervil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Soy sauce braised chicken thighs recipe ingredients
+		{ID: identifiers.New(), Name: "MSG", Description: "Monosodium glutamate, an umami-rich seasoning", PluralName: "MSG", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "msg", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "five spice powder", Description: "Chinese five spice powder blend", PluralName: "five spice powder", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "five-spice-powder", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dark brown sugar", Description: "Dark brown sugar with molasses", PluralName: "dark brown sugar", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "dark-brown-sugar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "white pepper", Description: "Ground white pepper", PluralName: "white pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "white-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "scallions", Description: "Fresh scallions, green and white parts", PluralName: "scallions", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "scallions", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "star anise", Description: "Whole star anise pods", PluralName: "star anise", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "star-anise", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "cassia bark", Description: "Cassia bark or cinnamon stick", PluralName: "cassia bark", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cassia-bark", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "light soy sauce", Description: "Light soy sauce", PluralName: "light soy sauce", StorageInstructions: "Store in a cool, dark place", Slug: "light-soy-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: true, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "Shaoxing wine", Description: "Shaoxing cooking wine", PluralName: "Shaoxing wine", StorageInstructions: "Store in a cool, dark place", Slug: "shaoxing-wine", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -198,6 +218,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Rice recipe instruments
 		{"fork", "A standard eating fork for fluffing rice and other tasks", "forks", "fork", "fork"},
 		{"wooden spoon", "A wooden spoon for stirring", "wooden spoons", "wooden-spoon", "wooden spoon"},
+		// Soy sauce braised chicken thighs recipe instruments
+		{"whisk", "A wire whisk for beating or stirring ingredients", "whisks", "whisk", "whisk"},
 		// Mashed potatoes recipe instruments
 		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
@@ -317,6 +339,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"slice", "A thin, flat piece cut from something", "slices", "slice", false, false},
 		{"pinch", "A small amount picked up between thumb and forefinger", "pinches", "pinch", false, false},
 		{"pound", "Imperial unit of weight equal to approximately 454 grams", "pounds", "pound", false, false},
+		{"clove", "A single segment of garlic or similar ingredient", "cloves", "clove", false, false},
 	}
 	for _, unit := range measurementUnits {
 		validUnit, err2 := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
@@ -458,6 +481,19 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create clear ingredient state: %w", err)
 	}
 	enums.IngredientStates["clear"] = clearState
+
+	shimmeringState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "shimmering",
+		Description:   "Oil that is hot enough to shimmer when viewed",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeAppearance,
+		PastTense:     "shimmering",
+		Slug:          "shimmering",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create shimmering ingredient state: %w", err)
+	}
+	enums.IngredientStates["shimmering"] = shimmeringState
 
 	// Create bridge types using first instances
 
@@ -1077,6 +1113,68 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["refrigerator"] = refrigerator
 
+	// Mixed green salad recipe vessels
+	saladSpinner, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "salad spinner",
+		Description:                    "A tool for drying washed greens by spinning to remove water",
+		PluralName:                     "salad spinners",
+		Slug:                           "salad-spinner",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             250,
+		LengthInMillimeters:            250,
+		HeightInMillimeters:            200,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create salad spinner vessel: %w", err)
+	}
+	enums.Vessels["salad spinner"] = saladSpinner
+
+	servingBowl, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "serving bowl",
+		Description:                    "A large bowl for serving salads and other dishes",
+		PluralName:                     "serving bowls",
+		Slug:                           "serving-bowl",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             300,
+		LengthInMillimeters:            300,
+		HeightInMillimeters:            120,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create serving bowl vessel: %w", err)
+	}
+	enums.Vessels["serving bowl"] = servingBowl
+
+	// Soy sauce braised chicken thighs recipe vessels
+	largePlate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "large plate",
+		Description:                    "A large plate for holding food temporarily",
+		PluralName:                     "large plates",
+		Slug:                           "large-plate",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             300,
+		LengthInMillimeters:            300,
+		HeightInMillimeters:            20,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create large plate vessel: %w", err)
+	}
+	enums.Vessels["large plate"] = largePlate
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1152,6 +1250,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"blanch", "Cook briefly in boiling water then shock in ice water", "blanched", "blanch", false, true},
 		{"emulsify", "Combine fat and water-based liquids into a smooth, glossy sauce by rapid stirring or shaking", "emulsified", "emulsify", false, false},
 		{"shock", "Immediately transfer hot food to ice water to stop cooking", "shocked", "shock", false, false},
+		// Soy sauce braised chicken thighs recipe preparations
+		{"combine", "Mix or blend ingredients together", "combined", "combine", false, false},
+		{"whisk", "Beat or stir ingredients together rapidly with a whisk", "whisked", "whisk", false, false},
+		{"braise", "Cook slowly in a covered pot with liquid", "braised", "braise", true, true},
 	}
 
 	for i := range prepInputs {
@@ -3015,6 +3117,577 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(hvaWater, hvaTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === MIXED GREEN SALAD RECIPE BRIDGE ENTRIES ===
+	// Get preparations for mixed green salad recipe
+	mgsTrimPrep := enums.Preparations["trim"]
+	mgsSlicePrep := enums.Preparations["slice"]
+	mgsRinsePrep := enums.Preparations["rinse"]
+	mgsDryPrep := enums.Preparations["dry"]
+	mgsMixPrep := enums.Preparations["mix"]
+	mgsTossPrep := enums.Preparations["toss"]
+	mgsSeasonPrep := enums.Preparations["season"]
+
+	// Get ingredients for mixed green salad recipe
+	mgsLettuce := enums.Ingredients["lettuce"]
+	mgsRadicchio := enums.Ingredients["radicchio"]
+	mgsEndive := enums.Ingredients["endive"]
+	mgsFrisee := enums.Ingredients["frisée"]
+	mgsKale := enums.Ingredients["kale"]
+	mgsDandelionGreens := enums.Ingredients["dandelion greens"]
+	mgsPurslane := enums.Ingredients["purslane"]
+	mgsFennelFronds := enums.Ingredients["fennel fronds"]
+	mgsParsley := enums.Ingredients["parsley"]
+	mgsTarragon := enums.Ingredients["tarragon"]
+	mgsChervil := enums.Ingredients["chervil"]
+	mgsBasil := enums.Ingredients["basil"]
+	mgsMint := enums.Ingredients["mint"]
+	mgsOliveOil := enums.Ingredients["olive oil"]
+	mgsLemon := enums.Ingredients["lemon"]
+	mgsSalt := enums.Ingredients["salt"]
+
+	// Get vessels for mixed green salad recipe
+	mgsCuttingBoard := enums.Vessels["cutting board"]
+	mgsLargeBowl := enums.Vessels["large bowl"]
+	mgsSaladSpinner := enums.Vessels["salad spinner"]
+	mgsServingBowl := enums.Vessels["serving bowl"]
+
+	// Get measurement units for mixed green salad recipe
+	mgsCupMeasurement := enums.MeasurementUnits["cup"]
+	mgsTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	mgsTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+
+	// Get instruments for mixed green salad recipe
+	mgsKnife := enums.Instruments["knife"]
+	mgsBareHands := enums.Instruments["bare hands"]
+
+	// === TRIM PREPARATION for inspecting greens ===
+	if err := createVIP(mgsTrimPrep, mgsLettuce); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsRadicchio); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsEndive); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsFrisee); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsKale); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsDandelionGreens); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsPurslane); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsFennelFronds); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsParsley); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsTarragon); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsChervil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsBasil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsTrimPrep, mgsMint); err != nil {
+		return err
+	}
+	if err := createVPV(mgsTrimPrep, mgsCuttingBoard); err != nil {
+		return err
+	}
+	if err := createVPI(mgsTrimPrep, mgsBareHands); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION for cutting greens ===
+	if err := createVIP(mgsSlicePrep, mgsLettuce); err != nil {
+		return err
+	}
+	if err := createVIP(mgsSlicePrep, mgsRadicchio); err != nil {
+		return err
+	}
+	if err := createVIP(mgsSlicePrep, mgsEndive); err != nil {
+		return err
+	}
+	if err := createVPV(mgsSlicePrep, mgsCuttingBoard); err != nil {
+		return err
+	}
+	if err := createVPI(mgsSlicePrep, mgsKnife); err != nil {
+		return err
+	}
+
+	// === RINSE PREPARATION for washing greens ===
+	if err := createVIP(mgsRinsePrep, mgsLettuce); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsRadicchio); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsEndive); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsFrisee); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsKale); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsDandelionGreens); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsPurslane); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsFennelFronds); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsParsley); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsTarragon); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsChervil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsBasil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsRinsePrep, mgsMint); err != nil {
+		return err
+	}
+	if err := createVPV(mgsRinsePrep, mgsLargeBowl); err != nil {
+		return err
+	}
+
+	// === DRY PREPARATION for spinning greens ===
+	if err := createVIP(mgsDryPrep, mgsLettuce); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsRadicchio); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsEndive); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsFrisee); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsKale); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsDandelionGreens); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsPurslane); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsFennelFronds); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsParsley); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsTarragon); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsChervil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsBasil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsDryPrep, mgsMint); err != nil {
+		return err
+	}
+	if err := createVPV(mgsDryPrep, mgsSaladSpinner); err != nil {
+		return err
+	}
+
+	// === MIX PREPARATION for combining greens ===
+	if err := createVIP(mgsMixPrep, mgsLettuce); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsRadicchio); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsEndive); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsFrisee); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsKale); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsDandelionGreens); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsPurslane); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsFennelFronds); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsParsley); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsTarragon); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsChervil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsBasil); err != nil {
+		return err
+	}
+	if err := createVIP(mgsMixPrep, mgsMint); err != nil {
+		return err
+	}
+	if err := createVPV(mgsMixPrep, mgsLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPI(mgsMixPrep, mgsBareHands); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION for dressing salad ===
+	if err := createVIP(mgsTossPrep, mgsOliveOil); err != nil {
+		return err
+	}
+	if err := createVPV(mgsTossPrep, mgsServingBowl); err != nil {
+		return err
+	}
+	if err := createVPI(mgsTossPrep, mgsBareHands); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for lemon and salt ===
+	if err := createVIP(mgsSeasonPrep, mgsLemon); err != nil {
+		return err
+	}
+	if err := createVIP(mgsSeasonPrep, mgsSalt); err != nil {
+		return err
+	}
+	if err := createVPV(mgsSeasonPrep, mgsServingBowl); err != nil {
+		return err
+	}
+
+	// === MIXED GREEN SALAD INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(mgsLettuce, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsRadicchio, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsEndive, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsFrisee, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsKale, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsDandelionGreens, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsPurslane, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsFennelFronds, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsParsley, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsTarragon, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsChervil, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsBasil, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsMint, mgsCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsOliveOil, mgsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsLemon, mgsTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mgsSalt, mgsTeaspoonMeasurement); err != nil {
+		return err
+	}
+
+	// === SOY SAUCE BRAISED CHICKEN THIGHS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for soy sauce braised chicken thighs recipe
+	ssbCombinePrep := enums.Preparations["combine"]
+	ssbDryPrep := enums.Preparations["dry"]
+	ssbSeasonPrep := enums.Preparations["season"]
+	ssbTransferPrep := enums.Preparations["transfer"]
+	ssbPreheatPrep := enums.Preparations["preheat"]
+	ssbHeatPrep := enums.Preparations["heat"]
+	ssbPanSearPrep := enums.Preparations["pan-sear"]
+	ssbFlipPrep := enums.Preparations["flip"]
+	ssbSautéPrep := enums.Preparations["sauté"]
+	ssbSimmerPrep := enums.Preparations["simmer"]
+	ssbBraisePrep := enums.Preparations["braise"]
+
+	// Get ingredients for soy sauce braised chicken thighs recipe
+	ssbSalt := enums.Ingredients["salt"]
+	ssbMSG := enums.Ingredients["MSG"]
+	ssbFiveSpice := enums.Ingredients["five spice powder"]
+	ssbDarkBrownSugar := enums.Ingredients["dark brown sugar"]
+	ssbWhitePepper := enums.Ingredients["white pepper"]
+	ssbChickenThighs := enums.Ingredients["chicken thigh"]
+	ssbVegetableOil := enums.Ingredients["vegetable oil"]
+	ssbScallions := enums.Ingredients["scallions"]
+	ssbGinger := enums.Ingredients["ginger"]
+	ssbGarlic := enums.Ingredients["garlic"]
+	ssbStarAnise := enums.Ingredients["star anise"]
+	ssbCassiaBark := enums.Ingredients["cassia bark"]
+	ssbLightSoySauce := enums.Ingredients["light soy sauce"]
+	ssbShaoxingWine := enums.Ingredients["Shaoxing wine"]
+	ssbWater := enums.Ingredients["water"]
+
+	// Get vessels for soy sauce braised chicken thighs recipe
+	ssbSmallBowl := enums.Vessels["small bowl"]
+	ssbWireRack := enums.Vessels["wire rack"]
+	ssbBakingSheet := enums.Vessels["baking sheet"]
+	ssbCastIronSkillet := enums.Vessels["cast iron skillet"]
+	ssbLargePlate := enums.Vessels["large plate"]
+	ssbOven := enums.Vessels["oven"]
+
+	// Get measurement units for soy sauce braised chicken thighs recipe
+	ssbTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	ssbTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	ssbPoundMeasurement := enums.MeasurementUnits["pound"]
+	ssbCupMeasurement := enums.MeasurementUnits["cup"]
+	ssbUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// Get instruments for soy sauce braised chicken thighs recipe
+	ssbPaperTowels := enums.Instruments["paper towels"]
+	ssbWhisk := enums.Instruments["whisk"]
+	ssbBareHands := enums.Instruments["bare hands"]
+	ssbTongs := enums.Instruments["tongs"]
+	ssbWoodenSpoon := enums.Instruments["wooden spoon"]
+	ssbThermometer := enums.Instruments["instant-read thermometer"]
+
+	// === COMBINE PREPARATION for dry brine mixture ===
+	if err := createVIP(ssbCombinePrep, ssbSalt); err != nil {
+		return err
+	}
+	if err := createVIP(ssbCombinePrep, ssbMSG); err != nil {
+		return err
+	}
+	if err := createVIP(ssbCombinePrep, ssbFiveSpice); err != nil {
+		return err
+	}
+	if err := createVIP(ssbCombinePrep, ssbDarkBrownSugar); err != nil {
+		return err
+	}
+	if err := createVIP(ssbCombinePrep, ssbWhitePepper); err != nil {
+		return err
+	}
+	if err := createVPV(ssbCombinePrep, ssbSmallBowl); err != nil {
+		return err
+	}
+	if err := createVPI(ssbCombinePrep, ssbWhisk); err != nil {
+		return err
+	}
+
+	// === DRY PREPARATION for chicken ===
+	if err := createVIP(ssbDryPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPI(ssbDryPrep, ssbPaperTowels); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for chicken ===
+	if err := createVIP(ssbSeasonPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPI(ssbSeasonPrep, ssbBareHands); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for chicken to wire rack ===
+	if err := createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(ssbTransferPrep, ssbWireRack); err != nil {
+		return err
+	}
+	if err := createVPV(ssbTransferPrep, ssbBakingSheet); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for oven ===
+	if err := createVPV(ssbPreheatPrep, ssbOven); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for oil ===
+	if err := createVIP(ssbHeatPrep, ssbVegetableOil); err != nil {
+		return err
+	}
+	if err := createVPV(ssbHeatPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+
+	// === PAN-SEAR PREPARATION for chicken ===
+	if err := createVIP(ssbPanSearPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(ssbPanSearPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(ssbPanSearPrep, ssbTongs); err != nil {
+		return err
+	}
+
+	// === FLIP PREPARATION for chicken ===
+	if err := createVIP(ssbFlipPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(ssbFlipPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(ssbFlipPrep, ssbTongs); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for chicken to plate ===
+	if err := createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(ssbTransferPrep, ssbLargePlate); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for chicken back to skillet ===
+	if err := createVPV(ssbTransferPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+
+	// === SAUTÉ PREPARATION for aromatics ===
+	if err := createVIP(ssbSautéPrep, ssbScallions); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSautéPrep, ssbGinger); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSautéPrep, ssbGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSautéPrep, ssbFiveSpice); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSautéPrep, ssbDarkBrownSugar); err != nil {
+		return err
+	}
+	if err := createVPV(ssbSautéPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+	if err := createVPI(ssbSautéPrep, ssbWoodenSpoon); err != nil {
+		return err
+	}
+
+	// === SIMMER PREPARATION for braising liquid ===
+	if err := createVIP(ssbSimmerPrep, ssbStarAnise); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSimmerPrep, ssbCassiaBark); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSimmerPrep, ssbLightSoySauce); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSimmerPrep, ssbShaoxingWine); err != nil {
+		return err
+	}
+	if err := createVIP(ssbSimmerPrep, ssbWater); err != nil {
+		return err
+	}
+	if err := createVPV(ssbSimmerPrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+
+	// === BRAISE PREPARATION for chicken ===
+	if err := createVIP(ssbBraisePrep, ssbChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(ssbBraisePrep, ssbCastIronSkillet); err != nil {
+		return err
+	}
+	if err := createVPV(ssbBraisePrep, ssbOven); err != nil {
+		return err
+	}
+	if err := createVPI(ssbBraisePrep, ssbThermometer); err != nil {
+		return err
+	}
+
+	// === SOY SAUCE BRAISED CHICKEN THIGHS INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(ssbSalt, ssbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbMSG, ssbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbFiveSpice, ssbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbDarkBrownSugar, ssbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbWhitePepper, ssbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbChickenThighs, ssbPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbVegetableOil, ssbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbScallions, ssbUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbGinger, ssbUnitMeasurement); err != nil {
+		return err
+	}
+	ssbCloveMeasurement := enums.MeasurementUnits["clove"]
+	if err := createVIMU(ssbGarlic, ssbCloveMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbStarAnise, ssbUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbCassiaBark, ssbUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbLightSoySauce, ssbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbShaoxingWine, ssbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(ssbWater, ssbCupMeasurement); err != nil {
 		return err
 	}
 
