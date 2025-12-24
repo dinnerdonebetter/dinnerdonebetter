@@ -35,7 +35,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
 	// Get instruments
-	chefsKnife := enums.Instruments["chef's knife"]
+	chefsKnife := enums.Instruments["knife"]
 	bareHands := enums.Instruments["bare hands"]
 	grillBrush := enums.Instruments["grill brush"]
 	brush := enums.Instruments["brush"]

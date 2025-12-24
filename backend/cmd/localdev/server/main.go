@@ -40,13 +40,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var adminUserID string
+
 	server, err := localdev.AllInOne(
 		ctx,
 		apiConfig,
 		// Create admin user
 		localdev.WithIdentityRepository(func(ctx context.Context, repo identity.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider, dbClient database.Client) error {
-			_, err = localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, repo, dbClient, premadeAdminUser)
-			return err
+			user, err := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, repo, dbClient, premadeAdminUser)
+			if err != nil {
+				return err
+			}
+			adminUserID = user.ID
+			return nil
 		}),
 		// Create OAuth2 client
 		localdev.WithOAuth2Repository(func(ctx context.Context, repo oauth.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
@@ -59,10 +65,29 @@ func main() {
 			})
 			return err
 		}),
-		// Create valid enumerations and bridge types
+		// Create valid enumerations and bridge types, then create all bootstrap recipes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			_, err = bootstrap.CreateEnumerations(ctx, repo, logger)
-			return err
+			logger.Info("Creating enumerations...")
+			enums, err := bootstrap.CreateEnumerations(ctx, repo, logger)
+			if err != nil {
+				return fmt.Errorf("failed to create enumerations: %w", err)
+			}
+			logger.Info("Enumerations created successfully!")
+
+			logger.Info("Creating bootstrap recipes...")
+			recipes := bootstrap.AllRecipes(adminUserID, enums)
+			logger.Info(fmt.Sprintf("Found %d recipes to create", len(recipes)))
+
+			for i, recipe := range recipes {
+				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
+				_, err := repo.CreateRecipe(ctx, recipe)
+				if err != nil {
+					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
+				}
+			}
+
+			logger.Info("All bootstrap recipes created successfully!")
+			return nil
 		}),
 		// Create example service settings
 		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {

@@ -50,6 +50,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	paperTowels := enums.Instruments["paper towels"]
 	kitchenTowels := enums.Instruments["kitchen towels"]
 	rubberSpatula := enums.Instruments["rubber spatula"]
+	knife := enums.Instruments["knife"]
 
 	// Get vessels
 	pot := enums.Vessels["pot"]
@@ -57,6 +58,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	mediumSkillet := enums.Vessels["medium skillet"]
 	servingPlatter := enums.Vessels["serving platter"]
 	colander := enums.Vessels["colander"]
+	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get ingredient states for completion conditions
 	toastedState := enums.IngredientStates["toasted"]
@@ -88,6 +90,8 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 
 	// Trim
 	trimGreenBeansVIP := enums.IngredientPreparations[trimPrep.ID][greenBeans.ID]
+	trimKnifeVPI := enums.PreparationInstruments[trimPrep.ID][knife.ID]
+	trimCuttingBoardVPV := enums.PreparationVessels[trimPrep.ID][cuttingBoard.ID]
 
 	// Heat
 	heatButterVIP := enums.IngredientPreparations[heatPrep.ID][butter.ID]
@@ -264,6 +268,30 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				MeasurementUnitID:                poundMeasurement.ID,
 				Name:                             "green beans",
 				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2ID,
+				ValidPreparationInstrumentID: &trimKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2ID,
+				ValidPreparationVesselID: &trimCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},

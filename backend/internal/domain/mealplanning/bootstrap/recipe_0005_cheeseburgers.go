@@ -71,10 +71,12 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
+	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Toast preparation bridges
 	toastBunVIP := enums.IngredientPreparations[toastPrep.ID][burgerBun.ID]
 	bunUnitVIMU := enums.IngredientMeasurementUnits[burgerBun.ID][unitMeasurement.ID]
+	toastSkilletVPV := enums.PreparationVessels[toastPrep.ID][castIronSkillet.ID]
 
 	// Smash preparation bridges
 	smashBeefVIP := enums.IngredientPreparations[smashPrep.ID][groundBeef.ID]
@@ -315,6 +317,18 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				ToTaste: true,
 			},
 		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step3ID,
+				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
+				InstrumentID:                 &bareHands.ID,
+				Name:                         "bare hands",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
@@ -349,6 +363,18 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Name:                             "burger buns",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step4ID,
+				ValidPreparationVesselID: &toastSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "cast iron skillet",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
 				},
 			},
 		},

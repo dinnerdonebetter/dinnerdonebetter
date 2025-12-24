@@ -45,7 +45,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
-	chefsKnife := enums.Instruments["chef's knife"]
+	chefsKnife := enums.Instruments["knife"]
 	bareHands := enums.Instruments["bare hands"]
 	ovenMitt := enums.Instruments["oven mitt"]
 	dishTowel := enums.Instruments["dish towel"]

@@ -82,6 +82,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "cilantro", Description: "Fresh cilantro leaves", PluralName: "cilantro", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "cilantro", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "lemon", Description: "Fresh lemons", PluralName: "lemons", StorageInstructions: "Store at room temperature or in the refrigerator", Slug: "lemon", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "lime", Description: "Fresh limes", PluralName: "limes", StorageInstructions: "Store at room temperature or in the refrigerator", Slug: "lime", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "orange", Description: "Fresh oranges", PluralName: "oranges", StorageInstructions: "Store at room temperature or in the refrigerator", Slug: "orange", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "potato", Description: "Russet potatoes", PluralName: "potatoes", StorageInstructions: "Store in a cool, dark, well-ventilated place", Slug: "potato", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "sweet potato", Description: "Orange sweet potatoes", PluralName: "sweet potatoes", StorageInstructions: "Store in a cool, dark, well-ventilated place", Slug: "sweet-potato", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "spinach", Description: "Fresh baby spinach leaves", PluralName: "spinach", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "spinach", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -191,6 +192,16 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "epazote", Description: "Fresh epazote, a Mexican herb", PluralName: "epazote", StorageInstructions: "Store in the refrigerator", Slug: "epazote", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "lard", Description: "Rendered pork fat", PluralName: "lard", StorageInstructions: "Store in the refrigerator", Slug: "lard", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "bacon drippings", Description: "Rendered fat from cooking bacon", PluralName: "bacon drippings", StorageInstructions: "Store in the refrigerator", Slug: "bacon-drippings", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		// Carne asada recipe ingredients
+		{ID: identifiers.New(), Name: "dried ancho chile", Description: "Whole dried ancho chile pepper", PluralName: "dried ancho chiles", StorageInstructions: "Store in a cool, dry place", Slug: "dried-ancho-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dried guajillo chile", Description: "Whole dried guajillo chile pepper", PluralName: "dried guajillo chiles", StorageInstructions: "Store in a cool, dry place", Slug: "dried-guajillo-chile", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "chipotle peppers in adobo", Description: "Chipotle peppers canned in adobo sauce", PluralName: "chipotle peppers in adobo", StorageInstructions: "Store in the refrigerator after opening", Slug: "chipotle-peppers-in-adobo", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "orange juice", Description: "Fresh orange juice", PluralName: "orange juice", StorageInstructions: "Store in the refrigerator", Slug: "orange-juice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "lime juice", Description: "Fresh lime juice", PluralName: "lime juice", StorageInstructions: "Store in the refrigerator", Slug: "lime-juice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "Asian fish sauce", Description: "Asian fish sauce, such as Red Boat", PluralName: "Asian fish sauce", StorageInstructions: "Store in a cool, dark place", Slug: "asian-fish-sauce", ContainsShellfish: true, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "skirt steak", Description: "Skirt steak, trimmed and cut with the grain into 5- to 6-inch lengths", PluralName: "skirt steaks", StorageInstructions: "Store in the refrigerator", Slug: "skirt-steak", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "cumin seeds", Description: "Whole cumin seeds", PluralName: "cumin seeds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cumin-seeds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "coriander seeds", Description: "Whole coriander seeds", PluralName: "coriander seeds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "coriander-seeds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -246,6 +257,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"bean masher", "A tool for mashing beans", "bean mashers", "bean-masher", "bean masher"},
 		{"potato masher", "A tool for mashing potatoes and other soft foods", "potato mashers", "potato-masher", "potato masher"},
 		{"stick blender", "An immersion blender for puréeing food", "stick blenders", "stick-blender", "stick blender"},
+		// Carne asada recipe instruments
+		{"blender", "An electric appliance for blending and puréeing ingredients", "blenders", "blender", "blender"},
+		{"chimney starter", "A metal cylinder for lighting charcoal", "chimney starters", "chimney-starter", "chimney starter"},
 		// Mashed potatoes recipe instruments
 		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
@@ -533,6 +547,45 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create at desired consistency ingredient state: %w", err)
 	}
 	enums.IngredientStates["at desired consistency"] = desiredConsistencyState
+
+	pliableState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "pliable",
+		Description:   "Ingredient is flexible and can be bent without breaking",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeTexture,
+		PastTense:     "pliable",
+		Slug:          "pliable",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pliable ingredient state: %w", err)
+	}
+	enums.IngredientStates["pliable"] = pliableState
+
+	tenderState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "tender",
+		Description:   "Ingredient is soft and easily chewed or cut",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeTexture,
+		PastTense:     "tenderized",
+		Slug:          "tender",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create tender ingredient state: %w", err)
+	}
+	enums.IngredientStates["tender"] = tenderState
+
+	translucentState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "translucent",
+		Description:   "Ingredient is semi-transparent, allowing light to pass through",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeAppearance,
+		PastTense:     "translucent",
+		Slug:          "translucent",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create translucent ingredient state: %w", err)
+	}
+	enums.IngredientStates["translucent"] = translucentState
 
 	// Create bridge types using first instances
 
@@ -1051,6 +1104,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["small nonstick skillet"] = smallNonstickSkillet
 
+	// Create small skillet for toasting seeds
+	smallSkillet, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "small skillet",
+		Description:                    "A small skillet for toasting spices and seeds",
+		PluralName:                     "small skillets",
+		Slug:                           "small-skillet",
+		DisplayInSummaryLists:          true,
+		IncludeInGeneratedInstructions: true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            40,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create small skillet vessel: %w", err)
+	}
+	enums.Vessels["small skillet"] = smallSkillet
+
 	servingPlatter, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "serving platter",
@@ -1235,6 +1309,147 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["grilling grate"] = grillingGrate
 
+	// Carne asada recipe vessels
+	microwaveSafePlate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "microwave-safe plate",
+		Description:                    "A plate safe for use in a microwave oven",
+		PluralName:                     "microwave-safe plates",
+		Slug:                           "microwave-safe-plate",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             250,
+		LengthInMillimeters:            250,
+		HeightInMillimeters:            10,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create microwave-safe plate vessel: %w", err)
+	}
+	enums.Vessels["microwave-safe plate"] = microwaveSafePlate
+
+	blenderJar, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "blender jar",
+		Description:                    "The jar or container of a blender",
+		PluralName:                     "blender jars",
+		Slug:                           "blender-jar",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            200,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create blender jar vessel: %w", err)
+	}
+	enums.Vessels["blender jar"] = blenderJar
+
+	sealedContainer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "sealed container",
+		Description:                    "An airtight container with a lid",
+		PluralName:                     "sealed containers",
+		Slug:                           "sealed-container",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            100,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sealed container vessel: %w", err)
+	}
+	enums.Vessels["sealed container"] = sealedContainer
+
+	zipperLockBag, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "zipper-lock bag",
+		Description:                    "A resealable plastic bag with a zipper closure",
+		PluralName:                     "zipper-lock bags",
+		Slug:                           "zipper-lock-bag",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            300,
+		HeightInMillimeters:            5,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create zipper-lock bag vessel: %w", err)
+	}
+	enums.Vessels["zipper-lock bag"] = zipperLockBag
+
+	charcoalGrate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "charcoal grate",
+		Description:                    "The grate that holds charcoal in a grill",
+		PluralName:                     "charcoal grates",
+		Slug:                           "charcoal-grate",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             400,
+		LengthInMillimeters:            600,
+		HeightInMillimeters:            10,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create charcoal grate vessel: %w", err)
+	}
+	enums.Vessels["charcoal grate"] = charcoalGrate
+
+	cookingGrate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "cooking grate",
+		Description:                    "The grate on which food is placed for cooking on a grill",
+		PluralName:                     "cooking grates",
+		Slug:                           "cooking-grate",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             500,
+		LengthInMillimeters:            500,
+		HeightInMillimeters:            10,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cooking grate vessel: %w", err)
+	}
+	enums.Vessels["cooking grate"] = cookingGrate
+
+	chimneyStarterVessel, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "chimney starter",
+		Description:                    "A metal cylinder vessel for holding charcoal while lighting",
+		PluralName:                     "chimney starters",
+		Slug:                           "chimney-starter-vessel",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            200,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create chimney starter vessel: %w", err)
+	}
+	enums.Vessels["chimney starter"] = chimneyStarterVessel
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1278,7 +1493,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"chill", "Place in freezer or refrigerator to reduce temperature", "chilled", "chill", false, true},
 		{"trim", "Remove unwanted parts such as gristle, silverskin, or fat", "trimmed", "trim", false, false},
 		{"cube", "Cut into cube shapes, typically 1-inch or similar", "cubed", "cube", false, false},
-		{"grind", "Process through a meat grinder to break down into smaller pieces", "ground", "grind", false, false},
 		{"form", "Shape ingredients into a specific form such as patties or balls", "formed", "form", false, false},
 		{"line", "Cover a surface with parchment, foil, or similar material", "lined", "line", false, false},
 		{"flip", "Turn food over to expose the other side", "flipped", "flip", false, false},
@@ -1336,6 +1550,20 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"measure", "Determine the quantity or size of something", "measured", "measure", false, false},
 		{"discard", "Throw away or remove unwanted items", "discarded", "discard", false, false},
 		{"thin", "Add liquid to reduce thickness or consistency", "thinned", "thin", false, false},
+		// Carne asada recipe preparations
+		{"microwave", "Heat food in a microwave oven", "microwaved", "microwave", false, false},
+		{"blend", "Mix ingredients together until smooth using a blender", "blended", "blend", false, false},
+		{"wipe", "Remove excess liquid or residue by rubbing with a cloth or paper towel", "wiped", "wipe", false, false},
+		{"light", "Ignite or start a fire", "lit", "light", false, false},
+		{"arrange", "Place items in a specific order or pattern", "arranged", "arrange", false, false},
+		{"pour", "Transfer liquid or small items by tipping a container", "poured", "pour", false, false},
+		{"set", "Place something in a specific position", "set", "set", false, false},
+		{"marinate", "Soak food in a seasoned liquid mixture to add flavor and tenderize", "marinated", "marinate", false, true},
+		{"unrefrigerate", "Remove from refrigeration to allow to warm up", "unrefrigerated", "unrefrigerate", false, false},
+		{"remove air", "Eliminate air from a container by squeezing or pressing", "air removed", "remove-air", false, false},
+		{"grind", "Process seeds or spices into a powder using a grinder or mortar and pestle", "ground", "grind", false, false},
+		{"add", "Put an ingredient into a vessel or mixture", "added", "add", false, false},
+		{"reduce", "Boil a liquid to decrease its volume and concentrate flavors", "reduced", "reduce", false, true},
 	}
 
 	for i := range prepInputs {
@@ -1370,8 +1598,50 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 
 // createSteakRecipeBridgeEntries creates all the bridge table entries needed for the steak recipe.
 func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, enums *Enumerations) error {
+	// Helper to get instrument with error checking
+	getInstrument := func(name string) (*mealplanning.ValidInstrument, error) {
+		inst := enums.Instruments[name]
+		if inst == nil {
+			return nil, fmt.Errorf("instrument '%s' not found in enumerations", name)
+		}
+		return inst, nil
+	}
+
+	// Helper to get vessel with error checking
+	getVessel := func(name string) (*mealplanning.ValidVessel, error) {
+		vessel := enums.Vessels[name]
+		if vessel == nil {
+			return nil, fmt.Errorf("vessel '%s' not found in enumerations", name)
+		}
+		return vessel, nil
+	}
+
+	// Helper to get preparation with error checking
+	getPreparation := func(name string) (*mealplanning.ValidPreparation, error) {
+		prep := enums.Preparations[name]
+		if prep == nil {
+			return nil, fmt.Errorf("preparation '%s' not found in enumerations", name)
+		}
+		return prep, nil
+	}
+
+	// Helper to get ingredient with error checking
+	getIngredient := func(name string) (*mealplanning.ValidIngredient, error) {
+		ing := enums.Ingredients[name]
+		if ing == nil {
+			return nil, fmt.Errorf("ingredient '%s' not found in enumerations", name)
+		}
+		return ing, nil
+	}
+
 	// Helper to create ValidIngredientPreparation and store in map
 	createVIP := func(prep *mealplanning.ValidPreparation, ing *mealplanning.ValidIngredient) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VIP")
+		}
+		if ing == nil {
+			return fmt.Errorf("ingredient is nil when creating VIP for preparation '%s'", prep.Name)
+		}
 		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -1389,6 +1659,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Helper to create ValidIngredientMeasurementUnit and store in map
 	createVIMU := func(ing *mealplanning.ValidIngredient, unit *mealplanning.ValidMeasurementUnit) error {
+		if ing == nil {
+			return fmt.Errorf("ingredient is nil")
+		}
+		if unit == nil {
+			return fmt.Errorf("measurement unit is nil")
+		}
 		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
 			ValidIngredientID:      ing.ID,
@@ -1406,6 +1682,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Helper to create ValidPreparationInstrument and store in map
 	createVPI := func(prep *mealplanning.ValidPreparation, inst *mealplanning.ValidInstrument) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VPI")
+		}
+		if inst == nil {
+			return fmt.Errorf("instrument is nil when creating VPI for preparation '%s'", prep.Name)
+		}
 		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -1423,6 +1705,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Helper to create ValidPreparationVessel and store in map
 	createVPV := func(prep *mealplanning.ValidPreparation, vessel *mealplanning.ValidVessel) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VPV")
+		}
+		if vessel == nil {
+			return fmt.Errorf("vessel is nil when creating VPV for preparation '%s'", prep.Name)
+		}
 		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
@@ -1461,10 +1749,22 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	sprigMeasurement := enums.MeasurementUnits["sprig"]
 
 	// Get instruments
-	paperTowels := enums.Instruments["paper towels"]
-	tongs := enums.Instruments["tongs"]
-	spoon := enums.Instruments["spoon"]
-	thermometer := enums.Instruments["instant-read thermometer"]
+	paperTowels, err := getInstrument("paper towels")
+	if err != nil {
+		return err
+	}
+	tongs, err := getInstrument("tongs")
+	if err != nil {
+		return err
+	}
+	spoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+	thermometer, err := getInstrument("instant-read thermometer")
+	if err != nil {
+		return err
+	}
 
 	// Get vessels
 	sheetPan := enums.Vessels["sheet pan"]
@@ -1525,7 +1825,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Instrument links
-	bareHands := enums.Instruments["bare hands"]
+	bareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
 	if err := createVPI(seasonPrep, bareHands); err != nil {
 		return err
 	}
@@ -2409,6 +2712,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIMU(burgerBun, burgerUnitMeasurement); err != nil {
 		return err
 	}
+	burgerCastIronSkillet := enums.Vessels["cast iron skillet"]
+	if err := createVPV(toastPrep, burgerCastIronSkillet); err != nil {
+		return err
+	}
 
 	// === ASSEMBLE PREPARATION ===
 	if err := createVIP(assemblePrep, burgerBun); err != nil {
@@ -2456,6 +2763,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === SEASON PREPARATION for ground beef ===
 	if err := createVIP(burgerSeasonPrep, groundBeef); err != nil {
+		return err
+	}
+	if err := createVPI(burgerSeasonPrep, burgerBareHands); err != nil {
 		return err
 	}
 
@@ -2510,7 +2820,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	riceOliveOil := enums.Ingredients["olive oil"]
 
 	// Get vessels for rice recipe
-	saucepan := enums.Vessels["saucepan"]
+	saucepan, err := getVessel("saucepan")
+	if err != nil {
+		return err
+	}
 
 	// Get instruments for rice recipe
 	fork := enums.Instruments["fork"]
@@ -3178,6 +3491,20 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIP(hvaTrimPrep, hvaGreenBeans); err != nil {
 		return err
 	}
+	hvaKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	hvaCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+	if err := createVPI(hvaTrimPrep, hvaKnife); err != nil {
+		return err
+	}
+	if err := createVPV(hvaTrimPrep, hvaCuttingBoard); err != nil {
+		return err
+	}
 
 	// === HARICOTS VERTS AMANDINE INGREDIENT MEASUREMENT UNITS ===
 	if err := createVIMU(hvaGreenBeans, hvaPoundMeasurement); err != nil {
@@ -3775,17 +4102,50 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === GRILLED PORK TENDERLOIN RECIPE BRIDGE ENTRIES ===
 	// Get preparations for grilled pork tenderloin recipe
-	gptTrimPrep := enums.Preparations["trim"]
-	gptSeasonPrep := enums.Preparations["season"]
-	gptTransferPrep := enums.Preparations["transfer"]
-	gptRefrigeratePrep := enums.Preparations["refrigerate"]
-	gptPreheatPrep := enums.Preparations["preheat"]
-	gptCleanPrep := enums.Preparations["clean"]
-	gptOilPrep := enums.Preparations["oil"]
-	gptGrillPrep := enums.Preparations["grill"]
-	gptTurnPrep := enums.Preparations["turn"]
-	gptRestPrep := enums.Preparations["rest"]
-	gptCarvePrep := enums.Preparations["carve"]
+	gptTrimPrep, err := getPreparation("trim")
+	if err != nil {
+		return err
+	}
+	gptSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	gptTransferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	gptRefrigeratePrep, err := getPreparation("refrigerate")
+	if err != nil {
+		return err
+	}
+	gptPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	gptCleanPrep, err := getPreparation("clean")
+	if err != nil {
+		return err
+	}
+	gptOilPrep, err := getPreparation("oil")
+	if err != nil {
+		return err
+	}
+	gptGrillPrep, err := getPreparation("grill")
+	if err != nil {
+		return err
+	}
+	gptTurnPrep, err := getPreparation("turn")
+	if err != nil {
+		return err
+	}
+	gptRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
+	gptCarvePrep, err := getPreparation("carve")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for grilled pork tenderloin recipe
 	gptPorkTenderloin := enums.Ingredients["pork tenderloin"]
@@ -3806,7 +4166,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gptTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
 	// Get instruments for grilled pork tenderloin recipe
-	gptChefsKnife := enums.Instruments["chef's knife"]
+	gptChefsKnife := enums.Instruments["knife"]
 	gptGrillBrush := enums.Instruments["grill brush"]
 	gptTongs := enums.Instruments["tongs"]
 	gptThermometer := enums.Instruments["instant-read thermometer"]
@@ -4123,7 +4483,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	rbsUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments for roasted Brussels sprouts recipe
-	rbsChefsKnife := enums.Instruments["chef's knife"]
+	rbsChefsKnife := enums.Instruments["knife"]
 	rbsOvenMitt := enums.Instruments["oven mitt"]
 	rbsDishTowel := enums.Instruments["dish towel"]
 	rbsBareHands := enums.Instruments["bare hands"]
@@ -4201,6 +4561,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === DIVIDE PREPARATION for Brussels sprouts ===
 	if err := createVIP(rbsDividePrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
+	// === DIVIDE PREPARATION for shallots ===
+	if err := createVIP(rbsDividePrep, rbsShallots); err != nil {
 		return err
 	}
 	if err := createVPV(rbsDividePrep, rbsBakingSheet); err != nil {
@@ -4311,40 +4675,130 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === REFRIED BEANS RECIPE BRIDGE ENTRIES ===
 	// Get preparations for refried beans recipe
-	rbCoverPrep := enums.Preparations["cover"]
-	rbAddPrep := enums.Preparations["add"]
-	rbBoilPrep := enums.Preparations["boil"]
-	rbReducePrep := enums.Preparations["reduce"]
-	rbSimmerPrep := enums.Preparations["simmer"]
-	rbSeasonPrep := enums.Preparations["season"]
-	rbDrainPrep := enums.Preparations["drain"]
-	rbReservePrep := enums.Preparations["reserve"]
-	rbMeasurePrep := enums.Preparations["measure"]
-	rbDiscardPrep := enums.Preparations["discard"]
-	rbHeatPrep := enums.Preparations["heat"]
-	rbSautPrep := enums.Preparations["sauté"]
-	rbStirPrep := enums.Preparations["stir"]
-	rbSmashPrep := enums.Preparations["smash"]
-	rbThinPrep := enums.Preparations["thin"]
+	rbCoverPrep, err := getPreparation("cover")
+	if err != nil {
+		return err
+	}
+	rbAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	rbBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+	rbReducePrep, err := getPreparation("reduce")
+	if err != nil {
+		return err
+	}
+	rbSimmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	rbSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	rbDrainPrep, err := getPreparation("drain")
+	if err != nil {
+		return err
+	}
+	rbReservePrep, err := getPreparation("reserve")
+	if err != nil {
+		return err
+	}
+	rbMeasurePrep, err := getPreparation("measure")
+	if err != nil {
+		return err
+	}
+	rbDiscardPrep, err := getPreparation("discard")
+	if err != nil {
+		return err
+	}
+	rbHeatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	rbSautPrep, err := getPreparation("sauté")
+	if err != nil {
+		return err
+	}
+	rbStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	rbSmashPrep, err := getPreparation("smash")
+	if err != nil {
+		return err
+	}
+	rbThinPrep, err := getPreparation("thin")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for refried beans recipe
-	rbPintoBeans := enums.Ingredients["pinto beans"]
-	rbBlackBeans := enums.Ingredients["black beans"]
-	rbWater := enums.Ingredients["water"]
-	rbEpazote := enums.Ingredients["epazote"]
-	rbOregano := enums.Ingredients["oregano"]
-	rbWhiteOnion := enums.Ingredients["white onion"]
-	rbGarlic := enums.Ingredients["garlic"]
-	rbSalt := enums.Ingredients["salt"]
-	rbLard := enums.Ingredients["lard"]
-	rbBaconDrippings := enums.Ingredients["bacon drippings"]
-	rbVegetableOil := enums.Ingredients["vegetable oil"]
-	rbButter := enums.Ingredients["butter"]
+	rbPintoBeans, err := getIngredient("pinto beans")
+	if err != nil {
+		return err
+	}
+	rbBlackBeans, err := getIngredient("black beans")
+	if err != nil {
+		return err
+	}
+	rbWater, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	rbEpazote, err := getIngredient("epazote")
+	if err != nil {
+		return err
+	}
+	rbOregano, err := getIngredient("oregano")
+	if err != nil {
+		return err
+	}
+	rbWhiteOnion, err := getIngredient("onion")
+	if err != nil {
+		return err
+	}
+	rbGarlic, err := getIngredient("garlic")
+	if err != nil {
+		return err
+	}
+	rbSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	rbLard, err := getIngredient("lard")
+	if err != nil {
+		return err
+	}
+	rbBaconDrippings, err := getIngredient("bacon drippings")
+	if err != nil {
+		return err
+	}
+	rbVegetableOil, err := getIngredient("vegetable oil")
+	if err != nil {
+		return err
+	}
+	rbButter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
 
 	// Get vessels for refried beans recipe
-	rbLargePot := enums.Vessels["large pot"]
-	rbLargeSkillet := enums.Vessels["large skillet"]
-	rbBowl := enums.Vessels["large bowl"]
+	rbLargePot, err := getVessel("pot")
+	if err != nil {
+		return err
+	}
+	rbLargeSkillet, err := getVessel("cast iron skillet")
+	if err != nil {
+		return err
+	}
+	rbBowl, err := getVessel("large bowl")
+	if err != nil {
+		return err
+	}
 
 	// Get measurement units for refried beans recipe
 	rbPoundMeasurement := enums.MeasurementUnits["pound"]
@@ -4388,6 +4842,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIP(rbAddPrep, rbGarlic); err != nil {
 		return err
 	}
+	if err := createVIP(rbAddPrep, rbWater); err != nil {
+		return err
+	}
 	if err := createVPV(rbAddPrep, rbLargePot); err != nil {
 		return err
 	}
@@ -4429,6 +4886,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIP(rbSeasonPrep, rbSalt); err != nil {
 		return err
 	}
+	if err := createVPV(rbSeasonPrep, rbLargePot); err != nil {
+		return err
+	}
+	if err := createVPV(rbSeasonPrep, rbLargeSkillet); err != nil {
+		return err
+	}
 
 	// === DRAIN PREPARATION for beans ===
 	if err := createVIP(rbDrainPrep, rbPintoBeans); err != nil {
@@ -4456,6 +4919,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVIP(rbMeasurePrep, rbBlackBeans); err != nil {
 		return err
 	}
+	if err := createVPV(rbMeasurePrep, rbBowl); err != nil {
+		return err
+	}
 
 	// === DISCARD PREPARATION for aromatics ===
 	if err := createVIP(rbDiscardPrep, rbEpazote); err != nil {
@@ -4468,6 +4934,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIP(rbDiscardPrep, rbGarlic); err != nil {
+		return err
+	}
+	if err := createVPV(rbDiscardPrep, rbLargePot); err != nil {
 		return err
 	}
 
@@ -4588,6 +5057,608 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(rbButter, rbTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === CARNE ASADA RECIPE BRIDGE ENTRIES ===
+	// Get preparations for carne asada recipe
+	caMicrowavePrep, err := getPreparation("microwave")
+	if err != nil {
+		return err
+	}
+	caTransferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	caAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	caBlendPrep, err := getPreparation("blend")
+	if err != nil {
+		return err
+	}
+	caSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	caRefrigeratePrep, err := getPreparation("refrigerate")
+	if err != nil {
+		return err
+	}
+	caRemovePrep, err := getPreparation("remove")
+	if err != nil {
+		return err
+	}
+	caLightPrep, err := getPreparation("light")
+	if err != nil {
+		return err
+	}
+	caPourPrep, err := getPreparation("pour")
+	if err != nil {
+		return err
+	}
+	caArrangePrep, err := getPreparation("arrange")
+	if err != nil {
+		return err
+	}
+	caSetPrep, err := getPreparation("set")
+	if err != nil {
+		return err
+	}
+	caCoverPrep, err := getPreparation("cover")
+	if err != nil {
+		return err
+	}
+	caPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	caCleanPrep, err := getPreparation("clean")
+	if err != nil {
+		return err
+	}
+	caOilPrep, err := getPreparation("oil")
+	if err != nil {
+		return err
+	}
+	caWipePrep, err := getPreparation("wipe")
+	if err != nil {
+		return err
+	}
+	caPlacePrep, err := getPreparation("place")
+	if err != nil {
+		return err
+	}
+	caGrillPrep, err := getPreparation("grill")
+	if err != nil {
+		return err
+	}
+	caTurnPrep, err := getPreparation("turn")
+	if err != nil {
+		return err
+	}
+	caRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
+	caSlicePrep, err := getPreparation("slice")
+	if err != nil {
+		return err
+	}
+	caToastPrep, err := getPreparation("toast")
+	if err != nil {
+		return err
+	}
+	caGrindPrep, err := getPreparation("grind")
+	if err != nil {
+		return err
+	}
+	caDividePrep, err := getPreparation("divide")
+	if err != nil {
+		return err
+	}
+	caMarinatePrep, err := getPreparation("marinate")
+	if err != nil {
+		return err
+	}
+	caRemoveAirPrep, err := getPreparation("remove air")
+	if err != nil {
+		return err
+	}
+	caUnrefrigeratePrep, err := getPreparation("unrefrigerate")
+	if err != nil {
+		return err
+	}
+
+	// Get ingredients for carne asada recipe
+	caAnchoChiles := enums.Ingredients["dried ancho chile"]
+	caGuajilloChiles := enums.Ingredients["dried guajillo chile"]
+	caChipotlePeppers := enums.Ingredients["chipotle peppers in adobo"]
+	caOrangeJuice := enums.Ingredients["orange juice"]
+	caLimeJuice := enums.Ingredients["lime juice"]
+	caOliveOil := enums.Ingredients["olive oil"]
+	caSoySauce := enums.Ingredients["soy sauce"]
+	caFishSauce := enums.Ingredients["Asian fish sauce"]
+	caDarkBrownSugar := enums.Ingredients["dark brown sugar"]
+	caCilantro := enums.Ingredients["cilantro"]
+	caGarlic := enums.Ingredients["garlic"]
+	caCuminSeeds := enums.Ingredients["cumin seeds"]
+	caCorianderSeeds := enums.Ingredients["coriander seeds"]
+	caSalt := enums.Ingredients["salt"]
+	caSkirtSteak := enums.Ingredients["skirt steak"]
+
+	// Get vessels for carne asada recipe
+	caMicrowaveSafePlate, err := getVessel("microwave-safe plate")
+	if err != nil {
+		return err
+	}
+	caBlenderJar, err := getVessel("blender jar")
+	if err != nil {
+		return err
+	}
+	caLargeBowl, err := getVessel("large bowl")
+	if err != nil {
+		return err
+	}
+	caSealedContainer, err := getVessel("sealed container")
+	if err != nil {
+		return err
+	}
+	caZipperLockBag, err := getVessel("zipper-lock bag")
+	if err != nil {
+		return err
+	}
+	caRefrigerator, err := getVessel("refrigerator")
+	if err != nil {
+		return err
+	}
+	caChimneyStarter, err := getVessel("chimney starter")
+	if err != nil {
+		return err
+	}
+	caGrill, err := getVessel("grill")
+	if err != nil {
+		return err
+	}
+	caCharcoalGrate, err := getVessel("charcoal grate")
+	if err != nil {
+		return err
+	}
+	caCookingGrate, err := getVessel("cooking grate")
+	if err != nil {
+		return err
+	}
+	caGrillingGrate, err := getVessel("grilling grate")
+	if err != nil {
+		return err
+	}
+	caCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units for carne asada recipe
+	caUnitMeasurement := enums.MeasurementUnits["unit"]
+	caCupMeasurement := enums.MeasurementUnits["cup"]
+	caTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	caTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	caPoundMeasurement := enums.MeasurementUnits["pound"]
+	caCloveMeasurement := enums.MeasurementUnits["clove"]
+
+	// Get instruments for carne asada recipe
+	caBlender := enums.Instruments["blender"]
+	caChimneyStarterInstrument := enums.Instruments["chimney starter"]
+	caGrillBrush := enums.Instruments["grill brush"]
+	caTongs := enums.Instruments["tongs"]
+	caThermometer := enums.Instruments["instant-read thermometer"]
+	caCarvingKnife := enums.Instruments["carving knife"]
+
+	// === TOAST PREPARATION for seeds ===
+	if err := createVIP(caToastPrep, caCuminSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(caToastPrep, caCorianderSeeds); err != nil {
+		return err
+	}
+	caSmallSkillet, err := getVessel("small skillet")
+	if err != nil {
+		return err
+	}
+	if err := createVPV(caToastPrep, caSmallSkillet); err != nil {
+		return err
+	}
+
+	// === GRIND PREPARATION for seeds ===
+	if err := createVIP(caGrindPrep, caCuminSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(caGrindPrep, caCorianderSeeds); err != nil {
+		return err
+	}
+	if err := createVPV(caGrindPrep, caBlenderJar); err != nil {
+		return err
+	}
+	if err := createVPI(caGrindPrep, caBlender); err != nil {
+		return err
+	}
+
+	// === MICROWAVE PREPARATION for chiles ===
+	if err := createVIP(caMicrowavePrep, caAnchoChiles); err != nil {
+		return err
+	}
+	if err := createVIP(caMicrowavePrep, caGuajilloChiles); err != nil {
+		return err
+	}
+	if err := createVPV(caMicrowavePrep, caMicrowaveSafePlate); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for chiles ===
+	if err := createVIP(caTransferPrep, caAnchoChiles); err != nil {
+		return err
+	}
+	if err := createVIP(caTransferPrep, caGuajilloChiles); err != nil {
+		return err
+	}
+	if err := createVPV(caTransferPrep, caBlenderJar); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for marinade ingredients ===
+	if err := createVIP(caAddPrep, caChipotlePeppers); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caOrangeJuice); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caLimeJuice); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caSoySauce); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caFishSauce); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caDarkBrownSugar); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caCilantro); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caCuminSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(caAddPrep, caCorianderSeeds); err != nil {
+		return err
+	}
+	if err := createVPV(caAddPrep, caBlenderJar); err != nil {
+		return err
+	}
+
+	// === BLEND PREPARATION for marinade ===
+	if err := createVIP(caBlendPrep, caAnchoChiles); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caGuajilloChiles); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caChipotlePeppers); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caOrangeJuice); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caLimeJuice); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caSoySauce); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caFishSauce); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caDarkBrownSugar); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caCilantro); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caCuminSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(caBlendPrep, caCorianderSeeds); err != nil {
+		return err
+	}
+	if err := createVPV(caBlendPrep, caBlenderJar); err != nil {
+		return err
+	}
+	if err := createVPI(caBlendPrep, caBlender); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for marinade ===
+	if err := createVIP(caSeasonPrep, caSalt); err != nil {
+		return err
+	}
+	if err := createVPV(caSeasonPrep, caBlenderJar); err != nil {
+		return err
+	}
+
+	// === DIVIDE PREPARATION for marinade ===
+	if err := createVIP(caDividePrep, caAnchoChiles); err != nil {
+		return err
+	}
+	if err := createVPV(caDividePrep, caLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPV(caDividePrep, caSealedContainer); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for salsa ===
+	if err := createVPV(caTransferPrep, caLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPV(caTransferPrep, caSealedContainer); err != nil {
+		return err
+	}
+
+	// === REFRIGERATE PREPARATION for salsa ===
+	if err := createVPV(caRefrigeratePrep, caSealedContainer); err != nil {
+		return err
+	}
+	if err := createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for salt to marinade ===
+	if err := createVIP(caAddPrep, caSalt); err != nil {
+		return err
+	}
+	if err := createVPV(caAddPrep, caLargeBowl); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for steak to marinade ===
+	if err := createVIP(caAddPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caAddPrep, caLargeBowl); err != nil {
+		return err
+	}
+
+	// === MARINATE PREPARATION for steak ===
+	if err := createVIP(caMarinatePrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caMarinatePrep, caLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPV(caMarinatePrep, caZipperLockBag); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for steak to bag ===
+	if err := createVIP(caTransferPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caTransferPrep, caZipperLockBag); err != nil {
+		return err
+	}
+
+	// === REMOVE AIR PREPARATION for bag ===
+	if err := createVPV(caRemoveAirPrep, caZipperLockBag); err != nil {
+		return err
+	}
+
+	// === UNREFRIGERATE PREPARATION for sealed container ===
+	if err := createVPV(caUnrefrigeratePrep, caSealedContainer); err != nil {
+		return err
+	}
+	if err := createVPV(caUnrefrigeratePrep, caRefrigerator); err != nil {
+		return err
+	}
+
+	// === REFRIGERATE PREPARATION for steak ===
+	if err := createVIP(caRefrigeratePrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caRefrigeratePrep, caZipperLockBag); err != nil {
+		return err
+	}
+	if err := createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
+		return err
+	}
+
+	// === REMOVE PREPARATION for steak from marinade ===
+	if err := createVIP(caRemovePrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caRemovePrep, caZipperLockBag); err != nil {
+		return err
+	}
+
+	// === LIGHT PREPARATION for charcoal ===
+	if err := createVPV(caLightPrep, caChimneyStarter); err != nil {
+		return err
+	}
+	if err := createVPI(caLightPrep, caChimneyStarterInstrument); err != nil {
+		return err
+	}
+
+	// === POUR PREPARATION for charcoal ===
+	if err := createVPV(caPourPrep, caChimneyStarter); err != nil {
+		return err
+	}
+	if err := createVPV(caPourPrep, caCharcoalGrate); err != nil {
+		return err
+	}
+
+	// === ARRANGE PREPARATION for charcoal ===
+	if err := createVPV(caArrangePrep, caCharcoalGrate); err != nil {
+		return err
+	}
+
+	// === SET PREPARATION for cooking grate ===
+	if err := createVPV(caSetPrep, caCookingGrate); err != nil {
+		return err
+	}
+	if err := createVPV(caSetPrep, caGrill); err != nil {
+		return err
+	}
+
+	// === COVER PREPARATION for grill ===
+	if err := createVPV(caCoverPrep, caGrill); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for grill ===
+	if err := createVPV(caPreheatPrep, caGrill); err != nil {
+		return err
+	}
+
+	// === CLEAN PREPARATION for grilling grate ===
+	if err := createVPV(caCleanPrep, caGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(caCleanPrep, caGrillBrush); err != nil {
+		return err
+	}
+
+	// === OIL PREPARATION for grilling grate ===
+	if err := createVIP(caOilPrep, caOliveOil); err != nil {
+		return err
+	}
+	if err := createVPV(caOilPrep, caGrillingGrate); err != nil {
+		return err
+	}
+
+	// === WIPE PREPARATION for steak ===
+	if err := createVIP(caWipePrep, caSkirtSteak); err != nil {
+		return err
+	}
+
+	// === PLACE PREPARATION for steak on grill ===
+	if err := createVIP(caPlacePrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caPlacePrep, caGrillingGrate); err != nil {
+		return err
+	}
+
+	// === GRILL PREPARATION for steak ===
+	if err := createVIP(caGrillPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caGrillPrep, caGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPV(caGrillPrep, caGrill); err != nil {
+		return err
+	}
+	if err := createVPI(caGrillPrep, caTongs); err != nil {
+		return err
+	}
+	if err := createVPI(caGrillPrep, caThermometer); err != nil {
+		return err
+	}
+
+	// === TURN PREPARATION for steak ===
+	if err := createVIP(caTurnPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caTurnPrep, caGrillingGrate); err != nil {
+		return err
+	}
+	if err := createVPI(caTurnPrep, caTongs); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION for steak to cutting board ===
+	if err := createVIP(caTransferPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caTransferPrep, caCuttingBoard); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for steak ===
+	if err := createVIP(caRestPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPV(caRestPrep, caCuttingBoard); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION for steak ===
+	if err := createVIP(caSlicePrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err := createVPI(caSlicePrep, caCarvingKnife); err != nil {
+		return err
+	}
+
+	// === CARNE ASADA INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(caAnchoChiles, caUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caGuajilloChiles, caUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caChipotlePeppers, caUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caOrangeJuice, caCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caLimeJuice, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caOliveOil, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caSoySauce, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caFishSauce, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caDarkBrownSugar, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caCilantro, caUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caGarlic, caCloveMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caCuminSeeds, caTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caCuminSeeds, caTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caCorianderSeeds, caTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caSalt, caTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(caSkirtSteak, caPoundMeasurement); err != nil {
 		return err
 	}
 
