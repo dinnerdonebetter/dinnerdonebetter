@@ -51,8 +51,8 @@ I basically need a Go file that adds a ton of recipes. Here's some recipes:
     - [x] [Glazed carrots with brown butter and sage](https://www.seriouseats.com/glazed-carrots-recipe-11856362)
     - [x] [Cornbread](https://www.kingarthurbaking.com/recipes/cornbread-recipe)
     - [x] [Grilled Whole Cauliflower](https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549)
-    - [ ] [Tortillas](https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe)
-    - [ ] [Stir Fried Green Beans](https://www.seriouseats.com/stir-fried-green-beans-recipe)
+    - [x] [Tortillas](https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe)
+    - [x] [Stir Fried Green Beans](https://www.seriouseats.com/stir-fried-green-beans-recipe)
 
 - [ ] Tier 2: Meal Enablers & Common Dishes
     - [ ] [Spaghetti carbonara](https://www.seriouseats.com/smoky-spaghetti-carbonara-recipe-smoked-salt)
