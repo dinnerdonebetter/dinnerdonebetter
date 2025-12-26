@@ -31,6 +31,7 @@ func AllRecipes(userID string, enums *Enumerations) []*mealplanning.RecipeDataba
 	recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(userID, enums)...)
 	recipes = append(recipes, CornbreadRecipe(userID, enums)...)
 	recipes = append(recipes, GrilledWholeCauliflowerRecipe(userID, enums)...)
+	recipes = append(recipes, StirFriedGreenBeansRecipe(userID, enums)...)
 
 	return recipes
 }
