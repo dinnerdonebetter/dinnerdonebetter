@@ -21,8 +21,18 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
+	identitygrpc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
+	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
+	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
+	oauthgrpc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
+	settingsgrpc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc"
+	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
+	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
 	grpc "google.golang.org/grpc"
 )
@@ -87,4 +97,56 @@ func ProvideUserTextSearcher(
 		cfg,
 		identityindexing.IndexTypeUsers,
 	)
+}
+
+// AggregateMethodPermissions combines method permissions from all services into a single map.
+// Each service provides its permissions via a typed map (e.g., SettingsMethodPermissions),
+// which are then aggregated here for the auth interceptor.
+func AggregateMethodPermissions(
+	authPermissions authgrpc.AuthMethodPermissions,
+	identityPermissions identitygrpc.IdentityMethodPermissions,
+	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
+	mealplanningPermissions mealplanninggrpc.MealPlanningMethodPermissions,
+	notificationsPermissions notificationsgrpc.NotificationsMethodPermissions,
+	oauthPermissions oauthgrpc.OAuthMethodPermissions,
+	settingsPermissions settingsgrpc.SettingsMethodPermissions,
+	uploadedmediaPermissions uploadedmediagrpc.UploadedMediaMethodPermissions,
+	waitlistsPermissions waitlistsgrpc.WaitlistsMethodPermissions,
+	webhooksPermissions webhooksgrpc.WebhooksMethodPermissions,
+) interceptors.MethodPermissionsMap {
+	result := make(interceptors.MethodPermissionsMap)
+
+	// Copy all service permissions into the aggregated map
+	for method, perms := range authPermissions {
+		result[method] = perms
+	}
+	for method, perms := range identityPermissions {
+		result[method] = perms
+	}
+	for method, perms := range issuereportsPermissions {
+		result[method] = perms
+	}
+	for method, perms := range mealplanningPermissions {
+		result[method] = perms
+	}
+	for method, perms := range notificationsPermissions {
+		result[method] = perms
+	}
+	for method, perms := range oauthPermissions {
+		result[method] = perms
+	}
+	for method, perms := range settingsPermissions {
+		result[method] = perms
+	}
+	for method, perms := range uploadedmediaPermissions {
+		result[method] = perms
+	}
+	for method, perms := range waitlistsPermissions {
+		result[method] = perms
+	}
+	for method, perms := range webhooksPermissions {
+		result[method] = perms
+	}
+
+	return result
 }

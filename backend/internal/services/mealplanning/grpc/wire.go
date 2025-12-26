@@ -7,5 +7,6 @@ import (
 var (
 	MPSvcProviders = wire.NewSet(
 		NewService,
+		ProvideMethodPermissions,
 	)
 )
