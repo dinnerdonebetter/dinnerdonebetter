@@ -218,6 +218,12 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "baking soda", Description: "Sodium bicarbonate, used as a leavening agent and for browning", PluralName: "baking soda", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "baking-soda", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "heavy cream", Description: "Heavy whipping cream with at least 36% milk fat", PluralName: "heavy cream", StorageInstructions: "Keep refrigerated at or below 40°F", Slug: "heavy-cream", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "canola oil", Description: "Neutral-flavored canola oil for cooking", PluralName: "canola oil", StorageInstructions: "Store in a cool, dark place", Slug: "canola-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Mac and cheese recipe ingredients
+		{ID: identifiers.New(), Name: "elbow macaroni", Description: "Short, curved pasta tubes", PluralName: "elbow macaroni", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "elbow-macaroni", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "evaporated milk", Description: "Canned milk with about 60% of water removed", PluralName: "evaporated milk", StorageInstructions: "Store unopened in a cool, dry place; refrigerate after opening", Slug: "evaporated-milk", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "hot sauce", Description: "Hot pepper sauce such as Frank's RedHot", PluralName: "hot sauce", StorageInstructions: "Store in a cool, dark place; refrigerate after opening", Slug: "hot-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "ground mustard", Description: "Dried ground mustard powder", PluralName: "ground mustard", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "ground-mustard", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "cornstarch", Description: "Fine starch powder derived from corn, used for thickening", PluralName: "cornstarch", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cornstarch", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -399,6 +405,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"pinch", "A small amount picked up between thumb and forefinger", "pinches", "pinch", false, false},
 		{"pound", "Imperial unit of weight equal to approximately 454 grams", "pounds", "pound", false, false},
 		{"clove", "A single segment of garlic or similar ingredient", "cloves", "clove", false, false},
+		{"fluid ounce", "Imperial unit of volume equal to approximately 30 milliliters", "fluid ounces", "fluid-ounce", true, false},
 	}
 	for _, unit := range measurementUnits {
 		validUnit, err2 := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
@@ -1624,6 +1631,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"adjust", "Change the position or setting of something", "adjusted", "adjust", false, false},
 		{"place", "Put something in a specific location", "placed", "place", false, false},
 		{"remove", "Take something away from its current location", "removed", "remove", false, false},
+		{"remove from heat", "Take a cooking vessel off the heat source", "removed from heat", "remove-from-heat", false, false},
 		{"return", "Put something back to its previous location", "returned", "return", false, false},
 		// Refried beans recipe preparations
 		{"reserve", "Set aside for later use", "reserved", "reserve", false, false},
@@ -6235,6 +6243,252 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(bcHeavyCream, bcCupMeasurement); err != nil {
+		return err
+	}
+
+	// === MAC AND CHEESE RECIPE BRIDGE ENTRIES ===
+	// Get preparations for mac and cheese recipe
+	macSubmergePrep := enums.Preparations["submerge"]
+	macBoilPrep := enums.Preparations["boil"]
+	macCoverPrep := enums.Preparations["cover"]
+	macRestPrep := enums.Preparations["rest"]
+	macWhiskPrep := enums.Preparations["whisk"]
+	macTossPrep := enums.Preparations["toss"]
+	macDrainPrep := enums.Preparations["drain"]
+	macMeltPrep := enums.Preparations["melt"]
+	macCookPrep := enums.Preparations["cook"]
+	macSeasonPrep := enums.Preparations["season"]
+	macStirPrep := enums.Preparations["stir"]
+	macAddPrep := enums.Preparations["add"]
+
+	// Get ingredients for mac and cheese recipe
+	macElbowMacaroni := enums.Ingredients["elbow macaroni"]
+	macSalt := enums.Ingredients["salt"]
+	macWater := enums.Ingredients["water"]
+	macEvaporatedMilk := enums.Ingredients["evaporated milk"]
+	macEggs := enums.Ingredients["eggs"]
+	macHotSauce := enums.Ingredients["hot sauce"]
+	macGroundMustard := enums.Ingredients["ground mustard"]
+	macCheddarCheese := enums.Ingredients["cheddar cheese"]
+	macAmericanCheese := enums.Ingredients["American cheese"]
+	macCornstarch := enums.Ingredients["cornstarch"]
+	macButter := enums.Ingredients["butter"]
+
+	// Get vessels for mac and cheese recipe
+	macSaucepan, err := getVessel("saucepan")
+	if err != nil {
+		return err
+	}
+	macLargeBowl := enums.Vessels["large bowl"]
+	macMediumBowl := enums.Vessels["medium bowl"]
+	macColander := enums.Vessels["colander"]
+
+	// Get instruments for mac and cheese recipe
+	macWhisk := enums.Instruments["whisk"]
+	macWoodenSpoon := enums.Instruments["wooden spoon"]
+
+	// Get measurement units for mac and cheese recipe
+	macPoundMeasurement := enums.MeasurementUnits["pound"]
+	macTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	macTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	macFluidOunceMeasurement := enums.MeasurementUnits["fluid ounce"]
+	macUnitMeasurement := enums.MeasurementUnits["unit"]
+	macOunceMeasurement := enums.MeasurementUnits["ounce"]
+
+	// === SUBMERGE PREPARATION for mac and cheese ===
+	if err := createVIP(macSubmergePrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVIP(macSubmergePrep, macWater); err != nil {
+		return err
+	}
+	if err := createVIP(macSubmergePrep, macSalt); err != nil {
+		return err
+	}
+	if err := createVPV(macSubmergePrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === BOIL PREPARATION for mac and cheese ===
+	if err := createVIP(macBoilPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVPV(macBoilPrep, macSaucepan); err != nil {
+		return err
+	}
+	if err := createVPI(macBoilPrep, macWoodenSpoon); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION for mac and cheese ===
+	if err := createVIP(macStirPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVIP(macStirPrep, macButter); err != nil {
+		return err
+	}
+	if err := createVPV(macStirPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === COVER PREPARATION for mac and cheese ===
+	if err := createVPV(macCoverPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for mac and cheese ===
+	if err := createVIP(macRestPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVPV(macRestPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === WHISK PREPARATION for mac and cheese ===
+	if err := createVIP(macWhiskPrep, macEvaporatedMilk); err != nil {
+		return err
+	}
+	if err := createVIP(macWhiskPrep, macEggs); err != nil {
+		return err
+	}
+	if err := createVIP(macWhiskPrep, macHotSauce); err != nil {
+		return err
+	}
+	if err := createVIP(macWhiskPrep, macGroundMustard); err != nil {
+		return err
+	}
+	if err := createVPI(macWhiskPrep, macWhisk); err != nil {
+		return err
+	}
+	if err := createVPV(macWhiskPrep, macMediumBowl); err != nil {
+		return err
+	}
+
+	// === MIX PREPARATION for mac and cheese ===
+	macMixPrep := enums.Preparations["mix"]
+	if err := createVIP(macMixPrep, macEvaporatedMilk); err != nil {
+		return err
+	}
+	if err := createVIP(macMixPrep, macEggs); err != nil {
+		return err
+	}
+	if err := createVIP(macMixPrep, macHotSauce); err != nil {
+		return err
+	}
+	if err := createVIP(macMixPrep, macGroundMustard); err != nil {
+		return err
+	}
+	if err := createVPI(macMixPrep, macWhisk); err != nil {
+		return err
+	}
+	if err := createVPV(macMixPrep, macMediumBowl); err != nil {
+		return err
+	}
+
+	// === REMOVE FROM HEAT PREPARATION for mac and cheese ===
+	macRemoveFromHeatPrep := enums.Preparations["remove from heat"]
+	if err := createVIP(macRemoveFromHeatPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVPV(macRemoveFromHeatPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION for mac and cheese ===
+	if err := createVIP(macTossPrep, macCheddarCheese); err != nil {
+		return err
+	}
+	if err := createVIP(macTossPrep, macAmericanCheese); err != nil {
+		return err
+	}
+	if err := createVIP(macTossPrep, macCornstarch); err != nil {
+		return err
+	}
+	if err := createVPV(macTossPrep, macLargeBowl); err != nil {
+		return err
+	}
+
+	// === DRAIN PREPARATION for mac and cheese ===
+	if err := createVIP(macDrainPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVPV(macDrainPrep, macColander); err != nil {
+		return err
+	}
+
+	// === MELT PREPARATION for mac and cheese ===
+	if err := createVIP(macMeltPrep, macButter); err != nil {
+		return err
+	}
+	if err := createVPV(macMeltPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for mac and cheese ===
+	if err := createVIP(macAddPrep, macButter); err != nil {
+		return err
+	}
+	if err := createVPV(macAddPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for mac and cheese ===
+	if err := createVIP(macCookPrep, macElbowMacaroni); err != nil {
+		return err
+	}
+	if err := createVIP(macCookPrep, macCheddarCheese); err != nil {
+		return err
+	}
+	if err := createVIP(macCookPrep, macAmericanCheese); err != nil {
+		return err
+	}
+	if err := createVIP(macCookPrep, macEvaporatedMilk); err != nil {
+		return err
+	}
+	if err := createVPI(macCookPrep, macWoodenSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(macCookPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION for mac and cheese ===
+	if err := createVIP(macSeasonPrep, macSalt); err != nil {
+		return err
+	}
+	if err := createVIP(macSeasonPrep, macHotSauce); err != nil {
+		return err
+	}
+	if err := createVPV(macSeasonPrep, macSaucepan); err != nil {
+		return err
+	}
+
+	// === MAC AND CHEESE INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(macElbowMacaroni, macPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macEvaporatedMilk, macFluidOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macEggs, macUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macHotSauce, macTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macGroundMustard, macTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macCheddarCheese, macPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macAmericanCheese, macOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macCornstarch, macTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(macButter, macTablespoonMeasurement); err != nil {
 		return err
 	}
 

@@ -1622,4 +1622,3 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		butterChickenRecipe,
 	}
 }
-
