@@ -93,6 +93,130 @@ func TestRecipe_FindStepForRecipeStepProductID(T *testing.T) {
 	})
 }
 
+func TestRecipe_GetRelatedRecipeIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns related recipe IDs from ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{
+			Steps: []*RecipeStep{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+				{
+					ID: "step-2",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2", "recipe-3"}, ids)
+	})
+
+	T.Run("deduplicates recipe IDs", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{
+			Steps: []*RecipeStep{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+				{
+					ID: "step-2",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")}, // duplicate
+						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2", "recipe-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{
+			Steps: []*RecipeStep{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: nil},
+						{RecipeStepProductRecipeID: pointer.To("")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no related recipes", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{
+			Steps: []*RecipeStep{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredient{
+						{RecipeStepProductRecipeID: nil},
+						{Name: "regular ingredient"},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+
+	T.Run("returns empty slice for recipe with no steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+
+	T.Run("returns empty slice for steps with no ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		x := &Recipe{
+			Steps: []*RecipeStep{
+				{
+					ID:          "step-1",
+					Ingredients: nil,
+				},
+				{
+					ID:          "step-2",
+					Ingredients: []*RecipeStepIngredient{},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+}
+
 func TestRecipe_FindStepIndexByID(T *testing.T) {
 	T.Parallel()
 
@@ -531,6 +655,157 @@ func TestRecipeDatabaseCreationInput_GetAllValidPreparationVesselIDs(T *testing.
 
 		ids := x.GetAllValidPreparationVesselIDs()
 		assert.Empty(t, ids)
+	})
+}
+
+func TestRecipeDatabaseCreationInput_GetRelatedRecipeIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("returns related recipe IDs from ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+				{
+					ID: "step-2",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2", "recipe-3"}, ids)
+	})
+
+	T.Run("deduplicates recipe IDs", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+				{
+					ID: "step-2",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")}, // duplicate
+						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2", "recipe-3"}, ids)
+	})
+
+	T.Run("skips nil and empty values", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: nil},
+						{RecipeStepProductRecipeID: pointer.To("")},
+						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"recipe-1", "recipe-2"}, ids)
+	})
+
+	T.Run("returns empty slice when no related recipes", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{RecipeStepProductRecipeID: nil},
+						{Name: "regular ingredient"},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+
+	T.Run("returns empty slice for recipe with no steps", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+
+	T.Run("returns empty slice for steps with no ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID:          "step-1",
+					Ingredients: nil,
+				},
+				{
+					ID:          "step-2",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Empty(t, ids)
+	})
+
+	T.Run("handles mixed ingredients with and without recipe references", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeDatabaseCreationInput{
+			Steps: []*RecipeStepDatabaseCreationInput{
+				{
+					ID: "step-1",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{Name: "salt", RecipeStepProductRecipeID: nil},
+						{Name: "caesar breadcrumbs", RecipeStepProductRecipeID: pointer.To("breadcrumbs-recipe-id")},
+						{Name: "pepper", RecipeStepProductRecipeID: nil},
+					},
+				},
+				{
+					ID: "step-2",
+					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
+						{Name: "garlic butter", RecipeStepProductRecipeID: pointer.To("garlic-butter-recipe-id")},
+						{Name: "olive oil", RecipeStepProductRecipeID: nil},
+					},
+				},
+			},
+		}
+
+		ids := x.GetRelatedRecipeIDs()
+		assert.Equal(t, []string{"breadcrumbs-recipe-id", "garlic-butter-recipe-id"}, ids)
 	})
 }
 
