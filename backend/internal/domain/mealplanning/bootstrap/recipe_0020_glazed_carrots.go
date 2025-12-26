@@ -65,18 +65,17 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	meltSpoonVPI := enums.PreparationInstruments[meltPrep.ID][spoon.ID]
 
 	// Cook preparation bridges
+	cookSageVIP := enums.IngredientPreparations[cookPrep.ID][sage.ID]
 	cookPanVPV := enums.PreparationVessels[cookPrep.ID][pan.ID]
 	cookSpoonVPI := enums.PreparationInstruments[cookPrep.ID][spoon.ID]
 
 	// Add preparation bridges
-	addSageVIP := enums.IngredientPreparations[addPrep.ID][sage.ID]
 	addCarrotVIP := enums.IngredientPreparations[addPrep.ID][carrot.ID]
 	addAppleCiderVIP := enums.IngredientPreparations[addPrep.ID][appleCider.ID]
 	addChickenStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
 	addHoneyVIP := enums.IngredientPreparations[addPrep.ID][honey.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addBlackPepperVIP := enums.IngredientPreparations[addPrep.ID][blackPepper.ID]
-	addAppleCiderVinegarVIP := enums.IngredientPreparations[addPrep.ID][appleCiderVinegar.ID]
 	addPanVPV := enums.PreparationVessels[addPrep.ID][pan.ID]
 
 	// Boil preparation bridges
@@ -98,9 +97,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 
 	// Discard preparation bridges
 	discardSageVIP := enums.IngredientPreparations[discardPrep.ID][sage.ID]
+	discardPanVPV := enums.PreparationVessels[discardPrep.ID][pan.ID]
 
 	// Season preparation bridges
 	seasonCarrotVIP := enums.IngredientPreparations[seasonPrep.ID][carrot.ID]
+	seasonAppleCiderVinegarVIP := enums.IngredientPreparations[seasonPrep.ID][appleCiderVinegar.ID]
 	seasonPanVPV := enums.PreparationVessels[seasonPrep.ID][pan.ID]
 	seasonSpoonVPI := enums.PreparationInstruments[seasonPrep.ID][spoon.ID]
 
@@ -239,7 +240,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step1ID,
-				ValidIngredientPreparationID:     &addSageVIP.ID,
+				ValidIngredientPreparationID:     &cookSageVIP.ID,
 				ValidIngredientMeasurementUnitID: &sageSprigVIMU.ID,
 				IngredientID:                     &sage.ID,
 				MeasurementUnitID:                sprigMeasurement.ID,
@@ -742,7 +743,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step8ID,
-				ValidPreparationVesselID: &seasonPanVPV.ID,
+				ValidPreparationVesselID: &discardPanVPV.ID,
 				VesselID:                 &pan.ID,
 				Name:                     "skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -790,7 +791,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step9ID,
-				ValidIngredientPreparationID:     &addAppleCiderVinegarVIP.ID,
+				ValidIngredientPreparationID:     &seasonAppleCiderVinegarVIP.ID,
 				ValidIngredientMeasurementUnitID: &appleCiderVinegarTeaspoonVIMU.ID,
 				IngredientID:                     &appleCiderVinegar.ID,
 				MeasurementUnitID:                teaspoonMeasurement.ID,

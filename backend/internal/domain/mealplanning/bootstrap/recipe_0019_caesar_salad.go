@@ -17,7 +17,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	// Get preparations
 	preheatPrep := enums.Preparations["preheat"]
 	combinePrep := enums.Preparations["combine"]
-	whiskPrep := enums.Preparations["whisk"]
+	mixPrep := enums.Preparations["mix"]
 	strainPrep := enums.Preparations["strain"]
 	addPrep := enums.Preparations["add"]
 	tossPrep := enums.Preparations["toss"]
@@ -79,9 +79,9 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	combineWhiskVPI := enums.PreparationInstruments[combinePrep.ID][whisk.ID]
 
 	// Whisk preparation bridges
-	whiskOliveOilVIP := enums.IngredientPreparations[whiskPrep.ID][oliveOil.ID]
-	whiskWhiskVPI := enums.PreparationInstruments[whiskPrep.ID][whisk.ID]
-	whiskMediumBowlVPV := enums.PreparationVessels[whiskPrep.ID][mediumBowl.ID]
+	whiskOliveOilVIP := enums.IngredientPreparations[mixPrep.ID][oliveOil.ID]
+	whiskWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
+	whiskMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
 	// Strain preparation bridges
 	strainOliveOilVIP := enums.IngredientPreparations[strainPrep.ID][oliveOil.ID]
@@ -801,7 +801,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	blendImmersionBlenderCupVPV := enums.PreparationVessels[blendPrep.ID][immersionBlenderCup.ID]
 
 	// Whisk bridges for dressing
-	whiskCanolaOilVIP := enums.IngredientPreparations[whiskPrep.ID][canolaOil.ID]
+	whiskCanolaOilVIP := enums.IngredientPreparations[mixPrep.ID][canolaOil.ID]
 
 	// Measurement unit bridges for dressing
 	eggYolkUnitVIMU := enums.IngredientMeasurementUnits[eggYolk.ID][unitMeasurement.ID]
@@ -1010,7 +1010,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	drStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              drStep2ID,
 		BelongsToRecipe: dressingRecipeID,
-		PreparationID:   whiskPrep.ID,
+		PreparationID:   mixPrep.ID,
 		Index:           2,
 		Notes:           "Whisking constantly, slowly drizzle in remaining 1/4 cup extra-virgin olive oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{

@@ -233,6 +233,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "romaine lettuce", Description: "Crisp romaine lettuce with inner leaves", PluralName: "romaine lettuce", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "romaine-lettuce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Glazed carrots recipe ingredients
 		{ID: identifiers.New(), Name: "apple cider", Description: "Unfiltered apple cider", PluralName: "apple cider", StorageInstructions: "Store in the refrigerator after opening", Slug: "apple-cider", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Cornbread recipe ingredients
+		{ID: identifiers.New(), Name: "cornmeal", Description: "Yellow cornmeal, medium grind", PluralName: "cornmeal", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cornmeal", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "chicken stock", Description: "Homemade or low-sodium chicken stock", PluralName: "chicken stock", StorageInstructions: "Store in the refrigerator for up to 5 days or freeze", Slug: "chicken-stock", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "chives", Description: "Fresh chives", PluralName: "chives", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "chives", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "apple cider vinegar", Description: "Apple cider vinegar", PluralName: "apple cider vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "apple-cider-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -651,6 +653,33 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create glazed ingredient state: %w", err)
 	}
 	enums.IngredientStates["glazed"] = glazedState
+
+	// Cornbread recipe ingredient states
+	bakedState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "baked",
+		Description:   "Food has been cooked in an oven until done",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeTexture,
+		PastTense:     "baked",
+		Slug:          "baked",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create baked ingredient state: %w", err)
+	}
+	enums.IngredientStates["baked"] = bakedState
+
+	combinedState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "combined",
+		Description:   "Ingredients have been mixed together into a uniform mixture",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeConsistency,
+		PastTense:     "combined",
+		Slug:          "combined",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create combined ingredient state: %w", err)
+	}
+	enums.IngredientStates["combined"] = combinedState
 
 	// Create bridge types using first instances
 
@@ -1597,6 +1626,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["immersion blender cup"] = immersionBlenderCup
 
+	// Create baking pan for cornbread and other baked goods
+	bakingPan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "baking pan",
+		Description:                    "A 9-inch square or round baking pan",
+		PluralName:                     "baking pans",
+		Slug:                           "baking-pan",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             230,
+		LengthInMillimeters:            230,
+		HeightInMillimeters:            50,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create baking pan vessel: %w", err)
+	}
+	enums.Vessels["baking pan"] = bakingPan
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1673,7 +1723,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"shock", "Immediately transfer hot food to ice water to stop cooking", "shocked", "shock", false, false},
 		// Soy sauce braised chicken thighs recipe preparations
 		{"combine", "Mix or blend ingredients together", "combined", "combine", false, false},
-		{"whisk", "Beat or stir ingredients together rapidly with a whisk", "whisked", "whisk", false, false},
 		{"braise", "Cook slowly in a covered pot with liquid", "braised", "braise", true, true},
 		// Grilled pork tenderloin recipe preparations
 		{"carve", "Cut cooked meat into slices for serving", "carved", "carve", false, false},
@@ -1726,6 +1775,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Glazed carrots recipe preparations
 		{"uncover", "Remove a lid, wrap, or foil from a vessel", "uncovered", "uncover", false, false},
 		{"swirl", "Move a vessel in a circular motion to mix or coat contents", "swirled", "swirl", false, false},
+		// Cornbread recipe preparations
+		{"grease", "Apply fat to a cooking surface to prevent sticking", "greased", "grease", false, false},
 	}
 
 	for i := range prepInputs {
@@ -6325,7 +6376,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	macBoilPrep := enums.Preparations["boil"]
 	macCoverPrep := enums.Preparations["cover"]
 	macRestPrep := enums.Preparations["rest"]
-	macWhiskPrep := enums.Preparations["whisk"]
+	macMixPrep := enums.Preparations["mix"]
 	macTossPrep := enums.Preparations["toss"]
 	macDrainPrep := enums.Preparations["drain"]
 	macMeltPrep := enums.Preparations["melt"]
@@ -6418,27 +6469,27 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === WHISK PREPARATION for mac and cheese ===
-	if err := createVIP(macWhiskPrep, macEvaporatedMilk); err != nil {
+	if err := createVIP(macMixPrep, macEvaporatedMilk); err != nil {
 		return err
 	}
-	if err := createVIP(macWhiskPrep, macEggs); err != nil {
+	if err := createVIP(macMixPrep, macEggs); err != nil {
 		return err
 	}
-	if err := createVIP(macWhiskPrep, macHotSauce); err != nil {
+	if err := createVIP(macMixPrep, macHotSauce); err != nil {
 		return err
 	}
-	if err := createVIP(macWhiskPrep, macGroundMustard); err != nil {
+	if err := createVIP(macMixPrep, macGroundMustard); err != nil {
 		return err
 	}
-	if err := createVPI(macWhiskPrep, macWhisk); err != nil {
+	if err := createVPI(macMixPrep, macWhisk); err != nil {
 		return err
 	}
-	if err := createVPV(macWhiskPrep, macMediumBowl); err != nil {
+	if err := createVPV(macMixPrep, macMediumBowl); err != nil {
 		return err
 	}
 
 	// === MIX PREPARATION for mac and cheese ===
-	macMixPrep := enums.Preparations["mix"]
+	macMixPrep = enums.Preparations["mix"]
 	if err := createVIP(macMixPrep, macEvaporatedMilk); err != nil {
 		return err
 	}
@@ -6578,7 +6629,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	csWhiskPrep, err := getPreparation("whisk")
+	csWhiskPrep, err := getPreparation("mix")
 	if err != nil {
 		return err
 	}
@@ -7081,7 +7132,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
-
 	// === COVER PREPARATION ===
 	if err := createVPV(gcCoverPrep, gcPan); err != nil {
 		return err
@@ -7134,6 +7184,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === DISCARD PREPARATION ===
 	if err := createVIP(gcDiscardPrep, gcSage); err != nil {
+		return err
+	}
+	if err := createVPV(gcDiscardPrep, gcPan); err != nil {
 		return err
 	}
 
@@ -7197,6 +7250,275 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(gcCarrot, gcUnitMeasurement); err != nil {
+		return err
+	}
+
+	// ========================================
+	// === CORNBREAD RECIPE BRIDGE ENTRIES ===
+	// ========================================
+
+	// Get preparations
+	cbPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	cbGreasePrep, err := getPreparation("grease")
+	if err != nil {
+		return err
+	}
+	cbMixPrep, err := getPreparation("mix")
+	if err != nil {
+		return err
+	}
+	cbPourPrep, err := getPreparation("pour")
+	if err != nil {
+		return err
+	}
+	cbStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	cbBakePrep, err := getPreparation("bake")
+	if err != nil {
+		return err
+	}
+	cbCoolPrep, err := getPreparation("cool")
+	if err != nil {
+		return err
+	}
+	cbCombinePrep, err := getPreparation("combine")
+	if err != nil {
+		return err
+	}
+
+	// Get ingredients
+	cbFlour, err := getIngredient("flour")
+	if err != nil {
+		return err
+	}
+	cbCornmeal, err := getIngredient("cornmeal")
+	if err != nil {
+		return err
+	}
+	cbSugar, err := getIngredient("sugar")
+	if err != nil {
+		return err
+	}
+	cbBakingPowder, err := getIngredient("baking powder")
+	if err != nil {
+		return err
+	}
+	cbBakingSoda, err := getIngredient("baking soda")
+	if err != nil {
+		return err
+	}
+	cbSalt, err := getIngredient("salt")
+	if err != nil {
+		return err
+	}
+	cbMilk, err := getIngredient("milk")
+	if err != nil {
+		return err
+	}
+	cbButter, err := getIngredient("butter")
+	if err != nil {
+		return err
+	}
+	cbVegetableOil, err := getIngredient("vegetable oil")
+	if err != nil {
+		return err
+	}
+	cbEggs, err := getIngredient("eggs")
+	if err != nil {
+		return err
+	}
+
+	// Get vessels
+	cbOven, err := getVessel("oven")
+	if err != nil {
+		return err
+	}
+	cbBakingPan, err := getVessel("baking pan")
+	if err != nil {
+		return err
+	}
+	cbMediumBowl, err := getVessel("medium bowl")
+	if err != nil {
+		return err
+	}
+	cbLargeBowl, err := getVessel("large bowl")
+	if err != nil {
+		return err
+	}
+	cbWireRack, err := getVessel("wire rack")
+	if err != nil {
+		return err
+	}
+
+	// Get instruments
+	cbWhisk, err := getInstrument("whisk")
+	if err != nil {
+		return err
+	}
+	cbSpoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units
+	cbCupMeasurement := enums.MeasurementUnits["cup"]
+	cbTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	cbTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	cbUnitMeasurement := enums.MeasurementUnits["unit"]
+	cbGramMeasurement := enums.MeasurementUnits["gram"]
+
+	// === PREHEAT PREPARATION ===
+	if err := createVPV(cbPreheatPrep, cbOven); err != nil {
+		return err
+	}
+
+	// === GREASE PREPARATION ===
+	if err := createVIP(cbGreasePrep, cbButter); err != nil {
+		return err
+	}
+	if err := createVIP(cbGreasePrep, cbVegetableOil); err != nil {
+		return err
+	}
+	if err := createVPV(cbGreasePrep, cbBakingPan); err != nil {
+		return err
+	}
+
+	// === WHISK PREPARATION ===
+	if err := createVIP(cbMixPrep, cbFlour); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbCornmeal); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbSugar); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbBakingPowder); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbBakingSoda); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbSalt); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbMilk); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbButter); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbVegetableOil); err != nil {
+		return err
+	}
+	if err := createVIP(cbMixPrep, cbEggs); err != nil {
+		return err
+	}
+	if err := createVPV(cbMixPrep, cbMediumBowl); err != nil {
+		return err
+	}
+	if err := createVPV(cbMixPrep, cbLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPI(cbMixPrep, cbWhisk); err != nil {
+		return err
+	}
+	if err := createVPI(cbMixPrep, cbSpoon); err != nil {
+		return err
+	}
+
+	// === POUR PREPARATION ===
+	if err := createVPV(cbPourPrep, cbMediumBowl); err != nil {
+		return err
+	}
+	if err := createVPV(cbPourPrep, cbLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPV(cbPourPrep, cbBakingPan); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION ===
+	if err := createVPV(cbStirPrep, cbMediumBowl); err != nil {
+		return err
+	}
+	if err := createVPI(cbStirPrep, cbSpoon); err != nil {
+		return err
+	}
+
+	// === COMBINE PREPARATION ===
+	if err := createVPV(cbCombinePrep, cbMediumBowl); err != nil {
+		return err
+	}
+
+	// === BAKE PREPARATION ===
+	if err := createVPV(cbBakePrep, cbOven); err != nil {
+		return err
+	}
+	if err := createVPV(cbBakePrep, cbBakingPan); err != nil {
+		return err
+	}
+
+	// === COOL PREPARATION ===
+	if err := createVPV(cbCoolPrep, cbWireRack); err != nil {
+		return err
+	}
+	if err := createVPV(cbCoolPrep, cbBakingPan); err != nil {
+		return err
+	}
+
+	// === CORNBREAD INGREDIENT MEASUREMENT UNIT BRIDGES ===
+	if err := createVIMU(cbFlour, cbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbFlour, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbCornmeal, cbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbCornmeal, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbSugar, cbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbSugar, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbBakingPowder, cbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbBakingSoda, cbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbSalt, cbTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbMilk, cbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbMilk, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbButter, cbTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbButter, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbVegetableOil, cbCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbVegetableOil, cbGramMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cbEggs, cbUnitMeasurement); err != nil {
 		return err
 	}
 
