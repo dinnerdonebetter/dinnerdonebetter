@@ -87,6 +87,20 @@ func main() {
 			}
 
 			logger.Info("All bootstrap recipes created successfully!")
+
+			logger.Info("Creating bootstrap meals...")
+			meals := bootstrap.AllMeals(adminUserID, recipes)
+			logger.Info(fmt.Sprintf("Found %d meals to create", len(meals)))
+
+			for i, meal := range meals {
+				logger.Info(fmt.Sprintf("Creating meal %d: %s (%d components)", i+1, meal.Name, len(meal.Components)))
+				_, err = repo.CreateMeal(ctx, meal)
+				if err != nil {
+					return fmt.Errorf("failed to create meal %s: %w", meal.Name, err)
+				}
+			}
+
+			logger.Info("All bootstrap meals created successfully!")
 			return nil
 		}),
 		// Create example service settings
