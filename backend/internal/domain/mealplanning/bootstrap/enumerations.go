@@ -231,6 +231,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "lemon juice", Description: "Freshly squeezed lemon juice", PluralName: "lemon juice", StorageInstructions: "Store in the refrigerator", Slug: "lemon-juice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "egg yolk", Description: "The yellow portion of an egg", PluralName: "egg yolks", StorageInstructions: "Store in the refrigerator and use within 2 days", Slug: "egg-yolk", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: true, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "romaine lettuce", Description: "Crisp romaine lettuce with inner leaves", PluralName: "romaine lettuce", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "romaine-lettuce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Glazed carrots recipe ingredients
+		{ID: identifiers.New(), Name: "apple cider", Description: "Unfiltered apple cider", PluralName: "apple cider", StorageInstructions: "Store in the refrigerator after opening", Slug: "apple-cider", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "chicken stock", Description: "Homemade or low-sodium chicken stock", PluralName: "chicken stock", StorageInstructions: "Store in the refrigerator for up to 5 days or freeze", Slug: "chicken-stock", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "chives", Description: "Fresh chives", PluralName: "chives", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "chives", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "apple cider vinegar", Description: "Apple cider vinegar", PluralName: "apple cider vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "apple-cider-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -619,6 +624,33 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create translucent ingredient state: %w", err)
 	}
 	enums.IngredientStates["translucent"] = translucentState
+
+	// Glazed carrots recipe ingredient states
+	crispState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "crisp",
+		Description:   "Ingredient has become dry and brittle with a snappy texture",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeTexture,
+		PastTense:     "crisped",
+		Slug:          "crisp",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create crisp ingredient state: %w", err)
+	}
+	enums.IngredientStates["crisp"] = crispState
+
+	glazedState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "glazed",
+		Description:   "Ingredient is coated with a glossy, emulsified sauce",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeTexture,
+		PastTense:     "glazed",
+		Slug:          "glazed",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create glazed ingredient state: %w", err)
+	}
+	enums.IngredientStates["glazed"] = glazedState
 
 	// Create bridge types using first instances
 
@@ -1691,6 +1723,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"strain", "Pass a mixture through a strainer to separate solids from liquids", "strained", "strain", false, false},
 		{"cool", "Allow food to decrease in temperature after cooking", "cooled", "cool", false, true},
 		{"sprinkle", "Scatter or distribute small pieces or particles over a surface", "sprinkled", "sprinkle", false, false},
+		// Glazed carrots recipe preparations
+		{"uncover", "Remove a lid, wrap, or foil from a vessel", "uncovered", "uncover", false, false},
+		{"swirl", "Move a vessel in a circular motion to mix or coat contents", "swirled", "swirl", false, false},
 	}
 
 	for i := range prepInputs {
@@ -6884,6 +6919,284 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(csRomaineLettuce, csUnitMeasurement); err != nil {
+		return err
+	}
+
+	// === GLAZED CARROTS RECIPE BRIDGE ENTRIES ===
+	// Get preparations for glazed carrots recipe
+	gcMeltPrep, err := getPreparation("melt")
+	if err != nil {
+		return err
+	}
+	gcStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	gcCookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	gcAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	gcCoverPrep, err := getPreparation("cover")
+	if err != nil {
+		return err
+	}
+	gcUncoverPrep, err := getPreparation("uncover")
+	if err != nil {
+		return err
+	}
+	gcReducePrep, err := getPreparation("reduce")
+	if err != nil {
+		return err
+	}
+	gcSwirPrep, err := getPreparation("swirl")
+	if err != nil {
+		return err
+	}
+	gcRemoveFromHeatPrep, err := getPreparation("remove from heat")
+	if err != nil {
+		return err
+	}
+	gcDiscardPrep, err := getPreparation("discard")
+	if err != nil {
+		return err
+	}
+	gcSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	gcSprinklePrep, err := getPreparation("sprinkle")
+	if err != nil {
+		return err
+	}
+	gcShakePrep, err := getPreparation("shake")
+	if err != nil {
+		return err
+	}
+	gcBoilPrep, err := getPreparation("boil")
+	if err != nil {
+		return err
+	}
+
+	// Get ingredients for glazed carrots recipe
+	gcButter := enums.Ingredients["butter"]
+	gcSage := enums.Ingredients["sage"]
+	gcCarrot := enums.Ingredients["carrot"]
+	gcAppleCider := enums.Ingredients["apple cider"]
+	gcChickenStock := enums.Ingredients["chicken stock"]
+	gcHoney := enums.Ingredients["honey"]
+	gcSalt := enums.Ingredients["salt"]
+	gcBlackPepper := enums.Ingredients["black pepper"]
+	gcAppleCiderVinegar := enums.Ingredients["apple cider vinegar"]
+	gcParsley := enums.Ingredients["parsley"]
+	gcChives := enums.Ingredients["chives"]
+	gcTarragon := enums.Ingredients["tarragon"]
+
+	// Get instruments for glazed carrots recipe
+	gcSpoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+
+	// Get vessels for glazed carrots recipe
+	gcPan := enums.Vessels["pan"]
+	gcServingBowl, err := getVessel("serving bowl")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units for glazed carrots recipe
+	gcTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	gcTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	gcCupMeasurement := enums.MeasurementUnits["cup"]
+	gcPoundMeasurement := enums.MeasurementUnits["pound"]
+	gcSprigMeasurement := enums.MeasurementUnits["sprig"]
+	gcUnitMeasurement := enums.MeasurementUnits["unit"]
+
+	// === MELT PREPARATION for butter ===
+	if err := createVIP(gcMeltPrep, gcButter); err != nil {
+		return err
+	}
+	if err := createVPV(gcMeltPrep, gcPan); err != nil {
+		return err
+	}
+	if err := createVPI(gcMeltPrep, gcSpoon); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION ===
+	if err := createVIP(gcStirPrep, gcButter); err != nil {
+		return err
+	}
+	if err := createVPV(gcStirPrep, gcPan); err != nil {
+		return err
+	}
+	if err := createVPI(gcStirPrep, gcSpoon); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for browning butter ===
+	if err := createVIP(gcCookPrep, gcButter); err != nil {
+		return err
+	}
+	if err := createVIP(gcCookPrep, gcSage); err != nil {
+		return err
+	}
+	if err := createVPV(gcCookPrep, gcPan); err != nil {
+		return err
+	}
+	if err := createVPI(gcCookPrep, gcSpoon); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION ===
+	if err := createVIP(gcAddPrep, gcSage); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcCarrot); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcAppleCider); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcChickenStock); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcHoney); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcSalt); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcBlackPepper); err != nil {
+		return err
+	}
+	if err := createVIP(gcAddPrep, gcAppleCiderVinegar); err != nil {
+		return err
+	}
+	if err := createVPV(gcAddPrep, gcPan); err != nil {
+		return err
+	}
+
+
+	// === COVER PREPARATION ===
+	if err := createVPV(gcCoverPrep, gcPan); err != nil {
+		return err
+	}
+
+	// === BOIL PREPARATION ===
+	if err := createVIP(gcBoilPrep, gcCarrot); err != nil {
+		return err
+	}
+	if err := createVPV(gcBoilPrep, gcPan); err != nil {
+		return err
+	}
+
+	// === SHAKE PREPARATION ===
+	if err := createVIP(gcShakePrep, gcCarrot); err != nil {
+		return err
+	}
+	if err := createVPV(gcShakePrep, gcPan); err != nil {
+		return err
+	}
+
+	// === UNCOVER PREPARATION ===
+	if err := createVPV(gcUncoverPrep, gcPan); err != nil {
+		return err
+	}
+
+	// === REDUCE PREPARATION ===
+	if err := createVIP(gcReducePrep, gcAppleCider); err != nil {
+		return err
+	}
+	if err := createVIP(gcReducePrep, gcChickenStock); err != nil {
+		return err
+	}
+	if err := createVPV(gcReducePrep, gcPan); err != nil {
+		return err
+	}
+	if err := createVPI(gcReducePrep, gcSpoon); err != nil {
+		return err
+	}
+
+	// === SWIRL PREPARATION ===
+	if err := createVPV(gcSwirPrep, gcPan); err != nil {
+		return err
+	}
+
+	// === REMOVE FROM HEAT PREPARATION ===
+	if err := createVPV(gcRemoveFromHeatPrep, gcPan); err != nil {
+		return err
+	}
+
+	// === DISCARD PREPARATION ===
+	if err := createVIP(gcDiscardPrep, gcSage); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION ===
+	if err := createVIP(gcSeasonPrep, gcAppleCiderVinegar); err != nil {
+		return err
+	}
+	if err := createVIP(gcSeasonPrep, gcCarrot); err != nil {
+		return err
+	}
+	if err := createVPV(gcSeasonPrep, gcPan); err != nil {
+		return err
+	}
+	if err := createVPI(gcSeasonPrep, gcSpoon); err != nil {
+		return err
+	}
+
+	// === SPRINKLE PREPARATION ===
+	if err := createVIP(gcSprinklePrep, gcParsley); err != nil {
+		return err
+	}
+	if err := createVIP(gcSprinklePrep, gcChives); err != nil {
+		return err
+	}
+	if err := createVIP(gcSprinklePrep, gcTarragon); err != nil {
+		return err
+	}
+	if err := createVPV(gcSprinklePrep, gcServingBowl); err != nil {
+		return err
+	}
+
+	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
+	if err := createVIMU(gcButter, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcSage, gcSprigMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcCarrot, gcPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcAppleCider, gcCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcChickenStock, gcCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcHoney, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcAppleCiderVinegar, gcTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcParsley, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcChives, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcTarragon, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(gcCarrot, gcUnitMeasurement); err != nil {
 		return err
 	}
 
