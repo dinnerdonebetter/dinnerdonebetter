@@ -38,7 +38,6 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
-	gramMeasurement := enums.MeasurementUnits["gram"]
 
 	// Get instruments
 	whisk := enums.Instruments["whisk"]
@@ -75,7 +74,6 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	mixVegetableOilVIP := enums.IngredientPreparations[mixPrep.ID][vegetableOil.ID]
 	mixEggsVIP := enums.IngredientPreparations[mixPrep.ID][eggs.ID]
 	mixMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
-	mixLargeBowlVPV := enums.PreparationVessels[mixPrep.ID][largeBowl.ID]
 	mixWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
 
 	// Pour preparation bridges
@@ -93,35 +91,18 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 
 	// Cool preparation bridges
 	coolWireRackVPV := enums.PreparationVessels[coolPrep.ID][wireRack.ID]
-	coolBakingPanVPV := enums.PreparationVessels[coolPrep.ID][bakingPan.ID]
 
 	// Measurement unit bridges
 	flourCupVIMU := enums.IngredientMeasurementUnits[flour.ID][cupMeasurement.ID]
-	flourGramVIMU := enums.IngredientMeasurementUnits[flour.ID][gramMeasurement.ID]
 	cornmealCupVIMU := enums.IngredientMeasurementUnits[cornmeal.ID][cupMeasurement.ID]
-	cornmealGramVIMU := enums.IngredientMeasurementUnits[cornmeal.ID][gramMeasurement.ID]
 	sugarCupVIMU := enums.IngredientMeasurementUnits[sugar.ID][cupMeasurement.ID]
-	sugarGramVIMU := enums.IngredientMeasurementUnits[sugar.ID][gramMeasurement.ID]
 	bakingPowderTeaspoonVIMU := enums.IngredientMeasurementUnits[bakingPowder.ID][teaspoonMeasurement.ID]
 	bakingSodaTeaspoonVIMU := enums.IngredientMeasurementUnits[bakingSoda.ID][teaspoonMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	milkCupVIMU := enums.IngredientMeasurementUnits[milk.ID][cupMeasurement.ID]
-	milkGramVIMU := enums.IngredientMeasurementUnits[milk.ID][gramMeasurement.ID]
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
-	butterGramVIMU := enums.IngredientMeasurementUnits[butter.ID][gramMeasurement.ID]
 	vegetableOilCupVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][cupMeasurement.ID]
-	vegetableOilGramVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][gramMeasurement.ID]
 	eggsUnitVIMU := enums.IngredientMeasurementUnits[eggs.ID][unitMeasurement.ID]
-
-	// Suppress unused variable warnings
-	_ = flourGramVIMU
-	_ = cornmealGramVIMU
-	_ = sugarGramVIMU
-	_ = milkGramVIMU
-	_ = butterGramVIMU
-	_ = vegetableOilGramVIMU
-	_ = coolBakingPanVPV
-	_ = mixLargeBowlVPV
 
 	// ==================== RECIPE STEPS ====================
 

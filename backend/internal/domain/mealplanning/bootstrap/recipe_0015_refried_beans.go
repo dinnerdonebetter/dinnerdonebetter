@@ -155,14 +155,14 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step0ID,
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &coverWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
-				IngredientID:                    &water.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "cold water",
-				QuantityNotes:                   "Enough to cover beans by at least 2 inches",
+				IngredientID:                     &water.ID,
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "cold water",
+				QuantityNotes:                    "Enough to cover beans by at least 2 inches",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4, // Approximate cups
 				},

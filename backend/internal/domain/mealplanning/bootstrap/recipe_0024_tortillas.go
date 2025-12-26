@@ -37,7 +37,6 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	cupMeasurement := enums.MeasurementUnits["cup"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
-	gramMeasurement := enums.MeasurementUnits["gram"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
@@ -149,12 +148,9 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	mixBakingPowderVIP := getVIP("mix", "baking powder")
 	mixSaltVIP := getVIP("mix", "salt")
 	mixLardVIP := getVIP("mix", "lard")
-	mixWaterVIP := getVIP("mix", "water")
 	mixMediumBowlVPV := getVPV("mix", "medium bowl")
 	mixWhiskVPI := getVPI("mix", "whisk")
 	mixPastryBlenderVPI := getVPI("mix", "pastry blender")
-	mixBareHandsVPI := getVPI("mix", "bare hands")
-	mixForkVPI := getVPI("mix", "fork")
 
 	addLardVIP := getVIP("add", "lard")
 	addWaterVIP := getVIP("add", "water")
@@ -162,7 +158,6 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 
 	stirMediumBowlVPV := getVPV("stir", "medium bowl")
 	stirForkVPI := getVPI("stir", "fork")
-	stirWhiskVPI := getVPI("stir", "whisk")
 
 	kneadFlourVIP := getVIP("knead", "flour")
 	kneadCountertopVPV := getVPV("knead", "countertop")
@@ -195,24 +190,10 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 
 	// Measurement unit bridges
 	flourCupVIMU := getVIMU("flour", "cup")
-	flourGramVIMU := getVIMU("flour", "gram")
 	bakingPowderTeaspoonVIMU := getVIMU("baking powder", "teaspoon")
 	saltTeaspoonVIMU := getVIMU("salt", "teaspoon")
 	lardTablespoonVIMU := getVIMU("lard", "tablespoon")
 	waterCupVIMU := getVIMU("water", "cup")
-	waterGramVIMU := getVIMU("water", "gram")
-
-	// Suppress unused variable warnings
-	_ = mixWhiskVPI
-	_ = mixPastryBlenderVPI
-	_ = mixBareHandsVPI
-	_ = mixForkVPI
-	_ = mixWaterVIP
-	_ = stirWhiskVPI
-	_ = divideBareHandsVPI
-	_ = flourGramVIMU
-	_ = waterGramVIMU
-	_ = gramMeasurement
 
 	// ==================== RECIPE STEPS ====================
 

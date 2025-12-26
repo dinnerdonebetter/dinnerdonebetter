@@ -36,4 +36,3 @@ func AllRecipes(userID string, enums *Enumerations) []*mealplanning.RecipeDataba
 
 	return recipes
 }
-

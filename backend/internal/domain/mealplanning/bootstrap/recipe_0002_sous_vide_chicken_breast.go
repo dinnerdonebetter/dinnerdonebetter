@@ -15,7 +15,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	seasonPrep := enums.Preparations["season"]
 	bagPrep := enums.Preparations["bag"]
 	sousVidePrep := enums.Preparations["sous-vide"]
-	dryPrep := enums.Preparations["dry"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	grillPrep := enums.Preparations["grill"]
 	restPrep := enums.Preparations["rest"]
@@ -67,7 +66,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Bag preparation bridges
-	_ = enums.IngredientPreparations[bagPrep.ID][chickenBreast.ID] // validated but not used
 	bagThymeVIP := enums.IngredientPreparations[bagPrep.ID][thyme.ID]
 	bagRosemaryVIP := enums.IngredientPreparations[bagPrep.ID][rosemary.ID]
 	thymeSprigVIMU := enums.IngredientMeasurementUnits[thyme.ID][sprigMeasurement.ID]
@@ -76,16 +74,9 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	bagVacuumBagVPV := enums.PreparationVessels[bagPrep.ID][vacuumBag.ID]
 
 	// Sous vide preparation bridges
-	_ = enums.IngredientPreparations[sousVidePrep.ID][chickenBreast.ID] // validated but not used
 	sousVideCookerVPI := enums.PreparationInstruments[sousVidePrep.ID][sousVideCooker.ID]
-	_ = enums.PreparationVessels[sousVidePrep.ID][waterBath.ID] // validated but not used
-
-	// Dry preparation bridges (for patting dry after sous vide)
-	_ = enums.IngredientPreparations[dryPrep.ID][chickenBreast.ID] // validated but not used
-	_ = enums.PreparationInstruments[dryPrep.ID][paperTowels.ID]   // validated but not used
 
 	// Pan-sear preparation bridges (for finishing)
-	_ = enums.IngredientPreparations[panSearPrep.ID][chickenBreast.ID] // validated but not used
 	panSearOilVIP := enums.IngredientPreparations[panSearPrep.ID][vegetableOil.ID]
 	oilMilliliterVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][milliliterMeasurement.ID]
 	panSearPaperTowelsVPI := enums.PreparationInstruments[panSearPrep.ID][paperTowels.ID]
@@ -94,7 +85,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	panSearSkilletVPV := enums.PreparationVessels[panSearPrep.ID][castIronSkillet.ID]
 
 	// Grill preparation bridges (for finishing)
-	_ = enums.IngredientPreparations[grillPrep.ID][chickenBreast.ID] // validated but not used
 	grillPaperTowelsVPI := enums.PreparationInstruments[grillPrep.ID][paperTowels.ID]
 	grillTongsVPI := enums.PreparationInstruments[grillPrep.ID][tongs.ID]
 	grillGrillVPV := enums.PreparationVessels[grillPrep.ID][grillVessel.ID]

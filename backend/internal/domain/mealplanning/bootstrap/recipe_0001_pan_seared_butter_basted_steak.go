@@ -46,7 +46,6 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	servingPlate := enums.Vessels["serving plate"]
 
 	// Get ingredient states for completion conditions
-	_ = enums.IngredientStates["dry"] // dry state validated but not used
 	smokingState := enums.IngredientStates["smoking"]
 	atTemperatureState := enums.IngredientStates["at temperature"]
 
@@ -57,7 +56,6 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	dryPaperTowelsVPI := enums.PreparationInstruments[dryPrep.ID][paperTowels.ID]
 
 	// Season preparation bridges
-	_ = enums.IngredientPreparations[seasonPrep.ID][ribeye.ID] // validated but not used
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
@@ -97,9 +95,8 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	// Step 0: Pat dry the steak
 	step0ID := identifiers.New()
 	step0IngredientID := identifiers.New()
-	_ = identifiers.New() // completion condition ID placeholder
 	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step0ID,
+		ID:              step0ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   dryPrep.ID,
 		Index:           0,
@@ -120,11 +117,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step0ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step0ID,
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
-				InstrumentID:                &paperTowels.ID,
-				Name:                        "paper towels",
+				InstrumentID:                 &paperTowels.ID,
+				Name:                         "paper towels",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -132,7 +129,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step0ID,
 				Name:                "dried ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -148,20 +145,20 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	// Step 1: Season the steak
 	step1ID := identifiers.New()
 	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step1ID,
+		ID:              step1ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
 		Index:           1,
 		Notes:           "Season liberally on all sides, including edges, with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step1ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &ribeye.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "dried ribeye steak",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step1ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &ribeye.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "dried ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -195,11 +192,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step1ID,
-				ValidPreparationVesselID:  &seasonSheetPanVPV.ID,
-				VesselID:                  &sheetPan.ID,
-				Name:                      "sheet pan",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step1ID,
+				ValidPreparationVesselID: &seasonSheetPanVPV.ID,
+				VesselID:                 &sheetPan.ID,
+				Name:                     "sheet pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -207,7 +204,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step1ID,
 				Name:                "seasoned ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -224,7 +221,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	step2ID := identifiers.New()
 	step2IngredientID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step2ID,
+		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   restPrep.ID,
 		Index:           2,
@@ -235,13 +232,13 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               step2IngredientID,
-				BelongsToRecipeStep:              step2ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &ribeye.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "seasoned ribeye steak",
+				ID:                              step2IngredientID,
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &ribeye.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "seasoned ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -249,11 +246,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step2ID,
-				ValidPreparationVesselID:  &restSheetPanVPV.ID,
-				VesselID:                  &sheetPan.ID,
-				Name:                      "sheet pan",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2ID,
+				ValidPreparationVesselID: &restSheetPanVPV.ID,
+				VesselID:                 &sheetPan.ID,
+				Name:                     "sheet pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -261,7 +258,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step2ID,
 				Name:                "rested seasoned ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -279,7 +276,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	step3OilIngredientID := identifiers.New()
 	step3CompletionConditionID := identifiers.New()
 	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step3ID,
+		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   heatPrep.ID,
 		Index:           3,
@@ -303,11 +300,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step3ID,
-				ValidPreparationVesselID:  &heatSkilletVPV.ID,
-				VesselID:                  &castIronSkillet.ID,
-				Name:                      "cast iron skillet",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step3ID,
+				ValidPreparationVesselID: &heatSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -315,7 +312,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step3ID,
 				Name:                "heated smoking oil",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -347,7 +344,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	// Step 4: Pan-sear the steak
 	step4ID := identifiers.New()
 	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step4ID,
+		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   panSearPrep.ID,
 		Index:           4,
@@ -357,25 +354,25 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step4ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &ribeye.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "rested seasoned ribeye steak",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &ribeye.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "rested seasoned ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step4ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &vegetableOil.ID,
-				MeasurementUnitID:                milliliterMeasurement.ID,
-				Name:                             "heated smoking oil",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &vegetableOil.ID,
+				MeasurementUnitID:               milliliterMeasurement.ID,
+				Name:                            "heated smoking oil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 60,
 				},
@@ -383,11 +380,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step4ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step4ID,
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -395,11 +392,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step4ID,
-				ValidPreparationVesselID:  &panSearSkilletVPV.ID,
-				VesselID:                  &castIronSkillet.ID,
-				Name:                      "cast iron skillet",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step4ID,
+				ValidPreparationVesselID: &panSearSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -407,7 +404,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step4ID,
 				Name:                "pan-seared ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -425,7 +422,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	step5SteakIngredientID := identifiers.New()
 	step5CompletionConditionID := identifiers.New()
 	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step5ID,
+		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   bastePrep.ID,
 		Index:           5,
@@ -440,13 +437,13 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               step5SteakIngredientID,
-				BelongsToRecipeStep:              step5ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &ribeye.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "pan-seared ribeye steak",
+				ID:                              step5SteakIngredientID,
+				BelongsToRecipeStep:             step5ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &ribeye.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "pan-seared ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -505,31 +502,31 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step5ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &basteSpoonVPI.ID,
-				InstrumentID:                &spoon.ID,
-				Name:                        "spoon",
+				InstrumentID:                 &spoon.ID,
+				Name:                         "spoon",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step5ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &basteThermometerVPI.ID,
-				InstrumentID:                &thermometer.ID,
-				Name:                        "instant-read thermometer",
+				InstrumentID:                 &thermometer.ID,
+				Name:                         "instant-read thermometer",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step5ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &basteTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -537,11 +534,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step5ID,
-				ValidPreparationVesselID:  &basteSkilletVPV.ID,
-				VesselID:                  &castIronSkillet.ID,
-				Name:                      "cast iron skillet",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step5ID,
+				ValidPreparationVesselID: &basteSkilletVPV.ID,
+				VesselID:                 &castIronSkillet.ID,
+				Name:                     "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -549,7 +546,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step5ID,
 				Name:                "butter-basted ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -581,7 +578,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 	// Step 6: Rest the steak
 	step6ID := identifiers.New()
 	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:            step6ID,
+		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   restPrep.ID,
 		Index:           6,
@@ -592,13 +589,13 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex:   pointer.To[uint64](0),
-				IngredientID:                     &ribeye.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "butter-basted ribeye steak",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &ribeye.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "butter-basted ribeye steak",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -606,11 +603,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                          identifiers.New(),
-				BelongsToRecipeStep:         step6ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step6ID,
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
-				InstrumentID:                &tongs.ID,
-				Name:                        "tongs",
+				InstrumentID:                 &tongs.ID,
+				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -618,11 +615,11 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                        identifiers.New(),
-				BelongsToRecipeStep:       step6ID,
-				ValidPreparationVesselID:  &restPlateVPV.ID,
-				VesselID:                  &servingPlate.ID,
-				Name:                      "serving plate",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step6ID,
+				ValidPreparationVesselID: &restPlateVPV.ID,
+				VesselID:                 &servingPlate.ID,
+				Name:                     "serving plate",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -630,7 +627,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step6ID,
 				Name:                "rested pan-seared butter-basted ribeye steak",
 				Type:                mealplanning.RecipeStepProductIngredientType,

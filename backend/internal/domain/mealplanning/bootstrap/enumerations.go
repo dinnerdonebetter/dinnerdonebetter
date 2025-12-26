@@ -265,7 +265,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 
 	// Create ValidInstruments
-	instruments := []struct {
+	instruments := []*struct {
 		name        string
 		description string
 		pluralName  string
@@ -415,7 +415,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 
 	// Create additional measurement units
-	measurementUnits := []struct {
+	measurementUnits := []*struct {
 		name        string
 		description string
 		pluralName  string
@@ -1919,7 +1919,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 
 	// Create bridge table entries for steak recipe
-	if err = createSteakRecipeBridgeEntries(ctx, repo, logger, enums); err != nil {
+	if err = createSteakRecipeBridgeEntries(ctx, repo, enums); err != nil {
 		return nil, err
 	}
 
@@ -1942,7 +1942,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 }
 
 // createSteakRecipeBridgeEntries creates all the bridge table entries needed for the steak recipe.
-func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, enums *Enumerations) error {
+func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repository, enums *Enumerations) error {
 	// Helper to get instrument with error checking
 	getInstrument := func(name string) (*mealplanning.ValidInstrument, error) {
 		inst := enums.Instruments[name]
@@ -2122,50 +2122,50 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === DRY PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(dryPrep, ribeye); err != nil {
+	if err = createVIP(dryPrep, ribeye); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links (already created for ribeye)
 
 	// Preparation-Instrument links
-	if err := createVPI(dryPrep, paperTowels); err != nil {
+	if err = createVPI(dryPrep, paperTowels); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(heatPrep, vegetableOil); err != nil {
+	if err = createVIP(heatPrep, vegetableOil); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links (already created for vegetableOil)
 
 	// Preparation-Vessel links
-	if err := createVPV(heatPrep, castIronSkillet); err != nil {
+	if err = createVPV(heatPrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(seasonPrep, ribeye); err != nil {
+	if err = createVIP(seasonPrep, ribeye); err != nil {
 		return err
 	}
-	if err := createVIP(seasonPrep, salt); err != nil {
+	if err = createVIP(seasonPrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(seasonPrep, blackPepper); err != nil {
+	if err = createVIP(seasonPrep, blackPepper); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(ribeye, unitMeasurement); err != nil {
+	if err = createVIMU(ribeye, unitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(salt, gramMeasurement); err != nil {
+	if err = createVIMU(salt, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(blackPepper, gramMeasurement); err != nil {
+	if err = createVIMU(blackPepper, gramMeasurement); err != nil {
 		return err
 	}
 
@@ -2174,92 +2174,92 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	if err := createVPI(seasonPrep, bareHands); err != nil {
+	if err = createVPI(seasonPrep, bareHands); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(seasonPrep, sheetPan); err != nil {
+	if err = createVPV(seasonPrep, sheetPan); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(panSearPrep, vegetableOil); err != nil {
+	if err = createVIP(panSearPrep, vegetableOil); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(vegetableOil, milliliterMeasurement); err != nil {
+	if err = createVIMU(vegetableOil, milliliterMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(panSearPrep, tongs); err != nil {
+	if err = createVPI(panSearPrep, tongs); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(panSearPrep, castIronSkillet); err != nil {
+	if err = createVPV(panSearPrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === BASTE PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(bastePrep, butter); err != nil {
+	if err = createVIP(bastePrep, butter); err != nil {
 		return err
 	}
-	if err := createVIP(bastePrep, thyme); err != nil {
+	if err = createVIP(bastePrep, thyme); err != nil {
 		return err
 	}
-	if err := createVIP(bastePrep, rosemary); err != nil {
+	if err = createVIP(bastePrep, rosemary); err != nil {
 		return err
 	}
-	if err := createVIP(bastePrep, shallot); err != nil {
+	if err = createVIP(bastePrep, shallot); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(butter, gramMeasurement); err != nil {
+	if err = createVIMU(butter, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(thyme, sprigMeasurement); err != nil {
+	if err = createVIMU(thyme, sprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rosemary, sprigMeasurement); err != nil {
+	if err = createVIMU(rosemary, sprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(shallot, gramMeasurement); err != nil {
+	if err = createVIMU(shallot, gramMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(bastePrep, spoon); err != nil {
+	if err = createVPI(bastePrep, spoon); err != nil {
 		return err
 	}
-	if err := createVPI(bastePrep, thermometer); err != nil {
+	if err = createVPI(bastePrep, thermometer); err != nil {
 		return err
 	}
-	if err := createVPI(bastePrep, tongs); err != nil {
+	if err = createVPI(bastePrep, tongs); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(bastePrep, castIronSkillet); err != nil {
+	if err = createVPV(bastePrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION ===
 	// Preparation-Instrument links
-	if err := createVPI(restPrep, tongs); err != nil {
+	if err = createVPI(restPrep, tongs); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(restPrep, sheetPan); err != nil {
+	if err = createVPV(restPrep, sheetPan); err != nil {
 		return err
 	}
-	if err := createVPV(restPrep, servingPlate); err != nil {
+	if err = createVPV(restPrep, servingPlate); err != nil {
 		return err
 	}
 
@@ -2291,110 +2291,110 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === SEASON PREPARATION (for chicken breast) ===
 	// Ingredient-Preparation links
-	if err := createVIP(seasonPrep, chickenBreast); err != nil {
+	if err = createVIP(seasonPrep, chickenBreast); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(chickenBreast, unitMeasurement); err != nil {
+	if err = createVIMU(chickenBreast, unitMeasurement); err != nil {
 		return err
 	}
 
 	// === POUND PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(poundPrep, chickenBreast); err != nil {
+	if err = createVIP(poundPrep, chickenBreast); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(poundPrep, meatPounder); err != nil {
+	if err = createVPI(poundPrep, meatPounder); err != nil {
 		return err
 	}
-	if err := createVPI(poundPrep, rollingPin); err != nil {
+	if err = createVPI(poundPrep, rollingPin); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(poundPrep, plasticBag); err != nil {
+	if err = createVPV(poundPrep, plasticBag); err != nil {
 		return err
 	}
 
 	// === WET-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(wetBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(wetBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err := createVIP(wetBrinePrep, salt); err != nil {
+	if err = createVIP(wetBrinePrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(wetBrinePrep, sugar); err != nil {
+	if err = createVIP(wetBrinePrep, sugar); err != nil {
 		return err
 	}
-	if err := createVIP(wetBrinePrep, water); err != nil {
+	if err = createVIP(wetBrinePrep, water); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(water, literMeasurement); err != nil {
+	if err = createVIMU(water, literMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(sugar, gramMeasurement); err != nil {
+	if err = createVIMU(sugar, gramMeasurement); err != nil {
 		return err
 	}
 
 	// === DRY-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(dryBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(dryBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err := createVIP(dryBrinePrep, salt); err != nil {
+	if err = createVIP(dryBrinePrep, salt); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(dryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err := createVPV(dryBrinePrep, sheetPan); err != nil {
+	if err = createVPV(dryBrinePrep, sheetPan); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(grillPrep, chickenBreast); err != nil {
+	if err = createVIP(grillPrep, chickenBreast); err != nil {
 		return err
 	}
-	if err := createVIP(grillPrep, oliveOil); err != nil {
+	if err = createVIP(grillPrep, oliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(grillPrep, salt); err != nil {
+	if err = createVIP(grillPrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(grillPrep, blackPepper); err != nil {
+	if err = createVIP(grillPrep, blackPepper); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(oliveOil, milliliterMeasurement); err != nil {
+	if err = createVIMU(oliveOil, milliliterMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(grillPrep, brush); err != nil {
+	if err = createVPI(grillPrep, brush); err != nil {
 		return err
 	}
-	if err := createVPI(grillPrep, thermometer); err != nil {
+	if err = createVPI(grillPrep, thermometer); err != nil {
 		return err
 	}
-	if err := createVPI(grillPrep, tongs); err != nil {
+	if err = createVPI(grillPrep, tongs); err != nil {
 		return err
 	}
-	if err := createVPI(grillPrep, paperTowels); err != nil {
+	if err = createVPI(grillPrep, paperTowels); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(grillPrep, grillVessel); err != nil {
+	if err = createVPV(grillPrep, grillVessel); err != nil {
 		return err
 	}
 
@@ -2419,83 +2419,83 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === HEAT PREPARATION (for water bath) ===
 	// Preparation-Instrument links
-	if err := createVPI(heatPrep, sousVideCooker); err != nil {
+	if err = createVPI(heatPrep, sousVideCooker); err != nil {
 		return err
 	}
 	// Preparation-Vessel links
-	if err := createVPV(heatPrep, waterBath); err != nil {
+	if err = createVPV(heatPrep, waterBath); err != nil {
 		return err
 	}
 
 	// === BAG PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(bagPrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(bagPrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
-	if err := createVIP(bagPrep, thyme); err != nil {
+	if err = createVIP(bagPrep, thyme); err != nil {
 		return err
 	}
-	if err := createVIP(bagPrep, rosemary); err != nil {
+	if err = createVIP(bagPrep, rosemary); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links (already created for bone-in skin-on chicken)
-	if err := createVIMU(thyme, sprigMeasurement); err != nil {
+	if err = createVIMU(thyme, sprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rosemary, sprigMeasurement); err != nil {
+	if err = createVIMU(rosemary, sprigMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(bagPrep, plasticBag); err != nil {
+	if err = createVPV(bagPrep, plasticBag); err != nil {
 		return err
 	}
-	if err := createVPV(bagPrep, vacuumBag); err != nil {
+	if err = createVPV(bagPrep, vacuumBag); err != nil {
 		return err
 	}
 
 	// === SOUS-VIDE PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(sousVidePrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(sousVidePrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(boneInSkinOnChickenBreast, unitMeasurement); err != nil {
+	if err = createVIMU(boneInSkinOnChickenBreast, unitMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(sousVidePrep, sousVideCooker); err != nil {
+	if err = createVPI(sousVidePrep, sousVideCooker); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(sousVidePrep, waterBath); err != nil {
+	if err = createVPV(sousVidePrep, waterBath); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION (for finishing) ===
 	// Ingredient-Preparation links for bone-in skin-on chicken
-	if err := createVIP(panSearPrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(panSearPrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
 	// Already has oil bridges, but need to add paper towels and spatula
-	if err := createVPI(panSearPrep, paperTowels); err != nil {
+	if err = createVPI(panSearPrep, paperTowels); err != nil {
 		return err
 	}
-	if err := createVPI(panSearPrep, spatula); err != nil {
+	if err = createVPI(panSearPrep, spatula); err != nil {
 		return err
 	}
 	// Need cast iron skillet vessel (may already exist, but ensure it)
-	if err := createVPV(panSearPrep, castIronSkillet); err != nil {
+	if err = createVPV(panSearPrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION (for finishing) ===
 	// Ingredient-Preparation links for bone-in skin-on chicken
-	if err := createVIP(grillPrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(grillPrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
 
@@ -2532,126 +2532,126 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === MIX PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(mixPrep, salt); err != nil {
+	if err = createVIP(mixPrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, blackPepper); err != nil {
+	if err = createVIP(mixPrep, blackPepper); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, bakingPowder); err != nil {
+	if err = createVIP(mixPrep, bakingPowder); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
+	if err = createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(salt, tablespoonMeasurement); err != nil {
+	if err = createVIMU(salt, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(blackPepper, teaspoonMeasurement); err != nil {
+	if err = createVIMU(blackPepper, teaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
+	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(mixPrep, smallBowl); err != nil {
+	if err = createVPV(mixPrep, smallBowl); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err := createVIP(seasonPrep, wholeChicken); err != nil {
+	if err = createVIP(seasonPrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err := createVIMU(wholeChicken, unitMeasurement); err != nil {
+	if err = createVIMU(wholeChicken, unitMeasurement); err != nil {
 		return err
 	}
 
 	// === TRUSS PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(trussPrep, wholeChicken); err != nil {
+	if err = createVIP(trussPrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(trussPrep, butchersTwine); err != nil {
+	if err = createVPI(trussPrep, butchersTwine); err != nil {
 		return err
 	}
 
 	// === DRY-BRINE PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err := createVIP(dryBrinePrep, wholeChicken); err != nil {
+	if err = createVIP(dryBrinePrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(dryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err := createVPV(dryBrinePrep, bakingSheet); err != nil {
+	if err = createVPV(dryBrinePrep, bakingSheet); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION (for stainless steel skillet) ===
 	// Preparation-Vessel links
-	if err := createVPV(heatPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(heatPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === RUB PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(rubPrep, wholeChicken); err != nil {
+	if err = createVIP(rubPrep, wholeChicken); err != nil {
 		return err
 	}
-	if err := createVIP(rubPrep, vegetableOil); err != nil {
+	if err = createVIP(rubPrep, vegetableOil); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(rubPrep, bareHands); err != nil {
+	if err = createVPI(rubPrep, bareHands); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err := createVIP(panSearPrep, wholeChicken); err != nil {
+	if err = createVIP(panSearPrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(panSearPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(panSearPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === ROAST PREPARATION ===
 	// Ingredient-Preparation links
-	if err := createVIP(roastPrep, wholeChicken); err != nil {
+	if err = createVIP(roastPrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err := createVPI(roastPrep, thermometer); err != nil {
+	if err = createVPI(roastPrep, thermometer); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(roastPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err := createVIP(restPrep, wholeChicken); err != nil {
+	if err = createVIP(restPrep, wholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err := createVPV(restPrep, carvingBoard); err != nil {
+	if err = createVPV(restPrep, carvingBoard); err != nil {
 		return err
 	}
 
@@ -2695,135 +2695,135 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	porkServingPlate := enums.Vessels["serving plate"]
 
 	// === PORK CHOP INGREDIENT-PREPARATION LINKS ===
-	if err := createVIP(porkSeasonPrep, porkChop); err != nil {
+	if err = createVIP(porkSeasonPrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkDryPrep, porkChop); err != nil {
+	if err = createVIP(porkDryPrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkBagPrep, porkChop); err != nil {
+	if err = createVIP(porkBagPrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkSousVidePrep, porkChop); err != nil {
+	if err = createVIP(porkSousVidePrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkPanSearPrep, porkChop); err != nil {
+	if err = createVIP(porkPanSearPrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkBastePrep, porkChop); err != nil {
+	if err = createVIP(porkBastePrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkGrillPrep, porkChop); err != nil {
+	if err = createVIP(porkGrillPrep, porkChop); err != nil {
 		return err
 	}
-	if err := createVIP(porkRestPrep, porkChop); err != nil {
+	if err = createVIP(porkRestPrep, porkChop); err != nil {
 		return err
 	}
 
 	// Garlic for baste step
-	if err := createVIP(porkBastePrep, porkGarlic); err != nil {
+	if err = createVIP(porkBastePrep, porkGarlic); err != nil {
 		return err
 	}
 
 	// === PORK CHOP INGREDIENT-MEASUREMENT UNIT LINKS ===
-	if err := createVIMU(porkChop, porkUnitMeasurement); err != nil {
+	if err = createVIMU(porkChop, porkUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(porkGarlic, porkUnitMeasurement); err != nil {
+	if err = createVIMU(porkGarlic, porkUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(porkButter, porkTablespoonMeasurement); err != nil {
+	if err = createVIMU(porkButter, porkTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(porkVegOil, porkTablespoonMeasurement); err != nil {
+	if err = createVIMU(porkVegOil, porkTablespoonMeasurement); err != nil {
 		return err
 	}
 
 	// === PORK CHOP PREPARATION-INSTRUMENT LINKS ===
 	// Season with bare hands
-	if err := createVPI(porkSeasonPrep, porkBareHands); err != nil {
+	if err = createVPI(porkSeasonPrep, porkBareHands); err != nil {
 		return err
 	}
 	// Dry with paper towels
-	if err := createVPI(porkDryPrep, porkPaperTowels); err != nil {
+	if err = createVPI(porkDryPrep, porkPaperTowels); err != nil {
 		return err
 	}
 	// Heat with sous vide cooker
-	if err := createVPI(porkHeatPrep, porkSousVideCooker); err != nil {
+	if err = createVPI(porkHeatPrep, porkSousVideCooker); err != nil {
 		return err
 	}
 	// Sous vide with sous vide cooker
-	if err := createVPI(porkSousVidePrep, porkSousVideCooker); err != nil {
+	if err = createVPI(porkSousVidePrep, porkSousVideCooker); err != nil {
 		return err
 	}
 	// Pan-sear with tongs
-	if err := createVPI(porkPanSearPrep, porkTongs); err != nil {
+	if err = createVPI(porkPanSearPrep, porkTongs); err != nil {
 		return err
 	}
 	// Baste with tongs and spoon
-	if err := createVPI(porkBastePrep, porkTongs); err != nil {
+	if err = createVPI(porkBastePrep, porkTongs); err != nil {
 		return err
 	}
-	if err := createVPI(porkBastePrep, porkSpoon); err != nil {
+	if err = createVPI(porkBastePrep, porkSpoon); err != nil {
 		return err
 	}
 	// Grill with tongs and paper towels
-	if err := createVPI(porkGrillPrep, porkTongs); err != nil {
+	if err = createVPI(porkGrillPrep, porkTongs); err != nil {
 		return err
 	}
-	if err := createVPI(porkGrillPrep, porkPaperTowels); err != nil {
+	if err = createVPI(porkGrillPrep, porkPaperTowels); err != nil {
 		return err
 	}
 	// Rest with tongs
-	if err := createVPI(porkRestPrep, porkTongs); err != nil {
+	if err = createVPI(porkRestPrep, porkTongs); err != nil {
 		return err
 	}
 
 	// === PORK CHOP PREPARATION-VESSEL LINKS ===
 	// Heat for water bath
-	if err := createVPV(porkHeatPrep, porkWaterBath); err != nil {
+	if err = createVPV(porkHeatPrep, porkWaterBath); err != nil {
 		return err
 	}
 	// Bag with plastic bag or vacuum bag
-	if err := createVPV(porkBagPrep, porkPlasticBag); err != nil {
+	if err = createVPV(porkBagPrep, porkPlasticBag); err != nil {
 		return err
 	}
-	if err := createVPV(porkBagPrep, porkVacuumBag); err != nil {
+	if err = createVPV(porkBagPrep, porkVacuumBag); err != nil {
 		return err
 	}
 	// Sous vide in water bath
-	if err := createVPV(porkSousVidePrep, porkWaterBath); err != nil {
+	if err = createVPV(porkSousVidePrep, porkWaterBath); err != nil {
 		return err
 	}
 	// Heat cast iron skillet
-	if err := createVPV(porkHeatPrep, porkCastIronSkillet); err != nil {
+	if err = createVPV(porkHeatPrep, porkCastIronSkillet); err != nil {
 		return err
 	}
 	// Pan-sear in cast iron skillet
-	if err := createVPV(porkPanSearPrep, porkCastIronSkillet); err != nil {
+	if err = createVPV(porkPanSearPrep, porkCastIronSkillet); err != nil {
 		return err
 	}
 	// Baste in cast iron skillet
-	if err := createVPV(porkBastePrep, porkCastIronSkillet); err != nil {
+	if err = createVPV(porkBastePrep, porkCastIronSkillet); err != nil {
 		return err
 	}
 	// Baste on serving plate
-	if err := createVPV(porkBastePrep, porkServingPlate); err != nil {
+	if err = createVPV(porkBastePrep, porkServingPlate); err != nil {
 		return err
 	}
 	// Grill on grill
-	if err := createVPV(porkGrillPrep, porkGrillVessel); err != nil {
+	if err = createVPV(porkGrillPrep, porkGrillVessel); err != nil {
 		return err
 	}
 	// Rest on wire rack set over baking sheet
-	if err := createVPV(porkRestPrep, porkWireRack); err != nil {
+	if err = createVPV(porkRestPrep, porkWireRack); err != nil {
 		return err
 	}
-	if err := createVPV(porkRestPrep, porkBakingSheet); err != nil {
+	if err = createVPV(porkRestPrep, porkBakingSheet); err != nil {
 		return err
 	}
 	// Also rest on serving plate (for final serve)
-	if err := createVPV(porkRestPrep, porkServingPlate); err != nil {
+	if err = createVPV(porkRestPrep, porkServingPlate); err != nil {
 		return err
 	}
 
@@ -2879,214 +2879,214 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	burgerTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 
 	// === TRIM PREPARATION ===
-	if err := createVIP(trimPrep, beefSirloin); err != nil {
+	if err = createVIP(trimPrep, beefSirloin); err != nil {
 		return err
 	}
-	if err := createVIP(trimPrep, beefBrisket); err != nil {
+	if err = createVIP(trimPrep, beefBrisket); err != nil {
 		return err
 	}
-	if err := createVIP(trimPrep, oxtail); err != nil {
+	if err = createVIP(trimPrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVIMU(beefSirloin, ounceMeasurement); err != nil {
+	if err = createVIMU(beefSirloin, ounceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(beefBrisket, ounceMeasurement); err != nil {
+	if err = createVIMU(beefBrisket, ounceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(oxtail, ounceMeasurement); err != nil {
+	if err = createVIMU(oxtail, ounceMeasurement); err != nil {
 		return err
 	}
-	if err := createVPI(trimPrep, knife); err != nil {
+	if err = createVPI(trimPrep, knife); err != nil {
 		return err
 	}
-	if err := createVPV(trimPrep, burgerCuttingBoard); err != nil {
+	if err = createVPV(trimPrep, burgerCuttingBoard); err != nil {
 		return err
 	}
 
 	// === DEBONE PREPARATION ===
-	if err := createVIP(debonePrep, oxtail); err != nil {
+	if err = createVIP(debonePrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVPI(debonePrep, knife); err != nil {
+	if err = createVPI(debonePrep, knife); err != nil {
 		return err
 	}
-	if err := createVPV(debonePrep, burgerCuttingBoard); err != nil {
+	if err = createVPV(debonePrep, burgerCuttingBoard); err != nil {
 		return err
 	}
 
 	// === CUBE PREPARATION ===
-	if err := createVIP(cubePrep, beefSirloin); err != nil {
+	if err = createVIP(cubePrep, beefSirloin); err != nil {
 		return err
 	}
-	if err := createVIP(cubePrep, beefBrisket); err != nil {
+	if err = createVIP(cubePrep, beefBrisket); err != nil {
 		return err
 	}
-	if err := createVIP(cubePrep, oxtail); err != nil {
+	if err = createVIP(cubePrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVPI(cubePrep, knife); err != nil {
+	if err = createVPI(cubePrep, knife); err != nil {
 		return err
 	}
-	if err := createVPV(cubePrep, burgerCuttingBoard); err != nil {
+	if err = createVPV(cubePrep, burgerCuttingBoard); err != nil {
 		return err
 	}
 
 	// === CHILL PREPARATION ===
-	if err := createVIP(chillPrep, beefSirloin); err != nil {
+	if err = createVIP(chillPrep, beefSirloin); err != nil {
 		return err
 	}
-	if err := createVIP(chillPrep, beefBrisket); err != nil {
+	if err = createVIP(chillPrep, beefBrisket); err != nil {
 		return err
 	}
-	if err := createVIP(chillPrep, oxtail); err != nil {
+	if err = createVIP(chillPrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVPV(chillPrep, freezer); err != nil {
+	if err = createVPV(chillPrep, freezer); err != nil {
 		return err
 	}
-	if err := createVPV(chillPrep, burgerBakingSheet); err != nil {
+	if err = createVPV(chillPrep, burgerBakingSheet); err != nil {
 		return err
 	}
 	// Chill preparation for meat grinder instrument
-	if err := createVPI(chillPrep, meatGrinder); err != nil {
+	if err = createVPI(chillPrep, meatGrinder); err != nil {
 		return err
 	}
 
 	// === MIX/COMBINE PREPARATION (using existing mix) ===
 	burgerMixPrep := enums.Preparations["mix"]
-	if err := createVIP(burgerMixPrep, beefSirloin); err != nil {
+	if err = createVIP(burgerMixPrep, beefSirloin); err != nil {
 		return err
 	}
-	if err := createVIP(burgerMixPrep, beefBrisket); err != nil {
+	if err = createVIP(burgerMixPrep, beefBrisket); err != nil {
 		return err
 	}
-	if err := createVIP(burgerMixPrep, oxtail); err != nil {
+	if err = createVIP(burgerMixPrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVPV(burgerMixPrep, largeBowl); err != nil {
+	if err = createVPV(burgerMixPrep, largeBowl); err != nil {
 		return err
 	}
-	if err := createVPI(burgerMixPrep, burgerBareHands); err != nil {
+	if err = createVPI(burgerMixPrep, burgerBareHands); err != nil {
 		return err
 	}
 
 	// === LINE PREPARATION ===
-	if err := createVPV(linePrep, burgerBakingSheet); err != nil {
+	if err = createVPV(linePrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === GRIND PREPARATION ===
-	if err := createVIP(grindPrep, beefSirloin); err != nil {
+	if err = createVIP(grindPrep, beefSirloin); err != nil {
 		return err
 	}
-	if err := createVIP(grindPrep, beefBrisket); err != nil {
+	if err = createVIP(grindPrep, beefBrisket); err != nil {
 		return err
 	}
-	if err := createVIP(grindPrep, oxtail); err != nil {
+	if err = createVIP(grindPrep, oxtail); err != nil {
 		return err
 	}
-	if err := createVPI(grindPrep, meatGrinder); err != nil {
+	if err = createVPI(grindPrep, meatGrinder); err != nil {
 		return err
 	}
-	if err := createVPV(grindPrep, burgerBakingSheet); err != nil {
+	if err = createVPV(grindPrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === FORM PREPARATION ===
-	if err := createVPI(formPrep, burgerBareHands); err != nil {
+	if err = createVPI(formPrep, burgerBareHands); err != nil {
 		return err
 	}
-	if err := createVPV(formPrep, burgerBakingSheet); err != nil {
+	if err = createVPV(formPrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for burger ingredients ===
-	if err := createVIP(burgerSeasonPrep, burgerSalt); err != nil {
+	if err = createVIP(burgerSeasonPrep, burgerSalt); err != nil {
 		return err
 	}
-	if err := createVIP(burgerSeasonPrep, burgerPepper); err != nil {
+	if err = createVIP(burgerSeasonPrep, burgerPepper); err != nil {
 		return err
 	}
-	if err := createVPV(burgerSeasonPrep, burgerBakingSheet); err != nil {
+	if err = createVPV(burgerSeasonPrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === FLIP PREPARATION ===
-	if err := createVPI(flipPrep, wideSpatula); err != nil {
+	if err = createVPI(flipPrep, wideSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(flipPrep, burgerBakingSheet); err != nil {
+	if err = createVPV(flipPrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === REFRIGERATE PREPARATION ===
-	if err := createVPV(refrigeratePrep, refrigerator); err != nil {
+	if err = createVPV(refrigeratePrep, refrigerator); err != nil {
 		return err
 	}
-	if err := createVPV(refrigeratePrep, burgerBakingSheet); err != nil {
+	if err = createVPV(refrigeratePrep, burgerBakingSheet); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for sauté pan ===
-	if err := createVIP(burgerHeatPrep, burgerVegOil); err != nil {
+	if err = createVIP(burgerHeatPrep, burgerVegOil); err != nil {
 		return err
 	}
-	if err := createVIMU(burgerVegOil, burgerTeaspoonMeasurement); err != nil {
+	if err = createVIMU(burgerVegOil, burgerTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVPV(burgerHeatPrep, sautePan); err != nil {
+	if err = createVPV(burgerHeatPrep, sautePan); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION ===
-	if err := createVPI(burgerPanSearPrep, wideSpatula); err != nil {
+	if err = createVPI(burgerPanSearPrep, wideSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(burgerPanSearPrep, sautePan); err != nil {
+	if err = createVPV(burgerPanSearPrep, sautePan); err != nil {
 		return err
 	}
 
 	// === TOP PREPARATION (adding cheese) ===
-	if err := createVIP(topPrep, americanCheese); err != nil {
+	if err = createVIP(topPrep, americanCheese); err != nil {
 		return err
 	}
-	if err := createVIMU(americanCheese, sliceMeasurement); err != nil {
+	if err = createVIMU(americanCheese, sliceMeasurement); err != nil {
 		return err
 	}
-	if err := createVPV(topPrep, sautePan); err != nil {
+	if err = createVPV(topPrep, sautePan); err != nil {
 		return err
 	}
 
 	// === TOAST PREPARATION ===
-	if err := createVIP(toastPrep, burgerBun); err != nil {
+	if err = createVIP(toastPrep, burgerBun); err != nil {
 		return err
 	}
-	if err := createVIMU(burgerBun, burgerUnitMeasurement); err != nil {
+	if err = createVIMU(burgerBun, burgerUnitMeasurement); err != nil {
 		return err
 	}
 	burgerCastIronSkillet := enums.Vessels["cast iron skillet"]
-	if err := createVPV(toastPrep, burgerCastIronSkillet); err != nil {
+	if err = createVPV(toastPrep, burgerCastIronSkillet); err != nil {
 		return err
 	}
 
 	// === ASSEMBLE PREPARATION ===
-	if err := createVIP(assemblePrep, burgerBun); err != nil {
+	if err = createVIP(assemblePrep, burgerBun); err != nil {
 		return err
 	}
-	if err := createVIP(assemblePrep, pickle); err != nil {
+	if err = createVIP(assemblePrep, pickle); err != nil {
 		return err
 	}
-	if err := createVIP(assemblePrep, burgerOnion); err != nil {
+	if err = createVIP(assemblePrep, burgerOnion); err != nil {
 		return err
 	}
-	if err := createVIMU(pickle, burgerUnitMeasurement); err != nil {
+	if err = createVIMU(pickle, burgerUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(burgerOnion, sliceMeasurement); err != nil {
+	if err = createVIMU(burgerOnion, sliceMeasurement); err != nil {
 		return err
 	}
-	if err := createVPV(assemblePrep, burgerServingPlate); err != nil {
+	if err = createVPV(assemblePrep, burgerServingPlate); err != nil {
 		return err
 	}
 
@@ -3102,59 +3102,59 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	smashBurgerSkillet := enums.Vessels["cast iron skillet"]
 
 	// === DIVIDE PREPARATION ===
-	if err := createVIP(dividePrep, groundBeef); err != nil {
+	if err = createVIP(dividePrep, groundBeef); err != nil {
 		return err
 	}
-	if err := createVPI(dividePrep, burgerBareHands); err != nil {
+	if err = createVPI(dividePrep, burgerBareHands); err != nil {
 		return err
 	}
 
 	// === FORM PREPARATION for ground beef ===
-	if err := createVIP(formPrep, groundBeef); err != nil {
+	if err = createVIP(formPrep, groundBeef); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for ground beef ===
-	if err := createVIP(burgerSeasonPrep, groundBeef); err != nil {
+	if err = createVIP(burgerSeasonPrep, groundBeef); err != nil {
 		return err
 	}
-	if err := createVPI(burgerSeasonPrep, burgerBareHands); err != nil {
+	if err = createVPI(burgerSeasonPrep, burgerBareHands); err != nil {
 		return err
 	}
 
 	// === SMASH PREPARATION ===
-	if err := createVIP(smashPrep, groundBeef); err != nil {
+	if err = createVIP(smashPrep, groundBeef); err != nil {
 		return err
 	}
-	if err := createVPI(smashPrep, wideSpatula); err != nil {
+	if err = createVPI(smashPrep, wideSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(smashPrep, smashBurgerSkillet); err != nil {
+	if err = createVPV(smashPrep, smashBurgerSkillet); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for cast iron skillet ===
-	if err := createVPV(burgerHeatPrep, smashBurgerSkillet); err != nil {
+	if err = createVPV(burgerHeatPrep, smashBurgerSkillet); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION for cast iron skillet ===
-	if err := createVPV(burgerPanSearPrep, smashBurgerSkillet); err != nil {
+	if err = createVPV(burgerPanSearPrep, smashBurgerSkillet); err != nil {
 		return err
 	}
 
 	// === FLIP PREPARATION for cast iron skillet ===
-	if err := createVPV(flipPrep, smashBurgerSkillet); err != nil {
+	if err = createVPV(flipPrep, smashBurgerSkillet); err != nil {
 		return err
 	}
 
 	// === TOP PREPARATION for cast iron skillet ===
-	if err := createVPV(topPrep, smashBurgerSkillet); err != nil {
+	if err = createVPV(topPrep, smashBurgerSkillet); err != nil {
 		return err
 	}
 
 	// Ground beef measurement unit (ounces)
-	if err := createVIMU(groundBeef, ounceMeasurement); err != nil {
+	if err = createVIMU(groundBeef, ounceMeasurement); err != nil {
 		return err
 	}
 
@@ -3188,68 +3188,68 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	tablespoonMeasurement = enums.MeasurementUnits["tablespoon"]
 
 	// === SIMMER PREPARATION (combine ingredients and bring to simmer) ===
-	if err := createVIP(simmerPrep, rice); err != nil {
+	if err = createVIP(simmerPrep, rice); err != nil {
 		return err
 	}
-	if err := createVIP(simmerPrep, riceWater); err != nil {
+	if err = createVIP(simmerPrep, riceWater); err != nil {
 		return err
 	}
-	if err := createVIP(simmerPrep, riceSalt); err != nil {
+	if err = createVIP(simmerPrep, riceSalt); err != nil {
 		return err
 	}
-	if err := createVIP(simmerPrep, riceOliveOil); err != nil {
+	if err = createVIP(simmerPrep, riceOliveOil); err != nil {
 		return err
 	}
-	if err := createVPV(simmerPrep, saucepan); err != nil {
+	if err = createVPV(simmerPrep, saucepan); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION ===
-	if err := createVIP(stirPrep, rice); err != nil {
+	if err = createVIP(stirPrep, rice); err != nil {
 		return err
 	}
-	if err := createVPI(stirPrep, woodenSpoon); err != nil {
+	if err = createVPI(stirPrep, woodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(stirPrep, saucepan); err != nil {
+	if err = createVPV(stirPrep, saucepan); err != nil {
 		return err
 	}
 
 	// === COVER PREPARATION ===
-	if err := createVPV(coverPrep, saucepan); err != nil {
+	if err = createVPV(coverPrep, saucepan); err != nil {
 		return err
 	}
 
 	// === FLUFF PREPARATION ===
-	if err := createVIP(fluffPrep, rice); err != nil {
+	if err = createVIP(fluffPrep, rice); err != nil {
 		return err
 	}
-	if err := createVPI(fluffPrep, fork); err != nil {
+	if err = createVPI(fluffPrep, fork); err != nil {
 		return err
 	}
-	if err := createVPV(fluffPrep, saucepan); err != nil {
+	if err = createVPV(fluffPrep, saucepan); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION for rice ===
-	if err := createVIP(riceRestPrep, rice); err != nil {
+	if err = createVIP(riceRestPrep, rice); err != nil {
 		return err
 	}
-	if err := createVPV(riceRestPrep, saucepan); err != nil {
+	if err = createVPV(riceRestPrep, saucepan); err != nil {
 		return err
 	}
 
 	// Rice measurement units
-	if err := createVIMU(rice, cupMeasurement); err != nil {
+	if err = createVIMU(rice, cupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(riceWater, cupMeasurement); err != nil {
+	if err = createVIMU(riceWater, cupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(riceSalt, pinchMeasurement); err != nil {
+	if err = createVIMU(riceSalt, pinchMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(riceOliveOil, tablespoonMeasurement); err != nil {
+	if err = createVIMU(riceOliveOil, tablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -3291,135 +3291,135 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	mashedTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
 	// === PEEL PREPARATION ===
-	if err := createVIP(peelPrep, potato); err != nil {
+	if err = createVIP(peelPrep, potato); err != nil {
 		return err
 	}
-	if err := createVPI(peelPrep, vegetablePeeler); err != nil {
+	if err = createVPI(peelPrep, vegetablePeeler); err != nil {
 		return err
 	}
-	if err := createVPV(peelPrep, mashedCuttingBoard); err != nil {
+	if err = createVPV(peelPrep, mashedCuttingBoard); err != nil {
 		return err
 	}
 
 	// === CUBE PREPARATION for potato ===
-	if err := createVIP(cubePrep, potato); err != nil {
+	if err = createVIP(cubePrep, potato); err != nil {
 		return err
 	}
-	if err := createVPI(cubePrep, mashedKnife); err != nil {
+	if err = createVPI(cubePrep, mashedKnife); err != nil {
 		return err
 	}
-	if err := createVPV(cubePrep, mashedCuttingBoard); err != nil {
+	if err = createVPV(cubePrep, mashedCuttingBoard); err != nil {
 		return err
 	}
 
 	// === RINSE PREPARATION ===
-	if err := createVIP(rinsePrep, potato); err != nil {
+	if err = createVIP(rinsePrep, potato); err != nil {
 		return err
 	}
-	if err := createVPV(rinsePrep, mashedPot); err != nil {
+	if err = createVPV(rinsePrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === SUBMERGE PREPARATION ===
-	if err := createVIP(submergePrep, potato); err != nil {
+	if err = createVIP(submergePrep, potato); err != nil {
 		return err
 	}
-	if err := createVIP(submergePrep, mashedWater); err != nil {
+	if err = createVIP(submergePrep, mashedWater); err != nil {
 		return err
 	}
-	if err := createVPV(submergePrep, mashedPot); err != nil {
+	if err = createVPV(submergePrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for pot (seasoning water) ===
-	if err := createVPV(mashedSeasonPrep, mashedPot); err != nil {
+	if err = createVPV(mashedSeasonPrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === BOIL PREPARATION ===
-	if err := createVIP(boilPrep, potato); err != nil {
+	if err = createVIP(boilPrep, potato); err != nil {
 		return err
 	}
-	if err := createVPV(boilPrep, mashedPot); err != nil {
+	if err = createVPV(boilPrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === DRAIN PREPARATION ===
-	if err := createVIP(drainPrep, potato); err != nil {
+	if err = createVIP(drainPrep, potato); err != nil {
 		return err
 	}
-	if err := createVPV(drainPrep, mashedColander); err != nil {
+	if err = createVPV(drainPrep, mashedColander); err != nil {
 		return err
 	}
 
 	// === RINSE PREPARATION for colander ===
-	if err := createVPV(rinsePrep, mashedColander); err != nil {
+	if err = createVPV(rinsePrep, mashedColander); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION for potato ===
-	if err := createVIP(mashedRestPrep, potato); err != nil {
+	if err = createVIP(mashedRestPrep, potato); err != nil {
 		return err
 	}
-	if err := createVPV(mashedRestPrep, mashedColander); err != nil {
+	if err = createVPV(mashedRestPrep, mashedColander); err != nil {
 		return err
 	}
 
 	// === RICE PREPARATION ===
-	if err := createVIP(ricePrep, potato); err != nil {
+	if err = createVIP(ricePrep, potato); err != nil {
 		return err
 	}
-	if err := createVPI(ricePrep, potatoRicer); err != nil {
+	if err = createVPI(ricePrep, potatoRicer); err != nil {
 		return err
 	}
-	if err := createVPV(ricePrep, mashedPot); err != nil {
+	if err = createVPV(ricePrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === FOLD PREPARATION ===
-	if err := createVIP(foldPrep, potato); err != nil {
+	if err = createVIP(foldPrep, potato); err != nil {
 		return err
 	}
-	if err := createVIP(foldPrep, mashedButter); err != nil {
+	if err = createVIP(foldPrep, mashedButter); err != nil {
 		return err
 	}
-	if err := createVIP(foldPrep, milk); err != nil {
+	if err = createVIP(foldPrep, milk); err != nil {
 		return err
 	}
-	if err := createVPI(foldPrep, rubberSpatula); err != nil {
+	if err = createVPI(foldPrep, rubberSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(foldPrep, mashedPot); err != nil {
+	if err = createVPV(foldPrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === SIMMER PREPARATION for milk ===
-	if err := createVIP(mashedSimmerPrep, milk); err != nil {
+	if err = createVIP(mashedSimmerPrep, milk); err != nil {
 		return err
 	}
-	if err := createVPV(mashedSimmerPrep, mashedPot); err != nil {
+	if err = createVPV(mashedSimmerPrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for mashed potatoes ===
-	if err := createVIP(mashedSeasonPrep, potato); err != nil {
+	if err = createVIP(mashedSeasonPrep, potato); err != nil {
 		return err
 	}
-	if err := createVIP(mashedSeasonPrep, mashedPepper); err != nil {
+	if err = createVIP(mashedSeasonPrep, mashedPepper); err != nil {
 		return err
 	}
-	if err := createVPV(mashedSeasonPrep, mashedPot); err != nil {
+	if err = createVPV(mashedSeasonPrep, mashedPot); err != nil {
 		return err
 	}
 
 	// === POTATO MEASUREMENT UNITS ===
-	if err := createVIMU(potato, poundMeasurement); err != nil {
+	if err = createVIMU(potato, poundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(milk, mashedCupMeasurement); err != nil {
+	if err = createVIMU(milk, mashedCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mashedButter, mashedTablespoonMeasurement); err != nil {
+	if err = createVIMU(mashedButter, mashedTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -3472,180 +3472,180 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caesarUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// === MELT PREPARATION ===
-	if err := createVIP(caesarMeltPrep, caesarSaltedButter); err != nil {
+	if err = createVIP(caesarMeltPrep, caesarSaltedButter); err != nil {
 		return err
 	}
-	if err := createVPV(caesarMeltPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarMeltPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION for anchovy paste and garlic ===
-	if err := createVIP(caesarStirPrep, caesarAnchovyPaste); err != nil {
+	if err = createVIP(caesarStirPrep, caesarAnchovyPaste); err != nil {
 		return err
 	}
-	if err := createVIP(caesarStirPrep, caesarGarlic); err != nil {
+	if err = createVIP(caesarStirPrep, caesarGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(caesarStirPrep, caesarBreadcrumbs); err != nil {
+	if err = createVIP(caesarStirPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err := createVIP(caesarStirPrep, caesarLemon); err != nil {
+	if err = createVIP(caesarStirPrep, caesarLemon); err != nil {
 		return err
 	}
-	if err := createVPV(caesarStirPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarStirPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(caesarStirPrep, caesarRubberSpatula); err != nil {
+	if err = createVPI(caesarStirPrep, caesarRubberSpatula); err != nil {
 		return err
 	}
 
 	// === COOK PREPARATION for breadcrumbs ===
-	if err := createVIP(caesarCookPrep, caesarAnchovyPaste); err != nil {
+	if err = createVIP(caesarCookPrep, caesarAnchovyPaste); err != nil {
 		return err
 	}
-	if err := createVIP(caesarCookPrep, caesarGarlic); err != nil {
+	if err = createVIP(caesarCookPrep, caesarGarlic); err != nil {
 		return err
 	}
-	if err := createVPV(caesarCookPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarCookPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
 
 	// === TOAST PREPARATION for breadcrumbs ===
-	if err := createVIP(caesarToastPrep, caesarBreadcrumbs); err != nil {
+	if err = createVIP(caesarToastPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err := createVPV(caesarToastPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarToastPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(caesarToastPrep, caesarRubberSpatula); err != nil {
+	if err = createVPI(caesarToastPrep, caesarRubberSpatula); err != nil {
 		return err
 	}
 
 	// === ZEST PREPARATION for lemon ===
-	if err := createVIP(caesarZestPrep, caesarLemon); err != nil {
+	if err = createVIP(caesarZestPrep, caesarLemon); err != nil {
 		return err
 	}
-	if err := createVPI(caesarZestPrep, caesarMicroplane); err != nil {
+	if err = createVPI(caesarZestPrep, caesarMicroplane); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for breadcrumbs ===
-	if err := createVIP(caesarSeasonPrep, caesarBreadcrumbs); err != nil {
+	if err = createVIP(caesarSeasonPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err := createVPV(caesarSeasonPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarSeasonPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for breadcrumbs ===
-	if err := createVIP(caesarTransferPrep, caesarBreadcrumbs); err != nil {
+	if err = createVIP(caesarTransferPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err := createVPV(caesarTransferPrep, caesarSmallBowl); err != nil {
+	if err = createVPV(caesarTransferPrep, caesarSmallBowl); err != nil {
 		return err
 	}
-	if err := createVPV(caesarTransferPrep, caesarServingPlatter); err != nil {
+	if err = createVPV(caesarTransferPrep, caesarServingPlatter); err != nil {
 		return err
 	}
 
 	// === LINE PREPARATION for baking sheet ===
-	if err := createVPI(caesarLinePrep, caesarAluminumFoil); err != nil {
+	if err = createVPI(caesarLinePrep, caesarAluminumFoil); err != nil {
 		return err
 	}
-	if err := createVPV(caesarLinePrep, caesarBakingSheet); err != nil {
+	if err = createVPV(caesarLinePrep, caesarBakingSheet); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for oven ===
-	if err := createVPV(caesarPreheatPrep, caesarOven); err != nil {
+	if err = createVPV(caesarPreheatPrep, caesarOven); err != nil {
 		return err
 	}
-	if err := createVPV(caesarPreheatPrep, caesarBakingSheet); err != nil {
+	if err = createVPV(caesarPreheatPrep, caesarBakingSheet); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION for broccoli ===
-	if err := createVIP(caesarTossPrep, caesarBroccoli); err != nil {
+	if err = createVIP(caesarTossPrep, caesarBroccoli); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTossPrep, caesarOliveOil); err != nil {
+	if err = createVIP(caesarTossPrep, caesarOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTossPrep, caesarSalt); err != nil {
+	if err = createVIP(caesarTossPrep, caesarSalt); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTossPrep, caesarPepper); err != nil {
+	if err = createVIP(caesarTossPrep, caesarPepper); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTossPrep, caesarLemon); err != nil {
+	if err = createVIP(caesarTossPrep, caesarLemon); err != nil {
 		return err
 	}
-	if err := createVPV(caesarTossPrep, caesarLargeBowl); err != nil {
+	if err = createVPV(caesarTossPrep, caesarLargeBowl); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for broccoli ===
-	if err := createVIP(caesarTransferPrep, caesarBroccoli); err != nil {
+	if err = createVIP(caesarTransferPrep, caesarBroccoli); err != nil {
 		return err
 	}
-	if err := createVPV(caesarTransferPrep, caesarBakingSheet); err != nil {
+	if err = createVPV(caesarTransferPrep, caesarBakingSheet); err != nil {
 		return err
 	}
 
 	// === ROAST PREPARATION for broccoli ===
-	if err := createVIP(caesarRoastPrep, caesarBroccoli); err != nil {
+	if err = createVIP(caesarRoastPrep, caesarBroccoli); err != nil {
 		return err
 	}
-	if err := createVPV(caesarRoastPrep, caesarBakingSheet); err != nil {
+	if err = createVPV(caesarRoastPrep, caesarBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(caesarRoastPrep, caesarOven); err != nil {
+	if err = createVPV(caesarRoastPrep, caesarOven); err != nil {
 		return err
 	}
 
 	// === TOP PREPARATION for broccoli ===
-	if err := createVIP(caesarTopPrep, caesarBroccoli); err != nil {
+	if err = createVIP(caesarTopPrep, caesarBroccoli); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTopPrep, caesarBreadcrumbs); err != nil {
+	if err = createVIP(caesarTopPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err := createVIP(caesarTopPrep, caesarParmesan); err != nil {
+	if err = createVIP(caesarTopPrep, caesarParmesan); err != nil {
 		return err
 	}
-	if err := createVPV(caesarTopPrep, caesarServingPlatter); err != nil {
+	if err = createVPV(caesarTopPrep, caesarServingPlatter); err != nil {
 		return err
 	}
 
 	// === CAESAR BROCCOLI INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(caesarSaltedButter, caesarTablespoonMeasurement); err != nil {
+	if err = createVIMU(caesarSaltedButter, caesarTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarBreadcrumbs, caesarCupMeasurement); err != nil {
+	if err = createVIMU(caesarBreadcrumbs, caesarCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarAnchovyPaste, caesarTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caesarAnchovyPaste, caesarTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarGarlic, caesarUnitMeasurement); err != nil {
+	if err = createVIMU(caesarGarlic, caesarUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarLemon, caesarTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caesarLemon, caesarTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarBroccoli, caesarPoundMeasurement); err != nil {
+	if err = createVIMU(caesarBroccoli, caesarPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarParmesan, caesarTablespoonMeasurement); err != nil {
+	if err = createVIMU(caesarParmesan, caesarTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarOliveOil, caesarTablespoonMeasurement); err != nil {
+	if err = createVIMU(caesarOliveOil, caesarTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarSalt, caesarTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caesarSalt, caesarTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caesarPepper, caesarGramMeasurement); err != nil {
+	if err = createVIMU(caesarPepper, caesarGramMeasurement); err != nil {
 		return err
 	}
 
@@ -3698,156 +3698,156 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	hvaUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// === BOIL PREPARATION for water ===
-	if err := createVIP(hvaBoilPrep, hvaWater); err != nil {
+	if err = createVIP(hvaBoilPrep, hvaWater); err != nil {
 		return err
 	}
-	if err := createVIP(hvaBoilPrep, hvaSalt); err != nil {
+	if err = createVIP(hvaBoilPrep, hvaSalt); err != nil {
 		return err
 	}
-	if err := createVPV(hvaBoilPrep, hvaPot); err != nil {
+	if err = createVPV(hvaBoilPrep, hvaPot); err != nil {
 		return err
 	}
 
 	// === BLANCH PREPARATION for green beans ===
-	if err := createVIP(hvaBlanch, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaBlanch, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPI(hvaBlanch, hvaWireMeshSpider); err != nil {
+	if err = createVPI(hvaBlanch, hvaWireMeshSpider); err != nil {
 		return err
 	}
-	if err := createVPI(hvaBlanch, hvaTongs); err != nil {
+	if err = createVPI(hvaBlanch, hvaTongs); err != nil {
 		return err
 	}
-	if err := createVPV(hvaBlanch, hvaPot); err != nil {
+	if err = createVPV(hvaBlanch, hvaPot); err != nil {
 		return err
 	}
 
 	// === SHOCK PREPARATION for green beans ===
-	if err := createVIP(hvaShockPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaShockPrep, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPI(hvaShockPrep, hvaWireMeshSpider); err != nil {
+	if err = createVPI(hvaShockPrep, hvaWireMeshSpider); err != nil {
 		return err
 	}
-	if err := createVPI(hvaShockPrep, hvaTongs); err != nil {
+	if err = createVPI(hvaShockPrep, hvaTongs); err != nil {
 		return err
 	}
-	if err := createVPV(hvaShockPrep, hvaLargeBowl); err != nil {
+	if err = createVPV(hvaShockPrep, hvaLargeBowl); err != nil {
 		return err
 	}
 
 	// === DRAIN PREPARATION for green beans ===
-	if err := createVIP(hvaDrainPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaDrainPrep, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(hvaDrainPrep, hvaColander); err != nil {
+	if err = createVPV(hvaDrainPrep, hvaColander); err != nil {
 		return err
 	}
 
 	// === DRY PREPARATION for green beans ===
-	if err := createVIP(hvaDryPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaDryPrep, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPI(hvaDryPrep, hvaPaperTowels); err != nil {
+	if err = createVPI(hvaDryPrep, hvaPaperTowels); err != nil {
 		return err
 	}
-	if err := createVPI(hvaDryPrep, hvaKitchenTowels); err != nil {
+	if err = createVPI(hvaDryPrep, hvaKitchenTowels); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for butter and skillet ===
-	if err := createVIP(hvaHeatPrep, hvaButter); err != nil {
+	if err = createVIP(hvaHeatPrep, hvaButter); err != nil {
 		return err
 	}
-	if err := createVIP(hvaHeatPrep, hvaSliveredAlmonds); err != nil {
+	if err = createVIP(hvaHeatPrep, hvaSliveredAlmonds); err != nil {
 		return err
 	}
-	if err := createVPV(hvaHeatPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaHeatPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(hvaHeatPrep, hvaRubberSpatula); err != nil {
+	if err = createVPI(hvaHeatPrep, hvaRubberSpatula); err != nil {
 		return err
 	}
 
 	// === TOAST PREPARATION for almonds ===
-	if err := createVIP(hvaToastPrep, hvaSliveredAlmonds); err != nil {
+	if err = createVIP(hvaToastPrep, hvaSliveredAlmonds); err != nil {
 		return err
 	}
-	if err := createVPI(hvaToastPrep, hvaRubberSpatula); err != nil {
+	if err = createVPI(hvaToastPrep, hvaRubberSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(hvaToastPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaToastPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
 
 	// === COOK PREPARATION for garlic and shallot ===
-	if err := createVIP(hvaCookPrep, hvaGarlic); err != nil {
+	if err = createVIP(hvaCookPrep, hvaGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(hvaCookPrep, hvaShallot); err != nil {
+	if err = createVIP(hvaCookPrep, hvaShallot); err != nil {
 		return err
 	}
-	if err := createVPI(hvaCookPrep, hvaRubberSpatula); err != nil {
+	if err = createVPI(hvaCookPrep, hvaRubberSpatula); err != nil {
 		return err
 	}
-	if err := createVPV(hvaCookPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaCookPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION for lemon juice and water ===
-	if err := createVIP(hvaStirPrep, hvaLemon); err != nil {
+	if err = createVIP(hvaStirPrep, hvaLemon); err != nil {
 		return err
 	}
-	if err := createVIP(hvaStirPrep, hvaWater); err != nil {
+	if err = createVIP(hvaStirPrep, hvaWater); err != nil {
 		return err
 	}
-	if err := createVPV(hvaStirPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaStirPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
-	if err := createVPV(hvaStirPrep, hvaLargeBowl); err != nil {
+	if err = createVPV(hvaStirPrep, hvaLargeBowl); err != nil {
 		return err
 	}
 
 	// === EMULSIFY PREPARATION for sauce ===
-	if err := createVIP(hvaEmulsifyPrep, hvaButter); err != nil {
+	if err = createVIP(hvaEmulsifyPrep, hvaButter); err != nil {
 		return err
 	}
-	if err := createVIP(hvaEmulsifyPrep, hvaLemon); err != nil {
+	if err = createVIP(hvaEmulsifyPrep, hvaLemon); err != nil {
 		return err
 	}
-	if err := createVIP(hvaEmulsifyPrep, hvaWater); err != nil {
+	if err = createVIP(hvaEmulsifyPrep, hvaWater); err != nil {
 		return err
 	}
-	if err := createVPV(hvaEmulsifyPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaEmulsifyPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for sauce ===
-	if err := createVIP(hvaSeasonPrep, hvaPepper); err != nil {
+	if err = createVIP(hvaSeasonPrep, hvaPepper); err != nil {
 		return err
 	}
-	if err := createVPV(hvaSeasonPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaSeasonPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION for green beans with sauce ===
-	if err := createVIP(hvaTossPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaTossPrep, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(hvaTossPrep, hvaMediumSkillet); err != nil {
+	if err = createVPV(hvaTossPrep, hvaMediumSkillet); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for finished dish ===
-	if err := createVIP(hvaTransferPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaTransferPrep, hvaGreenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(hvaTransferPrep, hvaServingPlatter); err != nil {
+	if err = createVPV(hvaTransferPrep, hvaServingPlatter); err != nil {
 		return err
 	}
 
 	// === TRIM PREPARATION for green beans ===
-	if err := createVIP(hvaTrimPrep, hvaGreenBeans); err != nil {
+	if err = createVIP(hvaTrimPrep, hvaGreenBeans); err != nil {
 		return err
 	}
 	hvaKnife, err := getInstrument("knife")
@@ -3858,33 +3858,33 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	if err := createVPI(hvaTrimPrep, hvaKnife); err != nil {
+	if err = createVPI(hvaTrimPrep, hvaKnife); err != nil {
 		return err
 	}
-	if err := createVPV(hvaTrimPrep, hvaCuttingBoard); err != nil {
+	if err = createVPV(hvaTrimPrep, hvaCuttingBoard); err != nil {
 		return err
 	}
 
 	// === HARICOTS VERTS AMANDINE INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(hvaGreenBeans, hvaPoundMeasurement); err != nil {
+	if err = createVIMU(hvaGreenBeans, hvaPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaButter, hvaTablespoonMeasurement); err != nil {
+	if err = createVIMU(hvaButter, hvaTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaSliveredAlmonds, hvaOunceMeasurement); err != nil {
+	if err = createVIMU(hvaSliveredAlmonds, hvaOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaGarlic, hvaUnitMeasurement); err != nil {
+	if err = createVIMU(hvaGarlic, hvaUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaShallot, hvaUnitMeasurement); err != nil {
+	if err = createVIMU(hvaShallot, hvaUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaLemon, hvaTablespoonMeasurement); err != nil {
+	if err = createVIMU(hvaLemon, hvaTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(hvaWater, hvaTablespoonMeasurement); err != nil {
+	if err = createVIMU(hvaWater, hvaTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -3932,273 +3932,273 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	mgsBareHands := enums.Instruments["bare hands"]
 
 	// === TRIM PREPARATION for inspecting greens ===
-	if err := createVIP(mgsTrimPrep, mgsLettuce); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsLettuce); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsRadicchio); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsRadicchio); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsEndive); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsEndive); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsFrisee); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsFrisee); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsKale); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsKale); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsDandelionGreens); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsDandelionGreens); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsPurslane); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsPurslane); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsFennelFronds); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsFennelFronds); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsParsley); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsParsley); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsTarragon); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsTarragon); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsChervil); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsChervil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsBasil); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsBasil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsTrimPrep, mgsMint); err != nil {
+	if err = createVIP(mgsTrimPrep, mgsMint); err != nil {
 		return err
 	}
-	if err := createVPV(mgsTrimPrep, mgsCuttingBoard); err != nil {
+	if err = createVPV(mgsTrimPrep, mgsCuttingBoard); err != nil {
 		return err
 	}
-	if err := createVPI(mgsTrimPrep, mgsBareHands); err != nil {
+	if err = createVPI(mgsTrimPrep, mgsBareHands); err != nil {
 		return err
 	}
 
 	// === SLICE PREPARATION for cutting greens ===
-	if err := createVIP(mgsSlicePrep, mgsLettuce); err != nil {
+	if err = createVIP(mgsSlicePrep, mgsLettuce); err != nil {
 		return err
 	}
-	if err := createVIP(mgsSlicePrep, mgsRadicchio); err != nil {
+	if err = createVIP(mgsSlicePrep, mgsRadicchio); err != nil {
 		return err
 	}
-	if err := createVIP(mgsSlicePrep, mgsEndive); err != nil {
+	if err = createVIP(mgsSlicePrep, mgsEndive); err != nil {
 		return err
 	}
-	if err := createVPV(mgsSlicePrep, mgsCuttingBoard); err != nil {
+	if err = createVPV(mgsSlicePrep, mgsCuttingBoard); err != nil {
 		return err
 	}
-	if err := createVPI(mgsSlicePrep, mgsKnife); err != nil {
+	if err = createVPI(mgsSlicePrep, mgsKnife); err != nil {
 		return err
 	}
 
 	// === RINSE PREPARATION for washing greens ===
-	if err := createVIP(mgsRinsePrep, mgsLettuce); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsLettuce); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsRadicchio); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsRadicchio); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsEndive); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsEndive); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsFrisee); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsFrisee); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsKale); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsKale); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsDandelionGreens); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsDandelionGreens); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsPurslane); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsPurslane); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsFennelFronds); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsFennelFronds); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsParsley); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsParsley); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsTarragon); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsTarragon); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsChervil); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsChervil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsBasil); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsBasil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsRinsePrep, mgsMint); err != nil {
+	if err = createVIP(mgsRinsePrep, mgsMint); err != nil {
 		return err
 	}
-	if err := createVPV(mgsRinsePrep, mgsLargeBowl); err != nil {
+	if err = createVPV(mgsRinsePrep, mgsLargeBowl); err != nil {
 		return err
 	}
 
 	// === DRY PREPARATION for spinning greens ===
-	if err := createVIP(mgsDryPrep, mgsLettuce); err != nil {
+	if err = createVIP(mgsDryPrep, mgsLettuce); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsRadicchio); err != nil {
+	if err = createVIP(mgsDryPrep, mgsRadicchio); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsEndive); err != nil {
+	if err = createVIP(mgsDryPrep, mgsEndive); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsFrisee); err != nil {
+	if err = createVIP(mgsDryPrep, mgsFrisee); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsKale); err != nil {
+	if err = createVIP(mgsDryPrep, mgsKale); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsDandelionGreens); err != nil {
+	if err = createVIP(mgsDryPrep, mgsDandelionGreens); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsPurslane); err != nil {
+	if err = createVIP(mgsDryPrep, mgsPurslane); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsFennelFronds); err != nil {
+	if err = createVIP(mgsDryPrep, mgsFennelFronds); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsParsley); err != nil {
+	if err = createVIP(mgsDryPrep, mgsParsley); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsTarragon); err != nil {
+	if err = createVIP(mgsDryPrep, mgsTarragon); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsChervil); err != nil {
+	if err = createVIP(mgsDryPrep, mgsChervil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsBasil); err != nil {
+	if err = createVIP(mgsDryPrep, mgsBasil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsDryPrep, mgsMint); err != nil {
+	if err = createVIP(mgsDryPrep, mgsMint); err != nil {
 		return err
 	}
-	if err := createVPV(mgsDryPrep, mgsSaladSpinner); err != nil {
+	if err = createVPV(mgsDryPrep, mgsSaladSpinner); err != nil {
 		return err
 	}
 
 	// === MIX PREPARATION for combining greens ===
-	if err := createVIP(mgsMixPrep, mgsLettuce); err != nil {
+	if err = createVIP(mgsMixPrep, mgsLettuce); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsRadicchio); err != nil {
+	if err = createVIP(mgsMixPrep, mgsRadicchio); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsEndive); err != nil {
+	if err = createVIP(mgsMixPrep, mgsEndive); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsFrisee); err != nil {
+	if err = createVIP(mgsMixPrep, mgsFrisee); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsKale); err != nil {
+	if err = createVIP(mgsMixPrep, mgsKale); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsDandelionGreens); err != nil {
+	if err = createVIP(mgsMixPrep, mgsDandelionGreens); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsPurslane); err != nil {
+	if err = createVIP(mgsMixPrep, mgsPurslane); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsFennelFronds); err != nil {
+	if err = createVIP(mgsMixPrep, mgsFennelFronds); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsParsley); err != nil {
+	if err = createVIP(mgsMixPrep, mgsParsley); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsTarragon); err != nil {
+	if err = createVIP(mgsMixPrep, mgsTarragon); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsChervil); err != nil {
+	if err = createVIP(mgsMixPrep, mgsChervil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsBasil); err != nil {
+	if err = createVIP(mgsMixPrep, mgsBasil); err != nil {
 		return err
 	}
-	if err := createVIP(mgsMixPrep, mgsMint); err != nil {
+	if err = createVIP(mgsMixPrep, mgsMint); err != nil {
 		return err
 	}
-	if err := createVPV(mgsMixPrep, mgsLargeBowl); err != nil {
+	if err = createVPV(mgsMixPrep, mgsLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPI(mgsMixPrep, mgsBareHands); err != nil {
+	if err = createVPI(mgsMixPrep, mgsBareHands); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION for dressing salad ===
-	if err := createVIP(mgsTossPrep, mgsOliveOil); err != nil {
+	if err = createVIP(mgsTossPrep, mgsOliveOil); err != nil {
 		return err
 	}
-	if err := createVPV(mgsTossPrep, mgsServingBowl); err != nil {
+	if err = createVPV(mgsTossPrep, mgsServingBowl); err != nil {
 		return err
 	}
-	if err := createVPI(mgsTossPrep, mgsBareHands); err != nil {
+	if err = createVPI(mgsTossPrep, mgsBareHands); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for lemon and salt ===
-	if err := createVIP(mgsSeasonPrep, mgsLemon); err != nil {
+	if err = createVIP(mgsSeasonPrep, mgsLemon); err != nil {
 		return err
 	}
-	if err := createVIP(mgsSeasonPrep, mgsSalt); err != nil {
+	if err = createVIP(mgsSeasonPrep, mgsSalt); err != nil {
 		return err
 	}
-	if err := createVPV(mgsSeasonPrep, mgsServingBowl); err != nil {
+	if err = createVPV(mgsSeasonPrep, mgsServingBowl); err != nil {
 		return err
 	}
 
 	// === MIXED GREEN SALAD INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(mgsLettuce, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsLettuce, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsRadicchio, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsRadicchio, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsEndive, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsEndive, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsFrisee, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsFrisee, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsKale, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsKale, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsDandelionGreens, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsDandelionGreens, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsPurslane, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsPurslane, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsFennelFronds, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsFennelFronds, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsParsley, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsParsley, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsTarragon, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsTarragon, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsChervil, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsChervil, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsBasil, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsBasil, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsMint, mgsCupMeasurement); err != nil {
+	if err = createVIMU(mgsMint, mgsCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsOliveOil, mgsTablespoonMeasurement); err != nil {
+	if err = createVIMU(mgsOliveOil, mgsTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsLemon, mgsTablespoonMeasurement); err != nil {
+	if err = createVIMU(mgsLemon, mgsTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(mgsSalt, mgsTeaspoonMeasurement); err != nil {
+	if err = createVIMU(mgsSalt, mgsTeaspoonMeasurement); err != nil {
 		return err
 	}
 
@@ -4212,7 +4212,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	ssbHeatPrep := enums.Preparations["heat"]
 	ssbPanSearPrep := enums.Preparations["pan-sear"]
 	ssbFlipPrep := enums.Preparations["flip"]
-	ssbSautéPrep := enums.Preparations["sauté"]
+	ssbSautePrep := enums.Preparations["sauté"]
 	ssbSimmerPrep := enums.Preparations["simmer"]
 	ssbBraisePrep := enums.Preparations["braise"]
 
@@ -4257,205 +4257,205 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	ssbThermometer := enums.Instruments["instant-read thermometer"]
 
 	// === COMBINE PREPARATION for dry brine mixture ===
-	if err := createVIP(ssbCombinePrep, ssbSalt); err != nil {
+	if err = createVIP(ssbCombinePrep, ssbSalt); err != nil {
 		return err
 	}
-	if err := createVIP(ssbCombinePrep, ssbMSG); err != nil {
+	if err = createVIP(ssbCombinePrep, ssbMSG); err != nil {
 		return err
 	}
-	if err := createVIP(ssbCombinePrep, ssbFiveSpice); err != nil {
+	if err = createVIP(ssbCombinePrep, ssbFiveSpice); err != nil {
 		return err
 	}
-	if err := createVIP(ssbCombinePrep, ssbDarkBrownSugar); err != nil {
+	if err = createVIP(ssbCombinePrep, ssbDarkBrownSugar); err != nil {
 		return err
 	}
-	if err := createVIP(ssbCombinePrep, ssbWhitePepper); err != nil {
+	if err = createVIP(ssbCombinePrep, ssbWhitePepper); err != nil {
 		return err
 	}
-	if err := createVPV(ssbCombinePrep, ssbSmallBowl); err != nil {
+	if err = createVPV(ssbCombinePrep, ssbSmallBowl); err != nil {
 		return err
 	}
-	if err := createVPI(ssbCombinePrep, ssbWhisk); err != nil {
+	if err = createVPI(ssbCombinePrep, ssbWhisk); err != nil {
 		return err
 	}
 
 	// === DRY PREPARATION for chicken ===
-	if err := createVIP(ssbDryPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbDryPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPI(ssbDryPrep, ssbPaperTowels); err != nil {
+	if err = createVPI(ssbDryPrep, ssbPaperTowels); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for chicken ===
-	if err := createVIP(ssbSeasonPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbSeasonPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPI(ssbSeasonPrep, ssbBareHands); err != nil {
+	if err = createVPI(ssbSeasonPrep, ssbBareHands); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for chicken to wire rack ===
-	if err := createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(ssbTransferPrep, ssbWireRack); err != nil {
+	if err = createVPV(ssbTransferPrep, ssbWireRack); err != nil {
 		return err
 	}
-	if err := createVPV(ssbTransferPrep, ssbBakingSheet); err != nil {
+	if err = createVPV(ssbTransferPrep, ssbBakingSheet); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for oven ===
-	if err := createVPV(ssbPreheatPrep, ssbOven); err != nil {
+	if err = createVPV(ssbPreheatPrep, ssbOven); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for oil ===
-	if err := createVIP(ssbHeatPrep, ssbVegetableOil); err != nil {
+	if err = createVIP(ssbHeatPrep, ssbVegetableOil); err != nil {
 		return err
 	}
-	if err := createVPV(ssbHeatPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbHeatPrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION for chicken ===
-	if err := createVIP(ssbPanSearPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbPanSearPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(ssbPanSearPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbPanSearPrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(ssbPanSearPrep, ssbTongs); err != nil {
+	if err = createVPI(ssbPanSearPrep, ssbTongs); err != nil {
 		return err
 	}
 
 	// === FLIP PREPARATION for chicken ===
-	if err := createVIP(ssbFlipPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbFlipPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(ssbFlipPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbFlipPrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(ssbFlipPrep, ssbTongs); err != nil {
+	if err = createVPI(ssbFlipPrep, ssbTongs); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for chicken to plate ===
-	if err := createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbTransferPrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(ssbTransferPrep, ssbLargePlate); err != nil {
+	if err = createVPV(ssbTransferPrep, ssbLargePlate); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for chicken back to skillet ===
-	if err := createVPV(ssbTransferPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbTransferPrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
 
 	// === SAUTÉ PREPARATION for aromatics ===
-	if err := createVIP(ssbSautéPrep, ssbScallions); err != nil {
+	if err = createVIP(ssbSautePrep, ssbScallions); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSautéPrep, ssbGinger); err != nil {
+	if err = createVIP(ssbSautePrep, ssbGinger); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSautéPrep, ssbGarlic); err != nil {
+	if err = createVIP(ssbSautePrep, ssbGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSautéPrep, ssbFiveSpice); err != nil {
+	if err = createVIP(ssbSautePrep, ssbFiveSpice); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSautéPrep, ssbDarkBrownSugar); err != nil {
+	if err = createVIP(ssbSautePrep, ssbDarkBrownSugar); err != nil {
 		return err
 	}
-	if err := createVPV(ssbSautéPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbSautePrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(ssbSautéPrep, ssbWoodenSpoon); err != nil {
+	if err = createVPI(ssbSautePrep, ssbWoodenSpoon); err != nil {
 		return err
 	}
 
 	// === SIMMER PREPARATION for braising liquid ===
-	if err := createVIP(ssbSimmerPrep, ssbStarAnise); err != nil {
+	if err = createVIP(ssbSimmerPrep, ssbStarAnise); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSimmerPrep, ssbCassiaBark); err != nil {
+	if err = createVIP(ssbSimmerPrep, ssbCassiaBark); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSimmerPrep, ssbLightSoySauce); err != nil {
+	if err = createVIP(ssbSimmerPrep, ssbLightSoySauce); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSimmerPrep, ssbShaoxingWine); err != nil {
+	if err = createVIP(ssbSimmerPrep, ssbShaoxingWine); err != nil {
 		return err
 	}
-	if err := createVIP(ssbSimmerPrep, ssbWater); err != nil {
+	if err = createVIP(ssbSimmerPrep, ssbWater); err != nil {
 		return err
 	}
-	if err := createVPV(ssbSimmerPrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbSimmerPrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
 
 	// === BRAISE PREPARATION for chicken ===
-	if err := createVIP(ssbBraisePrep, ssbChickenThighs); err != nil {
+	if err = createVIP(ssbBraisePrep, ssbChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(ssbBraisePrep, ssbCastIronSkillet); err != nil {
+	if err = createVPV(ssbBraisePrep, ssbCastIronSkillet); err != nil {
 		return err
 	}
-	if err := createVPV(ssbBraisePrep, ssbOven); err != nil {
+	if err = createVPV(ssbBraisePrep, ssbOven); err != nil {
 		return err
 	}
-	if err := createVPI(ssbBraisePrep, ssbThermometer); err != nil {
+	if err = createVPI(ssbBraisePrep, ssbThermometer); err != nil {
 		return err
 	}
 
 	// === SOY SAUCE BRAISED CHICKEN THIGHS INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(ssbSalt, ssbTablespoonMeasurement); err != nil {
+	if err = createVIMU(ssbSalt, ssbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbMSG, ssbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(ssbMSG, ssbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbFiveSpice, ssbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(ssbFiveSpice, ssbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbDarkBrownSugar, ssbTablespoonMeasurement); err != nil {
+	if err = createVIMU(ssbDarkBrownSugar, ssbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbWhitePepper, ssbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(ssbWhitePepper, ssbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbChickenThighs, ssbPoundMeasurement); err != nil {
+	if err = createVIMU(ssbChickenThighs, ssbPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbVegetableOil, ssbTablespoonMeasurement); err != nil {
+	if err = createVIMU(ssbVegetableOil, ssbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbScallions, ssbUnitMeasurement); err != nil {
+	if err = createVIMU(ssbScallions, ssbUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbGinger, ssbUnitMeasurement); err != nil {
+	if err = createVIMU(ssbGinger, ssbUnitMeasurement); err != nil {
 		return err
 	}
 	ssbCloveMeasurement := enums.MeasurementUnits["clove"]
-	if err := createVIMU(ssbGarlic, ssbCloveMeasurement); err != nil {
+	if err = createVIMU(ssbGarlic, ssbCloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbStarAnise, ssbUnitMeasurement); err != nil {
+	if err = createVIMU(ssbStarAnise, ssbUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbCassiaBark, ssbUnitMeasurement); err != nil {
+	if err = createVIMU(ssbCassiaBark, ssbUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbLightSoySauce, ssbCupMeasurement); err != nil {
+	if err = createVIMU(ssbLightSoySauce, ssbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbShaoxingWine, ssbCupMeasurement); err != nil {
+	if err = createVIMU(ssbShaoxingWine, ssbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(ssbWater, ssbCupMeasurement); err != nil {
+	if err = createVIMU(ssbWater, ssbCupMeasurement); err != nil {
 		return err
 	}
 
@@ -4534,140 +4534,140 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gptBrush := enums.Instruments["brush"]
 
 	// === TRIM PREPARATION for pork tenderloin ===
-	if err := createVIP(gptTrimPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptTrimPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPI(gptTrimPrep, gptChefsKnife); err != nil {
+	if err = createVPI(gptTrimPrep, gptChefsKnife); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for pork tenderloin ===
-	if err := createVIP(gptSeasonPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptSeasonPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVIP(gptSeasonPrep, gptSalt); err != nil {
+	if err = createVIP(gptSeasonPrep, gptSalt); err != nil {
 		return err
 	}
-	if err := createVIP(gptSeasonPrep, gptBlackPepper); err != nil {
+	if err = createVIP(gptSeasonPrep, gptBlackPepper); err != nil {
 		return err
 	}
-	if err := createVPI(gptSeasonPrep, gptBareHands); err != nil {
+	if err = createVPI(gptSeasonPrep, gptBareHands); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for pork tenderloin ===
-	if err := createVIP(gptTransferPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptTransferPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptTransferPrep, gptWireRack); err != nil {
+	if err = createVPV(gptTransferPrep, gptWireRack); err != nil {
 		return err
 	}
-	if err := createVPV(gptTransferPrep, gptBakingSheet); err != nil {
+	if err = createVPV(gptTransferPrep, gptBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(gptTransferPrep, gptGrill); err != nil {
+	if err = createVPV(gptTransferPrep, gptGrill); err != nil {
 		return err
 	}
-	if err := createVPV(gptTransferPrep, gptCarvingBoard); err != nil {
+	if err = createVPV(gptTransferPrep, gptCarvingBoard); err != nil {
 		return err
 	}
 
 	// === REFRIGERATE PREPARATION for pork tenderloin ===
-	if err := createVIP(gptRefrigeratePrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptRefrigeratePrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptRefrigeratePrep, gptWireRack); err != nil {
+	if err = createVPV(gptRefrigeratePrep, gptWireRack); err != nil {
 		return err
 	}
-	if err := createVPV(gptRefrigeratePrep, gptBakingSheet); err != nil {
+	if err = createVPV(gptRefrigeratePrep, gptBakingSheet); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for grill ===
-	if err := createVPV(gptPreheatPrep, gptGrill); err != nil {
+	if err = createVPV(gptPreheatPrep, gptGrill); err != nil {
 		return err
 	}
 
 	// === CLEAN PREPARATION for grilling grate ===
-	if err := createVPV(gptCleanPrep, gptGrillingGrate); err != nil {
+	if err = createVPV(gptCleanPrep, gptGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(gptCleanPrep, gptGrillBrush); err != nil {
+	if err = createVPI(gptCleanPrep, gptGrillBrush); err != nil {
 		return err
 	}
 
 	// === OIL PREPARATION for grilling grate ===
-	if err := createVIP(gptOilPrep, gptVegetableOil); err != nil {
+	if err = createVIP(gptOilPrep, gptVegetableOil); err != nil {
 		return err
 	}
-	if err := createVPV(gptOilPrep, gptGrillingGrate); err != nil {
+	if err = createVPV(gptOilPrep, gptGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(gptOilPrep, gptBrush); err != nil {
+	if err = createVPI(gptOilPrep, gptBrush); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION for pork tenderloin ===
-	if err := createVIP(gptGrillPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptGrillPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptGrillPrep, gptGrill); err != nil {
+	if err = createVPV(gptGrillPrep, gptGrill); err != nil {
 		return err
 	}
-	if err := createVPV(gptGrillPrep, gptGrillingGrate); err != nil {
+	if err = createVPV(gptGrillPrep, gptGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(gptGrillPrep, gptTongs); err != nil {
+	if err = createVPI(gptGrillPrep, gptTongs); err != nil {
 		return err
 	}
-	if err := createVPI(gptGrillPrep, gptThermometer); err != nil {
+	if err = createVPI(gptGrillPrep, gptThermometer); err != nil {
 		return err
 	}
 
 	// === TURN PREPARATION for pork tenderloin ===
-	if err := createVIP(gptTurnPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptTurnPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptTurnPrep, gptGrill); err != nil {
+	if err = createVPV(gptTurnPrep, gptGrill); err != nil {
 		return err
 	}
-	if err := createVPV(gptTurnPrep, gptGrillingGrate); err != nil {
+	if err = createVPV(gptTurnPrep, gptGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(gptTurnPrep, gptTongs); err != nil {
+	if err = createVPI(gptTurnPrep, gptTongs); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION for pork tenderloin ===
-	if err := createVIP(gptRestPrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptRestPrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptRestPrep, gptCarvingBoard); err != nil {
+	if err = createVPV(gptRestPrep, gptCarvingBoard); err != nil {
 		return err
 	}
 
 	// === CARVE PREPARATION for pork tenderloin ===
-	if err := createVIP(gptCarvePrep, gptPorkTenderloin); err != nil {
+	if err = createVIP(gptCarvePrep, gptPorkTenderloin); err != nil {
 		return err
 	}
-	if err := createVPV(gptCarvePrep, gptCarvingBoard); err != nil {
+	if err = createVPV(gptCarvePrep, gptCarvingBoard); err != nil {
 		return err
 	}
-	if err := createVPI(gptCarvePrep, gptCarvingKnife); err != nil {
+	if err = createVPI(gptCarvePrep, gptCarvingKnife); err != nil {
 		return err
 	}
 
 	// === GRILLED PORK TENDERLOIN INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(gptPorkTenderloin, gptPoundMeasurement); err != nil {
+	if err = createVIMU(gptPorkTenderloin, gptPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gptSalt, gptTeaspoonMeasurement); err != nil {
+	if err = createVIMU(gptSalt, gptTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gptBlackPepper, gptTeaspoonMeasurement); err != nil {
+	if err = createVIMU(gptBlackPepper, gptTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gptVegetableOil, gptTablespoonMeasurement); err != nil {
+	if err = createVIMU(gptVegetableOil, gptTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -4705,101 +4705,101 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	pssfBareHands := enums.Instruments["bare hands"]
 
 	// === DRY PREPARATION for salmon ===
-	if err := createVIP(pssfDryPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfDryPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPI(pssfDryPrep, pssfPaperTowels); err != nil {
+	if err = createVPI(pssfDryPrep, pssfPaperTowels); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for salmon ===
-	if err := createVIP(pssfSeasonPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfSeasonPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVIP(pssfSeasonPrep, pssfSalt); err != nil {
+	if err = createVIP(pssfSeasonPrep, pssfSalt); err != nil {
 		return err
 	}
-	if err := createVIP(pssfSeasonPrep, pssfBlackPepper); err != nil {
+	if err = createVIP(pssfSeasonPrep, pssfBlackPepper); err != nil {
 		return err
 	}
-	if err := createVPI(pssfSeasonPrep, pssfBareHands); err != nil {
+	if err = createVPI(pssfSeasonPrep, pssfBareHands); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for oil ===
-	if err := createVIP(pssfHeatPrep, pssfVegetableOil); err != nil {
+	if err = createVIP(pssfHeatPrep, pssfVegetableOil); err != nil {
 		return err
 	}
-	if err := createVPV(pssfHeatPrep, pssfSkillet); err != nil {
+	if err = createVPV(pssfHeatPrep, pssfSkillet); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION for salmon ===
-	if err := createVIP(pssfPanSearPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfPanSearPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPV(pssfPanSearPrep, pssfSkillet); err != nil {
+	if err = createVPV(pssfPanSearPrep, pssfSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(pssfPanSearPrep, pssfFishSpatula); err != nil {
+	if err = createVPI(pssfPanSearPrep, pssfFishSpatula); err != nil {
 		return err
 	}
-	if err := createVPI(pssfPanSearPrep, pssfThermometer); err != nil {
+	if err = createVPI(pssfPanSearPrep, pssfThermometer); err != nil {
 		return err
 	}
 
 	// === PRESS PREPARATION for salmon ===
-	if err := createVIP(pssfPressPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfPressPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPV(pssfPressPrep, pssfSkillet); err != nil {
+	if err = createVPV(pssfPressPrep, pssfSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(pssfPressPrep, pssfFishSpatula); err != nil {
+	if err = createVPI(pssfPressPrep, pssfFishSpatula); err != nil {
 		return err
 	}
 
 	// === FLIP PREPARATION for salmon ===
-	if err := createVIP(pssfFlipPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfFlipPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPV(pssfFlipPrep, pssfSkillet); err != nil {
+	if err = createVPV(pssfFlipPrep, pssfSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(pssfFlipPrep, pssfFishSpatula); err != nil {
+	if err = createVPI(pssfFlipPrep, pssfFishSpatula); err != nil {
 		return err
 	}
-	if err := createVPI(pssfFlipPrep, pssfFork); err != nil {
+	if err = createVPI(pssfFlipPrep, pssfFork); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for salmon ===
-	if err := createVIP(pssfTransferPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfTransferPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPV(pssfTransferPrep, pssfPlate); err != nil {
+	if err = createVPV(pssfTransferPrep, pssfPlate); err != nil {
 		return err
 	}
 
 	// === DRAIN PREPARATION for salmon ===
-	if err := createVIP(pssfDrainPrep, pssfSalmonFillet); err != nil {
+	if err = createVIP(pssfDrainPrep, pssfSalmonFillet); err != nil {
 		return err
 	}
-	if err := createVPV(pssfDrainPrep, pssfPlate); err != nil {
+	if err = createVPV(pssfDrainPrep, pssfPlate); err != nil {
 		return err
 	}
 
 	// === PAN-SEARED SALMON FILLETS INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(pssfSalmonFillet, pssfOunceMeasurement); err != nil {
+	if err = createVIMU(pssfSalmonFillet, pssfOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(pssfSalt, pssfTeaspoonMeasurement); err != nil {
+	if err = createVIMU(pssfSalt, pssfTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(pssfBlackPepper, pssfTeaspoonMeasurement); err != nil {
+	if err = createVIMU(pssfBlackPepper, pssfTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(pssfVegetableOil, pssfTablespoonMeasurement); err != nil {
+	if err = createVIMU(pssfVegetableOil, pssfTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -4848,199 +4848,199 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	rbsBareHands := enums.Instruments["bare hands"]
 
 	// === TRIM PREPARATION for Brussels sprouts ===
-	if err := createVIP(rbsTrimPrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsTrimPrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVPI(rbsTrimPrep, rbsChefsKnife); err != nil {
+	if err = createVPI(rbsTrimPrep, rbsChefsKnife); err != nil {
 		return err
 	}
 
 	// === HALVE PREPARATION for Brussels sprouts ===
-	if err := createVIP(rbsHalvePrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsHalvePrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVPI(rbsHalvePrep, rbsChefsKnife); err != nil {
+	if err = createVPI(rbsHalvePrep, rbsChefsKnife); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION for Brussels sprouts and shallots ===
-	if err := createVIP(rbsTossPrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsTossPrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVIP(rbsTossPrep, rbsOliveOil); err != nil {
+	if err = createVIP(rbsTossPrep, rbsOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(rbsTossPrep, rbsSalt); err != nil {
+	if err = createVIP(rbsTossPrep, rbsSalt); err != nil {
 		return err
 	}
-	if err := createVIP(rbsTossPrep, rbsBlackPepper); err != nil {
+	if err = createVIP(rbsTossPrep, rbsBlackPepper); err != nil {
 		return err
 	}
-	if err := createVIP(rbsTossPrep, rbsShallots); err != nil {
+	if err = createVIP(rbsTossPrep, rbsShallots); err != nil {
 		return err
 	}
-	if err := createVPV(rbsTossPrep, rbsLargeBowl); err != nil {
+	if err = createVPV(rbsTossPrep, rbsLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPI(rbsTossPrep, rbsBareHands); err != nil {
+	if err = createVPI(rbsTossPrep, rbsBareHands); err != nil {
 		return err
 	}
 
 	// === ADJUST PREPARATION for oven racks ===
-	if err := createVPV(rbsAdjustPrep, rbsOven); err != nil {
+	if err = createVPV(rbsAdjustPrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === PLACE PREPARATION for baking sheets ===
-	if err := createVPV(rbsPlacePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsPlacePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(rbsPlacePrep, rbsOven); err != nil {
+	if err = createVPV(rbsPlacePrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for oven ===
-	if err := createVPV(rbsPreheatPrep, rbsOven); err != nil {
+	if err = createVPV(rbsPreheatPrep, rbsOven); err != nil {
 		return err
 	}
-	if err := createVPV(rbsPreheatPrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsPreheatPrep, rbsBakingSheet); err != nil {
 		return err
 	}
 
 	// === REMOVE PREPARATION for baking sheets ===
-	if err := createVPV(rbsRemovePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsRemovePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPI(rbsRemovePrep, rbsOvenMitt); err != nil {
+	if err = createVPI(rbsRemovePrep, rbsOvenMitt); err != nil {
 		return err
 	}
-	if err := createVPI(rbsRemovePrep, rbsDishTowel); err != nil {
+	if err = createVPI(rbsRemovePrep, rbsDishTowel); err != nil {
 		return err
 	}
 
 	// === DIVIDE PREPARATION for Brussels sprouts ===
-	if err := createVIP(rbsDividePrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsDividePrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
 	// === DIVIDE PREPARATION for shallots ===
-	if err := createVIP(rbsDividePrep, rbsShallots); err != nil {
+	if err = createVIP(rbsDividePrep, rbsShallots); err != nil {
 		return err
 	}
-	if err := createVPV(rbsDividePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsDividePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPI(rbsDividePrep, rbsOvenMitt); err != nil {
+	if err = createVPI(rbsDividePrep, rbsOvenMitt); err != nil {
 		return err
 	}
-	if err := createVPI(rbsDividePrep, rbsDishTowel); err != nil {
+	if err = createVPI(rbsDividePrep, rbsDishTowel); err != nil {
 		return err
 	}
-	if err := createVPI(rbsDividePrep, rbsBareHands); err != nil {
+	if err = createVPI(rbsDividePrep, rbsBareHands); err != nil {
 		return err
 	}
 
 	// === SHAKE PREPARATION for baking sheets ===
-	if err := createVPV(rbsShakePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsShakePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPI(rbsShakePrep, rbsBareHands); err != nil {
+	if err = createVPI(rbsShakePrep, rbsBareHands); err != nil {
 		return err
 	}
 
 	// === RETURN PREPARATION for baking sheets ===
-	if err := createVPV(rbsReturnPrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsReturnPrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(rbsReturnPrep, rbsOven); err != nil {
+	if err = createVPV(rbsReturnPrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === ROAST PREPARATION for Brussels sprouts ===
-	if err := createVIP(rbsRoastPrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsRoastPrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVIP(rbsRoastPrep, rbsShallots); err != nil {
+	if err = createVIP(rbsRoastPrep, rbsShallots); err != nil {
 		return err
 	}
-	if err := createVPV(rbsRoastPrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsRoastPrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(rbsRoastPrep, rbsOven); err != nil {
+	if err = createVPV(rbsRoastPrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION for Brussels sprouts and shallots ===
-	if err := createVIP(rbsStirPrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsStirPrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVIP(rbsStirPrep, rbsShallots); err != nil {
+	if err = createVIP(rbsStirPrep, rbsShallots); err != nil {
 		return err
 	}
-	if err := createVPV(rbsStirPrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsStirPrep, rbsBakingSheet); err != nil {
 		return err
 	}
 
 	// === ROTATE PREPARATION for baking sheets ===
-	if err := createVPV(rbsRotatePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsRotatePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(rbsRotatePrep, rbsOven); err != nil {
+	if err = createVPV(rbsRotatePrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === SWAP PREPARATION for baking sheets ===
-	if err := createVPV(rbsSwapPrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsSwapPrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(rbsSwapPrep, rbsOven); err != nil {
+	if err = createVPV(rbsSwapPrep, rbsOven); err != nil {
 		return err
 	}
 
 	// === DRIZZLE PREPARATION for balsamic vinegar ===
-	if err := createVIP(rbsDrizzlePrep, rbsBalsamicVinegar); err != nil {
+	if err = createVIP(rbsDrizzlePrep, rbsBalsamicVinegar); err != nil {
 		return err
 	}
-	if err := createVIP(rbsDrizzlePrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsDrizzlePrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVPV(rbsDrizzlePrep, rbsBakingSheet); err != nil {
+	if err = createVPV(rbsDrizzlePrep, rbsBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPI(rbsDrizzlePrep, rbsBareHands); err != nil {
+	if err = createVPI(rbsDrizzlePrep, rbsBareHands); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for Brussels sprouts ===
-	if err := createVIP(rbsSeasonPrep, rbsBrusselsSprouts); err != nil {
+	if err = createVIP(rbsSeasonPrep, rbsBrusselsSprouts); err != nil {
 		return err
 	}
-	if err := createVIP(rbsSeasonPrep, rbsSalt); err != nil {
+	if err = createVIP(rbsSeasonPrep, rbsSalt); err != nil {
 		return err
 	}
-	if err := createVIP(rbsSeasonPrep, rbsBlackPepper); err != nil {
+	if err = createVIP(rbsSeasonPrep, rbsBlackPepper); err != nil {
 		return err
 	}
-	if err := createVPI(rbsSeasonPrep, rbsBareHands); err != nil {
+	if err = createVPI(rbsSeasonPrep, rbsBareHands); err != nil {
 		return err
 	}
 
 	// === ROASTED BRUSSELS SPROUTS INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(rbsBrusselsSprouts, rbsPoundMeasurement); err != nil {
+	if err = createVIMU(rbsBrusselsSprouts, rbsPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbsOliveOil, rbsTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbsOliveOil, rbsTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbsSalt, rbsTeaspoonMeasurement); err != nil {
+	if err = createVIMU(rbsSalt, rbsTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbsBlackPepper, rbsTeaspoonMeasurement); err != nil {
+	if err = createVIMU(rbsBlackPepper, rbsTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbsShallots, rbsUnitMeasurement); err != nil {
+	if err = createVIMU(rbsShallots, rbsUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbsBalsamicVinegar, rbsTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbsBalsamicVinegar, rbsTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -5187,250 +5187,250 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	rbWoodenSpoon := enums.Instruments["wooden spoon"]
 
 	// === COVER PREPARATION for beans ===
-	if err := createVIP(rbCoverPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbCoverPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbCoverPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbCoverPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbCoverPrep, rbWater); err != nil {
+	if err = createVIP(rbCoverPrep, rbWater); err != nil {
 		return err
 	}
-	if err := createVPV(rbCoverPrep, rbLargePot); err != nil {
+	if err = createVPV(rbCoverPrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for aromatics ===
-	if err := createVIP(rbAddPrep, rbEpazote); err != nil {
+	if err = createVIP(rbAddPrep, rbEpazote); err != nil {
 		return err
 	}
-	if err := createVIP(rbAddPrep, rbOregano); err != nil {
+	if err = createVIP(rbAddPrep, rbOregano); err != nil {
 		return err
 	}
-	if err := createVIP(rbAddPrep, rbWhiteOnion); err != nil {
+	if err = createVIP(rbAddPrep, rbWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVIP(rbAddPrep, rbGarlic); err != nil {
+	if err = createVIP(rbAddPrep, rbGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(rbAddPrep, rbWater); err != nil {
+	if err = createVIP(rbAddPrep, rbWater); err != nil {
 		return err
 	}
-	if err := createVPV(rbAddPrep, rbLargePot); err != nil {
+	if err = createVPV(rbAddPrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === BOIL PREPARATION for beans ===
-	if err := createVIP(rbBoilPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbBoilPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbBoilPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbBoilPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVPV(rbBoilPrep, rbLargePot); err != nil {
+	if err = createVPV(rbBoilPrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === REDUCE PREPARATION for heat ===
-	if err := createVPV(rbReducePrep, rbLargePot); err != nil {
+	if err = createVPV(rbReducePrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === SIMMER PREPARATION for beans ===
-	if err := createVIP(rbSimmerPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbSimmerPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbSimmerPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbSimmerPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVPV(rbSimmerPrep, rbLargePot); err != nil {
+	if err = createVPV(rbSimmerPrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for beans ===
-	if err := createVIP(rbSeasonPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbSeasonPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbSeasonPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbSeasonPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbSeasonPrep, rbSalt); err != nil {
+	if err = createVIP(rbSeasonPrep, rbSalt); err != nil {
 		return err
 	}
-	if err := createVPV(rbSeasonPrep, rbLargePot); err != nil {
+	if err = createVPV(rbSeasonPrep, rbLargePot); err != nil {
 		return err
 	}
-	if err := createVPV(rbSeasonPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbSeasonPrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
 	// === DRAIN PREPARATION for beans ===
-	if err := createVIP(rbDrainPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbDrainPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbDrainPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbDrainPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVPV(rbDrainPrep, rbLargePot); err != nil {
+	if err = createVPV(rbDrainPrep, rbLargePot); err != nil {
 		return err
 	}
-	if err := createVPV(rbDrainPrep, rbBowl); err != nil {
+	if err = createVPV(rbDrainPrep, rbBowl); err != nil {
 		return err
 	}
 
 	// === RESERVE PREPARATION for liquid ===
-	if err := createVIP(rbReservePrep, rbWater); err != nil {
+	if err = createVIP(rbReservePrep, rbWater); err != nil {
 		return err
 	}
-	if err := createVPV(rbReservePrep, rbBowl); err != nil {
+	if err = createVPV(rbReservePrep, rbBowl); err != nil {
 		return err
 	}
 
 	// === MEASURE PREPARATION for beans ===
-	if err := createVIP(rbMeasurePrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbMeasurePrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbMeasurePrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbMeasurePrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVPV(rbMeasurePrep, rbBowl); err != nil {
+	if err = createVPV(rbMeasurePrep, rbBowl); err != nil {
 		return err
 	}
 
 	// === DISCARD PREPARATION for aromatics ===
-	if err := createVIP(rbDiscardPrep, rbEpazote); err != nil {
+	if err = createVIP(rbDiscardPrep, rbEpazote); err != nil {
 		return err
 	}
-	if err := createVIP(rbDiscardPrep, rbOregano); err != nil {
+	if err = createVIP(rbDiscardPrep, rbOregano); err != nil {
 		return err
 	}
-	if err := createVIP(rbDiscardPrep, rbWhiteOnion); err != nil {
+	if err = createVIP(rbDiscardPrep, rbWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVIP(rbDiscardPrep, rbGarlic); err != nil {
+	if err = createVIP(rbDiscardPrep, rbGarlic); err != nil {
 		return err
 	}
-	if err := createVPV(rbDiscardPrep, rbLargePot); err != nil {
+	if err = createVPV(rbDiscardPrep, rbLargePot); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION for fat ===
-	if err := createVIP(rbHeatPrep, rbLard); err != nil {
+	if err = createVIP(rbHeatPrep, rbLard); err != nil {
 		return err
 	}
-	if err := createVIP(rbHeatPrep, rbBaconDrippings); err != nil {
+	if err = createVIP(rbHeatPrep, rbBaconDrippings); err != nil {
 		return err
 	}
-	if err := createVIP(rbHeatPrep, rbVegetableOil); err != nil {
+	if err = createVIP(rbHeatPrep, rbVegetableOil); err != nil {
 		return err
 	}
-	if err := createVIP(rbHeatPrep, rbButter); err != nil {
+	if err = createVIP(rbHeatPrep, rbButter); err != nil {
 		return err
 	}
-	if err := createVPV(rbHeatPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbHeatPrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
 	// === SAUTÉ PREPARATION for onion ===
-	if err := createVIP(rbSautPrep, rbWhiteOnion); err != nil {
+	if err = createVIP(rbSautPrep, rbWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVPV(rbSautPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbSautPrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION for beans ===
-	if err := createVIP(rbStirPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbStirPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbStirPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbStirPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbStirPrep, rbWhiteOnion); err != nil {
+	if err = createVIP(rbStirPrep, rbWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVIP(rbStirPrep, rbWater); err != nil {
+	if err = createVIP(rbStirPrep, rbWater); err != nil {
 		return err
 	}
-	if err := createVPV(rbStirPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbStirPrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
 	// === SMASH PREPARATION for beans ===
-	if err := createVIP(rbSmashPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbSmashPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbSmashPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbSmashPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVPV(rbSmashPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbSmashPrep, rbLargeSkillet); err != nil {
 		return err
 	}
-	if err := createVPI(rbSmashPrep, rbBeanMasher); err != nil {
+	if err = createVPI(rbSmashPrep, rbBeanMasher); err != nil {
 		return err
 	}
-	if err := createVPI(rbSmashPrep, rbPotatoMasher); err != nil {
+	if err = createVPI(rbSmashPrep, rbPotatoMasher); err != nil {
 		return err
 	}
-	if err := createVPI(rbSmashPrep, rbStickBlender); err != nil {
+	if err = createVPI(rbSmashPrep, rbStickBlender); err != nil {
 		return err
 	}
-	if err := createVPI(rbSmashPrep, rbWoodenSpoon); err != nil {
+	if err = createVPI(rbSmashPrep, rbWoodenSpoon); err != nil {
 		return err
 	}
 
 	// === THIN PREPARATION for beans ===
-	if err := createVIP(rbThinPrep, rbPintoBeans); err != nil {
+	if err = createVIP(rbThinPrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbThinPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbThinPrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err := createVIP(rbThinPrep, rbWater); err != nil {
+	if err = createVIP(rbThinPrep, rbWater); err != nil {
 		return err
 	}
-	if err := createVPV(rbThinPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbThinPrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
 	// === REFRIED BEANS INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(rbPintoBeans, rbPoundMeasurement); err != nil {
+	if err = createVIMU(rbPintoBeans, rbPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbPintoBeans, rbCupMeasurement); err != nil {
+	if err = createVIMU(rbPintoBeans, rbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbBlackBeans, rbPoundMeasurement); err != nil {
+	if err = createVIMU(rbBlackBeans, rbPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbBlackBeans, rbCupMeasurement); err != nil {
+	if err = createVIMU(rbBlackBeans, rbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbEpazote, rbSprigMeasurement); err != nil {
+	if err = createVIMU(rbEpazote, rbSprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbOregano, rbSprigMeasurement); err != nil {
+	if err = createVIMU(rbOregano, rbSprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbWhiteOnion, rbUnitMeasurement); err != nil {
+	if err = createVIMU(rbWhiteOnion, rbUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbGarlic, rbCloveMeasurement); err != nil {
+	if err = createVIMU(rbGarlic, rbCloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbSalt, rbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(rbSalt, rbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbLard, rbTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbLard, rbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbBaconDrippings, rbTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbBaconDrippings, rbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbVegetableOil, rbTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbVegetableOil, rbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(rbButter, rbTablespoonMeasurement); err != nil {
+	if err = createVIMU(rbButter, rbTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -5629,410 +5629,410 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caCarvingKnife := enums.Instruments["carving knife"]
 
 	// === TOAST PREPARATION for seeds ===
-	if err := createVIP(caToastPrep, caCuminSeeds); err != nil {
+	if err = createVIP(caToastPrep, caCuminSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(caToastPrep, caCorianderSeeds); err != nil {
+	if err = createVIP(caToastPrep, caCorianderSeeds); err != nil {
 		return err
 	}
 	caSmallSkillet, err := getVessel("small skillet")
 	if err != nil {
 		return err
 	}
-	if err := createVPV(caToastPrep, caSmallSkillet); err != nil {
+	if err = createVPV(caToastPrep, caSmallSkillet); err != nil {
 		return err
 	}
 
 	// === GRIND PREPARATION for seeds ===
-	if err := createVIP(caGrindPrep, caCuminSeeds); err != nil {
+	if err = createVIP(caGrindPrep, caCuminSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(caGrindPrep, caCorianderSeeds); err != nil {
+	if err = createVIP(caGrindPrep, caCorianderSeeds); err != nil {
 		return err
 	}
-	if err := createVPV(caGrindPrep, caBlenderJar); err != nil {
+	if err = createVPV(caGrindPrep, caBlenderJar); err != nil {
 		return err
 	}
-	if err := createVPI(caGrindPrep, caBlender); err != nil {
+	if err = createVPI(caGrindPrep, caBlender); err != nil {
 		return err
 	}
 
 	// === MICROWAVE PREPARATION for chiles ===
-	if err := createVIP(caMicrowavePrep, caAnchoChiles); err != nil {
+	if err = createVIP(caMicrowavePrep, caAnchoChiles); err != nil {
 		return err
 	}
-	if err := createVIP(caMicrowavePrep, caGuajilloChiles); err != nil {
+	if err = createVIP(caMicrowavePrep, caGuajilloChiles); err != nil {
 		return err
 	}
-	if err := createVPV(caMicrowavePrep, caMicrowaveSafePlate); err != nil {
+	if err = createVPV(caMicrowavePrep, caMicrowaveSafePlate); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for chiles ===
-	if err := createVIP(caTransferPrep, caAnchoChiles); err != nil {
+	if err = createVIP(caTransferPrep, caAnchoChiles); err != nil {
 		return err
 	}
-	if err := createVIP(caTransferPrep, caGuajilloChiles); err != nil {
+	if err = createVIP(caTransferPrep, caGuajilloChiles); err != nil {
 		return err
 	}
-	if err := createVPV(caTransferPrep, caBlenderJar); err != nil {
+	if err = createVPV(caTransferPrep, caBlenderJar); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for marinade ingredients ===
-	if err := createVIP(caAddPrep, caChipotlePeppers); err != nil {
+	if err = createVIP(caAddPrep, caChipotlePeppers); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caOrangeJuice); err != nil {
+	if err = createVIP(caAddPrep, caOrangeJuice); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caLimeJuice); err != nil {
+	if err = createVIP(caAddPrep, caLimeJuice); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caOliveOil); err != nil {
+	if err = createVIP(caAddPrep, caOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caSoySauce); err != nil {
+	if err = createVIP(caAddPrep, caSoySauce); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caFishSauce); err != nil {
+	if err = createVIP(caAddPrep, caFishSauce); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caDarkBrownSugar); err != nil {
+	if err = createVIP(caAddPrep, caDarkBrownSugar); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caCilantro); err != nil {
+	if err = createVIP(caAddPrep, caCilantro); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caGarlic); err != nil {
+	if err = createVIP(caAddPrep, caGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caCuminSeeds); err != nil {
+	if err = createVIP(caAddPrep, caCuminSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(caAddPrep, caCorianderSeeds); err != nil {
+	if err = createVIP(caAddPrep, caCorianderSeeds); err != nil {
 		return err
 	}
-	if err := createVPV(caAddPrep, caBlenderJar); err != nil {
+	if err = createVPV(caAddPrep, caBlenderJar); err != nil {
 		return err
 	}
 
 	// === BLEND PREPARATION for marinade ===
-	if err := createVIP(caBlendPrep, caAnchoChiles); err != nil {
+	if err = createVIP(caBlendPrep, caAnchoChiles); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caGuajilloChiles); err != nil {
+	if err = createVIP(caBlendPrep, caGuajilloChiles); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caChipotlePeppers); err != nil {
+	if err = createVIP(caBlendPrep, caChipotlePeppers); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caOrangeJuice); err != nil {
+	if err = createVIP(caBlendPrep, caOrangeJuice); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caLimeJuice); err != nil {
+	if err = createVIP(caBlendPrep, caLimeJuice); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caOliveOil); err != nil {
+	if err = createVIP(caBlendPrep, caOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caSoySauce); err != nil {
+	if err = createVIP(caBlendPrep, caSoySauce); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caFishSauce); err != nil {
+	if err = createVIP(caBlendPrep, caFishSauce); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caDarkBrownSugar); err != nil {
+	if err = createVIP(caBlendPrep, caDarkBrownSugar); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caCilantro); err != nil {
+	if err = createVIP(caBlendPrep, caCilantro); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caGarlic); err != nil {
+	if err = createVIP(caBlendPrep, caGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caCuminSeeds); err != nil {
+	if err = createVIP(caBlendPrep, caCuminSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(caBlendPrep, caCorianderSeeds); err != nil {
+	if err = createVIP(caBlendPrep, caCorianderSeeds); err != nil {
 		return err
 	}
-	if err := createVPV(caBlendPrep, caBlenderJar); err != nil {
+	if err = createVPV(caBlendPrep, caBlenderJar); err != nil {
 		return err
 	}
-	if err := createVPI(caBlendPrep, caBlender); err != nil {
+	if err = createVPI(caBlendPrep, caBlender); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for marinade ===
-	if err := createVIP(caSeasonPrep, caSalt); err != nil {
+	if err = createVIP(caSeasonPrep, caSalt); err != nil {
 		return err
 	}
-	if err := createVPV(caSeasonPrep, caBlenderJar); err != nil {
+	if err = createVPV(caSeasonPrep, caBlenderJar); err != nil {
 		return err
 	}
 
 	// === DIVIDE PREPARATION for marinade ===
-	if err := createVIP(caDividePrep, caAnchoChiles); err != nil {
+	if err = createVIP(caDividePrep, caAnchoChiles); err != nil {
 		return err
 	}
-	if err := createVPV(caDividePrep, caLargeBowl); err != nil {
+	if err = createVPV(caDividePrep, caLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPV(caDividePrep, caSealedContainer); err != nil {
+	if err = createVPV(caDividePrep, caSealedContainer); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for salsa ===
-	if err := createVPV(caTransferPrep, caLargeBowl); err != nil {
+	if err = createVPV(caTransferPrep, caLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPV(caTransferPrep, caSealedContainer); err != nil {
+	if err = createVPV(caTransferPrep, caSealedContainer); err != nil {
 		return err
 	}
 
 	// === REFRIGERATE PREPARATION for salsa ===
-	if err := createVPV(caRefrigeratePrep, caSealedContainer); err != nil {
+	if err = createVPV(caRefrigeratePrep, caSealedContainer); err != nil {
 		return err
 	}
-	if err := createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
+	if err = createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for salt to marinade ===
-	if err := createVIP(caAddPrep, caSalt); err != nil {
+	if err = createVIP(caAddPrep, caSalt); err != nil {
 		return err
 	}
-	if err := createVPV(caAddPrep, caLargeBowl); err != nil {
+	if err = createVPV(caAddPrep, caLargeBowl); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for steak to marinade ===
-	if err := createVIP(caAddPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caAddPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caAddPrep, caLargeBowl); err != nil {
+	if err = createVPV(caAddPrep, caLargeBowl); err != nil {
 		return err
 	}
 
 	// === MARINATE PREPARATION for steak ===
-	if err := createVIP(caMarinatePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caMarinatePrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caMarinatePrep, caLargeBowl); err != nil {
+	if err = createVPV(caMarinatePrep, caLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPV(caMarinatePrep, caZipperLockBag); err != nil {
+	if err = createVPV(caMarinatePrep, caZipperLockBag); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for steak to bag ===
-	if err := createVIP(caTransferPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caTransferPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caTransferPrep, caZipperLockBag); err != nil {
+	if err = createVPV(caTransferPrep, caZipperLockBag); err != nil {
 		return err
 	}
 
 	// === REMOVE AIR PREPARATION for bag ===
-	if err := createVPV(caRemoveAirPrep, caZipperLockBag); err != nil {
+	if err = createVPV(caRemoveAirPrep, caZipperLockBag); err != nil {
 		return err
 	}
 
 	// === UNREFRIGERATE PREPARATION for sealed container ===
-	if err := createVPV(caUnrefrigeratePrep, caSealedContainer); err != nil {
+	if err = createVPV(caUnrefrigeratePrep, caSealedContainer); err != nil {
 		return err
 	}
-	if err := createVPV(caUnrefrigeratePrep, caRefrigerator); err != nil {
+	if err = createVPV(caUnrefrigeratePrep, caRefrigerator); err != nil {
 		return err
 	}
 
 	// === REFRIGERATE PREPARATION for steak ===
-	if err := createVIP(caRefrigeratePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caRefrigeratePrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caRefrigeratePrep, caZipperLockBag); err != nil {
+	if err = createVPV(caRefrigeratePrep, caZipperLockBag); err != nil {
 		return err
 	}
-	if err := createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
+	if err = createVPV(caRefrigeratePrep, caRefrigerator); err != nil {
 		return err
 	}
 
 	// === REMOVE PREPARATION for steak from marinade ===
-	if err := createVIP(caRemovePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caRemovePrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caRemovePrep, caZipperLockBag); err != nil {
+	if err = createVPV(caRemovePrep, caZipperLockBag); err != nil {
 		return err
 	}
 
 	// === LIGHT PREPARATION for charcoal ===
-	if err := createVPV(caLightPrep, caChimneyStarter); err != nil {
+	if err = createVPV(caLightPrep, caChimneyStarter); err != nil {
 		return err
 	}
-	if err := createVPI(caLightPrep, caChimneyStarterInstrument); err != nil {
+	if err = createVPI(caLightPrep, caChimneyStarterInstrument); err != nil {
 		return err
 	}
 
 	// === POUR PREPARATION for charcoal ===
-	if err := createVPV(caPourPrep, caChimneyStarter); err != nil {
+	if err = createVPV(caPourPrep, caChimneyStarter); err != nil {
 		return err
 	}
-	if err := createVPV(caPourPrep, caCharcoalGrate); err != nil {
+	if err = createVPV(caPourPrep, caCharcoalGrate); err != nil {
 		return err
 	}
 
 	// === ARRANGE PREPARATION for charcoal ===
-	if err := createVPV(caArrangePrep, caCharcoalGrate); err != nil {
+	if err = createVPV(caArrangePrep, caCharcoalGrate); err != nil {
 		return err
 	}
 
 	// === SET PREPARATION for cooking grate ===
-	if err := createVPV(caSetPrep, caCookingGrate); err != nil {
+	if err = createVPV(caSetPrep, caCookingGrate); err != nil {
 		return err
 	}
-	if err := createVPV(caSetPrep, caGrill); err != nil {
+	if err = createVPV(caSetPrep, caGrill); err != nil {
 		return err
 	}
 
 	// === COVER PREPARATION for grill ===
-	if err := createVPV(caCoverPrep, caGrill); err != nil {
+	if err = createVPV(caCoverPrep, caGrill); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for grill ===
-	if err := createVPV(caPreheatPrep, caGrill); err != nil {
+	if err = createVPV(caPreheatPrep, caGrill); err != nil {
 		return err
 	}
 
 	// === CLEAN PREPARATION for grilling grate ===
-	if err := createVPV(caCleanPrep, caGrillingGrate); err != nil {
+	if err = createVPV(caCleanPrep, caGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(caCleanPrep, caGrillBrush); err != nil {
+	if err = createVPI(caCleanPrep, caGrillBrush); err != nil {
 		return err
 	}
 
 	// === OIL PREPARATION for grilling grate ===
-	if err := createVIP(caOilPrep, caOliveOil); err != nil {
+	if err = createVIP(caOilPrep, caOliveOil); err != nil {
 		return err
 	}
-	if err := createVPV(caOilPrep, caGrillingGrate); err != nil {
+	if err = createVPV(caOilPrep, caGrillingGrate); err != nil {
 		return err
 	}
 
 	// === WIPE PREPARATION for steak ===
-	if err := createVIP(caWipePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caWipePrep, caSkirtSteak); err != nil {
 		return err
 	}
 
 	// === PLACE PREPARATION for steak on grill ===
-	if err := createVIP(caPlacePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caPlacePrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caPlacePrep, caGrillingGrate); err != nil {
+	if err = createVPV(caPlacePrep, caGrillingGrate); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION for steak ===
-	if err := createVIP(caGrillPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caGrillPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caGrillPrep, caGrillingGrate); err != nil {
+	if err = createVPV(caGrillPrep, caGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPV(caGrillPrep, caGrill); err != nil {
+	if err = createVPV(caGrillPrep, caGrill); err != nil {
 		return err
 	}
-	if err := createVPI(caGrillPrep, caTongs); err != nil {
+	if err = createVPI(caGrillPrep, caTongs); err != nil {
 		return err
 	}
-	if err := createVPI(caGrillPrep, caThermometer); err != nil {
+	if err = createVPI(caGrillPrep, caThermometer); err != nil {
 		return err
 	}
 
 	// === TURN PREPARATION for steak ===
-	if err := createVIP(caTurnPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caTurnPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caTurnPrep, caGrillingGrate); err != nil {
+	if err = createVPV(caTurnPrep, caGrillingGrate); err != nil {
 		return err
 	}
-	if err := createVPI(caTurnPrep, caTongs); err != nil {
+	if err = createVPI(caTurnPrep, caTongs); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION for steak to cutting board ===
-	if err := createVIP(caTransferPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caTransferPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caTransferPrep, caCuttingBoard); err != nil {
+	if err = createVPV(caTransferPrep, caCuttingBoard); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION for steak ===
-	if err := createVIP(caRestPrep, caSkirtSteak); err != nil {
+	if err = createVIP(caRestPrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPV(caRestPrep, caCuttingBoard); err != nil {
+	if err = createVPV(caRestPrep, caCuttingBoard); err != nil {
 		return err
 	}
 
 	// === SLICE PREPARATION for steak ===
-	if err := createVIP(caSlicePrep, caSkirtSteak); err != nil {
+	if err = createVIP(caSlicePrep, caSkirtSteak); err != nil {
 		return err
 	}
-	if err := createVPI(caSlicePrep, caCarvingKnife); err != nil {
+	if err = createVPI(caSlicePrep, caCarvingKnife); err != nil {
 		return err
 	}
 
 	// === CARNE ASADA INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(caAnchoChiles, caUnitMeasurement); err != nil {
+	if err = createVIMU(caAnchoChiles, caUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caGuajilloChiles, caUnitMeasurement); err != nil {
+	if err = createVIMU(caGuajilloChiles, caUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caChipotlePeppers, caUnitMeasurement); err != nil {
+	if err = createVIMU(caChipotlePeppers, caUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caOrangeJuice, caCupMeasurement); err != nil {
+	if err = createVIMU(caOrangeJuice, caCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caLimeJuice, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caLimeJuice, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caOliveOil, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caOliveOil, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caSoySauce, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caSoySauce, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caFishSauce, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caFishSauce, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caDarkBrownSugar, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caDarkBrownSugar, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caCilantro, caUnitMeasurement); err != nil {
+	if err = createVIMU(caCilantro, caUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caGarlic, caCloveMeasurement); err != nil {
+	if err = createVIMU(caGarlic, caCloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caCuminSeeds, caTablespoonMeasurement); err != nil {
+	if err = createVIMU(caCuminSeeds, caTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caCuminSeeds, caTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caCuminSeeds, caTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caCorianderSeeds, caTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caCorianderSeeds, caTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caSalt, caTeaspoonMeasurement); err != nil {
+	if err = createVIMU(caSalt, caTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(caSkirtSteak, caPoundMeasurement); err != nil {
+	if err = createVIMU(caSkirtSteak, caPoundMeasurement); err != nil {
 		return err
 	}
 
@@ -6200,305 +6200,305 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	bcCloveMeasurement := enums.MeasurementUnits["clove"]
 
 	// === TOAST PREPARATION for spices ===
-	if err := createVIP(bcToastPrep, bcKasuriMethi); err != nil {
+	if err = createVIP(bcToastPrep, bcKasuriMethi); err != nil {
 		return err
 	}
-	if err := createVIP(bcToastPrep, bcFenugreekSeeds); err != nil {
+	if err = createVIP(bcToastPrep, bcFenugreekSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(bcToastPrep, bcChilesDeArbol); err != nil {
+	if err = createVIP(bcToastPrep, bcChilesDeArbol); err != nil {
 		return err
 	}
-	if err := createVIP(bcToastPrep, bcBrownCardamom); err != nil {
+	if err = createVIP(bcToastPrep, bcBrownCardamom); err != nil {
 		return err
 	}
-	if err := createVIP(bcToastPrep, bcGreenCardamom); err != nil {
+	if err = createVIP(bcToastPrep, bcGreenCardamom); err != nil {
 		return err
 	}
-	if err := createVIP(bcToastPrep, bcWholeCloves); err != nil {
+	if err = createVIP(bcToastPrep, bcWholeCloves); err != nil {
 		return err
 	}
-	if err := createVPV(bcToastPrep, bcSmallSkillet); err != nil {
+	if err = createVPV(bcToastPrep, bcSmallSkillet); err != nil {
 		return err
 	}
 
 	// === GRIND PREPARATION for spices ===
-	if err := createVIP(bcGrindPrep, bcKasuriMethi); err != nil {
+	if err = createVIP(bcGrindPrep, bcKasuriMethi); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcFenugreekSeeds); err != nil {
+	if err = createVIP(bcGrindPrep, bcFenugreekSeeds); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcChilesDeArbol); err != nil {
+	if err = createVIP(bcGrindPrep, bcChilesDeArbol); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcBrownCardamom); err != nil {
+	if err = createVIP(bcGrindPrep, bcBrownCardamom); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcGreenCardamom); err != nil {
+	if err = createVIP(bcGrindPrep, bcGreenCardamom); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcWholeCloves); err != nil {
+	if err = createVIP(bcGrindPrep, bcWholeCloves); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcGaramMasala); err != nil {
+	if err = createVIP(bcGrindPrep, bcGaramMasala); err != nil {
 		return err
 	}
-	if err := createVIP(bcGrindPrep, bcSalt); err != nil {
+	if err = createVIP(bcGrindPrep, bcSalt); err != nil {
 		return err
 	}
-	if err := createVPI(bcGrindPrep, bcSpiceGrinder); err != nil {
+	if err = createVPI(bcGrindPrep, bcSpiceGrinder); err != nil {
 		return err
 	}
-	if err := createVPI(bcGrindPrep, bcMortarAndPestle); err != nil {
+	if err = createVPI(bcGrindPrep, bcMortarAndPestle); err != nil {
 		return err
 	}
 
 	// === COMBINE PREPARATION for marinade ===
-	if err := createVIP(bcCombinePrep, bcYogurt); err != nil {
+	if err = createVIP(bcCombinePrep, bcYogurt); err != nil {
 		return err
 	}
-	if err := createVIP(bcCombinePrep, bcGaramMasala); err != nil {
+	if err = createVIP(bcCombinePrep, bcGaramMasala); err != nil {
 		return err
 	}
-	if err := createVIP(bcCombinePrep, bcKalaNamak); err != nil {
+	if err = createVIP(bcCombinePrep, bcKalaNamak); err != nil {
 		return err
 	}
-	if err := createVIP(bcCombinePrep, bcGinger); err != nil {
+	if err = createVIP(bcCombinePrep, bcGinger); err != nil {
 		return err
 	}
-	if err := createVIP(bcCombinePrep, bcKasuriMethi); err != nil {
+	if err = createVIP(bcCombinePrep, bcKasuriMethi); err != nil {
 		return err
 	}
-	if err := createVPV(bcCombinePrep, bcMediumBowl); err != nil {
+	if err = createVPV(bcCombinePrep, bcMediumBowl); err != nil {
 		return err
 	}
 
 	// === COAT PREPARATION for chicken ===
-	if err := createVIP(bcCoatPrep, bcChickenThighs); err != nil {
+	if err = createVIP(bcCoatPrep, bcChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPI(bcCoatPrep, bcBareHands); err != nil {
+	if err = createVPI(bcCoatPrep, bcBareHands); err != nil {
 		return err
 	}
-	if err := createVPV(bcCoatPrep, bcMediumBowl); err != nil {
+	if err = createVPV(bcCoatPrep, bcMediumBowl); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION ===
-	if err := createVIP(bcTransferPrep, bcChickenThighs); err != nil {
+	if err = createVIP(bcTransferPrep, bcChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(bcTransferPrep, bcBakingSheet); err != nil {
+	if err = createVPV(bcTransferPrep, bcBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(bcTransferPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcTransferPrep, bcDutchOven); err != nil {
 		return err
 	}
-	if err := createVPV(bcTransferPrep, bcServingBowl); err != nil {
+	if err = createVPV(bcTransferPrep, bcServingBowl); err != nil {
 		return err
 	}
 
 	// === LINE PREPARATION ===
-	if err := createVPI(bcLinePrep, bcAluminumFoil); err != nil {
+	if err = createVPI(bcLinePrep, bcAluminumFoil); err != nil {
 		return err
 	}
-	if err := createVPV(bcLinePrep, bcBakingSheet); err != nil {
+	if err = createVPV(bcLinePrep, bcBakingSheet); err != nil {
 		return err
 	}
 
 	// === SOAK PREPARATION for cashews ===
-	if err := createVIP(bcSoakPrep, bcCashews); err != nil {
+	if err = createVIP(bcSoakPrep, bcCashews); err != nil {
 		return err
 	}
-	if err := createVIP(bcSoakPrep, bcWater); err != nil {
+	if err = createVIP(bcSoakPrep, bcWater); err != nil {
 		return err
 	}
-	if err := createVPV(bcSoakPrep, bcMicrowaveSafeBowl); err != nil {
+	if err = createVPV(bcSoakPrep, bcMicrowaveSafeBowl); err != nil {
 		return err
 	}
 
 	// === MICROWAVE PREPARATION ===
-	if err := createVIP(bcMicrowavePrep, bcCashews); err != nil {
+	if err = createVIP(bcMicrowavePrep, bcCashews); err != nil {
 		return err
 	}
-	if err := createVPV(bcMicrowavePrep, bcMicrowaveSafeBowl); err != nil {
+	if err = createVPV(bcMicrowavePrep, bcMicrowaveSafeBowl); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION ===
-	if err := createVIP(bcHeatPrep, bcCanolaOil); err != nil {
+	if err = createVIP(bcHeatPrep, bcCanolaOil); err != nil {
 		return err
 	}
-	if err := createVPV(bcHeatPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcHeatPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === COOK PREPARATION for onions ===
-	if err := createVIP(bcCookPrep, bcWhiteOnion); err != nil {
+	if err = createVIP(bcCookPrep, bcWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVIP(bcCookPrep, bcBakingSoda); err != nil {
+	if err = createVIP(bcCookPrep, bcBakingSoda); err != nil {
 		return err
 	}
-	if err := createVIP(bcCookPrep, bcGinger); err != nil {
+	if err = createVIP(bcCookPrep, bcGinger); err != nil {
 		return err
 	}
-	if err := createVIP(bcCookPrep, bcGarlic); err != nil {
+	if err = createVIP(bcCookPrep, bcGarlic); err != nil {
 		return err
 	}
-	if err := createVPI(bcCookPrep, bcWoodenSpoon); err != nil {
+	if err = createVPI(bcCookPrep, bcWoodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(bcCookPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcCookPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION ===
-	if err := createVIP(bcStirPrep, bcWhiteOnion); err != nil {
+	if err = createVIP(bcStirPrep, bcWhiteOnion); err != nil {
 		return err
 	}
-	if err := createVPI(bcStirPrep, bcWoodenSpoon); err != nil {
+	if err = createVPI(bcStirPrep, bcWoodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(bcStirPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcStirPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION ===
-	if err := createVIP(bcAddPrep, bcCashews); err != nil {
+	if err = createVIP(bcAddPrep, bcCashews); err != nil {
 		return err
 	}
-	if err := createVIP(bcAddPrep, bcCannedTomatoes); err != nil {
+	if err = createVIP(bcAddPrep, bcCannedTomatoes); err != nil {
 		return err
 	}
-	if err := createVIP(bcAddPrep, bcWater); err != nil {
+	if err = createVIP(bcAddPrep, bcWater); err != nil {
 		return err
 	}
-	if err := createVIP(bcAddPrep, bcButter); err != nil {
+	if err = createVIP(bcAddPrep, bcButter); err != nil {
 		return err
 	}
-	if err := createVIP(bcAddPrep, bcHeavyCream); err != nil {
+	if err = createVIP(bcAddPrep, bcHeavyCream); err != nil {
 		return err
 	}
-	if err := createVIP(bcAddPrep, bcChickenThighs); err != nil {
+	if err = createVIP(bcAddPrep, bcChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPI(bcAddPrep, bcWoodenSpoon); err != nil {
+	if err = createVPI(bcAddPrep, bcWoodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(bcAddPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcAddPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === CRUSH PREPARATION for tomatoes ===
-	if err := createVIP(bcCrushPrep, bcCannedTomatoes); err != nil {
+	if err = createVIP(bcCrushPrep, bcCannedTomatoes); err != nil {
 		return err
 	}
-	if err := createVPI(bcCrushPrep, bcWoodenSpoon); err != nil {
+	if err = createVPI(bcCrushPrep, bcWoodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(bcCrushPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcCrushPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === SIMMER PREPARATION ===
-	if err := createVIP(bcSimmerPrep, bcCannedTomatoes); err != nil {
+	if err = createVIP(bcSimmerPrep, bcCannedTomatoes); err != nil {
 		return err
 	}
-	if err := createVPV(bcSimmerPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcSimmerPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === PREHEAT PREPARATION for broiler ===
-	if err := createVPV(bcPreheatPrep, bcOven); err != nil {
+	if err = createVPV(bcPreheatPrep, bcOven); err != nil {
 		return err
 	}
 
 	// === BROIL PREPARATION for chicken ===
-	if err := createVIP(bcBroilPrep, bcChickenThighs); err != nil {
+	if err = createVIP(bcBroilPrep, bcChickenThighs); err != nil {
 		return err
 	}
-	if err := createVPV(bcBroilPrep, bcBakingSheet); err != nil {
+	if err = createVPV(bcBroilPrep, bcBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(bcBroilPrep, bcOven); err != nil {
+	if err = createVPV(bcBroilPrep, bcOven); err != nil {
 		return err
 	}
 
 	// === BLEND PREPARATION for sauce ===
-	if err := createVIP(bcBlendPrep, bcCannedTomatoes); err != nil {
+	if err = createVIP(bcBlendPrep, bcCannedTomatoes); err != nil {
 		return err
 	}
-	if err := createVIP(bcBlendPrep, bcButter); err != nil {
+	if err = createVIP(bcBlendPrep, bcButter); err != nil {
 		return err
 	}
-	if err := createVIP(bcBlendPrep, bcHeavyCream); err != nil {
+	if err = createVIP(bcBlendPrep, bcHeavyCream); err != nil {
 		return err
 	}
-	if err := createVPI(bcBlendPrep, bcStickBlender); err != nil {
+	if err = createVPI(bcBlendPrep, bcStickBlender); err != nil {
 		return err
 	}
-	if err := createVPI(bcBlendPrep, bcBlender); err != nil {
+	if err = createVPI(bcBlendPrep, bcBlender); err != nil {
 		return err
 	}
-	if err := createVPV(bcBlendPrep, bcDutchOven); err != nil {
+	if err = createVPV(bcBlendPrep, bcDutchOven); err != nil {
 		return err
 	}
 
 	// === BUTTER CHICKEN INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(bcKasuriMethi, bcTablespoonMeasurement); err != nil {
+	if err = createVIMU(bcKasuriMethi, bcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcFenugreekSeeds, bcTeaspoonMeasurement); err != nil {
+	if err = createVIMU(bcFenugreekSeeds, bcTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcYogurt, bcCupMeasurement); err != nil {
+	if err = createVIMU(bcYogurt, bcCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcGaramMasala, bcTablespoonMeasurement); err != nil {
+	if err = createVIMU(bcGaramMasala, bcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcKalaNamak, bcTeaspoonMeasurement); err != nil {
+	if err = createVIMU(bcKalaNamak, bcTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcGinger, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcGinger, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcChickenThighs, bcPoundMeasurement); err != nil {
+	if err = createVIMU(bcChickenThighs, bcPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcChilesDeArbol, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcChilesDeArbol, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcBrownCardamom, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcBrownCardamom, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcGreenCardamom, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcGreenCardamom, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcWholeCloves, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcWholeCloves, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcCannedTomatoes, bcOunceMeasurement); err != nil {
+	if err = createVIMU(bcCannedTomatoes, bcOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcCashews, bcOunceMeasurement); err != nil {
+	if err = createVIMU(bcCashews, bcOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcCanolaOil, bcTablespoonMeasurement); err != nil {
+	if err = createVIMU(bcCanolaOil, bcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcWhiteOnion, bcUnitMeasurement); err != nil {
+	if err = createVIMU(bcWhiteOnion, bcUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcBakingSoda, bcTeaspoonMeasurement); err != nil {
+	if err = createVIMU(bcBakingSoda, bcTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcGarlic, bcCloveMeasurement); err != nil {
+	if err = createVIMU(bcGarlic, bcCloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bcHeavyCream, bcCupMeasurement); err != nil {
+	if err = createVIMU(bcHeavyCream, bcCupMeasurement); err != nil {
 		return err
 	}
 
@@ -6552,199 +6552,199 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	macOunceMeasurement := enums.MeasurementUnits["ounce"]
 
 	// === SUBMERGE PREPARATION for mac and cheese ===
-	if err := createVIP(macSubmergePrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macSubmergePrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVIP(macSubmergePrep, macWater); err != nil {
+	if err = createVIP(macSubmergePrep, macWater); err != nil {
 		return err
 	}
-	if err := createVIP(macSubmergePrep, macSalt); err != nil {
+	if err = createVIP(macSubmergePrep, macSalt); err != nil {
 		return err
 	}
-	if err := createVPV(macSubmergePrep, macSaucepan); err != nil {
+	if err = createVPV(macSubmergePrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === BOIL PREPARATION for mac and cheese ===
-	if err := createVIP(macBoilPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macBoilPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVPV(macBoilPrep, macSaucepan); err != nil {
+	if err = createVPV(macBoilPrep, macSaucepan); err != nil {
 		return err
 	}
-	if err := createVPI(macBoilPrep, macWoodenSpoon); err != nil {
+	if err = createVPI(macBoilPrep, macWoodenSpoon); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION for mac and cheese ===
-	if err := createVIP(macStirPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macStirPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVIP(macStirPrep, macButter); err != nil {
+	if err = createVIP(macStirPrep, macButter); err != nil {
 		return err
 	}
-	if err := createVPV(macStirPrep, macSaucepan); err != nil {
+	if err = createVPV(macStirPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === COVER PREPARATION for mac and cheese ===
-	if err := createVPV(macCoverPrep, macSaucepan); err != nil {
+	if err = createVPV(macCoverPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION for mac and cheese ===
-	if err := createVIP(macRestPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macRestPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVPV(macRestPrep, macSaucepan); err != nil {
+	if err = createVPV(macRestPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === WHISK PREPARATION for mac and cheese ===
-	if err := createVIP(macMixPrep, macEvaporatedMilk); err != nil {
+	if err = createVIP(macMixPrep, macEvaporatedMilk); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macEggs); err != nil {
+	if err = createVIP(macMixPrep, macEggs); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macHotSauce); err != nil {
+	if err = createVIP(macMixPrep, macHotSauce); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macGroundMustard); err != nil {
+	if err = createVIP(macMixPrep, macGroundMustard); err != nil {
 		return err
 	}
-	if err := createVPI(macMixPrep, macWhisk); err != nil {
+	if err = createVPI(macMixPrep, macWhisk); err != nil {
 		return err
 	}
-	if err := createVPV(macMixPrep, macMediumBowl); err != nil {
+	if err = createVPV(macMixPrep, macMediumBowl); err != nil {
 		return err
 	}
 
 	// === MIX PREPARATION for mac and cheese ===
 	macMixPrep = enums.Preparations["mix"]
-	if err := createVIP(macMixPrep, macEvaporatedMilk); err != nil {
+	if err = createVIP(macMixPrep, macEvaporatedMilk); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macEggs); err != nil {
+	if err = createVIP(macMixPrep, macEggs); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macHotSauce); err != nil {
+	if err = createVIP(macMixPrep, macHotSauce); err != nil {
 		return err
 	}
-	if err := createVIP(macMixPrep, macGroundMustard); err != nil {
+	if err = createVIP(macMixPrep, macGroundMustard); err != nil {
 		return err
 	}
-	if err := createVPI(macMixPrep, macWhisk); err != nil {
+	if err = createVPI(macMixPrep, macWhisk); err != nil {
 		return err
 	}
-	if err := createVPV(macMixPrep, macMediumBowl); err != nil {
+	if err = createVPV(macMixPrep, macMediumBowl); err != nil {
 		return err
 	}
 
 	// === REMOVE FROM HEAT PREPARATION for mac and cheese ===
 	macRemoveFromHeatPrep := enums.Preparations["remove from heat"]
-	if err := createVIP(macRemoveFromHeatPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macRemoveFromHeatPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVPV(macRemoveFromHeatPrep, macSaucepan); err != nil {
+	if err = createVPV(macRemoveFromHeatPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION for mac and cheese ===
-	if err := createVIP(macTossPrep, macCheddarCheese); err != nil {
+	if err = createVIP(macTossPrep, macCheddarCheese); err != nil {
 		return err
 	}
-	if err := createVIP(macTossPrep, macAmericanCheese); err != nil {
+	if err = createVIP(macTossPrep, macAmericanCheese); err != nil {
 		return err
 	}
-	if err := createVIP(macTossPrep, macCornstarch); err != nil {
+	if err = createVIP(macTossPrep, macCornstarch); err != nil {
 		return err
 	}
-	if err := createVPV(macTossPrep, macLargeBowl); err != nil {
+	if err = createVPV(macTossPrep, macLargeBowl); err != nil {
 		return err
 	}
 
 	// === DRAIN PREPARATION for mac and cheese ===
-	if err := createVIP(macDrainPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macDrainPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVPV(macDrainPrep, macColander); err != nil {
+	if err = createVPV(macDrainPrep, macColander); err != nil {
 		return err
 	}
 
 	// === MELT PREPARATION for mac and cheese ===
-	if err := createVIP(macMeltPrep, macButter); err != nil {
+	if err = createVIP(macMeltPrep, macButter); err != nil {
 		return err
 	}
-	if err := createVPV(macMeltPrep, macSaucepan); err != nil {
+	if err = createVPV(macMeltPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for mac and cheese ===
-	if err := createVIP(macAddPrep, macButter); err != nil {
+	if err = createVIP(macAddPrep, macButter); err != nil {
 		return err
 	}
-	if err := createVPV(macAddPrep, macSaucepan); err != nil {
+	if err = createVPV(macAddPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === COOK PREPARATION for mac and cheese ===
-	if err := createVIP(macCookPrep, macElbowMacaroni); err != nil {
+	if err = createVIP(macCookPrep, macElbowMacaroni); err != nil {
 		return err
 	}
-	if err := createVIP(macCookPrep, macCheddarCheese); err != nil {
+	if err = createVIP(macCookPrep, macCheddarCheese); err != nil {
 		return err
 	}
-	if err := createVIP(macCookPrep, macAmericanCheese); err != nil {
+	if err = createVIP(macCookPrep, macAmericanCheese); err != nil {
 		return err
 	}
-	if err := createVIP(macCookPrep, macEvaporatedMilk); err != nil {
+	if err = createVIP(macCookPrep, macEvaporatedMilk); err != nil {
 		return err
 	}
-	if err := createVPI(macCookPrep, macWoodenSpoon); err != nil {
+	if err = createVPI(macCookPrep, macWoodenSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(macCookPrep, macSaucepan); err != nil {
+	if err = createVPV(macCookPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION for mac and cheese ===
-	if err := createVIP(macSeasonPrep, macSalt); err != nil {
+	if err = createVIP(macSeasonPrep, macSalt); err != nil {
 		return err
 	}
-	if err := createVIP(macSeasonPrep, macHotSauce); err != nil {
+	if err = createVIP(macSeasonPrep, macHotSauce); err != nil {
 		return err
 	}
-	if err := createVPV(macSeasonPrep, macSaucepan); err != nil {
+	if err = createVPV(macSeasonPrep, macSaucepan); err != nil {
 		return err
 	}
 
 	// === MAC AND CHEESE INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(macElbowMacaroni, macPoundMeasurement); err != nil {
+	if err = createVIMU(macElbowMacaroni, macPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macEvaporatedMilk, macFluidOunceMeasurement); err != nil {
+	if err = createVIMU(macEvaporatedMilk, macFluidOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macEggs, macUnitMeasurement); err != nil {
+	if err = createVIMU(macEggs, macUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macHotSauce, macTeaspoonMeasurement); err != nil {
+	if err = createVIMU(macHotSauce, macTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macGroundMustard, macTeaspoonMeasurement); err != nil {
+	if err = createVIMU(macGroundMustard, macTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macCheddarCheese, macPoundMeasurement); err != nil {
+	if err = createVIMU(macCheddarCheese, macPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macAmericanCheese, macOunceMeasurement); err != nil {
+	if err = createVIMU(macAmericanCheese, macOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macCornstarch, macTablespoonMeasurement); err != nil {
+	if err = createVIMU(macCornstarch, macTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(macButter, macTablespoonMeasurement); err != nil {
+	if err = createVIMU(macButter, macTablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -6877,231 +6877,231 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	csCloveMeasurement := enums.MeasurementUnits["clove"]
 
 	// === PREHEAT PREPARATION ===
-	if err := createVPV(csPreheadPrep, csOven); err != nil {
+	if err = createVPV(csPreheadPrep, csOven); err != nil {
 		return err
 	}
 
 	// === COMBINE PREPARATION for garlic oil ===
-	if err := createVIP(csCombinePrep, csOliveOil); err != nil {
+	if err = createVIP(csCombinePrep, csOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(csCombinePrep, csGarlic); err != nil {
+	if err = createVIP(csCombinePrep, csGarlic); err != nil {
 		return err
 	}
-	if err := createVPI(csCombinePrep, csWhisk); err != nil {
+	if err = createVPI(csCombinePrep, csWhisk); err != nil {
 		return err
 	}
-	if err := createVPV(csCombinePrep, csSmallBowl); err != nil {
+	if err = createVPV(csCombinePrep, csSmallBowl); err != nil {
 		return err
 	}
 
 	// === WHISK PREPARATION ===
-	if err := createVIP(csWhiskPrep, csOliveOil); err != nil {
+	if err = createVIP(csWhiskPrep, csOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(csWhiskPrep, csGarlic); err != nil {
+	if err = createVIP(csWhiskPrep, csGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(csWhiskPrep, csCanolaOil); err != nil {
+	if err = createVIP(csWhiskPrep, csCanolaOil); err != nil {
 		return err
 	}
-	if err := createVPI(csWhiskPrep, csWhisk); err != nil {
+	if err = createVPI(csWhiskPrep, csWhisk); err != nil {
 		return err
 	}
-	if err := createVPV(csWhiskPrep, csSmallBowl); err != nil {
+	if err = createVPV(csWhiskPrep, csSmallBowl); err != nil {
 		return err
 	}
-	if err := createVPV(csWhiskPrep, csMediumBowl); err != nil {
+	if err = createVPV(csWhiskPrep, csMediumBowl); err != nil {
 		return err
 	}
 
 	// === STRAIN PREPARATION ===
-	if err := createVIP(csStrainPrep, csOliveOil); err != nil {
+	if err = createVIP(csStrainPrep, csOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(csStrainPrep, csGarlic); err != nil {
+	if err = createVIP(csStrainPrep, csGarlic); err != nil {
 		return err
 	}
-	if err := createVPI(csStrainPrep, csSpoon); err != nil {
+	if err = createVPI(csStrainPrep, csSpoon); err != nil {
 		return err
 	}
-	if err := createVPV(csStrainPrep, csFineMeshStrainer); err != nil {
+	if err = createVPV(csStrainPrep, csFineMeshStrainer); err != nil {
 		return err
 	}
-	if err := createVPV(csStrainPrep, csLargeBowl); err != nil {
+	if err = createVPV(csStrainPrep, csLargeBowl); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION for bread cubes ===
-	if err := createVIP(csAddPrep, csHeartyBread); err != nil {
+	if err = createVIP(csAddPrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVIP(csAddPrep, csParmesanCheese); err != nil {
+	if err = createVIP(csAddPrep, csParmesanCheese); err != nil {
 		return err
 	}
-	if err := createVPV(csAddPrep, csLargeBowl); err != nil {
+	if err = createVPV(csAddPrep, csLargeBowl); err != nil {
 		return err
 	}
 
 	// === TOSS PREPARATION ===
-	if err := createVIP(csTossPrep, csHeartyBread); err != nil {
+	if err = createVIP(csTossPrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVIP(csTossPrep, csParmesanCheese); err != nil {
+	if err = createVIP(csTossPrep, csParmesanCheese); err != nil {
 		return err
 	}
-	if err := createVIP(csTossPrep, csRomaineLettuce); err != nil {
+	if err = createVIP(csTossPrep, csRomaineLettuce); err != nil {
 		return err
 	}
-	if err := createVPV(csTossPrep, csLargeBowl); err != nil {
+	if err = createVPV(csTossPrep, csLargeBowl); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION ===
-	if err := createVIP(csSeasonPrep, csSalt); err != nil {
+	if err = createVIP(csSeasonPrep, csSalt); err != nil {
 		return err
 	}
-	if err := createVIP(csSeasonPrep, csBlackPepper); err != nil {
+	if err = createVIP(csSeasonPrep, csBlackPepper); err != nil {
 		return err
 	}
-	if err := createVPV(csSeasonPrep, csLargeBowl); err != nil {
+	if err = createVPV(csSeasonPrep, csLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPV(csSeasonPrep, csMediumBowl); err != nil {
+	if err = createVPV(csSeasonPrep, csMediumBowl); err != nil {
 		return err
 	}
 
 	// === TRANSFER PREPARATION ===
-	if err := createVIP(csTransferPrep, csHeartyBread); err != nil {
+	if err = createVIP(csTransferPrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVPV(csTransferPrep, csBakingSheet); err != nil {
+	if err = createVPV(csTransferPrep, csBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(csTransferPrep, csMediumBowl); err != nil {
+	if err = createVPV(csTransferPrep, csMediumBowl); err != nil {
 		return err
 	}
-	if err := createVPV(csTransferPrep, csServingBowl); err != nil {
+	if err = createVPV(csTransferPrep, csServingBowl); err != nil {
 		return err
 	}
 
 	// === BAKE PREPARATION ===
-	if err := createVIP(csBakePrep, csHeartyBread); err != nil {
+	if err = createVIP(csBakePrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVPV(csBakePrep, csBakingSheet); err != nil {
+	if err = createVPV(csBakePrep, csBakingSheet); err != nil {
 		return err
 	}
-	if err := createVPV(csBakePrep, csOven); err != nil {
+	if err = createVPV(csBakePrep, csOven); err != nil {
 		return err
 	}
 
 	// === COOL PREPARATION ===
-	if err := createVIP(csCoolPrep, csHeartyBread); err != nil {
+	if err = createVIP(csCoolPrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVPV(csCoolPrep, csBakingSheet); err != nil {
+	if err = createVPV(csCoolPrep, csBakingSheet); err != nil {
 		return err
 	}
 
 	// === BLEND PREPARATION for dressing ===
-	if err := createVIP(csBlendPrep, csEggYolk); err != nil {
+	if err = createVIP(csBlendPrep, csEggYolk); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csLemonJuice); err != nil {
+	if err = createVIP(csBlendPrep, csLemonJuice); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csAnchovies); err != nil {
+	if err = createVIP(csBlendPrep, csAnchovies); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csWorcestershire); err != nil {
+	if err = createVIP(csBlendPrep, csWorcestershire); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csGarlic); err != nil {
+	if err = createVIP(csBlendPrep, csGarlic); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csParmesanCheese); err != nil {
+	if err = createVIP(csBlendPrep, csParmesanCheese); err != nil {
 		return err
 	}
-	if err := createVIP(csBlendPrep, csCanolaOil); err != nil {
+	if err = createVIP(csBlendPrep, csCanolaOil); err != nil {
 		return err
 	}
-	if err := createVPI(csBlendPrep, csStickBlender); err != nil {
+	if err = createVPI(csBlendPrep, csStickBlender); err != nil {
 		return err
 	}
-	if err := createVPV(csBlendPrep, csImmersionBlenderCup); err != nil {
+	if err = createVPV(csBlendPrep, csImmersionBlenderCup); err != nil {
 		return err
 	}
 
 	// === DRIZZLE PREPARATION ===
-	if err := createVIP(csDrizzlePrep, csOliveOil); err != nil {
+	if err = createVIP(csDrizzlePrep, csOliveOil); err != nil {
 		return err
 	}
-	if err := createVIP(csDrizzlePrep, csCanolaOil); err != nil {
+	if err = createVIP(csDrizzlePrep, csCanolaOil); err != nil {
 		return err
 	}
-	if err := createVPV(csDrizzlePrep, csMediumBowl); err != nil {
+	if err = createVPV(csDrizzlePrep, csMediumBowl); err != nil {
 		return err
 	}
 
 	// === SPRINKLE PREPARATION ===
-	if err := createVIP(csSprinklePrep, csParmesanCheese); err != nil {
+	if err = createVIP(csSprinklePrep, csParmesanCheese); err != nil {
 		return err
 	}
-	if err := createVIP(csSprinklePrep, csHeartyBread); err != nil {
+	if err = createVIP(csSprinklePrep, csHeartyBread); err != nil {
 		return err
 	}
-	if err := createVPV(csSprinklePrep, csServingBowl); err != nil {
+	if err = createVPV(csSprinklePrep, csServingBowl); err != nil {
 		return err
 	}
 
 	// === CAESAR SALAD INGREDIENT MEASUREMENT UNITS ===
-	if err := createVIMU(csOliveOil, csTablespoonMeasurement); err != nil {
+	if err = createVIMU(csOliveOil, csTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csOliveOil, csCupMeasurement); err != nil {
+	if err = createVIMU(csOliveOil, csCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csGarlic, csCloveMeasurement); err != nil {
+	if err = createVIMU(csGarlic, csCloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csGarlic, csTeaspoonMeasurement); err != nil {
+	if err = createVIMU(csGarlic, csTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csHeartyBread, csCupMeasurement); err != nil {
+	if err = createVIMU(csHeartyBread, csCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csParmesanCheese, csOunceMeasurement); err != nil {
+	if err = createVIMU(csParmesanCheese, csOunceMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csParmesanCheese, csCupMeasurement); err != nil {
+	if err = createVIMU(csParmesanCheese, csCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csParmesanCheese, csTablespoonMeasurement); err != nil {
+	if err = createVIMU(csParmesanCheese, csTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csSalt, csTeaspoonMeasurement); err != nil {
+	if err = createVIMU(csSalt, csTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csBlackPepper, csTeaspoonMeasurement); err != nil {
+	if err = createVIMU(csBlackPepper, csTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csEggYolk, csUnitMeasurement); err != nil {
+	if err = createVIMU(csEggYolk, csUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csLemonJuice, csTablespoonMeasurement); err != nil {
+	if err = createVIMU(csLemonJuice, csTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csAnchovies, csUnitMeasurement); err != nil {
+	if err = createVIMU(csAnchovies, csUnitMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csWorcestershire, csTeaspoonMeasurement); err != nil {
+	if err = createVIMU(csWorcestershire, csTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csCanolaOil, csCupMeasurement); err != nil {
+	if err = createVIMU(csCanolaOil, csCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(csRomaineLettuce, csUnitMeasurement); err != nil {
+	if err = createVIMU(csRomaineLettuce, csUnitMeasurement); err != nil {
 		return err
 	}
 
@@ -7200,188 +7200,188 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gcUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// === MELT PREPARATION for butter ===
-	if err := createVIP(gcMeltPrep, gcButter); err != nil {
+	if err = createVIP(gcMeltPrep, gcButter); err != nil {
 		return err
 	}
-	if err := createVPV(gcMeltPrep, gcPan); err != nil {
+	if err = createVPV(gcMeltPrep, gcPan); err != nil {
 		return err
 	}
-	if err := createVPI(gcMeltPrep, gcSpoon); err != nil {
+	if err = createVPI(gcMeltPrep, gcSpoon); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION ===
-	if err := createVIP(gcStirPrep, gcButter); err != nil {
+	if err = createVIP(gcStirPrep, gcButter); err != nil {
 		return err
 	}
-	if err := createVPV(gcStirPrep, gcPan); err != nil {
+	if err = createVPV(gcStirPrep, gcPan); err != nil {
 		return err
 	}
-	if err := createVPI(gcStirPrep, gcSpoon); err != nil {
+	if err = createVPI(gcStirPrep, gcSpoon); err != nil {
 		return err
 	}
 
 	// === COOK PREPARATION for browning butter ===
-	if err := createVIP(gcCookPrep, gcButter); err != nil {
+	if err = createVIP(gcCookPrep, gcButter); err != nil {
 		return err
 	}
-	if err := createVIP(gcCookPrep, gcSage); err != nil {
+	if err = createVIP(gcCookPrep, gcSage); err != nil {
 		return err
 	}
-	if err := createVPV(gcCookPrep, gcPan); err != nil {
+	if err = createVPV(gcCookPrep, gcPan); err != nil {
 		return err
 	}
-	if err := createVPI(gcCookPrep, gcSpoon); err != nil {
+	if err = createVPI(gcCookPrep, gcSpoon); err != nil {
 		return err
 	}
 
 	// === ADD PREPARATION ===
-	if err := createVIP(gcAddPrep, gcSage); err != nil {
+	if err = createVIP(gcAddPrep, gcSage); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcCarrot); err != nil {
+	if err = createVIP(gcAddPrep, gcCarrot); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcAppleCider); err != nil {
+	if err = createVIP(gcAddPrep, gcAppleCider); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcChickenStock); err != nil {
+	if err = createVIP(gcAddPrep, gcChickenStock); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcHoney); err != nil {
+	if err = createVIP(gcAddPrep, gcHoney); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcSalt); err != nil {
+	if err = createVIP(gcAddPrep, gcSalt); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcBlackPepper); err != nil {
+	if err = createVIP(gcAddPrep, gcBlackPepper); err != nil {
 		return err
 	}
-	if err := createVIP(gcAddPrep, gcAppleCiderVinegar); err != nil {
+	if err = createVIP(gcAddPrep, gcAppleCiderVinegar); err != nil {
 		return err
 	}
-	if err := createVPV(gcAddPrep, gcPan); err != nil {
+	if err = createVPV(gcAddPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === COVER PREPARATION ===
-	if err := createVPV(gcCoverPrep, gcPan); err != nil {
+	if err = createVPV(gcCoverPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === BOIL PREPARATION ===
-	if err := createVIP(gcBoilPrep, gcCarrot); err != nil {
+	if err = createVIP(gcBoilPrep, gcCarrot); err != nil {
 		return err
 	}
-	if err := createVPV(gcBoilPrep, gcPan); err != nil {
+	if err = createVPV(gcBoilPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === SHAKE PREPARATION ===
-	if err := createVIP(gcShakePrep, gcCarrot); err != nil {
+	if err = createVIP(gcShakePrep, gcCarrot); err != nil {
 		return err
 	}
-	if err := createVPV(gcShakePrep, gcPan); err != nil {
+	if err = createVPV(gcShakePrep, gcPan); err != nil {
 		return err
 	}
 
 	// === UNCOVER PREPARATION ===
-	if err := createVPV(gcUncoverPrep, gcPan); err != nil {
+	if err = createVPV(gcUncoverPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === REDUCE PREPARATION ===
-	if err := createVIP(gcReducePrep, gcAppleCider); err != nil {
+	if err = createVIP(gcReducePrep, gcAppleCider); err != nil {
 		return err
 	}
-	if err := createVIP(gcReducePrep, gcChickenStock); err != nil {
+	if err = createVIP(gcReducePrep, gcChickenStock); err != nil {
 		return err
 	}
-	if err := createVPV(gcReducePrep, gcPan); err != nil {
+	if err = createVPV(gcReducePrep, gcPan); err != nil {
 		return err
 	}
-	if err := createVPI(gcReducePrep, gcSpoon); err != nil {
+	if err = createVPI(gcReducePrep, gcSpoon); err != nil {
 		return err
 	}
 
 	// === SWIRL PREPARATION ===
-	if err := createVPV(gcSwirPrep, gcPan); err != nil {
+	if err = createVPV(gcSwirPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === REMOVE FROM HEAT PREPARATION ===
-	if err := createVPV(gcRemoveFromHeatPrep, gcPan); err != nil {
+	if err = createVPV(gcRemoveFromHeatPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === DISCARD PREPARATION ===
-	if err := createVIP(gcDiscardPrep, gcSage); err != nil {
+	if err = createVIP(gcDiscardPrep, gcSage); err != nil {
 		return err
 	}
-	if err := createVPV(gcDiscardPrep, gcPan); err != nil {
+	if err = createVPV(gcDiscardPrep, gcPan); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION ===
-	if err := createVIP(gcSeasonPrep, gcAppleCiderVinegar); err != nil {
+	if err = createVIP(gcSeasonPrep, gcAppleCiderVinegar); err != nil {
 		return err
 	}
-	if err := createVIP(gcSeasonPrep, gcCarrot); err != nil {
+	if err = createVIP(gcSeasonPrep, gcCarrot); err != nil {
 		return err
 	}
-	if err := createVPV(gcSeasonPrep, gcPan); err != nil {
+	if err = createVPV(gcSeasonPrep, gcPan); err != nil {
 		return err
 	}
-	if err := createVPI(gcSeasonPrep, gcSpoon); err != nil {
+	if err = createVPI(gcSeasonPrep, gcSpoon); err != nil {
 		return err
 	}
 
 	// === SPRINKLE PREPARATION ===
-	if err := createVIP(gcSprinklePrep, gcParsley); err != nil {
+	if err = createVIP(gcSprinklePrep, gcParsley); err != nil {
 		return err
 	}
-	if err := createVIP(gcSprinklePrep, gcChives); err != nil {
+	if err = createVIP(gcSprinklePrep, gcChives); err != nil {
 		return err
 	}
-	if err := createVIP(gcSprinklePrep, gcTarragon); err != nil {
+	if err = createVIP(gcSprinklePrep, gcTarragon); err != nil {
 		return err
 	}
-	if err := createVPV(gcSprinklePrep, gcServingBowl); err != nil {
+	if err = createVPV(gcSprinklePrep, gcServingBowl); err != nil {
 		return err
 	}
 
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
-	if err := createVIMU(gcButter, gcTablespoonMeasurement); err != nil {
+	if err = createVIMU(gcButter, gcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcSage, gcSprigMeasurement); err != nil {
+	if err = createVIMU(gcSage, gcSprigMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcCarrot, gcPoundMeasurement); err != nil {
+	if err = createVIMU(gcCarrot, gcPoundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcAppleCider, gcCupMeasurement); err != nil {
+	if err = createVIMU(gcAppleCider, gcCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcChickenStock, gcCupMeasurement); err != nil {
+	if err = createVIMU(gcChickenStock, gcCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcHoney, gcTablespoonMeasurement); err != nil {
+	if err = createVIMU(gcHoney, gcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcAppleCiderVinegar, gcTeaspoonMeasurement); err != nil {
+	if err = createVIMU(gcAppleCiderVinegar, gcTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcParsley, gcTablespoonMeasurement); err != nil {
+	if err = createVIMU(gcParsley, gcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcChives, gcTablespoonMeasurement); err != nil {
+	if err = createVIMU(gcChives, gcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcTarragon, gcTablespoonMeasurement); err != nil {
+	if err = createVIMU(gcTarragon, gcTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(gcCarrot, gcUnitMeasurement); err != nil {
+	if err = createVIMU(gcCarrot, gcUnitMeasurement); err != nil {
 		return err
 	}
 
@@ -7505,152 +7505,152 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	cbGramMeasurement := enums.MeasurementUnits["gram"]
 
 	// === PREHEAT PREPARATION ===
-	if err := createVPV(cbPreheatPrep, cbOven); err != nil {
+	if err = createVPV(cbPreheatPrep, cbOven); err != nil {
 		return err
 	}
 
 	// === GREASE PREPARATION ===
-	if err := createVIP(cbGreasePrep, cbButter); err != nil {
+	if err = createVIP(cbGreasePrep, cbButter); err != nil {
 		return err
 	}
-	if err := createVIP(cbGreasePrep, cbVegetableOil); err != nil {
+	if err = createVIP(cbGreasePrep, cbVegetableOil); err != nil {
 		return err
 	}
-	if err := createVPV(cbGreasePrep, cbBakingPan); err != nil {
+	if err = createVPV(cbGreasePrep, cbBakingPan); err != nil {
 		return err
 	}
 
 	// === WHISK PREPARATION ===
-	if err := createVIP(cbMixPrep, cbFlour); err != nil {
+	if err = createVIP(cbMixPrep, cbFlour); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbCornmeal); err != nil {
+	if err = createVIP(cbMixPrep, cbCornmeal); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbSugar); err != nil {
+	if err = createVIP(cbMixPrep, cbSugar); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbBakingPowder); err != nil {
+	if err = createVIP(cbMixPrep, cbBakingPowder); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbBakingSoda); err != nil {
+	if err = createVIP(cbMixPrep, cbBakingSoda); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbSalt); err != nil {
+	if err = createVIP(cbMixPrep, cbSalt); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbMilk); err != nil {
+	if err = createVIP(cbMixPrep, cbMilk); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbButter); err != nil {
+	if err = createVIP(cbMixPrep, cbButter); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbVegetableOil); err != nil {
+	if err = createVIP(cbMixPrep, cbVegetableOil); err != nil {
 		return err
 	}
-	if err := createVIP(cbMixPrep, cbEggs); err != nil {
+	if err = createVIP(cbMixPrep, cbEggs); err != nil {
 		return err
 	}
-	if err := createVPV(cbMixPrep, cbMediumBowl); err != nil {
+	if err = createVPV(cbMixPrep, cbMediumBowl); err != nil {
 		return err
 	}
-	if err := createVPV(cbMixPrep, cbLargeBowl); err != nil {
+	if err = createVPV(cbMixPrep, cbLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPI(cbMixPrep, cbWhisk); err != nil {
+	if err = createVPI(cbMixPrep, cbWhisk); err != nil {
 		return err
 	}
-	if err := createVPI(cbMixPrep, cbSpoon); err != nil {
+	if err = createVPI(cbMixPrep, cbSpoon); err != nil {
 		return err
 	}
 
 	// === POUR PREPARATION ===
-	if err := createVPV(cbPourPrep, cbMediumBowl); err != nil {
+	if err = createVPV(cbPourPrep, cbMediumBowl); err != nil {
 		return err
 	}
-	if err := createVPV(cbPourPrep, cbLargeBowl); err != nil {
+	if err = createVPV(cbPourPrep, cbLargeBowl); err != nil {
 		return err
 	}
-	if err := createVPV(cbPourPrep, cbBakingPan); err != nil {
+	if err = createVPV(cbPourPrep, cbBakingPan); err != nil {
 		return err
 	}
 
 	// === STIR PREPARATION ===
-	if err := createVPV(cbStirPrep, cbMediumBowl); err != nil {
+	if err = createVPV(cbStirPrep, cbMediumBowl); err != nil {
 		return err
 	}
-	if err := createVPI(cbStirPrep, cbSpoon); err != nil {
+	if err = createVPI(cbStirPrep, cbSpoon); err != nil {
 		return err
 	}
 
 	// === COMBINE PREPARATION ===
-	if err := createVPV(cbCombinePrep, cbMediumBowl); err != nil {
+	if err = createVPV(cbCombinePrep, cbMediumBowl); err != nil {
 		return err
 	}
 
 	// === BAKE PREPARATION ===
-	if err := createVPV(cbBakePrep, cbOven); err != nil {
+	if err = createVPV(cbBakePrep, cbOven); err != nil {
 		return err
 	}
-	if err := createVPV(cbBakePrep, cbBakingPan); err != nil {
+	if err = createVPV(cbBakePrep, cbBakingPan); err != nil {
 		return err
 	}
 
 	// === COOL PREPARATION ===
-	if err := createVPV(cbCoolPrep, cbWireRack); err != nil {
+	if err = createVPV(cbCoolPrep, cbWireRack); err != nil {
 		return err
 	}
-	if err := createVPV(cbCoolPrep, cbBakingPan); err != nil {
+	if err = createVPV(cbCoolPrep, cbBakingPan); err != nil {
 		return err
 	}
 
 	// === CORNBREAD INGREDIENT MEASUREMENT UNIT BRIDGES ===
-	if err := createVIMU(cbFlour, cbCupMeasurement); err != nil {
+	if err = createVIMU(cbFlour, cbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbFlour, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbFlour, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbCornmeal, cbCupMeasurement); err != nil {
+	if err = createVIMU(cbCornmeal, cbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbCornmeal, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbCornmeal, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbSugar, cbCupMeasurement); err != nil {
+	if err = createVIMU(cbSugar, cbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbSugar, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbSugar, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbBakingPowder, cbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(cbBakingPowder, cbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbBakingSoda, cbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(cbBakingSoda, cbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbSalt, cbTeaspoonMeasurement); err != nil {
+	if err = createVIMU(cbSalt, cbTeaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbMilk, cbCupMeasurement); err != nil {
+	if err = createVIMU(cbMilk, cbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbMilk, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbMilk, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbButter, cbTablespoonMeasurement); err != nil {
+	if err = createVIMU(cbButter, cbTablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbButter, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbButter, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbVegetableOil, cbCupMeasurement); err != nil {
+	if err = createVIMU(cbVegetableOil, cbCupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbVegetableOil, cbGramMeasurement); err != nil {
+	if err = createVIMU(cbVegetableOil, cbGramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(cbEggs, cbUnitMeasurement); err != nil {
+	if err = createVIMU(cbEggs, cbUnitMeasurement); err != nil {
 		return err
 	}
 
@@ -7800,7 +7800,6 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 	// Get instruments
 	whisk := enums.Instruments["whisk"]
 	spoon := enums.Instruments["spoon"]
-	knife := enums.Instruments["knife"]
 	tongs := enums.Instruments["tongs"]
 	brush := enums.Instruments["brush"]
 	thermometer := enums.Instruments["instant-read thermometer"]
@@ -7813,13 +7812,6 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 	grillingGrate := enums.Vessels["grilling grate"]
 	chimneyStarter := enums.Vessels["chimney starter"]
 	servingPlatter := enums.Vessels["serving platter"]
-
-	// Suppress unused variable warnings
-	_ = whisk
-	_ = spoon
-	_ = sugar
-	_ = salt
-	_ = knife
 
 	// === TERIYAKI SAUCE BRIDGES ===
 	// ADD preparation bridges
@@ -8226,14 +8218,14 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 			}
 		}
 
-		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
-			ID:                  identifiers.New(),
-			ValidPreparationID:  prep.ID,
-			ValidIngredientID:   ing.ID,
-			Notes:               "",
+		vip, vipErr := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidIngredientID:  ing.ID,
+			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VIP for prep %s and ingredient %s: %w", prep.Name, ing.Name, err)
+		if vipErr != nil {
+			return fmt.Errorf("failed to create VIP for prep %s and ingredient %s: %w", prep.Name, ing.Name, vipErr)
 		}
 
 		if enums.IngredientPreparations[prep.ID] == nil {
@@ -8252,14 +8244,14 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 			}
 		}
 
-		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+		vpv, vpvErr := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
 			ValidVesselID:      vessel.ID,
 			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VPV for prep %s and vessel %s: %w", prep.Name, vessel.Name, err)
+		if vpvErr != nil {
+			return fmt.Errorf("failed to create VPV for prep %s and vessel %s: %w", prep.Name, vessel.Name, vpvErr)
 		}
 
 		if enums.PreparationVessels[prep.ID] == nil {
@@ -8278,14 +8270,14 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 			}
 		}
 
-		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+		vpi, vpiErr := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
 			ValidInstrumentID:  inst.ID,
 			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VPI for prep %s and instrument %s: %w", prep.Name, inst.Name, err)
+		if vpiErr != nil {
+			return fmt.Errorf("failed to create VPI for prep %s and instrument %s: %w", prep.Name, inst.Name, vpiErr)
 		}
 
 		if enums.PreparationInstruments[prep.ID] == nil {
@@ -8304,15 +8296,15 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 			}
 		}
 
-		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+		vimu, vimuErr := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
 			ValidIngredientID:      ing.ID,
 			ValidMeasurementUnitID: unit.ID,
 			Notes:                  "",
 			AllowableQuantity:      types.Float32RangeWithOptionalMax{Min: 0},
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, err)
+		if vimuErr != nil {
+			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, vimuErr)
 		}
 
 		if enums.IngredientMeasurementUnits[ing.ID] == nil {
@@ -8324,123 +8316,123 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 
 	// === INGREDIENT PREPARATION BRIDGES ===
 	// TRIM preparation bridges (for green beans)
-	if err := createVIP(trimPrep, greenBeans); err != nil {
+	if err = createVIP(trimPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVPI(trimPrep, knife); err != nil {
+	if err = createVPI(trimPrep, knife); err != nil {
 		return err
 	}
-	if err := createVPV(trimPrep, cuttingBoard); err != nil {
+	if err = createVPV(trimPrep, cuttingBoard); err != nil {
 		return err
 	}
 
 	// SNAP preparation bridges (for green beans)
-	if err := createVIP(snapPrep, greenBeans); err != nil {
+	if err = createVIP(snapPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(snapPrep, cuttingBoard); err != nil {
+	if err = createVPV(snapPrep, cuttingBoard); err != nil {
 		return err
 	}
 
 	// SMASH preparation bridges (for garlic)
-	if err := createVIP(smashPrep, garlic); err != nil {
+	if err = createVIP(smashPrep, garlic); err != nil {
 		return err
 	}
-	if err := createVPI(smashPrep, cleaver); err != nil {
+	if err = createVPI(smashPrep, cleaver); err != nil {
 		return err
 	}
-	if err := createVPV(smashPrep, cuttingBoard); err != nil {
+	if err = createVPV(smashPrep, cuttingBoard); err != nil {
 		return err
 	}
 
 	// PREHEAT preparation bridges (for wok)
-	if err := createVPV(preheatPrep, wok); err != nil {
+	if err = createVPV(preheatPrep, wok); err != nil {
 		return err
 	}
 
 	// SWIRL preparation bridges (for oil/lard into wok)
-	if err := createVIP(swirPrep, lard); err != nil {
+	if err = createVIP(swirPrep, lard); err != nil {
 		return err
 	}
-	if err := createVIP(swirPrep, vegetableOil); err != nil {
+	if err = createVIP(swirPrep, vegetableOil); err != nil {
 		return err
 	}
-	if err := createVPV(swirPrep, wok); err != nil {
+	if err = createVPV(swirPrep, wok); err != nil {
 		return err
 	}
 
 	// ADD preparation bridges
-	if err := createVIP(addPrep, garlic); err != nil {
+	if err = createVIP(addPrep, garlic); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, greenBeans); err != nil {
+	if err = createVIP(addPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, salt); err != nil {
+	if err = createVIP(addPrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, vegetableStock); err != nil {
+	if err = createVIP(addPrep, vegetableStock); err != nil {
 		return err
 	}
-	if err := createVPV(addPrep, wok); err != nil {
+	if err = createVPV(addPrep, wok); err != nil {
 		return err
 	}
 
 	// TOSS preparation bridges
-	if err := createVIP(tossPrep, greenBeans); err != nil {
+	if err = createVIP(tossPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(tossPrep, wok); err != nil {
+	if err = createVPV(tossPrep, wok); err != nil {
 		return err
 	}
 
 	// STIR preparation bridges
-	if err := createVIP(stirPrep, garlic); err != nil {
+	if err = createVIP(stirPrep, garlic); err != nil {
 		return err
 	}
-	if err := createVIP(stirPrep, greenBeans); err != nil {
+	if err = createVIP(stirPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(stirPrep, wok); err != nil {
+	if err = createVPV(stirPrep, wok); err != nil {
 		return err
 	}
-	if err := createVPI(stirPrep, spatula); err != nil {
+	if err = createVPI(stirPrep, spatula); err != nil {
 		return err
 	}
-	if err := createVPI(stirPrep, woodenSpoon); err != nil {
+	if err = createVPI(stirPrep, woodenSpoon); err != nil {
 		return err
 	}
 
 	// COVER preparation bridges
-	if err := createVPV(coverPrep, wok); err != nil {
+	if err = createVPV(coverPrep, wok); err != nil {
 		return err
 	}
 
 	// REST preparation bridges
-	if err := createVIP(restPrep, greenBeans); err != nil {
+	if err = createVIP(restPrep, greenBeans); err != nil {
 		return err
 	}
-	if err := createVPV(restPrep, wok); err != nil {
+	if err = createVPV(restPrep, wok); err != nil {
 		return err
 	}
 
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
-	if err := createVIMU(greenBeans, poundMeasurement); err != nil {
+	if err = createVIMU(greenBeans, poundMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(garlic, cloveMeasurement); err != nil {
+	if err = createVIMU(garlic, cloveMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(vegetableStock, tablespoonMeasurement); err != nil {
+	if err = createVIMU(vegetableStock, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(salt, teaspoonMeasurement); err != nil {
+	if err = createVIMU(salt, teaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(lard, tablespoonMeasurement); err != nil {
+	if err = createVIMU(lard, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
+	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
 		return err
 	}
 
@@ -8650,14 +8642,14 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 			}
 		}
 
-		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+		vip, vipErr := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
 			ValidIngredientID:  ing.ID,
 			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VIP for prep %s and ingredient %s: %w", prep.Name, ing.Name, err)
+		if vipErr != nil {
+			return fmt.Errorf("failed to create VIP for prep %s and ingredient %s: %w", prep.Name, ing.Name, vipErr)
 		}
 
 		if enums.IngredientPreparations[prep.ID] == nil {
@@ -8676,14 +8668,14 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 			}
 		}
 
-		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+		vpv, vpvErr := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
 			ValidVesselID:      vessel.ID,
 			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VPV for prep %s and vessel %s: %w", prep.Name, vessel.Name, err)
+		if vpvErr != nil {
+			return fmt.Errorf("failed to create VPV for prep %s and vessel %s: %w", prep.Name, vessel.Name, vpvErr)
 		}
 
 		if enums.PreparationVessels[prep.ID] == nil {
@@ -8702,14 +8694,14 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 			}
 		}
 
-		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+		vpi, vpiErr := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 identifiers.New(),
 			ValidPreparationID: prep.ID,
 			ValidInstrumentID:  inst.ID,
 			Notes:              "",
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VPI for prep %s and instrument %s: %w", prep.Name, inst.Name, err)
+		if vpiErr != nil {
+			return fmt.Errorf("failed to create VPI for prep %s and instrument %s: %w", prep.Name, inst.Name, vpiErr)
 		}
 
 		if enums.PreparationInstruments[prep.ID] == nil {
@@ -8728,14 +8720,14 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 			}
 		}
 
-		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+		vimu, vimuErr := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 			ID:                     identifiers.New(),
 			ValidIngredientID:      ing.ID,
 			ValidMeasurementUnitID: unit.ID,
 			AllowableQuantity:      types.Float32RangeWithOptionalMax{Min: 0},
 		})
-		if err != nil {
-			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, err)
+		if vimuErr != nil {
+			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, vimuErr)
 		}
 
 		if enums.IngredientMeasurementUnits[ing.ID] == nil {
@@ -8746,208 +8738,208 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 	}
 
 	// === MIX preparation bridges ===
-	if err := createVIP(mixPrep, flour); err != nil {
+	if err = createVIP(mixPrep, flour); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, bakingPowder); err != nil {
+	if err = createVIP(mixPrep, bakingPowder); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, salt); err != nil {
+	if err = createVIP(mixPrep, salt); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, butter); err != nil {
+	if err = createVIP(mixPrep, butter); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, shortening); err != nil {
+	if err = createVIP(mixPrep, shortening); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, lard); err != nil {
+	if err = createVIP(mixPrep, lard); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, vegetableOil); err != nil {
+	if err = createVIP(mixPrep, vegetableOil); err != nil {
 		return err
 	}
-	if err := createVIP(mixPrep, water); err != nil {
+	if err = createVIP(mixPrep, water); err != nil {
 		return err
 	}
-	if err := createVPV(mixPrep, mediumBowl); err != nil {
+	if err = createVPV(mixPrep, mediumBowl); err != nil {
 		return err
 	}
-	if err := createVPI(mixPrep, whisk); err != nil {
+	if err = createVPI(mixPrep, whisk); err != nil {
 		return err
 	}
-	if err := createVPI(mixPrep, pastryBlender); err != nil {
+	if err = createVPI(mixPrep, pastryBlender); err != nil {
 		return err
 	}
-	if err := createVPI(mixPrep, bareHands); err != nil {
+	if err = createVPI(mixPrep, bareHands); err != nil {
 		return err
 	}
-	if err := createVPI(mixPrep, fork); err != nil {
+	if err = createVPI(mixPrep, fork); err != nil {
 		return err
 	}
 
 	// === ADD preparation bridges ===
-	if err := createVIP(addPrep, butter); err != nil {
+	if err = createVIP(addPrep, butter); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, shortening); err != nil {
+	if err = createVIP(addPrep, shortening); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, lard); err != nil {
+	if err = createVIP(addPrep, lard); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, vegetableOil); err != nil {
+	if err = createVIP(addPrep, vegetableOil); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, water); err != nil {
+	if err = createVIP(addPrep, water); err != nil {
 		return err
 	}
-	if err := createVIP(addPrep, flour); err != nil {
+	if err = createVIP(addPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(addPrep, mediumBowl); err != nil {
+	if err = createVPV(addPrep, mediumBowl); err != nil {
 		return err
 	}
 
 	// === STIR preparation bridges ===
-	if err := createVPV(stirPrep, mediumBowl); err != nil {
+	if err = createVPV(stirPrep, mediumBowl); err != nil {
 		return err
 	}
-	if err := createVPI(stirPrep, fork); err != nil {
+	if err = createVPI(stirPrep, fork); err != nil {
 		return err
 	}
-	if err := createVPI(stirPrep, whisk); err != nil {
+	if err = createVPI(stirPrep, whisk); err != nil {
 		return err
 	}
 
 	// === KNEAD preparation bridges ===
-	if err := createVIP(kneadPrep, flour); err != nil {
+	if err = createVIP(kneadPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(kneadPrep, countertop); err != nil {
+	if err = createVPV(kneadPrep, countertop); err != nil {
 		return err
 	}
-	if err := createVPI(kneadPrep, bareHands); err != nil {
+	if err = createVPI(kneadPrep, bareHands); err != nil {
 		return err
 	}
 
 	// === DIVIDE preparation bridges ===
-	if err := createVIP(dividePrep, flour); err != nil {
+	if err = createVIP(dividePrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(dividePrep, countertop); err != nil {
+	if err = createVPV(dividePrep, countertop); err != nil {
 		return err
 	}
-	if err := createVPI(dividePrep, knife); err != nil {
+	if err = createVPI(dividePrep, knife); err != nil {
 		return err
 	}
-	if err := createVPI(dividePrep, bareHands); err != nil {
+	if err = createVPI(dividePrep, bareHands); err != nil {
 		return err
 	}
 
 	// === FORM preparation bridges ===
-	if err := createVIP(formPrep, flour); err != nil {
+	if err = createVIP(formPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(formPrep, countertop); err != nil {
+	if err = createVPV(formPrep, countertop); err != nil {
 		return err
 	}
-	if err := createVPI(formPrep, bareHands); err != nil {
+	if err = createVPI(formPrep, bareHands); err != nil {
 		return err
 	}
 
 	// === REST preparation bridges ===
-	if err := createVIP(restPrep, flour); err != nil {
+	if err = createVIP(restPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(restPrep, countertop); err != nil {
+	if err = createVPV(restPrep, countertop); err != nil {
 		return err
 	}
-	if err := createVPV(restPrep, kitchenTowel); err != nil {
+	if err = createVPV(restPrep, kitchenTowel); err != nil {
 		return err
 	}
 
 	// === COVER preparation bridges ===
-	if err := createVPV(coverPrep, kitchenTowel); err != nil {
+	if err = createVPV(coverPrep, kitchenTowel); err != nil {
 		return err
 	}
-	if err := createVPV(coverPrep, countertop); err != nil {
+	if err = createVPV(coverPrep, countertop); err != nil {
 		return err
 	}
 
 	// === PREHEAT preparation bridges ===
-	if err := createVPV(preheatPrep, castIronSkillet); err != nil {
+	if err = createVPV(preheatPrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === ROLL preparation bridges ===
-	if err := createVIP(rollPrep, flour); err != nil {
+	if err = createVIP(rollPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(rollPrep, countertop); err != nil {
+	if err = createVPV(rollPrep, countertop); err != nil {
 		return err
 	}
-	if err := createVPI(rollPrep, rollingPin); err != nil {
+	if err = createVPI(rollPrep, rollingPin); err != nil {
 		return err
 	}
 
 	// === COOK preparation bridges ===
-	if err := createVIP(cookPrep, flour); err != nil {
+	if err = createVIP(cookPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(cookPrep, castIronSkillet); err != nil {
+	if err = createVPV(cookPrep, castIronSkillet); err != nil {
 		return err
 	}
 
 	// === TRANSFER preparation bridges ===
-	if err := createVIP(transferPrep, flour); err != nil {
+	if err = createVIP(transferPrep, flour); err != nil {
 		return err
 	}
-	if err := createVPV(transferPrep, kitchenTowel); err != nil {
+	if err = createVPV(transferPrep, kitchenTowel); err != nil {
 		return err
 	}
 
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
-	if err := createVIMU(flour, cupMeasurement); err != nil {
+	if err = createVIMU(flour, cupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(flour, gramMeasurement); err != nil {
+	if err = createVIMU(flour, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
+	if err = createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(salt, teaspoonMeasurement); err != nil {
+	if err = createVIMU(salt, teaspoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(butter, tablespoonMeasurement); err != nil {
+	if err = createVIMU(butter, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(butter, gramMeasurement); err != nil {
+	if err = createVIMU(butter, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(shortening, tablespoonMeasurement); err != nil {
+	if err = createVIMU(shortening, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(shortening, gramMeasurement); err != nil {
+	if err = createVIMU(shortening, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(lard, tablespoonMeasurement); err != nil {
+	if err = createVIMU(lard, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(lard, gramMeasurement); err != nil {
+	if err = createVIMU(lard, gramMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
+	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(vegetableOil, cupMeasurement); err != nil {
+	if err = createVIMU(vegetableOil, cupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(water, cupMeasurement); err != nil {
+	if err = createVIMU(water, cupMeasurement); err != nil {
 		return err
 	}
-	if err := createVIMU(water, gramMeasurement); err != nil {
+	if err = createVIMU(water, gramMeasurement); err != nil {
 		return err
 	}
 

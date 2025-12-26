@@ -72,11 +72,9 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) []*mealplanning
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Bag preparation bridges
-	_ = enums.IngredientPreparations[bagPrep.ID][porkChop.ID] // validated but not used
 	bagVacuumBagVPV := enums.PreparationVessels[bagPrep.ID][vacuumBag.ID]
 
 	// Sous vide preparation bridges
-	_ = enums.IngredientPreparations[sousVidePrep.ID][porkChop.ID] // validated but not used
 	sousVideCookerVPI := enums.PreparationInstruments[sousVidePrep.ID][sousVideCooker.ID]
 	sousVideWaterBathVPV := enums.PreparationVessels[sousVidePrep.ID][waterBath.ID]
 

@@ -121,13 +121,6 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	appleCiderVinegarTeaspoonVIMU := enums.IngredientMeasurementUnits[appleCiderVinegar.ID][teaspoonMeasurement.ID]
 	parsleyTablespoonVIMU := enums.IngredientMeasurementUnits[parsley.ID][tablespoonMeasurement.ID]
 
-	// Suppress unused variable warnings
-	_ = addAppleCiderVIP
-	_ = addChickenStockVIP
-	_ = addHoneyVIP
-	_ = addSaltVIP
-	_ = addBlackPepperVIP
-
 	// ==================== RECIPE STEPS ====================
 
 	// Step 0: Melt butter in skillet over medium heat and cook until browned

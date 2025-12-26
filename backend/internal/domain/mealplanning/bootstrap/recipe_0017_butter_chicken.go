@@ -23,9 +23,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	microwavePrep := enums.Preparations["microwave"]
 	heatPrep := enums.Preparations["heat"]
 	cookPrep := enums.Preparations["cook"]
-	stirPrep := enums.Preparations["stir"]
 	addPrep := enums.Preparations["add"]
-	crushPrep := enums.Preparations["crush"]
 	simmerPrep := enums.Preparations["simmer"]
 	preheatPrep := enums.Preparations["preheat"]
 	broilPrep := enums.Preparations["broil"]
@@ -33,7 +31,6 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 
 	// Get ingredients
 	kasuriMethi := enums.Ingredients["kasuri methi"]
-	fenugreekSeeds := enums.Ingredients["fenugreek seeds"]
 	yogurt := enums.Ingredients["yogurt"]
 	garamMasala := enums.Ingredients["garam masala"]
 	salt := enums.Ingredients["salt"]
@@ -42,7 +39,6 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	chickenThighs := enums.Ingredients["boneless skinless chicken thighs"]
 	chilesDeArbol := enums.Ingredients["dried chile de arbol"]
 	brownCardamom := enums.Ingredients["brown cardamom"]
-	greenCardamom := enums.Ingredients["green cardamom"]
 	wholeCloves := enums.Ingredients["whole cloves"]
 	cannedTomatoes := enums.Ingredients["fire-roasted canned tomatoes"]
 	cashews := enums.Ingredients["raw cashews"]
@@ -65,13 +61,10 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 
 	// Get instruments
 	spiceGrinder := enums.Instruments["spice grinder"]
-	mortarAndPestle := enums.Instruments["mortar and pestle"]
 	woodenSpoon := enums.Instruments["wooden spoon"]
 	stickBlender := enums.Instruments["stick blender"]
 	bareHands := enums.Instruments["bare hands"]
 	aluminumFoil := enums.Instruments["aluminum foil"]
-	blenderInst := enums.Instruments["blender"]
-	tongs := enums.Instruments["tongs"]
 
 	// Get vessels
 	smallSkillet := enums.Vessels["small skillet"]
@@ -98,8 +91,6 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	toastBrownCardamomVIP := enums.IngredientPreparations[toastPrep.ID][brownCardamom.ID]
 	toastWholeCloveVIP := enums.IngredientPreparations[toastPrep.ID][wholeCloves.ID]
 	grindChilesVIP := enums.IngredientPreparations[grindPrep.ID][chilesDeArbol.ID]
-	grindBrownCardamomVIP := enums.IngredientPreparations[grindPrep.ID][brownCardamom.ID]
-	grindWholeCloveVIP := enums.IngredientPreparations[grindPrep.ID][wholeCloves.ID]
 	grindGaramMasalaVIP := enums.IngredientPreparations[grindPrep.ID][garamMasala.ID]
 	grindSaltVIP := enums.IngredientPreparations[grindPrep.ID][salt.ID]
 	soakCashewsVIP := enums.IngredientPreparations[soakPrep.ID][cashews.ID]
@@ -113,21 +104,16 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	addCashewsVIP := enums.IngredientPreparations[addPrep.ID][cashews.ID]
 	addTomatoesVIP := enums.IngredientPreparations[addPrep.ID][cannedTomatoes.ID]
 	addWaterVIP := enums.IngredientPreparations[addPrep.ID][water.ID]
-	crushTomatoesVIP := enums.IngredientPreparations[crushPrep.ID][cannedTomatoes.ID]
 	simmerTomatoesVIP := enums.IngredientPreparations[simmerPrep.ID][cannedTomatoes.ID]
 	broilChickenVIP := enums.IngredientPreparations[broilPrep.ID][chickenThighs.ID]
 	blendTomatoesVIP := enums.IngredientPreparations[blendPrep.ID][cannedTomatoes.ID]
 	blendButterVIP := enums.IngredientPreparations[blendPrep.ID][butter.ID]
 	blendCreamVIP := enums.IngredientPreparations[blendPrep.ID][heavyCream.ID]
-	addButterVIP := enums.IngredientPreparations[addPrep.ID][butter.ID]
-	addCreamVIP := enums.IngredientPreparations[addPrep.ID][heavyCream.ID]
 	addChickenVIP := enums.IngredientPreparations[addPrep.ID][chickenThighs.ID]
-	stirOnionVIP := enums.IngredientPreparations[stirPrep.ID][whiteOnion.ID]
 
 	// Preparation-Instrument bridges
 	toastSmallSkilletVPV := enums.PreparationVessels[toastPrep.ID][smallSkillet.ID]
 	grindSpiceGrinderVPI := enums.PreparationInstruments[grindPrep.ID][spiceGrinder.ID]
-	grindMortarVPI := enums.PreparationInstruments[grindPrep.ID][mortarAndPestle.ID]
 	combineMediumBowlVPV := enums.PreparationVessels[combinePrep.ID][mediumBowl.ID]
 	coatBareHandsVPI := enums.PreparationInstruments[coatPrep.ID][bareHands.ID]
 	coatMediumBowlVPV := enums.PreparationVessels[coatPrep.ID][mediumBowl.ID]
@@ -139,25 +125,18 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	heatDutchOvenVPV := enums.PreparationVessels[heatPrep.ID][dutchOven.ID]
 	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
 	cookDutchOvenVPV := enums.PreparationVessels[cookPrep.ID][dutchOven.ID]
-	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
-	stirDutchOvenVPV := enums.PreparationVessels[stirPrep.ID][dutchOven.ID]
 	addDutchOvenVPV := enums.PreparationVessels[addPrep.ID][dutchOven.ID]
 	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
-	crushWoodenSpoonVPI := enums.PreparationInstruments[crushPrep.ID][woodenSpoon.ID]
-	crushDutchOvenVPV := enums.PreparationVessels[crushPrep.ID][dutchOven.ID]
 	simmerDutchOvenVPV := enums.PreparationVessels[simmerPrep.ID][dutchOven.ID]
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
 	broilBakingSheetVPV := enums.PreparationVessels[broilPrep.ID][bakingSheet.ID]
 	broilOvenVPV := enums.PreparationVessels[broilPrep.ID][oven.ID]
 	blendStickBlenderVPI := enums.PreparationInstruments[blendPrep.ID][stickBlender.ID]
-	blendBlenderVPI := enums.PreparationInstruments[blendPrep.ID][blenderInst.ID]
 	blendDutchOvenVPV := enums.PreparationVessels[blendPrep.ID][dutchOven.ID]
-	transferDutchOvenVPV := enums.PreparationVessels[transferPrep.ID][dutchOven.ID]
 	transferServingBowlVPV := enums.PreparationVessels[transferPrep.ID][servingBowl.ID]
 
 	// Measurement unit bridges
 	kasuriMethiTablespoonVIMU := enums.IngredientMeasurementUnits[kasuriMethi.ID][tablespoonMeasurement.ID]
-	fenugreekSeedsTeaspoonVIMU := enums.IngredientMeasurementUnits[fenugreekSeeds.ID][teaspoonMeasurement.ID]
 	yogurtCupVIMU := enums.IngredientMeasurementUnits[yogurt.ID][cupMeasurement.ID]
 	garamMasalaTablespoonVIMU := enums.IngredientMeasurementUnits[garamMasala.ID][tablespoonMeasurement.ID]
 	kalaNamakTeaspoonVIMU := enums.IngredientMeasurementUnits[kalaNamak.ID][teaspoonMeasurement.ID]
@@ -165,7 +144,6 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	chickenThighsPoundVIMU := enums.IngredientMeasurementUnits[chickenThighs.ID][poundMeasurement.ID]
 	chilesDeArbolUnitVIMU := enums.IngredientMeasurementUnits[chilesDeArbol.ID][unitMeasurement.ID]
 	brownCardamomUnitVIMU := enums.IngredientMeasurementUnits[brownCardamom.ID][unitMeasurement.ID]
-	greenCardamomUnitVIMU := enums.IngredientMeasurementUnits[greenCardamom.ID][unitMeasurement.ID]
 	wholeClovesUnitVIMU := enums.IngredientMeasurementUnits[wholeCloves.ID][unitMeasurement.ID]
 	cannedTomatoesOunceVIMU := enums.IngredientMeasurementUnits[cannedTomatoes.ID][ounceMeasurement.ID]
 	cashewsOunceVIMU := enums.IngredientMeasurementUnits[cashews.ID][ounceMeasurement.ID]
@@ -177,24 +155,6 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
-
-	// Ignore unused variables for now
-	_ = crushTomatoesVIP
-	_ = addButterVIP
-	_ = addCreamVIP
-	_ = stirOnionVIP
-	_ = grindMortarVPI
-	_ = stirDutchOvenVPV
-	_ = crushDutchOvenVPV
-	_ = blendBlenderVPI
-	_ = transferDutchOvenVPV
-	_ = fenugreekSeedsTeaspoonVIMU
-	_ = greenCardamomUnitVIMU
-	_ = grindBrownCardamomVIP
-	_ = grindWholeCloveVIP
-	_ = tongs
-	_ = stirWoodenSpoonVPI
-	_ = crushWoodenSpoonVPI
 
 	// Step 0: Toast fenugreek leaves in a small skillet over medium heat until fragrant
 	step0ID := identifiers.New()

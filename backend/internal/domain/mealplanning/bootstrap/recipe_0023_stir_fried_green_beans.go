@@ -30,7 +30,6 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 	vegetableStock := enums.Ingredients["vegetable stock"]
 	salt := enums.Ingredients["salt"]
 	lard := enums.Ingredients["lard"]
-	vegetableOil := enums.Ingredients["vegetable oil"]
 
 	// Get measurement units
 	poundMeasurement := enums.MeasurementUnits["pound"]
@@ -156,11 +155,9 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 	preheatWokVPV := getVPV("preheat", "wok")
 
 	swirlLardVIP := getVIP("swirl", "lard")
-	swirlVegOilVIP := getVIP("swirl", "vegetable oil")
 	swirlWokVPV := getVPV("swirl", "wok")
 
 	addGarlicVIP := getVIP("add", "garlic")
-	addGreenBeansVIP := getVIP("add", "green beans")
 	addSaltVIP := getVIP("add", "salt")
 	addStockVIP := getVIP("add", "vegetable stock")
 	addWokVPV := getVPV("add", "wok")
@@ -185,7 +182,6 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 	stockTablespoonVIMU := getVIMU("vegetable stock", "tablespoon")
 	saltTeaspoonVIMU := getVIMU("salt", "teaspoon")
 	lardTablespoonVIMU := getVIMU("lard", "tablespoon")
-	vegOilTablespoonVIMU := getVIMU("vegetable oil", "tablespoon")
 
 	// ==================== RECIPE STEPS ====================
 
@@ -968,12 +964,6 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 			},
 		},
 	}
-
-	// Suppress unused variable warnings
-	_ = swirlVegOilVIP
-	_ = vegetableOil
-	_ = vegOilTablespoonVIMU
-	_ = addGreenBeansVIP
 
 	recipe := &mealplanning.RecipeDatabaseCreationInput{
 		ID:                  recipeID,

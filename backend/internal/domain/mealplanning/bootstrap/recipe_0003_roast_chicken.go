@@ -68,11 +68,9 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Truss preparation bridges
-	_ = enums.IngredientPreparations[trussPrep.ID][wholeChicken.ID] // validated but not used
 	trussTwineVPI := enums.PreparationInstruments[trussPrep.ID][butchersTwine.ID]
 
 	// Dry-brine preparation bridges
-	_ = enums.IngredientPreparations[dryBrinePrep.ID][wholeChicken.ID] // validated but not used
 	dryBrineWireRackVPV := enums.PreparationVessels[dryBrinePrep.ID][wireRack.ID]
 	dryBrineBakingSheetVPV := enums.PreparationVessels[dryBrinePrep.ID][bakingSheet.ID]
 
@@ -82,22 +80,18 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 	heatSkilletVPV := enums.PreparationVessels[heatPrep.ID][stainlessSteelSkillet.ID]
 
 	// Rub preparation bridges
-	_ = enums.IngredientPreparations[rubPrep.ID][wholeChicken.ID] // validated but not used
 	rubOilVIP := enums.IngredientPreparations[rubPrep.ID][vegetableOil.ID]
 	rubBareHandsVPI := enums.PreparationInstruments[rubPrep.ID][bareHands.ID]
 
 	// Pan-sear preparation bridges
-	_ = enums.IngredientPreparations[panSearPrep.ID][wholeChicken.ID] // validated but not used
 	panSearTongsVPI := enums.PreparationInstruments[panSearPrep.ID][tongs.ID]
 	panSearSkilletVPV := enums.PreparationVessels[panSearPrep.ID][stainlessSteelSkillet.ID]
 
 	// Roast preparation bridges
-	_ = enums.IngredientPreparations[roastPrep.ID][wholeChicken.ID] // validated but not used
 	roastThermometerVPI := enums.PreparationInstruments[roastPrep.ID][thermometer.ID]
 	roastSkilletVPV := enums.PreparationVessels[roastPrep.ID][stainlessSteelSkillet.ID]
 
 	// Rest preparation bridges
-	_ = enums.IngredientPreparations[restPrep.ID][wholeChicken.ID] // validated but not used
 	restCarvingBoardVPV := enums.PreparationVessels[restPrep.ID][carvingBoard.ID]
 
 	// Step 0: Mix the seasoning
@@ -162,7 +156,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step0ID,
 				Name:                "seasoning mixture",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -197,12 +191,12 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 				},
 			},
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step1ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](0),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step1ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				MeasurementUnitID:              gramMeasurement.ID,
-				Name:                           "seasoning mixture",
+				MeasurementUnitID:               gramMeasurement.ID,
+				Name:                            "seasoning mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 12,
 				},
@@ -222,7 +216,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step1ID,
 				Name:                "seasoned whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -245,13 +239,13 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		Notes:           "Set chicken, breast side up, on work surface and tuck wings behind back. Using butcher's twine, run the center of the twine under the tip of the tail end and truss chicken by tying drumsticks together at their bony ends, securing the legs and the tip of the tail together in a bundle. Criss-cross the twine and pass along the crevasse where the legs meet the breast; pass twine over wings to hold them into place, then tie securely around the stump of the neck.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step2ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](1),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "seasoned whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -259,8 +253,8 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                            identifiers.New(),
-				BelongsToRecipeStep:           step2ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2ID,
 				ValidPreparationInstrumentID: &trussTwineVPI.ID,
 				InstrumentID:                 &butchersTwine.ID,
 				Name:                         "butcher's twine",
@@ -271,7 +265,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step2ID,
 				Name:                "trussed seasoned whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -298,13 +292,13 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step3ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](2),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "trussed seasoned whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "trussed seasoned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -334,7 +328,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step3ID,
 				Name:                "dry-brined whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -386,7 +380,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step4ID,
 				Name:                "heated oil in skillet",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -409,13 +403,13 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		Notes:           "Rub chicken lightly with oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step5ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](3),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step5ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "dry-brined whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "dry-brined whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -447,7 +441,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step5ID,
 				Name:                "oiled whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -476,25 +470,25 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             step6ChickenIngredientID,
-				BelongsToRecipeStep:            step6ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](5),
+				ID:                              step6ChickenIngredientID,
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "oiled whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "oiled whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step6ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](4),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &vegetableOil.ID,
-				MeasurementUnitID:              milliliterMeasurement.ID,
-				Name:                           "heated oil in skillet",
+				IngredientID:                    &vegetableOil.ID,
+				MeasurementUnitID:               milliliterMeasurement.ID,
+				Name:                            "heated oil in skillet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 15,
 				},
@@ -502,8 +496,8 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                            identifiers.New(),
-				BelongsToRecipeStep:           step6ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step6ID,
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
@@ -526,7 +520,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step6ID,
 				Name:                "leg-browned whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -574,13 +568,13 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             step7ChickenIngredientID,
-				BelongsToRecipeStep:            step7ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](6),
+				ID:                              step7ChickenIngredientID,
+				BelongsToRecipeStep:             step7ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "leg-browned whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "leg-browned whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -588,8 +582,8 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
-				ID:                            identifiers.New(),
-				BelongsToRecipeStep:           step7ID,
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step7ID,
 				ValidPreparationInstrumentID: &roastThermometerVPI.ID,
 				InstrumentID:                 &thermometer.ID,
 				Name:                         "instant-read thermometer",
@@ -612,7 +606,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step7ID,
 				Name:                "roasted whole chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -655,13 +649,13 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                             identifiers.New(),
-				BelongsToRecipeStep:            step8ID,
-				ProductOfRecipeStepIndex:       pointer.To[uint64](7),
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                   &wholeChicken.ID,
-				MeasurementUnitID:              unitMeasurement.ID,
-				Name:                           "roasted whole chicken",
+				IngredientID:                    &wholeChicken.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "roasted whole chicken",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -681,7 +675,7 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
-				ID:                identifiers.New(),
+				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step8ID,
 				Name:                "rested roast chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
@@ -713,4 +707,3 @@ func PerfectRoastChickenRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 }
-

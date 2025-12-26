@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -43,14 +42,14 @@ func main() {
 
 	var adminUserID string
 
-	_, err = localdev.AllInOne(
+	server, err := localdev.AllInOne(
 		ctx,
 		apiConfig,
 		// Create admin user
 		localdev.WithIdentityRepository(func(ctx context.Context, repo identity.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider, dbClient database.Client) error {
-			user, err := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, repo, dbClient, premadeAdminUser)
-			if err != nil {
-				return err
+			user, userErr := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, repo, dbClient, premadeAdminUser)
+			if userErr != nil {
+				return userErr
 			}
 			adminUserID = user.ID
 			return nil
@@ -69,9 +68,9 @@ func main() {
 		// Create valid enumerations and bridge types, then create all bootstrap recipes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			logger.Info("Creating enumerations...")
-			enums, err := bootstrap.CreateEnumerations(ctx, repo, logger)
-			if err != nil {
-				return fmt.Errorf("failed to create enumerations: %w", err)
+			enums, enumsErr := bootstrap.CreateEnumerations(ctx, repo, logger)
+			if enumsErr != nil {
+				return fmt.Errorf("failed to create enumerations: %w", enumsErr)
 			}
 			logger.Info("Enumerations created successfully!")
 
@@ -81,7 +80,7 @@ func main() {
 
 			for i, recipe := range recipes {
 				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-				_, err := repo.CreateRecipe(ctx, recipe)
+				_, err = repo.CreateRecipe(ctx, recipe)
 				if err != nil {
 					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
 				}
@@ -99,10 +98,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	os.Exit(0)
-
-	// log.Println("starting server")
-	// server.Run()
+	log.Println("starting server")
+	server.Run()
 }
 
 func createExampleServiceSettings(ctx context.Context, repo settings.Repository, logger logging.Logger) error {
