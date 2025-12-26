@@ -238,6 +238,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "chicken stock", Description: "Homemade or low-sodium chicken stock", PluralName: "chicken stock", StorageInstructions: "Store in the refrigerator for up to 5 days or freeze", Slug: "chicken-stock", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "chives", Description: "Fresh chives", PluralName: "chives", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "chives", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "apple cider vinegar", Description: "Apple cider vinegar", PluralName: "apple cider vinegar", StorageInstructions: "Store in a cool, dark place", Slug: "apple-cider-vinegar", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Grilled whole cauliflower recipe ingredients
+		{ID: identifiers.New(), Name: "sake", Description: "Japanese rice wine for cooking", PluralName: "sake", StorageInstructions: "Store in a cool, dark place, refrigerate after opening", Slug: "sake", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "mirin", Description: "Sweet Japanese rice wine for cooking", PluralName: "mirin", StorageInstructions: "Store in a cool, dark place", Slug: "mirin", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dashi powder", Description: "Powdered dashi stock made from bonito and kelp", PluralName: "dashi powder", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "dashi-powder", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "toasted sesame oil", Description: "Toasted sesame oil for flavoring", PluralName: "toasted sesame oil", StorageInstructions: "Store in a cool, dark place", Slug: "toasted-sesame-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "shichimi togarashi", Description: "Japanese seven-spice blend", PluralName: "shichimi togarashi", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "shichimi-togarashi", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "rendered chicken fat", Description: "Schmaltz or rendered chicken fat for cooking", PluralName: "rendered chicken fat", StorageInstructions: "Store in the refrigerator for up to a month or freeze", Slug: "rendered-chicken-fat", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "charcoal briquettes", Description: "Charcoal briquettes for grilling", PluralName: "charcoal briquettes", StorageInstructions: "Store in a dry place", Slug: "charcoal-briquettes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -680,6 +688,34 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		return nil, fmt.Errorf("failed to create combined ingredient state: %w", err)
 	}
 	enums.IngredientStates["combined"] = combinedState
+
+	// Dissolved state (for ingredients like salt that dissolve in liquid)
+	dissolvedState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "dissolved",
+		Description:   "An ingredient has been completely dissolved into a liquid",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeConsistency,
+		PastTense:     "dissolved",
+		Slug:          "dissolved",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create dissolved ingredient state: %w", err)
+	}
+	enums.IngredientStates["dissolved"] = dissolvedState
+
+	// Lightly charred state (for grilled foods with light char marks)
+	lightlyCharredState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
+		ID:            identifiers.New(),
+		Name:          "lightly charred",
+		Description:   "Food has developed light char marks from high heat cooking",
+		AttributeType: mealplanning.ValidIngredientStateAttributeTypeAppearance,
+		PastTense:     "lightly charred",
+		Slug:          "lightly-charred",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create lightly charred ingredient state: %w", err)
+	}
+	enums.IngredientStates["lightly charred"] = lightlyCharredState
 
 	// Create bridge types using first instances
 
@@ -1777,6 +1813,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"swirl", "Move a vessel in a circular motion to mix or coat contents", "swirled", "swirl", false, false},
 		// Cornbread recipe preparations
 		{"grease", "Apply fat to a cooking surface to prevent sticking", "greased", "grease", false, false},
+		// Grilled whole cauliflower recipe preparations
+		{"whisk", "Mix ingredients rapidly in a circular motion using a whisk", "whisked", "whisk", false, false},
+		{"brush", "Apply a sauce, oil, or marinade to food using a brush", "brushed", "brush", false, false},
+		{"brine", "Soak food in a salt solution to enhance flavor and moisture", "brined", "brine", false, true},
 	}
 
 	for i := range prepInputs {
@@ -1803,6 +1843,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 
 	// Create bridge table entries for steak recipe
 	if err = createSteakRecipeBridgeEntries(ctx, repo, logger, enums); err != nil {
+		return nil, err
+	}
+
+	// Create bridge table entries for grilled cauliflower recipe
+	if err = createGrilledCauliflowerBridgeEntries(ctx, repo, logger, enums); err != nil {
 		return nil, err
 	}
 
@@ -7522,5 +7567,404 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	return nil
+}
+
+func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, enums *Enumerations) error {
+	// Helper functions for creating bridge entries
+	createVIP := func(prep *mealplanning.ValidPreparation, ingredient *mealplanning.ValidIngredient) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VIP")
+		}
+		if ingredient == nil {
+			return fmt.Errorf("ingredient is nil when creating VIP for preparation '%s'", prep.Name)
+		}
+		vip, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidIngredientID:  ingredient.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIP for %s + %s: %w", prep.Name, ingredient.Name, err)
+		}
+		if enums.IngredientPreparations[prep.ID] == nil {
+			enums.IngredientPreparations[prep.ID] = make(map[string]*mealplanning.ValidIngredientPreparation)
+		}
+		enums.IngredientPreparations[prep.ID][ingredient.ID] = vip
+		return nil
+	}
+
+	createVIMU := func(ingredient *mealplanning.ValidIngredient, unit *mealplanning.ValidMeasurementUnit) error {
+		if ingredient == nil {
+			return fmt.Errorf("ingredient is nil")
+		}
+		if unit == nil {
+			return fmt.Errorf("measurement unit is nil")
+		}
+		vimu, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
+			ID:                     identifiers.New(),
+			ValidIngredientID:      ingredient.ID,
+			ValidMeasurementUnitID: unit.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VIMU for %s + %s: %w", ingredient.Name, unit.Name, err)
+		}
+		if enums.IngredientMeasurementUnits[ingredient.ID] == nil {
+			enums.IngredientMeasurementUnits[ingredient.ID] = make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
+		}
+		enums.IngredientMeasurementUnits[ingredient.ID][unit.ID] = vimu
+		return nil
+	}
+
+	createVPV := func(prep *mealplanning.ValidPreparation, vessel *mealplanning.ValidVessel) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VPV")
+		}
+		if vessel == nil {
+			return fmt.Errorf("vessel is nil when creating VPV for preparation '%s'", prep.Name)
+		}
+		vpv, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidVesselID:      vessel.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPV for %s + %s: %w", prep.Name, vessel.Name, err)
+		}
+		if enums.PreparationVessels[prep.ID] == nil {
+			enums.PreparationVessels[prep.ID] = make(map[string]*mealplanning.ValidPreparationVessel)
+		}
+		enums.PreparationVessels[prep.ID][vessel.ID] = vpv
+		return nil
+	}
+
+	createVPI := func(prep *mealplanning.ValidPreparation, instrument *mealplanning.ValidInstrument) error {
+		if prep == nil {
+			return fmt.Errorf("preparation is nil when creating VPI")
+		}
+		if instrument == nil {
+			return fmt.Errorf("instrument is nil when creating VPI for preparation '%s'", prep.Name)
+		}
+		vpi, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
+			ID:                 identifiers.New(),
+			ValidPreparationID: prep.ID,
+			ValidInstrumentID:  instrument.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create VPI for %s + %s: %w", prep.Name, instrument.Name, err)
+		}
+		if enums.PreparationInstruments[prep.ID] == nil {
+			enums.PreparationInstruments[prep.ID] = make(map[string]*mealplanning.ValidPreparationInstrument)
+		}
+		enums.PreparationInstruments[prep.ID][instrument.ID] = vpi
+		return nil
+	}
+
+	// Get preparations with nil checks
+	getPrep := func(name string) *mealplanning.ValidPreparation {
+		p := enums.Preparations[name]
+		if p == nil {
+			logger.Info(fmt.Sprintf("WARNING: preparation '%s' not found in enumerations", name))
+		}
+		return p
+	}
+	addPrep := getPrep("add")
+	whiskPrep := getPrep("whisk")
+	boilPrep := getPrep("boil")
+	reducePrep := getPrep("reduce")
+	stirPrep := getPrep("stir")
+	trimPrep := getPrep("trim")
+	slicePrep := getPrep("slice")
+	submergePrep := getPrep("submerge")
+	restPrep := getPrep("rest")
+	lightPrep := getPrep("light")
+	drainPrep := getPrep("drain")
+	placePrep := getPrep("place")
+	grillPrep := getPrep("grill")
+	brushPrep := getPrep("brush")
+	flipPrep := getPrep("flip")
+	transferPrep := getPrep("transfer")
+	sprinklePrep := getPrep("sprinkle")
+	preheatPrep := getPrep("preheat")
+	brinePrep := getPrep("brine")
+	seasonPrep := getPrep("season")
+
+	// Get ingredients
+	soySauce := enums.Ingredients["soy sauce"]
+	sake := enums.Ingredients["sake"]
+	mirin := enums.Ingredients["mirin"]
+	dashiPowder := enums.Ingredients["dashi powder"]
+	chickenFat := enums.Ingredients["rendered chicken fat"]
+	sesameOil := enums.Ingredients["toasted sesame oil"]
+	cauliflower := enums.Ingredients["cauliflower"]
+	water := enums.Ingredients["water"]
+	togarashi := enums.Ingredients["shichimi togarashi"]
+	charcoal := enums.Ingredients["charcoal briquettes"]
+	salt := enums.Ingredients["salt"]
+	sugar := enums.Ingredients["sugar"]
+
+	// Get measurement units
+	cupMeasurement := enums.MeasurementUnits["cup"]
+	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	literMeasurement := enums.MeasurementUnits["liter"]
+	poundMeasurement := enums.MeasurementUnits["pound"]
+
+	// Get instruments
+	whisk := enums.Instruments["whisk"]
+	spoon := enums.Instruments["spoon"]
+	knife := enums.Instruments["knife"]
+	tongs := enums.Instruments["tongs"]
+	brush := enums.Instruments["brush"]
+	thermometer := enums.Instruments["instant-read thermometer"]
+	chimneyStarterInstrument := enums.Instruments["chimney starter"]
+
+	// Get vessels
+	saucepan := enums.Vessels["saucepan"]
+	pot := enums.Vessels["pot"]
+	grill := enums.Vessels["grill"]
+	grillingGrate := enums.Vessels["grilling grate"]
+	chimneyStarter := enums.Vessels["chimney starter"]
+	servingPlatter := enums.Vessels["serving platter"]
+
+	// Suppress unused variable warnings
+	_ = whisk
+	_ = spoon
+	_ = sugar
+	_ = salt
+	_ = knife
+
+	// === TERIYAKI SAUCE BRIDGES ===
+	// ADD preparation bridges
+	if err := createVIP(addPrep, soySauce); err != nil {
+		return err
+	}
+	if err := createVIP(addPrep, sake); err != nil {
+		return err
+	}
+	if err := createVIP(addPrep, mirin); err != nil {
+		return err
+	}
+	if err := createVIP(addPrep, sugar); err != nil {
+		return err
+	}
+	if err := createVIP(addPrep, dashiPowder); err != nil {
+		return err
+	}
+	if err := createVPV(addPrep, saucepan); err != nil {
+		return err
+	}
+
+	// WHISK preparation bridges
+	if err := createVPV(whiskPrep, saucepan); err != nil {
+		return err
+	}
+	if err := createVPI(whiskPrep, whisk); err != nil {
+		return err
+	}
+
+	// BOIL preparation bridges
+	if err := createVPV(boilPrep, saucepan); err != nil {
+		return err
+	}
+
+	// REDUCE preparation bridges
+	if err := createVPV(reducePrep, saucepan); err != nil {
+		return err
+	}
+	if err := createVPI(reducePrep, spoon); err != nil {
+		return err
+	}
+
+	// STIR preparation bridges
+	if err := createVIP(stirPrep, chickenFat); err != nil {
+		return err
+	}
+	if err := createVIP(stirPrep, sesameOil); err != nil {
+		return err
+	}
+	if err := createVPV(stirPrep, saucepan); err != nil {
+		return err
+	}
+	if err := createVPI(stirPrep, spoon); err != nil {
+		return err
+	}
+
+	// Measurement unit bridges for teriyaki sauce ingredients
+	if err := createVIMU(soySauce, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(sake, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mirin, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(dashiPowder, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(chickenFat, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(sesameOil, tablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// === CAULIFLOWER BRIDGES ===
+	// TRIM preparation bridges
+	if err := createVIP(trimPrep, cauliflower); err != nil {
+		return err
+	}
+
+	// SLICE preparation bridges
+	if err := createVIP(slicePrep, cauliflower); err != nil {
+		return err
+	}
+
+	// SUBMERGE preparation bridges
+	if err := createVIP(submergePrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(submergePrep, pot); err != nil {
+		return err
+	}
+
+	// BRINE preparation bridges
+	if err := createVIP(brinePrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(brinePrep, pot); err != nil {
+		return err
+	}
+
+	// REST preparation bridges
+	if err := createVPV(restPrep, pot); err != nil {
+		return err
+	}
+
+	// LIGHT preparation bridges
+	if err := createVIP(lightPrep, charcoal); err != nil {
+		return err
+	}
+	if err := createVPV(lightPrep, chimneyStarter); err != nil {
+		return err
+	}
+	if err := createVPI(lightPrep, chimneyStarterInstrument); err != nil {
+		return err
+	}
+
+	// DRAIN preparation bridges
+	if err := createVIP(drainPrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPI(drainPrep, tongs); err != nil {
+		return err
+	}
+
+	// PLACE preparation bridges
+	if err := createVIP(placePrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(placePrep, grillingGrate); err != nil {
+		return err
+	}
+
+	// GRILL preparation bridges
+	if err := createVIP(grillPrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(grillPrep, grill); err != nil {
+		return err
+	}
+	if err := createVPI(grillPrep, thermometer); err != nil {
+		return err
+	}
+
+	// BRUSH preparation bridges
+	if err := createVIP(brushPrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPI(brushPrep, brush); err != nil {
+		return err
+	}
+
+	// FLIP preparation bridges
+	if err := createVIP(flipPrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(flipPrep, grill); err != nil {
+		return err
+	}
+	if err := createVPI(flipPrep, tongs); err != nil {
+		return err
+	}
+
+	// TRANSFER preparation bridges
+	if err := createVIP(transferPrep, cauliflower); err != nil {
+		return err
+	}
+	if err := createVPV(transferPrep, servingPlatter); err != nil {
+		return err
+	}
+
+	// SPRINKLE preparation bridges
+	if err := createVIP(sprinklePrep, togarashi); err != nil {
+		return err
+	}
+	if err := createVPV(sprinklePrep, servingPlatter); err != nil {
+		return err
+	}
+
+	// SEASON preparation bridges
+	if err := createVIP(seasonPrep, togarashi); err != nil {
+		return err
+	}
+	if err := createVPV(seasonPrep, servingPlatter); err != nil {
+		return err
+	}
+
+	// PREHEAT bridges
+	if err := createVPV(preheatPrep, grill); err != nil {
+		return err
+	}
+
+	// WHISK bridges for pot
+	if err := createVPV(whiskPrep, pot); err != nil {
+		return err
+	}
+
+	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
+	if err := createVIMU(soySauce, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(sake, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(mirin, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(dashiPowder, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(chickenFat, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(sesameOil, tablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(cauliflower, poundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(water, literMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(salt, cupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(togarashi, teaspoonMeasurement); err != nil {
+		return err
+	}
+
+	logger.Debug("Created grilled cauliflower bridge entries")
 	return nil
 }

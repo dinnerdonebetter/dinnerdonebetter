@@ -1,9 +1,10 @@
 Prompt:
 
 
+
 Here's some information about how recipes are structured: @backend/docs/recipes.md 
 
-You can verify the quality of the code by running `go run github.com/dinnerdonebetter/backend/cmd/playground`
+You can verify the quality of the code by running `go run github.com/dinnerdonebetter/backend/cmd/localdev/server`
 
 I need you to create a new recipe file with a text recipe that I will provide. Please separate every recipe into a step involving a single valid preparation, with its requisite ingredients/vessels/instruments per step. Be precise, if not fickle: If an instruction says "pat dry the steak and then season it," that's two steps: one to dry, and one to season. If there's an instruction that prepares a cooking vessel, i.e. lining a baking sheet with aluminum foil, that is its own step. Be mindful of separating components into recipes, i.e. if the recipe describes how to make an icing, and then a cookie, then that should be treated as two recipes, one of which's ingredient is the product of the other. If you encounter a preparation or ingredient that you don't already have, add it to the already-existing lists of ingredients in the enumerations file here: @backend/internal/domain/mealplanning/bootstrap/enumerations.go
 
@@ -49,7 +50,7 @@ I basically need a Go file that adds a ton of recipes. Here's some recipes:
     - [x] [Caesar salad](https://www.seriouseats.com/the-best-caesar-salad-recipe)
     - [x] [Glazed carrots with brown butter and sage](https://www.seriouseats.com/glazed-carrots-recipe-11856362)
     - [x] [Cornbread](https://www.kingarthurbaking.com/recipes/cornbread-recipe)
-    - [ ] [Grilled Whole Cauliflower](https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549)
+    - [x] [Grilled Whole Cauliflower](https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549)
     - [ ] [Tortillas](https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe)
     - [ ] [Stir Fried Green Beans](https://www.seriouseats.com/stir-fried-green-beans-recipe)
 
