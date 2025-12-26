@@ -43,19 +43,23 @@ type AuthInterceptor struct {
 	methodScopesHat       sync.Mutex
 }
 
+// MethodPermissionsMap is a map of gRPC method full names to the permissions required to call them.
+// This type is used for dependency injection of aggregated service permissions.
+type MethodPermissionsMap map[string][]authorization.Permission
+
 func ProvideAuthInterceptor(
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	identityRepository identity.Repository,
 	oauth2ClientManager *manage.Manager,
+	aggregatedPermissions MethodPermissionsMap,
 ) *AuthInterceptor {
 	return &AuthInterceptor{
 		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
-		// TODO: configure this elsewhere
-		methodPermissions: methodPermissions,
+		methodPermissions:   aggregatedPermissions,
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",

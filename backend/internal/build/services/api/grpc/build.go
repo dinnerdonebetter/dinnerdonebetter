@@ -124,6 +124,7 @@ func Build(
 		recipeanalysis.ProvidersRecipeAnalysis,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
 		ProvideUserTextSearcher,
+		AggregateMethodPermissions,
 		BuildUnaryServerInterceptors,
 		BuildStreamServerInterceptors,
 		BuildRegistrationFuncs,
