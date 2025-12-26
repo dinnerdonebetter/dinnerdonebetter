@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -42,7 +43,7 @@ func main() {
 
 	var adminUserID string
 
-	server, err := localdev.AllInOne(
+	_, err = localdev.AllInOne(
 		ctx,
 		apiConfig,
 		// Create admin user
@@ -98,8 +99,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("starting server")
-	server.Run()
+	os.Exit(0)
+
+	// log.Println("starting server")
+	// server.Run()
 }
 
 func createExampleServiceSettings(ctx context.Context, repo settings.Repository, logger logging.Logger) error {

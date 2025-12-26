@@ -133,6 +133,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	coatMediumBowlVPV := enums.PreparationVessels[coatPrep.ID][mediumBowl.ID]
 	transferBakingSheetVPV := enums.PreparationVessels[transferPrep.ID][bakingSheet.ID]
 	lineAluminumFoilVPI := enums.PreparationInstruments[linePrep.ID][aluminumFoil.ID]
+	lineBakingSheetVPV := enums.PreparationVessels[linePrep.ID][bakingSheet.ID]
 	soakMicrowaveBowlVPV := enums.PreparationVessels[soakPrep.ID][microwaveSafeBowl.ID]
 	microwaveMicrowaveBowlVPV := enums.PreparationVessels[microwavePrep.ID][microwaveSafeBowl.ID]
 	heatDutchOvenVPV := enums.PreparationVessels[heatPrep.ID][dutchOven.ID]
@@ -141,6 +142,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
 	stirDutchOvenVPV := enums.PreparationVessels[stirPrep.ID][dutchOven.ID]
 	addDutchOvenVPV := enums.PreparationVessels[addPrep.ID][dutchOven.ID]
+	addWoodenSpoonVPI := enums.PreparationInstruments[addPrep.ID][woodenSpoon.ID]
 	crushWoodenSpoonVPI := enums.PreparationInstruments[crushPrep.ID][woodenSpoon.ID]
 	crushDutchOvenVPV := enums.PreparationVessels[crushPrep.ID][dutchOven.ID]
 	simmerDutchOvenVPV := enums.PreparationVessels[simmerPrep.ID][dutchOven.ID]
@@ -191,6 +193,8 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	_ = grindBrownCardamomVIP
 	_ = grindWholeCloveVIP
 	_ = tongs
+	_ = stirWoodenSpoonVPI
+	_ = crushWoodenSpoonVPI
 
 	// Step 0: Toast fenugreek leaves in a small skillet over medium heat until fragrant
 	step0ID := identifiers.New()
@@ -318,7 +322,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step2ID,
-				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
+				ValidPreparationVesselID: &lineBakingSheetVPV.ID,
 				VesselID:                 &bakingSheet.ID,
 				Name:                     "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -1000,7 +1004,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step12ID,
-				ValidPreparationInstrumentID: &stirWoodenSpoonVPI.ID,
+				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				InstrumentID:                 &woodenSpoon.ID,
 				Name:                         "wooden spoon",
 				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
@@ -1066,7 +1070,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step13ID,
-				ValidPreparationInstrumentID: &stirWoodenSpoonVPI.ID,
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				InstrumentID:                 &woodenSpoon.ID,
 				Name:                         "wooden spoon",
 				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
@@ -1150,7 +1154,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step14ID,
-				ValidPreparationInstrumentID: &crushWoodenSpoonVPI.ID,
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				InstrumentID:                 &woodenSpoon.ID,
 				Name:                         "wooden spoon",
 				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
@@ -1512,7 +1516,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step20ID,
-				ValidPreparationInstrumentID: &stirWoodenSpoonVPI.ID,
+				ValidPreparationInstrumentID: &addWoodenSpoonVPI.ID,
 				InstrumentID:                 &woodenSpoon.ID,
 				Name:                         "wooden spoon",
 				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},

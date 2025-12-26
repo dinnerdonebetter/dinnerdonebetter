@@ -224,6 +224,13 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "hot sauce", Description: "Hot pepper sauce such as Frank's RedHot", PluralName: "hot sauce", StorageInstructions: "Store in a cool, dark place; refrigerate after opening", Slug: "hot-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "ground mustard", Description: "Dried ground mustard powder", PluralName: "ground mustard", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "ground-mustard", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cornstarch", Description: "Fine starch powder derived from corn, used for thickening", PluralName: "cornstarch", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cornstarch", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Caesar salad recipe ingredients
+		{ID: identifiers.New(), Name: "anchovies", Description: "Oil-packed anchovy fillets", PluralName: "anchovies", StorageInstructions: "Store in the refrigerator after opening", Slug: "anchovies", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "Worcestershire sauce", Description: "Fermented condiment with savory, tangy flavor", PluralName: "Worcestershire sauce", StorageInstructions: "Store in a cool, dark place", Slug: "worcestershire-sauce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "hearty bread", Description: "Crusty hearty bread such as ciabatta or sourdough", PluralName: "hearty bread", StorageInstructions: "Store at room temperature in a bread box or sealed bag", Slug: "hearty-bread", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: true, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "lemon juice", Description: "Freshly squeezed lemon juice", PluralName: "lemon juice", StorageInstructions: "Store in the refrigerator", Slug: "lemon-juice", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "egg yolk", Description: "The yellow portion of an egg", PluralName: "egg yolks", StorageInstructions: "Store in the refrigerator and use within 2 days", Slug: "egg-yolk", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: true, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "romaine lettuce", Description: "Crisp romaine lettuce with inner leaves", PluralName: "romaine lettuce", StorageInstructions: "Store in the refrigerator crisper drawer", Slug: "romaine-lettuce", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -1537,6 +1544,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["microwave-safe bowl"] = microwaveSafeBowl
 
+	// Create immersion blender cup for Caesar salad
+	immersionBlenderCup, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "immersion blender cup",
+		Description:                    "A tall, narrow cup that fits the head of an immersion blender",
+		PluralName:                     "immersion blender cups",
+		Slug:                           "immersion-blender-cup",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             80,
+		LengthInMillimeters:            80,
+		HeightInMillimeters:            200,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create immersion blender cup vessel: %w", err)
+	}
+	enums.Vessels["immersion blender cup"] = immersionBlenderCup
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1659,6 +1687,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"push", "Move ingredients to one side or form into a mound", "pushed", "push", false, false},
 		{"scrape", "Remove residue or bits from a surface using a utensil", "scraped", "scrape", false, false},
 		{"crush", "Break down or mash an ingredient using pressure", "crushed", "crush", false, false},
+		// Caesar salad recipe preparations
+		{"strain", "Pass a mixture through a strainer to separate solids from liquids", "strained", "strain", false, false},
+		{"cool", "Allow food to decrease in temperature after cooking", "cooled", "cool", false, true},
+		{"sprinkle", "Scatter or distribute small pieces or particles over a surface", "sprinkled", "sprinkle", false, false},
 	}
 
 	for i := range prepInputs {
@@ -6053,6 +6085,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err := createVPI(bcLinePrep, bcAluminumFoil); err != nil {
 		return err
 	}
+	if err := createVPV(bcLinePrep, bcBakingSheet); err != nil {
+		return err
+	}
 
 	// === SOAK PREPARATION for cashews ===
 	if err := createVIP(bcSoakPrep, bcCashews); err != nil {
@@ -6129,6 +6164,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIP(bcAddPrep, bcChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPI(bcAddPrep, bcWoodenSpoon); err != nil {
 		return err
 	}
 	if err := createVPV(bcAddPrep, bcDutchOven); err != nil {
@@ -6489,6 +6527,363 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(macButter, macTablespoonMeasurement); err != nil {
+		return err
+	}
+
+	// =======================================================
+	// CAESAR SALAD BRIDGE ENTRIES
+	// =======================================================
+
+	// Get preparations for Caesar Salad
+	csPreheadPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	csCombinePrep, err := getPreparation("combine")
+	if err != nil {
+		return err
+	}
+	csWhiskPrep, err := getPreparation("whisk")
+	if err != nil {
+		return err
+	}
+	csStrainPrep, err := getPreparation("strain")
+	if err != nil {
+		return err
+	}
+	csTossPrep, err := getPreparation("toss")
+	if err != nil {
+		return err
+	}
+	csSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	csTransferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	csBakePrep, err := getPreparation("bake")
+	if err != nil {
+		return err
+	}
+	csCoolPrep, err := getPreparation("cool")
+	if err != nil {
+		return err
+	}
+	csBlendPrep, err := getPreparation("blend")
+	if err != nil {
+		return err
+	}
+	csDrizzlePrep, err := getPreparation("drizzle")
+	if err != nil {
+		return err
+	}
+	csSprinklePrep, err := getPreparation("sprinkle")
+	if err != nil {
+		return err
+	}
+	csAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+
+	// Get ingredients for Caesar Salad
+	csOliveOil := enums.Ingredients["olive oil"]
+	csGarlic := enums.Ingredients["garlic"]
+	csHeartyBread := enums.Ingredients["hearty bread"]
+	csParmesanCheese := enums.Ingredients["parmesan cheese"]
+	csSalt := enums.Ingredients["salt"]
+	csBlackPepper := enums.Ingredients["black pepper"]
+	csEggYolk := enums.Ingredients["egg yolk"]
+	csLemonJuice := enums.Ingredients["lemon juice"]
+	csAnchovies := enums.Ingredients["anchovies"]
+	csWorcestershire := enums.Ingredients["Worcestershire sauce"]
+	csCanolaOil := enums.Ingredients["canola oil"]
+	csRomaineLettuce := enums.Ingredients["romaine lettuce"]
+
+	// Get instruments for Caesar Salad
+	csWhisk, err := getInstrument("whisk")
+	if err != nil {
+		return err
+	}
+	csStickBlender, err := getInstrument("stick blender")
+	if err != nil {
+		return err
+	}
+	csSpoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+
+	// Get vessels for Caesar Salad
+	csSmallBowl, err := getVessel("small bowl")
+	if err != nil {
+		return err
+	}
+	csMediumBowl, err := getVessel("medium bowl")
+	if err != nil {
+		return err
+	}
+	csLargeBowl, err := getVessel("large bowl")
+	if err != nil {
+		return err
+	}
+	csFineMeshStrainer, err := getVessel("fine-mesh strainer")
+	if err != nil {
+		return err
+	}
+	csBakingSheet, err := getVessel("baking sheet")
+	if err != nil {
+		return err
+	}
+	csOven, err := getVessel("oven")
+	if err != nil {
+		return err
+	}
+	csImmersionBlenderCup, err := getVessel("immersion blender cup")
+	if err != nil {
+		return err
+	}
+	csServingBowl, err := getVessel("serving bowl")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units for Caesar Salad
+	csTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	csTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	csCupMeasurement := enums.MeasurementUnits["cup"]
+	csOunceMeasurement := enums.MeasurementUnits["ounce"]
+	csUnitMeasurement := enums.MeasurementUnits["unit"]
+	csCloveMeasurement := enums.MeasurementUnits["clove"]
+
+	// === PREHEAT PREPARATION ===
+	if err := createVPV(csPreheadPrep, csOven); err != nil {
+		return err
+	}
+
+	// === COMBINE PREPARATION for garlic oil ===
+	if err := createVIP(csCombinePrep, csOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(csCombinePrep, csGarlic); err != nil {
+		return err
+	}
+	if err := createVPI(csCombinePrep, csWhisk); err != nil {
+		return err
+	}
+	if err := createVPV(csCombinePrep, csSmallBowl); err != nil {
+		return err
+	}
+
+	// === WHISK PREPARATION ===
+	if err := createVIP(csWhiskPrep, csOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(csWhiskPrep, csGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(csWhiskPrep, csCanolaOil); err != nil {
+		return err
+	}
+	if err := createVPI(csWhiskPrep, csWhisk); err != nil {
+		return err
+	}
+	if err := createVPV(csWhiskPrep, csSmallBowl); err != nil {
+		return err
+	}
+	if err := createVPV(csWhiskPrep, csMediumBowl); err != nil {
+		return err
+	}
+
+	// === STRAIN PREPARATION ===
+	if err := createVIP(csStrainPrep, csOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(csStrainPrep, csGarlic); err != nil {
+		return err
+	}
+	if err := createVPI(csStrainPrep, csSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(csStrainPrep, csFineMeshStrainer); err != nil {
+		return err
+	}
+	if err := createVPV(csStrainPrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION for bread cubes ===
+	if err := createVIP(csAddPrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVIP(csAddPrep, csParmesanCheese); err != nil {
+		return err
+	}
+	if err := createVPV(csAddPrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === TOSS PREPARATION ===
+	if err := createVIP(csTossPrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVIP(csTossPrep, csParmesanCheese); err != nil {
+		return err
+	}
+	if err := createVIP(csTossPrep, csRomaineLettuce); err != nil {
+		return err
+	}
+	if err := createVPV(csTossPrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === SEASON PREPARATION ===
+	if err := createVIP(csSeasonPrep, csSalt); err != nil {
+		return err
+	}
+	if err := createVIP(csSeasonPrep, csBlackPepper); err != nil {
+		return err
+	}
+	if err := createVPV(csSeasonPrep, csLargeBowl); err != nil {
+		return err
+	}
+	if err := createVPV(csSeasonPrep, csMediumBowl); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION ===
+	if err := createVIP(csTransferPrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVPV(csTransferPrep, csBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(csTransferPrep, csMediumBowl); err != nil {
+		return err
+	}
+	if err := createVPV(csTransferPrep, csServingBowl); err != nil {
+		return err
+	}
+
+	// === BAKE PREPARATION ===
+	if err := createVIP(csBakePrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVPV(csBakePrep, csBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(csBakePrep, csOven); err != nil {
+		return err
+	}
+
+	// === COOL PREPARATION ===
+	if err := createVIP(csCoolPrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVPV(csCoolPrep, csBakingSheet); err != nil {
+		return err
+	}
+
+	// === BLEND PREPARATION for dressing ===
+	if err := createVIP(csBlendPrep, csEggYolk); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csLemonJuice); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csAnchovies); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csWorcestershire); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csGarlic); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csParmesanCheese); err != nil {
+		return err
+	}
+	if err := createVIP(csBlendPrep, csCanolaOil); err != nil {
+		return err
+	}
+	if err := createVPI(csBlendPrep, csStickBlender); err != nil {
+		return err
+	}
+	if err := createVPV(csBlendPrep, csImmersionBlenderCup); err != nil {
+		return err
+	}
+
+	// === DRIZZLE PREPARATION ===
+	if err := createVIP(csDrizzlePrep, csOliveOil); err != nil {
+		return err
+	}
+	if err := createVIP(csDrizzlePrep, csCanolaOil); err != nil {
+		return err
+	}
+	if err := createVPV(csDrizzlePrep, csMediumBowl); err != nil {
+		return err
+	}
+
+	// === SPRINKLE PREPARATION ===
+	if err := createVIP(csSprinklePrep, csParmesanCheese); err != nil {
+		return err
+	}
+	if err := createVIP(csSprinklePrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err := createVPV(csSprinklePrep, csServingBowl); err != nil {
+		return err
+	}
+
+	// === CAESAR SALAD INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(csOliveOil, csTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csOliveOil, csCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csGarlic, csCloveMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csGarlic, csTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csHeartyBread, csCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csParmesanCheese, csOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csParmesanCheese, csCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csParmesanCheese, csTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csSalt, csTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csBlackPepper, csTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csEggYolk, csUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csLemonJuice, csTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csAnchovies, csUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csWorcestershire, csTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csCanolaOil, csCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(csRomaineLettuce, csUnitMeasurement); err != nil {
 		return err
 	}
 

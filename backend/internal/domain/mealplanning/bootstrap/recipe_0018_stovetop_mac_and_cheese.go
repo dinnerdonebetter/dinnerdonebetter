@@ -86,7 +86,6 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 	mixMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
 	// Remove from heat preparation bridges
-	removeFromHeatMacaroniVIP := enums.IngredientPreparations[removeFromHeatPrep.ID][elbowMacaroni.ID]
 	removeFromHeatSaucepanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][saucepan.ID]
 
 	// Toss preparation bridges
@@ -331,15 +330,13 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		Notes:           "Remove the pan from the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &removeFromHeatMacaroniVIP.ID,
-				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
-				IngredientID:                     &elbowMacaroni.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "covered macaroni",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &elbowMacaroni.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "covered macaroni",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
