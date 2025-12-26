@@ -5,7 +5,7 @@ Here's some information about how recipes are structured: @backend/docs/recipes.
 
 You can verify the quality of the code by running `go run github.com/dinnerdonebetter/backend/cmd/playground`
 
-I need you to create a new recipe file with a text recipe that I will provide. Please separate every recipe into a step involving a single valid preparation, with its requisite ingredients/vessels/instruments per step. Be precise, if not fickle: If an instruction says "pat dry the steak and then season it," that's two steps: one to dry, and one to season. If there's an instruction that prepares a cooking vessel, i.e. lining a baking sheet with aluminum foil, that is its own step. If you encounter a preparation or ingredient that you don't already have, add it to the already-existing lists of ingredients in the enumerations file here: @backend/internal/domain/mealplanning/bootstrap/enumerations.go
+I need you to create a new recipe file with a text recipe that I will provide. Please separate every recipe into a step involving a single valid preparation, with its requisite ingredients/vessels/instruments per step. Be precise, if not fickle: If an instruction says "pat dry the steak and then season it," that's two steps: one to dry, and one to season. If there's an instruction that prepares a cooking vessel, i.e. lining a baking sheet with aluminum foil, that is its own step. Be mindful of separating components into recipes, i.e. if the recipe describes how to make an icing, and then a cookie, then that should be treated as two recipes, one of which's ingredient is the product of the other. If you encounter a preparation or ingredient that you don't already have, add it to the already-existing lists of ingredients in the enumerations file here: @backend/internal/domain/mealplanning/bootstrap/enumerations.go
 
 If a recipe step has the word "until" in it, it probably needs a recipe step completion condition.
 
@@ -42,28 +42,27 @@ I basically need a Go file that adds a ton of recipes. Here's some recipes:
     - [x] [Roasted Brussels sprouts](https://www.seriouseats.com/roasted-brussels-sprouts-and-shallots-with-balsamic-vinegar-thanksgiving-recipe)
     - [x] [Refried Beans](https://www.seriouseats.com/perfect-refried-beans)
     - [x] [Carne asada](https://www.seriouseats.com/carne-asada-food-lab-recipe-kenji)
-    - [ ] [Carnitas](https://www.seriouseats.com/sous-vide-carnitas-crispy-mexican-style-pulled-pork-recipe)
-    - [ ] [Coleslaw](https://www.seriouseats.com/creamy-cole-slaw)
+    - [x] [Butter Chicken](https://www.seriouseats.com/stovetop-butter-chicken)
+    - [ ] [Macaroni and Cheese](https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese)
     - [ ] [Caesar salad](https://www.seriouseats.com/the-best-caesar-salad-recipe)
     - [ ] [Glazed carrots with brown butter and sage](https://www.seriouseats.com/glazed-carrots-recipe-11856362)
     - [ ] [Grilled Whole Cauliflower](https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549)
-    - [ ] [Lamb chops](https://www.seriouseats.com/bar-bites-rosemary-lamb-chops-honey-cider-glaze-recipe)
     - [ ] [Cornbread](https://www.kingarthurbaking.com/recipes/cornbread-recipe)
     - [ ] [Tortillas](https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe)
     - [ ] [Stir Fried Green Beans](https://www.seriouseats.com/stir-fried-green-beans-recipe)
-    - [ ] [Chicken tacos](https://www.seriouseats.com/grilling-beer-marinated-chicken-negra-modelo-tacos-guacamole)
 
 - [ ] Tier 2: Meal Enablers & Common Dishes
     - [ ] [Spaghetti carbonara](https://www.seriouseats.com/smoky-spaghetti-carbonara-recipe-smoked-salt)
     - [ ] [Marinara sauce](https://www.seriouseats.com/marinara-sauce-recipe)
     - [ ] [Bolognese sauce](https://www.seriouseats.com/the-best-slow-cooked-bolognese-sauce-recipe)
     - [ ] [Beef Stew](https://www.seriouseats.com/all-american-beef-stew-recipe)
+    - [ ] [Lamb chops](https://www.seriouseats.com/bar-bites-rosemary-lamb-chops-honey-cider-glaze-recipe)
+    - [ ] [Chicken tacos](https://www.seriouseats.com/grilling-beer-marinated-chicken-negra-modelo-tacos-guacamole)
+    - [ ] [Carnitas](https://www.seriouseats.com/sous-vide-carnitas-crispy-mexican-style-pulled-pork-recipe)
     - [ ] [Pot Roast](https://www.seriouseats.com/perfect-pot-roast-recipe-pioneer-woman)
-    - [ ] [Chicken tikka masala](https://www.seriouseats.com/chicken-tikka-masala-for-the-grill-recipe)
     - [ ] [Grilled Cheese Sandwiches](https://www.seriouseats.com/grilled-cheese-mozzarella-mortadella-pesto-sandwiches-recipe)
     - [ ] [Burrito](https://www.seriouseats.com/mission-burrito-love-letter-11789178)
     - [ ] [Fish Tacos](https://www.seriouseats.com/baja-fish-tacos-recipe-8682282)
-    - [ ] [Macaroni and Cheese](https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese)
     - [ ] [Chick-fil-A Sandwich](https://www.seriouseats.com/homemade-chick-fil-a-sandwiches-recipe)
     - [ ] [In-N-Out Double Double](https://www.seriouseats.com/in-n-outs-double-double-animal-style-burger-recipe)
     - [ ] [Shepherd's pie](https://www.seriouseats.com/shepherds-pie-beef-lamb-recipe)
@@ -73,6 +72,7 @@ I basically need a Go file that adds a ton of recipes. Here's some recipes:
     - [ ] [Fettuccine alfredo](https://www.seriouseats.com/fettuccine-alfredo-sauce-italian-pasta-recipe)
     - [ ] [Lasagna](https://www.seriouseats.com/lasagna-bolognese-al-forno-recipe)
     - [ ] [Texas chili](https://www.seriouseats.com/real-texas-chili-con-carne)
+    - [ ] [Coleslaw](https://www.seriouseats.com/creamy-cole-slaw)
     - [ ] [pulled pork](https://www.kingarthurbaking.com/recipes/pulled-pork-recipe)
     - [ ] [Oven-fried chicken wings](https://www.seriouseats.com/the-best-buffalo-wings-oven-fried-wings-recipe)
     - [ ] [Philly Cheesesteak](https://www.seriouseats.com/philly-cheesesteak-recipe-7546830)

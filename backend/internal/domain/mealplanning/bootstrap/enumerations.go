@@ -202,6 +202,22 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "skirt steak", Description: "Skirt steak, trimmed and cut with the grain into 5- to 6-inch lengths", PluralName: "skirt steaks", StorageInstructions: "Store in the refrigerator", Slug: "skirt-steak", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cumin seeds", Description: "Whole cumin seeds", PluralName: "cumin seeds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cumin-seeds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "coriander seeds", Description: "Whole coriander seeds", PluralName: "coriander seeds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "coriander-seeds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Butter chicken recipe ingredients
+		{ID: identifiers.New(), Name: "kasuri methi", Description: "Dried fenugreek leaves, an aromatic herb used in Indian cooking", PluralName: "kasuri methi", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "kasuri-methi", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fenugreek seeds", Description: "Whole fenugreek seeds with a slightly bitter, maple-like flavor", PluralName: "fenugreek seeds", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "fenugreek-seeds", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "garam masala", Description: "A warm, aromatic spice blend used in Indian cuisine", PluralName: "garam masala", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "garam-masala", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "kala namak", Description: "Black salt with a distinctive sulfurous aroma, used in Indian cooking", PluralName: "kala namak", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "kala-namak", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "boneless skinless chicken thighs", Description: "Boneless, skinless chicken thighs", PluralName: "boneless skinless chicken thighs", StorageInstructions: "Keep refrigerated at or below 40°F", Slug: "boneless-skinless-chicken-thighs", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "dried chile de arbol", Description: "Small, hot dried chile pepper", PluralName: "dried chiles de arbol", StorageInstructions: "Store in a cool, dry place", Slug: "dried-chile-de-arbol", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "brown cardamom", Description: "Whole brown cardamom pods with a smoky, earthy flavor", PluralName: "brown cardamom pods", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "brown-cardamom", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "green cardamom", Description: "Whole green cardamom pods with a sweet, floral flavor", PluralName: "green cardamom pods", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "green-cardamom", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "whole cloves", Description: "Whole dried cloves with a strong, pungent flavor", PluralName: "whole cloves", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "whole-cloves", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "fire-roasted canned tomatoes", Description: "Whole fire-roasted tomatoes in a can with their juices", PluralName: "fire-roasted canned tomatoes", StorageInstructions: "Store in a cool, dry place, refrigerate after opening", Slug: "fire-roasted-canned-tomatoes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "raw cashews", Description: "Unsalted, unroasted cashew nuts", PluralName: "raw cashews", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "raw-cashews", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: true, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "white onion", Description: "White onion, milder than yellow onion", PluralName: "white onions", StorageInstructions: "Store in a cool, dry, well-ventilated place", Slug: "white-onion", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "baking soda", Description: "Sodium bicarbonate, used as a leavening agent and for browning", PluralName: "baking soda", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "baking-soda", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "heavy cream", Description: "Heavy whipping cream with at least 36% milk fat", PluralName: "heavy cream", StorageInstructions: "Keep refrigerated at or below 40°F", Slug: "heavy-cream", ContainsShellfish: false, ContainsDairy: true, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: true, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "canola oil", Description: "Neutral-flavored canola oil for cooking", PluralName: "canola oil", StorageInstructions: "Store in a cool, dark place", Slug: "canola-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -269,6 +285,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"microplane", "A fine grater for zesting citrus and grating hard cheeses", "microplanes", "microplane", "microplane"},
 		// Haricots verts amandine recipe instruments
 		{"wire mesh spider", "A wide shallow wire-mesh strainer on a long handle for scooping food from hot liquids", "wire mesh spiders", "wire-mesh-spider", "wire mesh spider"},
+		// Butter chicken recipe instruments
+		{"spice grinder", "An electric grinder for processing spices into powder", "spice grinders", "spice-grinder", "spice grinder"},
+		{"mortar and pestle", "A bowl and grinding tool for crushing spices and herbs", "mortars and pestles", "mortar-and-pestle", "mortar and pestle"},
 		{"kitchen towels", "Absorbent towels for drying ingredients", "kitchen towels", "kitchen-towels", "kitchen towels"},
 	}
 	for i, inst := range instruments {
@@ -1450,6 +1469,67 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["chimney starter"] = chimneyStarterVessel
 
+	// Butter chicken recipe vessels
+	dutchOven, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "dutch oven",
+		Description:                    "A heavy-bottomed pot with a tight-fitting lid for braising and slow cooking",
+		PluralName:                     "dutch ovens",
+		Slug:                           "dutch-oven",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             260,
+		LengthInMillimeters:            260,
+		HeightInMillimeters:            150,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create dutch oven vessel: %w", err)
+	}
+	enums.Vessels["dutch oven"] = dutchOven
+
+	mediumBowl, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "medium bowl",
+		Description:                    "A medium-sized mixing bowl",
+		PluralName:                     "medium bowls",
+		Slug:                           "medium-bowl",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             200,
+		LengthInMillimeters:            200,
+		HeightInMillimeters:            100,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create medium bowl vessel: %w", err)
+	}
+	enums.Vessels["medium bowl"] = mediumBowl
+
+	microwaveSafeBowl, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "microwave-safe bowl",
+		Description:                    "A small bowl safe for use in a microwave oven",
+		PluralName:                     "microwave-safe bowls",
+		Slug:                           "microwave-safe-bowl",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            80,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create microwave-safe bowl vessel: %w", err)
+	}
+	enums.Vessels["microwave-safe bowl"] = microwaveSafeBowl
+
 	// Create real preparations that we'll use for recipes
 	prepInputs := []struct {
 		name        string
@@ -1564,6 +1644,13 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"grind", "Process seeds or spices into a powder using a grinder or mortar and pestle", "ground", "grind", false, false},
 		{"add", "Put an ingredient into a vessel or mixture", "added", "add", false, false},
 		{"reduce", "Boil a liquid to decrease its volume and concentrate flavors", "reduced", "reduce", false, true},
+		// Butter chicken recipe preparations
+		{"broil", "Cook food under direct high heat from above", "broiled", "broil", true, true},
+		{"coat", "Cover food with a layer of sauce, batter, or marinade", "coated", "coat", false, false},
+		{"soak", "Submerge an ingredient in liquid to hydrate or soften", "soaked", "soak", false, true},
+		{"push", "Move ingredients to one side or form into a mound", "pushed", "push", false, false},
+		{"scrape", "Remove residue or bits from a surface using a utensil", "scraped", "scrape", false, false},
+		{"crush", "Break down or mash an ingredient using pressure", "crushed", "crush", false, false},
 	}
 
 	for i := range prepInputs {
@@ -5688,6 +5775,466 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err := createVIMU(caSkirtSteak, caPoundMeasurement); err != nil {
+		return err
+	}
+
+	// === BUTTER CHICKEN RECIPE BRIDGE ENTRIES ===
+	// Get preparations for butter chicken recipe
+	bcToastPrep, err := getPreparation("toast")
+	if err != nil {
+		return err
+	}
+	bcGrindPrep, err := getPreparation("grind")
+	if err != nil {
+		return err
+	}
+	bcCombinePrep, err := getPreparation("combine")
+	if err != nil {
+		return err
+	}
+	bcCoatPrep, err := getPreparation("coat")
+	if err != nil {
+		return err
+	}
+	bcTransferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	bcLinePrep, err := getPreparation("line")
+	if err != nil {
+		return err
+	}
+	bcSoakPrep, err := getPreparation("soak")
+	if err != nil {
+		return err
+	}
+	bcMicrowavePrep, err := getPreparation("microwave")
+	if err != nil {
+		return err
+	}
+	bcHeatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	bcCookPrep, err := getPreparation("cook")
+	if err != nil {
+		return err
+	}
+	bcStirPrep, err := getPreparation("stir")
+	if err != nil {
+		return err
+	}
+	bcAddPrep, err := getPreparation("add")
+	if err != nil {
+		return err
+	}
+	bcCrushPrep, err := getPreparation("crush")
+	if err != nil {
+		return err
+	}
+	bcSimmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+	bcPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	bcBroilPrep, err := getPreparation("broil")
+	if err != nil {
+		return err
+	}
+	bcBlendPrep, err := getPreparation("blend")
+	if err != nil {
+		return err
+	}
+
+	// Get ingredients for butter chicken recipe
+	bcKasuriMethi := enums.Ingredients["kasuri methi"]
+	bcFenugreekSeeds := enums.Ingredients["fenugreek seeds"]
+	bcYogurt := enums.Ingredients["yogurt"]
+	bcGaramMasala := enums.Ingredients["garam masala"]
+	bcSalt := enums.Ingredients["salt"]
+	bcKalaNamak := enums.Ingredients["kala namak"]
+	bcGinger := enums.Ingredients["ginger"]
+	bcChickenThighs := enums.Ingredients["boneless skinless chicken thighs"]
+	bcChilesDeArbol := enums.Ingredients["dried chile de arbol"]
+	bcBrownCardamom := enums.Ingredients["brown cardamom"]
+	bcGreenCardamom := enums.Ingredients["green cardamom"]
+	bcWholeCloves := enums.Ingredients["whole cloves"]
+	bcCannedTomatoes := enums.Ingredients["fire-roasted canned tomatoes"]
+	bcCashews := enums.Ingredients["raw cashews"]
+	bcWater := enums.Ingredients["water"]
+	bcCanolaOil := enums.Ingredients["canola oil"]
+	bcWhiteOnion := enums.Ingredients["white onion"]
+	bcBakingSoda := enums.Ingredients["baking soda"]
+	bcGarlic := enums.Ingredients["garlic"]
+	bcHeavyCream := enums.Ingredients["heavy cream"]
+	bcButter := enums.Ingredients["butter"]
+
+	// Get instruments for butter chicken recipe
+	bcSpiceGrinder, err := getInstrument("spice grinder")
+	if err != nil {
+		return err
+	}
+	bcMortarAndPestle, err := getInstrument("mortar and pestle")
+	if err != nil {
+		return err
+	}
+	bcWoodenSpoon, err := getInstrument("wooden spoon")
+	if err != nil {
+		return err
+	}
+	bcStickBlender, err := getInstrument("stick blender")
+	if err != nil {
+		return err
+	}
+	bcBareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	bcAluminumFoil, err := getInstrument("aluminum foil")
+	if err != nil {
+		return err
+	}
+	bcBlender, err := getInstrument("blender")
+	if err != nil {
+		return err
+	}
+
+	// Get vessels for butter chicken recipe
+	bcSmallSkillet, err := getVessel("small skillet")
+	if err != nil {
+		return err
+	}
+	bcMediumBowl, err := getVessel("medium bowl")
+	if err != nil {
+		return err
+	}
+	bcBakingSheet, err := getVessel("baking sheet")
+	if err != nil {
+		return err
+	}
+	bcMicrowaveSafeBowl, err := getVessel("microwave-safe bowl")
+	if err != nil {
+		return err
+	}
+	bcDutchOven, err := getVessel("dutch oven")
+	if err != nil {
+		return err
+	}
+	bcOven, err := getVessel("oven")
+	if err != nil {
+		return err
+	}
+	bcServingBowl, err := getVessel("serving bowl")
+	if err != nil {
+		return err
+	}
+
+	// Get measurement units for butter chicken recipe
+	bcTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	bcTeaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	bcCupMeasurement := enums.MeasurementUnits["cup"]
+	bcPoundMeasurement := enums.MeasurementUnits["pound"]
+	bcOunceMeasurement := enums.MeasurementUnits["ounce"]
+	bcUnitMeasurement := enums.MeasurementUnits["unit"]
+	bcCloveMeasurement := enums.MeasurementUnits["clove"]
+
+	// === TOAST PREPARATION for spices ===
+	if err := createVIP(bcToastPrep, bcKasuriMethi); err != nil {
+		return err
+	}
+	if err := createVIP(bcToastPrep, bcFenugreekSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(bcToastPrep, bcChilesDeArbol); err != nil {
+		return err
+	}
+	if err := createVIP(bcToastPrep, bcBrownCardamom); err != nil {
+		return err
+	}
+	if err := createVIP(bcToastPrep, bcGreenCardamom); err != nil {
+		return err
+	}
+	if err := createVIP(bcToastPrep, bcWholeCloves); err != nil {
+		return err
+	}
+	if err := createVPV(bcToastPrep, bcSmallSkillet); err != nil {
+		return err
+	}
+
+	// === GRIND PREPARATION for spices ===
+	if err := createVIP(bcGrindPrep, bcKasuriMethi); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcFenugreekSeeds); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcChilesDeArbol); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcBrownCardamom); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcGreenCardamom); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcWholeCloves); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcGaramMasala); err != nil {
+		return err
+	}
+	if err := createVIP(bcGrindPrep, bcSalt); err != nil {
+		return err
+	}
+	if err := createVPI(bcGrindPrep, bcSpiceGrinder); err != nil {
+		return err
+	}
+	if err := createVPI(bcGrindPrep, bcMortarAndPestle); err != nil {
+		return err
+	}
+
+	// === COMBINE PREPARATION for marinade ===
+	if err := createVIP(bcCombinePrep, bcYogurt); err != nil {
+		return err
+	}
+	if err := createVIP(bcCombinePrep, bcGaramMasala); err != nil {
+		return err
+	}
+	if err := createVIP(bcCombinePrep, bcKalaNamak); err != nil {
+		return err
+	}
+	if err := createVIP(bcCombinePrep, bcGinger); err != nil {
+		return err
+	}
+	if err := createVIP(bcCombinePrep, bcKasuriMethi); err != nil {
+		return err
+	}
+	if err := createVPV(bcCombinePrep, bcMediumBowl); err != nil {
+		return err
+	}
+
+	// === COAT PREPARATION for chicken ===
+	if err := createVIP(bcCoatPrep, bcChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPI(bcCoatPrep, bcBareHands); err != nil {
+		return err
+	}
+	if err := createVPV(bcCoatPrep, bcMediumBowl); err != nil {
+		return err
+	}
+
+	// === TRANSFER PREPARATION ===
+	if err := createVIP(bcTransferPrep, bcChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(bcTransferPrep, bcBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(bcTransferPrep, bcDutchOven); err != nil {
+		return err
+	}
+	if err := createVPV(bcTransferPrep, bcServingBowl); err != nil {
+		return err
+	}
+
+	// === LINE PREPARATION ===
+	if err := createVPI(bcLinePrep, bcAluminumFoil); err != nil {
+		return err
+	}
+
+	// === SOAK PREPARATION for cashews ===
+	if err := createVIP(bcSoakPrep, bcCashews); err != nil {
+		return err
+	}
+	if err := createVIP(bcSoakPrep, bcWater); err != nil {
+		return err
+	}
+	if err := createVPV(bcSoakPrep, bcMicrowaveSafeBowl); err != nil {
+		return err
+	}
+
+	// === MICROWAVE PREPARATION ===
+	if err := createVIP(bcMicrowavePrep, bcCashews); err != nil {
+		return err
+	}
+	if err := createVPV(bcMicrowavePrep, bcMicrowaveSafeBowl); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION ===
+	if err := createVIP(bcHeatPrep, bcCanolaOil); err != nil {
+		return err
+	}
+	if err := createVPV(bcHeatPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === COOK PREPARATION for onions ===
+	if err := createVIP(bcCookPrep, bcWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVIP(bcCookPrep, bcBakingSoda); err != nil {
+		return err
+	}
+	if err := createVIP(bcCookPrep, bcGinger); err != nil {
+		return err
+	}
+	if err := createVIP(bcCookPrep, bcGarlic); err != nil {
+		return err
+	}
+	if err := createVPI(bcCookPrep, bcWoodenSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(bcCookPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === STIR PREPARATION ===
+	if err := createVIP(bcStirPrep, bcWhiteOnion); err != nil {
+		return err
+	}
+	if err := createVPI(bcStirPrep, bcWoodenSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(bcStirPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === ADD PREPARATION ===
+	if err := createVIP(bcAddPrep, bcCashews); err != nil {
+		return err
+	}
+	if err := createVIP(bcAddPrep, bcCannedTomatoes); err != nil {
+		return err
+	}
+	if err := createVIP(bcAddPrep, bcWater); err != nil {
+		return err
+	}
+	if err := createVIP(bcAddPrep, bcButter); err != nil {
+		return err
+	}
+	if err := createVIP(bcAddPrep, bcHeavyCream); err != nil {
+		return err
+	}
+	if err := createVIP(bcAddPrep, bcChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(bcAddPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === CRUSH PREPARATION for tomatoes ===
+	if err := createVIP(bcCrushPrep, bcCannedTomatoes); err != nil {
+		return err
+	}
+	if err := createVPI(bcCrushPrep, bcWoodenSpoon); err != nil {
+		return err
+	}
+	if err := createVPV(bcCrushPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === SIMMER PREPARATION ===
+	if err := createVIP(bcSimmerPrep, bcCannedTomatoes); err != nil {
+		return err
+	}
+	if err := createVPV(bcSimmerPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION for broiler ===
+	if err := createVPV(bcPreheatPrep, bcOven); err != nil {
+		return err
+	}
+
+	// === BROIL PREPARATION for chicken ===
+	if err := createVIP(bcBroilPrep, bcChickenThighs); err != nil {
+		return err
+	}
+	if err := createVPV(bcBroilPrep, bcBakingSheet); err != nil {
+		return err
+	}
+	if err := createVPV(bcBroilPrep, bcOven); err != nil {
+		return err
+	}
+
+	// === BLEND PREPARATION for sauce ===
+	if err := createVIP(bcBlendPrep, bcCannedTomatoes); err != nil {
+		return err
+	}
+	if err := createVIP(bcBlendPrep, bcButter); err != nil {
+		return err
+	}
+	if err := createVIP(bcBlendPrep, bcHeavyCream); err != nil {
+		return err
+	}
+	if err := createVPI(bcBlendPrep, bcStickBlender); err != nil {
+		return err
+	}
+	if err := createVPI(bcBlendPrep, bcBlender); err != nil {
+		return err
+	}
+	if err := createVPV(bcBlendPrep, bcDutchOven); err != nil {
+		return err
+	}
+
+	// === BUTTER CHICKEN INGREDIENT MEASUREMENT UNITS ===
+	if err := createVIMU(bcKasuriMethi, bcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcFenugreekSeeds, bcTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcYogurt, bcCupMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcGaramMasala, bcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcKalaNamak, bcTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcGinger, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcChickenThighs, bcPoundMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcChilesDeArbol, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcBrownCardamom, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcGreenCardamom, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcWholeCloves, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcCannedTomatoes, bcOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcCashews, bcOunceMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcCanolaOil, bcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcWhiteOnion, bcUnitMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcBakingSoda, bcTeaspoonMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcGarlic, bcCloveMeasurement); err != nil {
+		return err
+	}
+	if err := createVIMU(bcHeavyCream, bcCupMeasurement); err != nil {
 		return err
 	}
 
