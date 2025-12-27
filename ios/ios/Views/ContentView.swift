@@ -11,10 +11,12 @@ struct ContentView: View {
   @Environment(AuthenticationManager.self) private var authManager
 
   var body: some View {
-    if authManager.isAuthenticated {
-      HomeView()
-    } else {
-      LoginView()
+    Group {
+      if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
+        HomeView()
+      } else {
+        LoginView()
+      }
     }
   }
 }

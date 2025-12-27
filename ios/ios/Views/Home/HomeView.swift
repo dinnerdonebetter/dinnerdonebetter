@@ -112,24 +112,18 @@ struct HomeView: View {
         .font(.largeTitle)
         .fontWeight(.bold)
 
-      Button(
-        action: {
-          // swiftlint:disable:next todo
-          // FIXME: Navigate to create meal plan view
-          print("Create Meal Plan tapped")
-        },
-        label: {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-            Text("Create New Meal Plan")
-          }
-          .fontWeight(.semibold)
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.blue)
-          .foregroundColor(.white)
-          .cornerRadius(10)
-        })
+      NavigationLink(destination: CreateMealPlanView()) {
+        HStack {
+          Image(systemName: "plus.circle.fill")
+          Text("Create New Meal Plan")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.blue)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
     }
   }
 

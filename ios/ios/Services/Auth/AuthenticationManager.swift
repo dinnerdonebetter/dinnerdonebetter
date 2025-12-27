@@ -158,7 +158,17 @@ class AuthenticationManager: AuthenticationManaging {
         let oauth2Result = await exchangeJWTForOAuth2Token(jwtToken: tokenResponse.accessToken)
         if !oauth2Result.success {
           print("⚠️ Failed to get OAuth2 token: \(oauth2Result.error ?? "Unknown error")")
-          // Continue anyway - we can retry later
+          // If OAuth2 token exchange fails, authentication is incomplete
+          await MainActor.run {
+            self.isAuthenticated = false
+            self.accessToken = ""
+            self.refreshToken = ""
+            self.userID = ""
+            self.accountID = ""
+          }
+          return LoginResult(
+            success: false, error: "Failed to complete authentication: \(oauth2Result.error ?? "Unknown error")",
+            requiresTOTP: false)
         } else {
           print("✅ OAuth2 token obtained successfully")
         }
