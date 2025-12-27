@@ -371,7 +371,7 @@ struct UpcomingMealCard: View {
           Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
             .font(.headline)
             .foregroundColor(.primary)
-          Text(formatMealPlanTimeRange(mealPlan))
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
             .font(.caption)
             .foregroundColor(.secondary)
         }

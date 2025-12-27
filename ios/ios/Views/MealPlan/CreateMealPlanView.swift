@@ -14,10 +14,10 @@ extension Notification.Name {
 
 struct CreateMealPlanView: View {
   @Environment(AuthenticationManager.self) private var authManager
-  @Environment(\.dismiss) private var dismiss
+  @Environment(\.dismiss) var dismiss
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewModel: CreateMealPlanViewModel?
-  @FocusState private var focusedField: Field?
+  @FocusState var focusedField: Field?
   
   enum Field: Hashable {
     case mealPlanName
@@ -72,115 +72,11 @@ struct CreateMealPlanView: View {
     }
   }
 
-  // MARK: - Meal Plan Details Section
 
-  private func mealPlanDetailsSection(viewModel: CreateMealPlanViewModel) -> some View {
-    let bindableViewModel = Bindable(viewModel)
-    
-    return VStack(alignment: .leading, spacing: 16) {
-      Text("Meal Plan Details")
-        .font(.title2)
-        .fontWeight(.bold)
-
-      VStack(alignment: .leading, spacing: 12) {
-        Text("Name")
-          .font(.headline)
-        TextField("Enter meal plan name", text: bindableViewModel.mealPlanName)
-          .textFieldStyle(.roundedBorder)
-          .focused($focusedField, equals: .mealPlanName)
-      }
-
-      VStack(alignment: .leading, spacing: 12) {
-        Text("Voting Deadline")
-          .font(.headline)
-        DatePicker(
-          "",
-          selection: bindableViewModel.votingDeadline,
-          displayedComponents: [.date, .hourAndMinute]
-        )
-        .datePickerStyle(.compact)
-        .labelsHidden()
-      }
-    }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
-  }
-  
-  // MARK: - Meal Plan Details Section (Horizontal for iPad)
-  
-  private func mealPlanDetailsSectionHorizontal(viewModel: CreateMealPlanViewModel) -> some View {
-    let bindableViewModel = Bindable(viewModel)
-    
-    return VStack(alignment: .leading, spacing: 16) {
-      Text("Meal Plan Details")
-        .font(.title2)
-        .fontWeight(.bold)
-
-      HStack(alignment: .top, spacing: 24) {
-        VStack(alignment: .leading, spacing: 12) {
-          Text("Name")
-            .font(.headline)
-          TextField("Enter meal plan name", text: bindableViewModel.mealPlanName)
-            .textFieldStyle(.roundedBorder)
-            .focused($focusedField, equals: .mealPlanName)
-        }
-        .frame(maxWidth: .infinity)
-
-        VStack(alignment: .leading, spacing: 12) {
-          Text("Voting Deadline")
-            .font(.headline)
-          DatePicker(
-            "",
-            selection: bindableViewModel.votingDeadline,
-            displayedComponents: [.date, .hourAndMinute]
-          )
-          .datePickerStyle(.compact)
-          .labelsHidden()
-          .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(maxWidth: .infinity)
-      }
-    }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
-  }
-
-  // MARK: - Events Section
-
-  private func eventsSection(viewModel: CreateMealPlanViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 16) {
-      HStack {
-        Text("Events")
-          .font(.title2)
-          .fontWeight(.bold)
-        Spacer()
-        Button(action: {
-          viewModel.addEvent()
-        }) {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-            Text("Add Event")
-          }
-          .font(.subheadline)
-          .foregroundColor(.blue)
-        }
-      }
-
-      // Always use vertical stack for events
-      ForEach(viewModel.events) { event in
-        eventCard(event: event, viewModel: viewModel)
-      }
-    }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
-  }
 
   // MARK: - Event Card
 
-  private func eventCard(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+  func eventCard(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
     VStack(alignment: .leading, spacing: 16) {
       // Event Header
       HStack {
@@ -190,10 +86,10 @@ struct CreateMealPlanView: View {
         if viewModel.events.count > 1 {
           Button(action: {
             viewModel.removeEvent(event)
-          }) {
+          }, label: {
             Image(systemName: "trash")
               .foregroundColor(.red)
-          }
+          })
         }
       }
 
@@ -346,7 +242,7 @@ struct CreateMealPlanView: View {
 
   // MARK: - Search Section (per event)
 
-  private func searchSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+  func searchSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
       _ = Bindable(viewModel)
     guard let eventIndex = viewModel.events.firstIndex(where: { $0.id == event.id }) else {
       return AnyView(EmptyView())
@@ -383,13 +279,13 @@ struct CreateMealPlanView: View {
               Task {
                 await viewModel.searchForMeals(for: event)
               }
-            }) {
+            }, label: {
               Image(systemName: "magnifyingglass")
                 .padding(8)
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(8)
-            }
+            })
           }
         }
 
@@ -404,7 +300,7 @@ struct CreateMealPlanView: View {
 
   // MARK: - Selected Meals Section (per event)
 
-  private func selectedMealsSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+  func selectedMealsSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Selected Meals (\(event.selectedMeals.count))")
         .font(.headline)
@@ -427,7 +323,7 @@ struct CreateMealPlanView: View {
 
   // MARK: - Search Results Section (per event)
 
-  private func searchResultsSection(event: MealPlanEvent, filteredResults: [Mealplanning_Meal], viewModel: CreateMealPlanViewModel) -> some View {
+  func searchResultsSection(event: MealPlanEvent, filteredResults: [Mealplanning_Meal], viewModel: CreateMealPlanViewModel) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Search Results (\(filteredResults.count))")
         .font(.headline)
@@ -444,271 +340,6 @@ struct CreateMealPlanView: View {
     }
   }
 
-  // MARK: - Error Message
-
-  private func errorMessage(_ message: String) -> some View {
-    HStack {
-      Image(systemName: "exclamationmark.triangle")
-        .foregroundColor(.red)
-      Text(message)
-        .font(.subheadline)
-        .foregroundColor(.red)
-    }
-    .padding()
-    .background(Color.red.opacity(0.1))
-    .cornerRadius(8)
-  }
-
-  // MARK: - Create Button
-
-  private func createButton(viewModel: CreateMealPlanViewModel) -> some View {
-      _ = Bindable(viewModel)
-    let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
-    
-    return Button(action: {
-      Task {
-        let success = await viewModel.createMealPlan()
-        if success {
-          // Post notification to refresh home view
-          NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-          dismiss()
-        }
-      }
-    }) {
-      HStack {
-        if viewModel.isCreating {
-          ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-        }
-        Text(viewModel.isCreating ? "Creating..." : "Create Meal Plan")
-          .fontWeight(.semibold)
-      }
-      .frame(maxWidth: .infinity)
-      .padding()
-      .background(
-        viewModel.isCreating || !hasSelectedMeals
-          ? Color.gray : Color.blue
-      )
-      .foregroundColor(.white)
-      .cornerRadius(10)
-    }
-    .disabled(viewModel.isCreating || !hasSelectedMeals)
-  }
-}
-
-// MARK: - Meal Search Result Card
-
-struct MealSearchResultCard: View {
-  let meal: Mealplanning_Meal
-  let isSelected: Bool
-  let onTap: () -> Void
-
-  var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 8) {
-        Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-          .font(.headline)
-          .foregroundColor(.primary)
-
-        if !meal.description_p.isEmpty {
-          Text(meal.description_p)
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-            .lineLimit(2)
-        }
-
-        // Show recipe names from components
-        if !meal.components.isEmpty {
-          let recipeNames = meal.components.compactMap { component -> String? in
-            component.recipe.name.isEmpty ? nil : component.recipe.name
-          }
-          if !recipeNames.isEmpty {
-            Text(recipeNames.joined(separator: ", "))
-              .font(.caption)
-              .foregroundColor(.secondary)
-              .lineLimit(1)
-          }
-        }
-      }
-
-      Spacer()
-
-      Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-        .foregroundColor(isSelected ? .blue : .gray)
-        .font(.title2)
-    }
-    .padding()
-    .background(isSelected ? Color.blue.opacity(0.1) : Color(.systemBackground))
-    .cornerRadius(8)
-    .overlay(
-      RoundedRectangle(cornerRadius: 8)
-        .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
-    )
-    .contentShape(Rectangle())
-    .onTapGesture {
-      onTap()
-    }
-  }
-}
-
-// MARK: - Selected Meal Card
-
-struct SelectedMealCard: View {
-  let meal: Mealplanning_Meal
-  let scale: Float
-  let onScaleChange: (Float) -> Void
-  let onRemove: () -> Void
-  let isRegularWidth: Bool
-  
-  @State private var scaleText: String = ""
-  @FocusState private var isScaleFocused: Bool
-
-  var body: some View {
-    if isRegularWidth {
-      // Horizontal layout for iPad
-      HStack(alignment: .top, spacing: 16) {
-        VStack(alignment: .leading, spacing: 4) {
-          Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-            .font(.headline)
-
-          if !meal.components.isEmpty {
-            let recipeNames = meal.components.compactMap { component -> String? in
-              component.recipe.name.isEmpty ? nil : component.recipe.name
-            }
-            if !recipeNames.isEmpty {
-              Text(recipeNames.joined(separator: ", "))
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-          }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-
-        // Scale control
-        VStack(alignment: .leading, spacing: 4) {
-          Text("Scale")
-            .font(.caption)
-            .foregroundColor(.secondary)
-          HStack(spacing: 8) {
-            TextField("1.0", text: $scaleText)
-              .keyboardType(.decimalPad)
-              .textFieldStyle(.roundedBorder)
-              .frame(width: 100)
-              .focused($isScaleFocused)
-              .onSubmit {
-                updateScaleFromText()
-              }
-              .onChange(of: isScaleFocused) { wasFocused, isFocused in
-                if !isFocused {
-                  updateScaleFromText()
-                }
-              }
-            Text("x")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
-          }
-        }
-        .frame(maxWidth: 200)
-
-        Button(action: onRemove) {
-          Image(systemName: "xmark.circle.fill")
-            .foregroundColor(.red)
-            .font(.title3)
-        }
-      }
-      .padding()
-      .background(Color(.systemBackground))
-      .cornerRadius(8)
-      .onAppear {
-        scaleText = String(format: "%.2f", scale)
-      }
-      .onChange(of: scale) { oldValue, newValue in
-        if !isScaleFocused {
-          scaleText = String(format: "%.2f", newValue)
-        }
-      }
-    } else {
-      // Vertical layout for iPhone
-      VStack(alignment: .leading, spacing: 12) {
-        HStack {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-              .font(.headline)
-
-            if !meal.components.isEmpty {
-              let recipeNames = meal.components.compactMap { component -> String? in
-                component.recipe.name.isEmpty ? nil : component.recipe.name
-              }
-              if !recipeNames.isEmpty {
-                Text(recipeNames.joined(separator: ", "))
-                  .font(.caption)
-                  .foregroundColor(.secondary)
-              }
-            }
-          }
-
-          Spacer()
-
-          Button(action: onRemove) {
-            Image(systemName: "xmark.circle.fill")
-              .foregroundColor(.red)
-              .font(.title3)
-          }
-        }
-
-        // Scale control
-        VStack(alignment: .leading, spacing: 4) {
-          Text("Scale")
-            .font(.caption)
-            .foregroundColor(.secondary)
-          HStack(spacing: 8) {
-            TextField("1.0", text: $scaleText)
-              .keyboardType(.decimalPad)
-              .textFieldStyle(.roundedBorder)
-              .focused($isScaleFocused)
-              .onSubmit {
-                updateScaleFromText()
-              }
-              .onChange(of: isScaleFocused) { wasFocused, isFocused in
-                if !isFocused {
-                  updateScaleFromText()
-                }
-              }
-            Text("x")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
-          }
-        }
-      }
-      .padding()
-      .background(Color(.systemBackground))
-      .cornerRadius(8)
-      .onAppear {
-        scaleText = String(format: "%.2f", scale)
-      }
-      .onChange(of: scale) { oldValue, newValue in
-        if !isScaleFocused {
-          scaleText = String(format: "%.2f", newValue)
-        }
-      }
-    }
-  }
-  
-  private func updateScaleFromText() {
-    // Parse the text input and validate it's a positive number
-    if let parsedValue = Float(scaleText.trimmingCharacters(in: .whitespacesAndNewlines)) {
-      if parsedValue > 0 {
-        onScaleChange(parsedValue)
-        scaleText = String(format: "%.2f", parsedValue)
-      } else {
-        // Invalid: not positive, reset to current scale
-        scaleText = String(format: "%.2f", scale)
-      }
-    } else {
-      // Invalid: not a number, reset to current scale
-      scaleText = String(format: "%.2f", scale)
-    }
-  }
 }
 
 #Preview {

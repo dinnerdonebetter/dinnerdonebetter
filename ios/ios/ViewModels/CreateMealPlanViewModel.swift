@@ -34,7 +34,7 @@ class CreateMealPlanViewModel {
   
   // Meal plan creation state
   var mealPlanName: String = ""
-  var votingDeadline: Date = Date()
+  var votingDeadline = Date()
   var isCreating: Bool = false
   var creationError: String?
   var createdMealPlanID: String?
@@ -329,10 +329,8 @@ class CreateMealPlanViewModel {
   
   func validateEvents() -> String? {
     // Check that all events have at least one meal selected
-    for event in events {
-      if event.selectedMeals.isEmpty {
-        return "Each event must have at least one meal selected"
-      }
+    for event in events where event.selectedMeals.isEmpty {
+      return "Each event must have at least one meal selected"
     }
     
     // Check that events don't span more than a week
