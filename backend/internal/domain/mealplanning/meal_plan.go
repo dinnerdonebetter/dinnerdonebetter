@@ -34,7 +34,8 @@ const (
 )
 
 var (
-	errInvalidVotingDeadline = errors.New("invalid voting deadline")
+	errInvalidVotingDeadline    = errors.New("invalid voting deadline")
+	errVotingDeadlineAfterStart = errors.New("voting deadline must be before all event start times")
 )
 
 func init() {
@@ -147,13 +148,25 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 		return errInvalidVotingDeadline
 	}
 
-	return validation.ValidateStructWithContext(
+	// Validate required fields first
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.VotingDeadline, validation.Required),
 		validation.Field(&x.Events, validation.Required),
 		validation.Field(&x.ElectionMethod, validation.In(MealPlanElectionMethodSchulze, MealPlanElectionMethodInstantRunoff)),
-	)
+	); err != nil {
+		return err
+	}
+
+	// Validate that voting deadline is before every event's start time
+	for _, event := range x.Events {
+		if !x.VotingDeadline.Before(event.StartsAt) {
+			return errVotingDeadlineAfterStart
+		}
+	}
+
+	return nil
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanDatabaseCreationInput)(nil)
