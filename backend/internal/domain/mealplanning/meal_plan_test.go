@@ -51,22 +51,109 @@ func TestMealPlanDatabaseCreationInput_Validate(T *testing.T) {
 func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with voting deadline before all events", func(t *testing.T) {
 		t.Parallel()
 
+		now := time.Now()
+		event1Start := now.Add(72 * time.Hour)    // Event 1 starts 3 days from now
+		event2Start := now.Add(96 * time.Hour)    // Event 2 starts 4 days from now
+		votingDeadline := now.Add(24 * time.Hour) // Voting deadline is 1 day from now
+
 		x := &MealPlanCreationRequestInput{
-			VotingDeadline: time.Now().Add(24 * time.Hour),
+			VotingDeadline: votingDeadline,
+			ElectionMethod: MealPlanElectionMethodSchulze,
 			Events: []*MealPlanEventCreationRequestInput{
 				{
 					MealName: BreakfastMealName,
 					Notes:    t.Name(),
-					StartsAt: time.Now(),
-					EndsAt:   time.Now().Add(24 * time.Hour),
+					StartsAt: event1Start,
+					EndsAt:   event1Start.Add(2 * time.Hour),
+				},
+				{
+					MealName: DinnerMealName,
+					Notes:    t.Name(),
+					StartsAt: event2Start,
+					EndsAt:   event2Start.Add(2 * time.Hour),
 				},
 			},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(t.Context()))
+	})
+
+	T.Run("with voting deadline after event start", func(t *testing.T) {
+		t.Parallel()
+
+		now := time.Now()
+		eventStart := now.Add(24 * time.Hour)     // Event starts 1 day from now
+		votingDeadline := now.Add(48 * time.Hour) // Voting deadline is 2 days from now (AFTER event start)
+
+		x := &MealPlanCreationRequestInput{
+			VotingDeadline: votingDeadline,
+			ElectionMethod: MealPlanElectionMethodSchulze,
+			Events: []*MealPlanEventCreationRequestInput{
+				{
+					MealName: BreakfastMealName,
+					Notes:    t.Name(),
+					StartsAt: eventStart,
+					EndsAt:   eventStart.Add(2 * time.Hour),
+				},
+			},
+		}
+
+		err := x.ValidateWithContext(t.Context())
+		assert.Error(t, err)
+		assert.Equal(t, errVotingDeadlineAfterStart, err)
+	})
+
+	T.Run("with voting deadline equal to event start", func(t *testing.T) {
+		t.Parallel()
+
+		now := time.Now()
+		eventStart := now.Add(24 * time.Hour) // Event starts 1 day from now
+		votingDeadline := eventStart          // Voting deadline equals event start (should fail)
+
+		x := &MealPlanCreationRequestInput{
+			VotingDeadline: votingDeadline,
+			ElectionMethod: MealPlanElectionMethodSchulze,
+			Events: []*MealPlanEventCreationRequestInput{
+				{
+					MealName: BreakfastMealName,
+					Notes:    t.Name(),
+					StartsAt: eventStart,
+					EndsAt:   eventStart.Add(2 * time.Hour),
+				},
+			},
+		}
+
+		err := x.ValidateWithContext(t.Context())
+		assert.Error(t, err)
+		assert.Equal(t, errVotingDeadlineAfterStart, err)
+	})
+
+	T.Run("with voting deadline in the past", func(t *testing.T) {
+		t.Parallel()
+
+		now := time.Now()
+		eventStart := now.Add(48 * time.Hour)      // Event starts 2 days from now
+		votingDeadline := now.Add(-24 * time.Hour) // Voting deadline is 1 day ago (in the past)
+
+		x := &MealPlanCreationRequestInput{
+			VotingDeadline: votingDeadline,
+			ElectionMethod: MealPlanElectionMethodSchulze,
+			Events: []*MealPlanEventCreationRequestInput{
+				{
+					MealName: BreakfastMealName,
+					Notes:    t.Name(),
+					StartsAt: eventStart,
+					EndsAt:   eventStart.Add(2 * time.Hour),
+				},
+			},
+		}
+
+		err := x.ValidateWithContext(t.Context())
+		assert.Error(t, err)
+		assert.Equal(t, errInvalidVotingDeadline, err)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {

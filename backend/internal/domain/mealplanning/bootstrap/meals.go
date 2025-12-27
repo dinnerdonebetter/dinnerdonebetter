@@ -48,17 +48,17 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 	}
 
 	// Helper function to get main portion range
-	getMainPortions := func(recipe *mealplanning.RecipeDatabaseCreationInput) (min float32, max *float32) {
-		min = recipe.EstimatedPortions.Min
+	getMainPortions := func(recipe *mealplanning.RecipeDatabaseCreationInput) (minimum float32, maximum *float32) {
+		minimum = recipe.EstimatedPortions.Min
 		if recipe.EstimatedPortions.Max != nil {
-			max = pointer.To(*recipe.EstimatedPortions.Max)
+			maximum = pointer.To(*recipe.EstimatedPortions.Max)
 		}
-		return
+		return minimum, maximum
 	}
 
 	// Pair 1: Pan-Seared Butter-Basted Steak with Ultra-Fluffy Mashed Potatoes
 	if steak, ok := mainRecipes["Pan-Seared Butter-Basted Steak"]; ok {
-		if mashedPotatoes, ok := sideRecipes["Ultra-Fluffy Mashed Potatoes"]; ok {
+		if mashedPotatoes, ok2 := sideRecipes["Ultra-Fluffy Mashed Potatoes"]; ok2 {
 			mainMin, mainMax := getMainPortions(steak)
 			sideMin := mashedPotatoes.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -82,7 +82,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 2: Sous Vide Chicken Breast with Simple White Rice
 	if chickenBreast, ok := mainRecipes["Sous Vide Chicken Breast"]; ok {
-		if rice, ok := sideRecipes["Simple White Rice"]; ok {
+		if rice, ok2 := sideRecipes["Simple White Rice"]; ok2 {
 			mainMin, mainMax := getMainPortions(chickenBreast)
 			sideMin := rice.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -106,7 +106,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 3: Perfect Roast Chicken with Caesar Roasted Broccoli
 	if roastChicken, ok := mainRecipes["Perfect Roast Chicken"]; ok {
-		if broccoli, ok := sideRecipes["Caesar Roasted Broccoli"]; ok {
+		if broccoli, ok2 := sideRecipes["Caesar Roasted Broccoli"]; ok2 {
 			mainMin, mainMax := getMainPortions(roastChicken)
 			sideMin := broccoli.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -130,7 +130,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 4: Sous Vide Pork Chops with Haricots Verts Amandine
 	if porkChops, ok := mainRecipes["Sous Vide Pork Chops"]; ok {
-		if greenBeans, ok := sideRecipes["Haricots Verts Amandine"]; ok {
+		if greenBeans, ok2 := sideRecipes["Haricots Verts Amandine"]; ok2 {
 			mainMin, mainMax := getMainPortions(porkChops)
 			sideMin := greenBeans.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -154,7 +154,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 5: Classic Smashed Burgers with Mixed Green Salad
 	if burgers, ok := mainRecipes["Classic Smashed Burgers"]; ok {
-		if salad, ok := saladRecipes["Mixed Green Salad"]; ok {
+		if salad, ok2 := saladRecipes["Mixed Green Salad"]; ok2 {
 			mainMin, mainMax := getMainPortions(burgers)
 			saladMin := salad.EstimatedPortions.Min
 			scale := calculateScale(mainMin, saladMin)
@@ -178,7 +178,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 6: Soy Sauce–Braised Chicken Thighs with Simple White Rice
 	if chickenThighs, ok := mainRecipes["Soy Sauce–Braised Chicken Thighs"]; ok {
-		if rice, ok := sideRecipes["Simple White Rice"]; ok {
+		if rice, ok2 := sideRecipes["Simple White Rice"]; ok2 {
 			mainMin, mainMax := getMainPortions(chickenThighs)
 			sideMin := rice.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -202,7 +202,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 7: Grilled Pork Tenderloin with Roasted Brussels Sprouts
 	if porkTenderloin, ok := mainRecipes["Grilled Pork Tenderloin"]; ok {
-		if brusselsSprouts, ok := sideRecipes["Roasted Brussels Sprouts"]; ok {
+		if brusselsSprouts, ok2 := sideRecipes["Roasted Brussels Sprouts"]; ok2 {
 			mainMin, mainMax := getMainPortions(porkTenderloin)
 			sideMin := brusselsSprouts.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -226,7 +226,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 8: Crispy Pan-Seared Salmon Fillets with Caesar Roasted Broccoli
 	if salmon, ok := mainRecipes["Crispy Pan-Seared Salmon Fillets"]; ok {
-		if broccoli, ok := sideRecipes["Caesar Roasted Broccoli"]; ok {
+		if broccoli, ok2 := sideRecipes["Caesar Roasted Broccoli"]; ok2 {
 			mainMin, mainMax := getMainPortions(salmon)
 			sideMin := broccoli.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -256,13 +256,13 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 		mainMin, mainMax := getMainPortions(carneAsada)
 
-		if refriedBeans, ok := sideRecipes["Perfect Frijoles Refritos (Mexican Refried Beans)"]; ok {
+		if refriedBeans, ok2 := sideRecipes["Perfect Frijoles Refritos (Mexican Refried Beans)"]; ok2 {
 			sideMin := refriedBeans.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
 			components = append(components, createComponent(refriedBeans, mealplanning.MealComponentTypesSide, scale))
 		}
 
-		if tortillas, ok := sideRecipes["Tortillas"]; ok {
+		if tortillas, ok2 := sideRecipes["Tortillas"]; ok2 {
 			sideMin := tortillas.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
 			components = append(components, createComponent(tortillas, mealplanning.MealComponentTypesSide, scale))
@@ -281,7 +281,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 10: Butter Chicken with Simple White Rice
 	if butterChicken, ok := mainRecipes["Butter Chicken"]; ok {
-		if rice, ok := sideRecipes["Simple White Rice"]; ok {
+		if rice, ok2 := sideRecipes["Simple White Rice"]; ok2 {
 			mainMin, mainMax := getMainPortions(butterChicken)
 			sideMin := rice.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -305,7 +305,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 11: Stovetop Mac and Cheese with Caesar Salad
 	if macAndCheese, ok := mainRecipes["Stovetop Mac and Cheese"]; ok {
-		if caesarSalad, ok := saladRecipes["Caesar Salad"]; ok {
+		if caesarSalad, ok2 := saladRecipes["Caesar Salad"]; ok2 {
 			mainMin, mainMax := getMainPortions(macAndCheese)
 			saladMin := caesarSalad.EstimatedPortions.Min
 			scale := calculateScale(mainMin, saladMin)
@@ -329,7 +329,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 12: Grilled Whole Cauliflower with Teriyaki Sauce with Glazed Carrots
 	if cauliflower, ok := mainRecipes["Grilled Whole Cauliflower with Teriyaki Sauce"]; ok {
-		if carrots, ok := sideRecipes["Glazed Carrots with Brown Butter and Sage"]; ok {
+		if carrots, ok2 := sideRecipes["Glazed Carrots with Brown Butter and Sage"]; ok2 {
 			mainMin, mainMax := getMainPortions(cauliflower)
 			sideMin := carrots.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -353,7 +353,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 13: Crispy Pan-Seared Salmon with Stir-Fried Green Beans
 	if salmon, ok := mainRecipes["Crispy Pan-Seared Salmon Fillets"]; ok {
-		if greenBeans, ok := sideRecipes["Stir-Fried Green Beans"]; ok {
+		if greenBeans, ok2 := sideRecipes["Stir-Fried Green Beans"]; ok2 {
 			mainMin, mainMax := getMainPortions(salmon)
 			sideMin := greenBeans.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
@@ -377,7 +377,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 
 	// Pair 14: Sous Vide Pork Chops with Cornbread
 	if porkChops, ok := mainRecipes["Sous Vide Pork Chops"]; ok {
-		if cornbread, ok := sideRecipes["Cornbread"]; ok {
+		if cornbread, ok2 := sideRecipes["Cornbread"]; ok2 {
 			mainMin, mainMax := getMainPortions(porkChops)
 			sideMin := cornbread.EstimatedPortions.Min
 			scale := calculateScale(mainMin, sideMin)
