@@ -274,6 +274,40 @@ public enum Mealplanning_MealPlanElectionMethod: SwiftProtobuf.Enum, Swift.CaseI
 
 }
 
+public enum Mealplanning_MealPlanStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case awaitingVotes // = 0
+  case finalized // = 1
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .awaitingVotes
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .awaitingVotes
+    case 1: self = .finalized
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .awaitingVotes: return 0
+    case .finalized: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanStatus] = [
+    .awaitingVotes,
+    .finalized,
+  ]
+
+}
+
 public enum Mealplanning_MealPlanEventName: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case breakfast // = 0
@@ -14369,7 +14403,7 @@ public struct Mealplanning_MealPlan: @unchecked Sendable {
     set {_uniqueStorage()._id = newValue}
   }
 
-  public var status: String {
+  public var status: Mealplanning_MealPlanStatus {
     get {return _storage._status}
     set {_uniqueStorage()._status = newValue}
   }
@@ -14539,7 +14573,7 @@ public struct Mealplanning_MealPlanEventCreationRequestInput: Sendable {
 
   public var notes: String = String()
 
-  public var mealName: String = String()
+  public var mealName: Mealplanning_MealPlanEventName = .breakfast
 
   public var options: [Mealplanning_MealPlanOptionCreationRequestInput] = []
 
@@ -14574,8 +14608,8 @@ public struct Mealplanning_MealPlanEventUpdateRequestInput: Sendable {
   /// Clears the value of `startsAt`. Subsequent reads from it will return its default value.
   public mutating func clearStartsAt() {self._startsAt = nil}
 
-  public var mealName: String {
-    get {return _mealName ?? String()}
+  public var mealName: Mealplanning_MealPlanEventName {
+    get {return _mealName ?? .breakfast}
     set {_mealName = newValue}
   }
   /// Returns true if `mealName` has been explicitly set.
@@ -14600,7 +14634,7 @@ public struct Mealplanning_MealPlanEventUpdateRequestInput: Sendable {
 
   fileprivate var _notes: String? = nil
   fileprivate var _startsAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-  fileprivate var _mealName: String? = nil
+  fileprivate var _mealName: Mealplanning_MealPlanEventName? = nil
   fileprivate var _endsAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
@@ -19025,6 +19059,10 @@ extension Mealplanning_MealComponentType: SwiftProtobuf._ProtoNameProviding {
 
 extension Mealplanning_MealPlanElectionMethod: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_ELECTION_METHOD_SCHULZE\0\u{1}MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF\0")
+}
+
+extension Mealplanning_MealPlanStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_STATUS_AWAITING_VOTES\0\u{1}MEAL_PLAN_STATUS_FINALIZED\0")
 }
 
 extension Mealplanning_MealPlanEventName: SwiftProtobuf._ProtoNameProviding {
@@ -39425,7 +39463,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _id: String = String()
-    var _status: String = String()
+    var _status: Mealplanning_MealPlanStatus = .awaitingVotes
     var _notes: String = String()
     var _electionMethod: Mealplanning_MealPlanElectionMethod = .schulze
     var _belongsToAccount: String = String()
@@ -39479,7 +39517,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
-        case 6: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
+        case 6: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
         case 8: try { try decoder.decodeSingularEnumField(value: &_storage._electionMethod) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._belongsToAccount) }()
@@ -39514,8 +39552,8 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 5)
       }
-      if !_storage._status.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._status, fieldNumber: 6)
+      if _storage._status != .awaitingVotes {
+        try visitor.visitSingularEnumField(value: _storage._status, fieldNumber: 6)
       }
       if !_storage._notes.isEmpty {
         try visitor.visitSingularStringField(value: _storage._notes, fieldNumber: 7)
@@ -39710,7 +39748,7 @@ extension Mealplanning_MealPlanEventCreationRequestInput: SwiftProtobuf.Message,
       case 1: try { try decoder.decodeSingularMessageField(value: &self._endsAt) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._startsAt) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.notes) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.mealName) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.mealName) }()
       case 5: try { try decoder.decodeRepeatedMessageField(value: &self.options) }()
       default: break
       }
@@ -39731,8 +39769,8 @@ extension Mealplanning_MealPlanEventCreationRequestInput: SwiftProtobuf.Message,
     if !self.notes.isEmpty {
       try visitor.visitSingularStringField(value: self.notes, fieldNumber: 3)
     }
-    if !self.mealName.isEmpty {
-      try visitor.visitSingularStringField(value: self.mealName, fieldNumber: 4)
+    if self.mealName != .breakfast {
+      try visitor.visitSingularEnumField(value: self.mealName, fieldNumber: 4)
     }
     if !self.options.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.options, fieldNumber: 5)
@@ -39763,7 +39801,7 @@ extension Mealplanning_MealPlanEventUpdateRequestInput: SwiftProtobuf.Message, S
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._notes) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._startsAt) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._mealName) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self._mealName) }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._endsAt) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.belongsToMealPlan) }()
       default: break
@@ -39783,7 +39821,7 @@ extension Mealplanning_MealPlanEventUpdateRequestInput: SwiftProtobuf.Message, S
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     } }()
     try { if let v = self._mealName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
     } }()
     try { if let v = self._endsAt {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)

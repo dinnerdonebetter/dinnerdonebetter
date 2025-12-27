@@ -319,6 +319,30 @@ func ConvertMealPlanEventToGRPCMealPlanEvent(input *mealplanning.MealPlanEvent) 
 	}
 }
 
+func ConvertStringToMealPlanStatus(s string) mealplanningsvc.MealPlanStatus {
+	switch s {
+	case string(mealplanning.MealPlanStatusAwaitingVotes):
+		return mealplanningsvc.MealPlanStatus_MEAL_PLAN_STATUS_AWAITING_VOTES
+	case string(mealplanning.MealPlanStatusFinalized):
+		return mealplanningsvc.MealPlanStatus_MEAL_PLAN_STATUS_FINALIZED
+	default:
+		log.Printf("UNKNOWN MealPlanStatus: %q", s)
+		return mealplanningsvc.MealPlanStatus_MEAL_PLAN_STATUS_AWAITING_VOTES
+	}
+}
+
+func ConvertMealPlanStatusToString(s mealplanningsvc.MealPlanStatus) string {
+	switch s {
+	case mealplanningsvc.MealPlanStatus_MEAL_PLAN_STATUS_AWAITING_VOTES:
+		return string(mealplanning.MealPlanStatusAwaitingVotes)
+	case mealplanningsvc.MealPlanStatus_MEAL_PLAN_STATUS_FINALIZED:
+		return string(mealplanning.MealPlanStatusFinalized)
+	default:
+		log.Printf("UNKNOWN MealPlanStatus: %q", s)
+		return string(mealplanning.MealPlanStatusAwaitingVotes)
+	}
+}
+
 func ConvertMealPlanToGRPCMealPlan(input *mealplanning.MealPlan) *mealplanningsvc.MealPlan {
 	var mealPlanEvents []*mealplanningsvc.MealPlanEvent
 	for _, event := range input.Events {
@@ -331,7 +355,7 @@ func ConvertMealPlanToGRPCMealPlan(input *mealplanning.MealPlan) *mealplanningsv
 		ArchivedAt:             grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		VotingDeadline:         grpcconverters.ConvertTimeToPBTimestamp(input.VotingDeadline),
 		ElectionMethod:         ConvertStringToMealPlanElectionMethod(input.ElectionMethod),
-		Status:                 input.Status,
+		Status:                 ConvertStringToMealPlanStatus(input.Status),
 		Notes:                  input.Notes,
 		Id:                     input.ID,
 		BelongsToAccount:       input.BelongsToAccount,
@@ -354,7 +378,7 @@ func ConvertGRPCMealPlanToMealPlan(input *mealplanningsvc.MealPlan) *mealplannin
 		ArchivedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		VotingDeadline:         grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
 		ElectionMethod:         ConvertMealPlanElectionMethodToString(input.ElectionMethod),
-		Status:                 input.Status,
+		Status:                 ConvertMealPlanStatusToString(input.Status),
 		Notes:                  input.Notes,
 		ID:                     input.Id,
 		BelongsToAccount:       input.BelongsToAccount,
@@ -602,7 +626,7 @@ func ConvertMealPlanEventCreationRequestInputToGRPCMealPlanEventCreationRequestI
 		EndsAt:   grpcconverters.ConvertTimeToPBTimestamp(input.EndsAt),
 		StartsAt: grpcconverters.ConvertTimeToPBTimestamp(input.StartsAt),
 		Notes:    input.Notes,
-		MealName: input.MealName,
+		MealName: ConvertStringToMealPlanEventName(input.MealName),
 		Options:  options,
 	}
 }
@@ -641,7 +665,7 @@ func ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestI
 		EndsAt:   grpcconverters.ConvertPBTimestampToTime(input.EndsAt),
 		StartsAt: grpcconverters.ConvertPBTimestampToTime(input.StartsAt),
 		Notes:    input.Notes,
-		MealName: input.MealName,
+		MealName: ConvertMealPlanEventNameToString(input.MealName),
 		Options:  options,
 	}
 }
@@ -763,20 +787,30 @@ func ConvertMealPlanEventUpdateRequestInputToGRPCMealPlanEventUpdateRequestInput
 		endsAt = grpcconverters.ConvertTimeToPBTimestamp(*input.EndsAt)
 	}
 
+	var mealName *mealplanningsvc.MealPlanEventName
+	if input.MealName != nil {
+		mealName = pointer.To(ConvertStringToMealPlanEventName(*input.MealName))
+	}
+
 	return &mealplanningsvc.MealPlanEventUpdateRequestInput{
 		Notes:             input.Notes,
 		StartsAt:          startsAt,
-		MealName:          input.MealName,
+		MealName:          mealName,
 		EndsAt:            endsAt,
 		BelongsToMealPlan: input.BelongsToMealPlan,
 	}
 }
 
 func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(input *mealplanningsvc.MealPlanEventUpdateRequestInput) *mealplanning.MealPlanEventUpdateRequestInput {
+	var mealName *string
+	if input.MealName != nil {
+		mealName = pointer.To(ConvertMealPlanEventNameToString(*input.MealName))
+	}
+
 	return &mealplanning.MealPlanEventUpdateRequestInput{
 		Notes:             input.Notes,
 		StartsAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.StartsAt),
-		MealName:          input.MealName,
+		MealName:          mealName,
 		EndsAt:            grpcconverters.ConvertPBTimestampToTimePointer(input.EndsAt),
 		BelongsToMealPlan: input.BelongsToMealPlan,
 	}

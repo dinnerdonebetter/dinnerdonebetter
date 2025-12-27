@@ -2838,13 +2838,18 @@ enum MealPlanElectionMethod {
   MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF = 1;
 }
 
+enum MealPlanStatus {
+  MEAL_PLAN_STATUS_AWAITING_VOTES = 0;
+  MEAL_PLAN_STATUS_FINALIZED = 1;
+}
+
 message MealPlan {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp voting_deadline = 2;
   optional google.protobuf.Timestamp archived_at = 3;
   optional google.protobuf.Timestamp last_updated_at = 4;
   string id = 5;
-  string status = 6;
+  MealPlanStatus status = 6;
   string notes = 7;
   MealPlanElectionMethod election_method = 8;
   string belongs_to_account = 9;
@@ -2887,14 +2892,14 @@ message MealPlanEventCreationRequestInput {
   google.protobuf.Timestamp ends_at = 1;
   google.protobuf.Timestamp starts_at = 2;
   string notes = 3;
-  string meal_name = 4;
+  MealPlanEventName meal_name = 4;
   repeated MealPlanOptionCreationRequestInput options = 5;
 }
 
 message MealPlanEventUpdateRequestInput {
   optional string notes = 1;
   optional google.protobuf.Timestamp starts_at = 2;
-  optional string meal_name = 3;
+  optional MealPlanEventName meal_name = 3;
   optional google.protobuf.Timestamp ends_at = 4;
   string belongs_to_meal_plan = 5;
 }

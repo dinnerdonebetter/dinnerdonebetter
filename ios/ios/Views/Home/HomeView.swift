@@ -7,6 +7,7 @@
 
 import SwiftProtobuf
 import SwiftUI
+import Combine
 
 struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
@@ -45,10 +46,8 @@ struct HomeView: View {
                 // Header Section
                 headerSection(viewModel: viewModel)
 
-                // Pending Votes Section
-                if !viewModel.pendingVoteMealPlans.isEmpty {
-                  pendingVotesSection(viewModel: viewModel)
-                }
+                // Pending Votes Section (always show, even if empty)
+                pendingVotesSection(viewModel: viewModel)
 
                 // Upcoming Meals Section
                 if !viewModel.upcomingMealPlans.isEmpty {
@@ -102,6 +101,14 @@ struct HomeView: View {
           }
         }
       }
+      .onReceive(NotificationCenter.default.publisher(for: .mealPlanCreated)) { _ in
+        // Refresh data when a meal plan is created
+        if let viewModel = viewModel {
+          Task {
+            await viewModel.loadData()
+          }
+        }
+      }
     }
   }
 
@@ -135,15 +142,22 @@ struct HomeView: View {
         .fontWeight(.bold)
         .padding(.horizontal, 4)
 
-      ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
-        PendingVoteCard(
-          mealPlan: mealPlan,
-          hasVoted: viewModel.hasUserVoted(on: mealPlan),
-          timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
-        ) {
-          // swiftlint:disable:next todo
-          // FIXME: Navigate to voting view
-          print("Vote on meal plan \(mealPlan.id)")
+      if viewModel.pendingVoteMealPlans.isEmpty {
+        Text("No meal plans require voting at this time.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .padding(.vertical, 8)
+      } else {
+        ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
+          PendingVoteCard(
+            mealPlan: mealPlan,
+            hasVoted: viewModel.hasUserVoted(on: mealPlan),
+            timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
+          ) {
+            // swiftlint:disable:next todo
+            // FIXME: Navigate to voting view
+            print("Vote on meal plan \(mealPlan.id)")
+          }
         }
       }
     }
@@ -268,6 +282,34 @@ struct HomeView: View {
   private func timestampToDate(_ timestamp: SwiftProtobuf.Google_Protobuf_Timestamp) -> Date {
     return HomeViewModel.timestampToDate(timestamp)
   }
+  
+  // Format meal plan time range (earliest start to latest end)
+  static func formatMealPlanTimeRange(_ mealPlan: Mealplanning_MealPlan) -> String {
+    guard !mealPlan.events.isEmpty else {
+      return ""
+    }
+    
+    let earliestStart = mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.min() ?? Date()
+    let latestEnd = mealPlan.events.map { HomeViewModel.timestampToDate($0.endsAt) }.max() ?? Date()
+    
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .none
+    
+    let startString = dateFormatter.string(from: earliestStart)
+    
+    // If all events are on the same day, just show the date once
+    let calendar = Calendar.current
+    if calendar.isDate(earliestStart, inSameDayAs: latestEnd) {
+      let timeFormatter = DateFormatter()
+      timeFormatter.dateStyle = .none
+      timeFormatter.timeStyle = .short
+      return "\(startString) • \(timeFormatter.string(from: earliestStart)) - \(timeFormatter.string(from: latestEnd))"
+    } else {
+      let endString = dateFormatter.string(from: latestEnd)
+      return "\(startString) - \(endString)"
+    }
+  }
 }
 
 // MARK: - Pending Vote Card
@@ -281,9 +323,14 @@ struct PendingVoteCard: View {
     Button(action: onTap) {
       VStack(alignment: .leading, spacing: 8) {
         HStack {
-          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-            .font(.headline)
-            .foregroundColor(.primary)
+          VStack(alignment: .leading, spacing: 2) {
+            Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+              .font(.headline)
+              .foregroundColor(.primary)
+            Text(HomeView.formatMealPlanTimeRange(mealPlan))
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
           Spacer()
           if hasVoted {
             Image(systemName: "checkmark.circle.fill")
@@ -320,9 +367,14 @@ struct UpcomingMealCard: View {
   var body: some View {
     Button(action: onTap) {
       VStack(alignment: .leading, spacing: 8) {
-        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-          .font(.headline)
-          .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 2) {
+          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+            .font(.headline)
+            .foregroundColor(.primary)
+          Text(formatMealPlanTimeRange(mealPlan))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
 
         // Show upcoming events
         ForEach(mealPlan.events.prefix(3), id: \.id) { event in
@@ -404,9 +456,14 @@ struct GroceryListCard: View {
   var body: some View {
     Button(action: onTap) {
       VStack(alignment: .leading, spacing: 8) {
-        Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
-          .font(.headline)
-          .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 2) {
+          Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
+            .font(.headline)
+            .foregroundColor(.primary)
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
 
         Text("\(items.count) item\(items.count == 1 ? "" : "s") needed")
           .font(.subheadline)

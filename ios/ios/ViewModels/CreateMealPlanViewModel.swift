@@ -22,6 +22,8 @@ struct MealPlanEvent: Identifiable {
   var isSearching: Bool = false
   var searchError: String?
   var selectedMeals: [Mealplanning_Meal] = []
+  // Meal scales: maps meal ID to scale value (default 1.0)
+  var mealScales: [String: Float] = [:]
 }
 
 @Observable
@@ -49,6 +51,8 @@ class CreateMealPlanViewModel {
     self.events = [
       MealPlanEvent(mealType: .dinner, startDate: eventStart, endDate: eventEnd)
     ]
+    // Set default meal plan name
+    updateDefaultMealPlanName()
   }
   
   // MARK: - Helper Functions for Date Calculation
@@ -137,12 +141,47 @@ class CreateMealPlanViewModel {
     
     // Update voting deadline to be the earliest event's preceding Friday
     updateVotingDeadline()
+    // updateDefaultMealPlanName is called by updateVotingDeadline
   }
   
   private func updateVotingDeadline() {
     // Find the earliest event date
     guard let earliestEvent = events.min(by: { $0.startDate < $1.startDate }) else { return }
-    votingDeadline = precedingFridayAtMidnight(for: earliestEvent.startDate)
+    var deadline = precedingFridayAtMidnight(for: earliestEvent.startDate)
+    
+    // If the deadline is sooner than 24 hours from now, move it forward by a week
+    let now = Date()
+    let hoursUntilDeadline = deadline.timeIntervalSince(now) / 3600.0
+    if hoursUntilDeadline < 24.0 {
+      if let nextWeekDeadline = Calendar.current.date(byAdding: .day, value: 7, to: deadline) {
+        deadline = nextWeekDeadline
+      }
+    }
+    
+    votingDeadline = deadline
+    // Update default meal plan name when events change
+    updateDefaultMealPlanName()
+  }
+  
+  private func updateDefaultMealPlanName() {
+    guard !events.isEmpty else {
+      mealPlanName = "Meal Plan"
+      return
+    }
+    
+    // Find earliest start and latest end dates
+    let earliestStart = events.map { $0.startDate }.min() ?? Date()
+    let latestEnd = events.map { $0.endDate }.max() ?? Date()
+    
+    // Format dates
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .short
+    
+    let startsAt = dateFormatter.string(from: earliestStart)
+    let endsAt = dateFormatter.string(from: latestEnd)
+    
+    mealPlanName = "Meal Plan for \(startsAt) to \(endsAt)"
   }
   
   func removeEvent(_ event: MealPlanEvent) {
@@ -153,6 +192,8 @@ class CreateMealPlanViewModel {
       let eventEnd = Calendar.current.date(byAdding: .hour, value: 2, to: eventStart) ?? eventStart
       events.append(MealPlanEvent(mealType: .dinner, startDate: eventStart, endDate: eventEnd))
     }
+    // Update meal plan name when events change
+    updateDefaultMealPlanName()
   }
   
   func updateEvent(_ event: MealPlanEvent) {
@@ -182,6 +223,8 @@ class CreateMealPlanViewModel {
   func updateEventEndDate(_ eventID: UUID, date: Date) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].endDate = date
+    // Update meal plan name when end date changes
+    updateDefaultMealPlanName()
   }
 
   // MARK: - Search Functions (per event)
@@ -243,8 +286,12 @@ class CreateMealPlanViewModel {
     
     if let mealIndex = events[index].selectedMeals.firstIndex(where: { $0.id == meal.id }) {
       events[index].selectedMeals.remove(at: mealIndex)
+      // Remove scale when meal is deselected
+      events[index].mealScales.removeValue(forKey: meal.id)
     } else {
       events[index].selectedMeals.append(meal)
+      // Set default scale to 1.0 when meal is selected
+      events[index].mealScales[meal.id] = 1.0
     }
   }
 
@@ -256,6 +303,26 @@ class CreateMealPlanViewModel {
   func removeSelectedMeal(_ meal: Mealplanning_Meal, from event: MealPlanEvent) {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
     events[index].selectedMeals.removeAll(where: { $0.id == meal.id })
+    // Remove scale when meal is removed
+    events[index].mealScales.removeValue(forKey: meal.id)
+    // Meal will automatically reappear in search results since we filter them
+  }
+  
+  func getMealScale(_ meal: Mealplanning_Meal, in event: MealPlanEvent) -> Float {
+    guard let index = events.firstIndex(where: { $0.id == event.id }) else { return 1.0 }
+    return events[index].mealScales[meal.id] ?? 1.0
+  }
+  
+  func setMealScale(_ meal: Mealplanning_Meal, scale: Float, in event: MealPlanEvent) {
+    guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
+    events[index].mealScales[meal.id] = scale
+  }
+  
+  /// Get filtered search results for an event (excluding already selected meals)
+  func filteredSearchResults(for event: MealPlanEvent) -> [Mealplanning_Meal] {
+    guard let index = events.firstIndex(where: { $0.id == event.id }) else { return [] }
+    let selectedMealIDs = Set(events[index].selectedMeals.map { $0.id })
+    return events[index].searchResults.filter { !selectedMealIDs.contains($0.id) }
   }
   
   // MARK: - Validation
@@ -326,14 +393,14 @@ class CreateMealPlanViewModel {
         var eventInput = Mealplanning_MealPlanEventCreationRequestInput()
         eventInput.startsAt = dateToTimestamp(event.startDate)
         eventInput.endsAt = dateToTimestamp(event.endDate)
-        eventInput.mealName = MealPlanningUtils.mealPlanEventNameToString(event.mealType)
+        eventInput.mealName = event.mealType
         eventInput.notes = ""
 
         // Create options for each selected meal in this event
         for meal in event.selectedMeals {
           var optionInput = Mealplanning_MealPlanOptionCreationRequestInput()
           optionInput.mealID = meal.id
-          optionInput.mealScale = 1.0
+          optionInput.mealScale = event.mealScales[meal.id] ?? 1.0
           optionInput.notes = ""
           eventInput.options.append(optionInput)
         }

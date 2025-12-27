@@ -39,8 +39,7 @@ class HomeViewModel {
     let now = Date()
     return allMealPlans.filter { mealPlan in
       // Meal plan is pending if voting deadline hasn't passed and status indicates voting
-      guard mealPlan.status.lowercased() == "draft" || mealPlan.status.lowercased() == "voting"
-      else {
+      guard mealPlan.status == .awaitingVotes else {
         return false
       }
 
@@ -55,7 +54,7 @@ class HomeViewModel {
 
     return allMealPlans.filter { mealPlan in
       // Finalized meal plans with events in the next 2 weeks
-      guard mealPlan.status.lowercased() == "finalized" else {
+      guard mealPlan.status == .finalized else {
         return false
       }
 
@@ -72,7 +71,7 @@ class HomeViewModel {
       // Only show grocery lists for finalized meal plans with unacquired items
       let mealPlan = allMealPlans.first { $0.id == mealPlanID }
       guard let mealPlan = mealPlan,
-        mealPlan.status.lowercased() == "finalized",
+        mealPlan.status == .finalized,
         mealPlan.groceryListInitialized
       else {
         return nil
@@ -101,6 +100,10 @@ class HomeViewModel {
       // First fetch meal plans
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
+      
+      // Log pending vote meal plans count
+      let pendingCount = pendingVoteMealPlans.count
+      print("📊 HomeViewModel: Loaded \(pendingCount) meal plan(s) with pending votes")
 
       // Then fetch tasks (which needs meal plans to be loaded)
       let tasks = try await fetchUserTasks()
@@ -108,7 +111,7 @@ class HomeViewModel {
 
       // Fetch grocery lists for finalized meal plans
       await fetchGroceryLists(
-        for: mealPlans.filter { $0.status.lowercased() == "finalized" && $0.groceryListInitialized }
+        for: mealPlans.filter { $0.status == .finalized && $0.groceryListInitialized }
       )
     } catch {
       errorMessage = "Failed to load data: \(error.localizedDescription)"
@@ -162,7 +165,7 @@ class HomeViewModel {
     // We need to get tasks for all meal plans and filter by user
     // For now, let's get tasks from all finalized meal plans
     let finalizedMealPlans = allMealPlans.filter {
-      $0.status.lowercased() == "finalized" && $0.tasksCreated
+      $0.status == .finalized && $0.tasksCreated
     }
 
     var allTasks: [Mealplanning_MealPlanTask] = []
