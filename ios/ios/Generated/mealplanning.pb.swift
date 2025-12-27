@@ -274,6 +274,56 @@ public enum Mealplanning_MealPlanElectionMethod: SwiftProtobuf.Enum, Swift.CaseI
 
 }
 
+public enum Mealplanning_MealPlanEventName: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case breakfast // = 0
+  case secondBreakfast // = 1
+  case brunch // = 2
+  case lunch // = 3
+  case supper // = 4
+  case dinner // = 5
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .breakfast
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .breakfast
+    case 1: self = .secondBreakfast
+    case 2: self = .brunch
+    case 3: self = .lunch
+    case 4: self = .supper
+    case 5: self = .dinner
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .breakfast: return 0
+    case .secondBreakfast: return 1
+    case .brunch: return 2
+    case .lunch: return 3
+    case .supper: return 4
+    case .dinner: return 5
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanEventName] = [
+    .breakfast,
+    .secondBreakfast,
+    .brunch,
+    .lunch,
+    .supper,
+    .dinner,
+  ]
+
+}
+
 public enum Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unknown // = 0
@@ -14443,7 +14493,7 @@ public struct Mealplanning_MealPlanEvent: Sendable {
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
   public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
 
-  public var mealName: String = String()
+  public var mealName: Mealplanning_MealPlanEventName = .breakfast
 
   public var notes: String = String()
 
@@ -18975,6 +19025,10 @@ extension Mealplanning_MealComponentType: SwiftProtobuf._ProtoNameProviding {
 
 extension Mealplanning_MealPlanElectionMethod: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_ELECTION_METHOD_SCHULZE\0\u{1}MEAL_PLAN_ELECTION_METHOD_INSTANT_RUNOFF\0")
+}
+
+extension Mealplanning_MealPlanEventName: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_EVENT_NAME_BREAKFAST\0\u{1}MEAL_PLAN_EVENT_NAME_SECOND_BREAKFAST\0\u{1}MEAL_PLAN_EVENT_NAME_BRUNCH\0\u{1}MEAL_PLAN_EVENT_NAME_LUNCH\0\u{1}MEAL_PLAN_EVENT_NAME_SUPPER\0\u{1}MEAL_PLAN_EVENT_NAME_DINNER\0")
 }
 
 extension Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf._ProtoNameProviding {
@@ -39579,7 +39633,7 @@ extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 3: try { try decoder.decodeSingularMessageField(value: &self._endsAt) }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
       case 5: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.mealName) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self.mealName) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.notes) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.belongsToMealPlan) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self.id) }()
@@ -39609,8 +39663,8 @@ extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try { if let v = self._lastUpdatedAt {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     } }()
-    if !self.mealName.isEmpty {
-      try visitor.visitSingularStringField(value: self.mealName, fieldNumber: 6)
+    if self.mealName != .breakfast {
+      try visitor.visitSingularEnumField(value: self.mealName, fieldNumber: 6)
     }
     if !self.notes.isEmpty {
       try visitor.visitSingularStringField(value: self.notes, fieldNumber: 7)

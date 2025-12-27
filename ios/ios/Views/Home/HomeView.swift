@@ -113,16 +113,16 @@ struct HomeView: View {
         .fontWeight(.bold)
 
       NavigationLink(destination: CreateMealPlanView()) {
-        HStack {
-          Image(systemName: "plus.circle.fill")
-          Text("Create New Meal Plan")
-        }
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.blue)
-        .foregroundColor(.white)
-        .cornerRadius(10)
+          HStack {
+            Image(systemName: "plus.circle.fill")
+            Text("Create New Meal Plan")
+          }
+          .fontWeight(.semibold)
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(Color.blue)
+          .foregroundColor(.white)
+          .cornerRadius(10)
       }
     }
   }
@@ -250,6 +250,7 @@ struct HomeView: View {
   }
 
   // MARK: - Helper Functions
+  
   private func formatTaskDate(_ task: Mealplanning_MealPlanTask) -> String {
     // Get the date from the task's meal plan option's event
     // For now, use a simple format
@@ -326,7 +327,7 @@ struct UpcomingMealCard: View {
         // Show upcoming events
         ForEach(mealPlan.events.prefix(3), id: \.id) { event in
           HStack {
-            Text(event.mealName.capitalized)
+            Text(MealPlanningUtils.formatMealName(event.mealName))
               .font(.subheadline)
             Spacer()
             Text(formatEventDate(event))

@@ -11,12 +11,17 @@ import SwiftUI
 struct CreateMealPlanView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) private var dismiss
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewModel: CreateMealPlanViewModel?
   @FocusState private var focusedField: Field?
   
-  enum Field {
+  enum Field: Hashable {
     case mealPlanName
-    case searchQuery
+    case searchQuery(UUID)  // Per-event search
+  }
+  
+  private var isRegularWidth: Bool {
+    horizontalSizeClass == .regular
   }
 
   var body: some View {
@@ -24,21 +29,15 @@ struct CreateMealPlanView: View {
       if let viewModel = viewModel {
         ScrollView(.vertical, showsIndicators: true) {
           VStack(spacing: 24) {
-            // Meal Plan Details Section
-            mealPlanDetailsSection(viewModel: viewModel)
-
-            // Search Section
-            searchSection(viewModel: viewModel)
-
-            // Selected Meals Section
-            if !viewModel.selectedMeals.isEmpty {
-              selectedMealsSection(viewModel: viewModel)
+            // Meal Plan Details Section - responsive layout
+            if isRegularWidth {
+              mealPlanDetailsSectionHorizontal(viewModel: viewModel)
+            } else {
+              mealPlanDetailsSection(viewModel: viewModel)
             }
 
-            // Search Results Section
-            if !viewModel.searchResults.isEmpty {
-              searchResultsSection(viewModel: viewModel)
-            }
+            // Events Section
+            eventsSection(viewModel: viewModel)
 
             // Error Messages
             if let error = viewModel.creationError {
@@ -49,6 +48,7 @@ struct CreateMealPlanView: View {
             createButton(viewModel: viewModel)
           }
           .padding()
+          .frame(maxWidth: isRegularWidth ? 800 : .infinity)
           .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
@@ -101,102 +101,334 @@ struct CreateMealPlanView: View {
     .background(Color(.systemGray6))
     .cornerRadius(10)
   }
-
-  // MARK: - Search Section
-
-  private func searchSection(viewModel: CreateMealPlanViewModel) -> some View {
+  
+  // MARK: - Meal Plan Details Section (Horizontal for iPad)
+  
+  private func mealPlanDetailsSectionHorizontal(viewModel: CreateMealPlanViewModel) -> some View {
     let bindableViewModel = Bindable(viewModel)
     
     return VStack(alignment: .leading, spacing: 16) {
-      Text("Search for Meals")
+      Text("Meal Plan Details")
         .font(.title2)
         .fontWeight(.bold)
 
-      HStack {
-        TextField("Search meals...", text: bindableViewModel.searchQuery)
-          .textFieldStyle(.roundedBorder)
-          .autocorrectionDisabled()
-          .textInputAutocapitalization(.never)
-          .submitLabel(.search)
-          .focused($focusedField, equals: .searchQuery)
-          .onSubmit {
-            Task {
-              await viewModel.searchForMeals()
-            }
-          }
+      HStack(alignment: .top, spacing: 24) {
+        VStack(alignment: .leading, spacing: 12) {
+          Text("Name")
+            .font(.headline)
+          TextField("Enter meal plan name", text: bindableViewModel.mealPlanName)
+            .textFieldStyle(.roundedBorder)
+            .focused($focusedField, equals: .mealPlanName)
+        }
+        .frame(maxWidth: .infinity)
 
-        if viewModel.isSearching {
-          ProgressView()
-            .padding(.leading, 8)
-        } else {
+        VStack(alignment: .leading, spacing: 12) {
+          Text("Voting Deadline")
+            .font(.headline)
+          DatePicker(
+            "Voting Deadline",
+            selection: bindableViewModel.votingDeadline,
+            displayedComponents: [.date, .hourAndMinute]
+          )
+          .datePickerStyle(.compact)
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
+  }
+
+  // MARK: - Events Section
+
+  private func eventsSection(viewModel: CreateMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 16) {
+      HStack {
+        Text("Events")
+          .font(.title2)
+          .fontWeight(.bold)
+        Spacer()
+        Button(action: {
+          viewModel.addEvent()
+        }) {
+          HStack {
+            Image(systemName: "plus.circle.fill")
+            Text("Add Event")
+          }
+          .font(.subheadline)
+          .foregroundColor(.blue)
+        }
+      }
+
+      // Always use vertical stack for events
+      ForEach(viewModel.events) { event in
+        eventCard(event: event, viewModel: viewModel)
+      }
+    }
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
+  }
+
+  // MARK: - Event Card
+
+  private func eventCard(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 16) {
+      // Event Header
+      HStack {
+        Text("Event")
+          .font(.headline)
+        Spacer()
+        if viewModel.events.count > 1 {
           Button(action: {
-            Task {
-              await viewModel.searchForMeals()
-            }
+            viewModel.removeEvent(event)
           }) {
-            Image(systemName: "magnifyingglass")
-              .padding(8)
-              .background(Color.blue)
-              .foregroundColor(.white)
-              .cornerRadius(8)
+            Image(systemName: "trash")
+              .foregroundColor(.red)
           }
         }
       }
 
-      if let searchError = viewModel.searchError {
-        Text(searchError)
-          .font(.caption)
-          .foregroundColor(.red)
+      if isRegularWidth {
+        // Horizontal layout for iPad
+        HStack(alignment: .top, spacing: 20) {
+          // Meal Type
+          VStack(alignment: .leading, spacing: 8) {
+            Text("Meal Type")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+            Picker("Meal Type", selection: Binding(
+              get: { event.mealType },
+              set: { newValue in
+                viewModel.updateEventMealType(event.id, mealType: newValue)
+              }
+            )) {
+              Text("Breakfast").tag(Mealplanning_MealPlanEventName.breakfast)
+              Text("Second Breakfast").tag(Mealplanning_MealPlanEventName.secondBreakfast)
+              Text("Brunch").tag(Mealplanning_MealPlanEventName.brunch)
+              Text("Lunch").tag(Mealplanning_MealPlanEventName.lunch)
+              Text("Supper").tag(Mealplanning_MealPlanEventName.supper)
+              Text("Dinner").tag(Mealplanning_MealPlanEventName.dinner)
+            }
+            .pickerStyle(.menu)
+          }
+          .frame(maxWidth: .infinity)
+
+          // Start Time
+          VStack(alignment: .leading, spacing: 8) {
+            Text("Start Time")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+            DatePicker(
+              "Start Time",
+              selection: Binding(
+                get: { event.startDate },
+                set: { newValue in
+                  viewModel.updateEventStartDate(event.id, date: newValue)
+                }
+              ),
+              displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.compact)
+            .labelsHidden()
+          }
+          .frame(maxWidth: .infinity)
+
+          // End Time
+          VStack(alignment: .leading, spacing: 8) {
+            Text("End Time")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+            DatePicker(
+              "End Time",
+              selection: Binding(
+                get: { event.endDate },
+                set: { newValue in
+                  viewModel.updateEventEndDate(event.id, date: newValue)
+                }
+              ),
+              displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.compact)
+            .labelsHidden()
+          }
+          .frame(maxWidth: .infinity)
+        }
+      } else {
+        // Vertical layout for iPhone
+        // Meal Type
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Meal Type")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+          Picker("Meal Type", selection: Binding(
+            get: { event.mealType },
+            set: { newValue in
+              viewModel.updateEventMealType(event.id, mealType: newValue)
+            }
+          )) {
+            Text("Breakfast").tag(Mealplanning_MealPlanEventName.breakfast)
+            Text("Second Breakfast").tag(Mealplanning_MealPlanEventName.secondBreakfast)
+            Text("Brunch").tag(Mealplanning_MealPlanEventName.brunch)
+            Text("Lunch").tag(Mealplanning_MealPlanEventName.lunch)
+            Text("Supper").tag(Mealplanning_MealPlanEventName.supper)
+            Text("Dinner").tag(Mealplanning_MealPlanEventName.dinner)
+          }
+          .pickerStyle(.menu)
+        }
+
+        // Date and Time
+        VStack(alignment: .leading, spacing: 12) {
+          Text("Start Time")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+          DatePicker(
+            "Start Time",
+            selection: Binding(
+              get: { event.startDate },
+              set: { newValue in
+                viewModel.updateEventStartDate(event.id, date: newValue)
+              }
+            ),
+            displayedComponents: [.date, .hourAndMinute]
+          )
+          .datePickerStyle(.compact)
+        }
+
+        VStack(alignment: .leading, spacing: 12) {
+          Text("End Time")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+          DatePicker(
+            "End Time",
+            selection: Binding(
+              get: { event.endDate },
+              set: { newValue in
+                viewModel.updateEventEndDate(event.id, date: newValue)
+              }
+            ),
+            displayedComponents: [.date, .hourAndMinute]
+          )
+          .datePickerStyle(.compact)
+        }
+      }
+
+      // Search Section
+      searchSection(event: event, viewModel: viewModel)
+
+      // Selected Meals
+      if !event.selectedMeals.isEmpty {
+        selectedMealsSection(event: event, viewModel: viewModel)
+      }
+
+      // Search Results
+      if !event.searchResults.isEmpty {
+        searchResultsSection(event: event, viewModel: viewModel)
       }
     }
     .padding()
-    .background(Color(.systemGray6))
+    .background(Color(.systemBackground))
     .cornerRadius(10)
+    .overlay(
+      RoundedRectangle(cornerRadius: 10)
+        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+    )
   }
 
-  // MARK: - Selected Meals Section
+  // MARK: - Search Section (per event)
 
-  private func selectedMealsSection(viewModel: CreateMealPlanViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 16) {
-      Text("Selected Meals (\(viewModel.selectedMeals.count))")
-        .font(.title2)
-        .fontWeight(.bold)
+  private func searchSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+      _ = Bindable(viewModel)
+    guard let eventIndex = viewModel.events.firstIndex(where: { $0.id == event.id }) else {
+      return AnyView(EmptyView())
+    }
+    
+    return AnyView(
+      VStack(alignment: .leading, spacing: 12) {
+        Text("Search for Meals")
+          .font(.headline)
 
-      ForEach(viewModel.selectedMeals, id: \.id) { meal in
+        HStack {
+          TextField("Search meals...", text: Binding(
+            get: { event.searchQuery },
+            set: { newValue in
+              viewModel.updateEventSearchQuery(event.id, query: newValue)
+            }
+          ))
+          .textFieldStyle(.roundedBorder)
+          .autocorrectionDisabled()
+          .textInputAutocapitalization(.never)
+          .submitLabel(.search)
+          .focused($focusedField, equals: .searchQuery(event.id))
+          .onSubmit {
+            Task {
+              await viewModel.searchForMeals(for: event)
+            }
+          }
+
+          if viewModel.events[eventIndex].isSearching {
+            ProgressView()
+              .padding(.leading, 8)
+          } else {
+            Button(action: {
+              Task {
+                await viewModel.searchForMeals(for: event)
+              }
+            }) {
+              Image(systemName: "magnifyingglass")
+                .padding(8)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+          }
+        }
+
+        if let searchError = viewModel.events[eventIndex].searchError {
+          Text(searchError)
+            .font(.caption)
+            .foregroundColor(.red)
+        }
+      }
+    )
+  }
+
+  // MARK: - Selected Meals Section (per event)
+
+  private func selectedMealsSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Selected Meals (\(event.selectedMeals.count))")
+        .font(.headline)
+
+      ForEach(event.selectedMeals, id: \.id) { meal in
         SelectedMealCard(
           meal: meal,
           onRemove: {
-            viewModel.removeSelectedMeal(meal)
+            viewModel.removeSelectedMeal(meal, from: event)
           }
         )
       }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
   }
 
-  // MARK: - Search Results Section
+  // MARK: - Search Results Section (per event)
 
-  private func searchResultsSection(viewModel: CreateMealPlanViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 16) {
-      Text("Search Results (\(viewModel.searchResults.count))")
-        .font(.title2)
-        .fontWeight(.bold)
+  private func searchResultsSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Search Results (\(event.searchResults.count))")
+        .font(.headline)
 
-      ForEach(viewModel.searchResults, id: \.id) { meal in
+      ForEach(event.searchResults, id: \.id) { meal in
         MealSearchResultCard(
           meal: meal,
-          isSelected: viewModel.isMealSelected(meal),
+          isSelected: viewModel.isMealSelected(meal, in: event),
           onTap: {
-            viewModel.toggleMealSelection(meal)
+            viewModel.toggleMealSelection(meal, in: event)
           }
         )
       }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
   }
 
   // MARK: - Error Message
@@ -217,7 +449,10 @@ struct CreateMealPlanView: View {
   // MARK: - Create Button
 
   private func createButton(viewModel: CreateMealPlanViewModel) -> some View {
-    Button(action: {
+      _ = Bindable(viewModel)
+    let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
+    
+    return Button(action: {
       Task {
         let success = await viewModel.createMealPlan()
         if success {
@@ -236,13 +471,13 @@ struct CreateMealPlanView: View {
       .frame(maxWidth: .infinity)
       .padding()
       .background(
-        viewModel.isCreating || viewModel.selectedMeals.isEmpty
+        viewModel.isCreating || !hasSelectedMeals
           ? Color.gray : Color.blue
       )
       .foregroundColor(.white)
       .cornerRadius(10)
     }
-    .disabled(viewModel.isCreating || viewModel.selectedMeals.isEmpty)
+    .disabled(viewModel.isCreating || !hasSelectedMeals)
   }
 }
 
@@ -349,4 +584,3 @@ struct SelectedMealCard: View {
   return CreateMealPlanView()
     .environment(authManager)
 }
-

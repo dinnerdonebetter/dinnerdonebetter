@@ -2861,13 +2861,22 @@ message MealPlanCreationRequestInput {
   repeated MealPlanEventCreationRequestInput events = 4;
 }
 
+enum MealPlanEventName {
+  MEAL_PLAN_EVENT_NAME_BREAKFAST = 0;
+  MEAL_PLAN_EVENT_NAME_SECOND_BREAKFAST = 1;
+  MEAL_PLAN_EVENT_NAME_BRUNCH = 2;
+  MEAL_PLAN_EVENT_NAME_LUNCH = 3;
+  MEAL_PLAN_EVENT_NAME_SUPPER = 4;
+  MEAL_PLAN_EVENT_NAME_DINNER = 5;
+}
+
 message MealPlanEvent {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp starts_at = 2;
   google.protobuf.Timestamp ends_at = 3;
   optional google.protobuf.Timestamp archived_at = 4;
   optional google.protobuf.Timestamp last_updated_at = 5;
-  string meal_name = 6;
+  MealPlanEventName meal_name = 6;
   string notes = 7;
   string belongs_to_meal_plan = 8;
   string id = 9;

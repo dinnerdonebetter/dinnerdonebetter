@@ -17,7 +17,7 @@ struct LoginView: View {
   @State private var errorMessage: String = ""
   @State private var isLoading: Bool = false
   @State private var loginTask: Task<Void, Never>?
-  
+
   // Temporary dev feature: always show TOTP and auto-generate
   // Set alwaysShowTOTP to false to disable this feature
   // The TOTP secret is hardcoded for development
@@ -185,7 +185,7 @@ struct LoginView: View {
         password = ""
         // Only clear TOTP code if not using always-show feature
         if !alwaysShowTOTP {
-          totpCode = ""
+        totpCode = ""
         }
         requiresTOTP = false
       } else {
