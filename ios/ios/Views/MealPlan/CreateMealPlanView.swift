@@ -22,7 +22,7 @@ struct CreateMealPlanView: View {
   var body: some View {
     Group {
       if let viewModel = viewModel {
-        ScrollView {
+        ScrollView(.vertical, showsIndicators: true) {
           VStack(spacing: 24) {
             // Meal Plan Details Section
             mealPlanDetailsSection(viewModel: viewModel)
