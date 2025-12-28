@@ -459,7 +459,7 @@ func SousVidePorkChopsRecipe(userID string, enums *Enumerations) []*mealplanning
 				BelongsToRecipeStep:      step5ID,
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
-				Name:                     "cast iron or stainless steel skillet",
+				Name:                     "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

@@ -467,7 +467,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				BelongsToRecipeStep:      step4aID,
 				ValidPreparationVesselID: &panSearSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
-				Name:                     "cast iron or stainless steel skillet",
+				Name:                     "cast iron skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

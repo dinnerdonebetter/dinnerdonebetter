@@ -12,6 +12,8 @@ struct PerformRecipeView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) private var dismiss
   @State private var viewModel: PerformRecipeViewModel?
+  @State private var isInstrumentsVesselsExpanded = false
+  @State private var isIngredientsExpanded = false
   
   let recipeID: String
   
@@ -51,6 +53,12 @@ struct PerformRecipeView: View {
               VStack(alignment: .leading, spacing: 16) {
                 // Recipe header
                 recipeHeader(recipe: recipe, viewModel: viewModel)
+                
+                // Instruments & Vessels section
+                instrumentsVesselsSection(recipe: recipe)
+                
+                // Ingredients section
+                ingredientsSection(recipe: recipe)
                 
                 // Steps list
                 stepsList(recipe: recipe, viewModel: viewModel)
@@ -112,6 +120,176 @@ struct PerformRecipeView: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(Color(.systemGray6))
     .cornerRadius(12)
+  }
+  
+  // MARK: - Instruments & Vessels Section
+  
+  private func instrumentsVesselsSection(recipe: Mealplanning_Recipe) -> some View {
+    let allInstrumentsVessels = getAllInstrumentsAndVessels(from: recipe)
+    
+    return VStack(alignment: .leading, spacing: 0) {
+      Button(action: {
+        withAnimation {
+          isInstrumentsVesselsExpanded.toggle()
+        }
+      }) {
+        HStack {
+          Text("Instruments & Vessels")
+            .font(.headline)
+            .foregroundColor(.primary)
+          Spacer()
+          Image(systemName: isInstrumentsVesselsExpanded ? "chevron.down" : "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+      }
+      .buttonStyle(.plain)
+      
+      if isInstrumentsVesselsExpanded && !allInstrumentsVessels.isEmpty {
+        VStack(alignment: .leading, spacing: 8) {
+          ForEach(allInstrumentsVessels, id: \.id) { item in
+            HStack(spacing: 8) {
+              Image(systemName: item.type == .instrument ? "wrench.and.screwdriver" : "square.stack.3d.up")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .frame(width: 20)
+              Text(item.name)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+              Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+          }
+        }
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+      }
+    }
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
+  }
+  
+  // MARK: - Ingredients Section
+  
+  private func ingredientsSection(recipe: Mealplanning_Recipe) -> some View {
+    let allIngredients = getAllIngredients(from: recipe)
+    
+    return VStack(alignment: .leading, spacing: 0) {
+      Button(action: {
+        withAnimation {
+          isIngredientsExpanded.toggle()
+        }
+      }) {
+        HStack {
+          Text("Ingredients")
+            .font(.headline)
+            .foregroundColor(.primary)
+          Spacer()
+          Image(systemName: isIngredientsExpanded ? "chevron.down" : "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+      }
+      .buttonStyle(.plain)
+      
+      if isIngredientsExpanded && !allIngredients.isEmpty {
+        VStack(alignment: .leading, spacing: 8) {
+          ForEach(allIngredients, id: \.id) { ingredient in
+            HStack(spacing: 8) {
+              Image(systemName: "leaf")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .frame(width: 20)
+              VStack(alignment: .leading, spacing: 2) {
+                Text(ingredient.name)
+                  .font(.subheadline)
+                  .foregroundColor(.primary)
+                if !ingredient.quantityNotes.isEmpty {
+                  Text(ingredient.quantityNotes)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                }
+              }
+              Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+          }
+        }
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+      }
+    }
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
+  }
+  
+  // MARK: - Helper Methods
+  
+  private func getAllInstrumentsAndVessels(from recipe: Mealplanning_Recipe) -> [InstrumentVesselItem] {
+    var items: [String: InstrumentVesselItem] = [:]
+    
+    for step in recipe.steps {
+      // Collect instruments (only if it has a ValidInstrument and displayInSummaryLists is true)
+      for instrument in step.instruments {
+        // Only include if it has a ValidInstrument (not a recipe step product)
+        // and displayInSummaryLists is true
+        if instrument.hasInstrument {
+          let validInstrument = instrument.instrument
+          if validInstrument.displayInSummaryLists && items[validInstrument.id] == nil {
+            items[validInstrument.id] = InstrumentVesselItem(
+              id: validInstrument.id,
+              name: instrument.name,
+              type: .instrument
+            )
+          }
+        }
+      }
+      
+      // Collect vessels (only if it has a ValidVessel and displayInSummaryLists is true)
+      for vessel in step.vessels {
+        // Only include if it has a ValidVessel (not a recipe step product)
+        // and displayInSummaryLists is true
+        if vessel.hasVessel {
+          let validVessel = vessel.vessel
+          if validVessel.displayInSummaryLists && items[validVessel.id] == nil {
+            items[validVessel.id] = InstrumentVesselItem(
+              id: validVessel.id,
+              name: vessel.name,
+              type: .vessel
+            )
+          }
+        }
+      }
+    }
+    
+    return Array(items.values).sorted { $0.name < $1.name }
+  }
+  
+  private func getAllIngredients(from recipe: Mealplanning_Recipe) -> [Mealplanning_RecipeStepIngredient] {
+    var ingredients: [String: Mealplanning_RecipeStepIngredient] = [:]
+    
+    for step in recipe.steps {
+      for ingredient in step.ingredients {
+        // Only include if it has a ValidIngredient (not a recipe step product)
+        // and displayInSummaryLists is true
+        if ingredient.hasIngredient {
+          let validIngredient = ingredient.ingredient
+          // Use ValidIngredient ID as key to ensure uniqueness
+          let key = validIngredient.id
+          if !key.isEmpty && ingredients[key] == nil {
+            ingredients[key] = ingredient
+          }
+        }
+      }
+    }
+    
+    return Array(ingredients.values).sorted { $0.name < $1.name }
   }
   
   // MARK: - Steps List
@@ -328,6 +506,17 @@ private struct StepItem {
   let isProduct: Bool
   let prerequisiteStepIndex: Int?
   let prerequisiteCompleted: Bool
+}
+
+private struct InstrumentVesselItem: Identifiable {
+  let id: String
+  let name: String
+  let type: ItemType
+  
+  enum ItemType {
+    case instrument
+    case vessel
+  }
 }
 
 // MARK: - Preview
