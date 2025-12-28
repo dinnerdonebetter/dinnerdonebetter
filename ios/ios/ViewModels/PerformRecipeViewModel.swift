@@ -91,37 +91,31 @@ class PerformRecipeViewModel {
     let step = recipe.steps[stepIndex]
 
     // Check all ingredients
-    for ingredient in step.ingredients {
-      if ingredient.hasRecipeStepProductID {
-        let productID = ingredient.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          if !completedSteps.contains(prerequisiteStepIndex) {
-            return false
-          }
+    for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
+      let productID = ingredient.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        if !completedSteps.contains(prerequisiteStepIndex) {
+          return false
         }
       }
     }
 
     // Check all instruments
-    for instrument in step.instruments {
-      if instrument.hasRecipeStepProductID {
-        let productID = instrument.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          if !completedSteps.contains(prerequisiteStepIndex) {
-            return false
-          }
+    for instrument in step.instruments where instrument.hasRecipeStepProductID {
+      let productID = instrument.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        if !completedSteps.contains(prerequisiteStepIndex) {
+          return false
         }
       }
     }
 
     // Check all vessels
-    for vessel in step.vessels {
-      if vessel.hasRecipeStepProductID {
-        let productID = vessel.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          if !completedSteps.contains(prerequisiteStepIndex) {
-            return false
-          }
+    for vessel in step.vessels where vessel.hasRecipeStepProductID {
+      let productID = vessel.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        if !completedSteps.contains(prerequisiteStepIndex) {
+          return false
         }
       }
     }
@@ -217,32 +211,26 @@ class PerformRecipeViewModel {
     let step = recipe.steps[stepIndex]
 
     // Check all ingredients
-    for ingredient in step.ingredients {
-      if ingredient.hasRecipeStepProductID {
-        let productID = ingredient.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          prerequisites.insert(prerequisiteStepIndex)
-        }
+    for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
+      let productID = ingredient.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        prerequisites.insert(prerequisiteStepIndex)
       }
     }
 
     // Check all instruments
-    for instrument in step.instruments {
-      if instrument.hasRecipeStepProductID {
-        let productID = instrument.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          prerequisites.insert(prerequisiteStepIndex)
-        }
+    for instrument in step.instruments where instrument.hasRecipeStepProductID {
+      let productID = instrument.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        prerequisites.insert(prerequisiteStepIndex)
       }
     }
 
     // Check all vessels
-    for vessel in step.vessels {
-      if vessel.hasRecipeStepProductID {
-        let productID = vessel.recipeStepProductID
-        if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-          prerequisites.insert(prerequisiteStepIndex)
-        }
+    for vessel in step.vessels where vessel.hasRecipeStepProductID {
+      let productID = vessel.recipeStepProductID
+      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
+        prerequisites.insert(prerequisiteStepIndex)
       }
     }
 

@@ -14,7 +14,8 @@ struct PerformRecipeView: View {
   @State private var isInstrumentsVesselsExpanded = false
   @State private var isIngredientsExpanded = false
   @State private var checkedIngredients: Set<String> = []
-  @State private var checkedInstrumentsVessels: Set<String> = []  // Track by ValidInstrument/ValidVessel ID
+  // Track by ValidInstrument/ValidVessel ID
+  @State private var checkedInstrumentsVessels: Set<String> = []
 
   let recipeID: String
 
