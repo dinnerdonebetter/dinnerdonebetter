@@ -9,4 +9,3 @@ import SwiftProtobuf
 
 // Make Recipe conform to Identifiable for sheet binding
 extension Mealplanning_Recipe: Identifiable {}
-

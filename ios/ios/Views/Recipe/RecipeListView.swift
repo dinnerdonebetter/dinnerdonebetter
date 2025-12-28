@@ -10,9 +10,8 @@ import SwiftUI
 
 struct RecipeListView: View {
   @Environment(AuthenticationManager.self) private var authManager
-  @Environment(\.dismiss) private var dismiss
   @State private var viewModel: RecipeListViewModel?
-  
+
   var body: some View {
     NavigationStack {
       Group {
@@ -73,13 +72,6 @@ struct RecipeListView: View {
       }
       .navigationTitle("Recipes")
       .navigationBarTitleDisplayMode(.large)
-      .toolbar {
-        ToolbarItem(placement: .navigationBarLeading) {
-          Button("Done") {
-            dismiss()
-          }
-        }
-      }
       .refreshable {
         if let viewModel = viewModel {
           await viewModel.loadRecipes()
@@ -103,14 +95,14 @@ struct RecipeListView: View {
 
 struct RecipeCard: View {
   let recipe: Mealplanning_Recipe
-  
+
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
         .font(.headline)
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
-      
+
       if !recipe.description_p.isEmpty {
         Text(recipe.description_p)
           .font(.subheadline)
@@ -118,15 +110,18 @@ struct RecipeCard: View {
           .lineLimit(2)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
-      
+
       // Recipe metadata
       HStack(spacing: 12) {
         if !recipe.steps.isEmpty {
-          Label("\(recipe.steps.count) step\(recipe.steps.count == 1 ? "" : "s")", systemImage: "list.number")
-            .font(.caption)
-            .foregroundColor(.secondary)
+          Label(
+            "\(recipe.steps.count) step\(recipe.steps.count == 1 ? "" : "s")",
+            systemImage: "list.number"
+          )
+          .font(.caption)
+          .foregroundColor(.secondary)
         }
-        
+
         if recipe.hasEstimatedPortions {
           Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
             .font(.caption)
@@ -143,7 +138,7 @@ struct RecipeCard: View {
         .stroke(Color(.systemGray4), lineWidth: 1)
     )
   }
-  
+
   private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
     if range.hasMax {
       if range.min == range.max {
@@ -166,8 +161,7 @@ struct RecipeCard: View {
   authManager.username = "Test User"
   authManager.userID = "user123"
   authManager.accountID = "account123"
-  
+
   return RecipeListView()
     .environment(authManager)
 }
-
