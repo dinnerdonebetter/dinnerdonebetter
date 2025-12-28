@@ -7,12 +7,19 @@
 
 import Foundation
 import GRPCCore
+import GRPCNIOTransportHTTP2
 import SwiftProtobuf
 import SwiftUI
 
 @Observable
 @MainActor
+// swiftlint:disable:next type_body_length
 class AccountSettingsViewModel {
+  private struct FetchDataResult {
+    let account: Identity_Account
+    let user: Auth_GetSelfResponse
+    let invitations: [Identity_AccountInvitation]
+  }
   // Data
   var account: Identity_Account?
   var user: Auth_GetSelfResponse?
@@ -39,39 +46,26 @@ class AccountSettingsViewModel {
 
   // Computed properties
   var isAccountAdmin: Bool {
-    guard let account = account,
-      let user = user,
-      user.hasResult,
-      !user.result.id.isEmpty
-    else {
-      return false
-    }
-    let userID = user.result.id
-    return account.members.first { membership in
+    guard let userID = getCurrentUserID() else { return false }
+    return account?.members.first { membership in
       membership.hasBelongsToUser && membership.belongsToUser.id == userID
     }?.accountRole == "account_admin"
   }
 
   var currentUserMembership: Identity_AccountUserMembershipWithUser? {
-    guard let account = account,
-      let user = user,
-      user.hasResult,
-      !user.result.id.isEmpty
-    else {
-      return nil
-    }
-    let userID = user.result.id
-    return account.members.first { membership in
+    guard let userID = getCurrentUserID() else { return nil }
+    return account?.members.first { membership in
       membership.hasBelongsToUser && membership.belongsToUser.id == userID
     }
   }
 
   var currentUserID: String {
-    guard let user = user,
-      user.hasResult,
-      !user.result.id.isEmpty
-    else {
-      return ""
+    return getCurrentUserID() ?? ""
+  }
+
+  private func getCurrentUserID() -> String? {
+    guard let user = user, user.hasResult, !user.result.id.isEmpty else {
+      return nil
     }
     return user.result.id
   }
@@ -87,28 +81,11 @@ class AccountSettingsViewModel {
     errorMessage = nil
 
     do {
-      // Fetch account, user, and invitations in parallel
-      async let accountTask = fetchActiveAccount()
-      async let userTask = fetchUser()
-      async let invitationsTask = fetchInvitations()
-
-      let (accountResult, userResult, invitationsResult) = try await (
-        accountTask, userTask, invitationsTask
-      )
-
-      self.account = accountResult
-      self.user = userResult
-      self.invitations = invitationsResult
-
-      // Initialize form fields from account
-      self.accountName = accountResult.name
-      self.contactPhone = accountResult.contactPhone
-      self.addressLine1 = accountResult.addressLine1
-      self.addressLine2 = accountResult.addressLine2
-      self.city = accountResult.city
-      self.state = accountResult.state
-      self.zipCode = accountResult.zipCode
-      self.country = accountResult.country.isEmpty ? "USA" : accountResult.country
+      let result = try await fetchAllData()
+      self.account = result.account
+      self.user = result.user
+      self.invitations = result.invitations
+      initializeFormFields(from: result.account)
     } catch {
       errorMessage = "Failed to load data: \(error.localizedDescription)"
       print("❌ Error loading account settings: \(error)")
@@ -117,22 +94,28 @@ class AccountSettingsViewModel {
     isLoading = false
   }
 
+  private func fetchAllData() async throws -> FetchDataResult {
+    async let accountTask = fetchActiveAccount()
+    async let userTask = fetchUser()
+    async let invitationsTask = fetchInvitations()
+    return FetchDataResult(
+      account: try await accountTask,
+      user: try await userTask,
+      invitations: try await invitationsTask
+    )
+  }
+
   private func fetchActiveAccount() async throws -> Identity_Account {
-    guard let clientManager = try? authManager.getClientManager() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-    }
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    let accountID = try await getActiveAccountID(clientManager: clientManager, metadata: metadata)
+    return try await getAccountDetails(
+      accountID: accountID, clientManager: clientManager, metadata: metadata)
+  }
 
-    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 2,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-    }
-
-    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-    // Get active account from auth service
+  private func getActiveAccountID(
+    clientManager: ClientManager<HTTP2ClientTransport.TransportServices>,
+    metadata: GRPCCore.Metadata
+  ) async throws -> String {
     let authResponse = try await clientManager.client.auth.getActiveAccount(
       Auth_GetActiveAccountRequest(),
       metadata: metadata,
@@ -145,9 +128,14 @@ class AccountSettingsViewModel {
         userInfo: [NSLocalizedDescriptionKey: "No active account found"])
     }
 
-    let accountID = authResponse.result.id
+    return authResponse.result.id
+  }
 
-    // Get full account details from identity service
+  private func getAccountDetails(
+    accountID: String,
+    clientManager: ClientManager<HTTP2ClientTransport.TransportServices>,
+    metadata: GRPCCore.Metadata
+  ) async throws -> Identity_Account {
     var request = Identity_GetAccountRequest()
     request.accountID = accountID
 
@@ -167,45 +155,16 @@ class AccountSettingsViewModel {
   }
 
   private func fetchUser() async throws -> Auth_GetSelfResponse {
-    guard let clientManager = try? authManager.getClientManager() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-    }
-
-    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 2,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-    }
-
-    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-    let response = try await clientManager.client.auth.getSelf(
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    return try await clientManager.client.auth.getSelf(
       Auth_GetSelfRequest(),
       metadata: metadata,
       options: clientManager.defaultCallOptions
     )
-
-    return response
   }
 
   private func fetchInvitations() async throws -> [Identity_AccountInvitation] {
-    guard let clientManager = try? authManager.getClientManager() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-    }
-
-    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-      throw NSError(
-        domain: "AccountSettingsViewModel", code: 2,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-    }
-
-    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-    // Create an empty filter (no filtering)
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
     let filter = Filtering_QueryFilter()
     var request = Identity_GetSentAccountInvitationsRequest()
     request.filter = filter
@@ -220,68 +179,76 @@ class AccountSettingsViewModel {
   }
 
   func updateAccount() async -> Bool {
+    guard let accountID = validateAccountUpdate() else {
+      return false
+    }
+
+    return await performUpdate {
+      try await executeAccountUpdate(accountID: accountID)
+      await loadData()
+    } errorMessage: {
+      "Failed to update account: \($0.localizedDescription)"
+    }
+  }
+
+  private func validateAccountUpdate() -> String? {
     guard let account = account else {
       errorMessage = "No account loaded"
-      return false
+      return nil
     }
 
     guard isAccountAdmin else {
       errorMessage = "Only account admins can update account information"
-      return false
+      return nil
     }
 
-    isLoading = true
-    errorMessage = nil
+    return account.id
+  }
 
-    do {
-      guard let clientManager = try? authManager.getClientManager() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 1,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-      }
+  private func executeAccountUpdate(accountID: String) async throws {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    let updateInput = createAccountUpdateInput()
+    var request = Identity_UpdateAccountRequest()
+    request.accountID = accountID
+    request.input = updateInput
 
-      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 2,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-      }
+    _ = try await clientManager.client.identity.updateAccount(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+  }
 
-      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-      var updateInput = Identity_AccountUpdateRequestInput()
-      updateInput.name = accountName
-      updateInput.contactPhone = contactPhone
-      updateInput.addressLine1 = addressLine1
-      updateInput.addressLine2 = addressLine2
-      updateInput.city = city
-      updateInput.state = state
-      updateInput.zipCode = zipCode
-      updateInput.country = country
-
-      var request = Identity_UpdateAccountRequest()
-      request.accountID = account.id
-      request.input = updateInput
-
-      _ = try await clientManager.client.identity.updateAccount(
-        request,
-        metadata: metadata,
-        options: clientManager.defaultCallOptions
-      )
-
-      // Reload data to get updated account
-      await loadData()
-
-      isLoading = false
-      return true
-    } catch {
-      errorMessage = "Failed to update account: \(error.localizedDescription)"
-      print("❌ Error updating account: \(error)")
-      isLoading = false
-      return false
-    }
+  private func createAccountUpdateInput() -> Identity_AccountUpdateRequestInput {
+    var updateInput = Identity_AccountUpdateRequestInput()
+    updateInput.name = accountName
+    updateInput.contactPhone = contactPhone
+    updateInput.addressLine1 = addressLine1
+    updateInput.addressLine2 = addressLine2
+    updateInput.city = city
+    updateInput.state = state
+    updateInput.zipCode = zipCode
+    updateInput.country = country
+    return updateInput
   }
 
   func sendInvitation() async -> Bool {
+    guard validateInvitationInput() else {
+      return false
+    }
+
+    return await performUpdate {
+      try await executeInvitationCreation()
+      invitationEmail = ""
+      invitationName = ""
+      invitationNote = ""
+      await loadData()
+    } errorMessage: {
+      "Failed to send invitation: \($0.localizedDescription)"
+    }
+  }
+
+  private func validateInvitationInput() -> Bool {
     guard account != nil else {
       errorMessage = "No account loaded"
       return false
@@ -297,127 +264,154 @@ class AccountSettingsViewModel {
       return false
     }
 
-    // Basic email validation
-    let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-    guard emailPredicate.evaluate(with: invitationEmail) else {
+    guard validateEmail(invitationEmail) else {
       errorMessage = "Invalid email address"
       return false
     }
 
+    return true
+  }
+
+  private func validateEmail(_ email: String) -> Bool {
+    let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+    return emailPredicate.evaluate(with: email)
+  }
+
+  private func createInvitationInput() -> Identity_AccountInvitationCreationRequestInput {
+    var invitationInput = Identity_AccountInvitationCreationRequestInput()
+    invitationInput.toEmail = invitationEmail
+    invitationInput.toName = invitationName
+    invitationInput.note = invitationNote
+    return invitationInput
+  }
+
+  private func executeInvitationCreation() async throws {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    let invitationInput = createInvitationInput()
+    var request = Identity_CreateAccountInvitationRequest()
+    request.input = invitationInput
+
+    _ = try await clientManager.client.identity.createAccountInvitation(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+  }
+
+  func updateMemberRole(membershipID: String, newRole: String, reason: String) async -> Bool {
+    guard let membership = validateMemberRoleUpdate(membershipID: membershipID, reason: reason)
+    else {
+      return false
+    }
+
+    return await performUpdate {
+      try await executeMemberRoleUpdate(
+        userID: membership.belongsToUser.id, newRole: newRole, reason: reason)
+      await loadData()
+    } errorMessage: {
+      "Failed to update member role: \($0.localizedDescription)"
+    }
+  }
+
+  private func validateMemberRoleUpdate(
+    membershipID: String, reason: String
+  ) -> Identity_AccountUserMembershipWithUser? {
+    guard isAccountAdmin else {
+      errorMessage = "Only account admins can change member roles"
+      return nil
+    }
+
+    guard !reason.isEmpty else {
+      errorMessage = "A reason is required for changing member roles"
+      return nil
+    }
+
+    guard let membership = account?.members.first(where: { $0.id == membershipID }) else {
+      errorMessage = "Member not found"
+      return nil
+    }
+
+    guard membership.hasBelongsToUser, !membership.belongsToUser.id.isEmpty else {
+      errorMessage = "User ID not found"
+      return nil
+    }
+
+    return membership
+  }
+
+  private func performUpdate(
+    operation: () async throws -> Void,
+    errorMessage: (Error) -> String
+  ) async -> Bool {
     isLoading = true
-    errorMessage = nil
+    self.errorMessage = nil
 
     do {
-      guard let clientManager = try? authManager.getClientManager() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 1,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-      }
-
-      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 2,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-      }
-
-      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-      var invitationInput = Identity_AccountInvitationCreationRequestInput()
-      invitationInput.toEmail = invitationEmail
-      invitationInput.toName = invitationName
-      invitationInput.note = invitationNote
-
-      var request = Identity_CreateAccountInvitationRequest()
-      request.input = invitationInput
-
-      _ = try await clientManager.client.identity.createAccountInvitation(
-        request,
-        metadata: metadata,
-        options: clientManager.defaultCallOptions
-      )
-
-      // Clear form and reload invitations
-      invitationEmail = ""
-      invitationName = ""
-      invitationNote = ""
-      await loadData()
-
+      try await operation()
       isLoading = false
       return true
     } catch {
-      errorMessage = "Failed to send invitation: \(error.localizedDescription)"
-      print("❌ Error sending invitation: \(error)")
+      self.errorMessage = errorMessage(error)
+      print("❌ Error: \(error)")
       isLoading = false
       return false
     }
   }
 
-  func updateMemberRole(membershipID: String, newRole: String, reason: String) async -> Bool {
-    guard isAccountAdmin else {
-      errorMessage = "Only account admins can change member roles"
-      return false
+  private func createMemberRoleUpdateInput(newRole: String, reason: String)
+    -> Identity_ModifyUserPermissionsInput
+  {
+    var updateInput = Identity_ModifyUserPermissionsInput()
+    updateInput.newRole = newRole
+    updateInput.reason = reason
+    return updateInput
+  }
+
+  private func executeMemberRoleUpdate(userID: String, newRole: String, reason: String) async throws
+  {
+    let (clientManager, metadata) = try await getClientManagerAndMetadata()
+    let updateInput = createMemberRoleUpdateInput(newRole: newRole, reason: reason)
+
+    var request = Identity_UpdateAccountMemberPermissionsRequest()
+    request.userID = userID
+    request.input = updateInput
+
+    _ = try await clientManager.client.identity.updateAccountMemberPermissions(
+      request,
+      metadata: metadata,
+      options: clientManager.defaultCallOptions
+    )
+  }
+
+  private func initializeFormFields(from account: Identity_Account) {
+    accountName = account.name
+    contactPhone = account.contactPhone
+    addressLine1 = account.addressLine1
+    addressLine2 = account.addressLine2
+    city = account.city
+    state = account.state
+    zipCode = account.zipCode
+    country = account.country.isEmpty ? "USA" : account.country
+  }
+
+  private func getClientManagerAndMetadata() async throws -> (
+    ClientManager<HTTP2ClientTransport.TransportServices>, GRPCCore.Metadata
+  ) {
+    guard let clientManager = try? authManager.getClientManager() else {
+      throw NSError(
+        domain: "AccountSettingsViewModel", code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
     }
 
-    guard !reason.isEmpty else {
-      errorMessage = "A reason is required for changing member roles"
-      return false
+    guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+      throw NSError(
+        domain: "AccountSettingsViewModel", code: 2,
+        userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
     }
 
-    guard let membership = account?.members.first(where: { $0.id == membershipID }) else {
-      errorMessage = "Member not found"
-      return false
-    }
-
-    guard membership.hasBelongsToUser, !membership.belongsToUser.id.isEmpty else {
-      errorMessage = "User ID not found"
-      return false
-    }
-    let userID = membership.belongsToUser.id
-
-    isLoading = true
-    errorMessage = nil
-
-    do {
-      guard let clientManager = try? authManager.getClientManager() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 1,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
-      }
-
-      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
-        throw NSError(
-          domain: "AccountSettingsViewModel", code: 2,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
-      }
-
-      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-
-      var updateInput = Identity_ModifyUserPermissionsInput()
-      updateInput.newRole = newRole
-      updateInput.reason = reason
-
-      var request = Identity_UpdateAccountMemberPermissionsRequest()
-      request.userID = userID
-      request.input = updateInput
-
-      _ = try await clientManager.client.identity.updateAccountMemberPermissions(
-        request,
-        metadata: metadata,
-        options: clientManager.defaultCallOptions
-      )
-
-      // Reload data to get updated account
-      await loadData()
-
-      isLoading = false
-      return true
-    } catch {
-      errorMessage = "Failed to update member role: \(error.localizedDescription)"
-      print("❌ Error updating member role: \(error)")
-      isLoading = false
-      return false
-    }
+    let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+    return (clientManager, metadata)
   }
 
   var accountDataHasChanged: Bool {
@@ -432,4 +426,3 @@ class AccountSettingsViewModel {
       || account.country != country
   }
 }
-

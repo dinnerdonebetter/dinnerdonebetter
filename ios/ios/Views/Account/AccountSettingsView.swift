@@ -14,11 +14,11 @@ struct AccountSettingsView: View {
   var body: some View {
     NavigationStack {
       Group {
-        if let vm = viewModel {
-          if vm.isLoading {
+        if let viewModel = viewModel {
+          if viewModel.isLoading {
             ProgressView("Loading...")
               .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let errorMessage = vm.errorMessage {
+          } else if let errorMessage = viewModel.errorMessage {
             VStack(spacing: 16) {
               Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
@@ -32,7 +32,7 @@ struct AccountSettingsView: View {
                 .padding(.horizontal)
               Button("Retry") {
                 Task {
-                  await vm.loadData()
+                  await viewModel.loadData()
                 }
               }
               .buttonStyle(.borderedProminent)
@@ -42,120 +42,23 @@ struct AccountSettingsView: View {
             ScrollView {
               VStack(spacing: 24) {
                 // Members Section
-                if let account = vm.account, !account.members.isEmpty {
-                  membersSection(viewModel: vm, account: account)
+                if let account = viewModel.account, !account.members.isEmpty {
+                  membersSection(viewModel: viewModel, account: account)
                 }
 
                 // Account Information Section
-                if vm.account != nil {
-                  VStack(alignment: .leading, spacing: 12) {
-                    Text("Information")
-                      .font(.title2)
-                      .fontWeight(.bold)
-                      .padding(.horizontal, 4)
-
-                    if !vm.isAccountAdmin {
-                      Text("Only account admins can edit account information")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .padding(.vertical, 8)
-                    }
-
-                    VStack(spacing: 16) {
-                      TextField("Account Name", text: Binding(get: { vm.accountName }, set: { vm.accountName = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .disabled(!vm.isAccountAdmin)
-
-                      TextField("Contact Phone", text: Binding(get: { vm.contactPhone }, set: { vm.contactPhone = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.phonePad)
-                        .disabled(!vm.isAccountAdmin)
-
-                      TextField("Address Line 1", text: Binding(get: { vm.addressLine1 }, set: { vm.addressLine1 = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .disabled(!vm.isAccountAdmin)
-
-                      TextField("Address Line 2", text: Binding(get: { vm.addressLine2 }, set: { vm.addressLine2 = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .disabled(!vm.isAccountAdmin)
-
-                      HStack(spacing: 12) {
-                        TextField("City", text: Binding(get: { vm.city }, set: { vm.city = $0 }))
-                          .textFieldStyle(.roundedBorder)
-                          .disabled(!vm.isAccountAdmin)
-
-                        TextField("State", text: Binding(get: { vm.state }, set: { vm.state = $0 }))
-                          .textFieldStyle(.roundedBorder)
-                          .disabled(!vm.isAccountAdmin)
-
-                        TextField("Zip Code", text: Binding(get: { vm.zipCode }, set: { vm.zipCode = $0 }))
-                          .textFieldStyle(.roundedBorder)
-                          .keyboardType(.numberPad)
-                          .disabled(!vm.isAccountAdmin)
-                      }
-
-                      TextField("Country", text: Binding(get: { vm.country }, set: { vm.country = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .disabled(!vm.isAccountAdmin)
-
-                      if vm.isAccountAdmin && vm.accountDataHasChanged {
-                        Button("Update Account") {
-                          Task {
-                            await vm.updateAccount()
-                          }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .frame(maxWidth: .infinity)
-                      }
-                    }
-                  }
+                if viewModel.account != nil {
+                  accountInformationSection(viewModel: viewModel)
                 }
 
                 // Pending Invitations Section
-                if !vm.invitations.isEmpty {
-                  VStack(alignment: .leading, spacing: 12) {
-                    Text("Awaiting Invites")
-                      .font(.title2)
-                      .fontWeight(.bold)
-                      .padding(.horizontal, 4)
-
-                    ForEach(vm.invitations, id: \.id) { invitation in
-                      InvitationCard(invitation: invitation)
-                    }
-                  }
+                if !viewModel.invitations.isEmpty {
+                  pendingInvitationsSection(viewModel: viewModel)
                 }
 
                 // Send Invitation Section
-                if vm.isAccountAdmin {
-                  VStack(alignment: .leading, spacing: 12) {
-                    Text("Send Invite")
-                      .font(.title2)
-                      .fontWeight(.bold)
-                      .padding(.horizontal, 4)
-
-                    VStack(spacing: 16) {
-                      TextField("Email Address", text: Binding(get: { vm.invitationEmail }, set: { vm.invitationEmail = $0 }))
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-
-                      TextField("Name (Optional)", text: Binding(get: { vm.invitationName }, set: { vm.invitationName = $0 }))
-                        .textFieldStyle(.roundedBorder)
-
-                      TextField("Note (Optional)", text: Binding(get: { vm.invitationNote }, set: { vm.invitationNote = $0 }), axis: .vertical)
-                        .textFieldStyle(.roundedBorder)
-                        .lineLimit(3...6)
-
-                      Button("Send Invitation") {
-                        Task {
-                          await vm.sendInvitation()
-                        }
-                      }
-                      .buttonStyle(.borderedProminent)
-                      .frame(maxWidth: .infinity)
-                      .disabled(vm.invitationEmail.isEmpty)
-                    }
-                  }
+                if viewModel.isAccountAdmin {
+                  sendInvitationSection(viewModel: viewModel)
                 }
               }
               .padding()
@@ -186,7 +89,9 @@ struct AccountSettingsView: View {
   }
 
   // MARK: - Members Section
-  private func membersSection(viewModel: AccountSettingsViewModel, account: Identity_Account) -> some View {
+  private func membersSection(viewModel: AccountSettingsViewModel, account: Identity_Account)
+    -> some View
+  {
     VStack(alignment: .leading, spacing: 12) {
       Text("Members")
         .font(.title2)
@@ -200,7 +105,8 @@ struct AccountSettingsView: View {
           isAccountAdmin: viewModel.isAccountAdmin,
           onRoleChange: { newRole, reason in
             Task {
-              await viewModel.updateMemberRole(membershipID: member.id, newRole: newRole, reason: reason)
+              await viewModel.updateMemberRole(
+                membershipID: member.id, newRole: newRole, reason: reason)
             }
           }
         )
@@ -208,6 +114,144 @@ struct AccountSettingsView: View {
     }
   }
 
+  // MARK: - Account Information Section
+  private func accountInformationSection(viewModel: AccountSettingsViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Information")
+        .font(.title2)
+        .fontWeight(.bold)
+        .padding(.horizontal, 4)
+
+      if !viewModel.isAccountAdmin {
+        Text("Only account admins can edit account information")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .padding(.vertical, 8)
+      }
+
+      VStack(spacing: 16) {
+        TextField(
+          "Account Name",
+          text: Binding(get: { viewModel.accountName }, set: { viewModel.accountName = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .disabled(!viewModel.isAccountAdmin)
+
+        TextField(
+          "Contact Phone",
+          text: Binding(get: { viewModel.contactPhone }, set: { viewModel.contactPhone = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .keyboardType(.phonePad)
+        .disabled(!viewModel.isAccountAdmin)
+
+        TextField(
+          "Address Line 1",
+          text: Binding(get: { viewModel.addressLine1 }, set: { viewModel.addressLine1 = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .disabled(!viewModel.isAccountAdmin)
+
+        TextField(
+          "Address Line 2",
+          text: Binding(get: { viewModel.addressLine2 }, set: { viewModel.addressLine2 = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .disabled(!viewModel.isAccountAdmin)
+
+        HStack(spacing: 12) {
+          TextField("City", text: Binding(get: { viewModel.city }, set: { viewModel.city = $0 }))
+            .textFieldStyle(.roundedBorder)
+            .disabled(!viewModel.isAccountAdmin)
+
+          TextField("State", text: Binding(get: { viewModel.state }, set: { viewModel.state = $0 }))
+            .textFieldStyle(.roundedBorder)
+            .disabled(!viewModel.isAccountAdmin)
+
+          TextField(
+            "Zip Code",
+            text: Binding(get: { viewModel.zipCode }, set: { viewModel.zipCode = $0 })
+          )
+          .textFieldStyle(.roundedBorder)
+          .keyboardType(.numberPad)
+          .disabled(!viewModel.isAccountAdmin)
+        }
+
+        TextField(
+          "Country", text: Binding(get: { viewModel.country }, set: { viewModel.country = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .disabled(!viewModel.isAccountAdmin)
+
+        if viewModel.isAccountAdmin && viewModel.accountDataHasChanged {
+          Button("Update Account") {
+            Task {
+              await viewModel.updateAccount()
+            }
+          }
+          .buttonStyle(.borderedProminent)
+          .frame(maxWidth: .infinity)
+        }
+      }
+    }
+  }
+
+  // MARK: - Pending Invitations Section
+  private func pendingInvitationsSection(viewModel: AccountSettingsViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Awaiting Invites")
+        .font(.title2)
+        .fontWeight(.bold)
+        .padding(.horizontal, 4)
+
+      ForEach(viewModel.invitations, id: \.id) { invitation in
+        InvitationCard(invitation: invitation)
+      }
+    }
+  }
+
+  // MARK: - Send Invitation Section
+  private func sendInvitationSection(viewModel: AccountSettingsViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Send Invite")
+        .font(.title2)
+        .fontWeight(.bold)
+        .padding(.horizontal, 4)
+
+      VStack(spacing: 16) {
+        TextField(
+          "Email Address",
+          text: Binding(get: { viewModel.invitationEmail }, set: { viewModel.invitationEmail = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+        .keyboardType(.emailAddress)
+        .autocapitalization(.none)
+
+        TextField(
+          "Name (Optional)",
+          text: Binding(get: { viewModel.invitationName }, set: { viewModel.invitationName = $0 })
+        )
+        .textFieldStyle(.roundedBorder)
+
+        TextField(
+          "Note (Optional)",
+          text: Binding(get: { viewModel.invitationNote }, set: { viewModel.invitationNote = $0 }),
+          axis: .vertical
+        )
+        .textFieldStyle(.roundedBorder)
+        .lineLimit(3...6)
+
+        Button("Send Invitation") {
+          Task {
+            await viewModel.sendInvitation()
+          }
+        }
+        .buttonStyle(.borderedProminent)
+        .frame(maxWidth: .infinity)
+        .disabled(viewModel.invitationEmail.isEmpty)
+      }
+    }
+  }
 }
 
 // MARK: - Member Card
@@ -264,23 +308,26 @@ struct MemberCard: View {
       Spacer()
 
       if isAccountAdmin {
-        Picker("Role", selection: Binding(
-          get: { selectedRole },
-          set: { newValue in
-            // Don't update selectedRole yet - show the confirmation sheet first
-            let newRole = newValue == "Admin" ? "account_admin" : "account_member"
-            let currentRole = member.accountRole
-            if newRole != currentRole {
-              // Store what they selected
-              pendingNewRole = newRole
-              reasonText = ""
-              showReasonAlert = true
-            } else {
-              // If they selected the same role, just update it (no change needed)
-              selectedRole = newValue
+        Picker(
+          "Role",
+          selection: Binding(
+            get: { selectedRole },
+            set: { newValue in
+              // Don't update selectedRole yet - show the confirmation sheet first
+              let newRole = newValue == "Admin" ? "account_admin" : "account_member"
+              let currentRole = member.accountRole
+              if newRole != currentRole {
+                // Store what they selected
+                pendingNewRole = newRole
+                reasonText = ""
+                showReasonAlert = true
+              } else {
+                // If they selected the same role, just update it (no change needed)
+                selectedRole = newValue
+              }
             }
-          }
-        )) {
+          )
+        ) {
           Text("Member").tag("Member")
           Text("Admin").tag("Admin")
         }
@@ -408,4 +455,3 @@ struct InvitationCard: View {
   return AccountSettingsView()
     .environment(authManager)
 }
-
