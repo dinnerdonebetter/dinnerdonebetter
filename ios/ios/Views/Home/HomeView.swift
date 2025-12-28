@@ -131,6 +131,19 @@ struct HomeView: View {
         .foregroundColor(.white)
         .cornerRadius(10)
       }
+      
+      NavigationLink(destination: RecipeListView()) {
+        HStack {
+          Image(systemName: "book.closed")
+          Text("View Recipes")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.green)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
     }
   }
 

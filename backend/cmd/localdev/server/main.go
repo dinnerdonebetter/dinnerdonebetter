@@ -303,48 +303,36 @@ func main() {
 			var chickenOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
 			for _, chickenMeal := range chickenMeals {
 				chickenOptions = append(chickenOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:                     identifiers.New(),
-					MealID:                 chickenMeal.ID,
-					MealScale:              1.0,
-					Notes:                  "",
-					AssignedCook:           nil,
-					AssignedDishwasher:     nil,
-					BelongsToMealPlanEvent: "", // Will be set by converter
+					ID:        identifiers.New(),
+					MealID:    chickenMeal.ID,
+					MealScale: 1.0,
 				})
 			}
 
 			var otherOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
 			for _, otherMeal := range otherMeals {
 				otherOptions = append(otherOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:                     identifiers.New(),
-					MealID:                 otherMeal.ID,
-					MealScale:              1.0,
-					Notes:                  "",
-					AssignedCook:           nil,
-					AssignedDishwasher:     nil,
-					BelongsToMealPlanEvent: "", // Will be set by converter
+					ID:        identifiers.New(),
+					MealID:    otherMeal.ID,
+					MealScale: 1.0,
 				})
 			}
 
 			// Create a single event with all three chickenOptions
 			events := []*mealplanning.MealPlanEventDatabaseCreationInput{
 				{
-					ID:                identifiers.New(),
-					StartsAt:          eventStart,
-					EndsAt:            eventEnd,
-					MealName:          mealplanning.DinnerMealName,
-					Notes:             "",
-					BelongsToMealPlan: "", // Will be set by converter
-					Options:           chickenOptions,
+					ID:       identifiers.New(),
+					StartsAt: eventStart,
+					EndsAt:   eventEnd,
+					MealName: mealplanning.DinnerMealName,
+					Options:  chickenOptions,
 				},
 				{
-					ID:                identifiers.New(),
-					StartsAt:          cloneTime(eventStart).Add(24 * time.Hour),
-					EndsAt:            cloneTime(eventEnd).Add(24 * time.Hour),
-					MealName:          mealplanning.SupperMealName,
-					Notes:             "",
-					BelongsToMealPlan: "", // Will be set by converter
-					Options:           otherOptions,
+					ID:       identifiers.New(),
+					StartsAt: cloneTime(eventStart).Add(24 * time.Hour),
+					EndsAt:   cloneTime(eventEnd).Add(24 * time.Hour),
+					MealName: mealplanning.SupperMealName,
+					Options:  otherOptions,
 				},
 			}
 
