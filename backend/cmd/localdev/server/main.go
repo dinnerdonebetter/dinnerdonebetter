@@ -98,7 +98,7 @@ func main() {
 			generatedQuerier := identitygenerated.New()
 
 			// Create two member users
-			memberUsers := []struct {
+			memberUsers := []*struct {
 				username  string
 				email     string
 				password  string
@@ -126,8 +126,8 @@ func main() {
 
 			for _, memberUser := range memberUsers {
 				// Check if user already exists
-				existingUser, userErr := repo.GetUserByUsername(ctx, memberUser.username)
-				if userErr == nil && existingUser != nil {
+				existingUser, userExistsErr := repo.GetUserByUsername(ctx, memberUser.username)
+				if userExistsErr == nil && existingUser != nil {
 					logger.Info(fmt.Sprintf("User %s already exists, skipping creation", memberUser.username))
 					// Still add to account if not already a member
 					isMember, memberErr := repo.UserIsMemberOfAccount(ctx, existingUser.ID, adminAccountID)
@@ -163,7 +163,7 @@ func main() {
 					LastName:        memberUser.lastName,
 				}
 
-				user, userErr := repo.CreateUser(ctx, identityconverters.ConvertUserToUserDatabaseCreationInput(userInput))
+				user, userErr = repo.CreateUser(ctx, identityconverters.ConvertUserToUserDatabaseCreationInput(userInput))
 				if userErr != nil {
 					return fmt.Errorf("failed to create user %s: %w", memberUser.username, userErr)
 				}
