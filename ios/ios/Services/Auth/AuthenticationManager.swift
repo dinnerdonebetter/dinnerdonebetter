@@ -167,7 +167,8 @@ class AuthenticationManager: AuthenticationManaging {
             self.accountID = ""
           }
           return LoginResult(
-            success: false, error: "Failed to complete authentication: \(oauth2Result.error ?? "Unknown error")",
+            success: false,
+            error: "Failed to complete authentication: \(oauth2Result.error ?? "Unknown error")",
             requiresTOTP: false)
         } else {
           print("✅ OAuth2 token obtained successfully")

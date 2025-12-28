@@ -13,9 +13,9 @@ struct ContentView: View {
   var body: some View {
     Group {
       if authManager.isAuthenticated && !authManager.oauth2AccessToken.isEmpty {
-      HomeView()
-    } else {
-      LoginView()
+        HomeView()
+      } else {
+        LoginView()
       }
     }
   }

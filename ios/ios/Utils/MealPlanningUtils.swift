@@ -31,7 +31,7 @@ enum MealPlanningUtils {
       return "Meal"
     }
   }
-  
+
   /// Convert MealPlanEventName enum to API string format
   /// - Parameter mealName: The meal plan event name enum
   /// - Returns: A string in the format expected by the API (e.g., "breakfast", "second_breakfast")
@@ -50,8 +50,7 @@ enum MealPlanningUtils {
     case .dinner:
       return "dinner"
     case .UNRECOGNIZED:
-      return "dinner" // Default fallback
+      return "dinner"  // Default fallback
     }
   }
 }
-

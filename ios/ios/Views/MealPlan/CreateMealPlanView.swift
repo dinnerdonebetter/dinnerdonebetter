@@ -18,12 +18,12 @@ struct CreateMealPlanView: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewModel: CreateMealPlanViewModel?
   @FocusState var focusedField: Field?
-  
+
   enum Field: Hashable {
     case mealPlanName
     case searchQuery(UUID)  // Per-event search
   }
-  
+
   private var isRegularWidth: Bool {
     horizontalSizeClass == .regular
   }
@@ -72,8 +72,6 @@ struct CreateMealPlanView: View {
     }
   }
 
-
-
   // MARK: - Event Card
 
   func eventCard(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
@@ -84,12 +82,14 @@ struct CreateMealPlanView: View {
           .font(.headline)
         Spacer()
         if viewModel.events.count > 1 {
-          Button(action: {
-            viewModel.removeEvent(event)
-          }, label: {
-            Image(systemName: "trash")
-              .foregroundColor(.red)
-          })
+          Button(
+            action: {
+              viewModel.removeEvent(event)
+            },
+            label: {
+              Image(systemName: "trash")
+                .foregroundColor(.red)
+            })
         }
       }
 
@@ -101,12 +101,15 @@ struct CreateMealPlanView: View {
             Text("Meal Type")
               .font(.subheadline)
               .foregroundColor(.secondary)
-            Picker("Meal Type", selection: Binding(
-              get: { event.mealType },
-              set: { newValue in
-                viewModel.updateEventMealType(event.id, mealType: newValue)
-              }
-            )) {
+            Picker(
+              "Meal Type",
+              selection: Binding(
+                get: { event.mealType },
+                set: { newValue in
+                  viewModel.updateEventMealType(event.id, mealType: newValue)
+                }
+              )
+            ) {
               Text("Breakfast").tag(Mealplanning_MealPlanEventName.breakfast)
               Text("Second Breakfast").tag(Mealplanning_MealPlanEventName.secondBreakfast)
               Text("Brunch").tag(Mealplanning_MealPlanEventName.brunch)
@@ -165,12 +168,15 @@ struct CreateMealPlanView: View {
           Text("Meal Type")
             .font(.subheadline)
             .foregroundColor(.secondary)
-          Picker("Meal Type", selection: Binding(
-            get: { event.mealType },
-            set: { newValue in
-              viewModel.updateEventMealType(event.id, mealType: newValue)
-            }
-          )) {
+          Picker(
+            "Meal Type",
+            selection: Binding(
+              get: { event.mealType },
+              set: { newValue in
+                viewModel.updateEventMealType(event.id, mealType: newValue)
+              }
+            )
+          ) {
             Text("Breakfast").tag(Mealplanning_MealPlanEventName.breakfast)
             Text("Second Breakfast").tag(Mealplanning_MealPlanEventName.secondBreakfast)
             Text("Brunch").tag(Mealplanning_MealPlanEventName.brunch)
@@ -243,23 +249,26 @@ struct CreateMealPlanView: View {
   // MARK: - Search Section (per event)
 
   func searchSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
-      _ = Bindable(viewModel)
+    _ = Bindable(viewModel)
     guard let eventIndex = viewModel.events.firstIndex(where: { $0.id == event.id }) else {
       return AnyView(EmptyView())
     }
-    
+
     return AnyView(
       VStack(alignment: .leading, spacing: 12) {
         Text("Search for Meals")
           .font(.headline)
 
         HStack {
-          TextField("Search meals...", text: Binding(
-            get: { event.searchQuery },
-            set: { newValue in
-              viewModel.updateEventSearchQuery(event.id, query: newValue)
-            }
-          ))
+          TextField(
+            "Search meals...",
+            text: Binding(
+              get: { event.searchQuery },
+              set: { newValue in
+                viewModel.updateEventSearchQuery(event.id, query: newValue)
+              }
+            )
+          )
           .textFieldStyle(.roundedBorder)
           .autocorrectionDisabled()
           .textInputAutocapitalization(.never)
@@ -275,17 +284,19 @@ struct CreateMealPlanView: View {
             ProgressView()
               .padding(.leading, 8)
           } else {
-            Button(action: {
-              Task {
-                await viewModel.searchForMeals(for: event)
-              }
-            }, label: {
-              Image(systemName: "magnifyingglass")
-                .padding(8)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            })
+            Button(
+              action: {
+                Task {
+                  await viewModel.searchForMeals(for: event)
+                }
+              },
+              label: {
+                Image(systemName: "magnifyingglass")
+                  .padding(8)
+                  .background(Color.blue)
+                  .foregroundColor(.white)
+                  .cornerRadius(8)
+              })
           }
         }
 
@@ -323,7 +334,9 @@ struct CreateMealPlanView: View {
 
   // MARK: - Search Results Section (per event)
 
-  func searchResultsSection(event: MealPlanEvent, filteredResults: [Mealplanning_Meal], viewModel: CreateMealPlanViewModel) -> some View {
+  func searchResultsSection(
+    event: MealPlanEvent, filteredResults: [Mealplanning_Meal], viewModel: CreateMealPlanViewModel
+  ) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Search Results (\(filteredResults.count))")
         .font(.headline)

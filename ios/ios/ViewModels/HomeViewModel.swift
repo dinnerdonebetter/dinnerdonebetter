@@ -100,7 +100,7 @@ class HomeViewModel {
       // First fetch meal plans
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
-      
+
       // Log pending vote meal plans count
       let pendingCount = pendingVoteMealPlans.count
       print("📊 HomeViewModel: Loaded \(pendingCount) meal plan(s) with pending votes")
