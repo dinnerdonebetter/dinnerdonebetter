@@ -149,15 +149,14 @@ struct HomeView: View {
           .padding(.vertical, 8)
       } else {
         ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
-          PendingVoteCard(
-            mealPlan: mealPlan,
-            hasVoted: viewModel.hasUserVoted(on: mealPlan),
-            timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
-          ) {
-            // swiftlint:disable:next todo
-            // FIXME: Navigate to voting view
-            print("Vote on meal plan \(mealPlan.id)")
+          NavigationLink(destination: VoteMealPlanView(mealPlan: mealPlan)) {
+            PendingVoteCardContent(
+              mealPlan: mealPlan,
+              hasVoted: viewModel.hasUserVoted(on: mealPlan),
+              timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
+            )
           }
+          .buttonStyle(.plain)
         }
       }
     }
@@ -321,41 +320,56 @@ struct PendingVoteCard: View {
 
   var body: some View {
     Button(action: onTap) {
-      VStack(alignment: .leading, spacing: 8) {
-        HStack {
-          VStack(alignment: .leading, spacing: 2) {
-            Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-              .font(.headline)
-              .foregroundColor(.primary)
-            Text(HomeView.formatMealPlanTimeRange(mealPlan))
-              .font(.caption)
-              .foregroundColor(.secondary)
-          }
-          Spacer()
-          if hasVoted {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-          } else {
-            Image(systemName: "exclamationmark.circle.fill")
-              .foregroundColor(.orange)
-          }
-        }
-
-        Text(timeUntilDeadline)
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-
-        if !hasVoted {
-          Text("Tap to vote")
-            .font(.caption)
-            .foregroundColor(.blue)
-        }
-      }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(10)
+      PendingVoteCardContent(
+        mealPlan: mealPlan,
+        hasVoted: hasVoted,
+        timeUntilDeadline: timeUntilDeadline
+      )
     }
     .buttonStyle(.plain)
+  }
+}
+
+// MARK: - Pending Vote Card Content (reusable for NavigationLink)
+struct PendingVoteCardContent: View {
+  let mealPlan: Mealplanning_MealPlan
+  let hasVoted: Bool
+  let timeUntilDeadline: String
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        VStack(alignment: .leading, spacing: 2) {
+          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+            .font(.headline)
+            .foregroundColor(.primary)
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        Spacer()
+        if hasVoted {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundColor(.green)
+        } else {
+          Image(systemName: "exclamationmark.circle.fill")
+            .foregroundColor(.orange)
+        }
+      }
+
+      Text(timeUntilDeadline)
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+
+      if !hasVoted {
+        Text("Tap to vote")
+          .font(.caption)
+          .foregroundColor(.blue)
+      }
+    }
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
   }
 }
 

@@ -50,7 +50,7 @@ class HomeViewModel {
 
   var upcomingMealPlans: [Mealplanning_MealPlan] {
     let now = Date()
-    let twoWeeksFromNow = Calendar.current.date(byAdding: .day, value: 14, to: now) ?? now
+    let fourWeeksFromNow = Calendar.current.date(byAdding: .day, value: 28, to: now) ?? now
 
     return allMealPlans.filter { mealPlan in
       // Finalized meal plans with events in the next 2 weeks
@@ -61,7 +61,7 @@ class HomeViewModel {
       // Check if any event is in the next 2 weeks
       return mealPlan.events.contains { event in
         let eventStart = timestampToDate(event.startsAt)
-        return eventStart >= now && eventStart <= twoWeeksFromNow
+        return eventStart >= now && eventStart <= fourWeeksFromNow
       }
     }
   }
