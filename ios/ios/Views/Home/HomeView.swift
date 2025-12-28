@@ -131,6 +131,19 @@ struct HomeView: View {
         .foregroundColor(.white)
         .cornerRadius(10)
       }
+
+      NavigationLink(destination: RecipeListView()) {
+        HStack {
+          Image(systemName: "book.closed")
+          Text("View Recipes")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.green)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
     }
   }
 
@@ -350,12 +363,20 @@ struct PendingVoteCardContent: View {
             .foregroundColor(.secondary)
         }
         Spacer()
-        if hasVoted {
-          Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(.green)
-        } else {
-          Image(systemName: "exclamationmark.circle.fill")
-            .foregroundColor(.orange)
+        HStack(spacing: 6) {
+          if hasVoted {
+            Image(systemName: "checkmark.circle.fill")
+              .foregroundColor(.green)
+            Text("Ballot submitted")
+              .font(.caption)
+              .foregroundColor(.green)
+          } else {
+            Image(systemName: "exclamationmark.circle.fill")
+              .foregroundColor(.orange)
+            Text("Vote requested")
+              .font(.caption)
+              .foregroundColor(.orange)
+          }
         }
       }
 

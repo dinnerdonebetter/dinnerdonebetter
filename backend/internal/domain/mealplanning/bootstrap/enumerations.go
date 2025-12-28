@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -326,6 +327,9 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Tortillas recipe instruments
 		{"pastry blender", "A tool with blades or wires for cutting fat into flour", "pastry blenders", "pastry-blender", "pastry blender"},
 	}
+
+	nonDisplayables := []string{"bare hands"}
+
 	for i, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
 			ID:                             identifiers.New(),
@@ -333,7 +337,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 			Description:                    inst.description,
 			PluralName:                     inst.pluralName,
 			Slug:                           inst.slug,
-			DisplayInSummaryLists:          true,
+			DisplayInSummaryLists:          !slices.Contains(nonDisplayables, inst.name),
 			IncludeInGeneratedInstructions: true,
 		})
 		if err2 != nil {
