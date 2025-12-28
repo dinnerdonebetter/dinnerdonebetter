@@ -144,6 +144,19 @@ struct HomeView: View {
         .foregroundColor(.white)
         .cornerRadius(10)
       }
+
+      NavigationLink(destination: AccountSettingsView()) {
+        HStack {
+          Image(systemName: "person.2.fill")
+          Text("Account Settings")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.purple)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
     }
   }
 
