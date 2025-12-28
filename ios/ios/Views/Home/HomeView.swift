@@ -5,9 +5,9 @@
 //  Created by Jeffrey Dorrycott on 12/8/25.
 //
 
+import Combine
 import SwiftProtobuf
 import SwiftUI
-import Combine
 
 struct HomeView: View {
   @Environment(AuthenticationManager.self) private var authManager
@@ -120,16 +120,16 @@ struct HomeView: View {
         .fontWeight(.bold)
 
       NavigationLink(destination: CreateMealPlanView()) {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-            Text("Create New Meal Plan")
-          }
-          .fontWeight(.semibold)
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.blue)
-          .foregroundColor(.white)
-          .cornerRadius(10)
+        HStack {
+          Image(systemName: "plus.circle.fill")
+          Text("Create New Meal Plan")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.blue)
+        .foregroundColor(.white)
+        .cornerRadius(10)
       }
     }
   }
@@ -149,15 +149,14 @@ struct HomeView: View {
           .padding(.vertical, 8)
       } else {
         ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
-          PendingVoteCard(
-            mealPlan: mealPlan,
-            hasVoted: viewModel.hasUserVoted(on: mealPlan),
-            timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
-          ) {
-            // swiftlint:disable:next todo
-            // FIXME: Navigate to voting view
-            print("Vote on meal plan \(mealPlan.id)")
+          NavigationLink(destination: VoteMealPlanView(mealPlan: mealPlan)) {
+            PendingVoteCardContent(
+              mealPlan: mealPlan,
+              hasVoted: viewModel.hasUserVoted(on: mealPlan),
+              timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
+            )
           }
+          .buttonStyle(.plain)
         }
       }
     }
@@ -264,7 +263,7 @@ struct HomeView: View {
   }
 
   // MARK: - Helper Functions
-  
+
   private func formatTaskDate(_ task: Mealplanning_MealPlanTask) -> String {
     // Get the date from the task's meal plan option's event
     // For now, use a simple format
@@ -282,29 +281,31 @@ struct HomeView: View {
   private func timestampToDate(_ timestamp: SwiftProtobuf.Google_Protobuf_Timestamp) -> Date {
     return HomeViewModel.timestampToDate(timestamp)
   }
-  
+
   // Format meal plan time range (earliest start to latest end)
   static func formatMealPlanTimeRange(_ mealPlan: Mealplanning_MealPlan) -> String {
     guard !mealPlan.events.isEmpty else {
       return ""
     }
-    
-    let earliestStart = mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.min() ?? Date()
+
+    let earliestStart =
+      mealPlan.events.map { HomeViewModel.timestampToDate($0.startsAt) }.min() ?? Date()
     let latestEnd = mealPlan.events.map { HomeViewModel.timestampToDate($0.endsAt) }.max() ?? Date()
-    
+
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .medium
     dateFormatter.timeStyle = .none
-    
+
     let startString = dateFormatter.string(from: earliestStart)
-    
+
     // If all events are on the same day, just show the date once
     let calendar = Calendar.current
     if calendar.isDate(earliestStart, inSameDayAs: latestEnd) {
       let timeFormatter = DateFormatter()
       timeFormatter.dateStyle = .none
       timeFormatter.timeStyle = .short
-      return "\(startString) • \(timeFormatter.string(from: earliestStart)) - \(timeFormatter.string(from: latestEnd))"
+      return
+        "\(startString) • \(timeFormatter.string(from: earliestStart)) - \(timeFormatter.string(from: latestEnd))"
     } else {
       let endString = dateFormatter.string(from: latestEnd)
       return "\(startString) - \(endString)"
@@ -321,41 +322,56 @@ struct PendingVoteCard: View {
 
   var body: some View {
     Button(action: onTap) {
-      VStack(alignment: .leading, spacing: 8) {
-        HStack {
-          VStack(alignment: .leading, spacing: 2) {
-            Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-              .font(.headline)
-              .foregroundColor(.primary)
-            Text(HomeView.formatMealPlanTimeRange(mealPlan))
-              .font(.caption)
-              .foregroundColor(.secondary)
-          }
-          Spacer()
-          if hasVoted {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-          } else {
-            Image(systemName: "exclamationmark.circle.fill")
-              .foregroundColor(.orange)
-          }
-        }
-
-        Text(timeUntilDeadline)
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-
-        if !hasVoted {
-          Text("Tap to vote")
-            .font(.caption)
-            .foregroundColor(.blue)
-        }
-      }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(10)
+      PendingVoteCardContent(
+        mealPlan: mealPlan,
+        hasVoted: hasVoted,
+        timeUntilDeadline: timeUntilDeadline
+      )
     }
     .buttonStyle(.plain)
+  }
+}
+
+// MARK: - Pending Vote Card Content (reusable for NavigationLink)
+struct PendingVoteCardContent: View {
+  let mealPlan: Mealplanning_MealPlan
+  let hasVoted: Bool
+  let timeUntilDeadline: String
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        VStack(alignment: .leading, spacing: 2) {
+          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+            .font(.headline)
+            .foregroundColor(.primary)
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        Spacer()
+        if hasVoted {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundColor(.green)
+        } else {
+          Image(systemName: "exclamationmark.circle.fill")
+            .foregroundColor(.orange)
+        }
+      }
+
+      Text(timeUntilDeadline)
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+
+      if !hasVoted {
+        Text("Tap to vote")
+          .font(.caption)
+          .foregroundColor(.blue)
+      }
+    }
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
   }
 }
 
@@ -433,7 +449,7 @@ struct TaskCard: View {
 
       // Status indicator
       Circle()
-            .fill(task.status == .finished ? Color.green : Color.orange)
+        .fill(task.status == .finished ? Color.green : Color.orange)
         .frame(width: 12, height: 12)
     }
     .padding()

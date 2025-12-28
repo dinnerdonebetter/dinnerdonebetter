@@ -31,7 +31,7 @@ struct MealPlanEvent: Identifiable {
 class CreateMealPlanViewModel {
   // Events - always at least one
   var events: [MealPlanEvent] = []
-  
+
   // Meal plan creation state
   var mealPlanName: String = ""
   var votingDeadline = Date()
@@ -54,101 +54,108 @@ class CreateMealPlanViewModel {
     // Set default meal plan name
     updateDefaultMealPlanName()
   }
-  
+
   // MARK: - Helper Functions for Date Calculation
-  
+
   private func nextMondayAt7PM() -> Date {
     let calendar = Calendar.current
     let now = Date()
-    
+
     // Get the weekday component (1 = Sunday, 2 = Monday, ..., 7 = Saturday)
     let weekday = calendar.component(.weekday, from: now)
-    
+
     // Calculate days until next Monday
     // If today is Monday (2), we want next Monday (7 days)
     // If today is Sunday (1), we want the Monday after tomorrow (8 days)
     // If today is Tuesday-Saturday, we want the Monday after that
     let daysUntilMonday: Int
-    if weekday == 2 { // Today is Monday
+    if weekday == 2 {  // Today is Monday
       daysUntilMonday = 7
-    } else if weekday == 1 { // Today is Sunday
-      daysUntilMonday = 8 // Monday after tomorrow
-    } else { // Tuesday through Saturday
-      daysUntilMonday = 9 - weekday // e.g., Tuesday (3) -> 6 days, Wednesday (4) -> 5 days
+    } else if weekday == 1 {  // Today is Sunday
+      daysUntilMonday = 8  // Monday after tomorrow
+    } else {  // Tuesday through Saturday
+      daysUntilMonday = 9 - weekday  // e.g., Tuesday (3) -> 6 days, Wednesday (4) -> 5 days
     }
-    
+
     // Get next Monday
     guard let nextMonday = calendar.date(byAdding: .day, value: daysUntilMonday, to: now) else {
       // Fallback to tomorrow at 7PM if calculation fails
-      return calendar.date(bySettingHour: 19, minute: 0, second: 0, of: calendar.date(byAdding: .day, value: 1, to: now) ?? now) ?? now
+      return calendar.date(
+        bySettingHour: 19, minute: 0, second: 0,
+        of: calendar.date(byAdding: .day, value: 1, to: now) ?? now) ?? now
     }
-    
+
     // Set time to 7PM (19:00)
     return calendar.date(bySettingHour: 19, minute: 0, second: 0, of: nextMonday) ?? nextMonday
   }
-  
+
   /// Get the preceding Friday at midnight for a given date
   /// - Parameter date: The date to find the preceding Friday for
   /// - Returns: The Friday before the given date at midnight (00:00)
   private func precedingFridayAtMidnight(for date: Date) -> Date {
     let calendar = Calendar.current
     let weekday = calendar.component(.weekday, from: date)
-    
+
     // Calculate days to subtract to get to the preceding Friday
     // Friday = 6, Saturday = 7, Sunday = 1, Monday = 2, Tuesday = 3, Wednesday = 4, Thursday = 5
     let daysToSubtract: Int
     switch weekday {
-    case 1: // Sunday - Friday is 2 days ago
+    case 1:  // Sunday - Friday is 2 days ago
       daysToSubtract = 2
-    case 2: // Monday - Friday is 3 days ago
+    case 2:  // Monday - Friday is 3 days ago
       daysToSubtract = 3
-    case 3: // Tuesday - Friday is 4 days ago
+    case 3:  // Tuesday - Friday is 4 days ago
       daysToSubtract = 4
-    case 4: // Wednesday - Friday is 5 days ago
+    case 4:  // Wednesday - Friday is 5 days ago
       daysToSubtract = 5
-    case 5: // Thursday - Friday is 6 days ago
+    case 5:  // Thursday - Friday is 6 days ago
       daysToSubtract = 6
-    case 6: // Friday - use this Friday (0 days)
+    case 6:  // Friday - use this Friday (0 days)
       daysToSubtract = 0
-    case 7: // Saturday - Friday is 1 day ago
+    case 7:  // Saturday - Friday is 1 day ago
       daysToSubtract = 1
     default:
       daysToSubtract = 0
     }
-    
+
     // Get the Friday
     guard let friday = calendar.date(byAdding: .day, value: -daysToSubtract, to: date) else {
       // Fallback to 3 days before the date at midnight
-      return calendar.date(bySettingHour: 0, minute: 0, second: 0, of: calendar.date(byAdding: .day, value: -3, to: date) ?? date) ?? date
+      return calendar.date(
+        bySettingHour: 0, minute: 0, second: 0,
+        of: calendar.date(byAdding: .day, value: -3, to: date) ?? date) ?? date
     }
-    
+
     // Set time to midnight (00:00)
     return calendar.date(bySettingHour: 0, minute: 0, second: 0, of: friday) ?? friday
   }
 
   // MARK: - Event Management
-  
+
   func addEvent() {
     // Find the latest event date
     let latestDate = events.map { $0.startDate }.max() ?? Date()
     // Add new event 1 day after the latest, or next Monday if no events
-    let newEventDate = Calendar.current.date(byAdding: .day, value: 1, to: latestDate) ?? nextMondayAt7PM()
-    let eventStart = Calendar.current.date(bySettingHour: 19, minute: 0, second: 0, of: newEventDate) ?? newEventDate
+    let newEventDate =
+      Calendar.current.date(byAdding: .day, value: 1, to: latestDate) ?? nextMondayAt7PM()
+    let eventStart =
+      Calendar.current.date(bySettingHour: 19, minute: 0, second: 0, of: newEventDate)
+      ?? newEventDate
     let eventEnd = Calendar.current.date(byAdding: .hour, value: 2, to: eventStart) ?? eventStart
-    
+
     let newEvent = MealPlanEvent(mealType: .dinner, startDate: eventStart, endDate: eventEnd)
     events.append(newEvent)
-    
+
     // Update voting deadline to be the earliest event's preceding Friday
     updateVotingDeadline()
     // updateDefaultMealPlanName is called by updateVotingDeadline
   }
-  
+
   private func updateVotingDeadline() {
     // Find the earliest event date
     guard let earliestEvent = events.min(by: { $0.startDate < $1.startDate }) else { return }
     var deadline = precedingFridayAtMidnight(for: earliestEvent.startDate)
-    
+
     // If the deadline is sooner than 24 hours from now, move it forward by a week
     let now = Date()
     let hoursUntilDeadline = deadline.timeIntervalSince(now) / 3600.0
@@ -157,33 +164,33 @@ class CreateMealPlanViewModel {
         deadline = nextWeekDeadline
       }
     }
-    
+
     votingDeadline = deadline
     // Update default meal plan name when events change
     updateDefaultMealPlanName()
   }
-  
+
   private func updateDefaultMealPlanName() {
     guard !events.isEmpty else {
       mealPlanName = "Meal Plan"
       return
     }
-    
+
     // Find earliest start and latest end dates
     let earliestStart = events.map { $0.startDate }.min() ?? Date()
     let latestEnd = events.map { $0.endDate }.max() ?? Date()
-    
+
     // Format dates
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .medium
     dateFormatter.timeStyle = .short
-    
+
     let startsAt = dateFormatter.string(from: earliestStart)
     let endsAt = dateFormatter.string(from: latestEnd)
-    
+
     mealPlanName = "Meal Plan for \(startsAt) to \(endsAt)"
   }
-  
+
   func removeEvent(_ event: MealPlanEvent) {
     events.removeAll(where: { $0.id == event.id })
     // Ensure at least one event remains
@@ -195,22 +202,22 @@ class CreateMealPlanViewModel {
     // Update meal plan name when events change
     updateDefaultMealPlanName()
   }
-  
+
   func updateEvent(_ event: MealPlanEvent) {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
     events[index] = event
   }
-  
+
   func updateEventSearchQuery(_ eventID: UUID, query: String) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].searchQuery = query
   }
-  
+
   func updateEventMealType(_ eventID: UUID, mealType: Mealplanning_MealPlanEventName) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].mealType = mealType
   }
-  
+
   func updateEventStartDate(_ eventID: UUID, date: Date) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].startDate = date
@@ -219,7 +226,7 @@ class CreateMealPlanViewModel {
     // Update voting deadline based on earliest event
     updateVotingDeadline()
   }
-  
+
   func updateEventEndDate(_ eventID: UUID, date: Date) {
     guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
     events[index].endDate = date
@@ -238,7 +245,7 @@ class CreateMealPlanViewModel {
     }
 
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
-    
+
     events[index].isSearching = true
     events[index].searchError = nil
 
@@ -260,7 +267,7 @@ class CreateMealPlanViewModel {
       // Create search request
       var request = Mealplanning_SearchForMealsRequest()
       request.query = event.searchQuery
-      request.useSearchService = false // disabled for local testing
+      request.useSearchService = false  // disabled for local testing
 
       // Execute search
       let response = try await clientManager.client.mealPlanning.searchForMeals(
@@ -283,7 +290,7 @@ class CreateMealPlanViewModel {
 
   func toggleMealSelection(_ meal: Mealplanning_Meal, in event: MealPlanEvent) {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
-    
+
     if let mealIndex = events[index].selectedMeals.firstIndex(where: { $0.id == meal.id }) {
       events[index].selectedMeals.remove(at: mealIndex)
       // Remove scale when meal is deselected
@@ -307,44 +314,47 @@ class CreateMealPlanViewModel {
     events[index].mealScales.removeValue(forKey: meal.id)
     // Meal will automatically reappear in search results since we filter them
   }
-  
+
   func getMealScale(_ meal: Mealplanning_Meal, in event: MealPlanEvent) -> Float {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return 1.0 }
     return events[index].mealScales[meal.id] ?? 1.0
   }
-  
+
   func setMealScale(_ meal: Mealplanning_Meal, scale: Float, in event: MealPlanEvent) {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return }
     events[index].mealScales[meal.id] = scale
   }
-  
+
   /// Get filtered search results for an event (excluding already selected meals)
   func filteredSearchResults(for event: MealPlanEvent) -> [Mealplanning_Meal] {
     guard let index = events.firstIndex(where: { $0.id == event.id }) else { return [] }
     let selectedMealIDs = Set(events[index].selectedMeals.map { $0.id })
     return events[index].searchResults.filter { !selectedMealIDs.contains($0.id) }
   }
-  
+
   // MARK: - Validation
-  
+
   func validateEvents() -> String? {
     // Check that all events have at least one meal selected
     for event in events where event.selectedMeals.isEmpty {
       return "Each event must have at least one meal selected"
     }
-    
+
     // Check that events don't span more than a week
     let sortedEvents = events.sorted(by: { $0.startDate < $1.startDate })
     guard let firstEvent = sortedEvents.first,
-          let lastEvent = sortedEvents.last else {
+      let lastEvent = sortedEvents.last
+    else {
       return "At least one event is required"
     }
-    
-    let daysBetween = Calendar.current.dateComponents([.day], from: firstEvent.startDate, to: lastEvent.startDate).day ?? 0
+
+    let daysBetween =
+      Calendar.current.dateComponents([.day], from: firstEvent.startDate, to: lastEvent.startDate)
+      .day ?? 0
     if daysBetween > 7 {
       return "Meal plan events cannot span more than a week"
     }
-    
+
     return nil
   }
 
@@ -432,9 +442,9 @@ class CreateMealPlanViewModel {
   private func dateToTimestamp(_ date: Date) -> SwiftProtobuf.Google_Protobuf_Timestamp {
     var timestamp = SwiftProtobuf.Google_Protobuf_Timestamp()
     timestamp.seconds = Int64(date.timeIntervalSince1970)
-    timestamp.nanos = Int32((date.timeIntervalSince1970 - Double(timestamp.seconds)) * 1_000_000_000)
+    timestamp.nanos = Int32(
+      (date.timeIntervalSince1970 - Double(timestamp.seconds)) * 1_000_000_000)
     return timestamp
   }
-  
-}
 
+}

@@ -15,7 +15,7 @@ extension CreateMealPlanView {
 
   func mealPlanDetailsSection(viewModel: CreateMealPlanViewModel) -> some View {
     let bindableViewModel = Bindable(viewModel)
-    
+
     return VStack(alignment: .leading, spacing: 16) {
       Text("Meal Plan Details")
         .font(.title2)
@@ -45,12 +45,12 @@ extension CreateMealPlanView {
     .background(Color(.systemGray6))
     .cornerRadius(10)
   }
-  
+
   // MARK: - Meal Plan Details Section (Horizontal for iPad)
-  
+
   func mealPlanDetailsSectionHorizontal(viewModel: CreateMealPlanViewModel) -> some View {
     let bindableViewModel = Bindable(viewModel)
-    
+
     return VStack(alignment: .leading, spacing: 16) {
       Text("Meal Plan Details")
         .font(.title2)
@@ -95,16 +95,18 @@ extension CreateMealPlanView {
           .font(.title2)
           .fontWeight(.bold)
         Spacer()
-        Button(action: {
-          viewModel.addEvent()
-        }, label: {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-            Text("Add Event")
-          }
-          .font(.subheadline)
-          .foregroundColor(.blue)
-        })
+        Button(
+          action: {
+            viewModel.addEvent()
+          },
+          label: {
+            HStack {
+              Image(systemName: "plus.circle.fill")
+              Text("Add Event")
+            }
+            .font(.subheadline)
+            .foregroundColor(.blue)
+          })
       }
 
       // Always use vertical stack for events
@@ -137,35 +139,37 @@ extension CreateMealPlanView {
   func createButton(viewModel: CreateMealPlanViewModel) -> some View {
     _ = Bindable(viewModel)
     let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
-    
-    return Button(action: {
-      Task {
-        let success = await viewModel.createMealPlan()
-        if success {
-          // Post notification to refresh home view
-          NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-          dismiss()
+
+    return Button(
+      action: {
+        Task {
+          let success = await viewModel.createMealPlan()
+          if success {
+            // Post notification to refresh home view
+            NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+            dismiss()
+          }
         }
-      }
-    }, label: {
-      HStack {
-        if viewModel.isCreating {
-          ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+      },
+      label: {
+        HStack {
+          if viewModel.isCreating {
+            ProgressView()
+              .progressViewStyle(CircularProgressViewStyle(tint: .white))
+          }
+          Text(viewModel.isCreating ? "Creating..." : "Create Meal Plan")
+            .fontWeight(.semibold)
         }
-        Text(viewModel.isCreating ? "Creating..." : "Create Meal Plan")
-          .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(
+          viewModel.isCreating || !hasSelectedMeals
+            ? Color.gray : Color.blue
+        )
+        .foregroundColor(.white)
+        .cornerRadius(10)
       }
-      .frame(maxWidth: .infinity)
-      .padding()
-      .background(
-        viewModel.isCreating || !hasSelectedMeals
-          ? Color.gray : Color.blue
-      )
-      .foregroundColor(.white)
-      .cornerRadius(10)
-    })
+    )
     .disabled(viewModel.isCreating || !hasSelectedMeals)
   }
 }
-

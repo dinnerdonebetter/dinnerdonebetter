@@ -16,7 +16,7 @@ struct SelectedMealCard: View {
   let onScaleChange: (Float) -> Void
   let onRemove: () -> Void
   let isRegularWidth: Bool
-  
+
   @State private var scaleText: String = ""
   @FocusState private var isScaleFocused: Bool
 
@@ -29,7 +29,7 @@ struct SelectedMealCard: View {
       verticalLayout
     }
   }
-  
+
   private var horizontalLayout: some View {
     HStack(alignment: .top, spacing: 16) {
       VStack(alignment: .leading, spacing: 4) {
@@ -93,7 +93,7 @@ struct SelectedMealCard: View {
       }
     }
   }
-  
+
   private var verticalLayout: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
@@ -158,7 +158,7 @@ struct SelectedMealCard: View {
       }
     }
   }
-  
+
   private func updateScaleFromText() {
     // Parse the text input and validate it's a positive number
     if let parsedValue = Float(scaleText.trimmingCharacters(in: .whitespacesAndNewlines)) {
@@ -175,4 +175,3 @@ struct SelectedMealCard: View {
     }
   }
 }
-

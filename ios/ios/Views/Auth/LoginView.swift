@@ -22,7 +22,9 @@ struct LoginView: View {
   // Set alwaysShowTOTP to false to disable this feature
   // The TOTP secret is hardcoded for development
   @State private var alwaysShowTOTP: Bool = true  // Set to false to disable
-  private let totpSecret: String = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="  // Hardcoded TOTP secret (base32) for dev
+  // Hardcoded TOTP secret (base32) for dev
+  private let totpSecret: String =
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
   @State private var totpUpdateTask: Task<Void, Never>?
 
   var body: some View {
@@ -95,8 +97,8 @@ struct LoginView: View {
           }
         )
         .disabled(
-          isLoading || username.isEmpty || password.isEmpty 
-          || ((requiresTOTP || alwaysShowTOTP) && totpCode.isEmpty)
+          isLoading || username.isEmpty || password.isEmpty
+            || ((requiresTOTP || alwaysShowTOTP) && totpCode.isEmpty)
         )
         .accessibilityIdentifier("signInButton")
         .padding(.top, 8)
@@ -115,37 +117,37 @@ struct LoginView: View {
       stopTOTPTimer()
     }
   }
-  
+
   // MARK: - TOTP Generation
-  
+
   private func updateTOTPCode() {
     guard !totpSecret.isEmpty else {
       totpCode = ""
       return
     }
-    
+
     if let code = TOTPGenerator.generate(secret: totpSecret) {
       totpCode = code
     } else {
       totpCode = ""
     }
   }
-  
+
   private func startTOTPTimer() {
     // Update immediately
     if alwaysShowTOTP {
       updateTOTPCode()
     }
-    
+
     // Cancel any existing task
     totpUpdateTask?.cancel()
-    
+
     // Update every second to refresh the code when it changes
     guard alwaysShowTOTP else { return }
-    
+
     totpUpdateTask = Task {
       while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
         guard !Task.isCancelled else { break }
         await MainActor.run {
           updateTOTPCode()
@@ -153,7 +155,7 @@ struct LoginView: View {
       }
     }
   }
-  
+
   private func stopTOTPTimer() {
     totpUpdateTask?.cancel()
     totpUpdateTask = nil
@@ -185,7 +187,7 @@ struct LoginView: View {
         password = ""
         // Only clear TOTP code if not using always-show feature
         if !alwaysShowTOTP {
-        totpCode = ""
+          totpCode = ""
         }
         requiresTOTP = false
       } else {
