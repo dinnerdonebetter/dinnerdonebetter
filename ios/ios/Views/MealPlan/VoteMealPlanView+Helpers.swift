@@ -12,7 +12,8 @@ import SwiftUI
 
 extension VoteMealPlanView {
   func rankedOptionsList(
-    event: Mealplanning_MealPlanEvent, viewModel: VoteMealPlanViewModel
+    event: Mealplanning_MealPlanEvent, viewModel: VoteMealPlanViewModel,
+    editMode: Binding<EditMode>
   ) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Your Ranking")
