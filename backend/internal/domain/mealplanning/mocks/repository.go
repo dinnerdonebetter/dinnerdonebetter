@@ -682,6 +682,11 @@ func (m *Repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
+// MarkMealPlanAsGroceryListInitialized is a mock function.
+func (m *Repository) MarkMealPlanAsGroceryListInitialized(ctx context.Context, mealPlanID string) error {
+	return m.Called(ctx, mealPlanID).Error(0)
+}
+
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods is a mock function.
 func (m *Repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*mealplanning.MealPlan, error) {
 	returnValues := m.Called(ctx)

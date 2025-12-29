@@ -11,10 +11,14 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 )
 
@@ -43,9 +47,17 @@ func Build(ctx context.Context, cfg *config.MealPlanGroceryListInitializerConfig
 	if err != nil {
 		return nil, err
 	}
+	databasecfgConfig := &cfg.Database
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
+	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
 	queuesConfig := &cfg.Queues
-	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -8,11 +8,15 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 
 	"github.com/google/wire"
@@ -24,6 +28,7 @@ func Build(
 	cfg *config.MealPlanGroceryListInitializerConfig,
 ) (*mealplangrocerylistinitializer.Worker, error) {
 	wire.Build(
+		postgres.PGProviders,
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
@@ -31,6 +36,9 @@ func Build(
 		loggingcfg.LogConfigProviders,
 		metricscfg.MetricsConfigProviders,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ConfigProviders,
 	)
 

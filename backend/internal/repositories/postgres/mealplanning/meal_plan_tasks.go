@@ -290,8 +290,6 @@ func (q *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealP
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
-	logger.Info("meal plan tasks created")
-
 	return nil
 }
 

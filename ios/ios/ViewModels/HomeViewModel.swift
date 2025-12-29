@@ -86,7 +86,7 @@ class HomeViewModel {
     }
   }
 
-  private let authManager: AuthenticationManager
+  let authManager: AuthenticationManager
 
   init(authManager: AuthenticationManager) {
     self.authManager = authManager

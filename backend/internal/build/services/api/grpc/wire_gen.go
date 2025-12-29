@@ -151,7 +151,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(ctx, logger, tracerProvider, provider, publisherProvider, mealplanningRepository, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
