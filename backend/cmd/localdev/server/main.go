@@ -487,9 +487,9 @@ func main() {
 
 			// Create votes from all members for all options in all events
 			// We need to reload the meal plan to get the created options
-			finalizedMealPlanWithEvents, err := repo.GetMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
-			if err != nil {
-				return fmt.Errorf("failed to get finalized meal plan with events: %w", err)
+			finalizedMealPlanWithEvents, finalizeErr := repo.GetMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
+			if finalizeErr != nil {
+				return fmt.Errorf("failed to get finalized meal plan with events: %w", finalizeErr)
 			}
 
 			for _, event := range finalizedMealPlanWithEvents.Events {
