@@ -197,10 +197,15 @@ struct HomeView: View {
         .padding(.horizontal, 4)
 
       ForEach(viewModel.upcomingMealPlans, id: \.id) { mealPlan in
-        UpcomingMealCard(mealPlan: mealPlan) {
-          // swiftlint:disable:next todo
-          // FIXME: Navigate to meal plan detail view
-          print("View meal plan \(mealPlan.id)")
+        NavigationLink(
+          destination: MealPlanDetailView(
+            mealPlan: mealPlan,
+            groceryListItems: viewModel.groceryLists[mealPlan.id]
+          )
+        ) {
+          UpcomingMealCard(mealPlan: mealPlan) {
+            // Navigation handled by NavigationLink
+          }
         }
       }
     }
@@ -245,14 +250,21 @@ struct HomeView: View {
 
       ForEach(viewModel.activeGroceryLists, id: \.mealPlanID) { groceryList in
         if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == groceryList.mealPlanID }) {
-          GroceryListCard(
-            mealPlan: mealPlan,
-            items: groceryList.items
+          NavigationLink(
+            destination: GroceryListView(
+              mealPlan: mealPlan,
+              items: groceryList.items,
+              authManager: viewModel.authManager
+            )
           ) {
-            // swiftlint:disable:next todo
-            // FIXME: Navigate to grocery list detail view
-            print("View grocery list for meal plan \(mealPlan.id)")
+            GroceryListCard(
+              mealPlan: mealPlan,
+              items: groceryList.items
+            ) {
+              // Navigation handled by NavigationLink
+            }
           }
+          .buttonStyle(.plain)
         }
       }
     }
@@ -415,40 +427,37 @@ struct UpcomingMealCard: View {
   let onTap: () -> Void
 
   var body: some View {
-    Button(action: onTap) {
-      VStack(alignment: .leading, spacing: 8) {
-        VStack(alignment: .leading, spacing: 2) {
-          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-            .font(.headline)
-            .foregroundColor(.primary)
-          Text(HomeView.formatMealPlanTimeRange(mealPlan))
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
+    VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: 2) {
+        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+          .font(.headline)
+          .foregroundColor(.primary)
+        Text(HomeView.formatMealPlanTimeRange(mealPlan))
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
 
-        // Show upcoming events
-        ForEach(mealPlan.events.prefix(3), id: \.id) { event in
-          HStack {
-            Text(MealPlanningUtils.formatMealName(event.mealName))
-              .font(.subheadline)
-            Spacer()
-            Text(formatEventDate(event))
-              .font(.caption)
-              .foregroundColor(.secondary)
-          }
-        }
-
-        if mealPlan.events.count > 3 {
-          Text("+ \(mealPlan.events.count - 3) more events")
+      // Show upcoming events
+      ForEach(mealPlan.events.prefix(3), id: \.id) { event in
+        HStack {
+          Text(MealPlanningUtils.formatMealName(event.mealName))
+            .font(.subheadline)
+          Spacer()
+          Text(formatEventDate(event))
             .font(.caption)
             .foregroundColor(.secondary)
         }
       }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(10)
+
+      if mealPlan.events.count > 3 {
+        Text("+ \(mealPlan.events.count - 3) more events")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
     }
-    .buttonStyle(.plain)
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
   }
 
   private func formatEventDate(_ event: Mealplanning_MealPlanEvent) -> String {

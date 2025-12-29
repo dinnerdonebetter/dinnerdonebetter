@@ -39,6 +39,7 @@ func NewMealPlanGroceryListInitializer(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
+	dataManager types.Repository,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
@@ -55,6 +56,7 @@ func NewMealPlanGroceryListInitializer(
 	return &Worker{
 		recordsProcessedCounter: recordsProcessedCounter,
 		postUpdatesPublisher:    postUpdatesPublisher,
+		dataManager:             dataManager,
 		groceryListCreator:      groceryListCreator,
 		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
 		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
