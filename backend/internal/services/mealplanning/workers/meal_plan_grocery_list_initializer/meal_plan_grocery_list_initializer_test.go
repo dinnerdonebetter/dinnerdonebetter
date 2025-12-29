@@ -36,6 +36,7 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 		tracing.NewNoopTracerProvider(),
 		metrics.NewNoopMetricsProvider(),
 		pp,
+		&mealplanningmock.Repository{},
 		grocerylistpreparation2.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		cfg,
 	)

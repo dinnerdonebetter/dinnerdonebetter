@@ -200,7 +200,7 @@ struct HomeView: View {
         NavigationLink(
           destination: MealPlanDetailView(
             mealPlan: mealPlan,
-            groceryListItems: viewModel.groceryLists[mealPlan.id]
+            groceryListItems: nil  // Don't pass grocery list items, they'll be fetched when needed
           )
         ) {
           UpcomingMealCard(mealPlan: mealPlan) {
@@ -253,16 +253,14 @@ struct HomeView: View {
           NavigationLink(
             destination: GroceryListView(
               mealPlan: mealPlan,
-              items: groceryList.items,
+              items: [],  // Always start with empty array, GroceryListView will fetch fresh data
               authManager: viewModel.authManager
             )
           ) {
             GroceryListCard(
               mealPlan: mealPlan,
               items: groceryList.items
-            ) {
-              // Navigation handled by NavigationLink
-            }
+            )
           }
           .buttonStyle(.plain)
         }
@@ -505,7 +503,6 @@ struct TaskCard: View {
 struct GroceryListCard: View {
   let mealPlan: Mealplanning_MealPlan
   let items: [Mealplanning_MealPlanGroceryListItem]
-  let onTap: () -> Void
 
   // Computed property for items to show
   private var itemsToShow: [Mealplanning_MealPlanGroceryListItem] {
@@ -513,37 +510,35 @@ struct GroceryListCard: View {
   }
 
   var body: some View {
-    Button(action: onTap) {
-      VStack(alignment: .leading, spacing: 8) {
-        VStack(alignment: .leading, spacing: 2) {
-          Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
-            .font(.headline)
-            .foregroundColor(.primary)
-          Text(HomeView.formatMealPlanTimeRange(mealPlan))
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
-
-        Text("\(items.count) item\(items.count == 1 ? "" : "s") needed")
-          .font(.subheadline)
+    VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: 2) {
+        Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
+          .font(.headline)
+          .foregroundColor(.primary)
+        Text(HomeView.formatMealPlanTimeRange(mealPlan))
+          .font(.caption)
           .foregroundColor(.secondary)
-
-        // Show first few items
-        ForEach(itemsToShow, id: \.id) { item in
-          GroceryItemRow(item: item)
-        }
-
-        if items.count > 3 {
-          Text("+ \(items.count - 3) more items")
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
       }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(10)
+
+      Text("\(items.count) item\(items.count == 1 ? "" : "s") needed")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+
+      // Show first few items
+      ForEach(itemsToShow, id: \.id) { item in
+        GroceryItemRow(item: item)
+      }
+
+      if items.count > 3 {
+        Text("+ \(items.count - 3) more items")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
     }
-    .buttonStyle(.plain)
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
+    .contentShape(Rectangle())
   }
 
   private func formatQuantity(_ quantity: Common_Float32RangeWithOptionalMax) -> String {

@@ -18,6 +18,7 @@ struct RecipePerformanceContentView: View {
 
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
+  var hideIngredientsAndInstruments: Bool = false
 
   var body: some View {
     ScrollView {
@@ -25,11 +26,15 @@ struct RecipePerformanceContentView: View {
         // Recipe header
         recipeHeader(recipe: recipe, viewModel: viewModel)
 
-        // Instruments & Vessels section
-        instrumentsVesselsSection(recipe: recipe)
+        // Instruments & Vessels section (hidden when embedded in meal view)
+        if !hideIngredientsAndInstruments {
+          instrumentsVesselsSection(recipe: recipe)
+        }
 
-        // Ingredients section
-        ingredientsSection(recipe: recipe)
+        // Ingredients section (hidden when embedded in meal view)
+        if !hideIngredientsAndInstruments {
+          ingredientsSection(recipe: recipe)
+        }
 
         // Steps list
         stepsList(recipe: recipe, viewModel: viewModel)

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -27,7 +27,7 @@ var _ workers.Worker = (*Worker)(nil)
 type Worker struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
-	dataManager             types.Repository // TODO: make this less potent
+	dataManager             mealplanning.Repository // TODO: make this less potent
 	postUpdatesPublisher    messagequeue.Publisher
 	recordsProcessedCounter metrics.Int64Counter
 	groceryListCreator      grocerylistpreparation.GroceryListCreator
@@ -39,7 +39,7 @@ func NewMealPlanGroceryListInitializer(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
-	dataManager types.Repository,
+	dataManager mealplanning.Repository,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
@@ -85,7 +85,7 @@ func (w *Worker) Work(ctx context.Context) error {
 	for _, mealPlan := range mealPlans {
 		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
-		var dbInputs []*types.MealPlanGroceryListItemDatabaseCreationInput
+		var dbInputs []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput
 		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
 		if err != nil {
 			errorResult = multierror.Append(errorResult, err)
@@ -98,7 +98,7 @@ func (w *Worker) Work(ctx context.Context) error {
 
 		var createdCount int64
 		for _, dbInput := range dbInputs {
-			var createdItem *types.MealPlanGroceryListItem
+			var createdItem *mealplanning.MealPlanGroceryListItem
 			createdItem, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput)
 			if err != nil {
 				errorResult = multierror.Append(errorResult, err)
@@ -108,7 +108,7 @@ func (w *Worker) Work(ctx context.Context) error {
 			createdCount++
 
 			if err = w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
-				EventType: types.MealPlanGroceryListItemCreatedServiceEventType,
+				EventType: mealplanning.MealPlanGroceryListItemCreatedServiceEventType,
 				Context: map[string]any{
 					"groceryListItem":                 createdItem,
 					keys.MealPlanGroceryListItemIDKey: createdItem.ID,

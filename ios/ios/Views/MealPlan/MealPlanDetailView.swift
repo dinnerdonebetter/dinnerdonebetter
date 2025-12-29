@@ -115,7 +115,7 @@ struct MealPlanDetailView: View {
     NavigationLink(
       destination: GroceryListView(
         mealPlan: mealPlan,
-        items: groceryListItems ?? [],
+        items: [],  // Always start with empty array, GroceryListView will fetch fresh data
         authManager: authManager
       )
     ) {
@@ -192,7 +192,12 @@ struct EventCard: View {
             .foregroundColor(.secondary)
 
           ForEach(event.options.filter { $0.chosen }, id: \.id) { option in
-            MealOptionCard(option: option)
+            NavigationLink(
+              destination: MealDetailView(mealID: option.meal.id)
+            ) {
+              MealOptionCard(option: option, isChosen: true)
+            }
+            .buttonStyle(.plain)
           }
 
           // Show other options if not chosen
@@ -235,9 +240,26 @@ struct MealOptionCard: View {
       }
 
       VStack(alignment: .leading, spacing: 4) {
-        Text(option.meal.name.isEmpty ? "Unnamed Meal" : option.meal.name)
-          .font(.subheadline)
-          .fontWeight(isChosen ? .semibold : .regular)
+        HStack(spacing: 6) {
+          Text(option.meal.name.isEmpty ? "Unnamed Meal" : option.meal.name)
+            .font(.subheadline)
+            .fontWeight(isChosen ? .semibold : .regular)
+
+          // Tiebroken indicator
+          if isChosen && option.tieBroken {
+            HStack(spacing: 2) {
+              Image(systemName: "dice")
+                .font(.caption2)
+              Text("Tiebroken")
+                .font(.caption2)
+            }
+            .foregroundColor(.orange)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(Color.orange.opacity(0.2))
+            .cornerRadius(4)
+          }
+        }
 
         if !option.meal.components.isEmpty {
           let recipeNames = option.meal.components.compactMap { component -> String? in
@@ -259,9 +281,17 @@ struct MealOptionCard: View {
       }
 
       Spacer()
+
+      // Show chevron only for chosen meals (indicating they're clickable)
+      if isChosen {
+        Image(systemName: "chevron.right")
+          .foregroundColor(.secondary)
+          .font(.caption)
+      }
     }
     .padding(.vertical, 4)
     .opacity(isChosen ? 1.0 : 0.6)
+    .contentShape(Rectangle())
   }
 }
 

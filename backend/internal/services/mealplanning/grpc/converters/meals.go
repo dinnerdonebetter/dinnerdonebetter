@@ -822,6 +822,14 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 		status = pointer.To(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
 	}
 
+	var quantityNeeded types.Float32RangeWithOptionalMaxUpdateRequestInput
+	if input.QuantityNeeded != nil {
+		quantityNeeded = types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Min: input.QuantityNeeded.Min,
+			Max: input.QuantityNeeded.Max,
+		}
+	}
+
 	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
 		BelongsToMealPlan:          input.BelongsToMealPlan,
 		ValidIngredientID:          input.ValidIngredientId,
@@ -832,10 +840,7 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 		PurchasedUPC:               input.PurchasedUpc,
 		PurchasePrice:              input.PurchasePrice,
 		Status:                     status,
-		QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.QuantityNeeded.Min,
-			Max: input.QuantityNeeded.Max,
-		},
+		QuantityNeeded:             quantityNeeded,
 	}
 }
 

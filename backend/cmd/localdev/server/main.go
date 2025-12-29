@@ -9,6 +9,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
+	mealplantaskcreatorbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
@@ -22,8 +24,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	identitygenerated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
-	mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
-	mealplantaskcreatorbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
 )
 
 const (
@@ -380,9 +380,9 @@ func main() {
 			}
 
 			// Get the current meal plan to use its timing
-			currentMealPlan, err := repo.GetMealPlan(ctx, currentMealPlanID, adminAccountID)
-			if err != nil {
-				return fmt.Errorf("failed to get current meal plan: %w", err)
+			currentMealPlan, mealPlanErr := repo.GetMealPlan(ctx, currentMealPlanID, adminAccountID)
+			if mealPlanErr != nil {
+				return fmt.Errorf("failed to get current meal plan: %w", mealPlanErr)
 			}
 
 			logger.Info("Creating finalized meal plan with votes...")
@@ -554,9 +554,9 @@ func main() {
 				Queues:        apiConfig.Queues,
 				Analytics:     apiConfig.Analytics,
 			}
-			groceryListWorker, err := mealplangrocerylistinitializerbuild.Build(ctx, groceryListConfig)
-			if err != nil {
-				return fmt.Errorf("failed to build grocery list initializer worker: %w", err)
+			groceryListWorker, workerErr := mealplangrocerylistinitializerbuild.Build(ctx, groceryListConfig)
+			if workerErr != nil {
+				return fmt.Errorf("failed to build grocery list initializer worker: %w", workerErr)
 			}
 
 			// Run grocery list initializer
@@ -564,6 +564,12 @@ func main() {
 				return fmt.Errorf("failed to run grocery list initializer worker: %w", err)
 			}
 			logger.Info("Grocery list initializer worker completed successfully")
+
+			if err = repo.MarkMealPlanAsGroceryListInitialized(ctx, currentMealPlanID); err != nil {
+				return fmt.Errorf("failed to mark current meal plan as grocery list: %w", err)
+			}
+
+			// TODO: repo.MarkMealPlanAsGroceryListsGenerated
 
 			// Build task creator worker
 			taskCreatorConfig := &config.MealPlanTaskCreatorConfig{
@@ -573,9 +579,9 @@ func main() {
 				Queues:        apiConfig.Queues,
 				Analytics:     apiConfig.Analytics,
 			}
-			taskCreatorWorker, err := mealplantaskcreatorbuild.Build(ctx, taskCreatorConfig)
-			if err != nil {
-				return fmt.Errorf("failed to build task creator worker: %w", err)
+			taskCreatorWorker, workerErr := mealplantaskcreatorbuild.Build(ctx, taskCreatorConfig)
+			if workerErr != nil {
+				return fmt.Errorf("failed to build task creator worker: %w", workerErr)
 			}
 
 			// Run task creator
