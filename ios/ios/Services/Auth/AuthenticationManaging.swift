@@ -16,6 +16,25 @@ struct LoginResult {
   let requiresTOTP: Bool
 }
 
+/// Result of a registration attempt
+struct RegistrationResult {
+  let success: Bool
+  let error: String?
+}
+
+/// Input parameters for user registration
+struct RegistrationInput {
+  let emailAddress: String
+  let username: String
+  let password: String
+  let accountName: String
+  let firstName: String
+  let lastName: String
+  let birthday: Date?
+  let invitationToken: String
+  let invitationID: String
+}
+
 /// Protocol defining the authentication interface
 /// Allows both AuthenticationManager and MockAuthenticationManager to be used interchangeably
 protocol AuthenticationManaging: AnyObject {
@@ -30,6 +49,7 @@ protocol AuthenticationManaging: AnyObject {
   var accountID: String { get set }
 
   func login(username: String, password: String, totpToken: String?) async -> LoginResult
+  func register(input: RegistrationInput) async -> RegistrationResult
   func getClientManager() throws -> ClientManager<HTTP2ClientTransport.TransportServices>
   func getOAuth2AccessToken() async -> String?
   func refreshOAuth2Token() async -> Bool

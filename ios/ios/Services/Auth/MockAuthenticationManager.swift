@@ -160,6 +160,16 @@ class MockAuthenticationManager: AuthenticationManaging {
     return false
   }
 
+  func register(input: RegistrationInput) async -> RegistrationResult {
+    print("🎭 MockAuthenticationManager: Registration attempt for user: \(input.username)")
+
+    // Simulate network delay
+    try? await Task.sleep(nanoseconds: 500_000_000)  // 0.5 seconds
+
+    // Mock successful registration
+    return RegistrationResult(success: true, error: nil)
+  }
+
   func logout() {
     self.isAuthenticated = false
     self.username = ""
