@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
   @Environment(AuthenticationManager.self) private var authManager
+  @Binding var showRegister: Bool
 
   @State private var username: String = "admin_user"
   @State private var password: String = "admin_pass"
@@ -101,6 +102,19 @@ struct LoginView: View {
             || ((requiresTOTP || alwaysShowTOTP) && totpCode.isEmpty)
         )
         .accessibilityIdentifier("signInButton")
+        .padding(.top, 8)
+
+        // Navigation to register
+        Button(
+          action: {
+            showRegister = true
+          },
+          label: {
+            Text("Don't have an account? Sign up")
+              .font(.caption)
+              .foregroundColor(.accentColor)
+          }
+        )
         .padding(.top, 8)
       }
       .padding(.horizontal, 32)
@@ -206,6 +220,6 @@ struct LoginView: View {
 }
 
 #Preview {
-  LoginView()
+  LoginView(showRegister: .constant(true))
     .environment(AuthenticationManager())
 }

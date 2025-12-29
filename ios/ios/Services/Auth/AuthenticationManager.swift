@@ -2,6 +2,7 @@ import Foundation
 import GRPCCore
 import GRPCNIOTransportHTTP2
 import GRPCNIOTransportHTTP2TransportServices
+import SwiftProtobuf
 import SwiftUI
 
 /// URLSessionDelegate that prevents automatic redirect following
@@ -477,6 +478,93 @@ class AuthenticationManager: AuthenticationManaging {
     }
 
     return oauth2AccessToken.isEmpty ? nil : oauth2AccessToken
+  }
+
+  func register(input: RegistrationInput) async -> RegistrationResult {
+    // If using mock, delegate to mock manager
+    if let mock = mockManager {
+      return await mock.register(input: input)
+    }
+
+    print("📝 Registration attempt for user: \(input.username)")
+
+    // Build the registration input
+    var registrationInput = Identity_UserRegistrationInput()
+    registrationInput.emailAddress = input.emailAddress.trimmingCharacters(in: .whitespaces)
+    registrationInput.username = input.username.trimmingCharacters(in: .whitespaces)
+    registrationInput.password = input.password
+    registrationInput.accountName = input.accountName.trimmingCharacters(in: .whitespaces)
+    registrationInput.firstName = input.firstName.trimmingCharacters(in: .whitespaces)
+    registrationInput.lastName = input.lastName.trimmingCharacters(in: .whitespaces)
+    registrationInput.invitationToken = input.invitationToken.trimmingCharacters(in: .whitespaces)
+    registrationInput.invitationID = input.invitationID.trimmingCharacters(in: .whitespaces)
+
+    // Convert birthday to protobuf timestamp if provided
+    if let birthday = input.birthday {
+      var timestamp = SwiftProtobuf.Google_Protobuf_Timestamp()
+      timestamp.seconds = Int64(birthday.timeIntervalSince1970)
+      timestamp.nanos = Int32(
+        (birthday.timeIntervalSince1970 - Double(timestamp.seconds)) * 1_000_000_000)
+      registrationInput.birthday = timestamp
+    }
+
+    var requestMessage = Identity_CreateUserRequest()
+    requestMessage.input = registrationInput
+
+    print("📤 Creating gRPC client and sending registration request...")
+
+    do {
+      // Check for cancellation before starting
+      try Task.checkCancellation()
+
+      // Get or create the client manager
+      let manager = try getClientManager()
+
+      // Use the identity service client from the unified Client
+      let response = try await manager.client.identity.createUser(
+        requestMessage,
+        options: manager.defaultCallOptions
+      )
+
+      // Check if registration was successful
+      if response.hasCreated {
+        print("✅ Registration successful")
+        return RegistrationResult(success: true, error: nil)
+      } else {
+        print("⚠️ Response received but no creation result")
+        return RegistrationResult(
+          success: false, error: "No creation result received from server")
+      }
+    } catch let error as GRPCCore.RPCError {
+      print("❌ RPC error code: \(error.code)")
+      print("❌ RPC error message: \(error.message)")
+
+      // Provide user-friendly error messages
+      switch error.code {
+      case .deadlineExceeded:
+        return RegistrationResult(
+          success: false, error: "Request timed out. Please check your connection.")
+      case .unavailable:
+        return RegistrationResult(
+          success: false, error: "Server is unavailable. Please try again later.")
+      case .alreadyExists:
+        return RegistrationResult(
+          success: false, error: "Username or email address already exists.")
+      case .invalidArgument:
+        return RegistrationResult(
+          success: false, error: "Invalid registration data. Please check your input.")
+      default:
+        return RegistrationResult(
+          success: false, error: "Registration failed: \(error.message)")
+      }
+    } catch is CancellationError {
+      print("❌ Registration cancelled")
+      return RegistrationResult(success: false, error: "Registration was cancelled")
+    } catch {
+      print("❌ Error details: \(String(describing: error))")
+      return RegistrationResult(
+        success: false, error: "Registration failed: \(error.localizedDescription)")
+    }
   }
 
   func logout() {
