@@ -19,13 +19,13 @@ class PerformRecipeViewModel {
 
   // Track which steps are completed (by step index)
   var completedSteps: Set<Int> = []
-  
+
   // Special step: wash hands (index -1)
   var washHandsCompleted: Bool = false
 
   // Map from product ID to the step index that produces it
   var productIDToStepIndex: [String: Int] = [:]
-  
+
   // Special index for wash hands step
   static let washHandsStepIndex = -1
 
@@ -94,12 +94,12 @@ class PerformRecipeViewModel {
     if stepIndex == Self.washHandsStepIndex {
       return true
     }
-    
+
     // All other steps require wash hands to be completed first
     if !washHandsCompleted {
       return false
     }
-    
+
     guard let recipe = recipe, stepIndex < recipe.steps.count else {
       return false
     }

@@ -75,7 +75,7 @@ struct StepCardView: View {
             }
             .padding(.top, 4)
           }
-          
+
           // Prerequisites warning (only show if wash hands is done)
           if viewModel.washHandsCompleted && hasPrerequisites && !allPrerequisitesCompleted {
             HStack(spacing: 4) {

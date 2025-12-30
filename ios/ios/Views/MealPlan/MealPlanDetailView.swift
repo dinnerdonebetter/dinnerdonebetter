@@ -12,7 +12,7 @@ struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
-  @State private var taskCount: Int? = nil
+  @State private var taskCount: Int?
 
   var body: some View {
     ScrollView {
@@ -45,32 +45,32 @@ struct MealPlanDetailView: View {
       await loadTaskCount()
     }
   }
-  
+
   private func loadTaskCount() async {
     guard mealPlan.status == .finalized && mealPlan.tasksCreated else {
       return
     }
-    
+
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         return
       }
-      
+
       guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
         return
       }
-      
+
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
-      
+
       var request = Mealplanning_GetMealPlanTasksRequest()
       request.mealPlanID = mealPlan.id
-      
+
       let response = try await clientManager.client.mealPlanning.getMealPlanTasks(
         request,
         metadata: metadata,
         options: clientManager.defaultCallOptions
       )
-      
+
       // Deduplicate by ID and get count
       var seenIDs: Set<String> = []
       let uniqueCount = response.results.filter { task in
@@ -80,7 +80,7 @@ struct MealPlanDetailView: View {
         seenIDs.insert(task.id)
         return true
       }.count
-      
+
       taskCount = uniqueCount
     } catch {
       print("⚠️ Failed to fetch task count: \(error)")
@@ -95,19 +95,19 @@ struct MealPlanDetailView: View {
         Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
           .font(.title2)
           .fontWeight(.bold)
-        
+
         statusBadge
-        
+
         Spacer()
       }
-      
+
       // Time range on second line
       Text(HomeView.formatMealPlanTimeRange(mealPlan))
         .font(.subheadline)
         .foregroundColor(.secondary)
     }
   }
-  
+
   private var votingDeadlineCard: some View {
     votingDeadlineView
       .padding()
@@ -193,7 +193,7 @@ struct MealPlanDetailView: View {
   private var tasksSection: some View {
     let count = taskCount ?? 0
     let hasTasks = count > 0
-    
+
     return Group {
       if hasTasks {
         NavigationLink(
@@ -212,7 +212,7 @@ struct MealPlanDetailView: View {
       }
     }
   }
-  
+
   private func tasksCardContent(count: Int) -> some View {
     HStack {
       Image(systemName: "checklist")

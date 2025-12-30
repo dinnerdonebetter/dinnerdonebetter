@@ -42,7 +42,7 @@ struct TaskListView: View {
           // Group tasks hierarchically
           let unfinishedGroups = viewModel.getUnfinishedGroups()
           let finishedGroups = viewModel.getFinishedGroups()
-          
+
           // Unfinished tasks
           if !unfinishedGroups.isEmpty {
             tasksSection(
@@ -137,11 +137,11 @@ struct TaskGroupRow: View {
   let viewModel: TaskListViewModel
   let loadedRecipes: [String: Mealplanning_Recipe]
   let loadedPrepTasks: [String: Mealplanning_RecipePrepTask]
-  
+
   var hasSubtasks: Bool {
     !group.subtasks.isEmpty
   }
-  
+
   var isExpanded: Bool {
     viewModel.isExpanded(taskID: group.parent.id)
   }
@@ -160,7 +160,7 @@ struct TaskGroupRow: View {
           viewModel.toggleExpanded(taskID: group.parent.id)
         }
       )
-      
+
       // Subtasks (shown when expanded)
       if hasSubtasks && isExpanded {
         ForEach(group.subtasks, id: \.id) { subtask in
@@ -169,7 +169,7 @@ struct TaskGroupRow: View {
             parentTask: group.parent,
             viewModel: viewModel
           )
-          .padding(.leading, 32) // Indent subtasks
+          .padding(.leading, 32)  // Indent subtasks
         }
       }
     }
@@ -182,7 +182,7 @@ struct SubtaskRow: View {
   let subtask: Mealplanning_MealPlanTask
   let parentTask: Mealplanning_MealPlanTask
   let viewModel: TaskListViewModel
-  
+
   // Extract step ID from subtask ID (format: "taskID_step_stepID")
   private var stepID: String {
     let prefix = "\(parentTask.id)_step_"
@@ -191,43 +191,51 @@ struct SubtaskRow: View {
     }
     return subtask.id
   }
-  
+
   var body: some View {
     HStack(alignment: .top, spacing: 12) {
       // Spacer for alignment (no disclosure indicator for subtasks)
       Spacer()
         .frame(width: 20)
-      
+
       // Checkbox for subtask (step) - enabled and functional
       Button {
         viewModel.toggleSubtaskCompletion(parentTaskID: parentTask.id, stepID: stepID)
       } label: {
-        Image(systemName: viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) ? "checkmark.circle.fill" : "circle")
-          .font(.body)
-          .foregroundColor(
-            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) ? .green : .blue
-          )
+        Image(
+          systemName: viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
+            ? "checkmark.circle.fill" : "circle"
+        )
+        .font(.body)
+        .foregroundColor(
+          viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) ? .green : .blue
+        )
       }
       .buttonStyle(.plain)
       .disabled(viewModel.isUpdating)
-      
+
       // Subtask content
       VStack(alignment: .leading, spacing: 4) {
         Text(subtask.creationExplanation)
           .font(.body)
           .foregroundColor(
-            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) || parentTask.status == .finished
+            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
+              || parentTask.status == .finished
               ? .secondary : .primary
           )
-          .strikethrough(viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) || parentTask.status == .finished)
+          .strikethrough(
+            viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
+              || parentTask.status == .finished)
       }
-      
+
       Spacer()
     }
     .padding()
     .background(Color(.systemGray5))
     .cornerRadius(8)
-    .opacity(viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID) || parentTask.status == .finished ? 0.7 : 1.0)
+    .opacity(
+      viewModel.isSubtaskCompleted(parentTaskID: parentTask.id, stepID: stepID)
+        || parentTask.status == .finished ? 0.7 : 1.0)
   }
 }
 
@@ -260,12 +268,12 @@ struct TaskRow: View {
         Spacer()
           .frame(width: 20)
       }
-      
+
       // Checkbox - enabled for parent tasks when all subtasks are completed, or when already finished (to allow unchecking)
       if isParent {
         let allSubtasksCompleted = viewModel.areAllSubtasksCompleted(parentTaskID: task.id)
         let canCheckParent = allSubtasksCompleted || task.status == .finished
-        
+
         if canCheckParent {
           // Parent task can be checked when all subtasks are done, or unchecked when finished
           Button {
@@ -283,7 +291,7 @@ struct TaskRow: View {
           }
           .buttonStyle(.plain)
           .disabled(viewModel.isUpdating)
-          .frame(minWidth: 44, minHeight: 44) // Ensure tappable area
+          .frame(minWidth: 44, minHeight: 44)  // Ensure tappable area
         } else {
           // Parent task shows status but can't be checked (not all subtasks done yet)
           Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
@@ -311,7 +319,7 @@ struct TaskRow: View {
       VStack(alignment: .leading, spacing: 4) {
         // Task description - show prep task name or creation explanation
         let isCompleted = task.status == .finished
-        
+
         if task.hasRecipePrepTask && !task.recipePrepTask.name.isEmpty {
           Text(task.recipePrepTask.name)
             .font(.body)
@@ -350,7 +358,7 @@ struct TaskRow: View {
     let stepID: String
     let description: String
   }
-  
+
   private func getStepData(task: Mealplanning_MealPlanTask) -> [StepInfo] {
     guard task.hasRecipePrepTask else {
       print("⚠️ Task \(task.id) has no recipePrepTask")
@@ -358,81 +366,100 @@ struct TaskRow: View {
     }
 
     let prepTask = task.recipePrepTask
-    var recipeID = prepTask.belongsToRecipe
-    
-    print("🔍 Task \(task.id): prepTask.id = '\(prepTask.id)'")
-    print("🔍 Task \(task.id): prepTask.belongsToRecipe = '\(recipeID)' (isEmpty: \(recipeID.isEmpty))")
-    print("🔍 Task \(task.id): prepTask.name = '\(prepTask.name)'")
-    print("🔍 Task \(task.id): prepTask.taskSteps.count = \(prepTask.taskSteps.count)")
-    
-    // If belongsToRecipe is empty, check loaded prep task
-    if recipeID.isEmpty && !prepTask.id.isEmpty {
-      if let loadedPrepTask = loadedPrepTasks[prepTask.id] {
-        recipeID = loadedPrepTask.belongsToRecipe
-        print("✅ Found recipe ID \(recipeID) from loaded prep task \(prepTask.id) for task \(task.id)")
-      } else {
-        print("⚠️ Prep task \(prepTask.id) not found in loadedPrepTasks")
-      }
-    }
-    
-    // If belongsToRecipe is still empty, try to find it from the meal option
-    if recipeID.isEmpty && task.hasMealPlanOption {
-      let meal = task.mealPlanOption.meal
-      // Try to find the recipe by matching step IDs
-      for component in meal.components {
-        let candidateRecipeID = component.recipe.id
-        // Check if any task step belongs to this recipe's steps
-        for taskStep in prepTask.taskSteps {
-          if !taskStep.belongsToRecipeStep.isEmpty {
-            // Check if this step ID exists in the component's recipe
-            if component.recipe.steps.contains(where: { $0.id == taskStep.belongsToRecipeStep }) {
-              recipeID = candidateRecipeID
-              print("✅ Found recipe ID \(recipeID) from meal option for task \(task.id)")
-              break
-            }
-          }
-        }
-        if !recipeID.isEmpty {
-          break
-        }
-      }
-    }
-    
+    let recipeID = findRecipeID(for: task, prepTask: prepTask)
+
     if recipeID.isEmpty {
       print("⚠️ Task \(task.id) prep task has no recipe ID and couldn't find it from meal option")
       return []
     }
-    
-    // Use loaded recipe from view model
+
     guard let recipe = loadedRecipes[recipeID] else {
-      print("⚠️ Recipe \(recipeID) not loaded yet for task \(task.id). Loaded recipes: \(loadedRecipes.keys.joined(separator: ", "))")
+      print(
+        "⚠️ Recipe \(recipeID) not loaded yet for task \(task.id). Loaded recipes: \(loadedRecipes.keys.joined(separator: ", "))"
+      )
       return []
     }
 
+    return buildStepData(prepTask: prepTask, recipe: recipe, recipeID: recipeID)
+  }
+
+  private func findRecipeID(
+    for task: Mealplanning_MealPlanTask,
+    prepTask: Mealplanning_RecipePrepTask
+  ) -> String {
+    var recipeID = prepTask.belongsToRecipe
+
+    print("🔍 Task \(task.id): prepTask.id = '\(prepTask.id)'")
+    print(
+      "🔍 Task \(task.id): prepTask.belongsToRecipe = '\(recipeID)' (isEmpty: \(recipeID.isEmpty))")
+    print("🔍 Task \(task.id): prepTask.name = '\(prepTask.name)'")
+    print("🔍 Task \(task.id): prepTask.taskSteps.count = \(prepTask.taskSteps.count)")
+
+    // If belongsToRecipe is empty, check loaded prep task
+    if recipeID.isEmpty && !prepTask.id.isEmpty {
+      if let loadedPrepTask = loadedPrepTasks[prepTask.id] {
+        recipeID = loadedPrepTask.belongsToRecipe
+        print(
+          "✅ Found recipe ID \(recipeID) from loaded prep task \(prepTask.id) for task \(task.id)")
+      } else {
+        print("⚠️ Prep task \(prepTask.id) not found in loadedPrepTasks")
+      }
+    }
+
+    // If belongsToRecipe is still empty, try to find it from the meal option
+    if recipeID.isEmpty && task.hasMealPlanOption {
+      recipeID = findRecipeIDFromMealOption(task: task, prepTask: prepTask)
+    }
+
+    return recipeID
+  }
+
+  private func findRecipeIDFromMealOption(
+    task: Mealplanning_MealPlanTask,
+    prepTask: Mealplanning_RecipePrepTask
+  ) -> String {
+    let meal = task.mealPlanOption.meal
+    // Try to find the recipe by matching step IDs
+    for component in meal.components {
+      let candidateRecipeID = component.recipe.id
+      // Check if any task step belongs to this recipe's steps
+      for taskStep in prepTask.taskSteps where !taskStep.belongsToRecipeStep.isEmpty {
+        // Check if this step ID exists in the component's recipe
+        if component.recipe.steps.contains(where: { $0.id == taskStep.belongsToRecipeStep }) {
+          print("✅ Found recipe ID \(candidateRecipeID) from meal option for task \(task.id)")
+          return candidateRecipeID
+        }
+      }
+    }
+    return ""
+  }
+
+  private func buildStepData(
+    prepTask: Mealplanning_RecipePrepTask,
+    recipe: Mealplanning_Recipe,
+    recipeID: String
+  ) -> [StepInfo] {
     var stepData: [StepInfo] = []
 
-    for taskStep in prepTask.taskSteps {
-      // Find the recipe step that matches
-      if !taskStep.belongsToRecipeStep.isEmpty {
-        // Try to find step by ID in the loaded recipe
-        if let stepIndex = recipe.steps.firstIndex(where: { $0.id == taskStep.belongsToRecipeStep }) {
-          let step = recipe.steps[stepIndex]
-          let formatted = formatStepTitle(step: step)
-          if !formatted.isEmpty {
-            stepData.append(StepInfo(stepID: taskStep.id, description: formatted))
-          } else {
-            print("⚠️ Step \(taskStep.belongsToRecipeStep) formatted to empty string")
-          }
+    for taskStep in prepTask.taskSteps where !taskStep.belongsToRecipeStep.isEmpty {
+      // Try to find step by ID in the loaded recipe
+      if let stepIndex = recipe.steps.firstIndex(where: { $0.id == taskStep.belongsToRecipeStep }) {
+        let step = recipe.steps[stepIndex]
+        let formatted = formatStepTitle(step: step)
+        if !formatted.isEmpty {
+          stepData.append(StepInfo(stepID: taskStep.id, description: formatted))
         } else {
-          print("⚠️ Step \(taskStep.belongsToRecipeStep) not found in recipe \(recipeID)")
+          print("⚠️ Step \(taskStep.belongsToRecipeStep) formatted to empty string")
         }
       } else {
-        print("⚠️ Task step has empty belongsToRecipeStep")
+        print("⚠️ Step \(taskStep.belongsToRecipeStep) not found in recipe \(recipeID)")
       }
     }
 
     if stepData.isEmpty {
-      print("⚠️ No step descriptions found for task \(task.id), prep task has \(prepTask.taskSteps.count) task steps")
+      print(
+        "⚠️ No step descriptions found, prep task has \(prepTask.taskSteps.count) task steps"
+      )
     }
 
     return stepData
@@ -525,4 +552,3 @@ extension Mealplanning_MealPlanTask: Identifiable {
   }
   .environment(authManager)
 }
-

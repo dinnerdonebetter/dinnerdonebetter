@@ -281,13 +281,13 @@ struct RecipePerformanceContentView: View {
       }
     }
   }
-  
+
   // MARK: - Wash Hands Step Card
-  
+
   private func washHandsStepCard(viewModel: PerformRecipeViewModel) -> some View {
     let isCompleted = viewModel.isStepCompleted(PerformRecipeViewModel.washHandsStepIndex)
     let canCheck = viewModel.canCheckStep(PerformRecipeViewModel.washHandsStepIndex)
-    
+
     return VStack(alignment: .leading, spacing: 12) {
       // Step header with checkbox
       HStack(alignment: .top, spacing: 12) {
