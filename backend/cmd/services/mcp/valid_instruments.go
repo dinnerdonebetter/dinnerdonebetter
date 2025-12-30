@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidInstrumentInvocation struct {
-		ValidInstrumentID string `jsonschema:"description=The instrument ID"`
+		ValidInstrumentID string `jsonschema:"description=The instrument MealPlanTaskID"`
 	}
 )
 
 var validInstrumentsSchema = map[string]any{
-	"ID":                             stringField("The ID of the valid instrument"),
+	"MealPlanTaskID":                 stringField("The MealPlanTaskID of the valid instrument"),
 	"CreatedAt":                      timestampField("When the valid instrument was created"),
 	"LastUpdatedAt":                  timestampField("When the valid instrument was last updated"),
 	"ArchivedAt":                     timestampField("When the valid instrument was soft deleted"),
@@ -35,9 +35,9 @@ var validInstrumentsSchema = map[string]any{
 
 var getValidInstrumentTool = &mcp.Tool{
 	Name:        "GetValidInstrument",
-	Description: "Get a valid instrument by it's ID",
+	Description: "Get a valid instrument by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidInstrumentID": stringField("The ID of the valid instrument to get"),
+		"ValidInstrumentID": stringField("The MealPlanTaskID of the valid instrument to get"),
 	}),
 	OutputSchema: schemaObject(validInstrumentsSchema),
 }
@@ -136,7 +136,7 @@ func (h *mcpToolManager) CreateValidInstrument() mcp.ToolHandlerFor[*mealplannin
 type (
 	UpdateValidInstrumentInvocation struct {
 		*mealplanning.ValidInstrumentUpdateRequestInput
-		ValidInstrumentID string `jsonschema:"required,description=The instrument ID"`
+		ValidInstrumentID string `jsonschema:"required,description=The instrument MealPlanTaskID"`
 	}
 )
 
@@ -144,7 +144,7 @@ var validInstrumentUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidInstrument",
 	Description: "Update a valid instrument for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidInstrumentID":              stringField("The ID of the valid instrument to update"),
+		"ValidInstrumentID":              stringField("The MealPlanTaskID of the valid instrument to update"),
 		"Name":                           stringField("Name of the instrument"),
 		"Description":                    stringField("Description of the instrument"),
 		"IconPath":                       stringField("The URL for the icon for the item"),

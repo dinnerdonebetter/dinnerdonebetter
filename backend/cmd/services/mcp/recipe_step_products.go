@@ -14,18 +14,18 @@ import (
 
 type (
 	GetRecipeStepProductInvocation struct {
-		RecipeID            string `jsonschema:"description=The recipe ID"`
-		RecipeStepID        string `jsonschema:"description=The recipe step ID"`
-		RecipeStepProductID string `jsonschema:"description=The recipe step product ID"`
+		RecipeID            string `jsonschema:"description=The recipe MealPlanTaskID"`
+		RecipeStepID        string `jsonschema:"description=The recipe step MealPlanTaskID"`
+		RecipeStepProductID string `jsonschema:"description=The recipe step product MealPlanTaskID"`
 	}
 )
 
 var recipeStepProductsSchema = map[string]any{
-	"ID":                          stringField("The ID of the recipe step product"),
+	"MealPlanTaskID":              stringField("The MealPlanTaskID of the recipe step product"),
 	"CreatedAt":                   timestampField("When the recipe step product was created"),
 	"LastUpdatedAt":               timestampField("When the recipe step product was last updated"),
 	"ArchivedAt":                  timestampField("When the recipe step product was soft deleted"),
-	"BelongsToRecipeStep":         stringField("The ID of the recipe step this product belongs to"),
+	"BelongsToRecipeStep":         stringField("The MealPlanTaskID of the recipe step this product belongs to"),
 	"Name":                        stringField("Name of the product"),
 	"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
 	"QuantityNotes":               stringField("Notes about the quantity"),
@@ -43,11 +43,11 @@ var recipeStepProductsSchema = map[string]any{
 
 var getRecipeStepProductTool = &mcp.Tool{
 	Name:        "GetRecipeStepProduct",
-	Description: "Get a recipe step product by it's ID",
+	Description: "Get a recipe step product by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":            stringField("The ID of the recipe"),
-		"RecipeStepID":        stringField("The ID of the recipe step"),
-		"RecipeStepProductID": stringField("The ID of the recipe step product to get"),
+		"RecipeID":            stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":        stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepProductID": stringField("The MealPlanTaskID of the recipe step product to get"),
 	}),
 	OutputSchema: schemaObject(recipeStepProductsSchema),
 }
@@ -83,8 +83,8 @@ var getRecipeStepProductsTool = &mcp.Tool{
 	Name:        "GetRecipeStepProducts",
 	Description: "Get recipe step products with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":     stringField("The ID of the recipe"),
-		"RecipeStepID": stringField("The ID of the recipe step"),
+		"RecipeID":     stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID": stringField("The MealPlanTaskID of the recipe step"),
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -115,8 +115,8 @@ func (h *mcpToolManager) GetRecipeStepProducts() mcp.ToolHandlerFor[*GetRecipeSt
 type (
 	CreateRecipeStepProductInvocation struct {
 		*mealplanning.RecipeStepProductCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
+		RecipeID     string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
 	}
 )
 
@@ -124,11 +124,11 @@ var recipeStepProductCreationTool = &mcp.Tool{
 	Name:        "CreateRecipeStepProduct",
 	Description: "Create a recipe step product",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                    stringField("The ID of the recipe"),
-		"RecipeStepID":                stringField("The ID of the recipe step"),
+		"RecipeID":                    stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                stringField("The MealPlanTaskID of the recipe step"),
 		"Name":                        stringField("Name of the product"),
 		"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
-		"MeasurementUnitID":           stringField("The ID of the measurement unit, if any"),
+		"MeasurementUnitID":           stringField("The MealPlanTaskID of the measurement unit, if any"),
 		"QuantityNotes":               stringField("Notes about the quantity"),
 		"StorageInstructions":         stringField("Storage instructions for the product"),
 		"Quantity":                    optionalFloatRangeSchema(),
@@ -161,9 +161,9 @@ func (h *mcpToolManager) CreateRecipeStepProduct() mcp.ToolHandlerFor[*CreateRec
 type (
 	UpdateRecipeStepProductInvocation struct {
 		*mealplanning.RecipeStepProductUpdateRequestInput
-		RecipeID            string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID        string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepProductID string `jsonschema:"required,description=The recipe step product ID"`
+		RecipeID            string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID        string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
+		RecipeStepProductID string `jsonschema:"required,description=The recipe step product MealPlanTaskID"`
 	}
 )
 
@@ -171,12 +171,12 @@ var recipeStepProductUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipeStepProduct",
 	Description: "Update a recipe step product",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                    stringField("The ID of the recipe"),
-		"RecipeStepID":                stringField("The ID of the recipe step"),
-		"RecipeStepProductID":         stringField("The ID of the recipe step product to update"),
+		"RecipeID":                    stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepProductID":         stringField("The MealPlanTaskID of the recipe step product to update"),
 		"Name":                        stringField("Name of the product"),
 		"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
-		"MeasurementUnitID":           stringField("The ID of the measurement unit, if any"),
+		"MeasurementUnitID":           stringField("The MealPlanTaskID of the measurement unit, if any"),
 		"QuantityNotes":               stringField("Notes about the quantity"),
 		"StorageInstructions":         stringField("Storage instructions for the product"),
 		"Quantity":                    optionalFloatRangeSchema(),

@@ -14,22 +14,22 @@ import (
 
 type (
 	GetRecipeStepVesselInvocation struct {
-		RecipeID           string `jsonschema:"description=The recipe ID"`
-		RecipeStepID       string `jsonschema:"description=The recipe step ID"`
-		RecipeStepVesselID string `jsonschema:"description=The recipe step vessel ID"`
+		RecipeID           string `jsonschema:"description=The recipe MealPlanTaskID"`
+		RecipeStepID       string `jsonschema:"description=The recipe step MealPlanTaskID"`
+		RecipeStepVesselID string `jsonschema:"description=The recipe step vessel MealPlanTaskID"`
 	}
 )
 
 var recipeStepVesselsSchema = map[string]any{
-	"ID":                   stringField("The ID of the recipe step vessel"),
+	"MealPlanTaskID":       stringField("The MealPlanTaskID of the recipe step vessel"),
 	"CreatedAt":            timestampField("When the recipe step vessel was created"),
 	"LastUpdatedAt":        timestampField("When the recipe step vessel was last updated"),
 	"ArchivedAt":           timestampField("When the recipe step vessel was soft deleted"),
-	"BelongsToRecipeStep":  stringField("The ID of the recipe step this vessel belongs to"),
+	"BelongsToRecipeStep":  stringField("The MealPlanTaskID of the recipe step this vessel belongs to"),
 	"Name":                 stringField("Name of the vessel"),
 	"Notes":                stringField("Notes about the vessel"),
 	"Vessel":               objectType(validVesselsSchema),
-	"RecipeStepProductID":  stringField("The ID of the recipe step product this vessel is associated with, if any"),
+	"RecipeStepProductID":  stringField("The MealPlanTaskID of the recipe step product this vessel is associated with, if any"),
 	"Quantity":             uint16RangeWithOptionalMaxSchema(),
 	"VesselPreposition":    stringField("The preposition to use with the vessel (e.g., 'in', 'on', 'over')"),
 	"UnavailableAfterStep": boolField("Whether this vessel becomes unavailable after this step"),
@@ -37,11 +37,11 @@ var recipeStepVesselsSchema = map[string]any{
 
 var getRecipeStepVesselTool = &mcp.Tool{
 	Name:        "GetRecipeStepVessel",
-	Description: "Get a recipe step vessel by it's ID",
+	Description: "Get a recipe step vessel by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":           stringField("The ID of the recipe"),
-		"RecipeStepID":       stringField("The ID of the recipe step"),
-		"RecipeStepVesselID": stringField("The ID of the recipe step vessel to get"),
+		"RecipeID":           stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":       stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepVesselID": stringField("The MealPlanTaskID of the recipe step vessel to get"),
 	}),
 	OutputSchema: schemaObject(recipeStepVesselsSchema),
 }
@@ -77,8 +77,8 @@ var getRecipeStepVesselsTool = &mcp.Tool{
 	Name:        "GetRecipeStepVessels",
 	Description: "Get recipe step vessels with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":     stringField("The ID of the recipe"),
-		"RecipeStepID": stringField("The ID of the recipe step"),
+		"RecipeID":     stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID": stringField("The MealPlanTaskID of the recipe step"),
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -109,8 +109,8 @@ func (h *mcpToolManager) GetRecipeStepVessels() mcp.ToolHandlerFor[*GetRecipeSte
 type (
 	CreateRecipeStepVesselInvocation struct {
 		*mealplanning.RecipeStepVesselCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
+		RecipeID     string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
 	}
 )
 
@@ -118,10 +118,10 @@ var recipeStepVesselCreationTool = &mcp.Tool{
 	Name:        "CreateRecipeStepVessel",
 	Description: "Create a recipe step vessel",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"VesselID":                        stringField("The ID of the vessel"),
-		"RecipeStepProductID":             stringField("The ID of the recipe step product this vessel is associated with, if any"),
+		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                    stringField("The MealPlanTaskID of the recipe step"),
+		"VesselID":                        stringField("The MealPlanTaskID of the vessel"),
+		"RecipeStepProductID":             stringField("The MealPlanTaskID of the recipe step product this vessel is associated with, if any"),
 		"ProductOfRecipeStepIndex":        uintField("The index of the recipe step that produces this vessel, if any"),
 		"ProductOfRecipeStepProductIndex": uintField("The index of the recipe step product that produces this vessel, if any"),
 		"Name":                            stringField("Name of the vessel"),
@@ -151,9 +151,9 @@ func (h *mcpToolManager) CreateRecipeStepVessel() mcp.ToolHandlerFor[*CreateReci
 type (
 	UpdateRecipeStepVesselInvocation struct {
 		*mealplanning.RecipeStepVesselUpdateRequestInput
-		RecipeID           string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID       string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepVesselID string `jsonschema:"required,description=The recipe step vessel ID"`
+		RecipeID           string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID       string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
+		RecipeStepVesselID string `jsonschema:"required,description=The recipe step vessel MealPlanTaskID"`
 	}
 )
 
@@ -161,11 +161,11 @@ var recipeStepVesselUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipeStepVessel",
 	Description: "Update a recipe step vessel",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":             stringField("The ID of the recipe"),
-		"RecipeStepID":         stringField("The ID of the recipe step"),
-		"RecipeStepVesselID":   stringField("The ID of the recipe step vessel to update"),
-		"VesselID":             stringField("The ID of the vessel"),
-		"RecipeStepProductID":  stringField("The ID of the recipe step product this vessel is associated with, if any"),
+		"RecipeID":             stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":         stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepVesselID":   stringField("The MealPlanTaskID of the recipe step vessel to update"),
+		"VesselID":             stringField("The MealPlanTaskID of the vessel"),
+		"RecipeStepProductID":  stringField("The MealPlanTaskID of the recipe step product this vessel is associated with, if any"),
 		"Name":                 stringField("Name of the vessel"),
 		"Notes":                stringField("Notes about the vessel"),
 		"Quantity":             uint16RangeWithOptionalMaxSchema(),

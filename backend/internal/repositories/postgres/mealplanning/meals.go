@@ -515,7 +515,7 @@ func (q *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error
 	return nil
 }
 
-// ArchiveMeal archives a meal from the database by its ID.
+// ArchiveMeal archives a meal from the database by its MealPlanTaskID.
 func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

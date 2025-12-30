@@ -92,7 +92,7 @@ func buildChiMux(
 			cfg.ServiceName,
 			otelchi.WithRequestMethodInSpanName(true),
 			otelchi.WithTraceResponseHeaders(otelchi.TraceHeaderConfig{
-				TraceIDHeader:      "X-Trace-ID",
+				TraceIDHeader:      "X-Trace-MealPlanTaskID",
 				TraceSampledHeader: "X-Trace-Sampled",
 			}),
 		),
@@ -299,7 +299,7 @@ func (r *router) BuildRouteParamIDFetcher(logger logging.Logger, key, logDescrip
 		u, err := strconv.ParseUint(v, 10, 64)
 		if err != nil && logDescription != "" {
 			// this should never happen
-			logger.Error(fmt.Sprintf("fetching %s ID from request", logDescription), err)
+			logger.Error(fmt.Sprintf("fetching %s MealPlanTaskID from request", logDescription), err)
 		}
 
 		return u

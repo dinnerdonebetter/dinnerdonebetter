@@ -408,7 +408,7 @@ func (q *repository) UpdateRecipeStepCompletionCondition(ctx context.Context, up
 	return nil
 }
 
-// ArchiveRecipeStepCompletionCondition archives a recipe step completion condition from the database by its ID.
+// ArchiveRecipeStepCompletionCondition archives a recipe step completion condition from the database by its MealPlanTaskID.
 func (q *repository) ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepCompletionConditionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

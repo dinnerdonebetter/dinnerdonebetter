@@ -94,7 +94,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 			Status:            pointer.To(types.MealPlanTaskStatusFinished),
 			StatusExplanation: t.Name(),
 			AssignedToUser:    &user.ID,
-			ID:                mealPlanTask.ID,
+			MealPlanTaskID:    mealPlanTask.ID,
 		}))
 
 		var exists bool
@@ -107,7 +107,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -121,7 +121,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid meal plan task ID", func(t *testing.T) {
+	T.Run("with invalid meal plan task MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -139,7 +139,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 func TestQuerier_GetMealPlanTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan task ID", func(t *testing.T) {
+	T.Run("with invalid meal plan task MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -169,7 +169,7 @@ func TestQuerier_CreateMealPlanTask(T *testing.T) {
 func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with missing meal plan ID", func(t *testing.T) {
+	T.Run("with missing meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -184,7 +184,7 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with empty meal plan ID", func(t *testing.T) {
+	T.Run("with empty meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -197,7 +197,7 @@ func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 func TestQuerier_MarkMealPlanAsHavingGroceryListInitialized(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with empty meal plan ID", func(t *testing.T) {
+	T.Run("with empty meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

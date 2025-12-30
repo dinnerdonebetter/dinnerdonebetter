@@ -60,8 +60,8 @@ struct RecipePerformanceContentView: View {
       }
 
       // Progress indicator
-      let completedCount = viewModel.completedSteps.count
-      let totalSteps = recipe.steps.count
+      let completedCount = viewModel.completedSteps.count + (viewModel.washHandsCompleted ? 1 : 0)
+      let totalSteps = recipe.steps.count + 1  // +1 for wash hands step
       Text("\(completedCount) of \(totalSteps) steps completed")
         .font(.caption)
         .foregroundColor(.secondary)
@@ -267,6 +267,10 @@ struct RecipePerformanceContentView: View {
         .font(.headline)
         .padding(.horizontal, 4)
 
+      // Wash hands step (always first)
+      washHandsStepCard(viewModel: viewModel)
+
+      // Regular recipe steps
       ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
         StepCardView(
           step: step,
@@ -276,6 +280,55 @@ struct RecipePerformanceContentView: View {
         )
       }
     }
+  }
+  
+  // MARK: - Wash Hands Step Card
+  
+  private func washHandsStepCard(viewModel: PerformRecipeViewModel) -> some View {
+    let isCompleted = viewModel.isStepCompleted(PerformRecipeViewModel.washHandsStepIndex)
+    let canCheck = viewModel.canCheckStep(PerformRecipeViewModel.washHandsStepIndex)
+    
+    return VStack(alignment: .leading, spacing: 12) {
+      // Step header with checkbox
+      HStack(alignment: .top, spacing: 12) {
+        // Checkbox
+        Button(
+          action: {
+            viewModel.toggleStep(PerformRecipeViewModel.washHandsStepIndex)
+          },
+          label: {
+            Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+              .font(.title2)
+              .foregroundColor(
+                canCheck ? (isCompleted ? .green : .blue) : .gray
+              )
+          }
+        )
+        .disabled(!canCheck)
+
+        // Step title
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Wash your hands")
+            .font(.headline)
+            .foregroundColor(isCompleted ? .secondary : .primary)
+            .italic(isCompleted)
+        }
+
+        Spacer()
+      }
+    }
+    .padding()
+    .background(
+      isCompleted ? Color(.systemGray6) : Color(.systemBackground)
+    )
+    .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(
+          isCompleted ? Color.green.opacity(0.3) : Color.clear,
+          lineWidth: 2
+        )
+    )
   }
 
 }

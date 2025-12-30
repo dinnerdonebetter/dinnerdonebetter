@@ -28,14 +28,14 @@ func createServiceSettingConfigurationForTest(t *testing.T, clientToUse client.C
 	})
 	require.NoError(t, err)
 	converted := settingsconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(createdServiceSettingConfiguration.Created)
-	assertRoughEquality(t, exampleServiceSettingConfiguration, converted, defaultIgnoredFields("ServiceSetting", "ID", "BelongsToUser", "BelongsToAccount")...)
+	assertRoughEquality(t, exampleServiceSettingConfiguration, converted, defaultIgnoredFields("ServiceSetting", "MealPlanTaskID", "BelongsToUser", "BelongsToAccount")...)
 
 	res, err := clientToUse.GetServiceSettingConfigurationByName(ctx, &settingssvc.GetServiceSettingConfigurationByNameRequest{ServiceSettingConfigurationName: createdServiceSettingConfiguration.Created.ServiceSetting.Name})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
 	serviceSettingConfiguration := settingsconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(res.Result)
-	assertRoughEquality(t, converted, serviceSettingConfiguration, defaultIgnoredFields("ServiceSetting", "ID", "BelongsToUser", "BelongsToAccount")...)
+	assertRoughEquality(t, converted, serviceSettingConfiguration, defaultIgnoredFields("ServiceSetting", "MealPlanTaskID", "BelongsToUser", "BelongsToAccount")...)
 
 	return serviceSettingConfiguration
 }
@@ -130,7 +130,7 @@ func TestServiceSettingConfigurations_Reading_ByName(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -170,7 +170,7 @@ func TestServiceSettingConfigurations_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

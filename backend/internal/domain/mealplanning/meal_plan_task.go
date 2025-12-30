@@ -81,7 +81,7 @@ type (
 		Status            *string `json:"status"`
 		StatusExplanation string  `json:"statusExplanation"`
 		AssignedToUser    *string `json:"assignedToUser"`
-		ID                string  `json:"-"`
+		MealPlanTaskID    string  `json:"-"`
 	}
 
 	// MealPlanTaskDatabaseCreationEstimate represents what a user could set as input for creating meal plan tasks.
@@ -181,7 +181,7 @@ func (x *MealPlanTaskStatusChangeRequestInput) ValidateWithContext(ctx context.C
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.MealPlanTaskID, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanTaskStatusUnfinished,
 			MealPlanTaskStatusPostponed,

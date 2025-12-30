@@ -25,7 +25,7 @@ func checkRecipeStepInstrumentSliceEquality(t *testing.T, stepIndex int, expecte
 
 func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, expected, actual *mealplanning.RecipeStepInstrument) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have ID", stepIndex, instrIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have MealPlanTaskID", stepIndex, instrIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d instrument %d to have CreatedAt", stepIndex, instrIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
@@ -36,8 +36,8 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
 	if expected.Instrument != nil {
 		require.NotNil(t, actual.Instrument, "expected step %d instrument %d Instrument non-nil", stepIndex, instrIndex)
-		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
-		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
+		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.MealPlanTaskID", stepIndex, instrIndex)
+		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.MealPlanTaskID", stepIndex, instrIndex)
 	}
 }
 
@@ -69,7 +69,7 @@ func TestRecipeStepInstruments_CompleteLifecycle(T *testing.T) {
 		exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
 		exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-		// Set bridge table ID (required)
+		// Set bridge table MealPlanTaskID (required)
 		exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 		createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 			RecipeId:     createdRecipe.ID,
@@ -236,7 +236,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 		// Set bridge table IDs
 		// Step 0: knife with preheat preparation
 		exampleRecipeInput.Steps[0].Instruments[0].ValidPreparationInstrumentID = &vpiKnifePreheat.ID
-		// Step 1: butter ingredient with cut preparation (the instrument is a recipe step product, no bridge ID needed)
+		// Step 1: butter ingredient with cut preparation (the instrument is a recipe step product, no bridge MealPlanTaskID needed)
 		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientPreparationID = &vipButterCut.ID
 		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuButterStick.ID
 
@@ -295,7 +295,7 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-			// Set bridge table ID (required)
+			// Set bridge table MealPlanTaskID (required)
 			exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 			createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 				RecipeId:     createdRecipe.ID,

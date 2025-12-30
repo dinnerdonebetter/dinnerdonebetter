@@ -16,7 +16,7 @@ func init() {
 	}
 }
 
-// BuildFakeID builds a fake ID.
+// BuildFakeID builds a fake MealPlanTaskID.
 func BuildFakeID() string {
 	return identifiers.New()
 }

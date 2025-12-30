@@ -107,7 +107,7 @@ func TestQuerier_Integration_ValidMeasurementUnitConversions(t *testing.T) {
 func TestQuerier_ValidMeasurementUnitConversionExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -123,7 +123,7 @@ func TestQuerier_ValidMeasurementUnitConversionExists(T *testing.T) {
 func TestQuerier_GetValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -166,7 +166,7 @@ func TestQuerier_UpdateValidMeasurementUnitConversion(T *testing.T) {
 func TestQuerier_ArchiveValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

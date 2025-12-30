@@ -28,14 +28,14 @@ func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.Cl
 	})
 	require.NoError(t, err)
 	converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(createdAccountInstrumentOwnership.Created)
-	assertRoughEquality(t, exampleAccountInstrumentOwnership, converted, defaultIgnoredFields("ID", "BelongsToAccount", "Instrument")...)
+	assertRoughEquality(t, exampleAccountInstrumentOwnership, converted, defaultIgnoredFields("MealPlanTaskID", "BelongsToAccount", "Instrument")...)
 
 	res, err := clientToUse.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: createdAccountInstrumentOwnership.Created.Id})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
 	serviceSetting := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(res.Result)
-	assertRoughEquality(t, converted, serviceSetting, defaultIgnoredFields("ID", "BelongsToAccount", "Instrument")...)
+	assertRoughEquality(t, converted, serviceSetting, defaultIgnoredFields("MealPlanTaskID", "BelongsToAccount", "Instrument")...)
 
 	return serviceSetting
 }
@@ -101,7 +101,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 
 		converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(retrieved.Result)
 
-		assertRoughEquality(t, created, converted, defaultIgnoredFields("ID", "BelongsToAccount", "Instrument")...)
+		assertRoughEquality(t, created, converted, defaultIgnoredFields("MealPlanTaskID", "BelongsToAccount", "Instrument")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -116,7 +116,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -156,7 +156,7 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

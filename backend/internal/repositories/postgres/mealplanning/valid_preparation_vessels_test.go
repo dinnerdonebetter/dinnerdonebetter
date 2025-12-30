@@ -122,7 +122,7 @@ func TestQuerier_Integration_ValidPreparationVessels(t *testing.T) {
 func TestQuerier_ValidPreparationVesselExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid preparation instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -138,7 +138,7 @@ func TestQuerier_ValidPreparationVesselExists(T *testing.T) {
 func TestQuerier_GetValidPreparationVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid preparation instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -181,7 +181,7 @@ func TestQuerier_UpdateValidPreparationVessel(T *testing.T) {
 func TestQuerier_ArchiveValidPreparationVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid preparation instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

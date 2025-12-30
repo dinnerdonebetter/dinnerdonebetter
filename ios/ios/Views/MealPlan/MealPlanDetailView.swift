@@ -12,12 +12,18 @@ struct MealPlanDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
+  @State private var taskCount: Int? = nil
 
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 20) {
-        // Header
+        // Header with title, status, and range inline
         headerSection
+
+        // Voting deadline (if not finalized) - shown in a card if needed
+        if mealPlan.status == .awaitingVotes {
+          votingDeadlineCard
+        }
 
         // Events
         eventsSection
@@ -34,31 +40,79 @@ struct MealPlanDetailView: View {
       }
       .padding()
     }
-    .navigationTitle(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-    .navigationBarTitleDisplayMode(.large)
+    .navigationBarTitleDisplayMode(.inline)
+    .task {
+      await loadTaskCount()
+    }
+  }
+  
+  private func loadTaskCount() async {
+    guard mealPlan.status == .finalized && mealPlan.tasksCreated else {
+      return
+    }
+    
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        return
+      }
+      
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        return
+      }
+      
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+      
+      var request = Mealplanning_GetMealPlanTasksRequest()
+      request.mealPlanID = mealPlan.id
+      
+      let response = try await clientManager.client.mealPlanning.getMealPlanTasks(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+      
+      // Deduplicate by ID and get count
+      var seenIDs: Set<String> = []
+      let uniqueCount = response.results.filter { task in
+        if seenIDs.contains(task.id) {
+          return false
+        }
+        seenIDs.insert(task.id)
+        return true
+      }.count
+      
+      taskCount = uniqueCount
+    } catch {
+      print("⚠️ Failed to fetch task count: \(error)")
+      taskCount = 0
+    }
   }
 
   private var headerSection: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      // Status badge
-      HStack {
+    VStack(alignment: .leading, spacing: 8) {
+      // Title with status badge and range inline
+      HStack(alignment: .firstTextBaseline, spacing: 8) {
+        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+          .font(.title2)
+          .fontWeight(.bold)
+        
         statusBadge
+        
         Spacer()
       }
-
-      // Time range
+      
+      // Time range on second line
       Text(HomeView.formatMealPlanTimeRange(mealPlan))
         .font(.subheadline)
         .foregroundColor(.secondary)
-
-      // Voting deadline (if not finalized)
-      if mealPlan.status == .awaitingVotes {
-        votingDeadlineView
-      }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
+  }
+  
+  private var votingDeadlineCard: some View {
+    votingDeadlineView
+      .padding()
+      .background(Color(.systemGray6))
+      .cornerRadius(10)
   }
 
   private var statusBadge: some View {
@@ -137,14 +191,40 @@ struct MealPlanDetailView: View {
   }
 
   private var tasksSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Tasks")
+    let count = taskCount ?? 0
+    let hasTasks = count > 0
+    
+    return Group {
+      if hasTasks {
+        NavigationLink(
+          destination: TaskListView(
+            mealPlan: mealPlan,
+            tasks: [],  // Always start with empty array, TaskListView will fetch fresh data
+            authManager: authManager
+          )
+        ) {
+          tasksCardContent(count: count)
+        }
+        .buttonStyle(.plain)
+      } else {
+        tasksCardContent(count: count)
+          .opacity(0.6)
+      }
+    }
+  }
+  
+  private func tasksCardContent(count: Int) -> some View {
+    HStack {
+      Image(systemName: "checklist")
+        .foregroundColor(.blue)
+      Text("View Tasks (\(count))")
         .font(.headline)
-        .foregroundColor(.secondary)
-
-      Text("View and manage tasks for this meal plan")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+      Spacer()
+      if count > 0 {
+        Image(systemName: "chevron.right")
+          .foregroundColor(.secondary)
+          .font(.caption)
+      }
     }
     .padding()
     .background(Color(.systemGray6))

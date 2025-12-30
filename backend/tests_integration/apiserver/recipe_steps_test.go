@@ -201,7 +201,7 @@ func TestRecipeSteps_Listing(T *testing.T) {
 			createdRecipeStepConverted := converters.ConvertGRPCRecipeStepToRecipeStep(createdRecipeStep.Created)
 			for j := range exampleRecipeStep.CompletionConditions {
 				for k := range exampleRecipeStep.CompletionConditions[j].Ingredients {
-					// Use the actual created recipe step ingredient ID
+					// Use the actual created recipe step ingredient MealPlanTaskID
 					exampleRecipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdRecipeStepConverted.Ingredients[k].ID
 				}
 			}
@@ -271,9 +271,9 @@ func TestRecipeSteps_Listing(T *testing.T) {
 //				"image_3.png": img3Bytes,
 //			}
 //
-//			require.NoError(t, adminClient.UploadMediaForRecipeStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
+//			require.NoError(t, adminClient.UploadMediaForRecipeStep(ctx, files, createdRecipe.MealPlanTaskID, createdRecipeStep.MealPlanTaskID))
 //
-//			assert.NoError(t, adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
+//			assert.NoError(t, adminClient.ArchiveRecipe(ctx, createdRecipe.MealPlanTaskID))
 //		}
 //	})
 //}

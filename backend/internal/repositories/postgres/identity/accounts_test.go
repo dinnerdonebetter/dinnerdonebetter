@@ -114,7 +114,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 func TestQuerier_GetAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -134,7 +134,7 @@ func TestQuerier_GetAccount(T *testing.T) {
 func TestQuerier_GetAccounts(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user ID", func(t *testing.T) {
+	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -183,7 +183,7 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 func TestQuerier_ArchiveAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
@@ -194,7 +194,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		assert.Error(t, c.ArchiveAccount(ctx, "", exampleUserID))
 	})
 
-	T.Run("with invalid user ID", func(t *testing.T) {
+	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()

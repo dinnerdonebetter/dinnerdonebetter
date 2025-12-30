@@ -794,7 +794,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
-	// Set the meal plan event ID that was missing before
+	// Set the meal plan event MealPlanTaskID that was missing before
 	convertedInput.BelongsToMealPlanEvent = mealPlanEventID
 
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
@@ -1106,15 +1106,15 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, input.ID)
-	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.ID)
+	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, input.MealPlanTaskID)
+	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.MealPlanTaskID)
 
 	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskStatusChangedServiceEventType, map[string]any{
-		keys.MealPlanTaskIDKey: input.ID,
+		keys.MealPlanTaskIDKey: input.MealPlanTaskID,
 	}))
 
 	return nil

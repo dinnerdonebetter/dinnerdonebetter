@@ -477,7 +477,7 @@ func (q *repository) UpdateValidIngredientGroup(ctx context.Context, updated *me
 	return nil
 }
 
-// ArchiveValidIngredientGroup archives a valid ingredient group from the database by its ID.
+// ArchiveValidIngredientGroup archives a valid ingredient group from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

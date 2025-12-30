@@ -492,7 +492,7 @@ func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	return nil
 }
 
-// ArchiveValidVessel archives a valid vessel from the database by its ID.
+// ArchiveValidVessel archives a valid vessel from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

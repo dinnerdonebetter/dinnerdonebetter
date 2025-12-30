@@ -25,7 +25,7 @@ func checkRecipeStepVesselSliceEquality(t *testing.T, stepIndex int, expected, a
 
 func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, expected, actual *mealplanning.RecipeStepVessel) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have ID", stepIndex, vesselIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have MealPlanTaskID", stepIndex, vesselIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d vessel %d to have CreatedAt", stepIndex, vesselIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
@@ -35,8 +35,8 @@ func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, exp
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
 	if expected.Vessel != nil {
 		require.NotNil(t, actual.Vessel, "expected step %d vessel %d Vessel non-nil", stepIndex, vesselIndex)
-		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
-		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
+		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.MealPlanTaskID", stepIndex, vesselIndex)
+		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.MealPlanTaskID", stepIndex, vesselIndex)
 	}
 }
 
@@ -68,7 +68,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 		exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-		// Set bridge table ID (required)
+		// Set bridge table MealPlanTaskID (required)
 		exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 
 		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
@@ -159,7 +159,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		vipAluminumFoilLine := createValidIngredientPreparationWithEntitiesForTest(t, aluminumFoil, line)
 		vimuAluminumFoilSheets := createValidIngredientMeasurementUnitWithEntitiesForTest(t, aluminumFoil, sheets)
 		vpvBakingSheetLine := createValidPreparationVesselWithEntitiesForTest(t, line, bakingSheet)
-		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge MealPlanTaskID needed)
 		vipGarlicRoast := createValidIngredientPreparationWithEntitiesForTest(t, garlic, roast)
 		vimuGarlicHead := createValidIngredientMeasurementUnitWithEntitiesForTest(t, garlic, head)
 
@@ -261,7 +261,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientPreparationID = &vipAluminumFoilLine.ID
 		exampleRecipeInput.Steps[0].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuAluminumFoilSheets.ID
 		exampleRecipeInput.Steps[0].Vessels[0].ValidPreparationVesselID = &vpvBakingSheetLine.ID
-		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge ID needed)
+		// Step 1: garlic ingredient with roast preparation (vessel is a recipe step product, no bridge MealPlanTaskID needed)
 		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientPreparationID = &vipGarlicRoast.ID
 		exampleRecipeInput.Steps[1].Ingredients[0].ValidIngredientMeasurementUnitID = &vimuGarlicHead.ID
 
@@ -320,7 +320,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-			// Set bridge table ID (required)
+			// Set bridge table MealPlanTaskID (required)
 			exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 			createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 				RecipeId:     createdRecipe.ID,

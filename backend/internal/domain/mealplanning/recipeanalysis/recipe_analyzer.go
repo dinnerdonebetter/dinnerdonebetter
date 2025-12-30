@@ -42,7 +42,7 @@ func (g recipeStepGraphNode) ID() int64 {
 	return g.id
 }
 
-var errRecipeStepIDNotFound = errors.New("recipe step ID not found")
+var errRecipeStepIDNotFound = errors.New("recipe step MealPlanTaskID not found")
 
 func findStepIndexForRecipeStepProductID(recipe *mealplanning.Recipe, recipeStepProductID string) (int64, error) {
 	if step := recipe.FindStepForRecipeStepProductID(recipeStepProductID); step != nil {
@@ -196,7 +196,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *mealplann
 
 			toStepID, err := findStepIDForRecipeStepProductID(recipe, *ingredient.RecipeStepProductID)
 			if err != nil {
-				return nil, fmt.Errorf("finding step ID for step %d for recipe step product ID: %w", step.Index, err)
+				return nil, fmt.Errorf("finding step MealPlanTaskID for step %d for recipe step product MealPlanTaskID: %w", step.Index, err)
 			}
 
 			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", graphIDForStep(step)), toStepID); err != nil {
@@ -211,7 +211,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *mealplann
 
 			toStep, err := findStepIDForRecipeStepProductID(recipe, *instrument.RecipeStepProductID)
 			if err != nil {
-				return nil, fmt.Errorf("finding step ID for step %d for recipe step ingredient ID: %w", step.Index, err)
+				return nil, fmt.Errorf("finding step MealPlanTaskID for step %d for recipe step ingredient MealPlanTaskID: %w", step.Index, err)
 			}
 
 			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", graphIDForStep(step)), toStep); err != nil {
@@ -289,7 +289,7 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 	for stepID, ingredientIndices := range frozenIngredientSteps {
 		stepIndex, err := findStepIndexForRecipeStepID(recipe, stepID)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "determining recipe stepSet index for stepSet ID")
+			observability.AcknowledgeError(err, logger, span, "determining recipe stepSet index for stepSet MealPlanTaskID")
 			continue
 		}
 
@@ -322,8 +322,9 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			CreationExplanation: recipeTaskStepCreationExplanation,
 			StatusExplanation:   "",
 			MealPlanOptionID:    mealPlanOptionID,
-			RecipePrepTaskID:    prepTask.ID,
-			ID:                  identifiers.New(),
+
+			RecipePrepTaskID: prepTask.ID,
+			ID:               identifiers.New(),
 		})
 	}
 

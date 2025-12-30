@@ -713,7 +713,7 @@ func (q *repository) UpdateValidIngredientPreparation(ctx context.Context, updat
 	return nil
 }
 
-// ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.
+// ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

@@ -437,7 +437,7 @@ func cloneRecipe(x *mealplanning.Recipe, userID string) *mealplanning.RecipeData
 	// clone recipe.
 	cloneInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(x)
 	cloneInput.CreatedByUser = userID
-	// TODO: cloneInput.ClonedFromRecipeID = &x.ID
+	// TODO: cloneInput.ClonedFromRecipeID = &x.MealPlanTaskID
 
 	cloneInput.ID = identifiers.New()
 	for i := range cloneInput.Steps {
@@ -1023,7 +1023,7 @@ func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, 
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	// TODO: refactor this to include recipe ID
+	// TODO: refactor this to include recipe MealPlanTaskID
 	if err := m.db.ArchiveRecipeStepProduct(ctx, recipeStepID, recipeStepProductID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product")
 	}
@@ -1175,7 +1175,7 @@ func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeI
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
-	// TODO: refactor this to accept recipe ID
+	// TODO: refactor this to accept recipe MealPlanTaskID
 	if err := m.db.ArchiveRecipeStepInstrument(ctx, recipeStepID, recipeStepInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument")
 	}
@@ -1335,7 +1335,7 @@ func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeI
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	// TODO: refactor this to include recipe ID
+	// TODO: refactor this to include recipe MealPlanTaskID
 	if err := m.db.ArchiveRecipeStepIngredient(ctx, recipeStepID, recipeStepIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient")
 	}
@@ -1603,7 +1603,7 @@ func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	// TODO: refactor this to include recipe ID
+	// TODO: refactor this to include recipe MealPlanTaskID
 	if err := m.db.ArchiveRecipeStepCompletionCondition(ctx, recipeStepID, recipeStepCompletionConditionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step completion condition")
 	}

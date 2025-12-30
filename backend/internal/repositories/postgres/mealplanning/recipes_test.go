@@ -257,7 +257,7 @@ func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {
 func TestQuerier_RecipeExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -301,7 +301,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -312,7 +312,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipe(ctx, "", exampleAccountID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
@@ -626,7 +626,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 func TestQuerier_MarkRecipeAsIndexed(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid ID", func(t *testing.T) {
+	T.Run("with invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

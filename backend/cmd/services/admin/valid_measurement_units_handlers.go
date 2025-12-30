@@ -147,7 +147,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 
 	validMeasurementUnitID := s.validMeasurementUnitIDRouteParamFetcher(req)
 	if validMeasurementUnitID == "" {
-		return page("Valid Measurement Units", s.renderValidMeasurementUnitsError("Error: No valid measurement unit ID provided")), nil
+		return page("Valid Measurement Units", s.renderValidMeasurementUnitsError("Error: No valid measurement unit MealPlanTaskID provided")), nil
 	}
 
 	validMeasurementUnitRes, err := c.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{ValidMeasurementUnitId: validMeasurementUnitID})
@@ -392,7 +392,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsList(_ http.ResponseWriter, r
 			TableID: "valid-measurement-units-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Name",
 				"PluralName",
 				"Description",
@@ -517,7 +517,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsSearch(_ http.ResponseWriter,
 		TableID: "valid-measurement-units-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"PluralName",
 			"Description",

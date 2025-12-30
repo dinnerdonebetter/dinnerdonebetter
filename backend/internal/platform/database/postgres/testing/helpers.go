@@ -287,7 +287,7 @@ type PaginationTestConfig[T any] struct {
 // TestCursorBasedPagination is a generic test function for cursor-based pagination.
 // It creates items, fetches them using cursor-based pagination, and verifies:
 //   - All items are retrieved exactly once
-//   - Items are returned in ascending ID order
+//   - Items are returned in ascending MealPlanTaskID order
 //   - Pagination counts are accurate
 //   - The expected number of pages is fetched
 func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config PaginationTestConfig[T]) {
@@ -350,7 +350,7 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 			break
 		}
 
-		// Use the last ID from this page as the cursor for the next page
+		// Use the last MealPlanTaskID from this page as the cursor for the next page
 		if len(result.Data) > 0 {
 			lastID := config.GetID(result.Data[len(result.Data)-1])
 			cursor = &lastID
@@ -373,7 +373,7 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 	seenIDs := make(map[string]bool)
 	for _, item := range allPaginatedItems {
 		id := config.GetID(item)
-		assert.False(t, seenIDs[id], "Duplicate %s ID found: %s", config.ItemName, id)
+		assert.False(t, seenIDs[id], "Duplicate %s MealPlanTaskID found: %s", config.ItemName, id)
 		seenIDs[id] = true
 	}
 
@@ -383,12 +383,12 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 		assert.True(t, seenIDs[config.GetID(created)], "Created %s %s was not retrieved via pagination", config.ItemName, id)
 	}
 
-	// Verify items are returned in ascending ID order (cursor-based pagination requirement)
+	// Verify items are returned in ascending MealPlanTaskID order (cursor-based pagination requirement)
 	for i := 1; i < len(allPaginatedItems); i++ {
 		prevID := config.GetID(allPaginatedItems[i-1])
 		currID := config.GetID(allPaginatedItems[i])
 		assert.True(t, prevID < currID,
-			"%ss should be ordered by ID ascending: %s should be < %s (position %d and %d)",
+			"%ss should be ordered by MealPlanTaskID ascending: %s should be < %s (position %d and %d)",
 			config.ItemName, prevID, currID, i-1, i)
 	}
 

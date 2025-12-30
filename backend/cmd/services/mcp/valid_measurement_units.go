@@ -14,31 +14,31 @@ import (
 
 type (
 	GetValidMeasurementUnitInvocation struct {
-		ValidMeasurementUnitID string `jsonschema:"description=The measurement unit ID"`
+		ValidMeasurementUnitID string `jsonschema:"description=The measurement unit MealPlanTaskID"`
 	}
 )
 
 var validMeasurementUnitsSchema = map[string]any{
-	"ID":            stringField("The ID of the valid measurement unit"),
-	"CreatedAt":     timestampField("When the valid measurement unit was created"),
-	"LastUpdatedAt": timestampField("When the valid measurement unit was last updated"),
-	"ArchivedAt":    timestampField("When the valid measurement unit was soft deleted"),
-	"Name":          stringField("Name of the measurement unit"),
-	"Description":   stringField("Description of the measurement unit"),
-	"IconPath":      stringField("The URL for the icon for the item"),
-	"PluralName":    stringField("The plural name for the measurement unit. So for a unit named 'cup', this would be 'cups'"),
-	"Slug":          stringField("An easy-to-use URL slug for the measurement unit"),
-	"Volumetric":    boolField("Whether or not the valid measurement unit is volumetric"),
-	"Universal":     boolField("Whether or not the valid measurement unit is universal (valid for all ingredients). For instance, 'grams' is a universal measurement unit"),
-	"Metric":        boolField("Whether or not the valid measurement unit is metric"),
-	"Imperial":      boolField("Whether or not the valid measurement unit is imperial"),
+	"MealPlanTaskID": stringField("The MealPlanTaskID of the valid measurement unit"),
+	"CreatedAt":      timestampField("When the valid measurement unit was created"),
+	"LastUpdatedAt":  timestampField("When the valid measurement unit was last updated"),
+	"ArchivedAt":     timestampField("When the valid measurement unit was soft deleted"),
+	"Name":           stringField("Name of the measurement unit"),
+	"Description":    stringField("Description of the measurement unit"),
+	"IconPath":       stringField("The URL for the icon for the item"),
+	"PluralName":     stringField("The plural name for the measurement unit. So for a unit named 'cup', this would be 'cups'"),
+	"Slug":           stringField("An easy-to-use URL slug for the measurement unit"),
+	"Volumetric":     boolField("Whether or not the valid measurement unit is volumetric"),
+	"Universal":      boolField("Whether or not the valid measurement unit is universal (valid for all ingredients). For instance, 'grams' is a universal measurement unit"),
+	"Metric":         boolField("Whether or not the valid measurement unit is metric"),
+	"Imperial":       boolField("Whether or not the valid measurement unit is imperial"),
 }
 
 var getValidMeasurementUnitTool = &mcp.Tool{
 	Name:        "GetValidMeasurementUnit",
-	Description: "Get a valid measurement unit by it's ID",
+	Description: "Get a valid measurement unit by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidMeasurementUnitID": stringField("The ID of the valid measurement unit to get"),
+		"ValidMeasurementUnitID": stringField("The MealPlanTaskID of the valid measurement unit to get"),
 	}),
 	OutputSchema: schemaObject(validMeasurementUnitsSchema),
 }
@@ -138,7 +138,7 @@ func (h *mcpToolManager) CreateValidMeasurementUnit() mcp.ToolHandlerFor[*mealpl
 type (
 	UpdateValidMeasurementUnitInvocation struct {
 		*mealplanning.ValidMeasurementUnitUpdateRequestInput
-		ValidMeasurementUnitID string `jsonschema:"required,description=The measurement unit ID"`
+		ValidMeasurementUnitID string `jsonschema:"required,description=The measurement unit MealPlanTaskID"`
 	}
 )
 
@@ -146,7 +146,7 @@ var validMeasurementUnitUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidMeasurementUnit",
 	Description: "Update a valid measurement unit for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidMeasurementUnitID": stringField("The ID of the valid measurement unit to update"),
+		"ValidMeasurementUnitID": stringField("The MealPlanTaskID of the valid measurement unit to update"),
 		"Name":                   stringField("Name of the measurement unit"),
 		"Description":            stringField("Description of the measurement unit"),
 		"IconPath":               stringField("The URL for the icon for the item"),

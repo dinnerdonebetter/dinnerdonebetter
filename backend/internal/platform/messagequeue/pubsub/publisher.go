@@ -115,7 +115,7 @@ func (p *pubSubPublisher) Publish(ctx context.Context, data any) error {
 
 	<-result.Ready()
 
-	// The Get method blocks until a server-generated ID or an error is returned for the published message.
+	// The Get method blocks until a server-generated MealPlanTaskID or an error is returned for the published message.
 	if _, err := result.Get(ctx); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
@@ -140,7 +140,7 @@ func (p *pubSubPublisher) PublishAsync(ctx context.Context, data any) {
 	result := p.publisher.Publish(ctx, msg)
 	<-result.Ready()
 
-	// The Get method blocks until a server-generated ID or an error is returned for the published message.
+	// The Get method blocks until a server-generated MealPlanTaskID or an error is returned for the published message.
 	if _, err := result.Get(ctx); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}

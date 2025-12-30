@@ -124,7 +124,7 @@ func TestQuerier_Integration_ValidIngredientMeasurementUnits(t *testing.T) {
 func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient measurement unit MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -140,7 +140,7 @@ func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 func TestQuerier_GetValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient measurement unit MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -183,7 +183,7 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 func TestQuerier_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient measurement unit MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

@@ -14,28 +14,28 @@ import (
 
 type (
 	GetValidIngredientStateInvocation struct {
-		ValidIngredientStateID string `jsonschema:"description=The ingredient state ID"`
+		ValidIngredientStateID string `jsonschema:"description=The ingredient state MealPlanTaskID"`
 	}
 )
 
 var validIngredientStatesSchema = map[string]any{
-	"ID":            stringField("The ID of the valid ingredient state"),
-	"CreatedAt":     timestampField("When the valid ingredient state was created"),
-	"LastUpdatedAt": timestampField("When the valid ingredient state was last updated"),
-	"ArchivedAt":    timestampField("When the valid ingredient state was soft deleted"),
-	"Name":          stringField("Name of the ingredient state"),
-	"Description":   stringField("Description of the ingredient state"),
-	"IconPath":      stringField("The URL for the icon for the item"),
-	"Slug":          stringField("An easy-to-use URL slug for the ingredient state"),
-	"PastTense":     stringField("The past tense form of the ingredient state name (e.g., 'chopped' for 'chop')"),
-	"AttributeType": stringField("The attribute type of the ingredient state (texture, consistency, temperature, color, appearance, odor, taste, sound, or other)"),
+	"MealPlanTaskID": stringField("The MealPlanTaskID of the valid ingredient state"),
+	"CreatedAt":      timestampField("When the valid ingredient state was created"),
+	"LastUpdatedAt":  timestampField("When the valid ingredient state was last updated"),
+	"ArchivedAt":     timestampField("When the valid ingredient state was soft deleted"),
+	"Name":           stringField("Name of the ingredient state"),
+	"Description":    stringField("Description of the ingredient state"),
+	"IconPath":       stringField("The URL for the icon for the item"),
+	"Slug":           stringField("An easy-to-use URL slug for the ingredient state"),
+	"PastTense":      stringField("The past tense form of the ingredient state name (e.g., 'chopped' for 'chop')"),
+	"AttributeType":  stringField("The attribute type of the ingredient state (texture, consistency, temperature, color, appearance, odor, taste, sound, or other)"),
 }
 
 var getValidIngredientStateTool = &mcp.Tool{
 	Name:        "GetValidIngredientState",
-	Description: "Get a valid ingredient state by it's ID",
+	Description: "Get a valid ingredient state by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientStateID": stringField("The ID of the valid ingredient state to get"),
+		"ValidIngredientStateID": stringField("The MealPlanTaskID of the valid ingredient state to get"),
 	}),
 	OutputSchema: schemaObject(validIngredientStatesSchema),
 }
@@ -132,7 +132,7 @@ func (h *mcpToolManager) CreateValidIngredientState() mcp.ToolHandlerFor[*mealpl
 type (
 	UpdateValidIngredientStateInvocation struct {
 		*mealplanning.ValidIngredientStateUpdateRequestInput
-		ValidIngredientStateID string `jsonschema:"required,description=The ingredient state ID"`
+		ValidIngredientStateID string `jsonschema:"required,description=The ingredient state MealPlanTaskID"`
 	}
 )
 
@@ -140,7 +140,7 @@ var validIngredientStateUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredientState",
 	Description: "Update a valid ingredient state for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientStateID": stringField("The ID of the valid ingredient state to update"),
+		"ValidIngredientStateID": stringField("The MealPlanTaskID of the valid ingredient state to update"),
 		"Name":                   stringField("Name of the ingredient state"),
 		"Description":            stringField("Description of the ingredient state"),
 		"IconPath":               stringField("The URL for the icon for the item"),

@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidVesselInvocation struct {
-		ValidVesselID string `jsonschema:"description=The vessel ID"`
+		ValidVesselID string `jsonschema:"description=The vessel MealPlanTaskID"`
 	}
 )
 
 var validVesselsSchema = map[string]any{
-	"ID":                             stringField("The ID of the valid vessel"),
+	"MealPlanTaskID":                 stringField("The MealPlanTaskID of the valid vessel"),
 	"CreatedAt":                      timestampField("When the valid vessel was created"),
 	"LastUpdatedAt":                  timestampField("When the valid vessel was last updated"),
 	"ArchivedAt":                     timestampField("When the valid vessel was soft deleted"),
@@ -41,9 +41,9 @@ var validVesselsSchema = map[string]any{
 
 var getValidVesselTool = &mcp.Tool{
 	Name:        "GetValidVessel",
-	Description: "Get a valid vessel by it's ID",
+	Description: "Get a valid vessel by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidVesselID": stringField("The ID of the valid vessel to get"),
+		"ValidVesselID": stringField("The MealPlanTaskID of the valid vessel to get"),
 	}),
 	OutputSchema: schemaObject(validVesselsSchema),
 }
@@ -126,7 +126,7 @@ var validVesselCreationTool = &mcp.Tool{
 		"LengthInMillimeters":            floatField("Length of the vessel in millimeters"),
 		"HeightInMillimeters":            floatField("Height of the vessel in millimeters"),
 		"Capacity":                       floatField("Capacity of the vessel"),
-		"CapacityUnitID":                 stringField("The ID of the valid measurement unit for capacity (optional)"),
+		"CapacityUnitID":                 stringField("The MealPlanTaskID of the valid measurement unit for capacity (optional)"),
 		"IncludeInGeneratedInstructions": boolField("Whether or not the valid vessel should be included in generated instructions"),
 		"DisplayInSummaryLists":          boolField("Whether or not the valid vessel should be displayed in summary lists"),
 		"UsableForStorage":               boolField("Whether or not the valid vessel is usable for storage"),
@@ -148,7 +148,7 @@ func (h *mcpToolManager) CreateValidVessel() mcp.ToolHandlerFor[*mealplanning.Va
 type (
 	UpdateValidVesselInvocation struct {
 		*mealplanning.ValidVesselUpdateRequestInput
-		ValidVesselID string `jsonschema:"required,description=The vessel ID"`
+		ValidVesselID string `jsonschema:"required,description=The vessel MealPlanTaskID"`
 	}
 )
 
@@ -156,7 +156,7 @@ var validVesselUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidVessel",
 	Description: "Update a valid vessel for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidVesselID":                  stringField("The ID of the valid vessel to update"),
+		"ValidVesselID":                  stringField("The MealPlanTaskID of the valid vessel to update"),
 		"Name":                           stringField("Name of the vessel"),
 		"Description":                    stringField("Description of the vessel"),
 		"IconPath":                       stringField("The URL for the icon for the item"),
@@ -167,7 +167,7 @@ var validVesselUpdateTool = &mcp.Tool{
 		"LengthInMillimeters":            floatField("Length of the vessel in millimeters"),
 		"HeightInMillimeters":            floatField("Height of the vessel in millimeters"),
 		"Capacity":                       floatField("Capacity of the vessel"),
-		"CapacityUnitID":                 stringField("The ID of the valid measurement unit for capacity (optional)"),
+		"CapacityUnitID":                 stringField("The MealPlanTaskID of the valid measurement unit for capacity (optional)"),
 		"IncludeInGeneratedInstructions": boolField("Whether or not the valid vessel should be included in generated instructions"),
 		"DisplayInSummaryLists":          boolField("Whether or not the valid vessel should be displayed in summary lists"),
 		"UsableForStorage":               boolField("Whether or not the valid vessel is usable for storage"),

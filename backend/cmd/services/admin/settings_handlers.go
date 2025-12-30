@@ -185,7 +185,7 @@ func (s *AdminFrontendServer) SettingPage(_ http.ResponseWriter, req *http.Reque
 
 	settingID := s.settingIDRouteParamFetcher(req)
 	if settingID == "" {
-		return page("Settings", s.renderSettingsError("Error: No setting ID provided")), nil
+		return page("Settings", s.renderSettingsError("Error: No setting MealPlanTaskID provided")), nil
 	}
 
 	settingsRes, err := c.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: settingID})
@@ -346,7 +346,7 @@ func (s *AdminFrontendServer) SettingsList(_ http.ResponseWriter, req *http.Requ
 			TableID: "settings-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Name",
 				"Type",
 				"Description",
@@ -477,7 +477,7 @@ func (s *AdminFrontendServer) SettingsSearch(_ http.ResponseWriter, req *http.Re
 		TableID: "settings-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"Type",
 			"Description",

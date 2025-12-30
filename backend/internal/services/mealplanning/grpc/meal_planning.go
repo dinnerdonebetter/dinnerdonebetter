@@ -1333,6 +1333,7 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(request.Input)
+	input.MealPlanTaskID = request.MealPlanTaskId
 
 	if err := s.mealPlanningManager.MealPlanTaskStatusChange(ctx, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan task status")

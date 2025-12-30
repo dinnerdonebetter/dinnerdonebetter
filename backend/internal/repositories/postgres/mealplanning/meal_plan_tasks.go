@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	platformtypes "github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
@@ -197,42 +198,101 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	var (
-		data                      = []*types.MealPlanTask{}
-		filteredCount, totalCount uint64
-	)
+	// Group results by task MealPlanTaskID (since each task can have multiple rows - one per prep task step)
+	taskMap := make(map[string]*types.MealPlanTask)
+
 	for _, result := range results {
-		mealPlanTask := &types.MealPlanTask{
-			RecipePrepTask:      types.RecipePrepTask{},
-			CreatedAt:           result.CreatedAt,
-			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
-			CompletedAt:         database.TimePointerFromNullTime(result.CompletedAt),
-			AssignedToUser:      database.StringPointerFromNullString(result.AssignedToUser),
-			ID:                  result.ID,
-			Status:              string(result.Status),
-			CreationExplanation: result.CreationExplanation,
-			StatusExplanation:   result.StatusExplanation,
-			MealPlanOption: types.MealPlanOption{
-				CreatedAt:              result.MealPlanOptionCreatedAt,
-				LastUpdatedAt:          database.TimePointerFromNullTime(result.MealPlanOptionLastUpdatedAt),
-				AssignedCook:           database.StringPointerFromNullString(result.MealPlanOptionAssignedCook),
-				ArchivedAt:             database.TimePointerFromNullTime(result.MealPlanOptionArchivedAt),
-				AssignedDishwasher:     database.StringPointerFromNullString(result.MealPlanOptionAssignedDishwasher),
-				Notes:                  result.MealPlanOptionNotes,
-				BelongsToMealPlanEvent: database.StringFromNullString(result.MealPlanOptionBelongsToMealPlanEvent),
-				ID:                     result.MealPlanOptionID,
-				Votes:                  nil,
-				Meal: types.Meal{
-					ID: result.MealPlanOptionMealID,
+		var mealPlanTask *types.MealPlanTask
+		var exists bool
+
+		if mealPlanTask, exists = taskMap[result.ID]; !exists {
+			// Create new task
+			mealPlanTask = &types.MealPlanTask{
+				CreatedAt:           result.CreatedAt,
+				LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+				CompletedAt:         database.TimePointerFromNullTime(result.CompletedAt),
+				AssignedToUser:      database.StringPointerFromNullString(result.AssignedToUser),
+				ID:                  result.ID,
+				Status:              string(result.Status),
+				CreationExplanation: result.CreationExplanation,
+				StatusExplanation:   result.StatusExplanation,
+				MealPlanOption: types.MealPlanOption{
+					CreatedAt:              result.MealPlanOptionCreatedAt,
+					LastUpdatedAt:          database.TimePointerFromNullTime(result.MealPlanOptionLastUpdatedAt),
+					AssignedCook:           database.StringPointerFromNullString(result.MealPlanOptionAssignedCook),
+					ArchivedAt:             database.TimePointerFromNullTime(result.MealPlanOptionArchivedAt),
+					AssignedDishwasher:     database.StringPointerFromNullString(result.MealPlanOptionAssignedDishwasher),
+					Notes:                  result.MealPlanOptionNotes,
+					BelongsToMealPlanEvent: database.StringFromNullString(result.MealPlanOptionBelongsToMealPlanEvent),
+					ID:                     result.MealPlanOptionID,
+					Votes:                  nil,
+					Meal: types.Meal{
+						ID: result.MealPlanOptionMealID,
+					},
+					MealScale: database.Float32FromString(result.MealPlanOptionMealScale),
+					Chosen:    result.MealPlanOptionChosen,
+					TieBroken: result.MealPlanOptionTiebroken,
 				},
-				MealScale: database.Float32FromString(result.MealPlanOptionMealScale),
-				Chosen:    result.MealPlanOptionChosen,
-				TieBroken: result.MealPlanOptionTiebroken,
-			},
+				RecipePrepTask: types.RecipePrepTask{
+					ID:                          result.PrepTaskID,
+					BelongsToRecipe:             result.PrepTaskBelongsToRecipe,
+					Name:                        result.PrepTaskName,
+					Description:                 result.PrepTaskDescription,
+					Notes:                       result.PrepTaskNotes,
+					ExplicitStorageInstructions: result.PrepTaskExplicitStorageInstructions,
+					Optional:                    result.PrepTaskOptional,
+					CreatedAt:                   result.PrepTaskCreatedAt,
+					LastUpdatedAt:               database.TimePointerFromNullTime(result.PrepTaskLastUpdatedAt),
+					ArchivedAt:                  database.TimePointerFromNullTime(result.PrepTaskArchivedAt),
+					StorageTemperatureInCelsius: platformtypes.OptionalFloat32Range{
+						Max: database.Float32PointerFromNullString(result.PrepTaskMaximumStorageTemperatureInCelsius),
+						Min: database.Float32PointerFromNullString(result.PrepTaskMinimumStorageTemperatureInCelsius),
+					},
+					TimeBufferBeforeRecipeInSeconds: platformtypes.Uint32RangeWithOptionalMax{
+						Max: database.Uint32PointerFromNullInt32(result.PrepTaskMaximumTimeBufferBeforeRecipeInSeconds),
+						Min: uint32(result.PrepTaskMinimumTimeBufferBeforeRecipeInSeconds),
+					},
+					TaskSteps: []*types.RecipePrepTaskStep{},
+				},
+			}
+
+			// Set storage type if available
+			if result.PrepTaskStorageType.Valid {
+				mealPlanTask.RecipePrepTask.StorageType = string(result.PrepTaskStorageType.StorageContainerType)
+			}
+
+			taskMap[result.ID] = mealPlanTask
 		}
 
-		data = append(data, mealPlanTask)
+		// Add prep task step if it exists and hasn't been added yet
+		if result.PrepTaskStepID != "" {
+			// Check if this step is already in the task steps
+			stepExists := false
+			for _, existingStep := range mealPlanTask.RecipePrepTask.TaskSteps {
+				if existingStep.ID == result.PrepTaskStepID {
+					stepExists = true
+					break
+				}
+			}
+
+			if !stepExists {
+				mealPlanTask.RecipePrepTask.TaskSteps = append(mealPlanTask.RecipePrepTask.TaskSteps, &types.RecipePrepTaskStep{
+					ID:                      result.PrepTaskStepID,
+					BelongsToRecipeStep:     result.PrepTaskStepBelongsToRecipeStep,
+					BelongsToRecipePrepTask: result.PrepTaskStepBelongsToRecipePrepTask,
+					SatisfiesRecipeStep:     result.PrepTaskStepSatisfiesRecipeStep,
+				})
+			}
+		}
 	}
+
+	// Convert map to slice
+	data := make([]*types.MealPlanTask, 0, len(taskMap))
+	for _, task := range taskMap {
+		data = append(data, task)
+	}
+
+	var filteredCount, totalCount uint64
 
 	x := filtering.NewQueryFilteredResult(data, filteredCount, totalCount, func(t *types.MealPlanTask) string {
 		return t.ID
@@ -325,8 +385,8 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 	if input == nil {
 		return database.ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.ID)
-	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.MealPlanTaskID)
+	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.MealPlanTaskID)
 
 	var settledAt *time.Time
 	if input.Status != nil && *input.Status == types.MealPlanTaskStatusFinished {
@@ -339,7 +399,7 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 	}
 
 	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated.ChangeMealPlanTaskStatusParams{
-		ID:                input.ID,
+		ID:                input.MealPlanTaskID,
 		Status:            generated.PrepStepStatus(newStatus),
 		StatusExplanation: input.StatusExplanation,
 		CompletedAt:       database.NullTimeFromTimePointer(settledAt),

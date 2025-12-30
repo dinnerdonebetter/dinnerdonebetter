@@ -64,7 +64,7 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 // BuildFakeMealPlanTaskStatusChangeRequestInput builds a faked meal plan task.
 func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusChangeRequestInput {
 	return &types.MealPlanTaskStatusChangeRequestInput{
-		ID:                BuildFakeID(),
+		MealPlanTaskID:    BuildFakeID(),
 		Status:            pointer.To("unfinished"),
 		StatusExplanation: buildUniqueString(),
 	}

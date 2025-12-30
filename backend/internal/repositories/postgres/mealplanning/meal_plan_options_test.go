@@ -128,7 +128,7 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -142,7 +142,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid meal plan option ID", func(t *testing.T) {
+	T.Run("with invalid meal plan option MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -161,7 +161,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 func TestQuerier_GetMealPlanOption(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
@@ -174,7 +174,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid meal plan option ID", func(t *testing.T) {
+	T.Run("with invalid meal plan option MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
@@ -192,7 +192,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan option ID", func(t *testing.T) {
+	T.Run("with invalid meal plan option MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -207,7 +207,7 @@ func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 func TestQuerier_GetMealPlanOptions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -252,7 +252,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
@@ -263,7 +263,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", "", exampleMealPlanOption.ID))
 	})
 
-	T.Run("with invalid meal plan option ID", func(t *testing.T) {
+	T.Run("with invalid meal plan option MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()

@@ -159,7 +159,7 @@ func (q *repository) UpdateMealList(ctx context.Context, updated *types.MealList
 	return nil
 }
 
-// ArchiveMealList archives a meal list from the database by its ID.
+// ArchiveMealList archives a meal list from the database by its MealPlanTaskID.
 func (q *repository) ArchiveMealList(ctx context.Context, mealListID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

@@ -152,7 +152,7 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 
 	validIngredientStateID := s.validIngredientStateIDRouteParamFetcher(req)
 	if validIngredientStateID == "" {
-		return page("Valid Ingredient States", s.renderValidIngredientStatesError("Error: No valid ingredient state ID provided")), nil
+		return page("Valid Ingredient States", s.renderValidIngredientStatesError("Error: No valid ingredient state MealPlanTaskID provided")), nil
 	}
 
 	validIngredientStateRes, err := c.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{ValidIngredientStateId: validIngredientStateID})
@@ -310,7 +310,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesList(_ http.ResponseWriter, r
 			TableID: "valid-ingredient-states-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Name",
 				"PastTense",
 				"AttributeType",
@@ -407,7 +407,7 @@ func (s *AdminFrontendServer) ValidIngredientStatesSearch(_ http.ResponseWriter,
 		TableID: "valid-ingredient-states-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"PastTense",
 			"AttributeType",
@@ -580,7 +580,7 @@ func (s *AdminFrontendServer) ValidIngredientStateIngredientsSearch(_ http.Respo
 			g.Attr("class", "overflow-x-auto"),
 			ghtml.P(
 				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
-				g.Text("Error: No valid ingredient state ID provided"),
+				g.Text("Error: No valid ingredient state MealPlanTaskID provided"),
 			),
 		), nil
 	}

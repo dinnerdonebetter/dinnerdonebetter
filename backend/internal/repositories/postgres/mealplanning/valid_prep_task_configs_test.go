@@ -138,7 +138,7 @@ func TestQuerier_Integration_ValidPrepTaskConfigs(t *testing.T) {
 func TestQuerier_ValidPrepTaskConfigExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid prep task config ID", func(t *testing.T) {
+	T.Run("with invalid valid prep task config MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -154,7 +154,7 @@ func TestQuerier_ValidPrepTaskConfigExists(T *testing.T) {
 func TestQuerier_GetValidPrepTaskConfig(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid prep task config ID", func(t *testing.T) {
+	T.Run("with invalid valid prep task config MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -169,7 +169,7 @@ func TestQuerier_GetValidPrepTaskConfig(T *testing.T) {
 func TestQuerier_GetValidPrepTaskConfigsForIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid ingredient ID", func(t *testing.T) {
+	T.Run("with invalid ingredient MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -184,7 +184,7 @@ func TestQuerier_GetValidPrepTaskConfigsForIngredient(T *testing.T) {
 func TestQuerier_GetValidPrepTaskConfigsForPreparation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid preparation ID", func(t *testing.T) {
+	T.Run("with invalid preparation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -199,7 +199,7 @@ func TestQuerier_GetValidPrepTaskConfigsForPreparation(T *testing.T) {
 func TestQuerier_GetValidPrepTaskConfigsForIngredientAndPreparation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid ingredient ID", func(t *testing.T) {
+	T.Run("with invalid ingredient MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -210,7 +210,7 @@ func TestQuerier_GetValidPrepTaskConfigsForIngredientAndPreparation(T *testing.T
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid preparation ID", func(t *testing.T) {
+	T.Run("with invalid preparation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -253,7 +253,7 @@ func TestQuerier_UpdateValidPrepTaskConfig(T *testing.T) {
 func TestQuerier_ArchiveValidPrepTaskConfig(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid prep task config ID", func(t *testing.T) {
+	T.Run("with invalid valid prep task config MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

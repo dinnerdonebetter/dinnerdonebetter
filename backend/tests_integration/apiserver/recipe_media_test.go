@@ -22,7 +22,7 @@ func checkRecipeMediaSliceEquality(t *testing.T, stepIndex int, expected, actual
 func checkRecipeMediaEquality(t *testing.T, stepIndex, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected step %d media %d to have ID", stepIndex, mediaIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d media %d to have MealPlanTaskID", stepIndex, mediaIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d media %d to have CreatedAt", stepIndex, mediaIndex)
 	assert.Equal(t, expected.MimeType, actual.MimeType, "expected step %d media %d MimeType", stepIndex, mediaIndex)
 	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected step %d media %d InternalPath", stepIndex, mediaIndex)
@@ -50,7 +50,7 @@ func checkRecipeLevelMediaSliceEquality(t *testing.T, expected, actual []*mealpl
 func checkRecipeLevelMediaEquality(t *testing.T, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected recipe media %d to have ID", mediaIndex)
+	assert.NotEmpty(t, actual.ID, "expected recipe media %d to have MealPlanTaskID", mediaIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected recipe media %d to have CreatedAt", mediaIndex)
 	assert.Equal(t, expected.MimeType, actual.MimeType, "expected recipe media %d MimeType", mediaIndex)
 	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected recipe media %d InternalPath", mediaIndex)

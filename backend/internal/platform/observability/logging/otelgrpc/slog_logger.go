@@ -106,7 +106,7 @@ func (l *otelSlogLogger) WithName(name string) logging.Logger {
 	return &otelSlogLogger{logger: l2}
 }
 
-// SetRequestIDFunc sets the request ID retrieval function.
+// SetRequestIDFunc sets the request MealPlanTaskID retrieval function.
 func (l *otelSlogLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	if f != nil {
 		l.requestIDFunc = f

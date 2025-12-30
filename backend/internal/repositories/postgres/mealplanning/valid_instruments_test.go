@@ -124,7 +124,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 func TestQuerier_ValidInstrumentExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -140,7 +140,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 func TestQuerier_GetValidInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -155,7 +155,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 func TestQuerier_SearchForValidInstruments(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -198,7 +198,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
+	T.Run("with invalid valid instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -211,7 +211,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 func TestQuerier_MarkValidInstrumentAsIndexed(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid ID", func(t *testing.T) {
+	T.Run("with invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

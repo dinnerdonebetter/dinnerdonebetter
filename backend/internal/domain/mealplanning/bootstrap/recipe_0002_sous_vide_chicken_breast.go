@@ -504,7 +504,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
-	// Fix step 4a completion condition - need to reference the actual ingredient ID
+	// Fix step 4a completion condition - need to reference the actual ingredient MealPlanTaskID
 	step4aChickenIngredientID := step4a.Ingredients[0].ID
 	step4a.CompletionConditions[0].Ingredients[0].RecipeStepIngredient = step4aChickenIngredientID
 
@@ -661,6 +661,30 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
+	// Create prep task for seasoning and bagging chicken ahead of time
+	prepTask1ID := identifiers.New()
+	prepTask1 := &mealplanning.RecipePrepTaskDatabaseCreationInput{
+		ID:                          prepTask1ID,
+		BelongsToRecipe:             recipeID,
+		Name:                        "Season and bag chicken breasts",
+		Description:                 "The chicken breasts can be seasoned and sealed in bags up to 24 hours ahead of time. Store in the refrigerator in sealed bags.",
+		Notes:                       "Preparing the chicken ahead saves time on the day of cooking.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the sealed chicken breasts in the refrigerator for up to 24 hours.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4), // Refrigerator temperature
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](86400), // 24 hours
+		},
+		TaskSteps: []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{
+			{ID: identifiers.New(), BelongsToRecipeStep: step1ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: true},
+			{ID: identifiers.New(), BelongsToRecipeStep: step2ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: true},
+		},
+	}
+
 	return []*mealplanning.RecipeDatabaseCreationInput{
 		{
 			ID:                  recipeID,
@@ -677,6 +701,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4a, step4b, step6},
+			PrepTasks:         []*mealplanning.RecipePrepTaskDatabaseCreationInput{prepTask1},
 		},
 	}
 }

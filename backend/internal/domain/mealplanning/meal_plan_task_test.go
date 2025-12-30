@@ -98,8 +98,8 @@ func TestMealPlanTaskStatusChangeRequestInput_ValidateWithContext(T *testing.T) 
 
 		ctx := t.Context()
 		x := MealPlanTaskStatusChangeRequestInput{
-			ID:     t.Name(),
-			Status: pointer.To(MealPlanTaskStatusUnfinished),
+			MealPlanTaskID: t.Name(),
+			Status:         pointer.To(MealPlanTaskStatusUnfinished),
 		}
 
 		require.NoError(t, x.ValidateWithContext(ctx))

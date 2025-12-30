@@ -66,7 +66,7 @@ func (l *zapLogger) SetLevel(level logging.Level) {
 	// there isn't really a way to set the level of a zap logger, but this doesn't really seem to get called anyway lol
 }
 
-// SetRequestIDFunc sets the request ID retrieval function.
+// SetRequestIDFunc sets the request MealPlanTaskID retrieval function.
 func (l *zapLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	if f != nil {
 		l.requestIDFunc = f

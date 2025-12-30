@@ -36,11 +36,11 @@ func (s *oauth2ClientStoreImpl) GetByID(ctx context.Context, id string) (oauth2.
 	defer span.End()
 
 	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, id)
-	logger.Debug("getting oauth2 client by ID")
+	logger.Debug("getting oauth2 client by MealPlanTaskID")
 
 	client, err := s.dataManager.GetOAuth2ClientByClientID(ctx, id)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client by ID")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client by MealPlanTaskID")
 	}
 
 	c := &oauth2ClientInfoImpl{

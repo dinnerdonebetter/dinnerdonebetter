@@ -24,7 +24,7 @@ func createServiceSettingForTest(t *testing.T) *settings.ServiceSetting {
 	})
 	require.NoError(t, err)
 	converted := settingsconverters.ConvertGRPCServiceSettingToServiceSetting(createdServiceSetting.Created)
-	assertRoughEquality(t, exampleServiceSetting, converted, defaultIgnoredFields("ID")...)
+	assertRoughEquality(t, exampleServiceSetting, converted, defaultIgnoredFields("MealPlanTaskID")...)
 
 	res, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: createdServiceSetting.Created.Id})
 	require.NoError(t, err)
@@ -124,7 +124,7 @@ func TestServiceSettings_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -162,7 +162,7 @@ func TestServiceSettings_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

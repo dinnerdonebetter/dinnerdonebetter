@@ -54,7 +54,7 @@ func BuildFakeRecipeStepVesselUpdateRequestInput() *types.RecipeStepVesselUpdate
 func BuildFakeRecipeStepVesselCreationRequestInput() *types.RecipeStepVesselCreationRequestInput {
 	recipeStepVessel := BuildFakeRecipeStepVessel()
 	input := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepVessel)
-	// Bridge table ID is now required
+	// Bridge table MealPlanTaskID is now required
 	input.ValidPreparationVesselID = pointer.To(BuildFakeID())
 	return input
 }

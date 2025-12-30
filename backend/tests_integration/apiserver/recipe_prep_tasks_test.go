@@ -24,7 +24,7 @@ func checkRecipePrepTaskStepSliceEquality(t *testing.T, taskIndex int, expected,
 
 func checkRecipePrepTaskStepEquality(t *testing.T, taskIndex, stepIndex int, expected, actual *mealplanning.RecipePrepTaskStep) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected prep task %d step %d to have ID", taskIndex, stepIndex)
+	assert.NotEmpty(t, actual.ID, "expected prep task %d step %d to have MealPlanTaskID", taskIndex, stepIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected prep task %d step %d to have BelongsToRecipeStep", taskIndex, stepIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipePrepTask, "expected prep task %d step %d to have BelongsToRecipePrepTask", taskIndex, stepIndex)
 	assert.Equal(t, expected.SatisfiesRecipeStep, actual.SatisfiesRecipeStep, "expected prep task %d step %d SatisfiesRecipeStep", taskIndex, stepIndex)
@@ -42,7 +42,7 @@ func checkRecipePrepTaskSliceEquality(t *testing.T, expected, actual []*mealplan
 func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *mealplanning.RecipePrepTask) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected prep task %d to have ID", taskIndex)
+	assert.NotEmpty(t, actual.ID, "expected prep task %d to have MealPlanTaskID", taskIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected prep task %d to have CreatedAt", taskIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipe, "expected prep task %d to have BelongsToRecipe", taskIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected prep task %d Name", taskIndex)

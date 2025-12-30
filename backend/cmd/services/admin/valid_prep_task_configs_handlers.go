@@ -31,7 +31,7 @@ func (s *AdminFrontendServer) ValidPrepTaskConfigPage(_ http.ResponseWriter, req
 
 	validPrepTaskConfigID := s.validPrepTaskConfigIDRouteParamFetcher(req)
 	if validPrepTaskConfigID == "" {
-		return page("Valid Prep Task Config", s.renderValidPrepTaskConfigsError("Error: No valid prep task config ID provided")), nil
+		return page("Valid Prep Task Config", s.renderValidPrepTaskConfigsError("Error: No valid prep task config MealPlanTaskID provided")), nil
 	}
 
 	validPrepTaskConfigRes, err := c.GetValidPrepTaskConfig(ctx, &mealplanningsvc.GetValidPrepTaskConfigRequest{ValidPrepTaskConfigId: validPrepTaskConfigID})
@@ -303,7 +303,7 @@ func (s *AdminFrontendServer) ValidPrepTaskConfigsList(_ http.ResponseWriter, re
 			TableID: "valid-prep-task-configs-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Ingredient",
 				"Preparation",
 				"StorageType",
@@ -436,7 +436,7 @@ func (s *AdminFrontendServer) ValidPrepTaskConfigsSearch(_ http.ResponseWriter, 
 		TableID: "valid-prep-task-configs-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Ingredient",
 			"Preparation",
 			"StorageType",

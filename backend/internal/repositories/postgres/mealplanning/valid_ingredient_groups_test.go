@@ -119,7 +119,7 @@ func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
 func TestQuerier_ValidIngredientGroupExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient group MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -135,7 +135,7 @@ func TestQuerier_ValidIngredientGroupExists(T *testing.T) {
 func TestQuerier_GetValidIngredientGroup(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient group MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -150,7 +150,7 @@ func TestQuerier_GetValidIngredientGroup(T *testing.T) {
 func TestQuerier_SearchForValidIngredientGroups(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient group MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -194,7 +194,7 @@ func TestQuerier_UpdateValidIngredientGroup(T *testing.T) {
 func TestQuerier_ArchiveValidIngredientGroup(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient group MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

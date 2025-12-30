@@ -115,7 +115,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
+	T.Run("with invalid user ingredient preference MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -128,7 +128,7 @@ func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid user ID", func(t *testing.T) {
+	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -145,7 +145,7 @@ func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 func TestQuerier_GetUserIngredientPreference(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
+	T.Run("with invalid user ingredient preference MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -189,7 +189,7 @@ func TestQuerier_UpdateUserIngredientPreference(T *testing.T) {
 func TestQuerier_ArchiveUserIngredientPreference(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
+	T.Run("with invalid user ingredient preference MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

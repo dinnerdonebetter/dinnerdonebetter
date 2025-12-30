@@ -903,7 +903,7 @@ func findCreatedRecipeStepProductsForVessels(recipe *mealplanning.RecipeDatabase
 				if enoughSteps && enoughRecipeStepProducts && relevantProductIsVessel {
 					vessel.RecipeStepProductID = &recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].ID
 				} else {
-					log.Printf("for recipe step id %q, vessel ID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
+					log.Printf("for recipe step id %q, vessel MealPlanTaskID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
 				}
 			}
 		}
@@ -991,7 +991,7 @@ func (q *repository) MarkRecipeAsIndexed(ctx context.Context, recipeID string) e
 	return nil
 }
 
-// ArchiveRecipe archives a recipe from the database by its ID.
+// ArchiveRecipe archives a recipe from the database by its MealPlanTaskID.
 func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
