@@ -261,13 +261,13 @@ struct TaskRow: View {
           .frame(width: 20)
       }
       
-      // Checkbox - enabled for parent tasks only when all subtasks are completed
+      // Checkbox - enabled for parent tasks when all subtasks are completed, or when already finished (to allow unchecking)
       if isParent {
         let allSubtasksCompleted = viewModel.areAllSubtasksCompleted(parentTaskID: task.id)
-        let canCheckParent = allSubtasksCompleted && task.status != .finished
+        let canCheckParent = allSubtasksCompleted || task.status == .finished
         
         if canCheckParent {
-          // Parent task can be checked when all subtasks are done
+          // Parent task can be checked when all subtasks are done, or unchecked when finished
           Button {
             print("🔘 Clicked parent task checkbox for task \(task.id)")
             Task {
@@ -276,19 +276,19 @@ struct TaskRow: View {
           } label: {
             Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
               .font(.title2)
-              .foregroundColor(.blue)
+              .foregroundColor(
+                task.status == .finished ? .green : .blue
+              )
               .contentShape(Rectangle())
           }
           .buttonStyle(.plain)
           .disabled(viewModel.isUpdating)
           .frame(minWidth: 44, minHeight: 44) // Ensure tappable area
         } else {
-          // Parent task shows status but can't be checked (either not all subtasks done, or already finished)
+          // Parent task shows status but can't be checked (not all subtasks done yet)
           Image(systemName: task.status == .finished ? "checkmark.circle.fill" : "circle")
             .font(.title2)
-            .foregroundColor(
-              task.status == .finished ? .green : .gray
-            )
+            .foregroundColor(.gray)
         }
       } else {
         // Standalone tasks can be checked
@@ -310,7 +310,6 @@ struct TaskRow: View {
       // Task content
       VStack(alignment: .leading, spacing: 4) {
         // Task description - show prep task name or creation explanation
-          _ = isParent ? viewModel.areAllSubtasksCompleted(parentTaskID: task.id) : false
         let isCompleted = task.status == .finished
         
         if task.hasRecipePrepTask && !task.recipePrepTask.name.isEmpty {

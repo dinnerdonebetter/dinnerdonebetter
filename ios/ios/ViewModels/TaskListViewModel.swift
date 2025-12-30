@@ -457,6 +457,16 @@ class TaskListViewModel {
 
       print("🔄 Updating task \(task.id) to status: \(newStatus)")
       
+      // If unchecking the parent task, also uncheck all subtasks
+      if newStatus == .unfinished {
+        if let stepStates = subtaskCompletionState[task.id] {
+          for stepID in stepStates.keys {
+            subtaskCompletionState[task.id]?[stepID] = false
+          }
+          print("✅ Unchecked all subtasks for task \(task.id)")
+        }
+      }
+      
       // Optimistically update the task status in the local array
       if let taskIndex = tasks.firstIndex(where: { $0.id == task.id }) {
         var updatedTask = tasks[taskIndex]
