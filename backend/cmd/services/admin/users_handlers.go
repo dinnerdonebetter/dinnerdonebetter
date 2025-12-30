@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 
 	userID := s.userIDRouteParamFetcher(req)
 	if userID == "" {
-		return page("Users", s.renderUsersError("Error: No user ID provided")), nil
+		return page("Users", s.renderUsersError("Error: No user MealPlanTaskID provided")), nil
 	}
 
 	usersRes, err := c.GetUser(ctx, &identitysvc.GetUserRequest{UserId: userID})
@@ -193,7 +193,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 			g.Attr("class", "text-center py-4"),
 			ghtml.P(
 				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
-				g.Text("Error: No user ID provided"),
+				g.Text("Error: No user MealPlanTaskID provided"),
 			),
 		), nil
 	}
@@ -240,7 +240,7 @@ func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.
 		TableID: "user-accounts-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"BillingStatus",
 			"ContactPhone",
@@ -349,7 +349,7 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 			TableID: "users-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Username",
 				"FirstName",
 				"LastName",
@@ -460,7 +460,7 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 		TableID: "users-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Username",
 			"FirstName",
 			"LastName",

@@ -142,7 +142,7 @@ func TestFeatureFlagManager_Identify(T *testing.T) {
 		ctx := t.Context()
 
 		user := mockauthn.NewMockUser()
-		user.On("GetID").Return("ID").Twice()
+		user.On("GetID").Return("MealPlanTaskID").Twice()
 		user.On("GetUsername").Return("Username")
 		user.On("GetFirstName").Return("FirstName")
 		user.On("GetLastName").Return("LastName")

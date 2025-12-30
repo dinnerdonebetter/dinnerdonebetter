@@ -261,7 +261,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromPreparation(_ http.
 		), nil
 	}
 
-	// Parse the instrument ID from the request
+	// Parse the instrument MealPlanTaskID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -305,7 +305,7 @@ func (s *AdminFrontendServer) CreatePreparationInstrumentFromInstrument(_ http.R
 		), nil
 	}
 
-	// Parse the preparation ID from the request
+	// Parse the preparation MealPlanTaskID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -339,12 +339,12 @@ func (s *AdminFrontendServer) DeletePreparationInstrument(_ http.ResponseWriter,
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	// Get the association ID from the URL path
+	// Get the association MealPlanTaskID from the URL path
 	associationID := req.PathValue("associationID")
 	if associationID == "" {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
-			g.Text("Error: No association ID provided"),
+			g.Text("Error: No association MealPlanTaskID provided"),
 		), nil
 	}
 
@@ -368,7 +368,7 @@ func (s *AdminFrontendServer) DeletePreparationInstrument(_ http.ResponseWriter,
 	}
 
 	// Determine which list to return based on the referer or a parameter
-	// For simplicity, we'll check if we have a preparation or instrument ID in the URL
+	// For simplicity, we'll check if we have a preparation or instrument MealPlanTaskID in the URL
 	if preparationID := s.validPreparationIDRouteParamFetcher(req); preparationID != "" {
 		return s.ValidPreparationInstrumentsForPreparation(nil, req)
 	} else if instrumentID := s.validInstrumentIDRouteParamFetcher(req); instrumentID != "" {

@@ -110,7 +110,7 @@ func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter 
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 		for j := range exampleRecipeInput.Steps[i].Ingredients {
-			// Use the ingredient ID from the original recipe (which we've already set)
+			// Use the ingredient MealPlanTaskID from the original recipe (which we've already set)
 			if exampleRecipe.Steps[i].Ingredients[j].Ingredient != nil {
 				ingredientID := exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID
 				if vipID, ok := ingredientPreparationIDs[ingredientID]; ok {
@@ -501,7 +501,7 @@ func TestRecipes_Updating(T *testing.T) {
 		assert.Equal(t, newRecipe.Slug, actualRecipe.Slug, "recipe slug should be updated")
 		assert.Equal(t, newRecipe.Source, actualRecipe.Source, "recipe source should be updated")
 		assert.Equal(t, newRecipe.Description, actualRecipe.Description, "recipe description should be updated")
-		assert.Equal(t, newRecipe.InspiredByRecipeID, actualRecipe.InspiredByRecipeID, "recipe inspired by recipe ID should be updated")
+		assert.Equal(t, newRecipe.InspiredByRecipeID, actualRecipe.InspiredByRecipeID, "recipe inspired by recipe MealPlanTaskID should be updated")
 		assert.Equal(t, newRecipe.EstimatedPortions, actualRecipe.EstimatedPortions, "recipe estimated portions should be updated")
 		assert.Equal(t, newRecipe.PortionName, actualRecipe.PortionName, "recipe portion name should be updated")
 		assert.Equal(t, newRecipe.PluralPortionName, actualRecipe.PluralPortionName, "recipe plural portion name should be updated")
@@ -513,13 +513,13 @@ func TestRecipes_Updating(T *testing.T) {
 		assert.Equal(t, len(originalSteps), len(actualRecipe.Steps), "number of recipe steps should remain the same")
 		for i, originalStep := range originalSteps {
 			actualStep := actualRecipe.Steps[i]
-			assert.Equal(t, originalStep.ID, actualStep.ID, "recipe step ID should remain unchanged")
+			assert.Equal(t, originalStep.ID, actualStep.ID, "recipe step MealPlanTaskID should remain unchanged")
 			assert.Equal(t, len(originalStep.CompletionConditions), len(actualStep.CompletionConditions), "number of completion conditions should remain the same")
 
 			// Verify completion conditions are still present and working (this was the original issue)
 			for j, originalCondition := range originalStep.CompletionConditions {
 				actualCondition := actualStep.CompletionConditions[j]
-				assert.Equal(t, originalCondition.ID, actualCondition.ID, "completion condition ID should remain unchanged")
+				assert.Equal(t, originalCondition.ID, actualCondition.ID, "completion condition MealPlanTaskID should remain unchanged")
 				assert.Equal(t, originalCondition.Optional, actualCondition.Optional, "completion condition optional flag should remain unchanged")
 				assert.Equal(t, originalCondition.Notes, actualCondition.Notes, "completion condition notes should remain unchanged")
 				assert.Equal(t, len(originalCondition.Ingredients), len(actualCondition.Ingredients), "number of completion condition ingredients should remain the same")

@@ -178,7 +178,7 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 
 	validIngredientID := s.validIngredientIDRouteParamFetcher(req)
 	if validIngredientID == "" {
-		return page("Valid Ingredients", s.renderValidIngredientsError("Error: No valid ingredient ID provided")), nil
+		return page("Valid Ingredients", s.renderValidIngredientsError("Error: No valid ingredient MealPlanTaskID provided")), nil
 	}
 
 	validIngredientRes, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientId: validIngredientID})
@@ -423,7 +423,7 @@ func (s *AdminFrontendServer) ValidIngredientsList(_ http.ResponseWriter, req *h
 			TableID: "valid-ingredients-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Name",
 				"PluralName",
 				"Description",
@@ -571,7 +571,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		TableID: "valid-ingredients-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"PluralName",
 			"Description",

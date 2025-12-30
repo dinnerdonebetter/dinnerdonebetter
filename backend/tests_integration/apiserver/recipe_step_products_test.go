@@ -23,7 +23,7 @@ func checkRecipeStepProductSliceEquality(t *testing.T, stepIndex int, expected, 
 
 func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, expected, actual *mealplanning.RecipeStepProduct) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d product %d to have ID", stepIndex, productIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d product %d to have MealPlanTaskID", stepIndex, productIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d product %d to have CreatedAt", stepIndex, productIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d product %d to have BelongsToRecipeStep", stepIndex, productIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d product %d Name", stepIndex, productIndex)
@@ -33,8 +33,8 @@ func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, e
 	assert.Equal(t, expected.Index, actual.Index, "expected step %d product %d Index", stepIndex, productIndex)
 	if expected.MeasurementUnit != nil {
 		require.NotNil(t, actual.MeasurementUnit, "expected step %d product %d MeasurementUnit non-nil", stepIndex, productIndex)
-		assert.NotEmpty(t, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
-		assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
+		assert.NotEmpty(t, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.MealPlanTaskID", stepIndex, productIndex)
+		assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.MealPlanTaskID", stepIndex, productIndex)
 	}
 }
 

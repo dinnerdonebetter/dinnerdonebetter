@@ -14,25 +14,25 @@ import (
 
 type (
 	GetValidPreparationVesselInvocation struct {
-		ValidPreparationVesselID string `jsonschema:"description=The preparation vessel ID"`
+		ValidPreparationVesselID string `jsonschema:"description=The preparation vessel MealPlanTaskID"`
 	}
 )
 
 var validPreparationVesselsSchema = map[string]any{
-	"ID":            stringField("The ID of the valid preparation vessel"),
-	"CreatedAt":     timestampField("When the valid preparation vessel was created"),
-	"LastUpdatedAt": timestampField("When the valid preparation vessel was last updated"),
-	"ArchivedAt":    timestampField("When the valid preparation vessel was soft deleted"),
-	"Notes":         stringField("Notes about the preparation vessel"),
-	"Vessel":        objectType(validVesselsSchema),
-	"Preparation":   objectType(validPreparationsSchema),
+	"MealPlanTaskID": stringField("The MealPlanTaskID of the valid preparation vessel"),
+	"CreatedAt":      timestampField("When the valid preparation vessel was created"),
+	"LastUpdatedAt":  timestampField("When the valid preparation vessel was last updated"),
+	"ArchivedAt":     timestampField("When the valid preparation vessel was soft deleted"),
+	"Notes":          stringField("Notes about the preparation vessel"),
+	"Vessel":         objectType(validVesselsSchema),
+	"Preparation":    objectType(validPreparationsSchema),
 }
 
 var getValidPreparationVesselTool = &mcp.Tool{
 	Name:        "GetValidPreparationVessel",
-	Description: "Get a valid preparation vessel by it's ID",
+	Description: "Get a valid preparation vessel by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationVesselID": stringField("The ID of the valid preparation vessel to get"),
+		"ValidPreparationVesselID": stringField("The MealPlanTaskID of the valid preparation vessel to get"),
 	}),
 	OutputSchema: schemaObject(validPreparationVesselsSchema),
 }
@@ -94,8 +94,8 @@ var validPreparationVesselCreationTool = &mcp.Tool{
 	Description: "Create a valid preparation vessel linking a preparation to a vessel.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":              stringField("Notes about the preparation vessel"),
-		"ValidPreparationID": stringField("The ID of the valid preparation"),
-		"ValidVesselID":      stringField("The ID of the valid vessel"),
+		"ValidPreparationID": stringField("The MealPlanTaskID of the valid preparation"),
+		"ValidVesselID":      stringField("The MealPlanTaskID of the valid vessel"),
 	}),
 	OutputSchema: schemaObject(validPreparationVesselsSchema),
 }
@@ -114,7 +114,7 @@ func (h *mcpToolManager) CreateValidPreparationVessel() mcp.ToolHandlerFor[*meal
 type (
 	UpdateValidPreparationVesselInvocation struct {
 		*mealplanning.ValidPreparationVesselUpdateRequestInput
-		ValidPreparationVesselID string `jsonschema:"required,description=The preparation vessel ID"`
+		ValidPreparationVesselID string `jsonschema:"required,description=The preparation vessel MealPlanTaskID"`
 	}
 )
 
@@ -122,10 +122,10 @@ var validPreparationVesselUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidPreparationVessel",
 	Description: "Update a valid preparation vessel.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationVesselID": stringField("The ID of the valid preparation vessel to update"),
+		"ValidPreparationVesselID": stringField("The MealPlanTaskID of the valid preparation vessel to update"),
 		"Notes":                    stringField("Notes about the preparation vessel"),
-		"ValidPreparationID":       stringField("The ID of the valid preparation"),
-		"ValidVesselID":            stringField("The ID of the valid vessel"),
+		"ValidPreparationID":       stringField("The MealPlanTaskID of the valid preparation"),
+		"ValidVesselID":            stringField("The MealPlanTaskID of the valid vessel"),
 	}),
 	OutputSchema: schemaObject(validPreparationVesselsSchema),
 }

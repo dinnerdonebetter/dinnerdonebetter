@@ -17,7 +17,7 @@ import (
 func checkValidVesselEquality(t *testing.T, expected, actual *mealplanning.ValidVessel) {
 	t.Helper()
 
-	assert.NotEmpty(t, actual.ID, "expected ValidVessel to have ID")
+	assert.NotEmpty(t, actual.ID, "expected ValidVessel to have MealPlanTaskID")
 	assert.NotZero(t, actual.CreatedAt, "expected ValidVessel to have CreatedAt")
 
 	assert.Equal(t, expected.Name, actual.Name, "expected ValidVessel Name")
@@ -153,7 +153,7 @@ func TestValidVessels_Reading(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -263,7 +263,7 @@ func TestValidVessels_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("invalid ID", func(t *testing.T) {
+	T.Run("invalid MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 

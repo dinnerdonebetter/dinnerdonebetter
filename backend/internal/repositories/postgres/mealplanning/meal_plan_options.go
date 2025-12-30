@@ -125,7 +125,7 @@ func (q *repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	return mealPlanOption, nil
 }
 
-// getMealPlanOptionByID fetches a meal plan option from the database by its ID.
+// getMealPlanOptionByID fetches a meal plan option from the database by its MealPlanTaskID.
 func (q *repository) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -398,7 +398,7 @@ func (q *repository) UpdateMealPlanOption(ctx context.Context, updated *mealplan
 	return nil
 }
 
-// ArchiveMealPlanOption archives a meal plan option from the database by its ID.
+// ArchiveMealPlanOption archives a meal plan option from the database by its MealPlanTaskID.
 func (q *repository) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -505,7 +505,7 @@ func (q *repository) decideOptionWinner(ctx context.Context, options []*mealplan
 	return "", false, false
 }
 
-// FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
+// FinalizeMealPlanOption archives a meal plan option vote from the database by its MealPlanTaskID.
 func (q *repository) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, accountID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

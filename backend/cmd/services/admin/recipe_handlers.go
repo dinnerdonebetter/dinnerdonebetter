@@ -27,7 +27,7 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 
 	recipeID := s.recipeIDRouteParamFetcher(req)
 	if recipeID == "" {
-		return page("Recipes", s.renderRecipesError("Error: No recipe ID provided")), nil
+		return page("Recipes", s.renderRecipesError("Error: No recipe MealPlanTaskID provided")), nil
 	}
 
 	recipeRes, err := c.GetRecipe(ctx, &mealplanningsvc.GetRecipeRequest{RecipeId: recipeID})
@@ -62,7 +62,7 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 			},
 			FieldConfigs: map[string]*components.FieldConfig{
 				"id": {
-					DisplayName: "ID",
+					DisplayName: "MealPlanTaskID",
 				},
 				"name": {
 					DisplayName: "Name",
@@ -210,7 +210,7 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 								ghtml.Class("flex items-center gap-2 mb-2"),
 								ghtml.Div(
 									ghtml.Class("text-xs text-gray-500"),
-									g.Text(fmt.Sprintf("Index: %d | ID: %s", step.Index, step.Id)),
+									g.Text(fmt.Sprintf("Index: %d | MealPlanTaskID: %s", step.Index, step.Id)),
 								),
 								g.If(step.Optional,
 									ghtml.Span(
@@ -427,7 +427,7 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 			} else {
 				details = append(details, ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product ID: %s", *ing.RecipeStepProductId)),
+					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
 				))
 			}
 		}
@@ -549,7 +549,7 @@ func (s *AdminFrontendServer) renderStepInstruments(instruments []*mealplannings
 			} else {
 				details = append(details, ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product ID: %s", *inst.RecipeStepProductId)),
+					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *inst.RecipeStepProductId)),
 				))
 			}
 		}
@@ -649,7 +649,7 @@ func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.Recip
 			} else {
 				details = append(details, ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product ID: %s", *vessel.RecipeStepProductId)),
+					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *vessel.RecipeStepProductId)),
 				))
 			}
 		}
@@ -856,7 +856,7 @@ func (s *AdminFrontendServer) renderStepCompletionConditions(conditions []*mealp
 	return nodes
 }
 
-// findStepWithProduct finds the step that contains a product with the given ID.
+// findStepWithProduct finds the step that contains a product with the given MealPlanTaskID.
 func (s *AdminFrontendServer) findStepWithProduct(productID string, allSteps []*mealplanningsvc.RecipeStep) *mealplanningsvc.RecipeStep {
 	for _, step := range allSteps {
 		for _, product := range step.Products {

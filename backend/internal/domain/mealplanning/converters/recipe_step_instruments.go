@@ -46,7 +46,7 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput builds a RecipeStepInstrumentCreationRequestInput from a RecipeStepInstrument.
-// Note: This conversion loses bridge table ID information since RecipeStepInstrument doesn't store them.
+// Note: This conversion loses bridge table MealPlanTaskID information since RecipeStepInstrument doesn't store them.
 func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input *mealplanning.RecipeStepInstrument) *mealplanning.RecipeStepInstrumentCreationRequestInput {
 	return &mealplanning.RecipeStepInstrumentCreationRequestInput{
 		Name:                input.Name,

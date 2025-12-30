@@ -63,8 +63,21 @@ struct StepCardView: View {
               .strikethrough(isCompleted)
           }
 
-          // Prerequisites warning
-          if hasPrerequisites && !allPrerequisitesCompleted {
+          // Wash hands requirement warning (show first if blocking)
+          if !viewModel.washHandsCompleted && !canCheck {
+            HStack(spacing: 4) {
+              Image(systemName: "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundColor(.orange)
+              Text("Wash your hands first")
+                .font(.caption)
+                .foregroundColor(.orange)
+            }
+            .padding(.top, 4)
+          }
+
+          // Prerequisites warning (only show if wash hands is done)
+          if viewModel.washHandsCompleted && hasPrerequisites && !allPrerequisitesCompleted {
             HStack(spacing: 4) {
               Image(systemName: "exclamationmark.triangle.fill")
                 .font(.caption)

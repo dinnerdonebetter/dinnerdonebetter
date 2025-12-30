@@ -128,7 +128,7 @@ func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 	return validIngredientMeasurementUnit, nil
 }
 
-// GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
+// GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient MealPlanTaskID.
 func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -252,7 +252,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 	return x, nil
 }
 
-// GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient ID.
+// GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient MealPlanTaskID.
 func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -668,7 +668,7 @@ func (q *repository) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 	return nil
 }
 
-// ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
+// ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

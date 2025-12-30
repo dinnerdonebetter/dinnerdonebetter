@@ -44,7 +44,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
-// Note: This conversion loses bridge table ID information since RecipeStepVessel doesn't store them.
+// Note: This conversion loses bridge table MealPlanTaskID information since RecipeStepVessel doesn't store them.
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
 		Name:                 input.Name,

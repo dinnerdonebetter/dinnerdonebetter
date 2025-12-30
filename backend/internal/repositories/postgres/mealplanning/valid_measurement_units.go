@@ -450,7 +450,7 @@ func (q *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, vali
 	return nil
 }
 
-// ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
+// ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

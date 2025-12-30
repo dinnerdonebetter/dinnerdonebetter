@@ -23,7 +23,7 @@ func checkRecipeStepIngredientSliceEquality(t *testing.T, stepIndex int, expecte
 
 func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, expected, actual *mealplanning.RecipeStepIngredient) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have ID", stepIndex, ingIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have MealPlanTaskID", stepIndex, ingIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d ingredient %d to have CreatedAt", stepIndex, ingIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d ingredient %d to have BelongsToRecipeStep", stepIndex, ingIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d ingredient %d Name", stepIndex, ingIndex)
@@ -41,12 +41,12 @@ func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, ex
 		require.NotNil(t, actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse non-nil", stepIndex, ingIndex)
 		assert.Equal(t, *expected.ProductPercentageToUse, *actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse", stepIndex, ingIndex)
 	}
-	// MeasurementUnit comparison by ID (and ranges already compared above)
-	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d ingredient %d MeasurementUnit.ID", stepIndex, ingIndex)
+	// MeasurementUnit comparison by MealPlanTaskID (and ranges already compared above)
+	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d ingredient %d MeasurementUnit.MealPlanTaskID", stepIndex, ingIndex)
 	// Ingredient pointer may be nil if this ingredient refers to a product of a prior step
 	if expected.Ingredient != nil {
 		require.NotNil(t, actual.Ingredient, "expected step %d ingredient %d Ingredient non-nil", stepIndex, ingIndex)
-		assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected step %d ingredient %d Ingredient.ID", stepIndex, ingIndex)
+		assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected step %d ingredient %d Ingredient.MealPlanTaskID", stepIndex, ingIndex)
 	}
 }
 
@@ -64,8 +64,8 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		createdRecipeStepID := firstStep.ID
 		createdRecipeStepIngredientID := firstStep.Ingredients[0].ID
 
-		require.NotEmpty(t, createdRecipeStepID, "created recipe step ID must not be empty")
-		require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient ID must not be empty")
+		require.NotEmpty(t, createdRecipeStepID, "created recipe step MealPlanTaskID must not be empty")
+		require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient MealPlanTaskID must not be empty")
 
 		createdRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
 			RecipeId:               createdRecipe.ID,

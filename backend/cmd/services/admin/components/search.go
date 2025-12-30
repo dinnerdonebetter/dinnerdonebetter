@@ -34,7 +34,7 @@ func SearchBox(props *SearchBoxProps) g.Node {
 	return ghtml.Div(
 		ghtml.Class("relative"),
 
-		// Hidden field that stores the selected ID
+		// Hidden field that stores the selected MealPlanTaskID
 		ghtml.Input(
 			ghtml.Type("hidden"),
 			ghtml.ID(hiddenFieldID),
@@ -170,7 +170,7 @@ func SearchResultItem_(item *SearchResultItem, onSelectJS string, palette *desig
 		palette = &design.StandardPalette
 	}
 
-	// Build the onclick handler - needs ID, Name, Name (for hidden value, display text, and innerHTML)
+	// Build the onclick handler - needs MealPlanTaskID, Name, Name (for hidden value, display text, and innerHTML)
 	// Also hide the results dropdown after selection
 	onclick := fmt.Sprintf(onSelectJS, item.ID, item.Name, item.Name)
 

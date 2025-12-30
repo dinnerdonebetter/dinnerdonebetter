@@ -22,12 +22,12 @@ func checkRecipeStepCompletionConditionSliceEquality(t *testing.T, stepIndex int
 
 func checkRecipeStepCompletionConditionEquality(t *testing.T, stepIndex, condIndex int, expected, actual *mealplanning.RecipeStepCompletionCondition) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d condition %d to have ID", stepIndex, condIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d condition %d to have MealPlanTaskID", stepIndex, condIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d condition %d to have CreatedAt", stepIndex, condIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d condition %d to have BelongsToRecipeStep", stepIndex, condIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d condition %d Notes", stepIndex, condIndex)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d condition %d Optional", stepIndex, condIndex)
-	assert.Equal(t, expected.IngredientState.ID, actual.IngredientState.ID, "expected step %d condition %d IngredientState.ID", stepIndex, condIndex)
+	assert.Equal(t, expected.IngredientState.ID, actual.IngredientState.ID, "expected step %d condition %d IngredientState.MealPlanTaskID", stepIndex, condIndex)
 	checkRecipeStepCompletionConditionIngredientSliceEquality(t, stepIndex, condIndex, expected.Ingredients, actual.Ingredients)
 }
 
@@ -36,7 +36,7 @@ func checkRecipeStepCompletionConditionIngredientSliceEquality(t *testing.T, ste
 	require.Equal(t, len(expected), len(actual), "expected step %d condition %d ingredients length", stepIndex, condIndex)
 	for i := range expected {
 		e, a := expected[i], actual[i]
-		assert.NotEmpty(t, a.ID, "expected step %d condition %d ingredient %d to have ID", stepIndex, condIndex, i)
+		assert.NotEmpty(t, a.ID, "expected step %d condition %d ingredient %d to have MealPlanTaskID", stepIndex, condIndex, i)
 		assert.False(t, a.CreatedAt.IsZero(), "expected step %d condition %d ingredient %d to have CreatedAt", stepIndex, condIndex, i)
 		assert.NotEmpty(t, a.BelongsToRecipeStepCompletionCondition, "expected step %d condition %d ingredient %d to have BelongsTo...", stepIndex, condIndex, i)
 		assert.Equal(t, e.RecipeStepIngredient, a.RecipeStepIngredient, "expected step %d condition %d ingredient %d RecipeStepIngredient", stepIndex, condIndex, i)
@@ -54,7 +54,7 @@ func TestRecipeStepCompletionConditions_CompleteLifecycle(T *testing.T) {
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		createdRecipeStep := createdRecipe.Steps[0]
-		require.NotEmpty(t, createdRecipeStep.ID, "created recipe step ID must not be empty")
+		require.NotEmpty(t, createdRecipeStep.ID, "created recipe step MealPlanTaskID must not be empty")
 
 		// create ingredient state
 		createdValidIngredientState := createValidIngredientStateForTest(t)

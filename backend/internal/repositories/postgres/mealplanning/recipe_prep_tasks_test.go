@@ -106,7 +106,7 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -123,7 +123,7 @@ func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 func TestQuerier_GetRecipePrepTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -155,7 +155,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -183,7 +183,7 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with missing recipe ID", func(t *testing.T) {
+	T.Run("with missing recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

@@ -329,7 +329,7 @@ func (q *repository) MarkValidIngredientStateAsIndexed(ctx context.Context, vali
 	return nil
 }
 
-// ArchiveValidIngredientState archives a valid ingredient state from the database by its ID.
+// ArchiveValidIngredientState archives a valid ingredient state from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

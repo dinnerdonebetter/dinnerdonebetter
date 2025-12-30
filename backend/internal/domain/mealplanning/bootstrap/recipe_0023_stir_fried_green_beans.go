@@ -108,7 +108,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 		return ingMap[u.ID]
 	}
 
-	// Helper to safely get ID pointer from VIP
+	// Helper to safely get MealPlanTaskID pointer from VIP
 	vipID := func(v *mealplanning.ValidIngredientPreparation) *string {
 		if v == nil {
 			return nil
@@ -116,7 +116,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 		return &v.ID
 	}
 
-	// Helper to safely get ID pointer from VPV
+	// Helper to safely get MealPlanTaskID pointer from VPV
 	vpvID := func(v *mealplanning.ValidPreparationVessel) *string {
 		if v == nil {
 			return nil
@@ -124,7 +124,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 		return &v.ID
 	}
 
-	// Helper to safely get ID pointer from VPI
+	// Helper to safely get MealPlanTaskID pointer from VPI
 	vpiID := func(v *mealplanning.ValidPreparationInstrument) *string {
 		if v == nil {
 			return nil
@@ -132,7 +132,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 		return &v.ID
 	}
 
-	// Helper to safely get ID pointer from VIMU
+	// Helper to safely get MealPlanTaskID pointer from VIMU
 	vimuID := func(v *mealplanning.ValidIngredientMeasurementUnit) *string {
 		if v == nil {
 			return nil

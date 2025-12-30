@@ -85,7 +85,7 @@ You must reason about which steps belong to which component recipe. For example:
 Each recipe MUST have at least 2 steps. Each step requires:
 
 **Required:**
-- PreparationID (string): ID of a valid preparation method (use SearchForValidPreparations to find)
+- PreparationID (string): MealPlanTaskID of a valid preparation method (use SearchForValidPreparations to find)
 - Index (uint32): Step order (0, 1, 2, ...)
 - At least ONE of: Instruments OR Vessels (not necessarily both, but at least one)
 
@@ -213,27 +213,27 @@ Before creating the recipe, systematically search for all needed entities:
 
 **For Each Ingredient:**
 1. Use SearchForValidIngredients to check if the ingredient exists
-2. If found: Note the ID and proceed
+2. If found: Note the MealPlanTaskID and proceed
 3. If NOT found: Add to the "missing ingredients" list
 
 **For Each Preparation Method:**
 1. Use SearchForValidPreparations to check if the preparation exists
-2. If found: Note the ID and proceed
+2. If found: Note the MealPlanTaskID and proceed
 3. If NOT found: Add to the "missing preparations" list
 
 **For Each Instrument:**
 1. Use SearchForValidInstruments to check if the instrument exists
-2. If found: Note the ID and proceed
+2. If found: Note the MealPlanTaskID and proceed
 3. If NOT found: Add to the "missing instruments" list
 
 **For Each Vessel:**
 1. Use SearchForValidVessels to check if the vessel exists
-2. If found: Note the ID and proceed
+2. If found: Note the MealPlanTaskID and proceed
 3. If NOT found: Add to the "missing vessels" list
 
 **For Each Measurement Unit:**
 1. Use SearchForValidMeasurementUnits to check if the unit exists
-2. If found: Note the ID and proceed
+2. If found: Note the MealPlanTaskID and proceed
 3. If NOT found: Add to the "missing measurement units" list
 
 **After searching, present a summary to the user:**

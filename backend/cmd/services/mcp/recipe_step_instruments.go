@@ -14,22 +14,22 @@ import (
 
 type (
 	GetRecipeStepInstrumentInvocation struct {
-		RecipeID               string `jsonschema:"description=The recipe ID"`
-		RecipeStepID           string `jsonschema:"description=The recipe step ID"`
-		RecipeStepInstrumentID string `jsonschema:"description=The recipe step instrument ID"`
+		RecipeID               string `jsonschema:"description=The recipe MealPlanTaskID"`
+		RecipeStepID           string `jsonschema:"description=The recipe step MealPlanTaskID"`
+		RecipeStepInstrumentID string `jsonschema:"description=The recipe step instrument MealPlanTaskID"`
 	}
 )
 
 var recipeStepInstrumentsSchema = map[string]any{
-	"ID":                  stringField("The ID of the recipe step instrument"),
+	"MealPlanTaskID":      stringField("The MealPlanTaskID of the recipe step instrument"),
 	"CreatedAt":           timestampField("When the recipe step instrument was created"),
 	"LastUpdatedAt":       timestampField("When the recipe step instrument was last updated"),
 	"ArchivedAt":          timestampField("When the recipe step instrument was soft deleted"),
-	"BelongsToRecipeStep": stringField("The ID of the recipe step this instrument belongs to"),
+	"BelongsToRecipeStep": stringField("The MealPlanTaskID of the recipe step this instrument belongs to"),
 	"Name":                stringField("Name of the instrument"),
 	"Notes":               stringField("Notes about the instrument"),
 	"Instrument":          objectType(validInstrumentsSchema),
-	"RecipeStepProductID": stringField("The ID of the recipe step product this instrument is associated with, if any"),
+	"RecipeStepProductID": stringField("The MealPlanTaskID of the recipe step product this instrument is associated with, if any"),
 	"Quantity":            uint32RangeWithOptionalMaxSchema(),
 	"OptionIndex":         uintField("The option index for this instrument"),
 	"PreferenceRank":      uintField("The preference rank for this instrument (0-255)"),
@@ -38,11 +38,11 @@ var recipeStepInstrumentsSchema = map[string]any{
 
 var getRecipeStepInstrumentTool = &mcp.Tool{
 	Name:        "GetRecipeStepInstrument",
-	Description: "Get a recipe step instrument by it's ID",
+	Description: "Get a recipe step instrument by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":               stringField("The ID of the recipe"),
-		"RecipeStepID":           stringField("The ID of the recipe step"),
-		"RecipeStepInstrumentID": stringField("The ID of the recipe step instrument to get"),
+		"RecipeID":               stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":           stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepInstrumentID": stringField("The MealPlanTaskID of the recipe step instrument to get"),
 	}),
 	OutputSchema: schemaObject(recipeStepInstrumentsSchema),
 }
@@ -78,8 +78,8 @@ var getRecipeStepInstrumentsTool = &mcp.Tool{
 	Name:        "GetRecipeStepInstruments",
 	Description: "Get recipe step instruments with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":     stringField("The ID of the recipe"),
-		"RecipeStepID": stringField("The ID of the recipe step"),
+		"RecipeID":     stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID": stringField("The MealPlanTaskID of the recipe step"),
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -110,8 +110,8 @@ func (h *mcpToolManager) GetRecipeStepInstruments() mcp.ToolHandlerFor[*GetRecip
 type (
 	CreateRecipeStepInstrumentInvocation struct {
 		*mealplanning.RecipeStepInstrumentCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
+		RecipeID     string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
 	}
 )
 
@@ -119,10 +119,10 @@ var recipeStepInstrumentCreationTool = &mcp.Tool{
 	Name:        "CreateRecipeStepInstrument",
 	Description: "Create a recipe step instrument",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"InstrumentID":                    stringField("The ID of the instrument"),
-		"RecipeStepProductID":             stringField("The ID of the recipe step product this instrument is associated with, if any"),
+		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                    stringField("The MealPlanTaskID of the recipe step"),
+		"InstrumentID":                    stringField("The MealPlanTaskID of the instrument"),
+		"RecipeStepProductID":             stringField("The MealPlanTaskID of the recipe step product this instrument is associated with, if any"),
 		"ProductOfRecipeStepIndex":        uintField("The index of the recipe step that produces this instrument, if any"),
 		"ProductOfRecipeStepProductIndex": uintField("The index of the recipe step product that produces this instrument, if any"),
 		"Name":                            stringField("Name of the instrument"),
@@ -153,9 +153,9 @@ func (h *mcpToolManager) CreateRecipeStepInstrument() mcp.ToolHandlerFor[*Create
 type (
 	UpdateRecipeStepInstrumentInvocation struct {
 		*mealplanning.RecipeStepInstrumentUpdateRequestInput
-		RecipeID               string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID           string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepInstrumentID string `jsonschema:"required,description=The recipe step instrument ID"`
+		RecipeID               string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID           string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
+		RecipeStepInstrumentID string `jsonschema:"required,description=The recipe step instrument MealPlanTaskID"`
 	}
 )
 
@@ -163,11 +163,11 @@ var recipeStepInstrumentUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipeStepInstrument",
 	Description: "Update a recipe step instrument",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":               stringField("The ID of the recipe"),
-		"RecipeStepID":           stringField("The ID of the recipe step"),
-		"RecipeStepInstrumentID": stringField("The ID of the recipe step instrument to update"),
-		"InstrumentID":           stringField("The ID of the instrument"),
-		"RecipeStepProductID":    stringField("The ID of the recipe step product this instrument is associated with, if any"),
+		"RecipeID":               stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":           stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepInstrumentID": stringField("The MealPlanTaskID of the recipe step instrument to update"),
+		"InstrumentID":           stringField("The MealPlanTaskID of the instrument"),
+		"RecipeStepProductID":    stringField("The MealPlanTaskID of the recipe step product this instrument is associated with, if any"),
 		"Name":                   stringField("Name of the instrument"),
 		"Notes":                  stringField("Notes about the instrument"),
 		"Quantity":               uint32RangeWithOptionalMaxSchema(),

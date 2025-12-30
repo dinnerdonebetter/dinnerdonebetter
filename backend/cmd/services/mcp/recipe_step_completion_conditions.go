@@ -14,27 +14,27 @@ import (
 
 type (
 	GetRecipeStepCompletionConditionInvocation struct {
-		RecipeID                        string `jsonschema:"description=The recipe ID"`
-		RecipeStepID                    string `jsonschema:"description=The recipe step ID"`
-		RecipeStepCompletionConditionID string `jsonschema:"description=The recipe step completion condition ID"`
+		RecipeID                        string `jsonschema:"description=The recipe MealPlanTaskID"`
+		RecipeStepID                    string `jsonschema:"description=The recipe step MealPlanTaskID"`
+		RecipeStepCompletionConditionID string `jsonschema:"description=The recipe step completion condition MealPlanTaskID"`
 	}
 )
 
 var recipeStepCompletionConditionIngredientSchema = map[string]any{
-	"ID":                                     stringField("The ID of the recipe step completion condition ingredient"),
+	"MealPlanTaskID":                         stringField("The MealPlanTaskID of the recipe step completion condition ingredient"),
 	"CreatedAt":                              timestampField("When the recipe step completion condition ingredient was created"),
 	"LastUpdatedAt":                          timestampField("When the recipe step completion condition ingredient was last updated"),
 	"ArchivedAt":                             timestampField("When the recipe step completion condition ingredient was soft deleted"),
-	"BelongsToRecipeStepCompletionCondition": stringField("The ID of the recipe step completion condition this ingredient belongs to"),
-	"RecipeStepIngredient":                   stringField("The ID of the recipe step ingredient"),
+	"BelongsToRecipeStepCompletionCondition": stringField("The MealPlanTaskID of the recipe step completion condition this ingredient belongs to"),
+	"RecipeStepIngredient":                   stringField("The MealPlanTaskID of the recipe step ingredient"),
 }
 
 var recipeStepCompletionConditionsSchema = map[string]any{
-	"ID":                  stringField("The ID of the recipe step completion condition"),
+	"MealPlanTaskID":      stringField("The MealPlanTaskID of the recipe step completion condition"),
 	"CreatedAt":           timestampField("When the recipe step completion condition was created"),
 	"LastUpdatedAt":       timestampField("When the recipe step completion condition was last updated"),
 	"ArchivedAt":          timestampField("When the recipe step completion condition was soft deleted"),
-	"BelongsToRecipeStep": stringField("The ID of the recipe step this completion condition belongs to"),
+	"BelongsToRecipeStep": stringField("The MealPlanTaskID of the recipe step this completion condition belongs to"),
 	"IngredientState":     objectType(validIngredientStatesSchema),
 	"Notes":               stringField("Notes about the completion condition"),
 	"Ingredients":         arrayType(schemaObject(recipeStepCompletionConditionIngredientSchema)),
@@ -43,11 +43,11 @@ var recipeStepCompletionConditionsSchema = map[string]any{
 
 var getRecipeStepCompletionConditionTool = &mcp.Tool{
 	Name:        "GetRecipeStepCompletionCondition",
-	Description: "Get a recipe step completion condition by it's ID",
+	Description: "Get a recipe step completion condition by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"RecipeStepCompletionConditionID": stringField("The ID of the recipe step completion condition to get"),
+		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                    stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepCompletionConditionID": stringField("The MealPlanTaskID of the recipe step completion condition to get"),
 	}),
 	OutputSchema: schemaObject(recipeStepCompletionConditionsSchema),
 }
@@ -83,8 +83,8 @@ var getRecipeStepCompletionConditionsTool = &mcp.Tool{
 	Name:        "GetRecipeStepCompletionConditions",
 	Description: "Get recipe step completion conditions with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":     stringField("The ID of the recipe"),
-		"RecipeStepID": stringField("The ID of the recipe step"),
+		"RecipeID":     stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID": stringField("The MealPlanTaskID of the recipe step"),
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -115,8 +115,8 @@ func (h *mcpToolManager) GetRecipeStepCompletionConditions() mcp.ToolHandlerFor[
 type (
 	CreateRecipeStepCompletionConditionInvocation struct {
 		*mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
+		RecipeID     string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
 	}
 )
 
@@ -124,13 +124,13 @@ var recipeStepCompletionConditionCreationTool = &mcp.Tool{
 	Name:        "CreateRecipeStepCompletionCondition",
 	Description: "Create a recipe step completion condition",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":            stringField("The ID of the recipe"),
-		"RecipeStepID":        stringField("The ID of the recipe step"),
-		"IngredientStateID":   stringField("The ID of the ingredient state"),
-		"BelongsToRecipeStep": stringField("The ID of the recipe step this completion condition belongs to"),
+		"RecipeID":            stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":        stringField("The MealPlanTaskID of the recipe step"),
+		"IngredientStateID":   stringField("The MealPlanTaskID of the ingredient state"),
+		"BelongsToRecipeStep": stringField("The MealPlanTaskID of the recipe step this completion condition belongs to"),
 		"Notes":               stringField("Notes about the completion condition"),
 		"Ingredients": arrayType(objectType(map[string]any{
-			"RecipeStepIngredient": stringField("The ID of the recipe step ingredient"),
+			"RecipeStepIngredient": stringField("The MealPlanTaskID of the recipe step ingredient"),
 		})),
 		"Optional": boolField("Whether this completion condition is optional"),
 	}),
@@ -155,9 +155,9 @@ func (h *mcpToolManager) CreateRecipeStepCompletionCondition() mcp.ToolHandlerFo
 type (
 	UpdateRecipeStepCompletionConditionInvocation struct {
 		*mealplanning.RecipeStepCompletionConditionUpdateRequestInput
-		RecipeID                        string `jsonschema:"required,description=The recipe ID"`
-		RecipeStepID                    string `jsonschema:"required,description=The recipe step ID"`
-		RecipeStepCompletionConditionID string `jsonschema:"required,description=The recipe step completion condition ID"`
+		RecipeID                        string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeStepID                    string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
+		RecipeStepCompletionConditionID string `jsonschema:"required,description=The recipe step completion condition MealPlanTaskID"`
 	}
 )
 
@@ -165,11 +165,11 @@ var recipeStepCompletionConditionUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipeStepCompletionCondition",
 	Description: "Update a recipe step completion condition",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The ID of the recipe"),
-		"RecipeStepID":                    stringField("The ID of the recipe step"),
-		"RecipeStepCompletionConditionID": stringField("The ID of the recipe step completion condition to update"),
-		"IngredientStateID":               stringField("The ID of the ingredient state"),
-		"BelongsToRecipeStep":             stringField("The ID of the recipe step this completion condition belongs to"),
+		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
+		"RecipeStepID":                    stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeStepCompletionConditionID": stringField("The MealPlanTaskID of the recipe step completion condition to update"),
+		"IngredientStateID":               stringField("The MealPlanTaskID of the ingredient state"),
+		"BelongsToRecipeStep":             stringField("The MealPlanTaskID of the recipe step this completion condition belongs to"),
 		"Notes":                           stringField("Notes about the completion condition"),
 		"Optional":                        boolField("Whether this completion condition is optional"),
 	}),

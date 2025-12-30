@@ -303,7 +303,7 @@ func (q *repository) GetValidPreparationsWithIDs(ctx context.Context, ids []stri
 
 	results, err := q.generatedQuerier.GetValidPreparationsWithIDs(ctx, q.db, ids)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparations by ID")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparations by MealPlanTaskID")
 	}
 
 	preparations := []*mealplanning.ValidPreparation{}
@@ -488,7 +488,7 @@ func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPre
 	return nil
 }
 
-// ArchiveValidPreparation archives a valid preparation from the database by its ID.
+// ArchiveValidPreparation archives a valid preparation from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

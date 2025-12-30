@@ -36,7 +36,7 @@ type (
 	// Level is a simple string alias for dependency injection's sake.
 	Level *level
 
-	// RequestIDFunc fetches a string ID from a request.
+	// RequestIDFunc fetches a string MealPlanTaskID from a request.
 	RequestIDFunc func(*http.Request) string
 )
 

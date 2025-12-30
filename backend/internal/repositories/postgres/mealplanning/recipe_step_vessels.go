@@ -453,7 +453,7 @@ func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealpl
 	return nil
 }
 
-// ArchiveRecipeStepVessel archives a recipe step vessel from the database by its ID.
+// ArchiveRecipeStepVessel archives a recipe step vessel from the database by its MealPlanTaskID.
 func (q *repository) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

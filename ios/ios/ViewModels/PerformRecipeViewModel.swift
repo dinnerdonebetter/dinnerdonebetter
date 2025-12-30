@@ -20,8 +20,14 @@ class PerformRecipeViewModel {
   // Track which steps are completed (by step index)
   var completedSteps: Set<Int> = []
 
+  // Special step: wash hands (index -1)
+  var washHandsCompleted: Bool = false
+
   // Map from product ID to the step index that produces it
   var productIDToStepIndex: [String: Int] = [:]
+
+  // Special index for wash hands step
+  static let washHandsStepIndex = -1
 
   private let recipeID: String
   private let authManager: AuthenticationManager
@@ -84,6 +90,16 @@ class PerformRecipeViewModel {
 
   // Check if a step can be checked off (all prerequisites are completed)
   func canCheckStep(_ stepIndex: Int) -> Bool {
+    // Wash hands step can always be checked
+    if stepIndex == Self.washHandsStepIndex {
+      return true
+    }
+
+    // All other steps require wash hands to be completed first
+    if !washHandsCompleted {
+      return false
+    }
+
     guard let recipe = recipe, stepIndex < recipe.steps.count else {
       return false
     }
@@ -126,6 +142,16 @@ class PerformRecipeViewModel {
   // Toggle step completion
   func toggleStep(_ stepIndex: Int) {
     guard canCheckStep(stepIndex) else {
+      return
+    }
+
+    // Handle wash hands step
+    if stepIndex == Self.washHandsStepIndex {
+      washHandsCompleted.toggle()
+      // If unchecking wash hands, uncheck all other steps
+      if !washHandsCompleted {
+        completedSteps.removeAll()
+      }
       return
     }
 
@@ -198,6 +224,9 @@ class PerformRecipeViewModel {
 
   // Check if a step is completed
   func isStepCompleted(_ stepIndex: Int) -> Bool {
+    if stepIndex == Self.washHandsStepIndex {
+      return washHandsCompleted
+    }
     return completedSteps.contains(stepIndex)
   }
 

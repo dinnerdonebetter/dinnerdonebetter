@@ -287,7 +287,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 		assert.NoError(t, err) // Should not error for unhandled event types
 	})
 
-	t.Run("with missing user ID", func(t *testing.T) {
+	t.Run("with missing user MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
@@ -296,12 +296,12 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 
 		dataChangeMessage := &audit.DataChangeMessage{
 			EventType: identity.UserSignedUpServiceEventType,
-			UserID:    "", // Missing user ID
+			UserID:    "", // Missing user MealPlanTaskID
 			AccountID: "test-account-id",
 			Context:   nil,
 		}
 
-		// Mock the search index publisher (function still publishes even with missing user ID)
+		// Mock the search index publisher (function still publishes even with missing user MealPlanTaskID)
 		mockPublisher := &msgqueuemock.Publisher{}
 		mockPublisher.On("Publish", mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockPublisher

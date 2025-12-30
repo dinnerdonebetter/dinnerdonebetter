@@ -144,7 +144,7 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 func TestQuerier_AccountInvitationExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -159,7 +159,7 @@ func TestQuerier_AccountInvitationExists(T *testing.T) {
 func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -172,7 +172,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid account invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -189,7 +189,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -202,7 +202,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid account invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -219,7 +219,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -232,7 +232,7 @@ func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid account invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -264,7 +264,7 @@ func TestQuerier_CreateAccountInvitation(T *testing.T) {
 func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -280,7 +280,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid invitation ID", func(t *testing.T) {
+	T.Run("with invalid invitation MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -320,7 +320,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid user ID", func(t *testing.T) {
+	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

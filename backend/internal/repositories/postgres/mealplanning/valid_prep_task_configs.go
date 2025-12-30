@@ -846,7 +846,7 @@ func (q *repository) UpdateValidPrepTaskConfig(ctx context.Context, updated *mea
 	return nil
 }
 
-// ArchiveValidPrepTaskConfig archives a valid prep task config from the database by its ID.
+// ArchiveValidPrepTaskConfig archives a valid prep task config from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

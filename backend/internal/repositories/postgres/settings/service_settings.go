@@ -298,7 +298,7 @@ func (q *repository) CreateServiceSetting(ctx context.Context, input *types.Serv
 	return x, nil
 }
 
-// ArchiveServiceSetting archives a service setting from the database by its ID.
+// ArchiveServiceSetting archives a service setting from the database by its MealPlanTaskID.
 func (q *repository) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

@@ -282,7 +282,7 @@ func (q *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.O
 	return oauth2ClientToken, nil
 }
 
-// DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
+// DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its MealPlanTaskID.
 func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

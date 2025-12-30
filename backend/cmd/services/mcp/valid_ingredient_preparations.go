@@ -14,25 +14,25 @@ import (
 
 type (
 	GetValidIngredientPreparationInvocation struct {
-		ValidIngredientPreparationID string `jsonschema:"description=The ingredient preparation ID"`
+		ValidIngredientPreparationID string `jsonschema:"description=The ingredient preparation MealPlanTaskID"`
 	}
 )
 
 var validIngredientPreparationsSchema = map[string]any{
-	"ID":            stringField("The ID of the valid ingredient preparation"),
-	"CreatedAt":     timestampField("When the valid ingredient preparation was created"),
-	"LastUpdatedAt": timestampField("When the valid ingredient preparation was last updated"),
-	"ArchivedAt":    timestampField("When the valid ingredient preparation was soft deleted"),
-	"Notes":         stringField("Notes about the ingredient preparation"),
-	"Preparation":   objectType(validPreparationsSchema),
-	"Ingredient":    objectType(validIngredientsSchema),
+	"MealPlanTaskID": stringField("The MealPlanTaskID of the valid ingredient preparation"),
+	"CreatedAt":      timestampField("When the valid ingredient preparation was created"),
+	"LastUpdatedAt":  timestampField("When the valid ingredient preparation was last updated"),
+	"ArchivedAt":     timestampField("When the valid ingredient preparation was soft deleted"),
+	"Notes":          stringField("Notes about the ingredient preparation"),
+	"Preparation":    objectType(validPreparationsSchema),
+	"Ingredient":     objectType(validIngredientsSchema),
 }
 
 var getValidIngredientPreparationTool = &mcp.Tool{
 	Name:        "GetValidIngredientPreparation",
-	Description: "Get a valid ingredient preparation by it's ID",
+	Description: "Get a valid ingredient preparation by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientPreparationID": stringField("The ID of the valid ingredient preparation to get"),
+		"ValidIngredientPreparationID": stringField("The MealPlanTaskID of the valid ingredient preparation to get"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),
 }
@@ -94,8 +94,8 @@ var validIngredientPreparationCreationTool = &mcp.Tool{
 	Description: "Create a valid ingredient preparation linking an ingredient to a preparation.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":              stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID": stringField("The ID of the valid preparation"),
-		"ValidIngredientID":  stringField("The ID of the valid ingredient"),
+		"ValidPreparationID": stringField("The MealPlanTaskID of the valid preparation"),
+		"ValidIngredientID":  stringField("The MealPlanTaskID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),
 }
@@ -114,7 +114,7 @@ func (h *mcpToolManager) CreateValidIngredientPreparation() mcp.ToolHandlerFor[*
 type (
 	UpdateValidIngredientPreparationInvocation struct {
 		*mealplanning.ValidIngredientPreparationUpdateRequestInput
-		ValidIngredientPreparationID string `jsonschema:"required,description=The ingredient preparation ID"`
+		ValidIngredientPreparationID string `jsonschema:"required,description=The ingredient preparation MealPlanTaskID"`
 	}
 )
 
@@ -122,10 +122,10 @@ var validIngredientPreparationUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredientPreparation",
 	Description: "Update a valid ingredient preparation.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientPreparationID": stringField("The ID of the valid ingredient preparation to update"),
+		"ValidIngredientPreparationID": stringField("The MealPlanTaskID of the valid ingredient preparation to update"),
 		"Notes":                        stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID":           stringField("The ID of the valid preparation"),
-		"ValidIngredientID":            stringField("The ID of the valid ingredient"),
+		"ValidPreparationID":           stringField("The MealPlanTaskID of the valid preparation"),
+		"ValidIngredientID":            stringField("The MealPlanTaskID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),
 }

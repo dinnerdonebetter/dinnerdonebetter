@@ -894,7 +894,7 @@ func ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRe
 		Status:            status,
 		StatusExplanation: input.StatusExplanation,
 		AssignedToUser:    input.AssignedToUser,
-		ID:                input.Id,
+		MealPlanTaskID:    input.Id,
 	}
 }
 

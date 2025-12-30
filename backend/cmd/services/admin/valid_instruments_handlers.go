@@ -146,7 +146,7 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 
 	validInstrumentID := s.validInstrumentIDRouteParamFetcher(req)
 	if validInstrumentID == "" {
-		return page("Valid Instruments", s.renderValidInstrumentsError("Error: No valid instrument ID provided")), nil
+		return page("Valid Instruments", s.renderValidInstrumentsError("Error: No valid instrument MealPlanTaskID provided")), nil
 	}
 
 	validInstrumentRes, err := c.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{ValidInstrumentId: validInstrumentID})
@@ -288,7 +288,7 @@ func (s *AdminFrontendServer) ValidInstrumentsList(_ http.ResponseWriter, req *h
 			TableID: "valid-instruments-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
+				"MealPlanTaskID",
 				"Name",
 				"PluralName",
 				"Description",
@@ -393,7 +393,7 @@ func (s *AdminFrontendServer) ValidInstrumentsSearch(_ http.ResponseWriter, req 
 		TableID: "valid-instruments-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
+			"MealPlanTaskID",
 			"Name",
 			"PluralName",
 			"Description",

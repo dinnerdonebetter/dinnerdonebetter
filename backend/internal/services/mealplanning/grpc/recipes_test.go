@@ -52,7 +52,7 @@ func TestServiceImpl_ArchiveRecipe(T *testing.T) {
 		mrm.On("ArchiveRecipe", testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user ID
+		// Override session context to return specific user MealPlanTaskID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -556,7 +556,7 @@ func TestServiceImpl_CloneRecipe(T *testing.T) {
 		mrm.On("CloneRecipe", testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(exampleClonedRecipe, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user ID
+		// Override session context to return specific user MealPlanTaskID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -590,7 +590,7 @@ func TestServiceImpl_CreateRecipe(T *testing.T) {
 		mrm.On("CreateRecipe", testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.RecipeCreationRequestInput]()).Return(exampleCreatedRecipe, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user ID
+		// Override session context to return specific user MealPlanTaskID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -655,7 +655,7 @@ func TestServiceImpl_CreateRecipeRating(T *testing.T) {
 		mrm.On("CreateRecipeRating", testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeRatingCreationRequestInput]()).Return(exampleCreatedRecipeRating, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user ID
+		// Override session context to return specific user MealPlanTaskID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{

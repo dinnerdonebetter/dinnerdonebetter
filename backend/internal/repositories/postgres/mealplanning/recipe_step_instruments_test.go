@@ -122,7 +122,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -137,7 +137,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -152,7 +152,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step instrument ID", func(t *testing.T) {
+	T.Run("with invalid recipe step instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -171,7 +171,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
@@ -185,7 +185,7 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -199,7 +199,7 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step instrument ID", func(t *testing.T) {
+	T.Run("with invalid recipe step instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -217,7 +217,7 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -231,7 +231,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -277,7 +277,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 func TestQuerier_ArchiveRecipeStepInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
@@ -288,7 +288,7 @@ func TestQuerier_ArchiveRecipeStepInstrument(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepInstrument(ctx, "", exampleRecipeStepInstrument.ID))
 	})
 
-	T.Run("with invalid recipe step instrument ID", func(t *testing.T) {
+	T.Run("with invalid recipe step instrument MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()

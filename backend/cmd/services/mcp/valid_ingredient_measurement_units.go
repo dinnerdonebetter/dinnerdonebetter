@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidIngredientMeasurementUnitInvocation struct {
-		ValidIngredientMeasurementUnitID string `jsonschema:"description=The ingredient measurement unit ID"`
+		ValidIngredientMeasurementUnitID string `jsonschema:"description=The ingredient measurement unit MealPlanTaskID"`
 	}
 )
 
 var validIngredientMeasurementUnitsSchema = map[string]any{
-	"ID":                stringField("The ID of the valid ingredient measurement unit"),
+	"MealPlanTaskID":    stringField("The MealPlanTaskID of the valid ingredient measurement unit"),
 	"CreatedAt":         timestampField("When the valid ingredient measurement unit was created"),
 	"LastUpdatedAt":     timestampField("When the valid ingredient measurement unit was last updated"),
 	"ArchivedAt":        timestampField("When the valid ingredient measurement unit was soft deleted"),
@@ -31,9 +31,9 @@ var validIngredientMeasurementUnitsSchema = map[string]any{
 
 var getValidIngredientMeasurementUnitTool = &mcp.Tool{
 	Name:        "GetValidIngredientMeasurementUnit",
-	Description: "Get a valid ingredient measurement unit by it's ID",
+	Description: "Get a valid ingredient measurement unit by it's MealPlanTaskID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientMeasurementUnitID": stringField("The ID of the valid ingredient measurement unit to get"),
+		"ValidIngredientMeasurementUnitID": stringField("The MealPlanTaskID of the valid ingredient measurement unit to get"),
 	}),
 	OutputSchema: schemaObject(validIngredientMeasurementUnitsSchema),
 }
@@ -95,8 +95,8 @@ var validIngredientMeasurementUnitCreationTool = &mcp.Tool{
 	Description: "Create a valid ingredient measurement unit linking an ingredient to a measurement unit.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":                  stringField("Notes about the ingredient measurement unit"),
-		"ValidMeasurementUnitID": stringField("The ID of the valid measurement unit"),
-		"ValidIngredientID":      stringField("The ID of the valid ingredient"),
+		"ValidMeasurementUnitID": stringField("The MealPlanTaskID of the valid measurement unit"),
+		"ValidIngredientID":      stringField("The MealPlanTaskID of the valid ingredient"),
 		"AllowableQuantity":      float32RangeWithOptionalMaxSchema(),
 	}),
 	OutputSchema: schemaObject(validIngredientMeasurementUnitsSchema),
@@ -116,7 +116,7 @@ func (h *mcpToolManager) CreateValidIngredientMeasurementUnit() mcp.ToolHandlerF
 type (
 	UpdateValidIngredientMeasurementUnitInvocation struct {
 		*mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput
-		ValidIngredientMeasurementUnitID string `jsonschema:"required,description=The ingredient measurement unit ID"`
+		ValidIngredientMeasurementUnitID string `jsonschema:"required,description=The ingredient measurement unit MealPlanTaskID"`
 	}
 )
 
@@ -124,10 +124,10 @@ var validIngredientMeasurementUnitUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredientMeasurementUnit",
 	Description: "Update a valid ingredient measurement unit.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientMeasurementUnitID": stringField("The ID of the valid ingredient measurement unit to update"),
+		"ValidIngredientMeasurementUnitID": stringField("The MealPlanTaskID of the valid ingredient measurement unit to update"),
 		"Notes":                            stringField("Notes about the ingredient measurement unit"),
-		"ValidMeasurementUnitID":           stringField("The ID of the valid measurement unit"),
-		"ValidIngredientID":                stringField("The ID of the valid ingredient"),
+		"ValidMeasurementUnitID":           stringField("The MealPlanTaskID of the valid measurement unit"),
+		"ValidIngredientID":                stringField("The MealPlanTaskID of the valid ingredient"),
 		"AllowableQuantity":                float32RangeWithOptionalMaxSchema(),
 	}),
 	OutputSchema: schemaObject(validIngredientMeasurementUnitsSchema),

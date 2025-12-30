@@ -132,7 +132,7 @@ func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
 func TestQuerier_RecipeStepCompletionConditionExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -147,7 +147,7 @@ func TestQuerier_RecipeStepCompletionConditionExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -162,7 +162,7 @@ func TestQuerier_RecipeStepCompletionConditionExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step completion condition ID", func(t *testing.T) {
+	T.Run("with invalid recipe step completion condition MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -181,7 +181,7 @@ func TestQuerier_RecipeStepCompletionConditionExists(T *testing.T) {
 func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
@@ -195,7 +195,7 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -209,7 +209,7 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step completion condition ID", func(t *testing.T) {
+	T.Run("with invalid recipe step completion condition MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -227,7 +227,7 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -288,7 +288,7 @@ func TestQuerier_UpdateRecipeStepCompletionCondition(T *testing.T) {
 func TestQuerier_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
+	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
@@ -299,7 +299,7 @@ func TestQuerier_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepCompletionCondition(ctx, "", exampleRecipeStepCompletionCondition.ID))
 	})
 
-	T.Run("with invalid recipe step completion condition ID", func(t *testing.T) {
+	T.Run("with invalid recipe step completion condition MealPlanTaskID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()

@@ -302,7 +302,7 @@ func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.Reci
 	return nil
 }
 
-// ArchiveRecipeRating archives a recipe rating from the database by its ID.
+// ArchiveRecipeRating archives a recipe rating from the database by its MealPlanTaskID.
 func (q *repository) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

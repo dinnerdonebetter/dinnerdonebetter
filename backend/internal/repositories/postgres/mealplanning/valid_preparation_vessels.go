@@ -702,7 +702,7 @@ func (q *repository) UpdateValidPreparationVessel(ctx context.Context, updated *
 	return nil
 }
 
-// ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its ID.
+// ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its MealPlanTaskID.
 func (q *repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
