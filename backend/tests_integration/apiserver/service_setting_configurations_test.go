@@ -28,14 +28,14 @@ func createServiceSettingConfigurationForTest(t *testing.T, clientToUse client.C
 	})
 	require.NoError(t, err)
 	converted := settingsconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(createdServiceSettingConfiguration.Created)
-	assertRoughEquality(t, exampleServiceSettingConfiguration, converted, defaultIgnoredFields("ServiceSetting", "MealPlanTaskID", "BelongsToUser", "BelongsToAccount")...)
+	assertRoughEquality(t, exampleServiceSettingConfiguration, converted, defaultIgnoredFields("ServiceSetting", "ID", "BelongsToUser", "BelongsToAccount")...)
 
 	res, err := clientToUse.GetServiceSettingConfigurationByName(ctx, &settingssvc.GetServiceSettingConfigurationByNameRequest{ServiceSettingConfigurationName: createdServiceSettingConfiguration.Created.ServiceSetting.Name})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
 	serviceSettingConfiguration := settingsconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(res.Result)
-	assertRoughEquality(t, converted, serviceSettingConfiguration, defaultIgnoredFields("ServiceSetting", "MealPlanTaskID", "BelongsToUser", "BelongsToAccount")...)
+	assertRoughEquality(t, converted, serviceSettingConfiguration, defaultIgnoredFields("ServiceSetting", "ID", "BelongsToUser", "BelongsToAccount")...)
 
 	return serviceSettingConfiguration
 }

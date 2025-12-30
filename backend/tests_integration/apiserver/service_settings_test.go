@@ -24,7 +24,7 @@ func createServiceSettingForTest(t *testing.T) *settings.ServiceSetting {
 	})
 	require.NoError(t, err)
 	converted := settingsconverters.ConvertGRPCServiceSettingToServiceSetting(createdServiceSetting.Created)
-	assertRoughEquality(t, exampleServiceSetting, converted, defaultIgnoredFields("MealPlanTaskID")...)
+	assertRoughEquality(t, exampleServiceSetting, converted, defaultIgnoredFields("ID")...)
 
 	res, err := adminClient.GetServiceSetting(ctx, &settingssvc.GetServiceSettingRequest{ServiceSettingId: createdServiceSetting.Created.Id})
 	require.NoError(t, err)

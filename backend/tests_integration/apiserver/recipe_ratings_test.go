@@ -31,7 +31,7 @@ func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client
 	require.NotNil(t, createdRecipeRating)
 
 	converted := converters.ConvertGRPCRecipeRatingToRecipeRating(createdRecipeRating.Created)
-	assertRoughEquality(t, exampleRecipeRating, converted, defaultIgnoredFields("MealPlanTaskID", "ByUser")...)
+	assertRoughEquality(t, exampleRecipeRating, converted, defaultIgnoredFields("ID", "ByUser")...)
 
 	return converted
 }
