@@ -64,8 +64,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 			handler.webhookExecutionRequestPublisher.(*msgqueuemock.Publisher).On("Publish", mock.Anything, mock.Anything).Return(nil).Maybe()
 		}
 
-		err = handler.DataChangesEventHandler(ctx, rawMsg)
-		assert.NoError(t, err)
+		assert.NoError(t, handler.DataChangesEventHandler(ctx, rawMsg))
 
 		mock.AssertExpectationsForObjects(t, analyticsReporter, webhookRepo, identityRepo)
 	})

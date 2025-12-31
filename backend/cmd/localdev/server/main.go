@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -602,6 +603,11 @@ func main() {
 	}
 
 	log.Println("starting server")
+
+	if os.Getenv("DRY_RUN") == "true" {
+		log.Println("dry run is enabled, skipping server run")
+		return
+	}
 	server.Run()
 }
 

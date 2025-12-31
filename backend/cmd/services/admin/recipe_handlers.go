@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -208,10 +209,6 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 							ghtml.Class("flex-1"),
 							ghtml.Div(
 								ghtml.Class("flex items-center gap-2 mb-2"),
-								ghtml.Div(
-									ghtml.Class("text-xs text-gray-500"),
-									g.Text(fmt.Sprintf("Index: %d | MealPlanTaskID: %s", step.Index, step.Id)),
-								),
 								g.If(step.Optional,
 									ghtml.Span(
 										ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded"),
@@ -257,101 +254,123 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 									g.Text(step.ConditionExpression),
 								),
 							),
-							// Time and temperature
-							ghtml.Div(
-								ghtml.Class("flex gap-4 text-xs text-gray-600 mb-2"),
-								g.If(step.EstimatedTimeInSeconds != nil,
-									ghtml.Div(
-										g.Text(fmt.Sprintf("Time: %d-%d seconds",
-											func() uint32 {
-												if step.EstimatedTimeInSeconds.Min != nil {
-													return *step.EstimatedTimeInSeconds.Min
+							// Time and temperature (only show if there's meaningful data)
+							g.If(
+								(step.EstimatedTimeInSeconds != nil && step.EstimatedTimeInSeconds.Min != nil && *step.EstimatedTimeInSeconds.Min > 0) ||
+									(step.TemperatureInCelsius != nil && step.TemperatureInCelsius.Min != nil && *step.TemperatureInCelsius.Min > 0),
+								ghtml.Div(
+									ghtml.Class("flex gap-4 text-xs text-gray-600 mb-2"),
+									g.If(
+										step.EstimatedTimeInSeconds != nil && step.EstimatedTimeInSeconds.Min != nil && *step.EstimatedTimeInSeconds.Min > 0,
+										ghtml.Div(
+											g.Text(func() string {
+												if step.EstimatedTimeInSeconds == nil || step.EstimatedTimeInSeconds.Min == nil {
+													return ""
 												}
-												return 0
-											}(),
-											func() uint32 {
-												if step.EstimatedTimeInSeconds.Max != nil {
-													return *step.EstimatedTimeInSeconds.Max
+												min := *step.EstimatedTimeInSeconds.Min
+												if step.EstimatedTimeInSeconds.Max != nil && *step.EstimatedTimeInSeconds.Max > 0 {
+													max := *step.EstimatedTimeInSeconds.Max
+													if max > min {
+														return fmt.Sprintf("Time: %s - %s", formatDuration(min), formatDuration(max))
+													} else if max == min {
+														return fmt.Sprintf("Time: %s", formatDuration(min))
+													}
 												}
-												return 0
-											}(),
-										)),
+												return fmt.Sprintf("Time: %s", formatDuration(min))
+											}()),
+										),
+									),
+									g.If(
+										step.TemperatureInCelsius != nil && step.TemperatureInCelsius.Min != nil && *step.TemperatureInCelsius.Min > 0,
+										ghtml.Div(
+											g.Text(func() string {
+												if step.TemperatureInCelsius == nil || step.TemperatureInCelsius.Min == nil {
+													return ""
+												}
+												min := *step.TemperatureInCelsius.Min
+												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > min {
+													return fmt.Sprintf("Temperature: %.1f-%.1f°C", min, *step.TemperatureInCelsius.Max)
+												}
+												return fmt.Sprintf("Temperature: %.1f°C", min)
+											}()),
+										),
 									),
 								),
-								g.If(step.TemperatureInCelsius != nil,
+							),
+						),
+					),
+					// 2x2 Grid: Instruments | Vessels, Ingredients | Products
+					ghtml.Div(
+						ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+						ghtml.Div(
+							ghtml.Class("grid grid-cols-2 gap-4"),
+							// Top row: Instruments
+							ghtml.Div(
+								ghtml.Div(
+									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+									g.Text("Instruments:"),
+								),
+								ghtml.Div(
+									ghtml.Class("space-y-2"),
+									func() g.Node {
+										if len(step.Instruments) > 0 {
+											return g.Group(s.renderStepInstruments(step.Instruments, steps))
+										}
+										return ghtml.Div(
+											ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+											g.Text("none"),
+										)
+									}(),
+								),
+							),
+							// Top row: Vessels
+							ghtml.Div(
+								ghtml.Div(
+									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+									g.Text("Vessels:"),
+								),
+								ghtml.Div(
+									ghtml.Class("space-y-2"),
+									func() g.Node {
+										if len(step.Vessels) > 0 {
+											return g.Group(s.renderStepVessels(step.Vessels, steps))
+										}
+										return ghtml.Div(
+											ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+											g.Text("none"),
+										)
+									}(),
+								),
+							),
+							// Bottom row: Ingredients
+							ghtml.Div(
+								g.If(len(step.Ingredients) > 0,
 									ghtml.Div(
-										g.Text(fmt.Sprintf("Temperature: %.1f-%.1f°C",
-											func() float32 {
-												if step.TemperatureInCelsius.Min != nil {
-													return *step.TemperatureInCelsius.Min
-												}
-												return 0
-											}(),
-											func() float32 {
-												if step.TemperatureInCelsius.Max != nil {
-													return *step.TemperatureInCelsius.Max
-												}
-												return 0
-											}(),
-										)),
+										ghtml.Div(
+											ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+											g.Text("Ingredients:"),
+										),
+										ghtml.Div(
+											ghtml.Class("space-y-2"),
+											g.Group(s.renderStepIngredients(step.Ingredients, steps)),
+										),
 									),
 								),
 							),
-						),
-					),
-					// Ingredients section
-					g.If(len(step.Ingredients) > 0,
-						ghtml.Div(
-							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+							// Bottom row: Products
 							ghtml.Div(
-								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text(fmt.Sprintf("Ingredients (%d):", len(step.Ingredients))),
-							),
-							ghtml.Div(
-								ghtml.Class("space-y-2"),
-								g.Group(s.renderStepIngredients(step.Ingredients, steps)),
-							),
-						),
-					),
-					// Instruments section
-					g.If(len(step.Instruments) > 0,
-						ghtml.Div(
-							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
-							ghtml.Div(
-								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text(fmt.Sprintf("Instruments (%d):", len(step.Instruments))),
-							),
-							ghtml.Div(
-								ghtml.Class("space-y-2"),
-								g.Group(s.renderStepInstruments(step.Instruments, steps)),
-							),
-						),
-					),
-					// Vessels section
-					g.If(len(step.Vessels) > 0,
-						ghtml.Div(
-							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
-							ghtml.Div(
-								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text(fmt.Sprintf("Vessels (%d):", len(step.Vessels))),
-							),
-							ghtml.Div(
-								ghtml.Class("space-y-2"),
-								g.Group(s.renderStepVessels(step.Vessels, steps)),
-							),
-						),
-					),
-					// Products section
-					g.If(len(step.Products) > 0,
-						ghtml.Div(
-							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
-							ghtml.Div(
-								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text(fmt.Sprintf("Products (%d):", len(step.Products))),
-							),
-							ghtml.Div(
-								ghtml.Class("space-y-2"),
-								g.Group(s.renderStepProducts(step.Products)),
+								g.If(len(step.Products) > 0,
+									ghtml.Div(
+										ghtml.Div(
+											ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+											g.Text("Products:"),
+										),
+										ghtml.Div(
+											ghtml.Class("space-y-2"),
+											g.Group(s.renderStepProducts(step.Products)),
+										),
+									),
+								),
 							),
 						),
 					),
@@ -361,7 +380,7 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
 							ghtml.Div(
 								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text(fmt.Sprintf("Completion Conditions (%d):", len(step.CompletionConditions))),
+								g.Text("Completion Conditions:"),
 							),
 							ghtml.Div(
 								ghtml.Class("space-y-2"),
@@ -385,50 +404,57 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 	for _, ing := range ingredients {
 		var details []g.Node
 
-		// Ingredient name
-		if ing.Ingredient != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(ing.Ingredient.Name),
-			))
-		} else if ing.Name != "" {
-			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(ing.Name),
-			))
+		// Get ingredient name - prioritize recipe step ingredient name over base ingredient name
+		ingredientName := ""
+		if ing.Name != "" {
+			ingredientName = ing.Name
+		} else if ing.Ingredient != nil {
+			ingredientName = ing.Ingredient.Name
 		}
 
-		// Quantity and unit
-		if ing.Quantity != nil {
-			qtyStr := ""
-			if ing.Quantity.Min != 0 {
-				qtyStr = fmt.Sprintf("%.2f", ing.Quantity.Min)
-				if ing.Quantity.Max != nil {
-					qtyStr += fmt.Sprintf("-%.2f", *ing.Quantity.Max)
-				}
-			}
-			if qtyStr != "" {
-				unitName := formatMeasurementUnitName(ing.MeasurementUnit)
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-gray-600"),
-					g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
-				))
-			}
-		}
-
-		// Product reference (from previous step)
+		// Check if this ingredient comes from a previous step
 		if ing.RecipeStepProductId != nil {
 			productStep := s.findStepWithProduct(*ing.RecipeStepProductId, allSteps)
 			if productStep != nil {
+				// Format as "ingredient name from step X" without quantity
 				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 font-semibold ml-2"),
-					g.Text(fmt.Sprintf("← Product from Step %d", productStep.Index+1)),
+					ghtml.Class("font-medium"),
+					g.Text(fmt.Sprintf("%s from step %d", ingredientName, productStep.Index+1)),
 				))
 			} else {
+				// Fallback if step not found
+				details = append(details, ghtml.Span(
+					ghtml.Class("font-medium"),
+					g.Text(ingredientName),
+				))
 				details = append(details, ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
 					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
 				))
+			}
+		} else {
+			// Regular ingredient - show name and quantity
+			details = append(details, ghtml.Span(
+				ghtml.Class("font-medium"),
+				g.Text(ingredientName),
+			))
+
+			// Quantity and unit
+			if ing.Quantity != nil {
+				qtyStr := ""
+				if ing.Quantity.Min != 0 {
+					qtyStr = formatQuantity(ing.Quantity.Min)
+					if ing.Quantity.Max != nil {
+						qtyStr += "-" + formatQuantity(*ing.Quantity.Max)
+					}
+				}
+				if qtyStr != "" {
+					unitName := formatMeasurementUnitName(ing.MeasurementUnit)
+					details = append(details, ghtml.Span(
+						ghtml.Class("text-gray-600"),
+						g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
+					))
+				}
 			}
 		}
 
@@ -521,13 +547,16 @@ func (s *AdminFrontendServer) renderStepInstruments(instruments []*mealplannings
 			))
 		}
 
-		// Quantity
+		// Quantity (only show if not 1)
 		if inst.Quantity != nil {
 			qtyStr := ""
 			if inst.Quantity.Min != 0 {
-				qtyStr = fmt.Sprintf("%d", inst.Quantity.Min)
-				if inst.Quantity.Max != nil {
-					qtyStr += fmt.Sprintf("-%d", *inst.Quantity.Max)
+				// Only show quantity if it's not 1, or if there's a range
+				if inst.Quantity.Min != 1 || (inst.Quantity.Max != nil && *inst.Quantity.Max != 1) {
+					qtyStr = fmt.Sprintf("%d", inst.Quantity.Min)
+					if inst.Quantity.Max != nil {
+						qtyStr += fmt.Sprintf("-%d", *inst.Quantity.Max)
+					}
 				}
 			}
 			if qtyStr != "" {
@@ -613,13 +642,16 @@ func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.Recip
 			))
 		}
 
-		// Quantity
+		// Quantity (only show if not 1)
 		if vessel.Quantity != nil {
 			qtyStr := ""
 			if vessel.Quantity.Min != 0 {
-				qtyStr = fmt.Sprintf("%d", vessel.Quantity.Min)
-				if vessel.Quantity.Max != nil {
-					qtyStr += fmt.Sprintf("-%d", *vessel.Quantity.Max)
+				// Only show quantity if it's not 1, or if there's a range
+				if vessel.Quantity.Min != 1 || (vessel.Quantity.Max != nil && *vessel.Quantity.Max != 1) {
+					qtyStr = fmt.Sprintf("%d", vessel.Quantity.Min)
+					if vessel.Quantity.Max != nil {
+						qtyStr += fmt.Sprintf("-%d", *vessel.Quantity.Max)
+					}
 				}
 			}
 			if qtyStr != "" {
@@ -703,9 +735,9 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 		if product.Quantity != nil {
 			qtyStr := ""
 			if product.Quantity.Min != nil {
-				qtyStr = fmt.Sprintf("%.2f", *product.Quantity.Min)
+				qtyStr = formatQuantity(*product.Quantity.Min)
 				if product.Quantity.Max != nil {
-					qtyStr += fmt.Sprintf("-%.2f", *product.Quantity.Max)
+					qtyStr += "-" + formatQuantity(*product.Quantity.Max)
 				}
 			}
 			if qtyStr != "" {
@@ -880,6 +912,42 @@ func formatProductType(productType mealplanningsvc.RecipeStepProductType) string
 	default:
 		return productType.String()
 	}
+}
+
+// formatDuration formats seconds into a human-readable duration string (e.g., "1h 30m", "45m", "30s").
+func formatDuration(seconds uint32) string {
+	if seconds == 0 {
+		return "0s"
+	}
+
+	hours := seconds / 3600
+	minutes := (seconds % 3600) / 60
+	secs := seconds % 60
+
+	var parts []string
+	if hours > 0 {
+		parts = append(parts, fmt.Sprintf("%dh", hours))
+	}
+	if minutes > 0 {
+		parts = append(parts, fmt.Sprintf("%dm", minutes))
+	}
+	if secs > 0 && hours == 0 {
+		// Only show seconds if we don't have hours (to avoid clutter)
+		parts = append(parts, fmt.Sprintf("%ds", secs))
+	}
+
+	if len(parts) == 0 {
+		return "0s"
+	}
+	return strings.Join(parts, " ")
+}
+
+// formatQuantity formats a float32 quantity, showing as integer if decimal part is zero.
+func formatQuantity(qty float32) string {
+	if qty == float32(int32(qty)) {
+		return fmt.Sprintf("%d", int32(qty))
+	}
+	return fmt.Sprintf("%.2f", qty)
 }
 
 // formatMeasurementUnitName formats a measurement unit name for display, removing test data numbering.

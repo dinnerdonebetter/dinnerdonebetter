@@ -251,6 +251,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "charcoal briquettes", Description: "Charcoal briquettes for grilling", PluralName: "charcoal briquettes", StorageInstructions: "Store in a dry place", Slug: "charcoal-briquettes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Tortillas recipe ingredients
 		{ID: identifiers.New(), Name: "shortening", Description: "Solid vegetable shortening for baking and frying", PluralName: "shortening", StorageInstructions: "Store in a cool, dry place", Slug: "shortening", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Paper towels as an ingredient (consumed when used for drying)
+		{ID: identifiers.New(), Name: "paper towels", Description: "Absorbent paper towels for drying", PluralName: "paper towels", StorageInstructions: "Store in a cool, dry place", Slug: "paper-towels", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
 	for i, ing := range ingredients {
@@ -2077,6 +2079,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get preparations
 	seasonPrep := enums.Preparations["season"]
+	slicePrep := enums.Preparations["slice"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	bastePrep := enums.Preparations["baste"]
 	restPrep := enums.Preparations["rest"]
@@ -2090,6 +2093,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	thyme := enums.Ingredients["thyme"]
 	rosemary := enums.Ingredients["rosemary"]
 	shallot := enums.Ingredients["shallot"]
+	paperTowelsIngredient, err := getIngredient("paper towels")
+	if err != nil {
+		return err
+	}
 
 	// Get measurement units
 	unitMeasurement := enums.MeasurementUnits["unit"]
@@ -2099,6 +2106,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get instruments
 	paperTowels, err := getInstrument("paper towels")
+	if err != nil {
+		return err
+	}
+	bareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	knife, err := getInstrument("knife")
 	if err != nil {
 		return err
 	}
@@ -2117,6 +2132,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get vessels
 	sheetPan := enums.Vessels["sheet pan"]
+	cuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
 	castIronSkillet := enums.Vessels["cast iron skillet"]
 	servingPlate := enums.Vessels["serving plate"]
 
@@ -2129,11 +2148,41 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(dryPrep, ribeye); err != nil {
 		return err
 	}
+	if err = createVIP(dryPrep, paperTowelsIngredient); err != nil {
+		return err
+	}
 
-	// Ingredient-MeasurementUnit links (already created for ribeye)
+	// Ingredient-MeasurementUnit links
+	if err = createVIMU(ribeye, gramMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(paperTowelsIngredient, unitMeasurement); err != nil {
+		return err
+	}
 
 	// Preparation-Instrument links
-	if err = createVPI(dryPrep, paperTowels); err != nil {
+	if err = createVPI(dryPrep, bareHands); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION ===
+	// Ingredient-Preparation links
+	if err = createVIP(slicePrep, shallot); err != nil {
+		return err
+	}
+
+	// Ingredient-MeasurementUnit links (already created for shallot)
+
+	// Preparation-Instrument links
+	if err = createVPI(slicePrep, knife); err != nil {
+		return err
+	}
+	if err = createVPI(slicePrep, bareHands); err != nil {
+		return err
+	}
+
+	// Preparation-Vessel links
+	if err = createVPV(slicePrep, cuttingBoard); err != nil {
 		return err
 	}
 
@@ -2163,7 +2212,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(ribeye, unitMeasurement); err != nil {
+	if err = createVIMU(ribeye, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(salt, gramMeasurement); err != nil {
@@ -2174,10 +2223,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Instrument links
-	bareHands, err := getInstrument("bare hands")
-	if err != nil {
-		return err
-	}
 	if err = createVPI(seasonPrep, bareHands); err != nil {
 		return err
 	}
@@ -2865,7 +2910,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	meatGrinder := enums.Instruments["meat grinder"]
 	wideSpatula := enums.Instruments["wide spatula"]
 	burgerBareHands := enums.Instruments["bare hands"]
-	knife := enums.Instruments["knife"]
+	burgerKnife := enums.Instruments["knife"]
 
 	// Get vessels for burger recipe
 	largeBowl := enums.Vessels["large bowl"]
@@ -2901,7 +2946,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(oxtail, ounceMeasurement); err != nil {
 		return err
 	}
-	if err = createVPI(trimPrep, knife); err != nil {
+	if err = createVPI(trimPrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(trimPrep, burgerCuttingBoard); err != nil {
@@ -2912,7 +2957,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(debonePrep, oxtail); err != nil {
 		return err
 	}
-	if err = createVPI(debonePrep, knife); err != nil {
+	if err = createVPI(debonePrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(debonePrep, burgerCuttingBoard); err != nil {
@@ -2929,7 +2974,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(cubePrep, oxtail); err != nil {
 		return err
 	}
-	if err = createVPI(cubePrep, knife); err != nil {
+	if err = createVPI(cubePrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(cubePrep, burgerCuttingBoard); err != nil {
