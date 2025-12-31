@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/posthog/posthog-go"
 	"github.com/stretchr/testify/assert"
@@ -142,10 +143,10 @@ func TestFeatureFlagManager_Identify(T *testing.T) {
 		ctx := t.Context()
 
 		user := mockauthn.NewMockUser()
-		user.On("GetID").Return("MealPlanTaskID").Twice()
-		user.On("GetUsername").Return("Username")
-		user.On("GetFirstName").Return("FirstName")
-		user.On("GetLastName").Return("LastName")
+		user.On(reflection.GetMethodName(user.GetID)).Return("MealPlanTaskID").Twice()
+		user.On(reflection.GetMethodName(user.GetUsername)).Return("Username")
+		user.On(reflection.GetMethodName(user.GetFirstName)).Return("FirstName")
+		user.On(reflection.GetMethodName(user.GetLastName)).Return("LastName")
 
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
 

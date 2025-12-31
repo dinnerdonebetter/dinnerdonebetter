@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -34,7 +35,7 @@ func Test_signer_IssueToken(T *testing.T) {
 
 		ctx := t.Context()
 		user := mocks.NewMockUser()
-		user.On("GetID").Return("user_id").Times(2)
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id").Times(2)
 
 		actual, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
@@ -58,7 +59,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 
 		ctx := t.Context()
 		user := mocks.NewMockUser()
-		user.On("GetID").Return("user_id").Times(2)
+		user.On(reflection.GetMethodName(user.GetID)).Return("user_id").Times(2)
 
 		issuedToken, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)

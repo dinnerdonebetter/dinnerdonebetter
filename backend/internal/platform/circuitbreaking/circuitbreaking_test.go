@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -33,7 +34,7 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
 		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)
@@ -49,8 +50,8 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
 		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)
@@ -66,9 +67,9 @@ func TestProvideCircuitBreaker(T *testing.T) {
 		i64Counter := &mockmetrics.Int64Counter{}
 
 		mp := &mockmetrics.MetricsProvider{}
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
-		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_reset", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On(reflection.GetMethodName(mp.NewInt64Counter), fmt.Sprintf("%s_circuit_breaker_reset", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
 
 		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
 		assert.Nil(t, cb)

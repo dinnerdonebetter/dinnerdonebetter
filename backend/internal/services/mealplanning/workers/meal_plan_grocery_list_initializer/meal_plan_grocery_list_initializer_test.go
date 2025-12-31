@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -28,7 +29,7 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
-	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	x, err := NewMealPlanGroceryListInitializer(
 		ctx,
@@ -217,7 +218,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		ctx := t.Context()
 		mdm := &mealplanningmock.Repository{}
 
-		mdm.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)
+		mdm.On(reflection.GetMethodName(mdm.GetFinalizedMealPlansWithUninitializedGroceryLists), testutils.ContextMatcher).Return(expectedMealPlans, nil)
 
 		firstMealPlanExpectedGroceryListItemInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			{
@@ -277,8 +278,8 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		pup := &mockpublishers.Publisher{}
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
-				mdm.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
-				pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
+				mdm.On(reflection.GetMethodName(mdm.CreateMealPlanGroceryListItem), testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
+				pup.On(reflection.GetMethodName(pup.Publish), testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
 			}
 		}
 

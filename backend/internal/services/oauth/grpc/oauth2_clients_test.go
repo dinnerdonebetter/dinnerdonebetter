@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -48,7 +49,7 @@ func TestServiceImpl_CreateOAuth2Client(t *testing.T) {
 		fakeClient := oauthfakes.BuildFakeOAuth2Client()
 		fakeInput := oauthfakes.BuildFakeOAuth2ClientCreationRequestInput()
 
-		mockManager.On("CreateOAuth2Client", testutils.ContextMatcher, mock.AnythingOfType("*oauth.OAuth2ClientCreationRequestInput")).Return(fakeClient, nil)
+		mockManager.On(reflection.GetMethodName(mockManager.CreateOAuth2Client), testutils.ContextMatcher, mock.AnythingOfType("*oauth.OAuth2ClientCreationRequestInput")).Return(fakeClient, nil)
 
 		request := &oauthsvc.CreateOAuth2ClientRequest{
 			Input: &oauthsvc.OAuth2ClientCreationRequestInput{
@@ -76,7 +77,7 @@ func TestServiceImpl_CreateOAuth2Client(t *testing.T) {
 
 		fakeInput := oauthfakes.BuildFakeOAuth2ClientCreationRequestInput()
 
-		mockManager.On("CreateOAuth2Client", testutils.ContextMatcher, mock.AnythingOfType("*oauth.OAuth2ClientCreationRequestInput")).Return((*oauth.OAuth2Client)(nil), errors.New("manager error"))
+		mockManager.On(reflection.GetMethodName(mockManager.CreateOAuth2Client), testutils.ContextMatcher, mock.AnythingOfType("*oauth.OAuth2ClientCreationRequestInput")).Return((*oauth.OAuth2Client)(nil), errors.New("manager error"))
 
 		request := &oauthsvc.CreateOAuth2ClientRequest{
 			Input: &oauthsvc.OAuth2ClientCreationRequestInput{
@@ -106,7 +107,7 @@ func TestServiceImpl_GetOAuth2Client(t *testing.T) {
 		fakeClient := oauthfakes.BuildFakeOAuth2Client()
 		clientID := fakeClient.ID
 
-		mockManager.On("GetOAuth2Client", testutils.ContextMatcher, clientID).Return(fakeClient, nil)
+		mockManager.On(reflection.GetMethodName(mockManager.GetOAuth2Client), testutils.ContextMatcher, clientID).Return(fakeClient, nil)
 
 		request := &oauthsvc.GetOAuth2ClientRequest{
 			Oauth2ClientId: clientID,
@@ -131,7 +132,7 @@ func TestServiceImpl_GetOAuth2Client(t *testing.T) {
 
 		clientID := "nonexistent-client"
 
-		mockManager.On("GetOAuth2Client", testutils.ContextMatcher, clientID).Return((*oauth.OAuth2Client)(nil), errors.New("manager error"))
+		mockManager.On(reflection.GetMethodName(mockManager.GetOAuth2Client), testutils.ContextMatcher, clientID).Return((*oauth.OAuth2Client)(nil), errors.New("manager error"))
 
 		request := &oauthsvc.GetOAuth2ClientRequest{
 			Oauth2ClientId: clientID,
@@ -162,7 +163,7 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(fakeClients, nil)
+		mockManager.On(reflection.GetMethodName(mockManager.GetOAuth2Clients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(fakeClients, nil)
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &oauthsvc.GetOAuth2ClientsRequest{
@@ -192,7 +193,7 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockManager.On("GetOAuth2Clients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[oauth.OAuth2Client])(nil), errors.New("manager error"))
+		mockManager.On(reflection.GetMethodName(mockManager.GetOAuth2Clients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[oauth.OAuth2Client])(nil), errors.New("manager error"))
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &oauthsvc.GetOAuth2ClientsRequest{
@@ -222,7 +223,7 @@ func TestServiceImpl_ArchiveOAuth2Client(t *testing.T) {
 
 		clientID := "test-client-id"
 
-		mockManager.On("ArchiveOAuth2Client", testutils.ContextMatcher, clientID).Return(nil)
+		mockManager.On(reflection.GetMethodName(mockManager.ArchiveOAuth2Client), testutils.ContextMatcher, clientID).Return(nil)
 
 		request := &oauthsvc.ArchiveOAuth2ClientRequest{
 			Oauth2ClientId: clientID,
@@ -245,7 +246,7 @@ func TestServiceImpl_ArchiveOAuth2Client(t *testing.T) {
 
 		clientID := "nonexistent-client"
 
-		mockManager.On("ArchiveOAuth2Client", testutils.ContextMatcher, clientID).Return(errors.New("manager error"))
+		mockManager.On(reflection.GetMethodName(mockManager.ArchiveOAuth2Client), testutils.ContextMatcher, clientID).Return(errors.New("manager error"))
 
 		request := &oauthsvc.ArchiveOAuth2ClientRequest{
 			Oauth2ClientId: clientID,

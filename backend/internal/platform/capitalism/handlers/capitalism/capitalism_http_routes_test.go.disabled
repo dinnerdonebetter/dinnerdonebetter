@@ -28,7 +28,7 @@ func TestCapitalismService_StripeWebhookHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mpm := &capitalismmock.MockPaymentManager{}
-		mpm.On("HandleEventWebhook", mock.AnythingOfType("*http.Request")).Return(nil)
+		mpm.On(reflection.GetMethodName(mpm.HandleEventWebhook), mock.AnythingOfType("*http.Request")).Return(nil)
 		helper.service.paymentManager = mpm
 
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))

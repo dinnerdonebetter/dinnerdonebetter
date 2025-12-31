@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -100,7 +101,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On("ExchangeTokenForUser", mock.Anything, "refresh-token").Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token").Return(fakeTokenResponse, nil)
 
 		request := &authsvc.ExchangeTokenRequest{
 			RefreshToken: "refresh-token",
@@ -146,7 +147,7 @@ func TestServiceImpl_ExchangeToken(t *testing.T) {
 		service, _, _, authenticationManager := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authenticationManager.On("ExchangeTokenForUser", mock.Anything, "refresh-token").Return((*auth.TokenResponse)(nil), errors.New("exchange failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ExchangeTokenForUser), mock.Anything, "refresh-token").Return((*auth.TokenResponse)(nil), errors.New("exchange failed"))
 
 		request := &authsvc.ExchangeTokenRequest{
 			RefreshToken: "refresh-token",
@@ -182,7 +183,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On("ProcessLogin", mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
 
 		request := &authsvc.LoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -211,7 +212,7 @@ func TestServiceImpl_LoginForToken(t *testing.T) {
 		service, _, _, authenticationManager := buildTestService(t)
 		ctx := t.Context()
 
-		authenticationManager.On("ProcessLogin", mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("login failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, false, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("login failed"))
 
 		request := &authsvc.LoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -251,7 +252,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 			ExpiresUTC:   time.Now().Add(time.Hour),
 		}
 
-		authenticationManager.On("ProcessLogin", mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return(fakeTokenResponse, nil)
 
 		request := &authsvc.AdminLoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -280,7 +281,7 @@ func TestServiceImpl_AdminLoginForToken(t *testing.T) {
 		service, _, _, authenticationManager := buildTestService(t)
 		ctx := t.Context()
 
-		authenticationManager.On("ProcessLogin", mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("admin login failed"))
+		authenticationManager.On(reflection.GetMethodName(authenticationManager.ProcessLogin), mock.Anything, true, mock.AnythingOfType("*auth.UserLoginInput")).Return((*auth.TokenResponse)(nil), errors.New("admin login failed"))
 
 		request := &authsvc.AdminLoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
@@ -319,7 +320,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 			},
 		}
 
-		authManager.On("CheckUserPermissions", mock.Anything, mock.AnythingOfType("*auth.UserPermissionsRequestInput")).Return(fakePermissionsResponse, nil)
+		authManager.On(reflection.GetMethodName(authManager.CheckUserPermissions), mock.Anything, mock.AnythingOfType("*auth.UserPermissionsRequestInput")).Return(fakePermissionsResponse, nil)
 
 		request := &authsvc.UserPermissionsRequestInput{
 			Permissions: []string{"read_users", "create_users"},
@@ -362,7 +363,7 @@ func TestServiceImpl_CheckPermissions(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("CheckUserPermissions", mock.Anything, mock.AnythingOfType("*auth.UserPermissionsRequestInput")).Return((*auth.UserPermissionsResponse)(nil), errors.New("permission check failed"))
+		authManager.On(reflection.GetMethodName(authManager.CheckUserPermissions), mock.Anything, mock.AnythingOfType("*auth.UserPermissionsRequestInput")).Return((*auth.UserPermissionsResponse)(nil), errors.New("permission check failed"))
 
 		request := &authsvc.UserPermissionsRequestInput{
 			Permissions: []string{"read_users"},
@@ -393,7 +394,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 		fakeAccount := identityfakes.BuildFakeAccount()
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetAccount", mock.Anything, sessionData.GetActiveAccountID()).Return(fakeAccount, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, sessionData.GetActiveAccountID()).Return(fakeAccount, nil)
 
 		request := &authsvc.GetActiveAccountRequest{}
 
@@ -434,7 +435,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetAccount", mock.Anything, sessionData.GetActiveAccountID()).Return((*identity.Account)(nil), sql.ErrNoRows)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, sessionData.GetActiveAccountID()).Return((*identity.Account)(nil), sql.ErrNoRows)
 
 		request := &authsvc.GetActiveAccountRequest{}
 
@@ -457,7 +458,7 @@ func TestServiceImpl_GetActiveAccount(t *testing.T) {
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetAccount", mock.Anything, sessionData.GetActiveAccountID()).Return((*identity.Account)(nil), errors.New("database error"))
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, sessionData.GetActiveAccountID()).Return((*identity.Account)(nil), errors.New("database error"))
 
 		request := &authsvc.GetActiveAccountRequest{}
 
@@ -486,7 +487,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 		fakeUser := identityfakes.BuildFakeUser()
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetUser", mock.Anything, sessionData.GetUserID()).Return(fakeUser, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, sessionData.GetUserID()).Return(fakeUser, nil)
 
 		request := &authsvc.GetSelfRequest{}
 
@@ -527,7 +528,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetUser", mock.Anything, sessionData.GetUserID()).Return((*identity.User)(nil), sql.ErrNoRows)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, sessionData.GetUserID()).Return((*identity.User)(nil), sql.ErrNoRows)
 
 		request := &authsvc.GetSelfRequest{}
 
@@ -550,7 +551,7 @@ func TestServiceImpl_GetSelf(t *testing.T) {
 		ctx := buildContextWithSessionData(t)
 
 		sessionData := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-		identityRepo.On("GetUser", mock.Anything, sessionData.GetUserID()).Return((*identity.User)(nil), errors.New("database error"))
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, sessionData.GetUserID()).Return((*identity.User)(nil), errors.New("database error"))
 
 		request := &authsvc.GetSelfRequest{}
 
@@ -576,7 +577,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("PasswordResetTokenRedemption", mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.PasswordResetTokenRedemption), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(nil)
 
 		request := &authsvc.RedeemPasswordResetTokenRequest{
 			Token:       "reset-token",
@@ -620,7 +621,7 @@ func TestServiceImpl_RedeemPasswordResetToken(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("PasswordResetTokenRedemption", mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(errors.New("redemption failed"))
+		authManager.On(reflection.GetMethodName(authManager.PasswordResetTokenRedemption), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenRedemptionRequestInput")).Return(errors.New("redemption failed"))
 
 		request := &authsvc.RedeemPasswordResetTokenRequest{
 			Token:       "invalid-token",
@@ -653,7 +654,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 			TwoFactorQRCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
 		}
 
-		authManager.On("NewTOTPSecret", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretRefreshInput")).Return(fakeTOTPResponse, nil)
+		authManager.On(reflection.GetMethodName(authManager.NewTOTPSecret), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretRefreshInput")).Return(fakeTOTPResponse, nil)
 
 		request := &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: "password123",
@@ -700,7 +701,7 @@ func TestServiceImpl_RefreshTOTPSecret(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("NewTOTPSecret", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretRefreshInput")).Return((*auth.TOTPSecretRefreshResponse)(nil), errors.New("refresh failed"))
+		authManager.On(reflection.GetMethodName(authManager.NewTOTPSecret), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretRefreshInput")).Return((*auth.TOTPSecretRefreshResponse)(nil), errors.New("refresh failed"))
 
 		request := &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: "wrongpassword",
@@ -729,7 +730,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("RequestEmailVerificationEmail", mock.Anything).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.RequestEmailVerificationEmail), mock.Anything).Return(nil)
 
 		request := &authsvc.RequestEmailVerificationEmailRequest{}
 
@@ -767,7 +768,7 @@ func TestServiceImpl_RequestEmailVerificationEmail(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("RequestEmailVerificationEmail", mock.Anything).Return(errors.New("email request failed"))
+		authManager.On(reflection.GetMethodName(authManager.RequestEmailVerificationEmail), mock.Anything).Return(errors.New("email request failed"))
 
 		request := &authsvc.RequestEmailVerificationEmailRequest{}
 
@@ -793,7 +794,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("CreatePasswordResetToken", mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.CreatePasswordResetToken), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(nil)
 
 		request := &authsvc.RequestPasswordResetTokenRequest{
 			EmailAddress: "test@example.com",
@@ -835,7 +836,7 @@ func TestServiceImpl_RequestPasswordResetToken(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("CreatePasswordResetToken", mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(errors.New("token creation failed"))
+		authManager.On(reflection.GetMethodName(authManager.CreatePasswordResetToken), mock.Anything, mock.AnythingOfType("*auth.PasswordResetTokenCreationRequestInput")).Return(errors.New("token creation failed"))
 
 		request := &authsvc.RequestPasswordResetTokenRequest{
 			EmailAddress: "invalid@example.com",
@@ -863,7 +864,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("RequestUsernameReminder", mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.RequestUsernameReminder), mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(nil)
 
 		request := &authsvc.RequestUsernameReminderRequest{
 			EmailAddress: "test@example.com",
@@ -905,7 +906,7 @@ func TestServiceImpl_RequestUsernameReminder(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("RequestUsernameReminder", mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(errors.New("reminder request failed"))
+		authManager.On(reflection.GetMethodName(authManager.RequestUsernameReminder), mock.Anything, mock.AnythingOfType("*auth.UsernameReminderRequestInput")).Return(errors.New("reminder request failed"))
 
 		request := &authsvc.RequestUsernameReminderRequest{
 			EmailAddress: "invalid@example.com",
@@ -933,7 +934,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("VerifyUserEmailAddress", mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(nil)
 
 		request := &authsvc.VerifyEmailAddressRequest{
 			Token: "verification-token",
@@ -976,7 +977,7 @@ func TestServiceImpl_VerifyEmailAddress(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("VerifyUserEmailAddress", mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(errors.New("verification failed"))
+		authManager.On(reflection.GetMethodName(authManager.VerifyUserEmailAddress), mock.Anything, mock.AnythingOfType("*auth.EmailAddressVerificationRequestInput")).Return(errors.New("verification failed"))
 
 		request := &authsvc.VerifyEmailAddressRequest{
 			Token: "invalid-token",
@@ -1004,7 +1005,7 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := t.Context()
 
-		authManager.On("TOTPSecretVerification", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.TOTPSecretVerification), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(nil)
 
 		request := &authsvc.VerifyTOTPSecretRequest{
 			UserId:    identityfakes.BuildFakeID(),
@@ -1028,7 +1029,7 @@ func TestServiceImpl_VerifyTOTPSecret(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := t.Context()
 
-		authManager.On("TOTPSecretVerification", mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(errors.New("verification failed"))
+		authManager.On(reflection.GetMethodName(authManager.TOTPSecretVerification), mock.Anything, mock.AnythingOfType("*auth.TOTPSecretVerificationInput")).Return(errors.New("verification failed"))
 
 		request := &authsvc.VerifyTOTPSecretRequest{
 			UserId:    identityfakes.BuildFakeID(),
@@ -1057,7 +1058,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("UpdatePassword", mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(nil)
+		authManager.On(reflection.GetMethodName(authManager.UpdatePassword), mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(nil)
 
 		request := &authsvc.UpdatePasswordRequest{
 			NewPassword:     "newpassword123",
@@ -1103,7 +1104,7 @@ func TestServiceImpl_UpdatePassword(t *testing.T) {
 		service, _, authManager, _ := buildTestService(t)
 		ctx := buildContextWithSessionData(t)
 
-		authManager.On("UpdatePassword", mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(errors.New("password update failed"))
+		authManager.On(reflection.GetMethodName(authManager.UpdatePassword), mock.Anything, mock.AnythingOfType("*auth.PasswordUpdateInput")).Return(errors.New("password update failed"))
 
 		request := &authsvc.UpdatePasswordRequest{
 			NewPassword:     "newpassword123",

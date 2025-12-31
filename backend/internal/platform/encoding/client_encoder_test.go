@@ -9,6 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -105,7 +106,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
 			mw := &mockWriter{}
-			mw.On("Write", mock.Anything).Return(0, errors.New("blah"))
+			mw.On(reflection.GetMethodName(mw.Write), mock.Anything).Return(0, errors.New("blah"))
 
 			assert.Error(t, e.Encode(ctx, mw, &example{Name: t.Name()}))
 		})

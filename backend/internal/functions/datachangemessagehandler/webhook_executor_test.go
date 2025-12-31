@@ -9,6 +9,7 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	webhooksfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -44,7 +45,7 @@ func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.
 		}
 
 		expectedError := errors.New("account fetch error")
-		identityRepo.On("GetAccount", mock.Anything, "test-account-id").Return((*identity.Account)(nil), expectedError)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, "test-account-id").Return((*identity.Account)(nil), expectedError)
 
 		err := handler.handleWebhookExecutionRequest(ctx, webhookExecutionRequest)
 		assert.Error(t, err)
@@ -70,8 +71,8 @@ func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.
 		}
 
 		expectedError := errors.New("webhook fetch error")
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, "test-webhook-id", account.ID).Return((*webhooks.Webhook)(nil), expectedError)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, account.ID).Return(account, nil)
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhook), mock.Anything, "test-webhook-id", account.ID).Return((*webhooks.Webhook)(nil), expectedError)
 
 		err := handler.handleWebhookExecutionRequest(ctx, webhookExecutionRequest)
 		assert.NoError(t, err) // Should not return error, just log it
@@ -99,8 +100,8 @@ func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.
 			Payload:   &audit.DataChangeMessage{},
 		}
 
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, account.ID).Return(account, nil)
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhook), mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
 
 		err := handler.handleWebhookExecutionRequest(ctx, webhookExecutionRequest)
 		assert.Error(t, err)
@@ -135,8 +136,8 @@ func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.
 			},
 		}
 
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, account.ID).Return(account, nil)
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhook), mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
 
 		err := handler.handleWebhookExecutionRequest(ctx, webhookExecutionRequest)
 		// We expect no error to be returned even if HTTP request fails (it gets logged)
@@ -172,8 +173,8 @@ func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.
 			},
 		}
 
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetAccount), mock.Anything, account.ID).Return(account, nil)
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhook), mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
 
 		err := handler.handleWebhookExecutionRequest(ctx, webhookExecutionRequest)
 		// XML marshaling of map[string]interface{} is not supported, so we expect an error

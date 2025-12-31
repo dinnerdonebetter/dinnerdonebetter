@@ -14,7 +14,7 @@ func NewMockDatabase() *MockDatabase {
 }
 
 // MockDatabase is our mock database structure. Note, when using this in tests, you must directly access the type name of all the implicit fields.
-// So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManagerMock.On("GetUserByUsername"...)` would do what you want it to do.
+// So `mockDB.On(reflection.GetMethodName(mockDB.GetUserByUsername)...)` is destined to fail, whereas `mockDB.UserDataManagerMock.On(reflection.GetMethodName(UserDataManagerMock.GetUserByUsername)...)` would do what you want it to do.
 type MockDatabase struct {
 	mock.Mock
 }

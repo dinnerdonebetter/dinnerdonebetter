@@ -32,7 +32,7 @@ func buildIdentityDataManagerForTest(t *testing.T) *manager {
 	}
 
 	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	m, err := NewIdentityDataManager(
 		ctx,
@@ -73,7 +73,7 @@ func setupExpectationsForIdentityDataManager(
 	}
 	for _, eventTypeMap := range eventTypeMaps {
 		for eventType, payload := range eventTypeMap {
-			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
 		}
 	}
 	manager.dataChangesPublisher = mp

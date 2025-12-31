@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -30,7 +31,7 @@ func buildNewMealPlanTaskCreatorForTest(t *testing.T) *Worker {
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
-	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	x, err := NewMealPlanTaskCreator(
 		ctx,
@@ -59,7 +60,7 @@ func TestWorker_Work(T *testing.T) {
 		ctx := t.Context()
 
 		mdm := &mealplanningmock.Repository{}
-		mdm.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*mealplanning.FinalizedMealPlanDatabaseResult{}, nil)
+		mdm.On(reflection.GetMethodName(mdm.GetFinalizedMealPlanIDsForTheNextWeek), testutils.ContextMatcher).Return([]*mealplanning.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
 		assert.NoError(t, w.Work(ctx))
@@ -154,9 +155,9 @@ func TestWorker_Work(T *testing.T) {
 		createdMealPlanTasks := fakes.BuildFakeMealPlanTasksList().Data
 
 		mdm := &mealplanningmock.Repository{}
-		mdm.On("CreateMealPlanTasksForMealPlanOption", testutils.ContextMatcher, testutils.MatchType[[]*mealplanning.MealPlanTaskDatabaseCreationInput]()).Return(createdMealPlanTasks, nil)
-		mdm.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
-		mdm.On("MarkMealPlanAsHavingTasksCreated", testutils.ContextMatcher, testutils.MatchType[string]()).Return(nil)
+		mdm.On(reflection.GetMethodName(mdm.CreateMealPlanTasksForMealPlanOption), testutils.ContextMatcher, testutils.MatchType[[]*mealplanning.MealPlanTaskDatabaseCreationInput]()).Return(createdMealPlanTasks, nil)
+		mdm.On(reflection.GetMethodName(mdm.GetFinalizedMealPlanIDsForTheNextWeek), testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
+		mdm.On(reflection.GetMethodName(mdm.MarkMealPlanAsHavingTasksCreated), testutils.ContextMatcher, testutils.MatchType[string]()).Return(nil)
 
 		expectedReturnResults := []*mealplanning.MealPlanTaskDatabaseCreationInput{
 			{
@@ -168,7 +169,7 @@ func TestWorker_Work(T *testing.T) {
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
 			for _, recipeID := range result.RecipeIDs {
-				mdm.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
+				mdm.On(reflection.GetMethodName(mdm.GetRecipe), testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",

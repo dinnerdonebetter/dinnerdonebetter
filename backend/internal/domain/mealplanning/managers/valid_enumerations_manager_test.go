@@ -29,7 +29,7 @@ func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager
 	}
 
 	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	m, err := NewValidEnumerationsManager(
 		t.Context(),
@@ -62,7 +62,7 @@ func setupExpectationsForValidEnumerationManager(
 	mp := &mockpublishers.Publisher{}
 	for _, eventTypeMap := range eventTypeMaps {
 		for eventType, payload := range eventTypeMap {
-			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
 		}
 	}
 	manager.dataChangesPublisher = mp

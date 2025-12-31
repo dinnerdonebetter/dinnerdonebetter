@@ -7,6 +7,7 @@ import (
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
@@ -27,13 +28,13 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}
-		identityRepo.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		identityRepo.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.MarkUserAsIndexed), testutils.ContextMatcher, exampleUser.ID).Return(nil)
 
 		uss := ConvertUserToUserSearchSubset(exampleUser)
 
 		mim := &mocksearch.IndexManager[UserSearchSubset]{}
-		mim.On("Index", testutils.ContextMatcher, exampleUser.ID, uss).Return(nil)
+		mim.On(reflection.GetMethodName(mim.Index), testutils.ContextMatcher, exampleUser.ID, uss).Return(nil)
 
 		cdi := NewCoreDataIndexer(
 			logger,
@@ -62,10 +63,10 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}
-		identityRepo.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
 
 		mim := &mocksearch.IndexManager[UserSearchSubset]{}
-		mim.On("Delete", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		mim.On(reflection.GetMethodName(mim.Delete), testutils.ContextMatcher, exampleUser.ID).Return(nil)
 
 		cdi := NewCoreDataIndexer(
 			logger,

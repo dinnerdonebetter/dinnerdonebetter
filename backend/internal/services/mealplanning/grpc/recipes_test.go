@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -49,7 +50,7 @@ func TestServiceImpl_ArchiveRecipe(T *testing.T) {
 		exampleUserID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipe", testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipe), testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(nil)
 		s.recipeManager = mrm
 
 		// Override session context to return specific user MealPlanTaskID
@@ -82,7 +83,7 @@ func TestServiceImpl_ArchiveRecipePrepTask(T *testing.T) {
 		exampleRecipePrepTaskID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipePrepTask", testutils.ContextMatcher, exampleRecipeID, exampleRecipePrepTaskID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, exampleRecipePrepTaskID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
@@ -109,7 +110,7 @@ func TestServiceImpl_ArchiveRecipeRating(T *testing.T) {
 		exampleRecipeRatingID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeRating", testutils.ContextMatcher, exampleRecipeID, exampleRecipeRatingID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeRating), testutils.ContextMatcher, exampleRecipeID, exampleRecipeRatingID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeRating(ctx, &mealplanninggrpc.ArchiveRecipeRatingRequest{
@@ -136,7 +137,7 @@ func TestServiceImpl_GetRecipeLists(T *testing.T) {
 		expected := &filtering.QueryFilteredResult[mealplanning.RecipeList]{Data: []*mealplanning.RecipeList{list}}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeLists", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeLists), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 		s.recipeManager = mrm
 
 		res, err := s.GetRecipeLists(ctx, &mealplanninggrpc.GetRecipeListsRequest{})
@@ -168,7 +169,7 @@ func TestServiceImpl_CreateRecipeList(T *testing.T) {
 		created := &mealplanning.RecipeList{ID: mealplanningfakes.BuildFakeID()}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeList", testutils.ContextMatcher, userID, testutils.MatchType[*mealplanning.RecipeListCreationRequestInput]()).Return(created, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeList), testutils.ContextMatcher, userID, testutils.MatchType[*mealplanning.RecipeListCreationRequestInput]()).Return(created, nil)
 		s.recipeManager = mrm
 
 		res, err := s.CreateRecipeList(ctx, &mealplanninggrpc.CreateRecipeListRequest{Input: input})
@@ -205,7 +206,7 @@ func TestServiceImpl_UpdateRecipeList(T *testing.T) {
 		}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeList", testutils.ContextMatcher, listID, userID, testutils.MatchType[*mealplanning.RecipeListUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeList), testutils.ContextMatcher, listID, userID, testutils.MatchType[*mealplanning.RecipeListUpdateRequestInput]()).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeList(ctx, &mealplanninggrpc.UpdateRecipeListRequest{
@@ -237,7 +238,7 @@ func TestServiceImpl_ArchiveRecipeList(T *testing.T) {
 		}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeList", testutils.ContextMatcher, listID, userID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeList), testutils.ContextMatcher, listID, userID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeList(ctx, &mealplanninggrpc.ArchiveRecipeListRequest{RecipeListId: listID})
@@ -262,7 +263,7 @@ func TestServiceImpl_GetRecipeListItems(T *testing.T) {
 		expected := &filtering.QueryFilteredResult[mealplanning.RecipeListItem]{Data: []*mealplanning.RecipeListItem{item}}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeListItems", testutils.ContextMatcher, listID, testutils.QueryFilterMatcher).Return(expected, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeListItems), testutils.ContextMatcher, listID, testutils.QueryFilterMatcher).Return(expected, nil)
 		s.recipeManager = mrm
 
 		res, err := s.GetRecipeListItems(ctx, &mealplanninggrpc.GetRecipeListItemsRequest{RecipeListId: listID})
@@ -294,7 +295,7 @@ func TestServiceImpl_CreateRecipeListItem(T *testing.T) {
 		created := &mealplanning.RecipeListItem{ID: mealplanningfakes.BuildFakeID()}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("AddRecipeToRecipeList", testutils.ContextMatcher, listID, recipeID, input.Notes).Return(created, nil)
+		mrm.On(reflection.GetMethodName(mrm.AddRecipeToRecipeList), testutils.ContextMatcher, listID, recipeID, input.Notes).Return(created, nil)
 		s.recipeManager = mrm
 
 		res, err := s.CreateRecipeListItem(ctx, &mealplanninggrpc.CreateRecipeListItemRequest{Input: input})
@@ -326,7 +327,7 @@ func TestServiceImpl_UpdateRecipeListItem(T *testing.T) {
 		}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeListItem", testutils.ContextMatcher, itemID, listID, recipeID, testutils.MatchType[*mealplanning.RecipeListItemUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeListItem), testutils.ContextMatcher, itemID, listID, recipeID, testutils.MatchType[*mealplanning.RecipeListItemUpdateRequestInput]()).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeListItem(ctx, &mealplanninggrpc.UpdateRecipeListItemRequest{
@@ -353,7 +354,7 @@ func TestServiceImpl_ArchiveRecipeListItem(T *testing.T) {
 		listID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("RemoveRecipeFromRecipeList", testutils.ContextMatcher, listID, itemID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.RemoveRecipeFromRecipeList), testutils.ContextMatcher, listID, itemID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeListItem(ctx, &mealplanninggrpc.ArchiveRecipeListItemRequest{
@@ -380,7 +381,7 @@ func TestServiceImpl_ArchiveRecipeStep(T *testing.T) {
 		exampleRecipeStepID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStep", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStep), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
@@ -408,7 +409,7 @@ func TestServiceImpl_ArchiveRecipeStepCompletionCondition(T *testing.T) {
 		exampleRecipeStepCompletionConditionID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionConditionID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionConditionID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepCompletionCondition(ctx, &mealplanninggrpc.ArchiveRecipeStepCompletionConditionRequest{
@@ -437,7 +438,7 @@ func TestServiceImpl_ArchiveRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredientID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStepIngredient", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredientID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredientID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
@@ -466,7 +467,7 @@ func TestServiceImpl_ArchiveRecipeStepInstrument(T *testing.T) {
 		exampleRecipeStepInstrumentID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStepInstrument", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepInstrumentID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepInstrumentID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepInstrument(ctx, &mealplanninggrpc.ArchiveRecipeStepInstrumentRequest{
@@ -495,7 +496,7 @@ func TestServiceImpl_ArchiveRecipeStepProduct(T *testing.T) {
 		exampleRecipeStepProductID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStepProduct", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepProductID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepProductID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
@@ -524,7 +525,7 @@ func TestServiceImpl_ArchiveRecipeStepVessel(T *testing.T) {
 		exampleRecipeStepVesselID := mealplanningfakes.BuildFakeID()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ArchiveRecipeStepVessel", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVesselID).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVesselID).Return(nil)
 		s.recipeManager = mrm
 
 		res, err := s.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
@@ -553,7 +554,7 @@ func TestServiceImpl_CloneRecipe(T *testing.T) {
 		exampleClonedRecipe := mealplanningfakes.BuildFakeRecipe()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CloneRecipe", testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(exampleClonedRecipe, nil)
+		mrm.On(reflection.GetMethodName(mrm.CloneRecipe), testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(exampleClonedRecipe, nil)
 		s.recipeManager = mrm
 
 		// Override session context to return specific user MealPlanTaskID
@@ -587,7 +588,7 @@ func TestServiceImpl_CreateRecipe(T *testing.T) {
 		exampleCreatedRecipe := mealplanningfakes.BuildFakeRecipe()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipe", testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.RecipeCreationRequestInput]()).Return(exampleCreatedRecipe, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipe), testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.RecipeCreationRequestInput]()).Return(exampleCreatedRecipe, nil)
 		s.recipeManager = mrm
 
 		// Override session context to return specific user MealPlanTaskID
@@ -623,7 +624,7 @@ func TestServiceImpl_CreateRecipePrepTask(T *testing.T) {
 		exampleCreatedRecipePrepTask := mealplanningfakes.BuildFakeRecipePrepTask()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipePrepTask", testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipePrepTaskCreationRequestInput]()).Return(exampleCreatedRecipePrepTask, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipePrepTaskCreationRequestInput]()).Return(exampleCreatedRecipePrepTask, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipePrepTaskRequest](t)
@@ -652,7 +653,7 @@ func TestServiceImpl_CreateRecipeRating(T *testing.T) {
 		exampleCreatedRecipeRating := mealplanningfakes.BuildFakeRecipeRating()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeRating", testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeRatingCreationRequestInput]()).Return(exampleCreatedRecipeRating, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeRating), testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeRatingCreationRequestInput]()).Return(exampleCreatedRecipeRating, nil)
 		s.recipeManager = mrm
 
 		// Override session context to return specific user MealPlanTaskID
@@ -689,7 +690,7 @@ func TestServiceImpl_CreateRecipeStep(T *testing.T) {
 		exampleCreatedRecipeStep := mealplanningfakes.BuildFakeRecipeStep()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStep", testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeStepCreationRequestInput]()).Return(exampleCreatedRecipeStep, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStep), testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeStepCreationRequestInput]()).Return(exampleCreatedRecipeStep, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepRequest](t)
@@ -718,7 +719,7 @@ func TestServiceImpl_CreateRecipeStepCompletionCondition(T *testing.T) {
 		exampleCreatedRecipeStepCompletionCondition := mealplanningfakes.BuildFakeRecipeStepCompletionCondition()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput]()).Return(exampleCreatedRecipeStepCompletionCondition, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput]()).Return(exampleCreatedRecipeStepCompletionCondition, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepCompletionConditionRequest](t)
@@ -748,7 +749,7 @@ func TestServiceImpl_CreateRecipeStepIngredient(T *testing.T) {
 		exampleCreatedRecipeStepIngredient := mealplanningfakes.BuildFakeRecipeStepIngredient()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStepIngredient", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepIngredientCreationRequestInput]()).Return(exampleCreatedRecipeStepIngredient, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepIngredientCreationRequestInput]()).Return(exampleCreatedRecipeStepIngredient, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepIngredientRequest](t)
@@ -778,7 +779,7 @@ func TestServiceImpl_CreateRecipeStepInstrument(T *testing.T) {
 		exampleCreatedRecipeStepInstrument := mealplanningfakes.BuildFakeRecipeStepInstrument()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStepInstrument", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepInstrumentCreationRequestInput]()).Return(exampleCreatedRecipeStepInstrument, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepInstrumentCreationRequestInput]()).Return(exampleCreatedRecipeStepInstrument, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepInstrumentRequest](t)
@@ -808,7 +809,7 @@ func TestServiceImpl_CreateRecipeStepProduct(T *testing.T) {
 		exampleCreatedRecipeStepProduct := mealplanningfakes.BuildFakeRecipeStepProduct()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStepProduct", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepProductCreationRequestInput]()).Return(exampleCreatedRecipeStepProduct, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepProductCreationRequestInput]()).Return(exampleCreatedRecipeStepProduct, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepProductRequest](t)
@@ -838,7 +839,7 @@ func TestServiceImpl_CreateRecipeStepVessel(T *testing.T) {
 		exampleCreatedRecipeStepVessel := mealplanningfakes.BuildFakeRecipeStepVessel()
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("CreateRecipeStepVessel", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepVesselCreationRequestInput]()).Return(exampleCreatedRecipeStepVessel, nil)
+		mrm.On(reflection.GetMethodName(mrm.CreateRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.MatchType[*mealplanning.RecipeStepVesselCreationRequestInput]()).Return(exampleCreatedRecipeStepVessel, nil)
 		s.recipeManager = mrm
 
 		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateRecipeStepVesselRequest](t)
@@ -867,7 +868,7 @@ func TestServiceImpl_GetMermaidDiagramForRecipe(T *testing.T) {
 		exampleMermaidDiagram := "graph TD\nA[Recipe]"
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("RecipeMermaid", testutils.ContextMatcher, exampleRecipeID).Return(exampleMermaidDiagram, nil)
+		mrm.On(reflection.GetMethodName(mrm.RecipeMermaid), testutils.ContextMatcher, exampleRecipeID).Return(exampleMermaidDiagram, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetMermaidDiagramForRecipe(ctx, &mealplanninggrpc.GetMermaidDiagramForRecipeRequest{RecipeId: exampleRecipeID})
@@ -891,7 +892,7 @@ func TestServiceImpl_GetRecipe(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipe", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipe), testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: exampleResult.ID})
@@ -919,7 +920,7 @@ func TestServiceImpl_EstimateRecipePrepTasks(T *testing.T) {
 		}
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("RecipeEstimatedPrepSteps", testutils.ContextMatcher, exampleRecipeID).Return(exampleEstimatedPrepSteps, nil)
+		mrm.On(reflection.GetMethodName(mrm.RecipeEstimatedPrepSteps), testutils.ContextMatcher, exampleRecipeID).Return(exampleEstimatedPrepSteps, nil)
 		s.recipeManager = mrm
 
 		result, err := s.EstimateRecipePrepTasks(ctx, &mealplanninggrpc.EstimateRecipePrepTasksRequest{RecipeId: exampleRecipeID})
@@ -943,7 +944,7 @@ func TestServiceImpl_GetRecipePrepTask(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipePrepTask", testutils.ContextMatcher, exampleResult.BelongsToRecipe, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipePrepTask), testutils.ContextMatcher, exampleResult.BelongsToRecipe, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipePrepTask(ctx, &mealplanninggrpc.GetRecipePrepTaskRequest{
@@ -970,7 +971,7 @@ func TestServiceImpl_GetRecipePrepTasks(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipePrepTask", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipePrepTask), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipePrepTasks(ctx, &mealplanninggrpc.GetRecipePrepTasksRequest{RecipeId: exampleRecipeID})
@@ -994,7 +995,7 @@ func TestServiceImpl_GetRecipeRating(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeRating", testutils.ContextMatcher, exampleResult.RecipeID, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeRating), testutils.ContextMatcher, exampleResult.RecipeID, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
@@ -1021,7 +1022,7 @@ func TestServiceImpl_GetRecipeRatingsForRecipe(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeRatings", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeRatings), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeRatingsForRecipe(ctx, &mealplanninggrpc.GetRecipeRatingsForRecipeRequest{RecipeId: exampleRecipeID})
@@ -1045,7 +1046,7 @@ func TestServiceImpl_GetRecipeStep(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStep", testutils.ContextMatcher, exampleResult.BelongsToRecipe, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStep), testutils.ContextMatcher, exampleResult.BelongsToRecipe, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStep(ctx, &mealplanninggrpc.GetRecipeStepRequest{
@@ -1072,7 +1073,7 @@ func TestServiceImpl_GetRecipeStepCompletionCondition(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepCompletionCondition(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionRequest{
@@ -1101,7 +1102,7 @@ func TestServiceImpl_GetRecipeStepCompletionConditions(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeStepCompletionConditions", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeStepCompletionConditions), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepCompletionConditions(ctx, &mealplanninggrpc.GetRecipeStepCompletionConditionsRequest{
@@ -1129,7 +1130,7 @@ func TestServiceImpl_GetRecipeStepIngredient(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStepIngredient", testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepIngredient), testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
@@ -1158,7 +1159,7 @@ func TestServiceImpl_GetRecipeStepIngredients(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeStepIngredients", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeStepIngredients), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
@@ -1186,7 +1187,7 @@ func TestServiceImpl_GetRecipeStepInstrument(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStepInstrument", testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepInstrument), testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
@@ -1215,7 +1216,7 @@ func TestServiceImpl_GetRecipeStepInstruments(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeStepInstruments", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeStepInstruments), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
@@ -1243,7 +1244,7 @@ func TestServiceImpl_GetRecipeStepProduct(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStepProduct", testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepProduct), testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
@@ -1272,7 +1273,7 @@ func TestServiceImpl_GetRecipeStepProducts(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeStepProducts", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeStepProducts), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
@@ -1300,7 +1301,7 @@ func TestServiceImpl_GetRecipeStepVessel(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ReadRecipeStepVessel", testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepVessel), testutils.ContextMatcher, exampleRecipeID, exampleResult.BelongsToRecipeStep, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
@@ -1329,7 +1330,7 @@ func TestServiceImpl_GetRecipeStepVessels(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeStepVessels", testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeStepVessels), testutils.ContextMatcher, exampleRecipeID, exampleRecipeStepID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
@@ -1357,7 +1358,7 @@ func TestServiceImpl_GetRecipeSteps(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipeSteps", testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipeSteps), testutils.ContextMatcher, exampleRecipeID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeSteps(ctx, &mealplanninggrpc.GetRecipeStepsRequest{RecipeId: exampleRecipeID})
@@ -1381,7 +1382,7 @@ func TestServiceImpl_GetRecipes(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("ListRecipes", testutils.ContextMatcher, "", testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ListRecipes), testutils.ContextMatcher, "", testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{})
@@ -1406,7 +1407,7 @@ func TestServiceImpl_SearchForRecipes(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("SearchRecipes", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.SearchRecipes), testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.SearchForRecipes(ctx, exampleRequest)
@@ -1431,7 +1432,7 @@ func TestServiceImpl_SearchForMealEligibleRecipes(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("SearchForMealEligibleRecipes", testutils.ContextMatcher, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.SearchForMealEligibleRecipes), testutils.ContextMatcher, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.SearchForMealEligibleRecipes(ctx, exampleRequest)
@@ -1456,8 +1457,8 @@ func TestServiceImpl_UpdateRecipe(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipe", testutils.ContextMatcher, exampleRequest.RecipeId, testutils.MatchType[*mealplanning.RecipeUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipe", testutils.ContextMatcher, exampleRequest.RecipeId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipe), testutils.ContextMatcher, exampleRequest.RecipeId, testutils.MatchType[*mealplanning.RecipeUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipe), testutils.ContextMatcher, exampleRequest.RecipeId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipe(ctx, exampleRequest)
@@ -1481,8 +1482,8 @@ func TestServiceImpl_UpdateRecipePrepTask(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId, testutils.MatchType[*mealplanning.RecipePrepTaskUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipePrepTask", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipePrepTask), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId, testutils.MatchType[*mealplanning.RecipePrepTaskUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipePrepTask), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipePrepTaskId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipePrepTask(ctx, exampleRequest)
@@ -1506,8 +1507,8 @@ func TestServiceImpl_UpdateRecipeRating(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId, testutils.MatchType[*mealplanning.RecipeRatingUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeRating", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeRating), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId, testutils.MatchType[*mealplanning.RecipeRatingUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeRating), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeRatingId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeRating(ctx, exampleRequest)
@@ -1531,8 +1532,8 @@ func TestServiceImpl_UpdateRecipeStep(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, testutils.MatchType[*mealplanning.RecipeStepUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStep", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStep), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, testutils.MatchType[*mealplanning.RecipeStepUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStep), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStep(ctx, exampleRequest)
@@ -1556,8 +1557,8 @@ func TestServiceImpl_UpdateRecipeStepCompletionCondition(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepCompletionCondition", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId, testutils.MatchType[*mealplanning.RecipeStepCompletionConditionUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepCompletionCondition), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepCompletionConditionId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepCompletionCondition(ctx, exampleRequest)
@@ -1581,8 +1582,8 @@ func TestServiceImpl_UpdateRecipeStepIngredient(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId, testutils.MatchType[*mealplanning.RecipeStepIngredientUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepIngredient", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStepIngredient), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId, testutils.MatchType[*mealplanning.RecipeStepIngredientUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepIngredient), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepIngredientId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepIngredient(ctx, exampleRequest)
@@ -1606,8 +1607,8 @@ func TestServiceImpl_UpdateRecipeStepInstrument(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId, testutils.MatchType[*mealplanning.RecipeStepInstrumentUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepInstrument", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStepInstrument), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId, testutils.MatchType[*mealplanning.RecipeStepInstrumentUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepInstrument), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepInstrumentId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepInstrument(ctx, exampleRequest)
@@ -1631,8 +1632,8 @@ func TestServiceImpl_UpdateRecipeStepProduct(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId, testutils.MatchType[*mealplanning.RecipeStepProductUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepProduct", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStepProduct), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId, testutils.MatchType[*mealplanning.RecipeStepProductUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepProduct), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepProductId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepProduct(ctx, exampleRequest)
@@ -1656,8 +1657,8 @@ func TestServiceImpl_UpdateRecipeStepVessel(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On("UpdateRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId, testutils.MatchType[*mealplanning.RecipeStepVesselUpdateRequestInput]()).Return(nil)
-		mrm.On("ReadRecipeStepVessel", testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId).Return(exampleResponse, nil)
+		mrm.On(reflection.GetMethodName(mrm.UpdateRecipeStepVessel), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId, testutils.MatchType[*mealplanning.RecipeStepVesselUpdateRequestInput]()).Return(nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeStepVessel), testutils.ContextMatcher, exampleRequest.RecipeId, exampleRequest.RecipeStepId, exampleRequest.RecipeStepVesselId).Return(exampleResponse, nil)
 		s.recipeManager = mrm
 
 		res, err := s.UpdateRecipeStepVessel(ctx, exampleRequest)

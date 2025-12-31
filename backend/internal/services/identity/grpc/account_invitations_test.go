@@ -9,6 +9,7 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +28,7 @@ func TestServiceImpl_AcceptAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("AcceptAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AcceptAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.AcceptAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -73,7 +74,7 @@ func TestServiceImpl_AcceptAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("AcceptAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("accept error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AcceptAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("accept error"))
 
 		request := &identitysvc.AcceptAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -103,7 +104,7 @@ func TestServiceImpl_RejectAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("RejectAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.RejectAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.RejectAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -149,7 +150,7 @@ func TestServiceImpl_RejectAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("RejectAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("reject error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.RejectAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, mock.AnythingOfType("*identity.AccountInvitationUpdateRequestInput")).Return(errors.New("reject error"))
 
 		request := &identitysvc.RejectAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -179,7 +180,7 @@ func TestServiceImpl_CancelAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("CancelAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.CancelAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(nil)
 
 		request := &identitysvc.CancelAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -224,7 +225,7 @@ func TestServiceImpl_CancelAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("CancelAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(errors.New("cancel error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.CancelAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID, "Cancelling invitation").Return(errors.New("cancel error"))
 
 		request := &identitysvc.CancelAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -254,7 +255,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 
 		exampleInvitation := identityfakes.BuildFakeAccountInvitation()
 
-		identityDataManager.On("GetAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitation.ID).Return(exampleInvitation, nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitation.ID).Return(exampleInvitation, nil)
 
 		request := &identitysvc.GetAccountInvitationRequest{
 			AccountInvitationId: exampleInvitation.ID,
@@ -296,7 +297,7 @@ func TestServiceImpl_GetAccountInvitation(t *testing.T) {
 
 		exampleInvitationID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("GetAccountInvitation", testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID).Return((*identity.AccountInvitation)(nil), errors.New("get error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetAccountInvitation), testutils.ContextMatcher, mock.AnythingOfType("string"), exampleInvitationID).Return((*identity.AccountInvitation)(nil), errors.New("get error"))
 
 		request := &identitysvc.GetAccountInvitationRequest{
 			AccountInvitationId: exampleInvitationID,
@@ -329,7 +330,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 			},
 		}
 
-		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations, nil)
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetReceivedAccountInvitations), testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations, nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
@@ -377,7 +378,7 @@ func TestServiceImpl_GetReceivedAccountInvitations(t *testing.T) {
 		ctx := t.Context()
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetReceivedAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetReceivedAccountInvitations), testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetReceivedAccountInvitationsRequest{
@@ -413,7 +414,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 			},
 		}
 
-		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations,
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetSentAccountInvitations), testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return(exampleInvitations,
 			nil)
 
 		pageSize := uint32(25)
@@ -461,7 +462,7 @@ func TestServiceImpl_GetSentAccountInvitations(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.On("GetSentAccountInvitations", testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.GetSentAccountInvitations), testutils.ContextMatcher, mock.AnythingOfType("string"), testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[identity.AccountInvitation])(nil), errors.New("get error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetSentAccountInvitationsRequest{
