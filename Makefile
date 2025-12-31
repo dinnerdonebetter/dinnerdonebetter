@@ -51,18 +51,15 @@ endif
 .PHONY: setup
 setup: ensure_yamlfmt_installed
 	(cd backend && $(MAKE) setup)
-	(cd frontend && $(MAKE) setup)
 
 .PHONY: format
 format: format_yaml
 	(cd backend && $(MAKE) format)
-	(cd frontend && $(MAKE) format)
 	(cd ios && $(MAKE) format)
 
 .PHONY: terraformat
 terraformat:
 	(cd backend && $(MAKE) terraformat)
-	(cd frontend && $(MAKE) terraformat)
 
 .PHONY: format_yaml
 format_yaml: ensure_yamlfmt_installed
@@ -71,13 +68,11 @@ format_yaml: ensure_yamlfmt_installed
 .PHONY: lint
 lint:
 	(cd backend && $(MAKE) lint)
-	(cd frontend && $(MAKE) lint)
 	(cd ios && $(MAKE) lint)
 
 .PHONY: test
 test:
 	(cd backend && $(MAKE) test)
-	(cd frontend && $(MAKE) test)
 	(cd ios && $(MAKE) test)
 
 .PHONY: regit

@@ -49,7 +49,7 @@ const (
 )
 
 type (
-	// UserStatusResponse is what we encode when the frontend wants to check auth status.
+	// UserStatusResponse is what we encode when a user wants to check auth status.
 	UserStatusResponse struct {
 		_ struct{} `json:"-"`
 
@@ -70,14 +70,14 @@ type (
 		RefreshToken string    `json:"refreshToken"`
 	}
 
-	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
+	// UserPermissionsRequestInput is what we decode when a user wants to check permission status.
 	UserPermissionsRequestInput struct {
 		_ struct{} `json:"-"`
 
 		Permissions []string `json:"permissions"`
 	}
 
-	// UserPermissionsResponse is what we encode when the frontend wants to check permission status.
+	// UserPermissionsResponse is what we encode when a user wants to check permission status.
 	UserPermissionsResponse struct {
 		_ struct{} `json:"-"`
 

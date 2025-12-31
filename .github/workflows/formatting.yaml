@@ -12,7 +12,6 @@ jobs:
       pull-requests: read
     outputs:
       backend_golang: ${{ steps.filter.outputs.backend_golang }}
-      frontend_typescript: ${{ steps.filter.outputs.frontend_typescript }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
@@ -21,9 +20,6 @@ jobs:
           filters: |
             backend_golang:
               - backend/**/*.go
-            frontend_typescript:
-              - frontend/**/*.ts
-              - frontend/**/*.tsx
             ios_swift:
               - ios/**/*.swift
 
@@ -60,24 +56,3 @@ jobs:
       - name: check formatting
         working-directory: ios
         run: make format-check
-
-  typescript:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.frontend_typescript == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['lts/*']
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend
-
-      - run: yarn run format-check
-        working-directory: frontend

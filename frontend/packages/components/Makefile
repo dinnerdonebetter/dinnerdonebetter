@@ -1,4 +1,0 @@
-RUNNER = yarn run
-
-%:
-	@$(RUNNER) $@

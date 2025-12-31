@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
-      frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
       ios: ${{ steps.filter.outputs.ios }}
     steps:
       - uses: dorny/paths-filter@v3
@@ -22,10 +21,6 @@ jobs:
           filters: |
             backend:
               - backend/**
-            frontend_webapp:
-              - frontend/apps/web/**
-              - frontend/packages/**
-              - frontend/environments/dev/webapp/**
             ios:
               - ios/**/*.swift
               - ios/**/*.xcodeproj
@@ -51,32 +46,6 @@ jobs:
       - name: Build backend
         working-directory: backend/
         run: make build
-
-  frontend_webapp:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.frontend_webapp == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        configs:
-          - node: 'lts/*'
-    name: webapp on ${{ matrix.configs.node }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend/
-
-      - run: yarn run build
-        env:
-          NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-          NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
-        working-directory: frontend/apps/web
 
   ios:
     needs: [changes]

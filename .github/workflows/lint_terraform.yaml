@@ -15,7 +15,6 @@ jobs:
     outputs:
       infra_dev: ${{ steps.filter.outputs.infra_dev }}
       backend_dev: ${{ steps.filter.outputs.backend_dev }}
-      frontend_webapp_dev: ${{ steps.filter.outputs.frontend_webapp_dev }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
@@ -25,8 +24,6 @@ jobs:
               - infra/deploy/environments/dev/terraform/*.tf
             backend_dev:
               - backend/deploy/environments/dev/terraform/*.tf
-            frontend_webapp_dev:
-              - frontend/deploy/environments/dev/webapp/terraform/*.tf
 
   infra:
     needs: [changes]
@@ -91,29 +88,5 @@ jobs:
 
       - name: Terraform Validate
         working-directory: backend/deploy/environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
-
-  webapp:
-    needs: [changes]
-    runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.frontend_webapp_dev == 'true' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.5
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-
-      - name: Terraform Init
-        working-directory: frontend/deploy/environments/dev/webapp/terraform
-        id: init
-        run: terraform init
-
-      - name: Terraform Validate
-        working-directory: frontend/deploy/environments/dev/webapp/terraform
         id: validate
         run: terraform validate -no-color

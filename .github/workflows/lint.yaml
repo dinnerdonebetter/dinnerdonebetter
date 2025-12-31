@@ -13,7 +13,6 @@ jobs:
     timeout-minutes: 5
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
       ios: ${{ steps.filter.outputs.ios }}
     runs-on: ubuntu-latest
     steps:
@@ -23,9 +22,6 @@ jobs:
           filters: |
             backend:
               - backend/**
-            frontend:
-              - frontend/**/*.ts
-              - frontend/**/*.tsx
             ios:
               - ios/**/*.swift
               - ios/.swiftlint.yml
@@ -48,29 +44,6 @@ jobs:
         with:
           version: v2.4.0
           working-directory: backend
-
-  typescript:
-    needs: [ changes ]
-    if: ${{ needs.changes.outputs.frontend == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [ 'lts/*' ]
-    name: ${{ matrix.node }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend
-
-      - run: yarn run lint
-        working-directory: frontend
 
   swift:
     needs: [ changes ]

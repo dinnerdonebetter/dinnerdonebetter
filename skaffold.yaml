@@ -8,11 +8,6 @@ requires:
     activeProfiles:
       - name: dev
 
-  - configs: ["dinner-done-better-frontend"]
-    path: ./frontend/skaffold.yaml
-    activeProfiles:
-      - name: dev
-
   - configs: ["dinner-done-better-backend"]
     path: ./backend/skaffold.yaml
     activeProfiles:
