@@ -229,12 +229,10 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 									g.Text(step.Preparation.Name),
 								),
 							),
-							// Notes
-							g.If(step.Notes != "",
-								ghtml.Div(
-									ghtml.Class("text-sm text-gray-700 mb-1"),
-									g.Text(step.Notes),
-								),
+							// Generated step description
+							ghtml.Div(
+								ghtml.Class("text-sm text-gray-700 mb-1"),
+								g.Text(generateStepDescription(step)),
 							),
 							// Explicit instructions
 							g.If(step.ExplicitInstructions != "",
@@ -948,6 +946,109 @@ func formatQuantity(qty float32) string {
 		return fmt.Sprintf("%d", int32(qty))
 	}
 	return fmt.Sprintf("%.2f", qty)
+}
+
+// humanizeList formats a list of strings with Oxford comma and "and" (e.g., "red, white, and blue").
+func humanizeList(items []string) string {
+	if len(items) == 0 {
+		return ""
+	}
+	if len(items) == 1 {
+		return items[0]
+	}
+	if len(items) == 2 {
+		return fmt.Sprintf("%s and %s", items[0], items[1])
+	}
+	// For 3+ items, use Oxford comma: "a, b, and c"
+	allButLast := strings.Join(items[:len(items)-1], ", ")
+	return fmt.Sprintf("%s, and %s", allButLast, items[len(items)-1])
+}
+
+// generateStepDescription generates a human-readable description of a recipe step.
+func generateStepDescription(step *mealplanningsvc.RecipeStep) string {
+	// Collect instruments
+	var instruments []string
+	for _, inst := range step.Instruments {
+		name := ""
+		if inst.Instrument != nil {
+			name = inst.Instrument.Name
+		} else if inst.Name != "" {
+			name = inst.Name
+		}
+		if name != "" {
+			instruments = append(instruments, name)
+		}
+	}
+
+	// Collect ingredients
+	var ingredients []string
+	for _, ing := range step.Ingredients {
+		name := ""
+		if ing.Name != "" {
+			name = ing.Name
+		} else if ing.Ingredient != nil {
+			name = ing.Ingredient.Name
+		}
+		if name != "" {
+			ingredients = append(ingredients, name)
+		}
+	}
+
+	// Collect vessels
+	var vessels []string
+	for _, vessel := range step.Vessels {
+		name := ""
+		if vessel.Vessel != nil {
+			name = vessel.Vessel.Name
+		} else if vessel.Name != "" {
+			name = vessel.Name
+		}
+		if name != "" {
+			vessels = append(vessels, name)
+		}
+	}
+
+	// Collect products
+	var products []string
+	for _, product := range step.Products {
+		if product.Name != "" {
+			products = append(products, product.Name)
+		}
+	}
+
+	// Build description following template: "using <instruments>, <preparation> <ingredients> in <vessels> to yield <products>"
+	var descriptionParts []string
+
+	// "using <instruments>"
+	if len(instruments) > 0 {
+		descriptionParts = append(descriptionParts, fmt.Sprintf("using %s", humanizeList(instruments)))
+	}
+
+	// "<preparation>"
+	prepName := ""
+	if step.Preparation != nil {
+		prepName = step.Preparation.Name
+	}
+	if prepName != "" {
+		descriptionParts = append(descriptionParts, prepName)
+	}
+
+	// "<ingredients>"
+	if len(ingredients) > 0 {
+		descriptionParts = append(descriptionParts, humanizeList(ingredients))
+	}
+
+	// "in <vessels>"
+	if len(vessels) > 0 {
+		descriptionParts = append(descriptionParts, fmt.Sprintf("in %s", humanizeList(vessels)))
+	}
+
+	// "to yield <products>"
+	if len(products) > 0 {
+		descriptionParts = append(descriptionParts, fmt.Sprintf("to yield %s", humanizeList(products)))
+	}
+
+	return strings.Join(descriptionParts, " ")
 }
 
 // formatMeasurementUnitName formats a measurement unit name for display, removing test data numbering.
