@@ -117,7 +117,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -203,7 +203,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -255,7 +255,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -328,7 +328,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -394,7 +394,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -467,7 +467,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -531,7 +531,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -582,7 +582,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -708,7 +708,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "foil-lined baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -745,7 +745,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "preheated oven",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -782,7 +782,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "preheated baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -868,7 +868,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -919,7 +919,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -976,7 +976,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1037,7 +1037,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1086,7 +1086,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1166,7 +1166,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},

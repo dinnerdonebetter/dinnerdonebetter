@@ -250,7 +250,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -299,7 +299,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -361,7 +361,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -420,7 +420,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "chicken on wire rack",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -454,7 +454,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "preheated oven at 300°F",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -504,7 +504,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -555,7 +555,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "heated skillet with oil",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -639,7 +639,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -649,7 +649,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with seared chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -716,7 +716,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -726,7 +726,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with seared chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -775,7 +775,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "seared chicken on plate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -893,7 +893,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -903,7 +903,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1015,7 +1015,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1025,7 +1025,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with braising liquid",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1077,7 +1077,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1087,7 +1087,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with chicken in braising liquid",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1166,7 +1166,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1176,7 +1176,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Name:                "skillet with braised chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1228,7 +1228,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},

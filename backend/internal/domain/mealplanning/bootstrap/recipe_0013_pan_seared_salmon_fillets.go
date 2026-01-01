@@ -133,7 +133,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -207,7 +207,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -258,7 +258,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "heated skillet with shimmering oil",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -341,7 +341,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -351,7 +351,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "skillet with pressed salmon",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -432,7 +432,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -442,7 +442,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "skillet with cooked salmon",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -532,7 +532,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -542,7 +542,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "skillet with flipped salmon",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -597,7 +597,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},
@@ -646,7 +646,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "salmon fillets on plate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -698,7 +698,7 @@ func PanSearedSalmonFilletsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](24),
 				},
 			},

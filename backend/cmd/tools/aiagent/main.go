@@ -96,7 +96,7 @@ Each recipe MUST have at least 2 steps. Each step requires:
   - Each ingredient needs:
     - IngredientID (*string): Use SearchForValidIngredients to find
     - MeasurementUnitID (string): Use SearchForValidMeasurementUnits to find
-    - Quantity (object): Min (float32, required), Max (*float32, optional)
+    - MeasurementQuantity (object): Min (float32, required), Max (*float32, optional)
     - Name (string): Display name
     - Optional (bool): Whether ingredient is optional
     - ToTaste (bool): Whether it's "to taste"

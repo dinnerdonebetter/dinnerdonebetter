@@ -30,7 +30,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d instrument %d Notes", stepIndex, instrIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d Quantity", stepIndex, instrIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d MeasurementQuantity", stepIndex, instrIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d instrument %d OptionIndex", stepIndex, instrIndex)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected step %d instrument %d PreferenceRank", stepIndex, instrIndex)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
@@ -178,11 +178,11 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            preheatedKnife,
-							Type:            mealplanning.RecipeStepProductInstrumentType,
-							MeasurementUnit: unit,
-							QuantityNotes:   "",
-							Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+							Name:                preheatedKnife,
+							Type:                mealplanning.RecipeStepProductInstrumentType,
+							MeasurementUnit:     unit,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 						},
 					},
 					Notes:       "first step",
@@ -205,11 +205,11 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "cut butter",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: stick,
-							QuantityNotes:   "",
-							Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+							Name:                "cut butter",
+							Type:                mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:     stick,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 						},
 					},
 					Notes: "second step",

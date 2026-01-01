@@ -144,7 +144,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -206,7 +206,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -265,7 +265,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "pork tenderloins on wire rack",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -302,7 +302,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "preheated grill",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -348,7 +348,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "cleaned grilling grate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -410,7 +410,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "oiled grilling grate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -472,7 +472,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -554,7 +554,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -647,7 +647,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -712,7 +712,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "pork tenderloins on carving board",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -767,7 +767,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -831,7 +831,7 @@ func GrilledPorkTenderloinRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},

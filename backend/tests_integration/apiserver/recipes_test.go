@@ -222,7 +222,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1000)),
 							},
@@ -263,7 +263,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1010)),
 							},
@@ -316,11 +316,11 @@ func TestRecipes_Creating(T *testing.T) {
 					TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              expected.Steps[0].Products[0].Name,
-							Type:              expected.Steps[0].Products[0].Type,
-							MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
-							QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
-							Quantity:          expected.Steps[0].Products[0].Quantity,
+							Name:                expected.Steps[0].Products[0].Name,
+							Type:                expected.Steps[0].Products[0].Type,
+							MeasurementUnitID:   &expected.Steps[0].Products[0].MeasurementUnit.ID,
+							QuantityNotes:       expected.Steps[0].Products[0].QuantityNotes,
+							MeasurementQuantity: expected.Steps[0].Products[0].MeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[0].Notes,
@@ -357,11 +357,11 @@ func TestRecipes_Creating(T *testing.T) {
 					TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              expected.Steps[1].Products[0].Name,
-							Type:              expected.Steps[1].Products[0].Type,
-							MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
-							QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
-							Quantity:          expected.Steps[1].Products[0].Quantity,
+							Name:                expected.Steps[1].Products[0].Name,
+							Type:                expected.Steps[1].Products[0].Type,
+							MeasurementUnitID:   &expected.Steps[1].Products[0].MeasurementUnit.ID,
+							QuantityNotes:       expected.Steps[1].Products[0].QuantityNotes,
+							MeasurementQuantity: expected.Steps[1].Products[0].MeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[1].Notes,
@@ -700,7 +700,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1000)),
 							},
@@ -734,7 +734,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1010)),
 							},
@@ -776,11 +776,11 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "diced chicken breast",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &grams.ID,
-							QuantityNotes:     "",
-							Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
+							Name:                "diced chicken breast",
+							Type:                mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:   &grams.ID,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
 						},
 					},
 					Notes:         "first step",
@@ -804,11 +804,11 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &grams.ID,
-							QuantityNotes:     "",
-							Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
+							Name:                "final output",
+							Type:                mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:   &grams.ID,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
 						},
 					},
 					Notes:         "second step",

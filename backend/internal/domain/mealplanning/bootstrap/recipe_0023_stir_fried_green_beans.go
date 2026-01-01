@@ -233,7 +233,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
 			},
 		},
 	}
@@ -277,7 +277,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](0.5)},
 			},
 		},
 	}
@@ -330,7 +330,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
 			},
 		},
 	}
@@ -417,7 +417,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -480,7 +480,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -546,7 +546,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -609,7 +609,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -702,7 +702,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -774,7 +774,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -837,7 +837,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -889,7 +889,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -960,7 +960,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](2), Max: pointer.To[float32](3)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2), Max: pointer.To[float32](3)},
 			},
 		},
 	}

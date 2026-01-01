@@ -24,8 +24,8 @@ const (
 
 type NamedID struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `json:"id,omitempty"   protobuf:"bytes,1,opt,name=id,proto3"`
-	Name          string                 `json:"name,omitempty" protobuf:"bytes,2,opt,name=name,proto3"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -76,8 +76,8 @@ func (x *NamedID) GetName() string {
 
 type ResponseDetails struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CurrentAccountId string                 `json:"current_account_id,omitempty" protobuf:"bytes,1,opt,name=current_account_id,json=currentAccountId,proto3"`
-	TraceId          string                 `json:"trace_id,omitempty"           protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3"`
+	CurrentAccountId string                 `protobuf:"bytes,1,opt,name=current_account_id,json=currentAccountId,proto3" json:"current_account_id,omitempty"`
+	TraceId          string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -128,8 +128,8 @@ func (x *ResponseDetails) GetTraceId() string {
 
 type OptionalFloat32Range struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *float32               `json:"max,omitempty" protobuf:"fixed32,1,opt,name=max,proto3,oneof"`
-	Min           *float32               `json:"min,omitempty" protobuf:"fixed32,2,opt,name=min,proto3,oneof"`
+	Max           *float32               `protobuf:"fixed32,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
+	Min           *float32               `protobuf:"fixed32,2,opt,name=min,proto3,oneof" json:"min,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -180,8 +180,8 @@ func (x *OptionalFloat32Range) GetMin() float32 {
 
 type OptionalUint32Range struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `json:"max,omitempty" protobuf:"varint,1,opt,name=max,proto3,oneof"`
-	Min           *uint32                `json:"min,omitempty" protobuf:"varint,2,opt,name=min,proto3,oneof"`
+	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
+	Min           *uint32                `protobuf:"varint,2,opt,name=min,proto3,oneof" json:"min,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -232,9 +232,9 @@ func (x *OptionalUint32Range) GetMin() uint32 {
 
 type Float32RangeWithOptionalMax struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *float32               `json:"max,omitempty" protobuf:"fixed32,1,opt,name=max,proto3,oneof"`
+	Max           *float32               `protobuf:"fixed32,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Min           float32 `json:"min,omitempty" protobuf:"fixed32,2,opt,name=min,proto3"`
+	Min           float32 `protobuf:"fixed32,2,opt,name=min,proto3" json:"min,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -284,8 +284,8 @@ func (x *Float32RangeWithOptionalMax) GetMin() float32 {
 
 type Float32RangeWithOptionalMaxUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *float32               `json:"min,omitempty" protobuf:"fixed32,1,opt,name=min,proto3,oneof"`
-	Max           *float32               `json:"max,omitempty" protobuf:"fixed32,2,opt,name=max,proto3,oneof"`
+	Min           *float32               `protobuf:"fixed32,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
+	Max           *float32               `protobuf:"fixed32,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,9 +336,9 @@ func (x *Float32RangeWithOptionalMaxUpdateRequestInput) GetMax() float32 {
 
 type Uint16RangeWithOptionalMax struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `json:"max,omitempty" protobuf:"varint,1,opt,name=max,proto3,oneof"`
+	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Min           uint32 `json:"min,omitempty" protobuf:"varint,2,opt,name=min,proto3"`
+	Min           uint32 `protobuf:"varint,2,opt,name=min,proto3" json:"min,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -388,8 +388,8 @@ func (x *Uint16RangeWithOptionalMax) GetMin() uint32 {
 
 type Uint16RangeWithOptionalMaxUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *uint32                `json:"min,omitempty" protobuf:"varint,1,opt,name=min,proto3,oneof"`
-	Max           *uint32                `json:"max,omitempty" protobuf:"varint,2,opt,name=max,proto3,oneof"`
+	Min           *uint32                `protobuf:"varint,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
+	Max           *uint32                `protobuf:"varint,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -440,9 +440,9 @@ func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) GetMax() uint32 {
 
 type Uint32RangeWithOptionalMax struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `json:"max,omitempty" protobuf:"varint,1,opt,name=max,proto3,oneof"`
+	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Min           uint32 `json:"min,omitempty" protobuf:"varint,2,opt,name=min,proto3"`
+	Min           uint32 `protobuf:"varint,2,opt,name=min,proto3" json:"min,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -492,8 +492,8 @@ func (x *Uint32RangeWithOptionalMax) GetMin() uint32 {
 
 type Uint32RangeWithOptionalMaxUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *uint32                `json:"min,omitempty" protobuf:"varint,1,opt,name=min,proto3,oneof"`
-	Max           *uint32                `json:"max,omitempty" protobuf:"varint,2,opt,name=max,proto3,oneof"`
+	Min           *uint32                `protobuf:"varint,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
+	Max           *uint32                `protobuf:"varint,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

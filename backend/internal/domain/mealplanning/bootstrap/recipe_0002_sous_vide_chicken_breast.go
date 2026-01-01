@@ -200,7 +200,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](900),
 				},
 			},
@@ -285,7 +285,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](900),
 				},
 			},
@@ -356,7 +356,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](900),
 				},
 			},
@@ -473,7 +473,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](900),
 				},
 			},
@@ -555,7 +555,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](900),
 				},
 			},

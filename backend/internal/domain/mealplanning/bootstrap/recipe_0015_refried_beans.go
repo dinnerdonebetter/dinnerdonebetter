@@ -187,7 +187,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "beans covered with water",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -263,7 +263,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "beans with aromatics in pot",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -300,7 +300,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "boiling beans with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -336,7 +336,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "beans ready to simmer",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -395,7 +395,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -405,7 +405,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "pot with cooked beans and cooking liquid",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -485,7 +485,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -547,7 +547,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -558,7 +558,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -609,7 +609,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -723,7 +723,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Name:                "heated fat in skillet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -797,7 +797,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -881,7 +881,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -932,7 +932,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -996,7 +996,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -1064,7 +1064,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -1144,7 +1144,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},

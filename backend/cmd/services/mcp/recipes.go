@@ -195,7 +195,7 @@ var recipeCreationTool = &mcp.Tool{
 			"Instruments": arrayType(objectType(map[string]any{
 				"InstrumentID":        stringField("The ID of the instrument"),
 				"RecipeStepProductID": stringField("The ID of the recipe step product this instrument is associated with, if any"),
-				"Quantity":            uint32RangeWithOptionalMaxSchema(),
+				"MeasurementQuantity": uint32RangeWithOptionalMaxSchema(),
 				"Name":                stringField("Name of the instrument"),
 				"Notes":               stringField("Notes about the instrument"),
 				"OptionIndex":         uintField("The option index for this instrument"),
@@ -205,7 +205,7 @@ var recipeCreationTool = &mcp.Tool{
 			"Vessels": arrayType(objectType(map[string]any{
 				"VesselID":             stringField("The ID of the vessel"),
 				"RecipeStepProductID":  stringField("The ID of the recipe step product this vessel is associated with, if any"),
-				"Quantity":             uint16RangeWithOptionalMaxSchema(),
+				"MeasurementQuantity":  uint16RangeWithOptionalMaxSchema(),
 				"Name":                 stringField("Name of the vessel"),
 				"Notes":                stringField("Notes about the vessel"),
 				"VesselPreposition":    stringField("The preposition to use with the vessel (e.g., 'in', 'on', 'over')"),
@@ -217,7 +217,7 @@ var recipeCreationTool = &mcp.Tool{
 				"MeasurementUnitID":           stringField("The ID of the measurement unit"),
 				"QuantityNotes":               stringField("Notes about the quantity"),
 				"StorageInstructions":         stringField("Storage instructions for the product"),
-				"Quantity":                    optionalFloat32RangeSchema(),
+				"MeasurementQuantity":         optionalFloat32RangeSchema(),
 				"StorageTemperatureInCelsius": optionalFloat32RangeSchema(),
 				"StorageDurationInSeconds":    optionalUint32RangeSchema(),
 				"ContainedInVesselIndex":      uintField("The index of the vessel this product is contained in, if any"),
@@ -229,7 +229,7 @@ var recipeCreationTool = &mcp.Tool{
 			"Ingredients": arrayType(objectType(map[string]any{
 				"IngredientID":           stringField("The ID of the ingredient"),
 				"MeasurementUnitID":      stringField("The ID of the measurement unit"),
-				"Quantity":               float32RangeWithOptionalMaxSchema(),
+				"MeasurementQuantity":    float32RangeWithOptionalMaxSchema(),
 				"Name":                   stringField("Name of the ingredient"),
 				"QuantityNotes":          stringField("Notes about the quantity"),
 				"IngredientNotes":        stringField("Notes about the ingredient"),

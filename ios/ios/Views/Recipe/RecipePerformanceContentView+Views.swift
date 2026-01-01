@@ -187,6 +187,11 @@ struct StepDetailsView: View {
         )
       }
 
+      // Products
+      if !step.products.isEmpty {
+        StepProductsSectionView(products: step.products)
+      }
+
       // Notes
       if !step.notes.isEmpty {
         Text(step.notes)
@@ -232,6 +237,111 @@ struct StepItemsSectionView: View {
           }
         }
       }
+    }
+  }
+}
+
+// MARK: - Step Products Section View
+
+struct StepProductsSectionView: View {
+  let products: [Mealplanning_RecipeStepProduct]
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text("Products")
+        .font(.subheadline)
+        .fontWeight(.semibold)
+        .foregroundColor(.secondary)
+
+      ForEach(Array(products.enumerated()), id: \.offset) { _, product in
+        HStack(spacing: 6) {
+          Text(formatProductQuantity(product))
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+    }
+  }
+
+  private func formatProductQuantity(_ product: Mealplanning_RecipeStepProduct) -> String {
+    // Check if product is discrete (has ItemQuantity set)
+    let isDiscrete = product.hasItemQuantity && 
+                     (product.itemQuantity.hasMin || product.itemQuantity.hasMax)
+    
+    if isDiscrete {
+      // Discrete product: Format as "4 patties (4 oz each)"
+      var itemQtyStr = ""
+      if product.itemQuantity.hasMin {
+        let min = product.itemQuantity.min
+        if product.itemQuantity.hasMax {
+          let max = product.itemQuantity.max
+          if min == max {
+            itemQtyStr = formatQuantity(min)
+          } else {
+            itemQtyStr = "\(formatQuantity(min))-\(formatQuantity(max))"
+          }
+        } else {
+          itemQtyStr = formatQuantity(min)
+        }
+      }
+      
+      var measurementQtyStr = ""
+      if product.hasMeasurementQuantity && product.measurementQuantity.hasMin {
+        let min = product.measurementQuantity.min
+        if product.measurementQuantity.hasMax {
+          let max = product.measurementQuantity.max
+          if min == max {
+            measurementQtyStr = formatQuantity(min)
+          } else {
+            measurementQtyStr = "\(formatQuantity(min))-\(formatQuantity(max))"
+          }
+        } else {
+          measurementQtyStr = formatQuantity(min)
+        }
+      }
+      
+      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      
+      if !itemQtyStr.isEmpty && !measurementQtyStr.isEmpty && !unitName.isEmpty {
+        // Format: "4 patties (4 oz each)"
+        return "\(itemQtyStr) \(product.name) (\(measurementQtyStr) \(unitName) each)"
+      } else if !itemQtyStr.isEmpty {
+        // Fallback: just show count and name if measurement is missing
+        return "\(itemQtyStr) \(product.name)"
+      } else {
+        // Fallback: just show name if quantities are missing
+        return product.name
+      }
+    } else if product.hasMeasurementQuantity && product.measurementQuantity.hasMin {
+      // Continuous product: Format as "product name: 16 oz"
+      let min = product.measurementQuantity.min
+      var qtyStr = formatQuantity(min)
+      
+      if product.measurementQuantity.hasMax {
+        let max = product.measurementQuantity.max
+        if min != max {
+          qtyStr = "\(qtyStr)-\(formatQuantity(max))"
+        }
+      }
+      
+      let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
+      if !unitName.isEmpty {
+        return "\(product.name): \(qtyStr) \(unitName)"
+      } else {
+        return "\(product.name): \(qtyStr)"
+      }
+    }
+    
+    // Fallback: just show name if no quantities
+    return product.name
+  }
+  
+  private func formatQuantity(_ qty: Float) -> String {
+    // Format numbers - use fewer decimals for whole numbers
+    if qty.truncatingRemainder(dividingBy: 1) == 0 {
+      return String(format: "%.0f", qty)
+    } else {
+      return String(format: "%.2f", qty)
     }
   }
 }

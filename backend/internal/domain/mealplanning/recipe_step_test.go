@@ -32,11 +32,11 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
-				Name:              "Name",
-				Type:              RecipeStepProductIngredientType,
-				MeasurementUnitID: pointer.To("MeasurementUnitID"),
-				Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1))},
-				QuantityNotes:     "QuantityNotes",
+				Name:                "Name",
+				Type:                RecipeStepProductIngredientType,
+				MeasurementUnitID:   pointer.To("MeasurementUnitID"),
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+				QuantityNotes:       "QuantityNotes",
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{

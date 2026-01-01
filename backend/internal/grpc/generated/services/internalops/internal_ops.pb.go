@@ -27,8 +27,8 @@ const (
 // PublishArbitraryQueueMessage
 type PublishArbitraryQueueMessageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	QueueName     string                 `json:"queue_name,omitempty" protobuf:"bytes,1,opt,name=queue_name,json=queueName,proto3"`
-	Body          string                 `json:"body,omitempty"       protobuf:"bytes,2,opt,name=body,proto3"`
+	QueueName     string                 `protobuf:"bytes,1,opt,name=queue_name,json=queueName,proto3" json:"queue_name,omitempty"`
+	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -79,10 +79,10 @@ func (x *PublishArbitraryQueueMessageRequest) GetBody() string {
 
 type PublishArbitraryQueueMessageResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Success         bool `json:"success,omitempty" protobuf:"varint,2,opt,name=success,proto3"`
+	Success         bool `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
 }
 
 func (x *PublishArbitraryQueueMessageResponse) Reset() {

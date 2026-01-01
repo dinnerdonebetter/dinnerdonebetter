@@ -91,9 +91,13 @@ func (q *repository) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 
 	recipeStepProduct := &mealplanning.RecipeStepProduct{
 		CreatedAt: result.CreatedAt,
-		Quantity: types.OptionalFloat32Range{
-			Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
-			Min: database.Float32PointerFromNullString(result.MinimumQuantityValue),
+		MeasurementQuantity: types.OptionalFloat32Range{
+			Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
+			Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
+		},
+		ItemQuantity: types.OptionalFloat32Range{
+			Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
+			Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 		},
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
@@ -161,9 +165,13 @@ func (q *repository) getRecipeStepProductsForRecipe(ctx context.Context, recipeI
 	for _, result := range results {
 		recipeStepProduct := &mealplanning.RecipeStepProduct{
 			CreatedAt: result.CreatedAt,
-			Quantity: types.OptionalFloat32Range{
-				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
-				Min: database.Float32PointerFromNullString(result.MinimumQuantityValue),
+			MeasurementQuantity: types.OptionalFloat32Range{
+				Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
+				Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
+			},
+			ItemQuantity: types.OptionalFloat32Range{
+				Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
+				Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 			},
 			StorageTemperatureInCelsius: types.OptionalFloat32Range{
 				Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
@@ -265,9 +273,13 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		}
 		recipeStepProduct := &mealplanning.RecipeStepProduct{
 			CreatedAt: result.CreatedAt,
-			Quantity: types.OptionalFloat32Range{
-				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
-				Min: database.Float32PointerFromNullString(result.MinimumQuantityValue),
+			MeasurementQuantity: types.OptionalFloat32Range{
+				Max: database.Float32PointerFromNullString(result.MaximumMeasurementQuantityValue),
+				Min: database.Float32PointerFromNullString(result.MinimumMeasurementQuantityValue),
+			},
+			ItemQuantity: types.OptionalFloat32Range{
+				Max: database.Float32PointerFromNullString(result.MaximumItemQuantityValue),
+				Min: database.Float32PointerFromNullString(result.MinimumItemQuantityValue),
 			},
 			StorageTemperatureInCelsius: types.OptionalFloat32Range{
 				Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
@@ -341,10 +353,12 @@ func (q *repository) createRecipeStepProduct(ctx context.Context, db database.SQ
 		BelongsToRecipeStep:                input.BelongsToRecipeStep,
 		ID:                                 input.ID,
 		StorageInstructions:                input.StorageInstructions,
-		MinimumQuantityValue:               database.NullStringFromFloat32Pointer(input.Quantity.Min),
+		MinimumMeasurementQuantityValue:    database.NullStringFromFloat32Pointer(input.MeasurementQuantity.Min),
+		MaximumMeasurementQuantityValue:    database.NullStringFromFloat32Pointer(input.MeasurementQuantity.Max),
+		MinimumItemQuantityValue:           database.NullStringFromFloat32Pointer(input.ItemQuantity.Min),
+		MaximumItemQuantityValue:           database.NullStringFromFloat32Pointer(input.ItemQuantity.Max),
 		MinimumStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Min),
 		MaximumStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Max),
-		MaximumQuantityValue:               database.NullStringFromFloat32Pointer(input.Quantity.Max),
 		MeasurementUnit:                    database.NullStringFromStringPointer(input.MeasurementUnitID),
 		MaximumStorageDurationInSeconds:    database.NullInt32FromUint32Pointer(input.StorageDurationInSeconds.Max),
 		ContainedInVesselIndex:             database.NullInt32FromUint16Pointer(input.ContainedInVesselIndex),
@@ -363,9 +377,13 @@ func (q *repository) createRecipeStepProduct(ctx context.Context, db database.SQ
 		QuantityNotes:       input.QuantityNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Compostable:         input.Compostable,
-		Quantity: types.OptionalFloat32Range{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
+		MeasurementQuantity: types.OptionalFloat32Range{
+			Max: input.MeasurementQuantity.Max,
+			Min: input.MeasurementQuantity.Min,
+		},
+		ItemQuantity: types.OptionalFloat32Range{
+			Max: input.ItemQuantity.Max,
+			Min: input.ItemQuantity.Min,
 		},
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: input.StorageTemperatureInCelsius.Max,
@@ -416,8 +434,10 @@ func (q *repository) UpdateRecipeStepProduct(ctx context.Context, updated *mealp
 		Name:                               updated.Name,
 		Type:                               generated.RecipeStepProductType(updated.Type),
 		MeasurementUnit:                    database.NullStringFromStringPointer(measurementUnitID),
-		MinimumQuantityValue:               database.NullStringFromFloat32Pointer(updated.Quantity.Min),
-		MaximumQuantityValue:               database.NullStringFromFloat32Pointer(updated.Quantity.Max),
+		MinimumMeasurementQuantityValue:    database.NullStringFromFloat32Pointer(updated.MeasurementQuantity.Min),
+		MaximumMeasurementQuantityValue:    database.NullStringFromFloat32Pointer(updated.MeasurementQuantity.Max),
+		MinimumItemQuantityValue:           database.NullStringFromFloat32Pointer(updated.ItemQuantity.Min),
+		MaximumItemQuantityValue:           database.NullStringFromFloat32Pointer(updated.ItemQuantity.Max),
 		QuantityNotes:                      updated.QuantityNotes,
 		Compostable:                        updated.Compostable,
 		MaximumStorageDurationInSeconds:    database.NullInt32FromUint32Pointer(updated.StorageDurationInSeconds.Max),

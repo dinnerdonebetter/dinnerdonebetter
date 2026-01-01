@@ -22,7 +22,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		Compostable:                 fake.Bool(),
 		IsLiquid:                    fake.Bool(),
 		IsWaste:                     fake.Bool(),
-		Quantity:                    BuildFakeOptionalFloat32Range(),
+		MeasurementQuantity:         BuildFakeOptionalFloat32Range(),
 		StorageDurationInSeconds:    BuildFakeOptionalUint32Range(),
 		StorageTemperatureInCelsius: BuildFakeOptionalFloat32Range(),
 		StorageInstructions:         buildUniqueString(),
