@@ -14,26 +14,26 @@ import (
 
 type (
 	GetRecipeStepIngredientInvocation struct {
-		RecipeID               string `jsonschema:"description=The recipe MealPlanTaskID"`
-		RecipeStepID           string `jsonschema:"description=The recipe step MealPlanTaskID"`
-		RecipeStepIngredientID string `jsonschema:"description=The recipe step ingredient MealPlanTaskID"`
+		RecipeID               string `jsonschema:"description=The recipe ID"`
+		RecipeStepID           string `jsonschema:"description=The recipe step ID"`
+		RecipeStepIngredientID string `jsonschema:"description=The recipe step ingredient ID"`
 	}
 )
 
 var recipeStepIngredientsSchema = map[string]any{
-	"MealPlanTaskID":         stringField("The MealPlanTaskID of the recipe step ingredient"),
+	"ID":                     stringField("The ID of the recipe step ingredient"),
 	"CreatedAt":              timestampField("When the recipe step ingredient was created"),
 	"LastUpdatedAt":          timestampField("When the recipe step ingredient was last updated"),
 	"ArchivedAt":             timestampField("When the recipe step ingredient was soft deleted"),
-	"BelongsToRecipeStep":    stringField("The MealPlanTaskID of the recipe step this ingredient belongs to"),
+	"BelongsToRecipeStep":    stringField("The ID of the recipe step this ingredient belongs to"),
 	"Name":                   stringField("Name of the ingredient"),
 	"QuantityNotes":          stringField("Notes about the quantity"),
 	"IngredientNotes":        stringField("Notes about the ingredient"),
 	"Ingredient":             objectType(validIngredientsSchema),
 	"MeasurementUnit":        objectType(validMeasurementUnitsSchema),
 	"Quantity":               float32RangeWithOptionalMaxSchema(),
-	"RecipeStepProductID":    stringField("The MealPlanTaskID of the recipe step product this ingredient is associated with, if any"),
-	"ProductOfRecipeID":      stringField("The MealPlanTaskID of the recipe that produces this ingredient, if any"),
+	"RecipeStepProductID":    stringField("The ID of the recipe step product this ingredient is associated with, if any"),
+	"ProductOfRecipeID":      stringField("The ID of the recipe that produces this ingredient, if any"),
 	"ProductPercentageToUse": floatField("The percentage of the product to use, if any"),
 	"VesselIndex":            uintField("The index of the vessel this ingredient is in, if any"),
 	"OptionIndex":            uintField("The option index for this ingredient"),
@@ -43,11 +43,11 @@ var recipeStepIngredientsSchema = map[string]any{
 
 var getRecipeStepIngredientTool = &mcp.Tool{
 	Name:        "GetRecipeStepIngredient",
-	Description: "Get a recipe step ingredient by it's MealPlanTaskID",
+	Description: "Get a recipe step ingredient by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":               stringField("The MealPlanTaskID of the recipe"),
-		"RecipeStepID":           stringField("The MealPlanTaskID of the recipe step"),
-		"RecipeStepIngredientID": stringField("The MealPlanTaskID of the recipe step ingredient to get"),
+		"RecipeID":               stringField("The ID of the recipe"),
+		"RecipeStepID":           stringField("The ID of the recipe step"),
+		"RecipeStepIngredientID": stringField("The ID of the recipe step ingredient to get"),
 	}),
 	OutputSchema: schemaObject(recipeStepIngredientsSchema),
 }
@@ -83,8 +83,8 @@ var getRecipeStepIngredientsTool = &mcp.Tool{
 	Name:        "GetRecipeStepIngredients",
 	Description: "Get recipe step ingredients with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":     stringField("The MealPlanTaskID of the recipe"),
-		"RecipeStepID": stringField("The MealPlanTaskID of the recipe step"),
+		"RecipeID":     stringField("The ID of the recipe"),
+		"RecipeStepID": stringField("The ID of the recipe step"),
 		"Filter":       queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -115,8 +115,8 @@ func (h *mcpToolManager) GetRecipeStepIngredients() mcp.ToolHandlerFor[*GetRecip
 type (
 	CreateRecipeStepIngredientInvocation struct {
 		*mealplanning.RecipeStepIngredientCreationRequestInput
-		RecipeID     string `jsonschema:"required,description=The recipe MealPlanTaskID"`
-		RecipeStepID string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
+		RecipeID     string `jsonschema:"required,description=The recipe ID"`
+		RecipeStepID string `jsonschema:"required,description=The recipe step ID"`
 	}
 )
 
@@ -124,14 +124,14 @@ var recipeStepIngredientCreationTool = &mcp.Tool{
 	Name:        "CreateRecipeStepIngredient",
 	Description: "Create a recipe step ingredient",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
-		"RecipeStepID":                    stringField("The MealPlanTaskID of the recipe step"),
-		"IngredientID":                    stringField("The MealPlanTaskID of the ingredient"),
-		"ProductOfRecipeID":               stringField("The MealPlanTaskID of the recipe that produces this ingredient, if any"),
+		"RecipeID":                        stringField("The ID of the recipe"),
+		"RecipeStepID":                    stringField("The ID of the recipe step"),
+		"IngredientID":                    stringField("The ID of the ingredient"),
+		"ProductOfRecipeID":               stringField("The ID of the recipe that produces this ingredient, if any"),
 		"ProductOfRecipeStepIndex":        uintField("The index of the recipe step that produces this ingredient, if any"),
 		"ProductOfRecipeStepProductIndex": uintField("The index of the recipe step product that produces this ingredient, if any"),
-		"RecipeStepProductID":             stringField("The MealPlanTaskID of the recipe step product this ingredient is associated with, if any"),
-		"MeasurementUnitID":               stringField("The MealPlanTaskID of the measurement unit"),
+		"RecipeStepProductID":             stringField("The ID of the recipe step product this ingredient is associated with, if any"),
+		"MeasurementUnitID":               stringField("The ID of the measurement unit"),
 		"Name":                            stringField("Name of the ingredient"),
 		"QuantityNotes":                   stringField("Notes about the quantity"),
 		"IngredientNotes":                 stringField("Notes about the ingredient"),
@@ -163,9 +163,9 @@ func (h *mcpToolManager) CreateRecipeStepIngredient() mcp.ToolHandlerFor[*Create
 type (
 	UpdateRecipeStepIngredientInvocation struct {
 		*mealplanning.RecipeStepIngredientUpdateRequestInput
-		RecipeID               string `jsonschema:"required,description=The recipe MealPlanTaskID"`
-		RecipeStepID           string `jsonschema:"required,description=The recipe step MealPlanTaskID"`
-		RecipeStepIngredientID string `jsonschema:"required,description=The recipe step ingredient MealPlanTaskID"`
+		RecipeID               string `jsonschema:"required,description=The recipe ID"`
+		RecipeStepID           string `jsonschema:"required,description=The recipe step ID"`
+		RecipeStepIngredientID string `jsonschema:"required,description=The recipe step ingredient ID"`
 	}
 )
 
@@ -173,13 +173,13 @@ var recipeStepIngredientUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipeStepIngredient",
 	Description: "Update a recipe step ingredient",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":               stringField("The MealPlanTaskID of the recipe"),
-		"RecipeStepID":           stringField("The MealPlanTaskID of the recipe step"),
-		"RecipeStepIngredientID": stringField("The MealPlanTaskID of the recipe step ingredient to update"),
-		"IngredientID":           stringField("The MealPlanTaskID of the ingredient"),
-		"RecipeStepProductID":    stringField("The MealPlanTaskID of the recipe step product this ingredient is associated with, if any"),
-		"ProductOfRecipeID":      stringField("The MealPlanTaskID of the recipe that produces this ingredient, if any"),
-		"MeasurementUnitID":      stringField("The MealPlanTaskID of the measurement unit"),
+		"RecipeID":               stringField("The ID of the recipe"),
+		"RecipeStepID":           stringField("The ID of the recipe step"),
+		"RecipeStepIngredientID": stringField("The ID of the recipe step ingredient to update"),
+		"IngredientID":           stringField("The ID of the ingredient"),
+		"RecipeStepProductID":    stringField("The ID of the recipe step product this ingredient is associated with, if any"),
+		"ProductOfRecipeID":      stringField("The ID of the recipe that produces this ingredient, if any"),
+		"MeasurementUnitID":      stringField("The ID of the measurement unit"),
 		"Name":                   stringField("Name of the ingredient"),
 		"QuantityNotes":          stringField("Notes about the quantity"),
 		"IngredientNotes":        stringField("Notes about the ingredient"),

@@ -15,6 +15,7 @@ import (
 	encodingmock "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
 	msgqueuemock "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -47,10 +48,10 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Set up mock expectations
-		analyticsReporter.On("EventOccurred", mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Once()
-		analyticsReporter.On("AddUser", mock.Anything, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Maybe()
-		webhookRepo.On("GetWebhooksForAccountAndEvent", mock.Anything, dataChangeMessage.AccountID, dataChangeMessage.EventType).Return([]*webhooks.Webhook{}, nil).Once()
-		identityRepo.On("GetUser", mock.Anything, dataChangeMessage.UserID).Return(identityfakes.BuildFakeUser(), nil).Maybe()
+		analyticsReporter.On(reflection.GetMethodName(analyticsReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Once()
+		analyticsReporter.On(reflection.GetMethodName(analyticsReporter.AddUser), mock.Anything, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Maybe()
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhooksForAccountAndEvent), mock.Anything, dataChangeMessage.AccountID, dataChangeMessage.EventType).Return([]*webhooks.Webhook{}, nil).Once()
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, dataChangeMessage.UserID).Return(identityfakes.BuildFakeUser(), nil).Maybe()
 
 		// Set up mock expectations for publishers
 		if handler.searchDataIndexPublisher != nil {
@@ -63,8 +64,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 			handler.webhookExecutionRequestPublisher.(*msgqueuemock.Publisher).On("Publish", mock.Anything, mock.Anything).Return(nil).Maybe()
 		}
 
-		err = handler.DataChangesEventHandler(ctx, rawMsg)
-		assert.NoError(t, err)
+		assert.NoError(t, handler.DataChangesEventHandler(ctx, rawMsg))
 
 		mock.AssertExpectationsForObjects(t, analyticsReporter, webhookRepo, identityRepo)
 	})
@@ -115,11 +115,11 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		// Set non-webhook event types to exclude this event (focuses test on analytics only)
 		handler.SetNonWebhookEventTypes([]string{dataChangeMessage.EventType})
 
-		analyticsEventReporter.On("EventOccurred", mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
+		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
 
 		// Mock the search index publisher (handleDataChangeMessage calls handleSearchIndexUpdates in a goroutine)
 		mockSearchPublisher := &msgqueuemock.Publisher{}
-		mockSearchPublisher.On("Publish", mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
+		mockSearchPublisher.On(reflection.GetMethodName(mockSearchPublisher.Publish), mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockSearchPublisher
 
 		err := handler.handleDataChangeMessage(ctx, dataChangeMessage)
@@ -147,19 +147,19 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 		// Set non-webhook event types to exclude this event
 		handler.SetNonWebhookEventTypes([]string{})
 
-		analyticsEventReporter.On("EventOccurred", mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
-		webhookRepo.On("GetWebhooksForAccountAndEvent", mock.Anything, dataChangeMessage.AccountID, dataChangeMessage.EventType).Return([]*webhooks.Webhook{webhook}, nil)
+		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil)
+		webhookRepo.On(reflection.GetMethodName(webhookRepo.GetWebhooksForAccountAndEvent), mock.Anything, dataChangeMessage.AccountID, dataChangeMessage.EventType).Return([]*webhooks.Webhook{webhook}, nil)
 
 		// Mock the webhook execution request publisher
 		mockWebhookPublisher := &msgqueuemock.Publisher{}
-		mockWebhookPublisher.On("Publish", mock.Anything, mock.MatchedBy(func(req *webhooks.WebhookExecutionRequest) bool {
+		mockWebhookPublisher.On(reflection.GetMethodName(mockWebhookPublisher.Publish), mock.Anything, mock.MatchedBy(func(req *webhooks.WebhookExecutionRequest) bool {
 			return req.WebhookID == webhook.ID && req.AccountID == dataChangeMessage.AccountID
 		})).Return(nil)
 		handler.webhookExecutionRequestPublisher = mockWebhookPublisher
 
 		// Mock the search index publisher (handleDataChangeMessage calls handleSearchIndexUpdates in a goroutine)
 		mockSearchPublisher := &msgqueuemock.Publisher{}
-		mockSearchPublisher.On("Publish", mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
+		mockSearchPublisher.On(reflection.GetMethodName(mockSearchPublisher.Publish), mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockSearchPublisher
 
 		err := handler.handleDataChangeMessage(ctx, dataChangeMessage)
@@ -188,7 +188,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 
 		// Mock the search data index publisher
 		mockPublisher := &msgqueuemock.Publisher{}
-		mockPublisher.On("Publish", mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
+		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
 			return req.RowID == dataChangeMessage.UserID &&
 				req.IndexType == identityindexing.IndexTypeUsers &&
 				req.Delete == false
@@ -217,7 +217,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 
 		// Mock the search data index publisher
 		mockPublisher := &msgqueuemock.Publisher{}
-		mockPublisher.On("Publish", mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
+		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
 			return req.RowID == dataChangeMessage.UserID &&
 				req.IndexType == identityindexing.IndexTypeUsers &&
 				req.Delete == true
@@ -251,11 +251,11 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 		}
 
 		// Mock decoder (note: parseValueFromEventContext calls with *interface{} due to a bug)
-		decoder.On("DecodeBytes", mock.Anything, recipeBytes, mock.Anything).Return(nil)
+		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, recipeBytes, mock.Anything).Return(nil)
 
 		// Mock the search data index publisher
 		mockPublisher := &msgqueuemock.Publisher{}
-		mockPublisher.On("Publish", mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
+		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.MatchedBy(func(req *textsearch.IndexRequest) bool {
 			// Due to bug in parseValueFromEventContext, RowID will be empty
 			return req.RowID == "" &&
 				req.IndexType == mealplanningindexing.IndexTypeRecipes &&
@@ -287,7 +287,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 		assert.NoError(t, err) // Should not error for unhandled event types
 	})
 
-	t.Run("with missing user MealPlanTaskID", func(t *testing.T) {
+	t.Run("with missing user ID", func(t *testing.T) {
 		t.Parallel()
 
 		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
@@ -296,14 +296,14 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 
 		dataChangeMessage := &audit.DataChangeMessage{
 			EventType: identity.UserSignedUpServiceEventType,
-			UserID:    "", // Missing user MealPlanTaskID
+			UserID:    "", // Missing user ID
 			AccountID: "test-account-id",
 			Context:   nil,
 		}
 
-		// Mock the search index publisher (function still publishes even with missing user MealPlanTaskID)
+		// Mock the search index publisher (function still publishes even with missing user ID)
 		mockPublisher := &msgqueuemock.Publisher{}
-		mockPublisher.On("Publish", mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
+		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.AnythingOfType("*textsearch.IndexRequest")).Return(nil)
 		handler.searchDataIndexPublisher = mockPublisher
 
 		err := handler.handleSearchIndexUpdates(ctx, dataChangeMessage)
@@ -344,12 +344,12 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 			},
 		}
 
-		identityRepo.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-		analyticsEventReporter.On("AddUser", mock.Anything, user.ID, dataChangeMessage.Context).Return(nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, user.ID).Return(user, nil)
+		analyticsEventReporter.On(reflection.GetMethodName(analyticsEventReporter.AddUser), mock.Anything, user.ID, dataChangeMessage.Context).Return(nil)
 
 		// Mock the outbound emails publisher
 		mockPublisher := &msgqueuemock.Publisher{}
-		mockPublisher.On("Publish", mock.Anything, mock.AnythingOfType("*email.OutboundEmailMessage")).Return(nil)
+		mockPublisher.On(reflection.GetMethodName(mockPublisher.Publish), mock.Anything, mock.AnythingOfType("*email.OutboundEmailMessage")).Return(nil)
 		handler.outboundEmailsPublisher = mockPublisher
 
 		err := handler.handleOutboundNotifications(ctx, dataChangeMessage)
@@ -378,7 +378,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		}
 
 		expectedError := errors.New("user fetch error")
-		identityRepo.On("GetUser", mock.Anything, "test-user-id").Return((*identity.User)(nil), expectedError)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, "test-user-id").Return((*identity.User)(nil), expectedError)
 
 		err := handler.handleOutboundNotifications(ctx, dataChangeMessage)
 		assert.Error(t, err)
@@ -404,7 +404,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 			Context:   nil,
 		}
 
-		identityRepo.On("GetUser", mock.Anything, user.ID).Return(user, nil)
+		identityRepo.On(reflection.GetMethodName(identityRepo.GetUser), mock.Anything, user.ID).Return(user, nil)
 
 		err := handler.handleOutboundNotifications(ctx, dataChangeMessage)
 		assert.NoError(t, err) // Should handle gracefully with no outbound emails
@@ -429,7 +429,7 @@ func TestParseValueFromEventContext(t *testing.T) {
 			},
 		}
 
-		decoder.On("DecodeBytes", mock.Anything, []byte(testString), mock.Anything).Return(nil)
+		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, []byte(testString), mock.Anything).Return(nil)
 
 		result, err := parseValueFromEventContext[string](ctx, changeMessage, decoder, "test-key")
 		assert.NoError(t, err)

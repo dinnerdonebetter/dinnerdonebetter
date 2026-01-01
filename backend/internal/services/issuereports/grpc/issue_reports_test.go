@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc/converters"
 
@@ -77,7 +78,7 @@ func TestServiceImpl_CreateIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeInput := issuereportfakes.BuildFakeIssueReportCreationRequestInput()
 
-		mockRepo.On("CreateIssueReport", testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReportDatabaseCreationInput")).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateIssueReport), testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReportDatabaseCreationInput")).Return(fakeIssueReport, nil)
 
 		request := &issuereportssvc.CreateIssueReportRequest{
 			Input: converters.ConvertIssueReportCreationRequestInputToGRPCIssueReportCreationRequestInput(fakeInput),
@@ -121,7 +122,7 @@ func TestServiceImpl_CreateIssueReport(t *testing.T) {
 
 		fakeInput := issuereportfakes.BuildFakeIssueReportCreationRequestInput()
 
-		mockRepo.On("CreateIssueReport", testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReportDatabaseCreationInput")).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateIssueReport), testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReportDatabaseCreationInput")).Return(nil, errors.New("repository error"))
 
 		request := &issuereportssvc.CreateIssueReportRequest{
 			Input: converters.ConvertIssueReportCreationRequestInputToGRPCIssueReportCreationRequestInput(fakeInput),
@@ -149,7 +150,7 @@ func TestServiceImpl_GetIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "test-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
 
 		request := &issuereportssvc.GetIssueReportRequest{
 			IssueReportId: fakeIssueReport.ID,
@@ -191,7 +192,7 @@ func TestServiceImpl_GetIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "different-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
 
 		request := &issuereportssvc.GetIssueReportRequest{
 			IssueReportId: fakeIssueReport.ID,
@@ -227,7 +228,7 @@ func TestServiceImpl_GetIssueReports(t *testing.T) {
 			},
 		}
 
-		mockRepo.On("GetIssueReports", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReports), testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
 
 		request := &issuereportssvc.GetIssueReportsRequest{
 			Filter: &grpcfiltering.QueryFilter{},
@@ -280,7 +281,7 @@ func TestServiceImpl_GetIssueReportsForAccount(t *testing.T) {
 			},
 		}
 
-		mockRepo.On("GetIssueReportsForAccount", testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReportsForAccount), testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
 
 		request := &issuereportssvc.GetIssueReportsForAccountRequest{
 			AccountId: "test-account-id",
@@ -334,7 +335,7 @@ func TestServiceImpl_GetIssueReportsForTable(t *testing.T) {
 			},
 		}
 
-		mockRepo.On("GetIssueReportsForTable", testutils.ContextMatcher, "recipes", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReportsForTable), testutils.ContextMatcher, "recipes", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
 
 		request := &issuereportssvc.GetIssueReportsForTableRequest{
 			TableName: "recipes",
@@ -388,7 +389,7 @@ func TestServiceImpl_GetIssueReportsForRecord(t *testing.T) {
 			},
 		}
 
-		mockRepo.On("GetIssueReportsForRecord", testutils.ContextMatcher, "recipes", "some-record-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReportsForRecord), testutils.ContextMatcher, "recipes", "some-record-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeIssueReports, nil)
 
 		request := &issuereportssvc.GetIssueReportsForRecordRequest{
 			TableName: "recipes",
@@ -437,8 +438,8 @@ func TestServiceImpl_UpdateIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "test-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
-		mockRepo.On("UpdateIssueReport", testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReport")).Return(nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.UpdateIssueReport), testutils.ContextMatcher, mock.AnythingOfType("*issuereports.IssueReport")).Return(nil)
 
 		newDetails := "Updated details"
 		request := &issuereportssvc.UpdateIssueReportRequest{
@@ -484,7 +485,7 @@ func TestServiceImpl_UpdateIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "different-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
 
 		request := &issuereportssvc.UpdateIssueReportRequest{
 			IssueReportId: fakeIssueReport.ID,
@@ -513,8 +514,8 @@ func TestServiceImpl_ArchiveIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "test-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
-		mockRepo.On("ArchiveIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(nil)
 
 		request := &issuereportssvc.ArchiveIssueReportRequest{
 			IssueReportId: fakeIssueReport.ID,
@@ -554,7 +555,7 @@ func TestServiceImpl_ArchiveIssueReport(t *testing.T) {
 		fakeIssueReport := issuereportfakes.BuildFakeIssueReport()
 		fakeIssueReport.BelongsToAccount = "different-account-id"
 
-		mockRepo.On("GetIssueReport", testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetIssueReport), testutils.ContextMatcher, fakeIssueReport.ID).Return(fakeIssueReport, nil)
 
 		request := &issuereportssvc.ArchiveIssueReportRequest{
 			IssueReportId: fakeIssueReport.ID,

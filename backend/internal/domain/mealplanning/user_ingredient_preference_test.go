@@ -52,7 +52,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 		assert.Error(t, input.ValidateWithContext(ctx))
 	})
 
-	T.Run("with valid ingredient group MealPlanTaskID", func(t *testing.T) {
+	T.Run("with valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

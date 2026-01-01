@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	uploadsmock "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -46,12 +47,12 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 
 	// Set up mock publishers for the indexers to prevent nil pointer dereferences
 	mockPublisher := &msgqueuemock.Publisher{}
-	publisherProvider.On("ProvidePublisher", mock.AnythingOfType("string")).Return(mockPublisher, nil).Maybe()
+	publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), mock.AnythingOfType("string")).Return(mockPublisher, nil).Maybe()
 
 	// Set up mock histograms
 	mockHistogram := metrics.NewNoopMetricsProvider()
 	noop, _ := mockHistogram.NewFloat64Histogram("test")
-	metricsProvider.On("NewFloat64Histogram", mock.AnythingOfType("string"), mock.Anything).Return(noop, nil).Maybe()
+	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noop, nil).Maybe()
 
 	handler := &AsyncDataChangeMessageHandler{
 		identityRepo:                         identityRepo,
@@ -112,17 +113,17 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		// Set up metrics expectations
 		mockHistogram := metrics.NewNoopMetricsProvider()
 		noop, _ := mockHistogram.NewFloat64Histogram("test")
-		metricsProvider.On("NewFloat64Histogram", "data_changes_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On("NewFloat64Histogram", "outbound_emails_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On("NewFloat64Histogram", "search_index_requests_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On("NewFloat64Histogram", "user_data_aggregation_execution_time", mock.Anything).Return(noop, nil)
-		metricsProvider.On("NewFloat64Histogram", "webhook_requests_execution_time", mock.Anything).Return(noop, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "data_changes_execution_time", mock.Anything).Return(noop, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "outbound_emails_execution_time", mock.Anything).Return(noop, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "search_index_requests_execution_time", mock.Anything).Return(noop, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "user_data_aggregation_execution_time", mock.Anything).Return(noop, nil)
+		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), "webhook_requests_execution_time", mock.Anything).Return(noop, nil)
 
 		// Set up publisher expectations
 		mockPublisher := &msgqueuemock.Publisher{}
-		publisherProvider.On("ProvidePublisher", "outbound-emails").Return(mockPublisher, nil)
-		publisherProvider.On("ProvidePublisher", "search-index-requests").Return(mockPublisher, nil)
-		publisherProvider.On("ProvidePublisher", "webhook-execution-requests").Return(mockPublisher, nil)
+		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "outbound-emails").Return(mockPublisher, nil)
+		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "search-index-requests").Return(mockPublisher, nil)
+		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "webhook-execution-requests").Return(mockPublisher, nil)
 
 		handler, err := NewAsyncDataChangeMessageHandler(
 			ctx,

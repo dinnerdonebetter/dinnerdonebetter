@@ -224,7 +224,7 @@ func extractFields(item any) ([]*fieldInfo, error) {
 }
 
 // applyFieldOrdering applies the specified field ordering to the fields slice.
-// If customOrder is nil or empty, uses automatic ordering (MealPlanTaskID first, timestamps last).
+// If customOrder is nil or empty, uses automatic ordering (ID first, timestamps last).
 // If customOrder is provided, only fields in that list will be included, in that order.
 func applyFieldOrdering(fields []*fieldInfo, customOrder []string, replacements map[string]string) []*fieldInfo {
 	// If no custom order specified, use automatic ordering
@@ -332,12 +332,12 @@ type fieldInfo struct {
 }
 
 // sortFields sorts the fields with custom ordering:
-// - MealPlanTaskID field first.
+// - ID field first.
 // - CreatedAt, LastUpdatedAt, ArchivedAt fields last (in that order).
 // - All other fields in their original order in between.
 func sortFields(fields []*fieldInfo) []*fieldInfo {
 	// Define priority fields (using JSON tag names - PascalCase for protobuf)
-	priorityFirst := "MealPlanTaskID"
+	priorityFirst := "ID"
 	priorityLast := []string{"CreatedAt", "LastUpdatedAt", "ArchivedAt"}
 
 	// Create a map for quick lookup of priority last fields
@@ -366,7 +366,7 @@ func sortFields(fields []*fieldInfo) []*fieldInfo {
 	// Build the result slice in order
 	result := make([]*fieldInfo, 0, len(fields))
 
-	// Add MealPlanTaskID first
+	// Add ID first
 	result = append(result, idField...)
 
 	// Add regular fields
@@ -545,7 +545,7 @@ func buildTableClasses(customClasses string) string {
 // commonInitialisms is a list of common initialisms that should not be split
 // Add additional initialisms here as needed.
 var commonInitialisms = []string{
-	"MealPlanTaskID",
+	"ID",
 	"API",
 	"URI",
 	"URL",
@@ -567,7 +567,7 @@ var commonInitialisms = []string{
 }
 
 // camelCaseToTitleCase converts CamelCase to Title Case with spaces
-// It handles common initialisms (like MealPlanTaskID, API, etc.) as single units.
+// It handles common initialisms (like ID, API, etc.) as single units.
 func camelCaseToTitleCase(s string) string {
 	if s == "" {
 		return s

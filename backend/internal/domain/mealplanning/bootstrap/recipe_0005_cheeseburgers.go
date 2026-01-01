@@ -15,7 +15,6 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 	heatPrep := enums.Preparations["heat"]
 	dividePrep := enums.Preparations["divide"]
 	formPrep := enums.Preparations["form"]
-	seasonPrep := enums.Preparations["season"]
 	toastPrep := enums.Preparations["toast"]
 	smashPrep := enums.Preparations["smash"]
 	panSearPrep := enums.Preparations["pan-sear"]
@@ -65,13 +64,9 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 	formBeefVIP := enums.IngredientPreparations[formPrep.ID][groundBeef.ID]
 	formBareHandsVPI := enums.PreparationInstruments[formPrep.ID][bareHands.ID]
 
-	// Season preparation bridges
-	seasonBeefVIP := enums.IngredientPreparations[seasonPrep.ID][groundBeef.ID]
-	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
+	// Season preparation bridges (for measurement units)
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
-	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
 
 	// Toast preparation bridges
 	toastBunVIP := enums.IngredientPreparations[toastPrep.ID][burgerBun.ID]
@@ -216,14 +211,14 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 2: Form beef into pucks
+	// Step 2: Form and season beef into patties
 	step2ID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   formPrep.ID,
 		Index:           2,
-		Notes:           "Gently form each portion of ground beef into a cylindrical puck about 2 inches tall, pressing together just until meat holds its shape without falling apart.",
+		Notes:           "Gently form each portion of ground beef into a cylindrical puck about 2 inches tall, pressing together just until meat holds its shape without falling apart. Season generously on all sides with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
@@ -238,6 +233,30 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 16,
 				},
+			},
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2ID,
+				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
+				IngredientID:                     &salt.ID,
+				MeasurementUnitID:                gramMeasurement.ID,
+				Name:                             "kosher salt",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0,
+				},
+				ToTaste: true,
+			},
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2ID,
+				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
+				IngredientID:                     &blackPepper.ID,
+				MeasurementUnitID:                gramMeasurement.ID,
+				Name:                             "freshly ground black pepper",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0,
+				},
+				ToTaste: true,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
@@ -256,7 +275,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step2ID,
-				Name:                "beef pucks",
+				Name:                "seasoned 4-ounce beef patties",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
@@ -267,95 +286,18 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 3: Season pucks
+	// Step 3: Toast buns
 	step3ID := identifiers.New()
 	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   seasonPrep.ID,
-		Index:           3,
-		Notes:           "Season the beef pucks generously on all sides with salt and pepper.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &seasonBeefVIP.ID,
-				ValidIngredientMeasurementUnitID: &beefOunceVIMU.ID,
-				IngredientID:                     &groundBeef.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "beef pucks",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 4,
-				},
-			},
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
-				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
-				IngredientID:                     &salt.ID,
-				MeasurementUnitID:                gramMeasurement.ID,
-				Name:                             "kosher salt",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0,
-				},
-				ToTaste: true,
-			},
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     &seasonPepperVIP.ID,
-				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
-				IngredientID:                     &blackPepper.ID,
-				MeasurementUnitID:                gramMeasurement.ID,
-				Name:                             "freshly ground black pepper",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0,
-				},
-				ToTaste: true,
-			},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
-			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step3ID,
-				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
-				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
-				Name:                "seasoned beef pucks",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](4),
-				},
-			},
-		},
-	}
-
-	// Step 4: Toast buns
-	step4ID := identifiers.New()
-	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step4ID,
-		BelongsToRecipe: recipeID,
 		PreparationID:   toastPrep.ID,
-		Index:           4,
+		Index:           3,
 		Notes:           "Lightly toast the burger buns.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step4ID,
+				BelongsToRecipeStep:              step3ID,
 				ValidIngredientPreparationID:     &toastBunVIP.ID,
 				ValidIngredientMeasurementUnitID: &bunUnitVIMU.ID,
 				IngredientID:                     &burgerBun.ID,
@@ -369,7 +311,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step4ID,
+				BelongsToRecipeStep:      step3ID,
 				ValidPreparationVesselID: &toastSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
 				Name:                     "cast iron skillet",
@@ -381,7 +323,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4ID,
+				BelongsToRecipeStep: step3ID,
 				Name:                "toasted burger buns",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -393,25 +335,25 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 5: Add pucks to skillet and smash
-	step5ID := identifiers.New()
-	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step5ID,
+	// Step 4: Add pucks to skillet and smash
+	step4ID := identifiers.New()
+	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   smashPrep.ID,
-		Index:           5,
+		Index:           4,
 		Notes:           "Add 2 beef pucks to the hot skillet and, using a firm, stiff metal spatula, press down on each one until they're roughly 4 to 4 1/2 inches in diameter and 1/2-inch thick. It helps to use a second spatula to apply downward pressure to the first if you are having trouble smashing them hard enough.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step5ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
+				BelongsToRecipeStep:              step4ID,
+				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &smashBeefVIP.ID,
 				ValidIngredientMeasurementUnitID: &beefOunceVIMU.ID,
 				IngredientID:                     &groundBeef.ID,
 				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "seasoned beef pucks",
+				Name:                             "seasoned 4-ounce beef patties",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
 				},
@@ -420,7 +362,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step5ID,
+				BelongsToRecipeStep:          step4ID,
 				ValidPreparationInstrumentID: &smashSpatulaVPI.ID,
 				InstrumentID:                 &wideSpatula.ID,
 				Name:                         "firm, stiff metal spatula",
@@ -432,7 +374,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step5ID,
+				BelongsToRecipeStep:      step4ID,
 				ProductOfRecipeStepIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID: &smashSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
@@ -445,7 +387,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step5ID,
+				BelongsToRecipeStep: step4ID,
 				Name:                "smashed burger patties",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -457,24 +399,24 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 6: Sear first side until golden brown
-	step6ID := identifiers.New()
-	step6PattyIngredientID := identifiers.New()
-	step6CompletionConditionID := identifiers.New()
-	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step6ID,
+	// Step 5: Sear first side until golden brown
+	step5ID := identifiers.New()
+	step5PattyIngredientID := identifiers.New()
+	step5CompletionConditionID := identifiers.New()
+	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   panSearPrep.ID,
-		Index:           6,
+		Index:           5,
 		Notes:           "Cook without moving until a golden brown crust develops, about 1 1/2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](90), // 1.5 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              step6PattyIngredientID,
-				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ID:                              step5PattyIngredientID,
+				BelongsToRecipeStep:             step5ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &groundBeef.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -487,7 +429,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step6ID,
+				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &panSearSpatulaVPI.ID,
 				InstrumentID:                 &wideSpatula.ID,
 				Name:                         "metal spatula",
@@ -499,7 +441,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step6ID,
+				BelongsToRecipeStep:      step5ID,
 				ValidPreparationVesselID: &panSearSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
 				Name:                     "cast iron skillet",
@@ -511,7 +453,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step6ID,
+				BelongsToRecipeStep: step5ID,
 				Name:                "seared burger patties (first side)",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -523,15 +465,15 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step6CompletionConditionID,
-				BelongsToRecipeStep: step6ID,
+				ID:                  step5CompletionConditionID,
+				BelongsToRecipeStep: step5ID,
 				IngredientStateID:   brownedState.ID,
 				Notes:               "A golden brown crust should develop on the bottom",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step6CompletionConditionID,
-						RecipeStepIngredient:                   step6PattyIngredientID,
+						BelongsToRecipeStepCompletionCondition: step5CompletionConditionID,
+						RecipeStepIngredient:                   step5PattyIngredientID,
 					},
 				},
 				Optional: false,
@@ -539,19 +481,19 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 7: Flip patties
-	step7ID := identifiers.New()
-	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step7ID,
+	// Step 6: Flip patties
+	step6ID := identifiers.New()
+	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   flipPrep.ID,
-		Index:           7,
+		Index:           6,
 		Notes:           "Use the edge of the spatula to carefully scrape up and flip the patties one at a time, making sure to get all browned bits removed from the skillet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &groundBeef.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -564,7 +506,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step7ID,
+				BelongsToRecipeStep:          step6ID,
 				ValidPreparationInstrumentID: &flipSpatulaVPI.ID,
 				InstrumentID:                 &wideSpatula.ID,
 				Name:                         "metal spatula",
@@ -576,7 +518,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step7ID,
+				BelongsToRecipeStep:      step6ID,
 				ValidPreparationVesselID: &flipSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
 				Name:                     "cast iron skillet",
@@ -588,7 +530,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step7ID,
+				BelongsToRecipeStep: step6ID,
 				Name:                "flipped burger patties",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -600,20 +542,20 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 8: Top with cheese (optional)
-	step8ID := identifiers.New()
-	step8 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step8ID,
+	// Step 7: Top with cheese (optional)
+	step7ID := identifiers.New()
+	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   topPrep.ID,
-		Index:           8,
+		Index:           7,
 		Optional:        true,
 		Notes:           "If using cheese, add a slice to each patty now.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				BelongsToRecipeStep:             step7ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &groundBeef.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -624,7 +566,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step8ID,
+				BelongsToRecipeStep:              step7ID,
 				ValidIngredientPreparationID:     &topCheeseVIP.ID,
 				ValidIngredientMeasurementUnitID: &cheeseSliceVIMU.ID,
 				IngredientID:                     &americanCheese.ID,
@@ -639,7 +581,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step8ID,
+				BelongsToRecipeStep:      step7ID,
 				ValidPreparationVesselID: &topSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
 				Name:                     "cast iron skillet",
@@ -651,7 +593,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step8ID,
+				BelongsToRecipeStep: step7ID,
 				Name:                "burger patties with cheese",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -663,13 +605,13 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 9: Finish cooking second side
-	step9ID := identifiers.New()
-	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step9ID,
+	// Step 8: Finish cooking second side
+	step8ID := identifiers.New()
+	step8 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   panSearPrep.ID,
-		Index:           9,
+		Index:           8,
 		Notes:           "Continue to cook until patties are cooked to desired doneness—about 30 seconds longer for medium-rare.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30),
@@ -677,8 +619,8 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step9ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				BelongsToRecipeStep:             step8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &groundBeef.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -691,7 +633,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step9ID,
+				BelongsToRecipeStep:      step8ID,
 				ValidPreparationVesselID: &panSearSkilletVPV.ID,
 				VesselID:                 &castIronSkillet.ID,
 				Name:                     "cast iron skillet",
@@ -703,7 +645,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step9ID,
+				BelongsToRecipeStep: step8ID,
 				Name:                "cooked smash burger patties",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -715,19 +657,19 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		},
 	}
 
-	// Step 10: Assemble burgers
-	step10ID := identifiers.New()
-	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step10ID,
+	// Step 9: Assemble burgers
+	step9ID := identifiers.New()
+	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step9ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   assemblePrep.ID,
-		Index:           10,
+		Index:           9,
 		Notes:           "Transfer patties to toasted buns, topping buns and/or patties as desired, close burgers, and serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
+				BelongsToRecipeStep:              step9ID,
+				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &assembleBunVIP.ID,
 				ValidIngredientMeasurementUnitID: &bunUnitVIMU.ID,
@@ -740,8 +682,8 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				BelongsToRecipeStep:             step8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &groundBeef.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -754,7 +696,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step10ID,
+				BelongsToRecipeStep:      step8ID,
 				ValidPreparationVesselID: &assembleServingPlateVPV.ID,
 				VesselID:                 &servingPlate.ID,
 				Name:                     "serving plate",
@@ -766,7 +708,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step10ID,
+				BelongsToRecipeStep: step8ID,
 				Name:                "classic smash burger",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -794,7 +736,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 			PluralPortionName: "burgers",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9,
 			},
 		},
 	}

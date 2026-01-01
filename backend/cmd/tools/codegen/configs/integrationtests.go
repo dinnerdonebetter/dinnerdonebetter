@@ -95,6 +95,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           1500 * time.Millisecond,
 			ConnectionDetails:        localdevPostgresDBConnectionDetails,
+			WriteConnectionDetails:   localdevPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{

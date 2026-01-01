@@ -55,7 +55,7 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 func BuildFakeRecipeStepInstrumentCreationRequestInput() *types.RecipeStepInstrumentCreationRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
 	input := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
-	// Bridge table MealPlanTaskID is now required
+	// Bridge table ID is now required
 	input.ValidPreparationInstrumentID = pointer.To(BuildFakeID())
 	return input
 }

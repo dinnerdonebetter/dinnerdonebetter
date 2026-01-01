@@ -16,6 +16,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -41,7 +42,7 @@ func buildTestService(t *testing.T) *service {
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
-	pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On(reflection.GetMethodName(pp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	rpm := mockrouting.NewRouteParamManager()
 	rpm.On(
@@ -91,7 +92,7 @@ func TestProvideService(T *testing.T) {
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.PublisherProvider{}
-		pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On(reflection.GetMethodName(pp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(

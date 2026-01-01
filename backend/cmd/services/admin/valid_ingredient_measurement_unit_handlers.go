@@ -261,7 +261,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromIngredient(_ ht
 		), nil
 	}
 
-	// Parse the measurement unit MealPlanTaskID from the request
+	// Parse the measurement unit ID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -305,7 +305,7 @@ func (s *AdminFrontendServer) CreateIngredientMeasurementUnitFromMeasurementUnit
 		), nil
 	}
 
-	// Parse the ingredient MealPlanTaskID from the request
+	// Parse the ingredient ID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -339,12 +339,12 @@ func (s *AdminFrontendServer) DeleteIngredientMeasurementUnit(_ http.ResponseWri
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	// Get the association MealPlanTaskID from the URL path
+	// Get the association ID from the URL path
 	associationID := req.PathValue("associationID")
 	if associationID == "" {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
-			g.Text("Error: No association MealPlanTaskID provided"),
+			g.Text("Error: No association ID provided"),
 		), nil
 	}
 

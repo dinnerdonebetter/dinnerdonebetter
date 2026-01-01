@@ -14,25 +14,25 @@ import (
 
 type (
 	GetValidPreparationInstrumentInvocation struct {
-		ValidPreparationInstrumentID string `jsonschema:"description=The preparation instrument MealPlanTaskID"`
+		ValidPreparationInstrumentID string `jsonschema:"description=The preparation instrument ID"`
 	}
 )
 
 var validPreparationInstrumentsSchema = map[string]any{
-	"MealPlanTaskID": stringField("The MealPlanTaskID of the valid preparation instrument"),
-	"CreatedAt":      timestampField("When the valid preparation instrument was created"),
-	"LastUpdatedAt":  timestampField("When the valid preparation instrument was last updated"),
-	"ArchivedAt":     timestampField("When the valid preparation instrument was soft deleted"),
-	"Notes":          stringField("Notes about the preparation instrument"),
-	"Instrument":     objectType(validInstrumentsSchema),
-	"Preparation":    objectType(validPreparationsSchema),
+	"ID":            stringField("The ID of the valid preparation instrument"),
+	"CreatedAt":     timestampField("When the valid preparation instrument was created"),
+	"LastUpdatedAt": timestampField("When the valid preparation instrument was last updated"),
+	"ArchivedAt":    timestampField("When the valid preparation instrument was soft deleted"),
+	"Notes":         stringField("Notes about the preparation instrument"),
+	"Instrument":    objectType(validInstrumentsSchema),
+	"Preparation":   objectType(validPreparationsSchema),
 }
 
 var getValidPreparationInstrumentTool = &mcp.Tool{
 	Name:        "GetValidPreparationInstrument",
-	Description: "Get a valid preparation instrument by it's MealPlanTaskID",
+	Description: "Get a valid preparation instrument by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationInstrumentID": stringField("The MealPlanTaskID of the valid preparation instrument to get"),
+		"ValidPreparationInstrumentID": stringField("The ID of the valid preparation instrument to get"),
 	}),
 	OutputSchema: schemaObject(validPreparationInstrumentsSchema),
 }
@@ -94,8 +94,8 @@ var validPreparationInstrumentCreationTool = &mcp.Tool{
 	Description: "Create a valid preparation instrument linking a preparation to an instrument.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":              stringField("Notes about the preparation instrument"),
-		"ValidPreparationID": stringField("The MealPlanTaskID of the valid preparation"),
-		"ValidInstrumentID":  stringField("The MealPlanTaskID of the valid instrument"),
+		"ValidPreparationID": stringField("The ID of the valid preparation"),
+		"ValidInstrumentID":  stringField("The ID of the valid instrument"),
 	}),
 	OutputSchema: schemaObject(validPreparationInstrumentsSchema),
 }
@@ -114,7 +114,7 @@ func (h *mcpToolManager) CreateValidPreparationInstrument() mcp.ToolHandlerFor[*
 type (
 	UpdateValidPreparationInstrumentInvocation struct {
 		*mealplanning.ValidPreparationInstrumentUpdateRequestInput
-		ValidPreparationInstrumentID string `jsonschema:"required,description=The preparation instrument MealPlanTaskID"`
+		ValidPreparationInstrumentID string `jsonschema:"required,description=The preparation instrument ID"`
 	}
 )
 
@@ -122,10 +122,10 @@ var validPreparationInstrumentUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidPreparationInstrument",
 	Description: "Update a valid preparation instrument.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationInstrumentID": stringField("The MealPlanTaskID of the valid preparation instrument to update"),
+		"ValidPreparationInstrumentID": stringField("The ID of the valid preparation instrument to update"),
 		"Notes":                        stringField("Notes about the preparation instrument"),
-		"ValidPreparationID":           stringField("The MealPlanTaskID of the valid preparation"),
-		"ValidInstrumentID":            stringField("The MealPlanTaskID of the valid instrument"),
+		"ValidPreparationID":           stringField("The ID of the valid preparation"),
+		"ValidInstrumentID":            stringField("The ID of the valid instrument"),
 	}),
 	OutputSchema: schemaObject(validPreparationInstrumentsSchema),
 }

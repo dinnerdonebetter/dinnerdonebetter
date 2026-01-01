@@ -29,15 +29,16 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		OAuth2TokenEncryptionKey string            `env:"OAUTH2_TOKEN_ENCRYPTION_KEY" json:"oauth2TokenEncryptionKey"`
-		Provider                 string            `env:"PROVIDER"                    json:"provider"`
-		ConnectionDetails        ConnectionDetails `envPrefix:"CONNECTION_DETAILS_"   json:"connectionDetails"`
-		Migrations               []*MigrationSpec  `env:"MIGRATIONS"                  json:"migrations"`
-		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"           json:"maxPingAttempts"`
-		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"            json:"pingWaitPeriod"`
-		Debug                    bool              `env:"DEBUG"                       json:"debug"`
-		LogQueries               bool              `env:"LOG_QUERIES"                 json:"logQueries"`
-		RunMigrations            bool              `env:"RUN_MIGRATIONS"              json:"runMigrations"`
+		OAuth2TokenEncryptionKey string            `env:"OAUTH2_TOKEN_ENCRYPTION_KEY"     json:"oauth2TokenEncryptionKey"`
+		Provider                 string            `env:"PROVIDER"                        json:"provider"`
+		ConnectionDetails        ConnectionDetails `envPrefix:"CONNECTION_DETAILS_"       json:"connectionDetails"`
+		WriteConnectionDetails   ConnectionDetails `envPrefix:"WRITE_CONNECTION_DETAILS_" json:"writeConnectionDetails"`
+		Migrations               []*MigrationSpec  `env:"MIGRATIONS"                      json:"migrations"`
+		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"               json:"maxPingAttempts"`
+		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"                json:"pingWaitPeriod"`
+		Debug                    bool              `env:"DEBUG"                           json:"debug"`
+		LogQueries               bool              `env:"LOG_QUERIES"                     json:"logQueries"`
+		RunMigrations            bool              `env:"RUN_MIGRATIONS"                  json:"runMigrations"`
 	}
 
 	MigrationSpec struct {

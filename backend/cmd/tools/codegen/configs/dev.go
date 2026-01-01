@@ -139,6 +139,14 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				Port:       5432,
 				DisableSSL: false,
 			},
+			WriteConnectionDetails: databasecfg.ConnectionDetails{
+				Username:   "api_db_user",
+				Password:   "",
+				Database:   "dinner-done-better",
+				Host:       "",
+				Port:       5432,
+				DisableSSL: false,
+			},
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{

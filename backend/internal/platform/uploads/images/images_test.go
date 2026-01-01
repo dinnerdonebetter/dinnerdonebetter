@@ -16,6 +16,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -127,8 +128,8 @@ func TestImage_Write(T *testing.T) {
 		}
 
 		res := &testutils.MockHTTPResponseWriter{}
-		res.On("Header").Return(http.Header{})
-		res.On("Write", mock.IsType([]byte(nil))).Return(0, errors.New("blah"))
+		res.On(reflection.GetMethodName(res.Header)).Return(http.Header{})
+		res.On(reflection.GetMethodName(res.Write), mock.IsType([]byte(nil))).Return(0, errors.New("blah"))
 
 		assert.Error(t, i.Write(res))
 	})

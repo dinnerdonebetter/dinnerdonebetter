@@ -56,7 +56,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 }
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
-// Note: This conversion loses bridge table MealPlanTaskID information since RecipeStepIngredient doesn't store them.
+// Note: This conversion loses bridge table ID information since RecipeStepIngredient doesn't store them.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientCreationRequestInput {
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		Name:     input.Name,

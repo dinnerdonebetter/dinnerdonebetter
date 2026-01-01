@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
@@ -102,7 +103,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 		require.NoError(t, err)
 
 		fakeClient := &mockClient{}
-		fakeClient.On("BoolVariation", t.Name(), ldcontext.New(exampleUsername), false).Return(true, nil)
+		fakeClient.On(reflection.GetMethodName(fakeClient.BoolVariation), t.Name(), ldcontext.New(exampleUsername), false).Return(true, nil)
 		ffm.(*featureFlagManager).launchDarklyClient = fakeClient
 
 		actual, err := ffm.CanUseFeature(ctx, exampleUsername, t.Name())

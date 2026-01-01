@@ -61,7 +61,7 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 
 	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.Oauth2ClientId)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database MealPlanTaskID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}
 
 	x := &oauthsvc.GetOAuth2ClientResponse{
@@ -83,7 +83,7 @@ func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 
 	oauth2Clients, err := s.oauthDataManager.GetOAuth2Clients(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database MealPlanTaskID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}
 
 	x := &oauthsvc.GetOAuth2ClientsResponse{

@@ -32,7 +32,7 @@ func buildRecipeManagerForTest(t *testing.T) *recipeManager {
 	}
 
 	mpp := &mockpublishers.PublisherProvider{}
-	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	mpp.On(reflection.GetMethodName(mpp.ProvidePublisher), queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	m, err := NewRecipeManager(
 		t.Context(),
@@ -66,7 +66,7 @@ func setupExpectationsForRecipeManager(
 	mp := &mockpublishers.Publisher{}
 	for _, eventTypeMap := range eventTypeMaps {
 		for eventType, payload := range eventTypeMap {
-			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+			mp.On(reflection.GetMethodName(mp.PublishAsync), testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
 		}
 	}
 	manager.dataChangesPublisher = mp
@@ -284,7 +284,7 @@ func TestRecipeManager_RecipeEstimatedPrepSteps(T *testing.T) {
 				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
 			},
 			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
-				analyzer.On("GenerateMealPlanTasksForRecipe", testutils.ContextMatcher, "", testutils.MatchType[*types.Recipe]()).Return(expectedResults, nil)
+				analyzer.On(reflection.GetMethodName(analyzer.GenerateMealPlanTasksForRecipe), testutils.ContextMatcher, "", testutils.MatchType[*types.Recipe]()).Return(expectedResults, nil)
 			},
 		)
 
@@ -325,7 +325,7 @@ func TestRecipeManager_RecipeMermaid(T *testing.T) {
 				db.On(reflection.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
 			},
 			func(analyzer *recipeanalysis.MockRecipeAnalyzer) {
-				analyzer.On("RenderMermaidDiagramForRecipe", testutils.ContextMatcher, testutils.MatchType[*types.Recipe]()).Return(expectedResult, nil)
+				analyzer.On(reflection.GetMethodName(analyzer.RenderMermaidDiagramForRecipe), testutils.ContextMatcher, testutils.MatchType[*types.Recipe]()).Return(expectedResult, nil)
 			},
 		)
 

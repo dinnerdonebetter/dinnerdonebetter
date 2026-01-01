@@ -1,0 +1,26 @@
+## Recipe Review
+
+- [x] `recipe_0001_pan_seared_butter_basted_steak.go`
+- [x] `recipe_0002_sous_vide_chicken_breast.go`
+- [x] `recipe_0003_roast_chicken.go`
+- [x] `recipe_0004_sous_vide_pork_chops.go`
+- [ ] `recipe_0005_cheeseburgers.go` (needs #1101)
+- [ ] `recipe_0006_simple_white_rice.go`
+- [ ] `recipe_0007_ultra_fluffy_mashed_potatoes.go`
+- [ ] `recipe_0008_caesar_roasted_broccoli.go`
+- [ ] `recipe_0009_haricots_verts_amandine.go`
+- [ ] `recipe_0010_mixed_green_salad.go`
+- [ ] `recipe_0011_soy_sauce_braised_chicken_thighs.go`
+- [ ] `recipe_0012_grilled_pork_tenderloin.go`
+- [ ] `recipe_0013_pan_seared_salmon_fillets.go`
+- [ ] `recipe_0014_roasted_brussels_sprouts.go`
+- [ ] `recipe_0015_refried_beans.go`
+- [ ] `recipe_0016_carne_asada.go`
+- [ ] `recipe_0017_butter_chicken.go`
+- [ ] `recipe_0018_stovetop_mac_and_cheese.go`
+- [ ] `recipe_0019_caesar_salad.go`
+- [ ] `recipe_0020_glazed_carrots.go`
+- [ ] `recipe_0021_cornbread.go`
+- [ ] `recipe_0022_grilled_whole_cauliflower.go`
+- [ ] `recipe_0023_stir_fried_green_beans.go`
+- [ ] `recipe_0024_tortillas.go`

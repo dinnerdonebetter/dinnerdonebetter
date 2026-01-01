@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	mockuploads "github.com/dinnerdonebetter/backend/internal/platform/uploads/mock"
 	"github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
@@ -130,7 +131,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeInput := uploadedmediafakes.BuildFakeUploadedMediaCreationRequestInput()
 
-		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
 
 		request := &uploadedmediasvc.CreateUploadedMediaRequest{
 			Input: converters.ConvertUploadedMediaCreationRequestInputToGRPCUploadedMediaCreationRequestInput(fakeInput),
@@ -173,7 +174,7 @@ func TestServiceImpl_CreateUploadedMedia(t *testing.T) {
 
 		fakeInput := uploadedmediafakes.BuildFakeUploadedMediaCreationRequestInput()
 
-		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.CreateUploadedMediaRequest{
 			Input: converters.ConvertUploadedMediaCreationRequestInputToGRPCUploadedMediaCreationRequestInput(fakeInput),
@@ -201,7 +202,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
 
 		request := &uploadedmediasvc.GetUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -243,7 +244,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
 
 		request := &uploadedmediasvc.GetUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -264,7 +265,7 @@ func TestServiceImpl_GetUploadedMedia(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo, _ := buildTestService(t)
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.GetUploadedMediaRequest{
 			UploadedMediaId: "some-id",
@@ -301,7 +302,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 
 		ids := []string{fakeUploadedMedia1.ID, fakeUploadedMedia2.ID}
 
-		mockRepo.On("GetUploadedMediaWithIDs", testutils.ContextMatcher, ids).Return(fakeUploadedMediaList, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaWithIDs), testutils.ContextMatcher, ids).Return(fakeUploadedMediaList, nil)
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
 			Ids: ids,
@@ -334,7 +335,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 
 		ids := []string{fakeUploadedMedia1.ID, fakeUploadedMedia2.ID}
 
-		mockRepo.On("GetUploadedMediaWithIDs", testutils.ContextMatcher, ids).Return(fakeUploadedMediaList, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaWithIDs), testutils.ContextMatcher, ids).Return(fakeUploadedMediaList, nil)
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
 			Ids: ids,
@@ -392,7 +393,7 @@ func TestServiceImpl_GetUploadedMediaWithIDs(t *testing.T) {
 
 		ids := []string{"id1", "id2"}
 
-		mockRepo.On("GetUploadedMediaWithIDs", testutils.ContextMatcher, ids).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaWithIDs), testutils.ContextMatcher, ids).Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.GetUploadedMediaWithIDsRequest{
 			Ids: ids,
@@ -428,7 +429,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 			},
 		}
 
-		mockRepo.On("GetUploadedMediaForUser", testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeUploadedMediaList, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaForUser), testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeUploadedMediaList, nil)
 
 		request := &uploadedmediasvc.GetUploadedMediaForUserRequest{
 			UserId: "test-user-id",
@@ -486,7 +487,7 @@ func TestServiceImpl_GetUploadedMediaForUser(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo, _ := buildTestService(t)
 
-		mockRepo.On("GetUploadedMediaForUser", testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMediaForUser), testutils.ContextMatcher, "test-user-id", mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.GetUploadedMediaForUserRequest{
 			UserId: "test-user-id",
@@ -517,8 +518,8 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 
 		newStoragePath := "updated/path.jpg"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
-		mockRepo.On("UpdateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMedia")).Return(nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.UpdateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMedia")).Return(nil)
 
 		request := &uploadedmediasvc.UpdateUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -563,7 +564,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
 
 		request := &uploadedmediasvc.UpdateUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -585,7 +586,7 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo, _ := buildTestService(t)
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.UpdateUploadedMediaRequest{
 			UploadedMediaId: "some-id",
@@ -610,8 +611,8 @@ func TestServiceImpl_UpdateUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
-		mockRepo.On("UpdateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMedia")).Return(errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.UpdateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMedia")).Return(errors.New("repository error"))
 
 		request := &uploadedmediasvc.UpdateUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -640,8 +641,8 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
-		mockRepo.On("ArchiveUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(nil)
 
 		request := &uploadedmediasvc.ArchiveUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -681,7 +682,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "different-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
 
 		request := &uploadedmediasvc.ArchiveUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -702,7 +703,7 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo, _ := buildTestService(t)
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, "some-id").Return(nil, errors.New("repository error"))
 
 		request := &uploadedmediasvc.ArchiveUploadedMediaRequest{
 			UploadedMediaId: "some-id",
@@ -726,8 +727,8 @@ func TestServiceImpl_ArchiveUploadedMedia(t *testing.T) {
 		fakeUploadedMedia := uploadedmediafakes.BuildFakeUploadedMedia()
 		fakeUploadedMedia.CreatedByUser = "test-user-id"
 
-		mockRepo.On("GetUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
-		mockRepo.On("ArchiveUploadedMedia", testutils.ContextMatcher, fakeUploadedMedia.ID).Return(errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveUploadedMedia), testutils.ContextMatcher, fakeUploadedMedia.ID).Return(errors.New("repository error"))
 
 		request := &uploadedmediasvc.ArchiveUploadedMediaRequest{
 			UploadedMediaId: fakeUploadedMedia.ID,
@@ -789,17 +790,17 @@ func TestServiceImpl_Upload(t *testing.T) {
 		}
 
 		// Setup mock stream expectations
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
-		mockStream.On("Recv").Return(chunkReq1, nil).Once()
-		mockStream.On("Recv").Return(chunkReq2, nil).Once()
-		mockStream.On("Recv").Return(nil, io.EOF).Once()
-		mockStream.On("SendAndClose", mock.AnythingOfType("*uploaded_media.UploadResponse")).Return(nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq1, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq2, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.SendAndClose), mock.AnythingOfType("*uploaded_media.UploadResponse")).Return(nil).Once()
 
 		// Setup mock upload manager expectation
-		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
 
 		// Setup mock repo expectation
-		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(fakeUploadedMedia, nil)
 
 		// Execute
 		err := service.Upload(mockStream)
@@ -840,7 +841,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(chunkReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq, nil).Once()
 
 		err := service.Upload(mockStream)
 
@@ -870,7 +871,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
 
 		err := service.Upload(mockStream)
 
@@ -900,7 +901,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
 
 		err := service.Upload(mockStream)
 
@@ -930,7 +931,7 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
 
 		err := service.Upload(mockStream)
 
@@ -969,8 +970,8 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
-		mockStream.On("Recv").Return(chunkReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq, nil).Once()
 
 		err := service.Upload(mockStream)
 
@@ -1000,8 +1001,8 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
-		mockStream.On("Recv").Return(nil, io.EOF).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
 
 		err := service.Upload(mockStream)
 
@@ -1038,12 +1039,12 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
-		mockStream.On("Recv").Return(chunkReq, nil).Once()
-		mockStream.On("Recv").Return(nil, io.EOF).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
 
 		// Mock upload manager to return error
-		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(errors.New("storage error"))
+		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(errors.New("storage error"))
 
 		err := service.Upload(mockStream)
 
@@ -1080,14 +1081,14 @@ func TestServiceImpl_Upload(t *testing.T) {
 			},
 		}
 
-		mockStream.On("Recv").Return(metadataReq, nil).Once()
-		mockStream.On("Recv").Return(chunkReq, nil).Once()
-		mockStream.On("Recv").Return(nil, io.EOF).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(metadataReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(chunkReq, nil).Once()
+		mockStream.On(reflection.GetMethodName(mockStream.Recv)).Return(nil, io.EOF).Once()
 
-		mockUploadMgr.On("SaveFile", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
+		mockUploadMgr.On(reflection.GetMethodName(mockUploadMgr.SaveFile), testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
 
 		// Mock repo to return error
-		mockRepo.On("CreateUploadedMedia", testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("database error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateUploadedMedia), testutils.ContextMatcher, mock.AnythingOfType("*uploadedmedia.UploadedMediaDatabaseCreationInput")).Return(nil, errors.New("database error"))
 
 		err := service.Upload(mockStream)
 

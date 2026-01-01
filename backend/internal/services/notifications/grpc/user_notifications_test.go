@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/notifications/grpc/converters"
 
@@ -78,7 +79,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		notificationID := fakeNotification.ID
 		userID := "test-user-id"
 
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil)
 
 		request := &notificationssvc.GetUserNotificationRequest{
 			UserNotificationId: notificationID,
@@ -121,7 +122,7 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 		notificationID := "nonexistent-notification"
 		userID := "test-user-id"
 
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
 
 		request := &notificationssvc.GetUserNotificationRequest{
 			UserNotificationId: notificationID,
@@ -153,7 +154,7 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockRepo.On("GetUserNotifications", testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return(fakeNotifications, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotifications), testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return(fakeNotifications, nil)
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &notificationssvc.GetUserNotificationsRequest{
@@ -200,7 +201,7 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 
 		userID := "test-user-id"
 
-		mockRepo.On("GetUserNotifications", testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[notifications.UserNotification])(nil), errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotifications), testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[notifications.UserNotification])(nil), errors.New("repository error"))
 
 		grpcPageSize := uint32(20)
 		request := &notificationssvc.GetUserNotificationsRequest{
@@ -234,15 +235,15 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		newStatus := notifications.UserNotificationStatusTypeRead
 
 		// Mock the first call to get existing notification
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
 
 		// Mock the update call
-		mockRepo.On("UpdateUserNotification", testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(nil).Once()
+		mockRepo.On(reflection.GetMethodName(mockRepo.UpdateUserNotification), testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(nil).Once()
 
 		// Mock the second call to get updated notification
 		updatedNotification := *fakeNotification
 		updatedNotification.Status = newStatus
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(&updatedNotification, nil).Once()
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return(&updatedNotification, nil).Once()
 
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationId: notificationID,
@@ -292,7 +293,7 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		notificationID := "nonexistent-notification"
 		userID := "test-user-id"
 
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
 
 		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
@@ -321,8 +322,8 @@ func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 		notificationID := fakeNotification.ID
 		userID := "test-user-id"
 
-		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
-		mockRepo.On("UpdateUserNotification", testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(errors.New("update error")).Once()
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetUserNotification), testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
+		mockRepo.On(reflection.GetMethodName(mockRepo.UpdateUserNotification), testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(errors.New("update error")).Once()
 
 		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{

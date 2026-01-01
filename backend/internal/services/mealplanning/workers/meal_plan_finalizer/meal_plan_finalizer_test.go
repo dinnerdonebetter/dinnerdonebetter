@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func buildNewMealPlanFinalizerForTest(t *testing.T) *Worker {
 	cfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.PublisherProvider{}
-	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On(reflection.GetMethodName(pp.ProvidePublisher), cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	x, err := NewMealPlanFinalizer(
 		ctx,
@@ -65,7 +66,7 @@ func TestWorker_Work(T *testing.T) {
 				mealPlan.BelongsToAccount,
 			).Return(true, nil)
 
-			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
+			pup.On(reflection.GetMethodName(pup.Publish), testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
 		}
 
 		worker := buildNewMealPlanFinalizerForTest(t)

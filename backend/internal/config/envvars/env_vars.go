@@ -154,6 +154,24 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
+	// DatabaseWriteConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Database`.
+	DatabaseWriteConnectionDetailsDatabaseEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_DATABASE"
+
+	// DatabaseWriteConnectionDetailsDisableSslEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.DisableSSL`.
+	DatabaseWriteConnectionDetailsDisableSslEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_DISABLE_SSL"
+
+	// DatabaseWriteConnectionDetailsHostEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Host`.
+	DatabaseWriteConnectionDetailsHostEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_HOST"
+
+	// DatabaseWriteConnectionDetailsPasswordEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Password`.
+	DatabaseWriteConnectionDetailsPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_PASSWORD"
+
+	// DatabaseWriteConnectionDetailsPortEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Port`.
+	DatabaseWriteConnectionDetailsPortEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_PORT"
+
+	// DatabaseWriteConnectionDetailsUsernameEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Username`.
+	DatabaseWriteConnectionDetailsUsernameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_USERNAME"
+
 	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `config.Email.CircuitBreaker.ErrorRate`.
 	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
 

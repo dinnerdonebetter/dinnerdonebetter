@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -88,7 +89,7 @@ func TestServiceImpl_CreateServiceSetting(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("CreateServiceSetting", testutils.ContextMatcher, mock.MatchedBy(func(input interface{}) bool {
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.CreateServiceSetting), testutils.ContextMatcher, mock.MatchedBy(func(input interface{}) bool {
 			return input != nil
 		})).Return(exampleServiceSetting, nil)
 
@@ -144,7 +145,7 @@ func TestServiceImpl_CreateServiceSetting(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("CreateServiceSetting", testutils.ContextMatcher, mock.MatchedBy(func(input *settings.ServiceSettingDatabaseCreationInput) bool {
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.CreateServiceSetting), testutils.ContextMatcher, mock.MatchedBy(func(input *settings.ServiceSettingDatabaseCreationInput) bool {
 			return input != nil
 		})).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
 
@@ -173,7 +174,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
-		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(exampleServiceSetting, nil)
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.GetServiceSetting), testutils.ContextMatcher, exampleServiceSetting.ID).Return(exampleServiceSetting, nil)
 
 		actual, err := service.GetServiceSetting(ctx, request)
 
@@ -198,7 +199,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
-		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.GetServiceSetting), testutils.ContextMatcher, exampleServiceSetting.ID).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSetting(ctx, request)
 
@@ -228,7 +229,7 @@ func TestServiceImpl_GetServiceSettings(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("GetServiceSettings", testutils.ContextMatcher, mock.MatchedBy(func(filter *filtering.QueryFilter) bool {
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.GetServiceSettings), testutils.ContextMatcher, mock.MatchedBy(func(filter *filtering.QueryFilter) bool {
 			return filter != nil
 		})).Return(exampleServiceSettingsList, nil)
 
@@ -256,7 +257,7 @@ func TestServiceImpl_GetServiceSettings(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("GetServiceSettings", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.GetServiceSettings), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSettings(ctx, request)
 
@@ -286,7 +287,7 @@ func TestServiceImpl_SearchForServiceSettings(t *testing.T) {
 			Query: query,
 		}
 
-		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return(exampleServiceSettings, nil)
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.SearchForServiceSettings), testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return(exampleServiceSettings, nil)
 
 		actual, err := service.SearchForServiceSettings(ctx, request)
 
@@ -310,7 +311,7 @@ func TestServiceImpl_SearchForServiceSettings(t *testing.T) {
 			Query: query,
 		}
 
-		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.SearchForServiceSettings), testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
 
 		actual, err := service.SearchForServiceSettings(ctx, request)
 
@@ -337,7 +338,7 @@ func TestServiceImpl_ArchiveServiceSetting(t *testing.T) {
 			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
-		settingsRepo.On("ArchiveServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(nil)
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.ArchiveServiceSetting), testutils.ContextMatcher, exampleServiceSetting.ID).Return(nil)
 
 		actual, err := service.ArchiveServiceSetting(ctx, request)
 
@@ -360,7 +361,7 @@ func TestServiceImpl_ArchiveServiceSetting(t *testing.T) {
 			ServiceSettingId: exampleServiceSetting.ID,
 		}
 
-		settingsRepo.On("ArchiveServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(errors.New("repository error"))
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.ArchiveServiceSetting), testutils.ContextMatcher, exampleServiceSetting.ID).Return(errors.New("repository error"))
 
 		actual, err := service.ArchiveServiceSetting(ctx, request)
 

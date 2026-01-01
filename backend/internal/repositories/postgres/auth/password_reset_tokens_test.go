@@ -111,7 +111,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with missing MealPlanTaskID", func(t *testing.T) {
+	T.Run("with missing ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

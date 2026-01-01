@@ -261,7 +261,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromIngredient(_ http.R
 		), nil
 	}
 
-	// Parse the preparation MealPlanTaskID from the request
+	// Parse the preparation ID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -305,7 +305,7 @@ func (s *AdminFrontendServer) CreateIngredientPreparationFromPreparation(_ http.
 		), nil
 	}
 
-	// Parse the ingredient MealPlanTaskID from the request
+	// Parse the ingredient ID from the request
 	var input struct {
 		ID string `json:"id"`
 	}
@@ -339,12 +339,12 @@ func (s *AdminFrontendServer) DeleteIngredientPreparation(_ http.ResponseWriter,
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	// Get the association MealPlanTaskID from the URL path
+	// Get the association ID from the URL path
 	associationID := req.PathValue("associationID")
 	if associationID == "" {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
-			g.Text("Error: No association MealPlanTaskID provided"),
+			g.Text("Error: No association ID provided"),
 		), nil
 	}
 

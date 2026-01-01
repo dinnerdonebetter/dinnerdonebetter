@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidIngredientStateIngredientInvocation struct {
-		ValidIngredientStateIngredientID string `jsonschema:"description=The ingredient state ingredient MealPlanTaskID"`
+		ValidIngredientStateIngredientID string `jsonschema:"description=The ingredient state ingredient ID"`
 	}
 )
 
 var validIngredientStateIngredientsSchema = map[string]any{
-	"MealPlanTaskID":  stringField("The MealPlanTaskID of the valid ingredient state ingredient"),
+	"ID":              stringField("The ID of the valid ingredient state ingredient"),
 	"CreatedAt":       timestampField("When the valid ingredient state ingredient was created"),
 	"LastUpdatedAt":   timestampField("When the valid ingredient state ingredient was last updated"),
 	"ArchivedAt":      timestampField("When the valid ingredient state ingredient was soft deleted"),
@@ -30,9 +30,9 @@ var validIngredientStateIngredientsSchema = map[string]any{
 
 var getValidIngredientStateIngredientTool = &mcp.Tool{
 	Name:        "GetValidIngredientStateIngredient",
-	Description: "Get a valid ingredient state ingredient by it's MealPlanTaskID",
+	Description: "Get a valid ingredient state ingredient by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientStateIngredientID": stringField("The MealPlanTaskID of the valid ingredient state ingredient to get"),
+		"ValidIngredientStateIngredientID": stringField("The ID of the valid ingredient state ingredient to get"),
 	}),
 	OutputSchema: schemaObject(validIngredientStateIngredientsSchema),
 }
@@ -94,8 +94,8 @@ var validIngredientStateIngredientCreationTool = &mcp.Tool{
 	Description: "Create a valid ingredient state ingredient linking an ingredient to an ingredient state.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":                  stringField("Notes about the ingredient state ingredient"),
-		"ValidIngredientStateID": stringField("The MealPlanTaskID of the valid ingredient state"),
-		"ValidIngredientID":      stringField("The MealPlanTaskID of the valid ingredient"),
+		"ValidIngredientStateID": stringField("The ID of the valid ingredient state"),
+		"ValidIngredientID":      stringField("The ID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientStateIngredientsSchema),
 }
@@ -114,7 +114,7 @@ func (h *mcpToolManager) CreateValidIngredientStateIngredient() mcp.ToolHandlerF
 type (
 	UpdateValidIngredientStateIngredientInvocation struct {
 		*mealplanning.ValidIngredientStateIngredientUpdateRequestInput
-		ValidIngredientStateIngredientID string `jsonschema:"required,description=The ingredient state ingredient MealPlanTaskID"`
+		ValidIngredientStateIngredientID string `jsonschema:"required,description=The ingredient state ingredient ID"`
 	}
 )
 
@@ -122,10 +122,10 @@ var validIngredientStateIngredientUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredientStateIngredient",
 	Description: "Update a valid ingredient state ingredient.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientStateIngredientID": stringField("The MealPlanTaskID of the valid ingredient state ingredient to update"),
+		"ValidIngredientStateIngredientID": stringField("The ID of the valid ingredient state ingredient to update"),
 		"Notes":                            stringField("Notes about the ingredient state ingredient"),
-		"ValidIngredientStateID":           stringField("The MealPlanTaskID of the valid ingredient state"),
-		"ValidIngredientID":                stringField("The MealPlanTaskID of the valid ingredient"),
+		"ValidIngredientStateID":           stringField("The ID of the valid ingredient state"),
+		"ValidIngredientID":                stringField("The ID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientStateIngredientsSchema),
 }

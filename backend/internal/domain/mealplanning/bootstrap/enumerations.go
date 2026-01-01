@@ -29,8 +29,6 @@ type Enumerations struct {
 
 // CreateEnumerations creates a comprehensive set of valid enumerations for local development.
 func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logger logging.Logger) (*Enumerations, error) {
-	const count = 75
-
 	enums := &Enumerations{
 		Ingredients:      make(map[string]*mealplanning.ValidIngredient),
 		Preparations:     make(map[string]*mealplanning.ValidPreparation),
@@ -45,15 +43,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		PreparationInstruments:     make(map[string]map[string]*mealplanning.ValidPreparationInstrument),
 		PreparationVessels:         make(map[string]map[string]*mealplanning.ValidPreparationVessel),
 	}
-
-	// Store first instances for bridge relationships
-	var firstValidIngredient *mealplanning.ValidIngredient
-	var firstValidInstrument *mealplanning.ValidInstrument
-	var firstValidPreparation *mealplanning.ValidPreparation
-	var firstValidMeasurementUnitGram *mealplanning.ValidMeasurementUnit
-	var firstValidMeasurementUnitKilogram *mealplanning.ValidMeasurementUnit
-	var firstValidVessel *mealplanning.ValidVessel
-	var firstValidIngredientState *mealplanning.ValidIngredientState
 
 	// Create 75 ValidIngredients - diverse list of real ingredients
 	ingredients := []*mealplanning.ValidIngredientDatabaseCreationInput{
@@ -251,15 +240,14 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "charcoal briquettes", Description: "Charcoal briquettes for grilling", PluralName: "charcoal briquettes", StorageInstructions: "Store in a dry place", Slug: "charcoal-briquettes", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		// Tortillas recipe ingredients
 		{ID: identifiers.New(), Name: "shortening", Description: "Solid vegetable shortening for baking and frying", PluralName: "shortening", StorageInstructions: "Store in a cool, dry place", Slug: "shortening", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		// Paper towels as an ingredient (consumed when used for drying)
+		{ID: identifiers.New(), Name: "paper towels", Description: "Absorbent paper towels for drying", PluralName: "paper towels", StorageInstructions: "Store in a cool, dry place", Slug: "paper-towels", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 	}
 
-	for i, ing := range ingredients {
+	for _, ing := range ingredients {
 		validIngredient, err := repo.CreateValidIngredient(ctx, ing)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create valid ingredient %d: %w", i+1, err)
-		}
-		if i == 0 {
-			firstValidIngredient = validIngredient
+			return nil, fmt.Errorf("failed to create valid ingredient %s: %w", ing.Name, err)
 		}
 		// Store ingredients we'll need for recipes
 		enums.Ingredients[validIngredient.Name] = validIngredient
@@ -330,7 +318,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 
 	nonDisplayables := []string{"bare hands"}
 
-	for i, inst := range instruments {
+	for _, inst := range instruments {
 		validInstrument, err2 := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
 			ID:                             identifiers.New(),
 			Name:                           inst.name,
@@ -343,78 +331,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		if err2 != nil {
 			return nil, fmt.Errorf("failed to create instrument %s: %w", inst.name, err2)
 		}
-		if i == 0 {
-			firstValidInstrument = validInstrument
-		}
 		if inst.mapKey != "" {
 			enums.Instruments[inst.mapKey] = validInstrument
-		}
-	}
-
-	// Create 75 ValidPreparations
-	for i := 1; i <= count; i++ {
-		validPreparation, err := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
-			ID:                          identifiers.New(),
-			Name:                        fmt.Sprintf("slicing %d", i),
-			Description:                 "Cut into thin, flat pieces",
-			Slug:                        fmt.Sprintf("slicing-%d", i),
-			PastTense:                   "sliced",
-			YieldsNothing:               false,
-			RestrictToIngredients:       false,
-			TemperatureRequired:         false,
-			TimeEstimateRequired:        false,
-			ConditionExpressionRequired: false,
-			ConsumesVessel:              false,
-			OnlyForVessels:              false,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid preparation %d: %w", i, err)
-		}
-		if i == 1 {
-			firstValidPreparation = validPreparation
-		}
-	}
-
-	// Create 75 ValidMeasurementUnits (Gram)
-	for i := 1; i <= count; i++ {
-		validMeasurementUnitGram, err := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
-			ID:          identifiers.New(),
-			Name:        fmt.Sprintf("gram %d", i),
-			Description: "Metric unit of mass",
-			PluralName:  "grams",
-			Slug:        fmt.Sprintf("gram-%d", i),
-			Volumetric:  false,
-			Universal:   true,
-			Metric:      true,
-			Imperial:    false,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid measurement unit (gram) %d: %w", i, err)
-		}
-		if i == 1 {
-			firstValidMeasurementUnitGram = validMeasurementUnitGram
-			enums.MeasurementUnits["gram"] = validMeasurementUnitGram
-		}
-	}
-
-	// Create 75 ValidMeasurementUnits (Kilogram)
-	for i := 1; i <= count; i++ {
-		validMeasurementUnitKilogram, err := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
-			ID:          identifiers.New(),
-			Name:        fmt.Sprintf("kilogram %d", i),
-			Description: "Metric unit of mass equal to 1000 grams",
-			PluralName:  "kilograms",
-			Slug:        fmt.Sprintf("kilogram-%d", i),
-			Volumetric:  false,
-			Universal:   true,
-			Metric:      true,
-			Imperial:    false,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create valid measurement unit (kilogram) %d: %w", i, err)
-		}
-		if i == 1 {
-			firstValidMeasurementUnitKilogram = validMeasurementUnitKilogram
 		}
 	}
 
@@ -428,6 +346,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		metric      bool
 	}{
 		{"unit", "A generic unit of measurement for recipe products", "units", "unit", false, false},
+		{"gram", "Metric unit of mass", "grams", "gram", false, true},
+		{"kilogram", "Metric unit of mass equal to 1000 grams", "kilograms", "kilogram", false, true},
 		{"milliliter", "Metric unit of volume", "milliliters", "milliliter", true, true},
 		{"liter", "Metric unit of volume equal to 1000 milliliters", "liters", "liter", true, true},
 		{"cup", "A volumetric measurement equal to 240 milliliters", "cups", "cup", true, false},
@@ -457,50 +377,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 			return nil, fmt.Errorf("failed to create measurement unit %s: %w", unit.name, err2)
 		}
 		enums.MeasurementUnits[unit.name] = validUnit
-	}
-
-	// Create 75 ValidVessels
-	for i := 1; i <= count; i++ {
-		validVessel, err2 := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
-			ID:                             identifiers.New(),
-			Name:                           fmt.Sprintf("cutting board %d", i),
-			Description:                    "A flat surface for cutting ingredients",
-			PluralName:                     "cutting boards",
-			Slug:                           fmt.Sprintf("cutting-board-%d", i),
-			IncludeInGeneratedInstructions: true,
-			DisplayInSummaryLists:          true,
-			CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
-			WidthInMillimeters:             300,
-			LengthInMillimeters:            400,
-			HeightInMillimeters:            20,
-			Shape:                          mealplanning.VesselShapeRectangle,
-			UsableForStorage:               true,
-		})
-		if err2 != nil {
-			return nil, fmt.Errorf("failed to create valid vessel %d: %w", i, err2)
-		}
-		if i == 1 {
-			firstValidVessel = validVessel
-			enums.Vessels["cutting board"] = validVessel
-		}
-	}
-
-	// Create 75 ValidIngredientStates
-	for i := 1; i <= count; i++ {
-		validIngredientState, err2 := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
-			ID:            identifiers.New(),
-			Name:          fmt.Sprintf("slice %d", i),
-			Description:   "a sliced ingredient",
-			AttributeType: mealplanning.ValidIngredientStateAttributeTypeOther,
-			PastTense:     "sliced",
-			Slug:          fmt.Sprintf("slice-%d", i),
-		})
-		if err2 != nil {
-			return nil, fmt.Errorf("failed to create valid ingredient state %d: %w", i, err2)
-		}
-		if i == 1 {
-			firstValidIngredientState = validIngredientState
-		}
 	}
 
 	// Create additional ingredient states for recipe completion conditions
@@ -729,93 +605,6 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.IngredientStates["lightly charred"] = lightlyCharredState
 
-	// Create bridge types using first instances
-
-	// ValidPreparationInstrument (Slicing requires Chef's Knife)
-	createdVPI, err := repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
-		ID:                 identifiers.New(),
-		ValidPreparationID: firstValidPreparation.ID,
-		ValidInstrumentID:  firstValidInstrument.ID,
-		Notes:              "A chef's knife is commonly used for slicing",
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid preparation instrument: %w", err)
-	}
-	// Store in lookup map
-	if enums.PreparationInstruments[firstValidPreparation.ID] == nil {
-		enums.PreparationInstruments[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidPreparationInstrument)
-	}
-	enums.PreparationInstruments[firstValidPreparation.ID][firstValidInstrument.ID] = createdVPI
-
-	// ValidIngredientMeasurementUnit (Garlic can be measured in Grams)
-	createdVIMU, err := repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
-		ID:                     identifiers.New(),
-		ValidIngredientID:      firstValidIngredient.ID,
-		ValidMeasurementUnitID: firstValidMeasurementUnitGram.ID,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
-	}
-	// Store in lookup map
-	if enums.IngredientMeasurementUnits[firstValidIngredient.ID] == nil {
-		enums.IngredientMeasurementUnits[firstValidIngredient.ID] = make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
-	}
-	enums.IngredientMeasurementUnits[firstValidIngredient.ID][firstValidMeasurementUnitGram.ID] = createdVIMU
-
-	// ValidIngredientStateIngredient (Garlic can be in Whole state)
-	_, err = repo.CreateValidIngredientStateIngredient(ctx, &mealplanning.ValidIngredientStateIngredientDatabaseCreationInput{
-		ID:                     identifiers.New(),
-		ValidIngredientID:      firstValidIngredient.ID,
-		ValidIngredientStateID: firstValidIngredientState.ID,
-		Notes:                  "Whole garlic cloves",
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid ingredient state ingredient: %w", err)
-	}
-
-	// ValidPreparationVessel (Slicing can be done on a Cutting Board)
-	createdVPV, err := repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
-		ID:                 identifiers.New(),
-		ValidPreparationID: firstValidPreparation.ID,
-		ValidVesselID:      firstValidVessel.ID,
-		Notes:              "Slicing is typically done on a cutting board",
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid preparation vessel: %w", err)
-	}
-	// Store in lookup map
-	if enums.PreparationVessels[firstValidPreparation.ID] == nil {
-		enums.PreparationVessels[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidPreparationVessel)
-	}
-	enums.PreparationVessels[firstValidPreparation.ID][firstValidVessel.ID] = createdVPV
-
-	// ValidMeasurementUnitConversion (Gram to Kilogram)
-	_, err = repo.CreateValidMeasurementUnitConversion(ctx, &mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput{
-		ID:       identifiers.New(),
-		From:     firstValidMeasurementUnitGram.ID,
-		To:       firstValidMeasurementUnitKilogram.ID,
-		Notes:    "conversion from grams to kilograms",
-		Modifier: 0.001, // 1 gram = 0.001 kilograms
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid measurement unit conversion: %w", err)
-	}
-
-	createdVIP, err := repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 identifiers.New(),
-		Notes:              "",
-		ValidPreparationID: firstValidPreparation.ID,
-		ValidIngredientID:  firstValidIngredient.ID,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create valid ingredient preparation: %w", err)
-	}
-	// Store in lookup map
-	if enums.IngredientPreparations[firstValidPreparation.ID] == nil {
-		enums.IngredientPreparations[firstValidPreparation.ID] = make(map[string]*mealplanning.ValidIngredientPreparation)
-	}
-	enums.IngredientPreparations[firstValidPreparation.ID][firstValidIngredient.ID] = createdVIP
-
 	// Create additional vessels needed for recipes
 	pan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
@@ -825,7 +614,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "pan",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            50,
@@ -845,7 +634,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "pot",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            150,
@@ -865,7 +654,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "baking-sheet",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            450,
 		HeightInMillimeters:            5,
@@ -885,7 +674,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "steamer",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            80,
@@ -906,7 +695,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "sheet-pan",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             330,
 		LengthInMillimeters:            460,
 		HeightInMillimeters:            25,
@@ -926,7 +715,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "cast-iron-skillet",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             305,
 		LengthInMillimeters:            305,
 		HeightInMillimeters:            50,
@@ -938,6 +727,26 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["cast iron skillet"] = castIronSkillet
 
+	cuttingBoard, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "cutting board",
+		Description:                    "A flat surface for cutting ingredients",
+		PluralName:                     "cutting boards",
+		Slug:                           "cutting-board",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
+		WidthInMillimeters:             300,
+		LengthInMillimeters:            400,
+		HeightInMillimeters:            20,
+		Shape:                          mealplanning.VesselShapeRectangle,
+		UsableForStorage:               true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cutting board vessel: %w", err)
+	}
+	enums.Vessels["cutting board"] = cuttingBoard
+
 	servingPlate, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "serving plate",
@@ -946,7 +755,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "serving-plate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             280,
 		LengthInMillimeters:            280,
 		HeightInMillimeters:            25,
@@ -967,7 +776,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "wire-rack",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            400,
 		HeightInMillimeters:            30,
@@ -987,7 +796,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "grill",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             400,
 		LengthInMillimeters:            600,
 		HeightInMillimeters:            200,
@@ -1007,7 +816,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "plastic-bag",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            5,
@@ -1028,7 +837,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "vacuum-bag",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            5,
@@ -1048,7 +857,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "water-bath",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            400,
 		HeightInMillimeters:            200,
@@ -1069,7 +878,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "small-bowl",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            80,
@@ -1089,7 +898,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "stainless-steel-skillet",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             305,
 		LengthInMillimeters:            305,
 		HeightInMillimeters:            50,
@@ -1109,7 +918,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "carving-board",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             400,
 		LengthInMillimeters:            500,
 		HeightInMillimeters:            30,
@@ -1130,7 +939,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "large-bowl",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            150,
@@ -1150,7 +959,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "saute-pan",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            50,
@@ -1171,7 +980,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "saucepan",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             180,
 		LengthInMillimeters:            180,
 		HeightInMillimeters:            100,
@@ -1192,7 +1001,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "fine-mesh-strainer",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            80,
@@ -1213,7 +1022,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "colander",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             250,
 		LengthInMillimeters:            250,
 		HeightInMillimeters:            120,
@@ -1234,7 +1043,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "small-nonstick-skillet",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            40,
@@ -1255,7 +1064,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "small-skillet",
 		DisplayInSummaryLists:          true,
 		IncludeInGeneratedInstructions: true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            40,
@@ -1275,7 +1084,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "serving-platter",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             350,
 		LengthInMillimeters:            450,
 		HeightInMillimeters:            25,
@@ -1295,7 +1104,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "oven",
 		IncludeInGeneratedInstructions: false,
 		DisplayInSummaryLists:          false,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             600,
 		LengthInMillimeters:            600,
 		HeightInMillimeters:            400,
@@ -1315,7 +1124,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "freezer",
 		IncludeInGeneratedInstructions: false,
 		DisplayInSummaryLists:          false,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             500,
 		LengthInMillimeters:            500,
 		HeightInMillimeters:            400,
@@ -1336,7 +1145,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "medium-skillet",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             250,
 		LengthInMillimeters:            250,
 		HeightInMillimeters:            50,
@@ -1356,7 +1165,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "refrigerator",
 		IncludeInGeneratedInstructions: false,
 		DisplayInSummaryLists:          false,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             600,
 		LengthInMillimeters:            600,
 		HeightInMillimeters:            1500,
@@ -1377,7 +1186,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "salad-spinner",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             250,
 		LengthInMillimeters:            250,
 		HeightInMillimeters:            200,
@@ -1397,7 +1206,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "serving-bowl",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            120,
@@ -1418,7 +1227,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "large-plate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             300,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            20,
@@ -1439,7 +1248,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "grilling-grate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             500,
 		LengthInMillimeters:            500,
 		HeightInMillimeters:            10,
@@ -1460,7 +1269,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "microwave-safe-plate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             250,
 		LengthInMillimeters:            250,
 		HeightInMillimeters:            10,
@@ -1480,7 +1289,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "blender-jar",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            200,
@@ -1500,7 +1309,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "sealed-container",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            100,
@@ -1520,7 +1329,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "zipper-lock-bag",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            300,
 		HeightInMillimeters:            5,
@@ -1540,7 +1349,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "charcoal-grate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             400,
 		LengthInMillimeters:            600,
 		HeightInMillimeters:            10,
@@ -1560,7 +1369,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "cooking-grate",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             500,
 		LengthInMillimeters:            500,
 		HeightInMillimeters:            10,
@@ -1580,7 +1389,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "chimney-starter-vessel",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            200,
@@ -1601,7 +1410,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "dutch-oven",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             260,
 		LengthInMillimeters:            260,
 		HeightInMillimeters:            150,
@@ -1621,7 +1430,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "medium-bowl",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             200,
 		LengthInMillimeters:            200,
 		HeightInMillimeters:            100,
@@ -1641,7 +1450,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "microwave-safe-bowl",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             150,
 		LengthInMillimeters:            150,
 		HeightInMillimeters:            80,
@@ -1662,7 +1471,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "immersion-blender-cup",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             80,
 		LengthInMillimeters:            80,
 		HeightInMillimeters:            200,
@@ -1683,7 +1492,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "baking-pan",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             230,
 		LengthInMillimeters:            230,
 		HeightInMillimeters:            50,
@@ -1704,7 +1513,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		Slug:                           "wok",
 		IncludeInGeneratedInstructions: true,
 		DisplayInSummaryLists:          true,
-		CapacityUnitID:                 &firstValidMeasurementUnitGram.ID,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
 		WidthInMillimeters:             360,
 		LengthInMillimeters:            360,
 		HeightInMillimeters:            120,
@@ -1790,9 +1599,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"rest", "Allow food to sit after cooking to redistribute juices", "rested", "rest", false, true},
 		// Additional preparations for sous vide chicken recipe
 		{"pound", "Flatten meat to an even thickness using a mallet or heavy object", "pounded", "pound", false, false},
-		{"wet-brine", "Soak in a saltwater solution to season and tenderize", "wet-brined", "wet-brine", false, true},
-		{"dry-brine", "Salt and refrigerate uncovered to season and dry the surface", "dry-brined", "dry-brine", false, true},
+		{"wet brine", "Soak in a saltwater solution to season and tenderize", "wet-brined", "wet-brine", false, true},
+		{"dry brine", "Salt and refrigerate uncovered to season and dry the surface", "dry-brined", "dry-brine", false, true},
 		{"bag", "Place ingredients in a bag for cooking or storage", "bagged", "bag", false, false},
+		{"seal", "Close or seal a bag or container to make it airtight", "sealed", "seal", false, false},
 		{"sous-vide", "Cook in a temperature-controlled water bath while sealed in a bag", "sous-vided", "sous-vide", true, true},
 		// Additional preparations for roast chicken recipe
 		{"truss", "Tie meat or poultry with string to maintain shape during cooking", "trussed", "truss", false, false},
@@ -2077,6 +1887,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get preparations
 	seasonPrep := enums.Preparations["season"]
+	slicePrep := enums.Preparations["slice"]
 	panSearPrep := enums.Preparations["pan-sear"]
 	bastePrep := enums.Preparations["baste"]
 	restPrep := enums.Preparations["rest"]
@@ -2090,6 +1901,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	thyme := enums.Ingredients["thyme"]
 	rosemary := enums.Ingredients["rosemary"]
 	shallot := enums.Ingredients["shallot"]
+	paperTowelsIngredient, err := getIngredient("paper towels")
+	if err != nil {
+		return err
+	}
 
 	// Get measurement units
 	unitMeasurement := enums.MeasurementUnits["unit"]
@@ -2099,6 +1914,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get instruments
 	paperTowels, err := getInstrument("paper towels")
+	if err != nil {
+		return err
+	}
+	bareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	knife, err := getInstrument("knife")
 	if err != nil {
 		return err
 	}
@@ -2117,6 +1940,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Get vessels
 	sheetPan := enums.Vessels["sheet pan"]
+	cuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
 	castIronSkillet := enums.Vessels["cast iron skillet"]
 	servingPlate := enums.Vessels["serving plate"]
 
@@ -2129,11 +1956,41 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(dryPrep, ribeye); err != nil {
 		return err
 	}
+	if err = createVIP(dryPrep, paperTowelsIngredient); err != nil {
+		return err
+	}
 
-	// Ingredient-MeasurementUnit links (already created for ribeye)
+	// Ingredient-MeasurementUnit links
+	if err = createVIMU(ribeye, gramMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(paperTowelsIngredient, unitMeasurement); err != nil {
+		return err
+	}
 
 	// Preparation-Instrument links
-	if err = createVPI(dryPrep, paperTowels); err != nil {
+	if err = createVPI(dryPrep, bareHands); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION ===
+	// Ingredient-Preparation links
+	if err = createVIP(slicePrep, shallot); err != nil {
+		return err
+	}
+
+	// Ingredient-MeasurementUnit links (already created for shallot)
+
+	// Preparation-Instrument links
+	if err = createVPI(slicePrep, knife); err != nil {
+		return err
+	}
+	if err = createVPI(slicePrep, bareHands); err != nil {
+		return err
+	}
+
+	// Preparation-Vessel links
+	if err = createVPV(slicePrep, cuttingBoard); err != nil {
 		return err
 	}
 
@@ -2163,7 +2020,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(ribeye, unitMeasurement); err != nil {
+	if err = createVIMU(ribeye, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(salt, gramMeasurement); err != nil {
@@ -2174,10 +2031,6 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Instrument links
-	bareHands, err := getInstrument("bare hands")
-	if err != nil {
-		return err
-	}
 	if err = createVPI(seasonPrep, bareHands); err != nil {
 		return err
 	}
@@ -2269,10 +2122,26 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === CHICKEN RECIPE BRIDGE ENTRIES ===
 	// Get preparations for chicken recipe
-	poundPrep := enums.Preparations["pound"]
-	wetBrinePrep := enums.Preparations["wet-brine"]
-	dryBrinePrep := enums.Preparations["dry-brine"]
-	grillPrep := enums.Preparations["grill"]
+	chickenSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	chickenPoundPrep, err := getPreparation("pound")
+	if err != nil {
+		return err
+	}
+	chickenWetBrinePrep, err := getPreparation("wet brine")
+	if err != nil {
+		return err
+	}
+	chickenDryBrinePrep, err := getPreparation("dry brine")
+	if err != nil {
+		return err
+	}
+	chickenGrillPrep, err := getPreparation("grill")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for chicken recipe
 	chickenBreast := enums.Ingredients["chicken breast"]
@@ -2295,7 +2164,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === SEASON PREPARATION (for chicken breast) ===
 	// Ingredient-Preparation links
-	if err = createVIP(seasonPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenSeasonPrep, chickenBreast); err != nil {
 		return err
 	}
 
@@ -2303,38 +2172,41 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(chickenBreast, unitMeasurement); err != nil {
 		return err
 	}
+	if err = createVIMU(chickenBreast, gramMeasurement); err != nil {
+		return err
+	}
 
 	// === POUND PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(poundPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenPoundPrep, chickenBreast); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(poundPrep, meatPounder); err != nil {
+	if err = createVPI(chickenPoundPrep, meatPounder); err != nil {
 		return err
 	}
-	if err = createVPI(poundPrep, rollingPin); err != nil {
+	if err = createVPI(chickenPoundPrep, rollingPin); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(poundPrep, plasticBag); err != nil {
+	if err = createVPV(chickenPoundPrep, plasticBag); err != nil {
 		return err
 	}
 
 	// === WET-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(wetBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(chickenWetBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, salt); err != nil {
+	if err = createVIP(chickenWetBrinePrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, sugar); err != nil {
+	if err = createVIP(chickenWetBrinePrep, sugar); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, water); err != nil {
+	if err = createVIP(chickenWetBrinePrep, water); err != nil {
 		return err
 	}
 
@@ -2348,33 +2220,33 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === DRY-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(dryBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(chickenDryBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(dryBrinePrep, salt); err != nil {
+	if err = createVIP(chickenDryBrinePrep, salt); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(chickenDryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err = createVPV(dryBrinePrep, sheetPan); err != nil {
+	if err = createVPV(chickenDryBrinePrep, sheetPan); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(grillPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenGrillPrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, oliveOil); err != nil {
+	if err = createVIP(chickenGrillPrep, oliveOil); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, salt); err != nil {
+	if err = createVIP(chickenGrillPrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, blackPepper); err != nil {
+	if err = createVIP(chickenGrillPrep, blackPepper); err != nil {
 		return err
 	}
 
@@ -2384,21 +2256,21 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(grillPrep, brush); err != nil {
+	if err = createVPI(chickenGrillPrep, brush); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, thermometer); err != nil {
+	if err = createVPI(chickenGrillPrep, thermometer); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, tongs); err != nil {
+	if err = createVPI(chickenGrillPrep, tongs); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, paperTowels); err != nil {
+	if err = createVPI(chickenGrillPrep, paperTowels); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(grillPrep, grillVessel); err != nil {
+	if err = createVPV(chickenGrillPrep, grillVessel); err != nil {
 		return err
 	}
 
@@ -2499,26 +2371,59 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === GRILL PREPARATION (for finishing) ===
 	// Ingredient-Preparation links for bone-in skin-on chicken
-	if err = createVIP(grillPrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(chickenGrillPrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
 
 	// === ROAST CHICKEN RECIPE BRIDGE ENTRIES ===
-	// Get preparations for roast chicken recipe
-	mixPrep := enums.Preparations["mix"]
-	seasonPrep = enums.Preparations["season"]
-	trussPrep := enums.Preparations["truss"]
-	dryBrinePrep = enums.Preparations["dry-brine"]
-	heatPrep = enums.Preparations["heat"]
-	rubPrep := enums.Preparations["rub"]
-	panSearPrep = enums.Preparations["pan-sear"]
-	roastPrep := enums.Preparations["roast"]
-	restPrep = enums.Preparations["rest"]
+	// Get preparations for roast chicken recipe (using fresh variable names to avoid scope issues)
+	roastChickenMixPrep, err := getPreparation("mix")
+	if err != nil {
+		return err
+	}
+	roastChickenSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	roastChickenTrussPrep, err := getPreparation("truss")
+	if err != nil {
+		return err
+	}
+	roastChickenDryBrinePrep, err := getPreparation("dry brine")
+	if err != nil {
+		return err
+	}
+	roastChickenPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	roastChickenHeatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	roastChickenRubPrep, err := getPreparation("rub")
+	if err != nil {
+		return err
+	}
+	roastChickenPanSearPrep, err := getPreparation("pan-sear")
+	if err != nil {
+		return err
+	}
+	roastChickenRoastPrep, err := getPreparation("roast")
+	if err != nil {
+		return err
+	}
+	roastChickenRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for roast chicken recipe
-	wholeChicken := enums.Ingredients["whole chicken"]
-	bakingPowder := enums.Ingredients["baking powder"]
-	vegetableOil = enums.Ingredients["vegetable oil"]
+	roastChickenWholeChicken := enums.Ingredients["whole chicken"]
+	roastChickenBakingPowder := enums.Ingredients["baking powder"]
+	roastChickenVegetableOil := enums.Ingredients["vegetable oil"]
+	roastChickenSalt := enums.Ingredients["salt"]
+	roastChickenBlackPepper := enums.Ingredients["black pepper"]
 
 	// Get instruments for roast chicken recipe
 	butchersTwine := enums.Instruments["butcher's twine"]
@@ -2528,26 +2433,31 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	stainlessSteelSkillet := enums.Vessels["stainless steel skillet"]
 	carvingBoard := enums.Vessels["carving board"]
 	bakingSheet := enums.Vessels["baking sheet"]
+	oven := enums.Vessels["oven"]
 	// wireRack already defined above in chicken recipe section
 
 	// Get measurement units for roast chicken
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	gramMeasurement = enums.MeasurementUnits["gram"]
 
 	// === MIX PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(mixPrep, salt); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenSalt); err != nil {
 		return err
 	}
-	if err = createVIP(mixPrep, blackPepper); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenBlackPepper); err != nil {
 		return err
 	}
-	if err = createVIP(mixPrep, bakingPowder); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenBakingPowder); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
+	if err = createVIMU(roastChickenBakingPowder, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(roastChickenBakingPowder, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(salt, tablespoonMeasurement); err != nil {
@@ -2561,101 +2471,110 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(mixPrep, smallBowl); err != nil {
+	if err = createVPV(roastChickenMixPrep, smallBowl); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(seasonPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenSeasonPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(wholeChicken, unitMeasurement); err != nil {
+	if err = createVIMU(roastChickenWholeChicken, unitMeasurement); err != nil {
 		return err
 	}
 
 	// === TRUSS PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(trussPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenTrussPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(trussPrep, butchersTwine); err != nil {
+	if err = createVPI(roastChickenTrussPrep, butchersTwine); err != nil {
 		return err
 	}
 
 	// === DRY-BRINE PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(dryBrinePrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenDryBrinePrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(roastChickenDryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err = createVPV(dryBrinePrep, bakingSheet); err != nil {
+	if err = createVPV(roastChickenDryBrinePrep, bakingSheet); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION (for oven) ===
+	// Preparation-Vessel links
+	if err = createVPV(roastChickenPreheatPrep, oven); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION (for stainless steel skillet) ===
 	// Preparation-Vessel links
-	if err = createVPV(heatPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenHeatPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === RUB PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(rubPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRubPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
-	if err = createVIP(rubPrep, vegetableOil); err != nil {
+	if err = createVIP(roastChickenRubPrep, roastChickenVegetableOil); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(rubPrep, bareHands); err != nil {
+	if err = createVPI(roastChickenRubPrep, bareHands); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(panSearPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenPanSearPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(panSearPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenPanSearPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === ROAST PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(roastPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRoastPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(roastPrep, thermometer); err != nil {
+	if err = createVPI(roastChickenRoastPrep, thermometer); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(roastPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenRoastPrep, stainlessSteelSkillet); err != nil {
+		return err
+	}
+	if err = createVPV(roastChickenRoastPrep, oven); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(restPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRestPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(restPrep, carvingBoard); err != nil {
+	if err = createVPV(roastChickenRestPrep, carvingBoard); err != nil {
 		return err
 	}
 
@@ -2664,6 +2583,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	porkSeasonPrep := enums.Preparations["season"]
 	porkDryPrep := enums.Preparations["dry"]
 	porkBagPrep := enums.Preparations["bag"]
+	porkSealPrep := enums.Preparations["seal"]
 	porkSousVidePrep := enums.Preparations["sous-vide"]
 	porkPanSearPrep := enums.Preparations["pan-sear"]
 	porkBastePrep := enums.Preparations["baste"]
@@ -2795,6 +2715,13 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPV(porkBagPrep, porkVacuumBag); err != nil {
 		return err
 	}
+	// Seal with vacuum bag
+	if err = createVPV(porkSealPrep, porkVacuumBag); err != nil {
+		return err
+	}
+	if err = createVPV(porkSealPrep, porkPlasticBag); err != nil {
+		return err
+	}
 	// Sous vide in water bath
 	if err = createVPV(porkSousVidePrep, porkWaterBath); err != nil {
 		return err
@@ -2865,7 +2792,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	meatGrinder := enums.Instruments["meat grinder"]
 	wideSpatula := enums.Instruments["wide spatula"]
 	burgerBareHands := enums.Instruments["bare hands"]
-	knife := enums.Instruments["knife"]
+	burgerKnife := enums.Instruments["knife"]
 
 	// Get vessels for burger recipe
 	largeBowl := enums.Vessels["large bowl"]
@@ -2901,7 +2828,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(oxtail, ounceMeasurement); err != nil {
 		return err
 	}
-	if err = createVPI(trimPrep, knife); err != nil {
+	if err = createVPI(trimPrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(trimPrep, burgerCuttingBoard); err != nil {
@@ -2912,7 +2839,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(debonePrep, oxtail); err != nil {
 		return err
 	}
-	if err = createVPI(debonePrep, knife); err != nil {
+	if err = createVPI(debonePrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(debonePrep, burgerCuttingBoard); err != nil {
@@ -2929,7 +2856,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(cubePrep, oxtail); err != nil {
 		return err
 	}
-	if err = createVPI(cubePrep, knife); err != nil {
+	if err = createVPI(cubePrep, burgerKnife); err != nil {
 		return err
 	}
 	if err = createVPV(cubePrep, burgerCuttingBoard); err != nil {

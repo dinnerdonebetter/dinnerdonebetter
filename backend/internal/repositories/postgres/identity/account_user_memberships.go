@@ -74,7 +74,7 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID 
 	return sessionCtxData, nil
 }
 
-// GetDefaultAccountIDForUser retrieves the default account MealPlanTaskID for a user.
+// GetDefaultAccountIDForUser retrieves the default account ID for a user.
 func (r *repository) GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
@@ -89,7 +89,7 @@ func (r *repository) GetDefaultAccountIDForUser(ctx context.Context, userID stri
 
 	id, err := r.generatedQuerier.GetDefaultAccountIDForUser(ctx, r.db, userID)
 	if err != nil {
-		return "", observability.PrepareAndLogError(err, logger, span, "fetching default account MealPlanTaskID for user")
+		return "", observability.PrepareAndLogError(err, logger, span, "fetching default account ID for user")
 	}
 
 	return id, nil

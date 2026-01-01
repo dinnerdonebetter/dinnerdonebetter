@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
@@ -21,9 +20,6 @@ jobs:
           filters: |
             backend:
               - backend/**/*.go
-            frontend:
-              - frontend/packages/**/*.ts
-              - frontend/packages/**/*.test
             ios:
               - ios/**/*.swift
               - ios/**/*.xcodeproj
@@ -50,27 +46,6 @@ jobs:
       - name: run unit tests
         working-directory: backend
         run: make test
-
-  frontend:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.frontend == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['lts/*']
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend
-
-      - run: yarn run test
-        working-directory: frontend
 
   ios_unit_tests:
     needs: [changes]

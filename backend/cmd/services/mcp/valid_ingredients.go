@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidIngredientsInvocation struct {
-		ValidIngredientID string `jsonschema:"description=The ingredient MealPlanTaskID"`
+		ValidIngredientID string `jsonschema:"description=The ingredient ID"`
 	}
 )
 
 var validIngredientsSchema = map[string]any{
-	"MealPlanTaskID":              stringField("The MealPlanTaskID of the valid ingredient"),
+	"ID":                          stringField("The ID of the valid ingredient"),
 	"CreatedAt":                   timestampField("When the valid ingredient was created"),
 	"LastUpdatedAt":               timestampField("When the valid ingredient was last updated"),
 	"ArchivedAt":                  timestampField("When the valid ingredient was soft deleted"),
@@ -59,9 +59,9 @@ var validIngredientsSchema = map[string]any{
 
 var getValidIngredientTool = &mcp.Tool{
 	Name:        "GetValidIngredient",
-	Description: "Get a valid ingredient by it's MealPlanTaskID",
+	Description: "Get a valid ingredient by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientID": stringField("The MealPlanTaskID of the valid ingredient to update"),
+		"ValidIngredientID": stringField("The ID of the valid ingredient to update"),
 	}),
 	OutputSchema: schemaObject(validIngredientsSchema),
 }
@@ -184,7 +184,7 @@ func (h *mcpToolManager) CreateValidIngredient() mcp.ToolHandlerFor[*mealplannin
 type (
 	UpdateValidIngredientInvocation struct {
 		*mealplanning.ValidIngredientUpdateRequestInput
-		ValidIngredientID string `jsonschema:"required,description=The ingredient MealPlanTaskID"`
+		ValidIngredientID string `jsonschema:"required,description=The ingredient ID"`
 	}
 )
 
@@ -192,7 +192,7 @@ var validIngredientUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredient",
 	Description: "Update a valid ingredient for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientID":           stringField("The MealPlanTaskID of the valid ingredient to update"),
+		"ValidIngredientID":           stringField("The ID of the valid ingredient to update"),
 		"Name":                        stringField("Name of the ingredient"),
 		"Description":                 stringField("Description of the ingredient"),
 		"Warning":                     stringField("For things like allergen warnings"),

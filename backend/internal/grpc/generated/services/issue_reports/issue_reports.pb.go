@@ -28,7 +28,7 @@ const (
 
 type DataCollection struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	IssueReports  map[string]*IssueReport `protobuf:"bytes,1,rep,name=issue_reports,json=issueReports,proto3" json:"issue_reports,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	IssueReports  map[string]*IssueReport `json:"issue_reports,omitempty" protobuf:"bytes,1,rep,name=issue_reports,json=issueReports,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -72,16 +72,16 @@ func (x *DataCollection) GetIssueReports() map[string]*IssueReport {
 
 type IssueReport struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
-	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
-	IssueType        string                 `protobuf:"bytes,5,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
-	Details          string                 `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
-	RelevantTable    string                 `protobuf:"bytes,7,opt,name=relevant_table,json=relevantTable,proto3" json:"relevant_table,omitempty"`
-	RelevantRecordId string                 `protobuf:"bytes,8,opt,name=relevant_record_id,json=relevantRecordId,proto3" json:"relevant_record_id,omitempty"`
-	CreatedByUser    string                 `protobuf:"bytes,9,opt,name=created_by_user,json=createdByUser,proto3" json:"created_by_user,omitempty"`
-	BelongsToAccount string                 `protobuf:"bytes,10,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
+	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
+	IssueType        string                 `json:"issue_type,omitempty"         protobuf:"bytes,5,opt,name=issue_type,json=issueType,proto3"`
+	Details          string                 `json:"details,omitempty"            protobuf:"bytes,6,opt,name=details,proto3"`
+	RelevantTable    string                 `json:"relevant_table,omitempty"     protobuf:"bytes,7,opt,name=relevant_table,json=relevantTable,proto3"`
+	RelevantRecordId string                 `json:"relevant_record_id,omitempty" protobuf:"bytes,8,opt,name=relevant_record_id,json=relevantRecordId,proto3"`
+	CreatedByUser    string                 `json:"created_by_user,omitempty"    protobuf:"bytes,9,opt,name=created_by_user,json=createdByUser,proto3"`
+	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,10,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -188,10 +188,10 @@ func (x *IssueReport) GetBelongsToAccount() string {
 
 type IssueReportCreationRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	IssueType        string                 `protobuf:"bytes,1,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
-	Details          string                 `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
-	RelevantTable    string                 `protobuf:"bytes,3,opt,name=relevant_table,json=relevantTable,proto3" json:"relevant_table,omitempty"`
-	RelevantRecordId string                 `protobuf:"bytes,4,opt,name=relevant_record_id,json=relevantRecordId,proto3" json:"relevant_record_id,omitempty"`
+	IssueType        string                 `json:"issue_type,omitempty"         protobuf:"bytes,1,opt,name=issue_type,json=issueType,proto3"`
+	Details          string                 `json:"details,omitempty"            protobuf:"bytes,2,opt,name=details,proto3"`
+	RelevantTable    string                 `json:"relevant_table,omitempty"     protobuf:"bytes,3,opt,name=relevant_table,json=relevantTable,proto3"`
+	RelevantRecordId string                 `json:"relevant_record_id,omitempty" protobuf:"bytes,4,opt,name=relevant_record_id,json=relevantRecordId,proto3"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -256,10 +256,10 @@ func (x *IssueReportCreationRequestInput) GetRelevantRecordId() string {
 
 type IssueReportUpdateRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	IssueType        *string                `protobuf:"bytes,1,opt,name=issue_type,json=issueType,proto3,oneof" json:"issue_type,omitempty"`
-	Details          *string                `protobuf:"bytes,2,opt,name=details,proto3,oneof" json:"details,omitempty"`
-	RelevantTable    *string                `protobuf:"bytes,3,opt,name=relevant_table,json=relevantTable,proto3,oneof" json:"relevant_table,omitempty"`
-	RelevantRecordId *string                `protobuf:"bytes,4,opt,name=relevant_record_id,json=relevantRecordId,proto3,oneof" json:"relevant_record_id,omitempty"`
+	IssueType        *string                `json:"issue_type,omitempty"         protobuf:"bytes,1,opt,name=issue_type,json=issueType,proto3,oneof"`
+	Details          *string                `json:"details,omitempty"            protobuf:"bytes,2,opt,name=details,proto3,oneof"`
+	RelevantTable    *string                `json:"relevant_table,omitempty"     protobuf:"bytes,3,opt,name=relevant_table,json=relevantTable,proto3,oneof"`
+	RelevantRecordId *string                `json:"relevant_record_id,omitempty" protobuf:"bytes,4,opt,name=relevant_record_id,json=relevantRecordId,proto3,oneof"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -325,7 +325,7 @@ func (x *IssueReportUpdateRequestInput) GetRelevantRecordId() string {
 // CreateIssueReport
 type CreateIssueReportRequest struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
-	Input         *IssueReportCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *IssueReportCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -369,8 +369,8 @@ func (x *CreateIssueReportRequest) GetInput() *IssueReportCreationRequestInput {
 
 type CreateIssueReportResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Created         *IssueReport           `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Created         *IssueReport           `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -422,7 +422,7 @@ func (x *CreateIssueReportResponse) GetCreated() *IssueReport {
 // GetIssueReport
 type GetIssueReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	IssueReportId string                 `protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3" json:"issue_report_id,omitempty"`
+	IssueReportId string                 `json:"issue_report_id,omitempty" protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -466,8 +466,8 @@ func (x *GetIssueReportRequest) GetIssueReportId() string {
 
 type GetIssueReportResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *IssueReport           `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *IssueReport           `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -519,7 +519,7 @@ func (x *GetIssueReportResponse) GetResult() *IssueReport {
 // GetIssueReports
 type GetIssueReportsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -563,9 +563,9 @@ func (x *GetIssueReportsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetIssueReportsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*IssueReport         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*IssueReport         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -624,8 +624,8 @@ func (x *GetIssueReportsResponse) GetResults() []*IssueReport {
 // GetIssueReportsForAccount
 type GetIssueReportsForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,2,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -676,9 +676,9 @@ func (x *GetIssueReportsForAccountRequest) GetFilter() *filtering.QueryFilter {
 
 type GetIssueReportsForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*IssueReport         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*IssueReport         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -737,8 +737,8 @@ func (x *GetIssueReportsForAccountResponse) GetResults() []*IssueReport {
 // GetIssueReportsForTable
 type GetIssueReportsForTableRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TableName     string                 `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	TableName     string                 `json:"table_name,omitempty" protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,2,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -789,9 +789,9 @@ func (x *GetIssueReportsForTableRequest) GetFilter() *filtering.QueryFilter {
 
 type GetIssueReportsForTableResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*IssueReport         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*IssueReport         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -850,9 +850,9 @@ func (x *GetIssueReportsForTableResponse) GetResults() []*IssueReport {
 // GetIssueReportsForRecord
 type GetIssueReportsForRecordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TableName     string                 `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
-	RecordId      string                 `protobuf:"bytes,2,opt,name=record_id,json=recordId,proto3" json:"record_id,omitempty"`
-	Filter        *filtering.QueryFilter `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
+	TableName     string                 `json:"table_name,omitempty" protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3"`
+	RecordId      string                 `json:"record_id,omitempty"  protobuf:"bytes,2,opt,name=record_id,json=recordId,proto3"`
+	Filter        *filtering.QueryFilter `json:"filter,omitempty"     protobuf:"bytes,3,opt,name=filter,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -910,9 +910,9 @@ func (x *GetIssueReportsForRecordRequest) GetFilter() *filtering.QueryFilter {
 
 type GetIssueReportsForRecordResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Results         []*IssueReport         `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
+	Results         []*IssueReport         `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -971,8 +971,8 @@ func (x *GetIssueReportsForRecordResponse) GetResults() []*IssueReport {
 // UpdateIssueReport
 type UpdateIssueReportRequest struct {
 	state         protoimpl.MessageState         `protogen:"open.v1"`
-	IssueReportId string                         `protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3" json:"issue_report_id,omitempty"`
-	Input         *IssueReportUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	IssueReportId string                         `json:"issue_report_id,omitempty" protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3"`
+	Input         *IssueReportUpdateRequestInput `json:"input,omitempty"           protobuf:"bytes,2,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1023,8 +1023,8 @@ func (x *UpdateIssueReportRequest) GetInput() *IssueReportUpdateRequestInput {
 
 type UpdateIssueReportResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Updated         *IssueReport           `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Updated         *IssueReport           `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1076,7 +1076,7 @@ func (x *UpdateIssueReportResponse) GetUpdated() *IssueReport {
 // ArchiveIssueReport
 type ArchiveIssueReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	IssueReportId string                 `protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3" json:"issue_report_id,omitempty"`
+	IssueReportId string                 `json:"issue_report_id,omitempty" protobuf:"bytes,1,opt,name=issue_report_id,json=issueReportId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1120,7 +1120,7 @@ func (x *ArchiveIssueReportRequest) GetIssueReportId() string {
 
 type ArchiveIssueReportResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

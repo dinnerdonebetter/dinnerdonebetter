@@ -13,6 +13,7 @@ import (
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -89,7 +90,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminUpdateUserStatus), testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.GoodStandingUserAccountStatus.String()
 		})).Return(nil)
@@ -132,7 +133,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		service, identityDataManager := buildTestServiceWithAdminPermissions(t)
 
-		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.AnythingOfType("*identity.UserAccountStatusUpdateInput")).Return(errors.New("update error"))
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminUpdateUserStatus), testutils.ContextMatcher, mock.AnythingOfType("*identity.UserAccountStatusUpdateInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
 			TargetUserId: identityfakes.BuildFakeID(),
@@ -156,7 +157,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminUpdateUserStatus), testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.BannedUserAccountStatus.String()
 		})).Return(nil)
@@ -181,7 +182,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On(reflection.GetMethodName(identityDataManager.AdminUpdateUserStatus), testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.UnverifiedAccountStatus.String()
 		})).Return(nil)

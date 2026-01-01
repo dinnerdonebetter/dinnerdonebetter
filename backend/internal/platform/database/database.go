@@ -48,6 +48,8 @@ type (
 
 	Client interface {
 		DB() *sql.DB
+		WriteDB() *sql.DB
+		ReadDB() *sql.DB
 		Close() error
 		CurrentTime() time.Time
 		RollbackTransaction(ctx context.Context, tx SQLQueryExecutorAndTransactionManager)

@@ -29,7 +29,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v2.4.0
+LINTER_IMAGE           := golangci/golangci-lint:v2.7.2
 SHELLCHECK_IMAGE       := koalaman/shellcheck:stable
 GO_IMAGE               := golang:1.25-trixie
 
@@ -66,7 +66,7 @@ ensure_fieldalignment_installed:
 
 .PHONY: ensure_tagalign_installed
 ensure_tagalign_installed:
-	@$(SCRIPTS_DIR)/ensure_tool_installed.sh tagalign "go install github.com/4meepo/tagalign/cmd/tagalign@v1.4.1"
+	@$(SCRIPTS_DIR)/ensure_tool_installed.sh tagalign "go install github.com/4meepo/tagalign/cmd/tagalign@v1.4.3"
 
 .PHONY: ensure_gci_installed
 ensure_gci_installed:
@@ -184,7 +184,8 @@ struct_usage_check:
 
 .PHONY: env_vars
 env_vars:
-	$(SCRIPTS_DIR)/env_vars.sh $(THIS) "$(GO_FORMAT)"
+	$(SCRIPTS_DIR)/env_vars.sh $(THIS)
+	$(MAKE) format_golang
 
 ## INTEGRATION TESTING
 

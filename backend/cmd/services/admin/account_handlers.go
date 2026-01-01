@@ -29,7 +29,7 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 
 	accountID := s.accountIDRouteParamFetcher(req)
 	if accountID == "" {
-		return page("Accounts", s.renderAccountsError("Error: No account MealPlanTaskID provided")), nil
+		return page("Accounts", s.renderAccountsError("Error: No account ID provided")), nil
 	}
 
 	accountsRes, err := c.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountId: accountID})
@@ -213,7 +213,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 			g.Attr("class", "text-center py-4"),
 			ghtml.P(
 				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
-				g.Text("Error: No account MealPlanTaskID provided"),
+				g.Text("Error: No account ID provided"),
 			),
 		), nil
 	}
@@ -253,7 +253,7 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 		TableID: "account-users-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"MealPlanTaskID",
+			"ID",
 			"Username",
 			"CreatedAt",
 		},
@@ -358,7 +358,7 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 			TableID: "accounts-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"MealPlanTaskID",
+				"ID",
 				"Name",
 				"BillingStatus",
 				"ContactPhone",
@@ -369,7 +369,7 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 				"ArchivedAt",
 			},
 			FieldReplacements: map[string]string{
-				"PaymentProcessorCustomerID": "Payment Processor MealPlanTaskID",
+				"PaymentProcessorCustomerID": "Payment Processor ID",
 				"SubscriptionPlanID":         "Subscription Plan",
 			},
 			FieldRenderers: map[string]components.FieldRenderer{
@@ -460,7 +460,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		TableID: "accounts-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"MealPlanTaskID",
+			"ID",
 			"Name",
 			"BillingStatus",
 			"ContactPhone",
@@ -471,7 +471,7 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 			"ArchivedAt",
 		},
 		FieldReplacements: map[string]string{
-			"PaymentProcessorCustomerID": "Payment Processor MealPlanTaskID",
+			"PaymentProcessorCustomerID": "Payment Processor ID",
 			"SubscriptionPlanID":         "Subscription Plan",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
