@@ -53,7 +53,7 @@ func TestServiceImpl_ArchiveRecipe(T *testing.T) {
 		mrm.On(reflection.GetMethodName(mrm.ArchiveRecipe), testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -557,7 +557,7 @@ func TestServiceImpl_CloneRecipe(T *testing.T) {
 		mrm.On(reflection.GetMethodName(mrm.CloneRecipe), testutils.ContextMatcher, exampleRecipeID, exampleUserID).Return(exampleClonedRecipe, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -591,7 +591,7 @@ func TestServiceImpl_CreateRecipe(T *testing.T) {
 		mrm.On(reflection.GetMethodName(mrm.CreateRecipe), testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.RecipeCreationRequestInput]()).Return(exampleCreatedRecipe, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -656,7 +656,7 @@ func TestServiceImpl_CreateRecipeRating(T *testing.T) {
 		mrm.On(reflection.GetMethodName(mrm.CreateRecipeRating), testutils.ContextMatcher, exampleRecipeID, testutils.MatchType[*mealplanning.RecipeRatingCreationRequestInput]()).Return(exampleCreatedRecipeRating, nil)
 		s.recipeManager = mrm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{

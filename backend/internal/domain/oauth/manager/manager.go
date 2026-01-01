@@ -127,7 +127,7 @@ func (m *manager) GetOAuth2Client(ctx context.Context, oauth2ClientID string) (*
 
 	oauth2Client, err := m.oauthRepository.GetOAuth2ClientByDatabaseID(ctx, oauth2ClientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client by database MealPlanTaskID")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client by database ID")
 	}
 
 	return oauth2Client, nil
@@ -141,7 +141,7 @@ func (m *manager) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryF
 
 	oauth2Clients, err := m.oauthRepository.GetOAuth2Clients(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database MealPlanTaskID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
 	}
 
 	return oauth2Clients, nil

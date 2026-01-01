@@ -794,7 +794,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Contex
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
-	// Set the meal plan event MealPlanTaskID that was missing before
+	// Set the meal plan event ID that was missing before
 	convertedInput.BelongsToMealPlanEvent = mealPlanEventID
 
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)

@@ -14,12 +14,12 @@ import (
 
 type (
 	GetValidPreparationInvocation struct {
-		ValidPreparationID string `jsonschema:"description=The preparation MealPlanTaskID"`
+		ValidPreparationID string `jsonschema:"description=The preparation ID"`
 	}
 )
 
 var validPreparationsSchema = map[string]any{
-	"MealPlanTaskID":              stringField("The MealPlanTaskID of the valid preparation"),
+	"ID":                          stringField("The ID of the valid preparation"),
 	"CreatedAt":                   timestampField("When the valid preparation was created"),
 	"LastUpdatedAt":               timestampField("When the valid preparation was last updated"),
 	"ArchivedAt":                  timestampField("When the valid preparation was soft deleted"),
@@ -42,9 +42,9 @@ var validPreparationsSchema = map[string]any{
 
 var getValidPreparationTool = &mcp.Tool{
 	Name:        "GetValidPreparation",
-	Description: "Get a valid preparation by it's MealPlanTaskID",
+	Description: "Get a valid preparation by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationID": stringField("The MealPlanTaskID of the valid preparation to get"),
+		"ValidPreparationID": stringField("The ID of the valid preparation to get"),
 	}),
 	OutputSchema: schemaObject(validPreparationsSchema),
 }
@@ -150,7 +150,7 @@ func (h *mcpToolManager) CreateValidPreparation() mcp.ToolHandlerFor[*mealplanni
 type (
 	UpdateValidPreparationInvocation struct {
 		*mealplanning.ValidPreparationUpdateRequestInput
-		ValidPreparationID string `jsonschema:"required,description=The preparation MealPlanTaskID"`
+		ValidPreparationID string `jsonschema:"required,description=The preparation ID"`
 	}
 )
 
@@ -158,7 +158,7 @@ var validPreparationUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidPreparation",
 	Description: "Update a valid preparation for use in recipes.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidPreparationID":          stringField("The MealPlanTaskID of the valid preparation to update"),
+		"ValidPreparationID":          stringField("The ID of the valid preparation to update"),
 		"Name":                        stringField("Name of the preparation"),
 		"Description":                 stringField("Description of the preparation"),
 		"IconPath":                    stringField("The URL for the icon for the item"),

@@ -96,7 +96,7 @@ func main() {
 			}
 
 			if adminAccountID == "" {
-				return fmt.Errorf("admin account MealPlanTaskID not set")
+				return fmt.Errorf("admin account ID not set")
 			}
 
 			hasher := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
@@ -258,7 +258,7 @@ func main() {
 		// Create meal plan with 3 chicken dishes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			if adminUserID == "" || adminAccountID == "" {
-				return fmt.Errorf("admin user MealPlanTaskID or account MealPlanTaskID not set")
+				return fmt.Errorf("admin user ID or account ID not set")
 			}
 
 			logger.Info("Creating meal plan with chicken dishes...")
@@ -369,11 +369,11 @@ func main() {
 		// Create finalized meal plan with votes and extend current meal plan deadline
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			if adminUserID == "" || adminAccountID == "" {
-				return fmt.Errorf("admin user MealPlanTaskID or account MealPlanTaskID not set")
+				return fmt.Errorf("admin user ID or account ID not set")
 			}
 
 			if currentMealPlanID == "" {
-				return fmt.Errorf("current meal plan MealPlanTaskID not set")
+				return fmt.Errorf("current meal plan ID not set")
 			}
 
 			if len(memberUserIDs) == 0 {

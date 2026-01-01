@@ -253,7 +253,7 @@ func buildCursorCondition(tableName string) string {
 }
 
 // buildCursorLimitClause creates the ORDER BY and LIMIT clause for cursor-based pagination.
-// This provides a consistent ordering by MealPlanTaskID (which is sortable with xid) and applies the limit.
+// This provides a consistent ordering by ID (which is sortable with xid) and applies the limit.
 func buildCursorLimitClause(tableName string) string {
 	return fmt.Sprintf("ORDER BY %s.%s ASC\nLIMIT COALESCE(sqlc.narg(%s), 50)", tableName, idColumn, limitArg)
 }

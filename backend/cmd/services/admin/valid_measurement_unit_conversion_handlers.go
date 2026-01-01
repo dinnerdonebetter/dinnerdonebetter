@@ -21,7 +21,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitConversionsForUnit(_ http.Resp
 	if measurementUnitID == "" {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
-			g.Text("Error: No measurement unit MealPlanTaskID provided"),
+			g.Text("Error: No measurement unit ID provided"),
 		), nil
 	}
 
@@ -479,10 +479,10 @@ func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWri
 		), nil
 	}
 
-	// Return the updated conversions list - we need to construct a proper request with the measurement unit MealPlanTaskID
-	// Extract the measurement unit MealPlanTaskID from the 'from' field since that's the current unit
+	// Return the updated conversions list - we need to construct a proper request with the measurement unit ID
+	// Extract the measurement unit ID from the 'from' field since that's the current unit
 	updatedReq := req.Clone(ctx)
-	// Set the path value for the measurement unit MealPlanTaskID fetcher
+	// Set the path value for the measurement unit ID fetcher
 	updatedReq.SetPathValue(validMeasurementUnitIDURLParamKey, fromID)
 
 	return s.ValidMeasurementUnitConversionsForUnit(nil, updatedReq)
@@ -493,12 +493,12 @@ func (s *AdminFrontendServer) DeleteMeasurementUnitConversion(_ http.ResponseWri
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	// Get the conversion MealPlanTaskID from the URL path
+	// Get the conversion ID from the URL path
 	conversionID := req.PathValue("conversionID")
 	if conversionID == "" {
 		return ghtml.Div(
 			ghtml.Class("text-sm text-red-600 py-2"),
-			g.Text("Error: No conversion MealPlanTaskID provided"),
+			g.Text("Error: No conversion ID provided"),
 		), nil
 	}
 

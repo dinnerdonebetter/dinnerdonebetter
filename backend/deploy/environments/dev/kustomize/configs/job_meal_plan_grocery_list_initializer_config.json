@@ -90,6 +90,14 @@
 			"port": 5432,
 			"disableSSL": false
 		},
+		"writeConnectionDetails": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
 		"migrations": null,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000,

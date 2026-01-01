@@ -16,7 +16,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	bagPrep := enums.Preparations["bag"]
 	sousVidePrep := enums.Preparations["sous-vide"]
 	panSearPrep := enums.Preparations["pan-sear"]
-	grillPrep := enums.Preparations["grill"]
 	restPrep := enums.Preparations["rest"]
 
 	// Get ingredients
@@ -28,7 +27,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	vegetableOil := enums.Ingredients["vegetable oil"]
 
 	// Get measurement units
-	unitMeasurement := enums.MeasurementUnits["unit"]
 	gramMeasurement := enums.MeasurementUnits["gram"]
 	milliliterMeasurement := enums.MeasurementUnits["milliliter"]
 	sprigMeasurement := enums.MeasurementUnits["sprig"]
@@ -45,7 +43,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	plasticBag := enums.Vessels["plastic bag"]
 	vacuumBag := enums.Vessels["vacuum bag"]
 	castIronSkillet := enums.Vessels["cast iron skillet"]
-	grillVessel := enums.Vessels["grill"]
 	servingPlate := enums.Vessels["serving plate"]
 
 	// Get ingredient states for completion conditions
@@ -60,7 +57,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	seasonChickenVIP := enums.IngredientPreparations[seasonPrep.ID][chickenBreast.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
-	chickenUnitVIMU := enums.IngredientMeasurementUnits[chickenBreast.ID][unitMeasurement.ID]
+	chickenGramVIMU := enums.IngredientMeasurementUnits[chickenBreast.ID][gramMeasurement.ID]
 	saltGramVIMU := enums.IngredientMeasurementUnits[salt.ID][gramMeasurement.ID]
 	pepperGramVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][gramMeasurement.ID]
 	seasonBareHandsVPI := enums.PreparationInstruments[seasonPrep.ID][bareHands.ID]
@@ -83,11 +80,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	panSearSpatulaVPI := enums.PreparationInstruments[panSearPrep.ID][spatula.ID]
 	panSearTongsVPI := enums.PreparationInstruments[panSearPrep.ID][tongs.ID]
 	panSearSkilletVPV := enums.PreparationVessels[panSearPrep.ID][castIronSkillet.ID]
-
-	// Grill preparation bridges (for finishing)
-	grillPaperTowelsVPI := enums.PreparationInstruments[grillPrep.ID][paperTowels.ID]
-	grillTongsVPI := enums.PreparationInstruments[grillPrep.ID][tongs.ID]
-	grillGrillVPV := enums.PreparationVessels[grillPrep.ID][grillVessel.ID]
 
 	// Rest preparation bridges
 	restTongsVPI := enums.PreparationInstruments[restPrep.ID][tongs.ID]
@@ -153,12 +145,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step1ID,
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
-				ValidIngredientMeasurementUnitID: &chickenUnitVIMU.ID,
+				ValidIngredientMeasurementUnitID: &chickenGramVIMU.ID,
 				IngredientID:                     &chickenBreast.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "chicken breasts",
+				MeasurementUnitID:                gramMeasurement.ID,
+				Name:                             "boneless chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 900,
 				},
 			},
 			{
@@ -204,12 +196,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step1ID,
-				Name:                "seasoned chicken breasts",
+				Name:                "seasoned boneless chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &gramMeasurement.ID,
 				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: pointer.To[float32](900),
 				},
 			},
 		},
@@ -230,10 +222,10 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &chickenBreast.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "seasoned chicken breasts",
+				MeasurementUnitID:               gramMeasurement.ID,
+				Name:                            "seasoned boneless chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 900,
 				},
 			},
 			{
@@ -289,12 +281,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step2ID,
-				Name:                "bagged seasoned chicken breasts",
+				Name:                "bagged seasoned boneless chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &gramMeasurement.ID,
 				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: pointer.To[float32](900),
 				},
 			},
 		},
@@ -325,10 +317,10 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &chickenBreast.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "bagged seasoned chicken breasts",
+				MeasurementUnitID:               gramMeasurement.ID,
+				Name:                            "bagged seasoned boneless chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 900,
 				},
 			},
 		},
@@ -360,12 +352,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step3ID,
-				Name:                "sous vide cooked chicken breasts",
+				Name:                "sous vide cooked boneless chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &gramMeasurement.ID,
 				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: pointer.To[float32](900),
 				},
 			},
 		},
@@ -396,7 +388,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 		PreparationID:   panSearPrep.ID,
 		Index:           4,
 		Optional:        true,
-		Notes:           "Turn on your vents and open your windows. Remove chicken from water bath and bag. Discard herbs, if using. Carefully pat chicken dry with paper towels. Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering. Gently lay chicken in skillet, skin side down, using your fingers or a set of tongs. Hold chicken down flat in pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes. Remove from pan and let rest until cool enough to handle, about 2 minutes. Remove bones with your fingertips.",
+		Notes:           "Turn on your vents and open your windows. Remove chicken from water bath and bag. Discard herbs, if using. Carefully pat chicken dry with paper towels. Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering. Gently lay chicken in skillet using your fingers or a set of tongs. Hold chicken down flat in pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes. Remove from pan and let rest until cool enough to handle, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
 		},
@@ -410,10 +402,10 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &chickenBreast.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "sous vide cooked chicken breasts",
+				MeasurementUnitID:               gramMeasurement.ID,
+				Name:                            "sous vide cooked boneless chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 900,
 				},
 			},
 			{
@@ -477,12 +469,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step4aID,
-				Name:                "pan-seared sous vide chicken breasts",
+				Name:                "pan-seared sous vide boneless chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &gramMeasurement.ID,
 				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: pointer.To[float32](900),
 				},
 			},
 		},
@@ -491,7 +483,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ID:                  step4aCompletionConditionID,
 				BelongsToRecipeStep: step4aID,
 				IngredientStateID:   atTemperatureState.ID,
-				Notes:               "Skin should be golden brown and crisp",
+				Notes:               "Chicken should be golden brown",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
@@ -508,84 +500,6 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 	step4aChickenIngredientID := step4a.Ingredients[0].ID
 	step4a.CompletionConditions[0].Ingredients[0].RecipeStepIngredient = step4aChickenIngredientID
 
-	// Step 4b: Finish on grill (optional)
-	step4bID := identifiers.New()
-	step4b := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step4bID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   grillPrep.ID,
-		Index:           5,
-		Optional:        true,
-		Notes:           "Light one half chimney full of charcoal. When all the charcoal is lit and covered with gray ash, pour out and arrange coals on one side of charcoal grate. Set cooking grate in place, cover grill, and allow to preheat for 5 minutes. Alternatively, set half the burners on a gas grill to medium-high heat setting, cover, and preheat for 10 minutes. Clean and oil the grilling grate. Remove chicken from water bath and bag. Discard herbs, if using. Carefully pat chicken dry with paper towels. Gently lay chicken on hot side of grill, skin side down. Cook until nicely marked, about 2 minutes. Rotate 90 degrees and cook until chicken is marked again and skin is crisp, about 1 1/2 minutes longer. Remove from grill and let rest until cool enough to handle, about 2 minutes. Remove bones with your fingertips.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Min: pointer.To[uint32](210), // 3.5 minutes total
-		},
-		TemperatureInCelsius: types.OptionalFloat32Range{
-			Min: pointer.To[float32](190), // Medium-high heat
-		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4bID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &chickenBreast.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "sous vide cooked chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
-				},
-			},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
-			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step4bID,
-				ValidPreparationInstrumentID: &grillPaperTowelsVPI.ID,
-				InstrumentID:                 &paperTowels.ID,
-				Name:                         "paper towels",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step4bID,
-				ValidPreparationInstrumentID: &grillTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
-				Name:                         "tongs",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
-			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step4bID,
-				ValidPreparationVesselID: &grillGrillVPV.ID,
-				VesselID:                 &grillVessel.ID,
-				Name:                     "grill",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4bID,
-				Name:                "grilled sous vide chicken breasts",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
-				},
-			},
-		},
-	}
-
 	// Step 6: Rest and serve
 	step6ID := identifiers.New()
 	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
@@ -601,25 +515,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    nil, // Will be resolved via RecipeStepProductID
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "pan-seared sous vide chicken breasts",
+				MeasurementUnitID:               gramMeasurement.ID,
+				Name:                            "pan-seared sous vide boneless chicken breasts",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
+					Min: 900,
 				},
 				Optional: true, // From step 4a if pan finishing chosen
-			},
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    nil, // Will be resolved via RecipeStepProductID
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "grilled sous vide chicken breasts",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
-				},
-				Optional: true, // From step 4b if grill finishing chosen
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
@@ -650,12 +551,12 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: step6ID,
-				Name:                "sliced sous vide chicken breasts",
+				Name:                "sliced sous vide boneless chicken breasts",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &gramMeasurement.ID,
 				Quantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
+					Min: pointer.To[float32](900),
 				},
 			},
 		},
@@ -691,7 +592,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			CreatedByUser:       userID,
 			Name:                "Sous Vide Chicken Breast",
 			Slug:                "sous-vide-chicken-breast",
-			Source:              "https://www.seriouseats.com/the-food-lab-complete-guide-to-sous-vide-chicken-breast",
+			Source:              "https://www.seriouseats.com/sous-vide-chicken-breast-recipe",
 			Description:         "",
 			YieldsComponentType: mealplanning.MealComponentTypesMain,
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
@@ -700,7 +601,7 @@ func SousVideChickenBreastRecipe(userID string, enums *Enumerations) []*mealplan
 			PortionName:       "serving",
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4a, step4b, step6},
+			Steps:             []*mealplanning.RecipeStepDatabaseCreationInput{step0, step1, step2, step3, step4a, step6},
 			PrepTasks:         []*mealplanning.RecipePrepTaskDatabaseCreationInput{prepTask1},
 		},
 	}

@@ -3,21 +3,21 @@ package keys
 const (
 	idSuffix = ".id"
 
-	// RequesterIDKey is the standard key for referring to a requesting user's MealPlanTaskID.
+	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
-	// AccountIDKey is the standard key for referring to an account MealPlanTaskID.
+	// AccountIDKey is the standard key for referring to an account ID.
 	AccountIDKey = "account" + idSuffix
-	// AccountInvitationKey is the standard key for referring to an account MealPlanTaskID.
+	// AccountInvitationKey is the standard key for referring to an account ID.
 	AccountInvitationKey = "account_invitation"
-	// AccountInvitationIDKey is the standard key for referring to an account MealPlanTaskID.
+	// AccountInvitationIDKey is the standard key for referring to an account ID.
 	AccountInvitationIDKey = AccountInvitationKey + idSuffix
 	// AccountInvitationTokenKey is the standard key for referring to an account invitation token.
 	AccountInvitationTokenKey = "account_invitation.token"
-	// ActiveAccountIDKey is the standard key for referring to an active account MealPlanTaskID.
+	// ActiveAccountIDKey is the standard key for referring to an active account ID.
 	ActiveAccountIDKey = "active_account" + idSuffix
-	// UserIDKey is the standard key for referring to a user MealPlanTaskID.
+	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user" + idSuffix
-	// UserNotificationIDKey is the standard key for referring to a user notification MealPlanTaskID.
+	// UserNotificationIDKey is the standard key for referring to a user notification ID.
 	UserNotificationIDKey = "user_notification" + idSuffix
 	// UserEmailAddressKey is the standard key for referring to a user's email address.
 	UserEmailAddressKey = "user.email_address"
@@ -29,9 +29,9 @@ const (
 	UserEmailVerificationTokenKey = "user.email_verification_token"
 	// NameKey is the standard key for referring to a name.
 	NameKey = "name"
-	// SpanIDKey is the standard key for referring to a span MealPlanTaskID.
+	// SpanIDKey is the standard key for referring to a span ID.
 	SpanIDKey = "span" + idSuffix
-	// TraceIDKey is the standard key for referring to a trace MealPlanTaskID.
+	// TraceIDKey is the standard key for referring to a trace ID.
 	TraceIDKey = "trace" + idSuffix
 	// FilterCreatedAfterKey is the standard key for referring to a types.QueryFilter's CreatedAfter field.
 	FilterCreatedAfterKey = "query_filter.created_after"
@@ -49,31 +49,31 @@ const (
 	FilterLimitKey = "query_filter.limit"
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.
 	FilterIsNilKey = "query_filter.is_nil"
-	// WebhookIDKey is the standard key for referring to a webhook's MealPlanTaskID.
+	// WebhookIDKey is the standard key for referring to a webhook's ID.
 	WebhookIDKey = "webhook" + idSuffix
-	// WebhookTriggerEventIDKey is the standard key for referring to a webhook trigger event's MealPlanTaskID.
+	// WebhookTriggerEventIDKey is the standard key for referring to a webhook trigger event's ID.
 	WebhookTriggerEventIDKey = "webhook_trigger_event" + idSuffix
-	// WaitlistIDKey is the standard key for referring to a waitlist MealPlanTaskID.
+	// WaitlistIDKey is the standard key for referring to a waitlist ID.
 	WaitlistIDKey = "waitlist" + idSuffix
-	// WaitlistSignupIDKey is the standard key for referring to a waitlist signup MealPlanTaskID.
+	// WaitlistSignupIDKey is the standard key for referring to a waitlist signup ID.
 	WaitlistSignupIDKey = "waitlist_signup" + idSuffix
-	// IssueReportIDKey is the standard key for referring to an issue report MealPlanTaskID.
+	// IssueReportIDKey is the standard key for referring to an issue report ID.
 	IssueReportIDKey = "issue_report" + idSuffix
-	// UploadedMediaIDKey is the standard key for referring to an uploaded media MealPlanTaskID.
+	// UploadedMediaIDKey is the standard key for referring to an uploaded media ID.
 	UploadedMediaIDKey = "uploaded_media" + idSuffix
-	// AuditLogEntryIDKey is the standard key for referring to an audit log entry's MealPlanTaskID.
+	// AuditLogEntryIDKey is the standard key for referring to an audit log entry's ID.
 	AuditLogEntryIDKey = "audit_log_entry" + idSuffix
 	// AuditLogEntryResourceTypesKey is the standard key for referring to an audit log entry's resource type.
 	AuditLogEntryResourceTypesKey = "audit_log_entry.resource_types"
 	// URLKey is the standard key for referring to a URL.
 	URLKey = "url"
-	// PasswordResetTokenKey is the standard key for referring to a password reset token's MealPlanTaskID.
+	// PasswordResetTokenKey is the standard key for referring to a password reset token's ID.
 	PasswordResetTokenKey = "password_reset_token"
-	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's MealPlanTaskID.
+	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's ID.
 	PasswordResetTokenIDKey = PasswordResetTokenKey + idSuffix
 	// RequestHeadersKey is the standard key for referring to a http.Request's Headers.
 	RequestHeadersKey = "request.headers"
-	// RequestIDKey is the standard key for referring to a http.Request's MealPlanTaskID.
+	// RequestIDKey is the standard key for referring to a http.Request's ID.
 	RequestIDKey = "request" + idSuffix
 	// RequestMethodKey is the standard key for referring to a http.Request's Method.
 	RequestMethodKey = "request.method"
@@ -106,69 +106,69 @@ const (
 
 	// ValidInstrumentKey is the standard key for referring to a valid instrument.
 	ValidInstrumentKey = "valid_instrument"
-	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's MealPlanTaskID.
+	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = ValidInstrumentKey + idSuffix
 
-	// ValidVesselIDKey is the standard key for referring to a valid vessel's MealPlanTaskID.
+	// ValidVesselIDKey is the standard key for referring to a valid vessel's ID.
 	ValidVesselIDKey = "valid_vessel" + idSuffix
 
 	// ValidIngredientKey is the standard key for referring to a valid ingredient.
 	ValidIngredientKey = "valid_ingredient"
-	// ValidIngredientIDKey is the standard key for referring to a valid ingredient's MealPlanTaskID.
+	// ValidIngredientIDKey is the standard key for referring to a valid ingredient's ID.
 	ValidIngredientIDKey = ValidIngredientKey + idSuffix
 
-	// ValidIngredientGroupIDKey is the standard key for referring to a valid ingredient group's MealPlanTaskID.
+	// ValidIngredientGroupIDKey is the standard key for referring to a valid ingredient group's ID.
 	ValidIngredientGroupIDKey = "valid_ingredient_group" + idSuffix
 
 	// ValidPreparationKey is the standard key for referring to a valid preparation.
 	ValidPreparationKey = "valid_preparation"
-	// ValidPreparationIDKey is the standard key for referring to a valid preparation's MealPlanTaskID.
+	// ValidPreparationIDKey is the standard key for referring to a valid preparation's ID.
 	ValidPreparationIDKey = ValidPreparationKey + idSuffix
 
 	// ValidIngredientStateKey is the standard key for referring to a valid ingredient state.
 	ValidIngredientStateKey = "valid_ingredient_state"
-	// ValidIngredientStateIDKey is the standard key for referring to a valid ingredient state's MealPlanTaskID.
+	// ValidIngredientStateIDKey is the standard key for referring to a valid ingredient state's ID.
 	ValidIngredientStateIDKey = ValidIngredientStateKey + idSuffix
 
 	// ValidIngredientStateIngredientKey is the standard key for referring to a valid ingredient state ingredient.
 	ValidIngredientStateIngredientKey = "valid_ingredient_state_ingredient"
-	// ValidIngredientStateIngredientIDKey is the standard key for referring to a valid ingredient state ingredient's MealPlanTaskID.
+	// ValidIngredientStateIngredientIDKey is the standard key for referring to a valid ingredient state ingredient's ID.
 	ValidIngredientStateIngredientIDKey = ValidIngredientStateIngredientKey + idSuffix
 
 	// ValidIngredientPreparationKey is the standard key for referring to a valid preparation ingredient.
 	ValidIngredientPreparationKey = "valid_ingredient_preparation"
-	// ValidIngredientPreparationIDKey is the standard key for referring to a valid preparation ingredient's MealPlanTaskID.
+	// ValidIngredientPreparationIDKey is the standard key for referring to a valid preparation ingredient's ID.
 	ValidIngredientPreparationIDKey = ValidIngredientPreparationKey + idSuffix
 
 	// ValidPrepTaskConfigKey is the standard key for referring to a valid prep task config.
 	ValidPrepTaskConfigKey = "valid_prep_task_config"
-	// ValidPrepTaskConfigIDKey is the standard key for referring to a valid prep task config's MealPlanTaskID.
+	// ValidPrepTaskConfigIDKey is the standard key for referring to a valid prep task config's ID.
 	ValidPrepTaskConfigIDKey = ValidPrepTaskConfigKey + idSuffix
 
 	// ValidPreparationInstrumentKey is the standard key for referring to a valid preparation instrument.
 	ValidPreparationInstrumentKey = "valid_preparation_instrument"
-	// ValidPreparationInstrumentIDKey is the standard key for referring to a valid preparation instrument's MealPlanTaskID.
+	// ValidPreparationInstrumentIDKey is the standard key for referring to a valid preparation instrument's ID.
 	ValidPreparationInstrumentIDKey = ValidPreparationInstrumentKey + idSuffix
 
 	// ValidIngredientMeasurementUnitKey is the standard key for referring to a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnitKey = "valid_ingredient_measurement_unit"
-	// ValidIngredientMeasurementUnitIDKey is the standard key for referring to a valid ingredient measurement unit's MealPlanTaskID.
+	// ValidIngredientMeasurementUnitIDKey is the standard key for referring to a valid ingredient measurement unit's ID.
 	ValidIngredientMeasurementUnitIDKey = ValidIngredientMeasurementUnitKey + idSuffix
 
 	// MealKey is the standard key for referring to a meal.
 	MealKey = "meal"
-	// MealIDKey is the standard key for referring to a meal's MealPlanTaskID.
+	// MealIDKey is the standard key for referring to a meal's ID.
 	MealIDKey = MealKey + idSuffix
-	// MealListIDKey is the standard key for referring to a meal list's MealPlanTaskID.
+	// MealListIDKey is the standard key for referring to a meal list's ID.
 	MealListIDKey = "meal_list" + idSuffix
-	// MealListItemIDKey is the standard key for referring to a meal list item's MealPlanTaskID.
+	// MealListItemIDKey is the standard key for referring to a meal list item's ID.
 	MealListItemIDKey = "meal_list_item" + idSuffix
 
 	// RecipeKey is the standard key for referring to a recipe.
 	RecipeKey = "recipe"
-	// RecipeIDKey is the standard key for referring to a recipe's MealPlanTaskID.
+	// RecipeIDKey is the standard key for referring to a recipe's ID.
 	RecipeIDKey = RecipeKey + idSuffix
-	// RecipeListIDKey is the standard key for referring to a recipe list's MealPlanTaskID.
+	// RecipeListIDKey is the standard key for referring to a recipe list's ID.
 	RecipeListIDKey = "recipe_list" + idSuffix
 	// RecipeListItemIDKey is the standard key for referring to a recipe list item's MealPlanTaskID.
 	RecipeListItemIDKey = "recipe_list_item" + idSuffix

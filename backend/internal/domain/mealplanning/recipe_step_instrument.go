@@ -166,7 +166,7 @@ var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestI
 func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	err := &multierror.Error{}
 
-	// When not referencing a recipe step product, bridge table MealPlanTaskID is required
+	// When not referencing a recipe step product, bridge table ID is required
 	if isRecipeStepProduct := x.ProductOfRecipeStepIndex != nil; !isRecipeStepProduct {
 		if x.ValidPreparationInstrumentID == nil || *x.ValidPreparationInstrumentID == "" {
 			err = multierror.Append(err, errValidPreparationInstrumentIDRequired)

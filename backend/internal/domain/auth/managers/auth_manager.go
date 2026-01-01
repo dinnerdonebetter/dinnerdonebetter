@@ -279,7 +279,7 @@ func (l *AuthManager) UpdatePassword(ctx context.Context, input *auth.PasswordUp
 		return observability.PrepareError(err, span, "retrieving session context data")
 	}
 
-	// determine relevant user MealPlanTaskID.
+	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
@@ -342,7 +342,7 @@ func (l *AuthManager) UpdateUserEmailAddress(ctx context.Context, input *auth.Us
 		return observability.PrepareError(err, span, "retrieving session context data")
 	}
 
-	// determine relevant user MealPlanTaskID.
+	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
@@ -393,7 +393,7 @@ func (l *AuthManager) UpdateUserUsername(ctx context.Context, input *auth.Userna
 		return observability.PrepareError(err, span, "retrieving session context data")
 	}
 
-	// determine relevant user MealPlanTaskID.
+	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 

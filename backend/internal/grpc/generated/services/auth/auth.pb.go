@@ -29,7 +29,7 @@ const (
 // LoginForToken
 type LoginForTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Input         *UserLoginInput        `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *UserLoginInput        `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -73,8 +73,8 @@ func (x *LoginForTokenRequest) GetInput() *UserLoginInput {
 
 type LoginForTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *TokenResponse         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *TokenResponse         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -126,7 +126,7 @@ func (x *LoginForTokenResponse) GetResult() *TokenResponse {
 // AdminLoginForToken
 type AdminLoginForTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Input         *UserLoginInput        `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	Input         *UserLoginInput        `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,8 +170,8 @@ func (x *AdminLoginForTokenRequest) GetInput() *UserLoginInput {
 
 type AdminLoginForTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *TokenResponse         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *TokenResponse         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -223,7 +223,7 @@ func (x *AdminLoginForTokenResponse) GetResult() *TokenResponse {
 // ExchangeToken
 type ExchangeTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	RefreshToken  string                 `json:"refresh_token,omitempty" protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -267,12 +267,12 @@ func (x *ExchangeTokenRequest) GetRefreshToken() string {
 
 type ExchangeTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	UserId          string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	AccountId       string                 `protobuf:"bytes,3,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	AccessToken     string                 `protobuf:"bytes,4,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	RefreshToken    string                 `protobuf:"bytes,5,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
-	ExpiresUtc      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=expires_utc,json=expiresUtc,proto3" json:"expires_utc,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	UserId          string                 `json:"user_id,omitempty"          protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
+	AccountId       string                 `json:"account_id,omitempty"       protobuf:"bytes,3,opt,name=account_id,json=accountId,proto3"`
+	AccessToken     string                 `json:"access_token,omitempty"     protobuf:"bytes,4,opt,name=access_token,json=accessToken,proto3"`
+	RefreshToken    string                 `json:"refresh_token,omitempty"    protobuf:"bytes,5,opt,name=refresh_token,json=refreshToken,proto3"`
+	ExpiresUtc      *timestamppb.Timestamp `json:"expires_utc,omitempty"      protobuf:"bytes,6,opt,name=expires_utc,json=expiresUtc,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -388,8 +388,8 @@ func (*GetActiveAccountRequest) Descriptor() ([]byte, []int) {
 
 type GetActiveAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *identity.Account      `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *identity.Account      `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -477,11 +477,11 @@ func (*GetAuthStatusRequest) Descriptor() ([]byte, []int) {
 
 type GetAuthStatusResponse struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails          *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	UserId                   string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	AccountStatus            string                 `protobuf:"bytes,3,opt,name=account_status,json=accountStatus,proto3" json:"account_status,omitempty"`
-	AccountStatusExplanation string                 `protobuf:"bytes,4,opt,name=account_status_explanation,json=accountStatusExplanation,proto3" json:"account_status_explanation,omitempty"`
-	ActiveAccount            string                 `protobuf:"bytes,5,opt,name=active_account,json=activeAccount,proto3" json:"active_account,omitempty"`
+	ResponseDetails          *types.ResponseDetails `json:"response_details,omitempty"           protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	UserId                   string                 `json:"user_id,omitempty"                    protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
+	AccountStatus            string                 `json:"account_status,omitempty"             protobuf:"bytes,3,opt,name=account_status,json=accountStatus,proto3"`
+	AccountStatusExplanation string                 `json:"account_status_explanation,omitempty" protobuf:"bytes,4,opt,name=account_status_explanation,json=accountStatusExplanation,proto3"`
+	ActiveAccount            string                 `json:"active_account,omitempty"             protobuf:"bytes,5,opt,name=active_account,json=activeAccount,proto3"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -554,8 +554,8 @@ func (x *GetAuthStatusResponse) GetActiveAccount() string {
 // RedeemPasswordResetToken
 type RedeemPasswordResetTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	NewPassword   string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	Token         string                 `json:"token,omitempty"        protobuf:"bytes,1,opt,name=token,proto3"`
+	NewPassword   string                 `json:"new_password,omitempty" protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -606,7 +606,7 @@ func (x *RedeemPasswordResetTokenRequest) GetNewPassword() string {
 
 type RedeemPasswordResetTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -651,8 +651,8 @@ func (x *RedeemPasswordResetTokenResponse) GetResponseDetails() *types.ResponseD
 // RefreshTOTPSecret
 type RefreshTOTPSecretRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	CurrentPassword string                 `protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -703,8 +703,8 @@ func (x *RefreshTOTPSecretRequest) GetTotpToken() string {
 
 type RefreshTOTPSecretResponse struct {
 	state           protoimpl.MessageState     `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails     `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *TOTPSecretRefreshResponse `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails     `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *TOTPSecretRefreshResponse `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -756,7 +756,7 @@ func (x *RefreshTOTPSecretResponse) GetResult() *TOTPSecretRefreshResponse {
 // RequestEmailVerificationEmail
 type RequestEmailVerificationEmailRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailAddress  string                 `protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	EmailAddress  string                 `json:"email_address,omitempty" protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -800,10 +800,10 @@ func (x *RequestEmailVerificationEmailRequest) GetEmailAddress() string {
 
 type RequestEmailVerificationEmailResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Submitted       bool `protobuf:"varint,2,opt,name=submitted,proto3" json:"submitted,omitempty"`
+	Submitted       bool `json:"submitted,omitempty" protobuf:"varint,2,opt,name=submitted,proto3"`
 }
 
 func (x *RequestEmailVerificationEmailResponse) Reset() {
@@ -853,7 +853,7 @@ func (x *RequestEmailVerificationEmailResponse) GetSubmitted() bool {
 // RequestPasswordResetToken
 type RequestPasswordResetTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailAddress  string                 `protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	EmailAddress  string                 `json:"email_address,omitempty" protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -897,10 +897,10 @@ func (x *RequestPasswordResetTokenRequest) GetEmailAddress() string {
 
 type RequestPasswordResetTokenResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Accepted        bool `protobuf:"varint,2,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	Accepted        bool `json:"accepted,omitempty" protobuf:"varint,2,opt,name=accepted,proto3"`
 }
 
 func (x *RequestPasswordResetTokenResponse) Reset() {
@@ -950,7 +950,7 @@ func (x *RequestPasswordResetTokenResponse) GetAccepted() bool {
 // RequestUsernameReminder
 type RequestUsernameReminderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailAddress  string                 `protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	EmailAddress  string                 `json:"email_address,omitempty" protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -994,10 +994,10 @@ func (x *RequestUsernameReminderRequest) GetEmailAddress() string {
 
 type RequestUsernameReminderResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Submitted       bool `protobuf:"varint,2,opt,name=submitted,proto3" json:"submitted,omitempty"`
+	Submitted       bool `json:"submitted,omitempty" protobuf:"varint,2,opt,name=submitted,proto3"`
 }
 
 func (x *RequestUsernameReminderResponse) Reset() {
@@ -1047,9 +1047,9 @@ func (x *RequestUsernameReminderResponse) GetSubmitted() bool {
 // UpdatePassword
 type UpdatePasswordRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	NewPassword     string                 `protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
-	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	NewPassword     string                 `json:"new_password,omitempty"     protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1107,7 +1107,7 @@ func (x *UpdatePasswordRequest) GetTotpToken() string {
 
 type UpdatePasswordResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1152,7 +1152,7 @@ func (x *UpdatePasswordResponse) GetResponseDetails() *types.ResponseDetails {
 // VerifyEmailAddress
 type VerifyEmailAddressRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Token         string                 `json:"token,omitempty" protobuf:"bytes,1,opt,name=token,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1196,10 +1196,10 @@ func (x *VerifyEmailAddressRequest) GetToken() string {
 
 type VerifyEmailAddressResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Verified        bool `protobuf:"varint,2,opt,name=verified,proto3" json:"verified,omitempty"`
+	Verified        bool `json:"verified,omitempty" protobuf:"varint,2,opt,name=verified,proto3"`
 }
 
 func (x *VerifyEmailAddressResponse) Reset() {
@@ -1249,8 +1249,8 @@ func (x *VerifyEmailAddressResponse) GetVerified() bool {
 // VerifyTOTPSecret
 type VerifyTOTPSecretRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotpToken     string                 `protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TotpToken     string                 `json:"totp_token,omitempty" protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3"`
+	UserId        string                 `json:"user_id,omitempty"    protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1301,10 +1301,10 @@ func (x *VerifyTOTPSecretRequest) GetUserId() string {
 
 type VerifyTOTPSecretResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Accepted        bool `protobuf:"varint,2,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	Accepted        bool `json:"accepted,omitempty" protobuf:"varint,2,opt,name=accepted,proto3"`
 }
 
 func (x *VerifyTOTPSecretResponse) Reset() {
@@ -1353,7 +1353,7 @@ func (x *VerifyTOTPSecretResponse) GetAccepted() bool {
 
 type ChangeActiveAccountInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	AccountId     string                 `json:"account_id,omitempty" protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1397,7 +1397,7 @@ func (x *ChangeActiveAccountInput) GetAccountId() string {
 
 type EmailAddressVerificationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Token         string                 `json:"token,omitempty" protobuf:"bytes,1,opt,name=token,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1441,7 +1441,7 @@ func (x *EmailAddressVerificationRequest) GetToken() string {
 
 type EmailAddressVerificationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1485,10 +1485,10 @@ func (x *EmailAddressVerificationResponse) GetResponseDetails() *types.ResponseD
 
 type PasswordResetResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Successful      bool `protobuf:"varint,2,opt,name=successful,proto3" json:"successful,omitempty"`
+	Successful      bool `json:"successful,omitempty" protobuf:"varint,2,opt,name=successful,proto3"`
 }
 
 func (x *PasswordResetResponse) Reset() {
@@ -1537,13 +1537,13 @@ func (x *PasswordResetResponse) GetSuccessful() bool {
 
 type PasswordResetToken struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	RedeemedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=redeemed_at,json=redeemedAt,proto3" json:"redeemed_at,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
-	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	Token         string                 `protobuf:"bytes,6,opt,name=token,proto3" json:"token,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
+	ExpiresAt     *timestamppb.Timestamp `json:"expires_at,omitempty"      protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3"`
+	RedeemedAt    *timestamppb.Timestamp `json:"redeemed_at,omitempty"     protobuf:"bytes,3,opt,name=redeemed_at,json=redeemedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,4,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	Id            string                 `json:"id,omitempty"              protobuf:"bytes,5,opt,name=id,proto3"`
+	Token         string                 `json:"token,omitempty"           protobuf:"bytes,6,opt,name=token,proto3"`
+	BelongsToUser string                 `json:"belongs_to_user,omitempty" protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1629,7 +1629,7 @@ func (x *PasswordResetToken) GetBelongsToUser() string {
 
 type PasswordResetTokenCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailAddress  string                 `protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	EmailAddress  string                 `json:"email_address,omitempty" protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1673,8 +1673,8 @@ func (x *PasswordResetTokenCreationRequestInput) GetEmailAddress() string {
 
 type PasswordResetTokenRedemptionRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	NewPassword   string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	Token         string                 `json:"token,omitempty"        protobuf:"bytes,1,opt,name=token,proto3"`
+	NewPassword   string                 `json:"new_password,omitempty" protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1725,9 +1725,9 @@ func (x *PasswordResetTokenRedemptionRequestInput) GetNewPassword() string {
 
 type PasswordUpdateInput struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	NewPassword     string                 `protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
-	CurrentPassword string                 `protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	NewPassword     string                 `json:"new_password,omitempty"     protobuf:"bytes,1,opt,name=new_password,json=newPassword,proto3"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,2,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1785,8 +1785,8 @@ func (x *PasswordUpdateInput) GetTotpToken() string {
 
 type TOTPSecretRefreshInput struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	CurrentPassword string                 `protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3" json:"current_password,omitempty"`
-	TotpToken       string                 `protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	CurrentPassword string                 `json:"current_password,omitempty" protobuf:"bytes,1,opt,name=current_password,json=currentPassword,proto3"`
+	TotpToken       string                 `json:"totp_token,omitempty"       protobuf:"bytes,2,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1837,8 +1837,8 @@ func (x *TOTPSecretRefreshInput) GetTotpToken() string {
 
 type TOTPSecretRefreshResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	TwoFactorQrCode string                 `protobuf:"bytes,2,opt,name=two_factor_qr_code,json=twoFactorQrCode,proto3" json:"two_factor_qr_code,omitempty"`
-	TwoFactorSecret string                 `protobuf:"bytes,3,opt,name=two_factor_secret,json=twoFactorSecret,proto3" json:"two_factor_secret,omitempty"`
+	TwoFactorQrCode string                 `json:"two_factor_qr_code,omitempty" protobuf:"bytes,2,opt,name=two_factor_qr_code,json=twoFactorQrCode,proto3"`
+	TwoFactorSecret string                 `json:"two_factor_secret,omitempty"  protobuf:"bytes,3,opt,name=two_factor_secret,json=twoFactorSecret,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1889,8 +1889,8 @@ func (x *TOTPSecretRefreshResponse) GetTwoFactorSecret() string {
 
 type TOTPSecretVerificationInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotpToken     string                 `protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TotpToken     string                 `json:"totp_token,omitempty" protobuf:"bytes,1,opt,name=totp_token,json=totpToken,proto3"`
+	UserId        string                 `json:"user_id,omitempty"    protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1941,10 +1941,10 @@ func (x *TOTPSecretVerificationInput) GetUserId() string {
 
 type TOTPSecretVerificationResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	Accepted        bool `protobuf:"varint,2,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	Accepted        bool `json:"accepted,omitempty" protobuf:"varint,2,opt,name=accepted,proto3"`
 }
 
 func (x *TOTPSecretVerificationResponse) Reset() {
@@ -1993,11 +1993,11 @@ func (x *TOTPSecretVerificationResponse) GetAccepted() bool {
 
 type TokenResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	AccountId     string                 `protobuf:"bytes,3,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	AccessToken   string                 `protobuf:"bytes,4,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	RefreshToken  string                 `protobuf:"bytes,5,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
-	ExpiresUtc    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=expires_utc,json=expiresUtc,proto3" json:"expires_utc,omitempty"`
+	UserId        string                 `json:"user_id,omitempty"       protobuf:"bytes,2,opt,name=user_id,json=userId,proto3"`
+	AccountId     string                 `json:"account_id,omitempty"    protobuf:"bytes,3,opt,name=account_id,json=accountId,proto3"`
+	AccessToken   string                 `json:"access_token,omitempty"  protobuf:"bytes,4,opt,name=access_token,json=accessToken,proto3"`
+	RefreshToken  string                 `json:"refresh_token,omitempty" protobuf:"bytes,5,opt,name=refresh_token,json=refreshToken,proto3"`
+	ExpiresUtc    *timestamppb.Timestamp `json:"expires_utc,omitempty"   protobuf:"bytes,6,opt,name=expires_utc,json=expiresUtc,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2069,9 +2069,9 @@ func (x *TokenResponse) GetExpiresUtc() *timestamppb.Timestamp {
 
 type UserLoginInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	TotpToken     string                 `protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3" json:"totp_token,omitempty"`
+	Username      string                 `json:"username,omitempty"   protobuf:"bytes,1,opt,name=username,proto3"`
+	Password      string                 `json:"password,omitempty"   protobuf:"bytes,2,opt,name=password,proto3"`
+	TotpToken     string                 `json:"totp_token,omitempty" protobuf:"bytes,3,opt,name=totp_token,json=totpToken,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2129,7 +2129,7 @@ func (x *UserLoginInput) GetTotpToken() string {
 
 type UserPermissionsRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Permissions   []string               `protobuf:"bytes,1,rep,name=permissions,proto3" json:"permissions,omitempty"`
+	Permissions   []string               `json:"permissions,omitempty" protobuf:"bytes,1,rep,name=permissions,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2173,8 +2173,8 @@ func (x *UserPermissionsRequestInput) GetPermissions() []string {
 
 type UserPermissionsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Permissions     map[string]bool        `protobuf:"bytes,2,rep,name=permissions,proto3" json:"permissions,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Permissions     map[string]bool        `json:"permissions,omitempty"      protobuf:"bytes,2,rep,name=permissions,proto3"                           protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -2225,7 +2225,7 @@ func (x *UserPermissionsResponse) GetPermissions() map[string]bool {
 
 type UsernameReminderRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	EmailAddress  string                 `protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	EmailAddress  string                 `json:"email_address,omitempty" protobuf:"bytes,1,opt,name=email_address,json=emailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2306,8 +2306,8 @@ func (*GetSelfRequest) Descriptor() ([]byte, []int) {
 
 type GetSelfResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
-	Result          *identity.User         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	Result          *identity.User         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

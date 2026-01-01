@@ -41,7 +41,7 @@ func TestQuerier_Integration_DataPrivacy(t *testing.T) {
 func TestQuerier_DeleteUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

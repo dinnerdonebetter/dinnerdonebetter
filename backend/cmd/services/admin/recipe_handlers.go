@@ -265,16 +265,16 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 												if step.EstimatedTimeInSeconds == nil || step.EstimatedTimeInSeconds.Min == nil {
 													return ""
 												}
-												min := *step.EstimatedTimeInSeconds.Min
+												minimum := *step.EstimatedTimeInSeconds.Min
 												if step.EstimatedTimeInSeconds.Max != nil && *step.EstimatedTimeInSeconds.Max > 0 {
-													max := *step.EstimatedTimeInSeconds.Max
-													if max > min {
-														return fmt.Sprintf("Time: %s - %s", formatDuration(min), formatDuration(max))
-													} else if max == min {
-														return fmt.Sprintf("Time: %s", formatDuration(min))
+													maximum := *step.EstimatedTimeInSeconds.Max
+													if maximum > minimum {
+														return fmt.Sprintf("Time: %s - %s", formatDuration(minimum), formatDuration(maximum))
+													} else if maximum == minimum {
+														return fmt.Sprintf("Time: %s", formatDuration(minimum))
 													}
 												}
-												return fmt.Sprintf("Time: %s", formatDuration(min))
+												return fmt.Sprintf("Time: %s", formatDuration(minimum))
 											}()),
 										),
 									),
@@ -285,11 +285,15 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 												if step.TemperatureInCelsius == nil || step.TemperatureInCelsius.Min == nil {
 													return ""
 												}
-												min := *step.TemperatureInCelsius.Min
-												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > min {
-													return fmt.Sprintf("Temperature: %.1f-%.1f°C", min, *step.TemperatureInCelsius.Max)
+												minC := *step.TemperatureInCelsius.Min
+												minF := (minC * 9.0 / 5.0) + 32.0
+
+												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > minC {
+													maxC := *step.TemperatureInCelsius.Max
+													maxF := (maxC * 9.0 / 5.0) + 32.0
+													return fmt.Sprintf("Temperature: %.1f-%.1f°F (%.1f-%.1f°C)", minF, maxF, minC, maxC)
 												}
-												return fmt.Sprintf("Temperature: %.1f°C", min)
+												return fmt.Sprintf("Temperature: %.1f°F (%.1f°C)", minF, minC)
 											}()),
 										),
 									),
@@ -421,14 +425,16 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 				))
 			} else {
 				// Fallback if step not found
-				details = append(details, ghtml.Span(
-					ghtml.Class("font-medium"),
-					g.Text(ingredientName),
-				))
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
-				))
+				details = append(details,
+					ghtml.Span(
+						ghtml.Class("font-medium"),
+						g.Text(ingredientName),
+					),
+					ghtml.Span(
+						ghtml.Class("text-blue-600 ml-2"),
+						g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
+					),
+				)
 			}
 		} else {
 			// Regular ingredient - show name and quantity
@@ -627,16 +633,41 @@ func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.Recip
 	for _, vessel := range vessels {
 		var details []g.Node
 
-		// Vessel name
+		// Get vessel name
+		vesselName := ""
 		if vessel.Vessel != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(vessel.Vessel.Name),
-			))
+			vesselName = vessel.Vessel.Name
 		} else if vessel.Name != "" {
+			vesselName = vessel.Name
+		}
+
+		// Check if this vessel comes from a previous step
+		if vessel.RecipeStepProductId != nil {
+			productStep := s.findStepWithProduct(*vessel.RecipeStepProductId, allSteps)
+			if productStep != nil {
+				// Format as "vessel name from step X" without quantity
+				details = append(details, ghtml.Span(
+					ghtml.Class("font-medium"),
+					g.Text(fmt.Sprintf("%s from step %d", vesselName, productStep.Index+1)),
+				))
+			} else {
+				// Fallback if step not found
+				details = append(details,
+					ghtml.Span(
+						ghtml.Class("font-medium"),
+						g.Text(vesselName),
+					),
+					ghtml.Span(
+						ghtml.Class("text-blue-600 ml-2"),
+						g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *vessel.RecipeStepProductId)),
+					),
+				)
+			}
+		} else {
+			// Regular vessel - show name
 			details = append(details, ghtml.Span(
 				ghtml.Class("font-medium"),
-				g.Text(vessel.Name),
+				g.Text(vesselName),
 			))
 		}
 
@@ -666,22 +697,6 @@ func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.Recip
 				ghtml.Class("text-gray-500"),
 				g.Text(fmt.Sprintf(" (%s)", vessel.VesselPreposition)),
 			))
-		}
-
-		// Product reference
-		if vessel.RecipeStepProductId != nil {
-			productStep := s.findStepWithProduct(*vessel.RecipeStepProductId, allSteps)
-			if productStep != nil {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 font-semibold ml-2"),
-					g.Text(fmt.Sprintf("← Product from Step %d", productStep.Index+1)),
-				))
-			} else {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *vessel.RecipeStepProductId)),
-				))
-			}
 		}
 
 		// Flags

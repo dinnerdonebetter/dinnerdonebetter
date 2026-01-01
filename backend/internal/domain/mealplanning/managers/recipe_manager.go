@@ -437,7 +437,7 @@ func cloneRecipe(x *mealplanning.Recipe, userID string) *mealplanning.RecipeData
 	// clone recipe.
 	cloneInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(x)
 	cloneInput.CreatedByUser = userID
-	// TODO: cloneInput.ClonedFromRecipeID = &x.MealPlanTaskID
+	// TODO: cloneInput.ClonedFromRecipeID = &x.ID
 
 	cloneInput.ID = identifiers.New()
 	for i := range cloneInput.Steps {

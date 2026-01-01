@@ -53,7 +53,7 @@ func (l *slogLogger) WithName(name string) logging.Logger {
 	return &slogLogger{logger: l2}
 }
 
-// SetRequestIDFunc sets the request MealPlanTaskID retrieval function.
+// SetRequestIDFunc sets the request ID retrieval function.
 func (l *slogLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	if f != nil {
 		l.requestIDFunc = f

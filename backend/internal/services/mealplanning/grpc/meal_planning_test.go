@@ -58,7 +58,7 @@ func TestServiceImpl_ArchiveMeal(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.ArchiveMeal), testutils.ContextMatcher, exampleMealID, exampleUserID).Return(nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -91,7 +91,7 @@ func TestServiceImpl_ArchiveMealPlan(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.ArchiveMealPlan), testutils.ContextMatcher, exampleMealPlanID, exampleAccountID).Return(nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific account MealPlanTaskID
+		// Override session context to return specific account ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				ActiveAccountID: exampleAccountID,
@@ -236,7 +236,7 @@ func TestServiceImpl_ArchiveUserIngredientPreference(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.ArchiveUserIngredientPreference), testutils.ContextMatcher, exampleUserID, exampleUserIngredientPreferenceID).Return(nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -515,7 +515,7 @@ func TestServiceImpl_CreateMeal(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.CreateMeal), testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.MealCreationRequestInput]()).Return(exampleCreatedMeal, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -678,7 +678,7 @@ func TestServiceImpl_CreateMealPlanOptionVote(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.CreateMealPlanOptionVotes), testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.MealPlanOptionVoteCreationRequestInput]()).Return(exampleCreatedMealPlanOptionVotes, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -745,7 +745,7 @@ func TestServiceImpl_CreateUserIngredientPreference(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.CreateUserIngredientPreference), testutils.ContextMatcher, exampleUserID, testutils.MatchType[*mealplanning.UserIngredientPreferenceCreationRequestInput]()).Return(exampleCreatedUserIngredientPreferences, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific user MealPlanTaskID
+		// Override session context to return specific user ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -782,7 +782,7 @@ func TestServiceImpl_FinalizeMealPlan(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.FinalizeMealPlan), testutils.ContextMatcher, exampleMealPlanID, exampleAccountID).Return(exampleFinalized, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific account MealPlanTaskID
+		// Override session context to return specific account ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				ActiveAccountID: exampleAccountID,
@@ -837,7 +837,7 @@ func TestServiceImpl_GetMealPlan(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.ReadMealPlan), testutils.ContextMatcher, exampleResult.ID, exampleAccountID).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific account MealPlanTaskID
+		// Override session context to return specific account ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				ActiveAccountID: exampleAccountID,
@@ -868,7 +868,7 @@ func TestServiceImpl_GetMealPlansForAccount(T *testing.T) {
 		mmpm.On(reflection.GetMethodName(mmpm.ListMealPlans), testutils.ContextMatcher, exampleAccountID, testutils.QueryFilterMatcher).Return(exampleResult, nil)
 		s.mealPlanningManager = mmpm
 
-		// Override session context to return specific account MealPlanTaskID
+		// Override session context to return specific account ID
 		s.sessionContextDataFetcher = func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				ActiveAccountID: exampleAccountID,

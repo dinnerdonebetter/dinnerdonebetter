@@ -44,8 +44,8 @@ const (
 var (
 	userAvatarBase64Encoding = base64.RawURLEncoding
 
-	// ErrInvalidIDProvided indicates a required MealPlanTaskID was passed in empty.
-	ErrInvalidIDProvided = errors.New("required MealPlanTaskID was empty")
+	// ErrInvalidIDProvided indicates a required ID was passed in empty.
+	ErrInvalidIDProvided = errors.New("required ID was empty")
 
 	// ErrNilInputProvided indicates that a required parameter was nil.
 	ErrNilInputProvided = errors.New("nil input provided")
@@ -374,7 +374,7 @@ func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareAndLogError(err, logger, span, "no account invitation found")
 		} else if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "getting account invitation by token and MealPlanTaskID")
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting account invitation by token and ID")
 		}
 
 		invitation = invite
@@ -428,7 +428,7 @@ func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	defaultAccountID, err := m.identityRepo.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching default account MealPlanTaskID for user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching default account ID for user")
 	}
 
 	emailVerificationToken, err := m.identityRepo.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
@@ -447,7 +447,7 @@ func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	/* TODO: this should be done in a downstream handler
 
-	if err = m.analyticsReporter.AddUser(ctx, user.MealPlanTaskID, map[string]any{
+	if err = m.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
 		"username":        user.Username,
 		"default_account": defaultAccountID,
 		"first_name":      user.FirstName,

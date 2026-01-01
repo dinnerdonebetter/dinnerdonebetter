@@ -185,7 +185,7 @@ func createEmptyTablePage[T any](props *TablePageProps[T]) g.Node {
 		HTMXSearchTrigger: props.HTMXSearchTrigger,
 		Actions:           props.Actions,
 	},
-		// Wrap empty state in scrollable container with MealPlanTaskID for HTMX targeting
+		// Wrap empty state in scrollable container with ID for HTMX targeting
 		g.El("div",
 			g.Attr("id", "search-results"),
 			g.Attr("class", "overflow-x-auto"),

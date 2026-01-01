@@ -28,7 +28,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 
 	oauth2ClientID := s.oauth2ClientIDRouteParamFetcher(req)
 	if oauth2ClientID == "" {
-		return page("OAuth2 Clients", s.renderOAuth2ClientsError("Error: No OAuth2 client MealPlanTaskID provided")), nil
+		return page("OAuth2 Clients", s.renderOAuth2ClientsError("Error: No OAuth2 client ID provided")), nil
 	}
 
 	oauth2ClientRes, err := c.GetOAuth2Client(ctx, &oauthsvc.GetOAuth2ClientRequest{Oauth2ClientId: oauth2ClientID})
@@ -67,7 +67,7 @@ func (s *AdminFrontendServer) OAuth2ClientPage(_ http.ResponseWriter, req *http.
 					Placeholder: "Description of the OAuth2 client...",
 				},
 				"ClientID": {
-					Placeholder: "OAuth2 Client MealPlanTaskID",
+					Placeholder: "OAuth2 Client ID",
 				},
 				"ClientSecret": {
 					InputType:   "password",
@@ -152,7 +152,7 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 			TableID: "oauth2-clients-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"MealPlanTaskID",
+				"ID",
 				"Name",
 				"Description",
 				"ClientID",
@@ -160,7 +160,7 @@ func (s *AdminFrontendServer) OAuth2ClientsList(_ http.ResponseWriter, req *http
 				"ArchivedAt",
 			},
 			FieldReplacements: map[string]string{
-				"ClientID": "Client MealPlanTaskID",
+				"ClientID": "Client ID",
 			},
 			FieldRenderers: map[string]components.FieldRenderer{
 				"CreatedAt":  renderTimestamp,
@@ -250,7 +250,7 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 		TableID: "oauth2-clients-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"MealPlanTaskID",
+			"ID",
 			"Name",
 			"Description",
 			"ClientID",
@@ -258,7 +258,7 @@ func (s *AdminFrontendServer) OAuth2ClientsSearch(_ http.ResponseWriter, req *ht
 			"ArchivedAt",
 		},
 		FieldReplacements: map[string]string{
-			"ClientID": "Client MealPlanTaskID",
+			"ClientID": "Client ID",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
 			"CreatedAt":  renderTimestamp,

@@ -108,7 +108,7 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

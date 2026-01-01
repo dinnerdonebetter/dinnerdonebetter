@@ -34,6 +34,16 @@ func (m *MockDatabase) DB() *sql.DB {
 	return m.Called().Get(0).(*sql.DB)
 }
 
+// ReadDB satisfies the DataManager interface.
+func (m *MockDatabase) ReadDB() *sql.DB {
+	return m.Called().Get(0).(*sql.DB)
+}
+
+// WriteDB satisfies the DataManager interface.
+func (m *MockDatabase) WriteDB() *sql.DB {
+	return m.Called().Get(0).(*sql.DB)
+}
+
 // IsReady satisfies the DataManager interface.
 func (m *MockDatabase) IsReady(ctx context.Context) (ready bool) {
 	return m.Called(ctx).Bool(0)
@@ -125,6 +135,14 @@ type MockClient struct {
 }
 
 func (m *MockClient) DB() *sql.DB {
+	return nil
+}
+
+func (m *MockClient) ReadDB() *sql.DB {
+	return nil
+}
+
+func (m *MockClient) WriteDB() *sql.DB {
 	return nil
 }
 

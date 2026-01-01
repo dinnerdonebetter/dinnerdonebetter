@@ -14,24 +14,24 @@ import (
 
 type (
 	GetRecipePrepTaskInvocation struct {
-		RecipeID         string `jsonschema:"description=The recipe MealPlanTaskID"`
-		RecipePrepTaskID string `jsonschema:"description=The recipe prep task MealPlanTaskID"`
+		RecipeID         string `jsonschema:"description=The recipe ID"`
+		RecipePrepTaskID string `jsonschema:"description=The recipe prep task ID"`
 	}
 )
 
 var recipePrepTaskStepSchema = map[string]any{
-	"MealPlanTaskID":          stringField("The MealPlanTaskID of the recipe prep task step"),
-	"BelongsToRecipeStep":     stringField("The MealPlanTaskID of the recipe step this prep task step belongs to"),
-	"BelongsToRecipePrepTask": stringField("The MealPlanTaskID of the recipe prep task this step belongs to"),
+	"ID":                      stringField("The ID of the recipe prep task step"),
+	"BelongsToRecipeStep":     stringField("The ID of the recipe step this prep task step belongs to"),
+	"BelongsToRecipePrepTask": stringField("The ID of the recipe prep task this step belongs to"),
 	"SatisfiesRecipeStep":     boolField("Whether this prep task step satisfies the recipe step"),
 }
 
 var recipePrepTasksSchema = map[string]any{
-	"MealPlanTaskID":                  stringField("The MealPlanTaskID of the recipe prep task"),
+	"ID":                              stringField("The ID of the recipe prep task"),
 	"CreatedAt":                       timestampField("When the recipe prep task was created"),
 	"LastUpdatedAt":                   timestampField("When the recipe prep task was last updated"),
 	"ArchivedAt":                      timestampField("When the recipe prep task was soft deleted"),
-	"BelongsToRecipe":                 stringField("The MealPlanTaskID of the recipe this prep task belongs to"),
+	"BelongsToRecipe":                 stringField("The ID of the recipe this prep task belongs to"),
 	"Name":                            stringField("Name of the prep task"),
 	"Description":                     stringField("Description of the prep task"),
 	"Notes":                           stringField("Notes about the prep task"),
@@ -45,10 +45,10 @@ var recipePrepTasksSchema = map[string]any{
 
 var getRecipePrepTaskTool = &mcp.Tool{
 	Name:        "GetRecipePrepTask",
-	Description: "Get a recipe prep task by it's MealPlanTaskID",
+	Description: "Get a recipe prep task by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":         stringField("The MealPlanTaskID of the recipe"),
-		"RecipePrepTaskID": stringField("The MealPlanTaskID of the recipe prep task to get"),
+		"RecipeID":         stringField("The ID of the recipe"),
+		"RecipePrepTaskID": stringField("The ID of the recipe prep task to get"),
 	}),
 	OutputSchema: schemaObject(recipePrepTasksSchema),
 }
@@ -82,7 +82,7 @@ var getRecipePrepTasksTool = &mcp.Tool{
 	Name:        "GetRecipePrepTasks",
 	Description: "Get recipe prep tasks with optional filtering",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID": stringField("The MealPlanTaskID of the recipe"),
+		"RecipeID": stringField("The ID of the recipe"),
 		"Filter":   queryFilterSchema(),
 	}),
 	OutputSchema: schemaObject(map[string]any{
@@ -112,7 +112,7 @@ func (h *mcpToolManager) GetRecipePrepTasks() mcp.ToolHandlerFor[*GetRecipePrepT
 type (
 	CreateRecipePrepTaskInvocation struct {
 		*mealplanning.RecipePrepTaskCreationRequestInput
-		RecipeID string `jsonschema:"required,description=The recipe MealPlanTaskID"`
+		RecipeID string `jsonschema:"required,description=The recipe ID"`
 	}
 )
 
@@ -120,7 +120,7 @@ var recipePrepTaskCreationTool = &mcp.Tool{
 	Name:        "CreateRecipePrepTask",
 	Description: "Create a recipe prep task",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
+		"RecipeID":                        stringField("The ID of the recipe"),
 		"Name":                            stringField("Name of the prep task"),
 		"Description":                     stringField("Description of the prep task"),
 		"Notes":                           stringField("Notes about the prep task"),
@@ -151,8 +151,8 @@ func (h *mcpToolManager) CreateRecipePrepTask() mcp.ToolHandlerFor[*CreateRecipe
 type (
 	UpdateRecipePrepTaskInvocation struct {
 		*mealplanning.RecipePrepTaskUpdateRequestInput
-		RecipeID         string `jsonschema:"required,description=The recipe MealPlanTaskID"`
-		RecipePrepTaskID string `jsonschema:"required,description=The recipe prep task MealPlanTaskID"`
+		RecipeID         string `jsonschema:"required,description=The recipe ID"`
+		RecipePrepTaskID string `jsonschema:"required,description=The recipe prep task ID"`
 	}
 )
 
@@ -160,8 +160,8 @@ var recipePrepTaskUpdateTool = &mcp.Tool{
 	Name:        "UpdateRecipePrepTask",
 	Description: "Update a recipe prep task",
 	InputSchema: schemaObject(map[string]any{
-		"RecipeID":                        stringField("The MealPlanTaskID of the recipe"),
-		"RecipePrepTaskID":                stringField("The MealPlanTaskID of the recipe prep task to update"),
+		"RecipeID":                        stringField("The ID of the recipe"),
+		"RecipePrepTaskID":                stringField("The ID of the recipe prep task to update"),
 		"Name":                            stringField("Name of the prep task"),
 		"Description":                     stringField("Description of the prep task"),
 		"Notes":                           stringField("Notes about the prep task"),

@@ -89,7 +89,7 @@ func TestQuerier_Integration_OAuth2Clients(t *testing.T) {
 func TestQuerier_GetOAuth2ClientByClientID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with empty client MealPlanTaskID", func(t *testing.T) {
+	T.Run("with empty client ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -104,7 +104,7 @@ func TestQuerier_GetOAuth2ClientByClientID(T *testing.T) {
 func TestQuerier_GetOAuth2ClientByDatabaseID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid client MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -134,7 +134,7 @@ func TestQuerier_CreateOAuth2Client(T *testing.T) {
 func TestQuerier_ArchiveOAuth2Client(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid client MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

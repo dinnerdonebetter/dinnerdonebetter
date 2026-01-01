@@ -172,6 +172,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
 			ConnectionDetails:        localdevPostgresDBConnectionDetails,
+			WriteConnectionDetails:   localdevPostgresDBConnectionDetails,
 		},
 		Observability: localObservabilityConfig,
 		Services: config.ServicesConfig{

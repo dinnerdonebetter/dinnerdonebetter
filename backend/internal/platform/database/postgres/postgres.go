@@ -81,6 +81,16 @@ func (q *Client) DB() *sql.DB {
 	return q.db
 }
 
+// ReadDB provides the database object.
+func (q *Client) ReadDB() *sql.DB {
+	return q.db
+}
+
+// WriteDB provides the database object.
+func (q *Client) WriteDB() *sql.DB {
+	return q.db
+}
+
 // Close closes the database connection.
 func (q *Client) Close() error {
 	if err := q.db.Close(); err != nil {

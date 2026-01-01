@@ -124,7 +124,7 @@ func (s *AdminFrontendServer) ValidVesselNewPage(_ http.ResponseWriter, req *htt
 					Placeholder: "Enter icon path (optional)...",
 				},
 				"CapacityUnitID": {
-					Placeholder: "Enter capacity unit MealPlanTaskID (optional)...",
+					Placeholder: "Enter capacity unit ID (optional)...",
 				},
 				"Capacity": {
 					Placeholder: "Enter capacity (optional)...",
@@ -169,7 +169,7 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 
 	validVesselID := s.validVesselIDRouteParamFetcher(req)
 	if validVesselID == "" {
-		return page("Valid Vessels", s.renderValidVesselsError("Error: No valid vessel MealPlanTaskID provided")), nil
+		return page("Valid Vessels", s.renderValidVesselsError("Error: No valid vessel ID provided")), nil
 	}
 
 	validVesselRes, err := c.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{ValidVesselId: validVesselID})
@@ -330,7 +330,7 @@ func (s *AdminFrontendServer) ValidVesselsList(_ http.ResponseWriter, req *http.
 			TableID: "valid-vessels-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"MealPlanTaskID",
+				"ID",
 				"Name",
 				"PluralName",
 				"Shape",
@@ -434,7 +434,7 @@ func (s *AdminFrontendServer) ValidVesselsSearch(_ http.ResponseWriter, req *htt
 		TableID: "valid-vessels-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"MealPlanTaskID",
+			"ID",
 			"Name",
 			"PluralName",
 			"Shape",

@@ -471,4 +471,3 @@ func (s *AdminFrontendServer) WaitlistSignupsForWaitlist(_ http.ResponseWriter, 
 		ghtml.Div(paginationControls...),
 	), nil
 }
-

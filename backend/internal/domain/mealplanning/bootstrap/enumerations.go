@@ -1599,9 +1599,10 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"rest", "Allow food to sit after cooking to redistribute juices", "rested", "rest", false, true},
 		// Additional preparations for sous vide chicken recipe
 		{"pound", "Flatten meat to an even thickness using a mallet or heavy object", "pounded", "pound", false, false},
-		{"wet-brine", "Soak in a saltwater solution to season and tenderize", "wet-brined", "wet-brine", false, true},
-		{"dry-brine", "Salt and refrigerate uncovered to season and dry the surface", "dry-brined", "dry-brine", false, true},
+		{"wet brine", "Soak in a saltwater solution to season and tenderize", "wet-brined", "wet-brine", false, true},
+		{"dry brine", "Salt and refrigerate uncovered to season and dry the surface", "dry-brined", "dry-brine", false, true},
 		{"bag", "Place ingredients in a bag for cooking or storage", "bagged", "bag", false, false},
+		{"seal", "Close or seal a bag or container to make it airtight", "sealed", "seal", false, false},
 		{"sous-vide", "Cook in a temperature-controlled water bath while sealed in a bag", "sous-vided", "sous-vide", true, true},
 		// Additional preparations for roast chicken recipe
 		{"truss", "Tie meat or poultry with string to maintain shape during cooking", "trussed", "truss", false, false},
@@ -2121,10 +2122,26 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === CHICKEN RECIPE BRIDGE ENTRIES ===
 	// Get preparations for chicken recipe
-	poundPrep := enums.Preparations["pound"]
-	wetBrinePrep := enums.Preparations["wet-brine"]
-	dryBrinePrep := enums.Preparations["dry-brine"]
-	grillPrep := enums.Preparations["grill"]
+	chickenSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	chickenPoundPrep, err := getPreparation("pound")
+	if err != nil {
+		return err
+	}
+	chickenWetBrinePrep, err := getPreparation("wet brine")
+	if err != nil {
+		return err
+	}
+	chickenDryBrinePrep, err := getPreparation("dry brine")
+	if err != nil {
+		return err
+	}
+	chickenGrillPrep, err := getPreparation("grill")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for chicken recipe
 	chickenBreast := enums.Ingredients["chicken breast"]
@@ -2147,7 +2164,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === SEASON PREPARATION (for chicken breast) ===
 	// Ingredient-Preparation links
-	if err = createVIP(seasonPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenSeasonPrep, chickenBreast); err != nil {
 		return err
 	}
 
@@ -2155,38 +2172,41 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIMU(chickenBreast, unitMeasurement); err != nil {
 		return err
 	}
+	if err = createVIMU(chickenBreast, gramMeasurement); err != nil {
+		return err
+	}
 
 	// === POUND PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(poundPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenPoundPrep, chickenBreast); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(poundPrep, meatPounder); err != nil {
+	if err = createVPI(chickenPoundPrep, meatPounder); err != nil {
 		return err
 	}
-	if err = createVPI(poundPrep, rollingPin); err != nil {
+	if err = createVPI(chickenPoundPrep, rollingPin); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(poundPrep, plasticBag); err != nil {
+	if err = createVPV(chickenPoundPrep, plasticBag); err != nil {
 		return err
 	}
 
 	// === WET-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(wetBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(chickenWetBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, salt); err != nil {
+	if err = createVIP(chickenWetBrinePrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, sugar); err != nil {
+	if err = createVIP(chickenWetBrinePrep, sugar); err != nil {
 		return err
 	}
-	if err = createVIP(wetBrinePrep, water); err != nil {
+	if err = createVIP(chickenWetBrinePrep, water); err != nil {
 		return err
 	}
 
@@ -2200,33 +2220,33 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === DRY-BRINE PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(dryBrinePrep, chickenBreast); err != nil {
+	if err = createVIP(chickenDryBrinePrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(dryBrinePrep, salt); err != nil {
+	if err = createVIP(chickenDryBrinePrep, salt); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(chickenDryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err = createVPV(dryBrinePrep, sheetPan); err != nil {
+	if err = createVPV(chickenDryBrinePrep, sheetPan); err != nil {
 		return err
 	}
 
 	// === GRILL PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(grillPrep, chickenBreast); err != nil {
+	if err = createVIP(chickenGrillPrep, chickenBreast); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, oliveOil); err != nil {
+	if err = createVIP(chickenGrillPrep, oliveOil); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, salt); err != nil {
+	if err = createVIP(chickenGrillPrep, salt); err != nil {
 		return err
 	}
-	if err = createVIP(grillPrep, blackPepper); err != nil {
+	if err = createVIP(chickenGrillPrep, blackPepper); err != nil {
 		return err
 	}
 
@@ -2236,21 +2256,21 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(grillPrep, brush); err != nil {
+	if err = createVPI(chickenGrillPrep, brush); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, thermometer); err != nil {
+	if err = createVPI(chickenGrillPrep, thermometer); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, tongs); err != nil {
+	if err = createVPI(chickenGrillPrep, tongs); err != nil {
 		return err
 	}
-	if err = createVPI(grillPrep, paperTowels); err != nil {
+	if err = createVPI(chickenGrillPrep, paperTowels); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(grillPrep, grillVessel); err != nil {
+	if err = createVPV(chickenGrillPrep, grillVessel); err != nil {
 		return err
 	}
 
@@ -2351,26 +2371,59 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === GRILL PREPARATION (for finishing) ===
 	// Ingredient-Preparation links for bone-in skin-on chicken
-	if err = createVIP(grillPrep, boneInSkinOnChickenBreast); err != nil {
+	if err = createVIP(chickenGrillPrep, boneInSkinOnChickenBreast); err != nil {
 		return err
 	}
 
 	// === ROAST CHICKEN RECIPE BRIDGE ENTRIES ===
-	// Get preparations for roast chicken recipe
-	mixPrep := enums.Preparations["mix"]
-	seasonPrep = enums.Preparations["season"]
-	trussPrep := enums.Preparations["truss"]
-	dryBrinePrep = enums.Preparations["dry-brine"]
-	heatPrep = enums.Preparations["heat"]
-	rubPrep := enums.Preparations["rub"]
-	panSearPrep = enums.Preparations["pan-sear"]
-	roastPrep := enums.Preparations["roast"]
-	restPrep = enums.Preparations["rest"]
+	// Get preparations for roast chicken recipe (using fresh variable names to avoid scope issues)
+	roastChickenMixPrep, err := getPreparation("mix")
+	if err != nil {
+		return err
+	}
+	roastChickenSeasonPrep, err := getPreparation("season")
+	if err != nil {
+		return err
+	}
+	roastChickenTrussPrep, err := getPreparation("truss")
+	if err != nil {
+		return err
+	}
+	roastChickenDryBrinePrep, err := getPreparation("dry brine")
+	if err != nil {
+		return err
+	}
+	roastChickenPreheatPrep, err := getPreparation("preheat")
+	if err != nil {
+		return err
+	}
+	roastChickenHeatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	roastChickenRubPrep, err := getPreparation("rub")
+	if err != nil {
+		return err
+	}
+	roastChickenPanSearPrep, err := getPreparation("pan-sear")
+	if err != nil {
+		return err
+	}
+	roastChickenRoastPrep, err := getPreparation("roast")
+	if err != nil {
+		return err
+	}
+	roastChickenRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for roast chicken recipe
-	wholeChicken := enums.Ingredients["whole chicken"]
-	bakingPowder := enums.Ingredients["baking powder"]
-	vegetableOil = enums.Ingredients["vegetable oil"]
+	roastChickenWholeChicken := enums.Ingredients["whole chicken"]
+	roastChickenBakingPowder := enums.Ingredients["baking powder"]
+	roastChickenVegetableOil := enums.Ingredients["vegetable oil"]
+	roastChickenSalt := enums.Ingredients["salt"]
+	roastChickenBlackPepper := enums.Ingredients["black pepper"]
 
 	// Get instruments for roast chicken recipe
 	butchersTwine := enums.Instruments["butcher's twine"]
@@ -2380,26 +2433,31 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	stainlessSteelSkillet := enums.Vessels["stainless steel skillet"]
 	carvingBoard := enums.Vessels["carving board"]
 	bakingSheet := enums.Vessels["baking sheet"]
+	oven := enums.Vessels["oven"]
 	// wireRack already defined above in chicken recipe section
 
 	// Get measurement units for roast chicken
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	gramMeasurement = enums.MeasurementUnits["gram"]
 
 	// === MIX PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(mixPrep, salt); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenSalt); err != nil {
 		return err
 	}
-	if err = createVIP(mixPrep, blackPepper); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenBlackPepper); err != nil {
 		return err
 	}
-	if err = createVIP(mixPrep, bakingPowder); err != nil {
+	if err = createVIP(roastChickenMixPrep, roastChickenBakingPowder); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(bakingPowder, teaspoonMeasurement); err != nil {
+	if err = createVIMU(roastChickenBakingPowder, teaspoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(roastChickenBakingPowder, gramMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(salt, tablespoonMeasurement); err != nil {
@@ -2413,101 +2471,110 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(mixPrep, smallBowl); err != nil {
+	if err = createVPV(roastChickenMixPrep, smallBowl); err != nil {
 		return err
 	}
 
 	// === SEASON PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(seasonPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenSeasonPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Ingredient-MeasurementUnit links
-	if err = createVIMU(wholeChicken, unitMeasurement); err != nil {
+	if err = createVIMU(roastChickenWholeChicken, unitMeasurement); err != nil {
 		return err
 	}
 
 	// === TRUSS PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(trussPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenTrussPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(trussPrep, butchersTwine); err != nil {
+	if err = createVPI(roastChickenTrussPrep, butchersTwine); err != nil {
 		return err
 	}
 
 	// === DRY-BRINE PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(dryBrinePrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenDryBrinePrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(dryBrinePrep, wireRack); err != nil {
+	if err = createVPV(roastChickenDryBrinePrep, wireRack); err != nil {
 		return err
 	}
-	if err = createVPV(dryBrinePrep, bakingSheet); err != nil {
+	if err = createVPV(roastChickenDryBrinePrep, bakingSheet); err != nil {
+		return err
+	}
+
+	// === PREHEAT PREPARATION (for oven) ===
+	// Preparation-Vessel links
+	if err = createVPV(roastChickenPreheatPrep, oven); err != nil {
 		return err
 	}
 
 	// === HEAT PREPARATION (for stainless steel skillet) ===
 	// Preparation-Vessel links
-	if err = createVPV(heatPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenHeatPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === RUB PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(rubPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRubPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
-	if err = createVIP(rubPrep, vegetableOil); err != nil {
+	if err = createVIP(roastChickenRubPrep, roastChickenVegetableOil); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(rubPrep, bareHands); err != nil {
+	if err = createVPI(roastChickenRubPrep, bareHands); err != nil {
 		return err
 	}
 
 	// === PAN-SEAR PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(panSearPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenPanSearPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(panSearPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenPanSearPrep, stainlessSteelSkillet); err != nil {
 		return err
 	}
 
 	// === ROAST PREPARATION ===
 	// Ingredient-Preparation links
-	if err = createVIP(roastPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRoastPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Instrument links
-	if err = createVPI(roastPrep, thermometer); err != nil {
+	if err = createVPI(roastChickenRoastPrep, thermometer); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(roastPrep, stainlessSteelSkillet); err != nil {
+	if err = createVPV(roastChickenRoastPrep, stainlessSteelSkillet); err != nil {
+		return err
+	}
+	if err = createVPV(roastChickenRoastPrep, oven); err != nil {
 		return err
 	}
 
 	// === REST PREPARATION (for whole chicken) ===
 	// Ingredient-Preparation links
-	if err = createVIP(restPrep, wholeChicken); err != nil {
+	if err = createVIP(roastChickenRestPrep, roastChickenWholeChicken); err != nil {
 		return err
 	}
 
 	// Preparation-Vessel links
-	if err = createVPV(restPrep, carvingBoard); err != nil {
+	if err = createVPV(roastChickenRestPrep, carvingBoard); err != nil {
 		return err
 	}
 
@@ -2516,6 +2583,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	porkSeasonPrep := enums.Preparations["season"]
 	porkDryPrep := enums.Preparations["dry"]
 	porkBagPrep := enums.Preparations["bag"]
+	porkSealPrep := enums.Preparations["seal"]
 	porkSousVidePrep := enums.Preparations["sous-vide"]
 	porkPanSearPrep := enums.Preparations["pan-sear"]
 	porkBastePrep := enums.Preparations["baste"]
@@ -2645,6 +2713,13 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(porkBagPrep, porkVacuumBag); err != nil {
+		return err
+	}
+	// Seal with vacuum bag
+	if err = createVPV(porkSealPrep, porkVacuumBag); err != nil {
+		return err
+	}
+	if err = createVPV(porkSealPrep, porkPlasticBag); err != nil {
 		return err
 	}
 	// Sous vide in water bath

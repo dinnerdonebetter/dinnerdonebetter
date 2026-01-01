@@ -150,7 +150,7 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 
 	validPreparationID := s.validPreparationIDRouteParamFetcher(req)
 	if validPreparationID == "" {
-		return page("Valid Preparations", s.renderValidPreparationsError("Error: No valid preparation MealPlanTaskID provided")), nil
+		return page("Valid Preparations", s.renderValidPreparationsError("Error: No valid preparation ID provided")), nil
 	}
 
 	validPreparationRes, err := c.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{ValidPreparationId: validPreparationID})
@@ -328,7 +328,7 @@ func (s *AdminFrontendServer) ValidPreparationsList(_ http.ResponseWriter, req *
 			TableID: "valid-preparations-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"MealPlanTaskID",
+				"ID",
 				"Name",
 				"PastTense",
 				"Description",
@@ -433,7 +433,7 @@ func (s *AdminFrontendServer) ValidPreparationsSearch(_ http.ResponseWriter, req
 		TableID: "valid-preparations-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"MealPlanTaskID",
+			"ID",
 			"Name",
 			"PastTense",
 			"Description",

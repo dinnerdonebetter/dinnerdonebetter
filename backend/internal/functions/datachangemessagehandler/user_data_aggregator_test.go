@@ -92,7 +92,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		mock.AssertExpectationsForObjects(t, decoder, uploadManager)
 	})
 
-	t.Run("with empty report MealPlanTaskID", func(t *testing.T) {
+	t.Run("with empty report ID", func(t *testing.T) {
 		t.Parallel()
 
 		handler, _, _, _, _, _, _, uploadManager, _, decoder := buildTestAsyncDataChangeMessageHandler(t)
@@ -100,7 +100,7 @@ func TestAsyncDataChangeMessageHandler_UserDataAggregationEventHandler(t *testin
 		ctx := t.Context()
 
 		userDataCollectionRequest := &dataprivacy.UserDataAggregationRequest{
-			ReportID: "", // Empty report MealPlanTaskID
+			ReportID: "", // Empty report ID
 			UserID:   "test-user-id",
 		}
 
