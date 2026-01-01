@@ -184,7 +184,8 @@ struct_usage_check:
 
 .PHONY: env_vars
 env_vars:
-	$(SCRIPTS_DIR)/env_vars.sh $(THIS) "$(GO_FORMAT)"
+	$(SCRIPTS_DIR)/env_vars.sh $(THIS)
+	$(MAKE) format_golang
 
 ## INTEGRATION TESTING
 
