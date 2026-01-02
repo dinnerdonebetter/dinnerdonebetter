@@ -29,6 +29,7 @@ func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, e
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d product %d Name", stepIndex, productIndex)
 	assert.Equal(t, expected.Type, actual.Type, "expected step %d product %d Type", stepIndex, productIndex)
 	assert.Equal(t, expected.MeasurementQuantity, actual.MeasurementQuantity, "expected step %d product %d MeasurementQuantity", stepIndex, productIndex)
+	assert.Equal(t, expected.ItemQuantity, actual.ItemQuantity, "expected step %d product %d ItemQuantity", stepIndex, productIndex)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d product %d QuantityNotes", stepIndex, productIndex)
 	assert.Equal(t, expected.Index, actual.Index, "expected step %d product %d Index", stepIndex, productIndex)
 	if expected.MeasurementUnit != nil {
