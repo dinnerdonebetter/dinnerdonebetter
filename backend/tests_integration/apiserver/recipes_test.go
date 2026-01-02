@@ -222,7 +222,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1000)),
 							},
@@ -263,7 +263,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1010)),
 							},
@@ -316,11 +316,11 @@ func TestRecipes_Creating(T *testing.T) {
 					TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              expected.Steps[0].Products[0].Name,
-							Type:              expected.Steps[0].Products[0].Type,
-							MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
-							QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
-							Quantity:          expected.Steps[0].Products[0].Quantity,
+							Name:                expected.Steps[0].Products[0].Name,
+							Type:                expected.Steps[0].Products[0].Type,
+							MeasurementUnitID:   &expected.Steps[0].Products[0].MeasurementUnit.ID,
+							QuantityNotes:       expected.Steps[0].Products[0].QuantityNotes,
+							MeasurementQuantity: expected.Steps[0].Products[0].MeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[0].Notes,
@@ -357,11 +357,11 @@ func TestRecipes_Creating(T *testing.T) {
 					TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              expected.Steps[1].Products[0].Name,
-							Type:              expected.Steps[1].Products[0].Type,
-							MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
-							QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
-							Quantity:          expected.Steps[1].Products[0].Quantity,
+							Name:                expected.Steps[1].Products[0].Name,
+							Type:                expected.Steps[1].Products[0].Type,
+							MeasurementUnitID:   &expected.Steps[1].Products[0].MeasurementUnit.ID,
+							QuantityNotes:       expected.Steps[1].Products[0].QuantityNotes,
+							MeasurementQuantity: expected.Steps[1].Products[0].MeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[1].Notes,
@@ -700,7 +700,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1000)),
 							},
@@ -734,7 +734,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1010)),
 							},
@@ -776,11 +776,11 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "diced chicken breast",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &grams.ID,
-							QuantityNotes:     "",
-							Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
+							Name:                "diced chicken breast",
+							Type:                mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:   &grams.ID,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
 						},
 					},
 					Notes:         "first step",
@@ -804,11 +804,11 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &grams.ID,
-							QuantityNotes:     "",
-							Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
+							Name:                "final output",
+							Type:                mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:   &grams.ID,
+							QuantityNotes:       "",
+							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
 						},
 					},
 					Notes:         "second step",
@@ -845,6 +845,905 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 	})
 }
 
+func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should create recipe with discrete and continuous products", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		// Create valid entities
+		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+		createdValidInstrument := createValidInstrumentForTest(t)
+
+		// Create preparations (must be created before bridge table entries)
+		shape := createValidPreparationForTest(t)
+		assemble := createValidPreparationForTest(t)
+
+		// Create ingredients
+		groundBeef := createValidIngredientForTest(t)
+		cheese := createValidIngredientForTest(t)
+
+		// Create bridge table entries for ingredients (must match the preparation used in the step)
+		vipGroundBeefShape := createValidIngredientPreparationWithEntitiesForTest(t, groundBeef, shape)
+		vimuGroundBeefOunce := createValidIngredientMeasurementUnitWithEntitiesForTest(t, groundBeef, createdValidMeasurementUnit)
+
+		vipCheeseSlice := createValidIngredientPreparationWithEntitiesForTest(t, cheese, assemble)
+		vimuCheeseSlice := createValidIngredientMeasurementUnitWithEntitiesForTest(t, cheese, createdValidMeasurementUnit)
+
+		// Create bridge table entries for preparations
+		vpiShapeInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, shape, createdValidInstrument)
+		vpiAssembleInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, assemble, createdValidInstrument)
+
+		// Expected recipe with discrete product (beef patties) and continuous product (sauce)
+		expected := &mealplanning.Recipe{
+			Name:                "Cheeseburgers",
+			Slug:                "cheeseburgers",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStep{
+				{
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            "beef patties",
+							Type:            mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit: createdValidMeasurementUnit,
+							QuantityNotes:   "",
+							// Discrete product: 4 patties, each 4 ounces
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)),
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)), // per-item measurement
+								Max: nil,
+							},
+						},
+					},
+					Notes:       "Shape the meat into patties",
+					Preparation: *shape,
+					Instruments: []*mealplanning.RecipeStepInstrument{
+						{
+							Name:       "hands",
+							Instrument: createdValidInstrument,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Ingredient:      groundBeef,
+							Name:            "ground beef",
+							MeasurementUnit: *createdValidMeasurementUnit,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 16, // 16 ounces total for 4 patties
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            "special sauce",
+							Type:            mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit: createdValidMeasurementUnit,
+							QuantityNotes:   "",
+							// Continuous product: 8 ounces total
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: nil,
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(8)), // total quantity
+								Max: nil,
+							},
+						},
+					},
+					Notes:       "Mix the sauce",
+					Preparation: *assemble,
+					Instruments: []*mealplanning.RecipeStepInstrument{
+						{
+							Name:       "spoon",
+							Instrument: createdValidInstrument,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Ingredient:      cheese,
+							Name:            "cheese",
+							MeasurementUnit: *createdValidMeasurementUnit,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 4, // 4 slices
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		expectedInput := &mealplanning.RecipeCreationRequestInput{
+			Name:                expected.Name,
+			Slug:                expected.Slug,
+			YieldsComponentType: expected.YieldsComponentType,
+			PortionName:         expected.PortionName,
+			PluralPortionName:   expected.PluralPortionName,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: expected.EstimatedPortions.Min,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "beef patties",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &createdValidMeasurementUnit.ID,
+							QuantityNotes:     "",
+							// Discrete product: 4 patties, each 4 ounces
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)),
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)), // per-item measurement
+								Max: nil,
+							},
+						},
+					},
+					Notes:         "Shape the meat into patties",
+					PreparationID: shape.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "hands",
+							ValidPreparationInstrumentID: &vpiShapeInstrument.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "ground beef",
+							ValidIngredientPreparationID:     &vipGroundBeefShape.ID,
+							ValidIngredientMeasurementUnitID: &vimuGroundBeefOunce.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 16},
+						},
+					},
+					Index: 0,
+				},
+				{
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "special sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &createdValidMeasurementUnit.ID,
+							QuantityNotes:     "",
+							// Continuous product: 8 ounces total (ItemQuantity not set)
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: nil,
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(8)), // total quantity
+								Max: nil,
+							},
+						},
+					},
+					Notes:         "Mix the sauce",
+					PreparationID: assemble.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiAssembleInstrument.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "cheese",
+							ValidIngredientPreparationID:     &vipCheeseSlice.ID,
+							ValidIngredientMeasurementUnitID: &vimuCheeseSlice.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 4},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		// Create the recipe
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(expectedInput),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify the recipe was created correctly
+		require.NotEmpty(t, createdRecipe.ID)
+		assert.Equal(t, expected.Name, createdRecipe.Name)
+
+		// Verify step 0 has discrete product (beef patties)
+		require.Len(t, createdRecipe.Steps, len(expected.Steps))
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		step0Product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "beef patties", step0Product.Name)
+		// Verify discrete product fields
+		require.NotNil(t, step0Product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
+		assert.Equal(t, float32(4), *step0Product.ItemQuantity.Min, "ItemQuantity should be 4 patties")
+		assert.Equal(t, float32(4), *step0Product.MeasurementQuantity.Min, "MeasurementQuantity should be 4 oz per patty")
+
+		// Verify step 1 has continuous product (sauce)
+		require.Len(t, createdRecipe.Steps[1].Products, 1)
+		step1Product := createdRecipe.Steps[1].Products[0]
+		assert.Equal(t, "special sauce", step1Product.Name)
+		// Verify continuous product fields (ItemQuantity should be empty)
+		assert.Nil(t, step1Product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, step1Product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
+		assert.Equal(t, float32(8), *step1Product.MeasurementQuantity.Min, "MeasurementQuantity should be 8 oz total")
+
+		// Verify we can retrieve the recipe and products are still correct
+		retrieved, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		require.NoError(t, err)
+
+		retrievedRecipe := converters.ConvertGRPCRecipeToRecipe(retrieved.Result)
+
+		// Verify discrete product is still correct after retrieval
+		require.Len(t, retrievedRecipe.Steps[0].Products, 1)
+		retrievedStep0Product := retrievedRecipe.Steps[0].Products[0]
+		assert.Equal(t, "beef patties", retrievedStep0Product.Name)
+		require.NotNil(t, retrievedStep0Product.ItemQuantity.Min)
+		assert.Equal(t, float32(4), *retrievedStep0Product.ItemQuantity.Min)
+		assert.Equal(t, float32(4), *retrievedStep0Product.MeasurementQuantity.Min)
+
+		// Verify continuous product is still correct after retrieval
+		require.Len(t, retrievedRecipe.Steps[1].Products, 1)
+		retrievedStep1Product := retrievedRecipe.Steps[1].Products[0]
+		assert.Equal(t, "special sauce", retrievedStep1Product.Name)
+		assert.Nil(t, retrievedStep1Product.ItemQuantity.Min)
+		assert.Nil(t, retrievedStep1Product.ItemQuantity.Max)
+		assert.Equal(t, float32(8), *retrievedStep1Product.MeasurementQuantity.Min)
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+}
+
+func TestRecipes_StepProducts_Discrete(T *testing.T) {
+	T.Parallel()
+
+	T.Run("discrete product with ItemQuantity.Min set", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "cookies",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Discrete product: ItemQuantity.Min set
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(12)),
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(2)), // per-item measurement (2 oz per cookie)
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify discrete product is correctly identified
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "cookies", product.Name)
+		// Verify ItemQuantity.Min is set (indicates discrete)
+		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
+		assert.Equal(t, float32(12), *product.ItemQuantity.Min, "ItemQuantity should be 12 cookies")
+		// Verify MeasurementQuantity represents per-item measurement
+		assert.Equal(t, float32(2), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 2 oz per cookie")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("discrete product with ItemQuantity.Max set", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "slices",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Discrete product: ItemQuantity.Max set (range)
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(8)),
+								Max: pointer.To(float32(10)),
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)), // per-item measurement (1 oz per slice)
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify discrete product is correctly identified
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "slices", product.Name)
+		// Verify ItemQuantity.Max is set (indicates discrete with range)
+		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
+		require.NotNil(t, product.ItemQuantity.Max, "discrete product with range should have ItemQuantity.Max set")
+		assert.Equal(t, float32(8), *product.ItemQuantity.Min, "ItemQuantity.Min should be 8 slices")
+		assert.Equal(t, float32(10), *product.ItemQuantity.Max, "ItemQuantity.Max should be 10 slices")
+		// Verify MeasurementQuantity represents per-item measurement
+		assert.Equal(t, float32(1), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 1 oz per slice")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+}
+
+func TestRecipes_StepProducts_Continuous(T *testing.T) {
+	T.Parallel()
+
+	T.Run("continuous product with both ItemQuantity.Min and Max as null", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Continuous product: both ItemQuantity.Min and Max are null
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: nil,
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(16)), // total quantity (16 oz total)
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify continuous product is correctly identified
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "sauce", product.Name)
+		// Verify both ItemQuantity.Min and Max are null (indicates continuous)
+		assert.Nil(t, product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
+		// Verify MeasurementQuantity represents total quantity
+		assert.Equal(t, float32(16), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 16 oz total")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+}
+
+func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
+	T.Parallel()
+
+	T.Run("product with ItemQuantity.Min set but Max null (discrete)", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "patties",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Discrete: ItemQuantity.Min set, Max null
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)),
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(4)), // per-item
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify product is identified as discrete (ItemQuantity.Min is set)
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "patties", product.Name)
+		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
+		assert.Nil(t, product.ItemQuantity.Max, "ItemQuantity.Max can be null for discrete products")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("product with ItemQuantity.Min null but Max set (discrete)", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "pieces",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Discrete: ItemQuantity.Min null, Max set
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: nil,
+								Max: pointer.To(float32(6)),
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(3)), // per-item
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify product is identified as discrete (ItemQuantity.Max is set)
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "pieces", product.Name)
+		assert.Nil(t, product.ItemQuantity.Min, "ItemQuantity.Min can be null when Max is set")
+		require.NotNil(t, product.ItemQuantity.Max, "discrete product should have ItemQuantity.Max set")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("product with both ItemQuantity.Min and Max null (continuous)", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "liquid",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							// Continuous: both ItemQuantity.Min and Max are null
+							ItemQuantity: types.OptionalFloat32Range{
+								Min: nil,
+								Max: nil,
+							},
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(32)), // total quantity
+								Max: nil,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		require.NoError(t, err)
+
+		createdRecipe := converters.ConvertGRPCRecipeToRecipe(created.Created)
+
+		// Verify product is identified as continuous (both ItemQuantity.Min and Max are null)
+		require.Len(t, createdRecipe.Steps[0].Products, 1)
+		product := createdRecipe.Steps[0].Products[0]
+		assert.Equal(t, "liquid", product.Name)
+		assert.Nil(t, product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
+		// Verify MeasurementQuantity represents total quantity
+		assert.Equal(t, float32(32), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 32 oz total")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
+			RecipeId: createdRecipe.ID,
+		})
+		assert.NoError(t, err)
+	})
+}
+
 func TestRecipes_Reading(T *testing.T) {
 	T.Parallel()
 
@@ -867,6 +1766,988 @@ func TestRecipes_Reading(T *testing.T) {
 		recipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeId: nonexistentID})
 		assert.Error(t, err)
 		assert.Nil(t, recipe)
+	})
+}
+
+func TestRecipes_Validation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("minimum steps requirement", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		// Create recipe with only 1 step (should fail)
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "at least 2 steps")
+	})
+
+	T.Run("step requirements - only instruments", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		// Create recipe with step that has only instruments (should succeed)
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("step requirements - only vessels", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		vessel := createValidVesselForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpv := createValidPreparationVesselWithEntitiesForTest(t, preparation, vessel)
+
+		// Create recipe with step that has only vessels (should succeed)
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "pot",
+							ValidPreparationVesselID: &vpv.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "pan",
+							ValidPreparationVesselID: &vpv.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("step requirements - neither instruments nor vessels", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+
+		// Create recipe with step that has neither instruments nor vessels (should fail)
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					// No instruments or vessels
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					// No instruments or vessels
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "at least one instrument or vessel")
+	})
+
+	T.Run("bridge table validation - invalid ValidIngredientPreparationID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, createValidIngredientForTest(t), measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		invalidID := nonexistentID
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &invalidID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "step 0 ingredient 0")
+		assert.Contains(t, err.Error(), "ValidIngredientPreparation")
+		assert.Contains(t, err.Error(), "not found")
+	})
+
+	T.Run("bridge table validation - mismatched preparation for ingredient", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation1 := createValidPreparationForTest(t)
+		preparation2 := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		// Create VIP for preparation1, but use it in step with preparation2
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation1)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation2, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation2.ID, // Different preparation
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID, // VIP is for preparation1
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "step 0 ingredient 0")
+		assert.Contains(t, err.Error(), "is for preparation")
+		assert.Contains(t, err.Error(), "but step uses preparation")
+	})
+
+	T.Run("bridge table validation - mismatched preparation for instrument", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation1 := createValidPreparationForTest(t)
+		preparation2 := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		// Create VPI for preparation1, but use it in step with preparation2
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation2)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation1, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation2.ID, // Different preparation
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID, // VPI is for preparation1
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "step 0 instrument 0")
+		assert.Contains(t, err.Error(), "is for preparation")
+		assert.Contains(t, err.Error(), "but step uses preparation")
+	})
+
+	T.Run("bridge table validation - mismatched ingredient for ValidIngredientMeasurementUnit", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient1 := createValidIngredientForTest(t)
+		ingredient2 := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		// Create VIP for ingredient1, but VIMU for ingredient2
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient1, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient2, measurementUnit) // Different ingredient
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,  // ingredient1
+							ValidIngredientMeasurementUnitID: &vimu.ID, // ingredient2 - mismatch!
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "step 0 ingredient 0")
+		assert.Contains(t, err.Error(), "ValidIngredientMeasurementUnit")
+		assert.Contains(t, err.Error(), "is for ingredient")
+		assert.Contains(t, err.Error(), "but ingredient")
+	})
+
+	T.Run("required fields - missing name", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			// Name missing
+			Slug:                "test-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("required fields - missing slug", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "test recipe",
+			// Slug missing
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		_, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("component type validation - invalid type", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		preparation := createValidPreparationForTest(t)
+		measurementUnit := createValidMeasurementUnitForTest(t)
+		ingredient := createValidIngredientForTest(t)
+		instrument := createValidInstrumentForTest(t)
+
+		vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+		vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:                "test recipe",
+			Slug:                "test-recipe",
+			YieldsComponentType: "invalid-type", // Invalid component type
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "knife",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "test ingredient",
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		// Test validation at the domain layer directly, since gRPC conversion
+		// normalizes invalid component types to "unspecified" before validation
+		err := input.ValidateWithContext(ctx)
+		require.Error(t, err, "should reject invalid component type")
+		// The validation error uses camelCase field name
+		assert.Contains(t, err.Error(), "yieldsComponentType", "error should mention yieldsComponentType")
+	})
+
+	T.Run("component type validation - all valid types", func(t *testing.T) {
+		t.Parallel()
+
+		validTypes := []string{
+			mealplanning.MealComponentTypesUnspecified,
+			mealplanning.MealComponentTypesAmuseBouche,
+			mealplanning.MealComponentTypesAppetizer,
+			mealplanning.MealComponentTypesSoup,
+			mealplanning.MealComponentTypesMain,
+			mealplanning.MealComponentTypesSalad,
+			mealplanning.MealComponentTypesBeverage,
+			mealplanning.MealComponentTypesSide,
+			mealplanning.MealComponentTypesDessert,
+		}
+
+		for _, componentType := range validTypes {
+			t.Run(componentType, func(t *testing.T) {
+				t.Parallel()
+				ctx := t.Context()
+
+				preparation := createValidPreparationForTest(t)
+				measurementUnit := createValidMeasurementUnitForTest(t)
+				ingredient := createValidIngredientForTest(t)
+				instrument := createValidInstrumentForTest(t)
+
+				vip := createValidIngredientPreparationWithEntitiesForTest(t, ingredient, preparation)
+				vimu := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient, measurementUnit)
+				vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
+
+				input := &mealplanning.RecipeCreationRequestInput{
+					Name:                fmt.Sprintf("test recipe %s", componentType),
+					Slug:                fmt.Sprintf("test-recipe-%s", componentType),
+					YieldsComponentType: componentType,
+					PortionName:         "serving",
+					PluralPortionName:   "servings",
+					EstimatedPortions: types.Float32RangeWithOptionalMax{
+						Min: 4,
+					},
+					Steps: []*mealplanning.RecipeStepCreationRequestInput{
+						{
+							PreparationID: preparation.ID,
+							Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+								{
+									Name:                         "knife",
+									ValidPreparationInstrumentID: &vpi.ID,
+								},
+							},
+							Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+								{
+									Name:                             "test ingredient",
+									ValidIngredientPreparationID:     &vip.ID,
+									ValidIngredientMeasurementUnitID: &vimu.ID,
+									Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+								},
+							},
+							Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+								{
+									Name:              "output",
+									Type:              mealplanning.RecipeStepProductIngredientType,
+									MeasurementUnitID: &measurementUnit.ID,
+									MeasurementQuantity: types.OptionalFloat32Range{
+										Min: pointer.To(float32(1)),
+									},
+								},
+							},
+							Index: 0,
+						},
+						{
+							PreparationID: preparation.ID,
+							Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+								{
+									Name:                         "spoon",
+									ValidPreparationInstrumentID: &vpi.ID,
+								},
+							},
+							Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+								{
+									Name:              "final output",
+									Type:              mealplanning.RecipeStepProductIngredientType,
+									MeasurementUnitID: &measurementUnit.ID,
+									MeasurementQuantity: types.OptionalFloat32Range{
+										Min: pointer.To(float32(1)),
+									},
+								},
+							},
+							Index: 1,
+						},
+					},
+				}
+
+				created, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+					Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input),
+				})
+				require.NoError(t, err, "component type %s should be valid", componentType)
+				require.NotNil(t, created)
+
+				// Cleanup
+				_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: created.Created.Id})
+				assert.NoError(t, err)
+			})
+		}
 	})
 }
 

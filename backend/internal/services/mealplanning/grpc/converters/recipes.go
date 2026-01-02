@@ -450,9 +450,13 @@ func ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreation
 			Min: input.StorageDurationInSeconds.Min,
 			Max: input.StorageDurationInSeconds.Max,
 		},
-		Quantity: types.OptionalFloat32Range{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
+		MeasurementQuantity: types.OptionalFloat32Range{
+			Min: input.MeasurementQuantity.Min,
+			Max: input.MeasurementQuantity.Max,
+		},
+		ItemQuantity: types.OptionalFloat32Range{
+			Min: input.ItemQuantity.Min,
+			Max: input.ItemQuantity.Max,
 		},
 	}
 }
@@ -477,9 +481,13 @@ func ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreation
 			Min: input.StorageDurationInSeconds.Min,
 			Max: input.StorageDurationInSeconds.Max,
 		},
-		Quantity: &grpctypes.OptionalFloat32Range{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
+		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
+			Min: input.MeasurementQuantity.Min,
+			Max: input.MeasurementQuantity.Max,
+		},
+		ItemQuantity: &grpctypes.OptionalFloat32Range{
+			Min: input.ItemQuantity.Min,
+			Max: input.ItemQuantity.Max,
 		},
 	}
 }
@@ -1118,9 +1126,13 @@ func ConvertRecipeStepProductToGRPCRecipeStepProduct(input *mealplanning.RecipeS
 			Max: input.StorageDurationInSeconds.Max,
 			Min: input.StorageDurationInSeconds.Min,
 		},
-		Quantity: &grpctypes.OptionalFloat32Range{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
+		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
+			Max: input.MeasurementQuantity.Max,
+			Min: input.MeasurementQuantity.Min,
+		},
+		ItemQuantity: &grpctypes.OptionalFloat32Range{
+			Max: input.ItemQuantity.Max,
+			Min: input.ItemQuantity.Min,
 		},
 		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -1155,9 +1167,13 @@ func ConvertGRPCRecipeStepProductToRecipeStepProduct(input *mealplanningsvc.Reci
 			Max: input.StorageDurationInSeconds.Max,
 			Min: input.StorageDurationInSeconds.Min,
 		},
-		Quantity: types.OptionalFloat32Range{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
+		MeasurementQuantity: types.OptionalFloat32Range{
+			Max: input.MeasurementQuantity.Max,
+			Min: input.MeasurementQuantity.Min,
+		},
+		ItemQuantity: types.OptionalFloat32Range{
+			Max: input.ItemQuantity.Max,
+			Min: input.ItemQuantity.Min,
 		},
 		ArchivedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		LastUpdatedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
@@ -1646,9 +1662,13 @@ func ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequ
 			Max: input.StorageDurationInSeconds.Max,
 			Min: input.StorageDurationInSeconds.Min,
 		},
-		Quantity: types.OptionalFloat32Range{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
+		MeasurementQuantity: types.OptionalFloat32Range{
+			Max: input.MeasurementQuantity.Max,
+			Min: input.MeasurementQuantity.Min,
+		},
+		ItemQuantity: types.OptionalFloat32Range{
+			Max: input.ItemQuantity.Max,
+			Min: input.ItemQuantity.Min,
 		},
 		Compostable:            input.Compostable,
 		StorageInstructions:    input.StorageInstructions,
@@ -1679,9 +1699,13 @@ func ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequ
 			Max: input.StorageDurationInSeconds.Max,
 			Min: input.StorageDurationInSeconds.Min,
 		},
-		Quantity: &grpctypes.OptionalFloat32Range{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
+		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
+			Max: input.MeasurementQuantity.Max,
+			Min: input.MeasurementQuantity.Min,
+		},
+		ItemQuantity: &grpctypes.OptionalFloat32Range{
+			Max: input.ItemQuantity.Max,
+			Min: input.ItemQuantity.Min,
 		},
 		Compostable:            input.Compostable,
 		StorageInstructions:    input.StorageInstructions,

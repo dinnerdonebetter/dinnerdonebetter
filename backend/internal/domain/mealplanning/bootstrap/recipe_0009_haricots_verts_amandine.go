@@ -194,7 +194,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -243,7 +243,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "ice bath",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -305,7 +305,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -383,7 +383,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -448,7 +448,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -499,7 +499,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -560,7 +560,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -638,7 +638,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -648,7 +648,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "heated skillet with brown butter",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -756,7 +756,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -766,7 +766,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "skillet with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -843,7 +843,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -853,7 +853,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "skillet with sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -907,7 +907,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -917,7 +917,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "skillet with emulsified sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -994,7 +994,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1004,7 +1004,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "skillet with seasoned sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1069,7 +1069,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1079,7 +1079,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Name:                "skillet with green beans",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1133,7 +1133,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1184,7 +1184,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},

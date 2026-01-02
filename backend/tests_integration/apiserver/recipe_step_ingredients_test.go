@@ -27,7 +27,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, ex
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d ingredient %d to have CreatedAt", stepIndex, ingIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d ingredient %d to have BelongsToRecipeStep", stepIndex, ingIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d ingredient %d Name", stepIndex, ingIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d ingredient %d Quantity", stepIndex, ingIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d ingredient %d MeasurementQuantity", stepIndex, ingIndex)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d ingredient %d QuantityNotes", stepIndex, ingIndex)
 	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected step %d ingredient %d IngredientNotes", stepIndex, ingIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d ingredient %d OptionIndex", stepIndex, ingIndex)

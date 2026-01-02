@@ -28,8 +28,8 @@ const (
 
 type DataCollection struct {
 	state                  protoimpl.MessageState    `protogen:"open.v1"`
-	AccountAuditLogEntries map[string]*AuditLogEntry `json:"account_audit_log_entries,omitempty" protobuf:"bytes,5,rep,name=account_audit_log_entries,json=accountAuditLogEntries,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	UserAuditLogEntries    []*AuditLogEntry          `json:"user_audit_log_entries,omitempty"    protobuf:"bytes,9,rep,name=user_audit_log_entries,json=userAuditLogEntries,proto3"`
+	AccountAuditLogEntries map[string]*AuditLogEntry `protobuf:"bytes,5,rep,name=account_audit_log_entries,json=accountAuditLogEntries,proto3" json:"account_audit_log_entries,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	UserAuditLogEntries    []*AuditLogEntry          `protobuf:"bytes,9,rep,name=user_audit_log_entries,json=userAuditLogEntries,proto3" json:"user_audit_log_entries,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -80,8 +80,8 @@ func (x *DataCollection) GetUserAuditLogEntries() []*AuditLogEntry {
 
 type ChangeLog struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OldValue      string                 `json:"old_value,omitempty" protobuf:"bytes,1,opt,name=old_value,json=oldValue,proto3"`
-	NewValue      string                 `json:"new_value,omitempty" protobuf:"bytes,2,opt,name=new_value,json=newValue,proto3"`
+	OldValue      string                 `protobuf:"bytes,1,opt,name=old_value,json=oldValue,proto3" json:"old_value,omitempty"`
+	NewValue      string                 `protobuf:"bytes,2,opt,name=new_value,json=newValue,proto3" json:"new_value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -132,14 +132,14 @@ func (x *ChangeLog) GetNewValue() string {
 
 type AuditLogEntry struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	Changes          map[string]*ChangeLog  `json:"changes,omitempty"            protobuf:"bytes,2,rep,name=changes,proto3"                                  protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,3,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
-	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,4,opt,name=id,proto3"`
-	ResourceType     string                 `json:"resource_type,omitempty"      protobuf:"bytes,5,opt,name=resource_type,json=resourceType,proto3"`
-	RelevantId       string                 `json:"relevant_id,omitempty"        protobuf:"bytes,6,opt,name=relevant_id,json=relevantId,proto3"`
-	EventType        string                 `json:"event_type,omitempty"         protobuf:"bytes,7,opt,name=event_type,json=eventType,proto3"`
-	BelongsToUser    string                 `json:"belongs_to_user,omitempty"    protobuf:"bytes,8,opt,name=belongs_to_user,json=belongsToUser,proto3"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Changes          map[string]*ChangeLog  `protobuf:"bytes,2,rep,name=changes,proto3" json:"changes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	BelongsToAccount string                 `protobuf:"bytes,3,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	Id               string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	ResourceType     string                 `protobuf:"bytes,5,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
+	RelevantId       string                 `protobuf:"bytes,6,opt,name=relevant_id,json=relevantId,proto3" json:"relevant_id,omitempty"`
+	EventType        string                 `protobuf:"bytes,7,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
+	BelongsToUser    string                 `protobuf:"bytes,8,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -233,7 +233,7 @@ func (x *AuditLogEntry) GetBelongsToUser() string {
 // GetAuditLogEntriesForAccount
 type GetAuditLogEntriesForAccountRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -277,9 +277,9 @@ func (x *GetAuditLogEntriesForAccountRequest) GetFilter() *filtering.QueryFilter
 
 type GetAuditLogEntriesForAccountResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*AuditLogEntry       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*AuditLogEntry       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -338,7 +338,7 @@ func (x *GetAuditLogEntriesForAccountResponse) GetResults() []*AuditLogEntry {
 // GetAuditLogEntriesForUser
 type GetAuditLogEntriesForUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -382,9 +382,9 @@ func (x *GetAuditLogEntriesForUserRequest) GetFilter() *filtering.QueryFilter {
 
 type GetAuditLogEntriesForUserResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*AuditLogEntry       `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*AuditLogEntry       `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -443,7 +443,7 @@ func (x *GetAuditLogEntriesForUserResponse) GetResults() []*AuditLogEntry {
 // GetAuditLogEntryByID
 type GetAuditLogEntryByIDRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	AuditLogEntryId string                 `json:"audit_log_entry_id,omitempty" protobuf:"bytes,1,opt,name=audit_log_entry_id,json=auditLogEntryId,proto3"`
+	AuditLogEntryId string                 `protobuf:"bytes,1,opt,name=audit_log_entry_id,json=auditLogEntryId,proto3" json:"audit_log_entry_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -487,8 +487,8 @@ func (x *GetAuditLogEntryByIDRequest) GetAuditLogEntryId() string {
 
 type GetAuditLogEntryByIDResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *AuditLogEntry         `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *AuditLogEntry         `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

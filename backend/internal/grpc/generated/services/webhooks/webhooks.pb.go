@@ -130,7 +130,7 @@ func (WebhookMethod) EnumDescriptor() ([]byte, []int) {
 
 type DataCollection struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Webhooks      map[string]*Webhook    `json:"webhooks,omitempty" protobuf:"bytes,1,rep,name=webhooks,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Webhooks      map[string]*Webhook    `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -173,18 +173,18 @@ func (x *DataCollection) GetWebhooks() map[string]*Webhook {
 }
 
 type Webhook struct {
-	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
-	LastUpdatedAt    *timestamppb.Timestamp `json:"last_updated_at,omitempty"    protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Name             string                 `json:"name,omitempty"               protobuf:"bytes,4,opt,name=name,proto3"`
-	Url              string                 `json:"url,omitempty"                protobuf:"bytes,5,opt,name=url,proto3"`
-	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,7,opt,name=id,proto3"`
-	BelongsToAccount string                 `json:"belongs_to_account,omitempty" protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
-	Events           []*WebhookTriggerEvent `json:"events,omitempty"             protobuf:"bytes,10,rep,name=events,proto3"`
+	Name             string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Url              string                 `protobuf:"bytes,5,opt,name=url,proto3" json:"url,omitempty"`
+	Id               string                 `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
+	Events           []*WebhookTriggerEvent `protobuf:"bytes,10,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields    protoimpl.UnknownFields
-	Method           WebhookMethod      `json:"method,omitempty"       protobuf:"varint,6,opt,name=method,proto3,enum=webhooks.WebhookMethod"`
-	ContentType      WebhookContentType `json:"content_type,omitempty" protobuf:"varint,9,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType"`
+	Method           WebhookMethod      `protobuf:"varint,6,opt,name=method,proto3,enum=webhooks.WebhookMethod" json:"method,omitempty"`
+	ContentType      WebhookContentType `protobuf:"varint,9,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType" json:"content_type,omitempty"`
 	sizeCache        protoimpl.SizeCache
 }
 
@@ -290,12 +290,12 @@ func (x *Webhook) GetEvents() []*WebhookTriggerEvent {
 
 type WebhookCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `json:"name,omitempty"   protobuf:"bytes,1,opt,name=name,proto3"`
-	Url           string                 `json:"url,omitempty"    protobuf:"bytes,3,opt,name=url,proto3"`
-	Events        []string               `json:"events,omitempty" protobuf:"bytes,5,rep,name=events,proto3"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	Events        []string               `protobuf:"bytes,5,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	ContentType   WebhookContentType `json:"content_type,omitempty" protobuf:"varint,2,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType"`
-	Method        WebhookMethod      `json:"method,omitempty"       protobuf:"varint,4,opt,name=method,proto3,enum=webhooks.WebhookMethod"`
+	ContentType   WebhookContentType `protobuf:"varint,2,opt,name=content_type,json=contentType,proto3,enum=webhooks.WebhookContentType" json:"content_type,omitempty"`
+	Method        WebhookMethod      `protobuf:"varint,4,opt,name=method,proto3,enum=webhooks.WebhookMethod" json:"method,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -366,11 +366,11 @@ func (x *WebhookCreationRequestInput) GetEvents() []string {
 
 type WebhookExecutionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RequestId     string                 `json:"request_id,omitempty"    protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3"`
-	Payload       *anypb.Any             `json:"payload,omitempty"       protobuf:"bytes,2,opt,name=payload,proto3"`
-	WebhookId     string                 `json:"webhook_id,omitempty"    protobuf:"bytes,3,opt,name=webhook_id,json=webhookId,proto3"`
-	AccountId     string                 `json:"account_id,omitempty"    protobuf:"bytes,4,opt,name=account_id,json=accountId,proto3"`
-	TriggerEvent  string                 `json:"trigger_event,omitempty" protobuf:"bytes,5,opt,name=trigger_event,json=triggerEvent,proto3"`
+	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Payload       *anypb.Any             `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	WebhookId     string                 `protobuf:"bytes,3,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
+	AccountId     string                 `protobuf:"bytes,4,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	TriggerEvent  string                 `protobuf:"bytes,5,opt,name=trigger_event,json=triggerEvent,proto3" json:"trigger_event,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -442,11 +442,11 @@ func (x *WebhookExecutionRequest) GetTriggerEvent() string {
 
 type WebhookTriggerEvent struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt        *timestamppb.Timestamp `json:"created_at,omitempty"         protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	ArchivedAt       *timestamppb.Timestamp `json:"archived_at,omitempty"        protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3"`
-	Id               string                 `json:"id,omitempty"                 protobuf:"bytes,3,opt,name=id,proto3"`
-	BelongsToWebhook string                 `json:"belongs_to_webhook,omitempty" protobuf:"bytes,4,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3"`
-	TriggerEvent     string                 `json:"trigger_event,omitempty"      protobuf:"bytes,5,opt,name=trigger_event,json=triggerEvent,proto3"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Id               string                 `protobuf:"bytes,3,opt,name=id,proto3" json:"id,omitempty"`
+	BelongsToWebhook string                 `protobuf:"bytes,4,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3" json:"belongs_to_webhook,omitempty"`
+	TriggerEvent     string                 `protobuf:"bytes,5,opt,name=trigger_event,json=triggerEvent,proto3" json:"trigger_event,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -518,8 +518,8 @@ func (x *WebhookTriggerEvent) GetTriggerEvent() string {
 
 type WebhookTriggerEventCreationRequestInput struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	BelongsToWebhook string                 `json:"belongs_to_webhook,omitempty" protobuf:"bytes,1,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3"`
-	TriggerEvent     string                 `json:"trigger_event,omitempty"      protobuf:"bytes,2,opt,name=trigger_event,json=triggerEvent,proto3"`
+	BelongsToWebhook string                 `protobuf:"bytes,1,opt,name=belongs_to_webhook,json=belongsToWebhook,proto3" json:"belongs_to_webhook,omitempty"`
+	TriggerEvent     string                 `protobuf:"bytes,2,opt,name=trigger_event,json=triggerEvent,proto3" json:"trigger_event,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -571,7 +571,7 @@ func (x *WebhookTriggerEventCreationRequestInput) GetTriggerEvent() string {
 // CreateWebhook
 type CreateWebhookRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
-	Input         *WebhookCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *WebhookCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -615,8 +615,8 @@ func (x *CreateWebhookRequest) GetInput() *WebhookCreationRequestInput {
 
 type CreateWebhookResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *Webhook               `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *Webhook               `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -668,8 +668,8 @@ func (x *CreateWebhookResponse) GetCreated() *Webhook {
 // AddWebhookTriggerEvent
 type AddWebhookTriggerEventRequest struct {
 	state         protoimpl.MessageState                   `protogen:"open.v1"`
-	WebhookId     string                                   `json:"webhook_id,omitempty" protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3"`
-	Input         *WebhookTriggerEventCreationRequestInput `json:"input,omitempty"      protobuf:"bytes,2,opt,name=input,proto3"`
+	WebhookId     string                                   `protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
+	Input         *WebhookTriggerEventCreationRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -720,8 +720,8 @@ func (x *AddWebhookTriggerEventRequest) GetInput() *WebhookTriggerEventCreationR
 
 type AddWebhookTriggerEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *WebhookTriggerEvent   `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *WebhookTriggerEvent   `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -773,7 +773,7 @@ func (x *AddWebhookTriggerEventResponse) GetCreated() *WebhookTriggerEvent {
 // ArchiveWebhook
 type ArchiveWebhookRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WebhookId     string                 `json:"webhook_id,omitempty" protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3"`
+	WebhookId     string                 `protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -817,7 +817,7 @@ func (x *ArchiveWebhookRequest) GetWebhookId() string {
 
 type ArchiveWebhookResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -862,8 +862,8 @@ func (x *ArchiveWebhookResponse) GetResponseDetails() *types.ResponseDetails {
 // ArchiveWebhookTriggerEvent
 type ArchiveWebhookTriggerEventRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	WebhookId             string                 `json:"webhook_id,omitempty"               protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3"`
-	WebhookTriggerEventId string                 `json:"webhook_trigger_event_id,omitempty" protobuf:"bytes,2,opt,name=webhook_trigger_event_id,json=webhookTriggerEventId,proto3"`
+	WebhookId             string                 `protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
+	WebhookTriggerEventId string                 `protobuf:"bytes,2,opt,name=webhook_trigger_event_id,json=webhookTriggerEventId,proto3" json:"webhook_trigger_event_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -914,7 +914,7 @@ func (x *ArchiveWebhookTriggerEventRequest) GetWebhookTriggerEventId() string {
 
 type ArchiveWebhookTriggerEventResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -959,7 +959,7 @@ func (x *ArchiveWebhookTriggerEventResponse) GetResponseDetails() *types.Respons
 // GetWebhook
 type GetWebhookRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WebhookId     string                 `json:"webhook_id,omitempty" protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3"`
+	WebhookId     string                 `protobuf:"bytes,1,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1003,8 +1003,8 @@ func (x *GetWebhookRequest) GetWebhookId() string {
 
 type GetWebhookResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *Webhook               `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *Webhook               `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1056,7 +1056,7 @@ func (x *GetWebhookResponse) GetResult() *Webhook {
 // GetWebhooks
 type GetWebhooksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1100,9 +1100,9 @@ func (x *GetWebhooksRequest) GetFilter() *filtering.QueryFilter {
 
 type GetWebhooksResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Webhook             `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Webhook             `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

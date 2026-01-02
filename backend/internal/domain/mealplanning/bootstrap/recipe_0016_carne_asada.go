@@ -275,7 +275,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "toasted cumin and coriander seeds",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -337,7 +337,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "toasted and ground cumin and coriander seeds",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -403,7 +403,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "toasted and pliable chiles",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](6),
 				},
 			},
@@ -631,7 +631,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1.5),
 				},
 			},
@@ -681,7 +681,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1.5),
 				},
 			},
@@ -740,7 +740,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "marinade in large bowl",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -750,7 +750,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "marinade in sealed container",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -796,7 +796,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "refrigerated marinade in sealed container",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -846,7 +846,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "salted marinade in large bowl",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -906,7 +906,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "steak in zipper-lock bag",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -957,7 +957,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "steak in bag with excess marinade",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -993,7 +993,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "sealed zipper-lock bag with steak",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1059,7 +1059,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1107,7 +1107,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "removed marinade container",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1153,7 +1153,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "lit chimney starter with charcoal",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1199,7 +1199,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "charcoal arranged on one side of grate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1243,7 +1243,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "cooking grate set in place on grill",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1295,7 +1295,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "preheated grill",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1343,7 +1343,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "cleaned grilling grate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1393,7 +1393,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "oiled grilling grate",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1445,7 +1445,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1537,7 +1537,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1616,7 +1616,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Name:                "steak on cutting board",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1671,7 +1671,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1721,7 +1721,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},

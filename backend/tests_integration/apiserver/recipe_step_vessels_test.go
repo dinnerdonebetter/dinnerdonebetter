@@ -30,7 +30,7 @@ func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, exp
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d vessel %d Notes", stepIndex, vesselIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d Quantity", stepIndex, vesselIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d MeasurementQuantity", stepIndex, vesselIndex)
 	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected step %d vessel %d VesselPreposition", stepIndex, vesselIndex)
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
 	if expected.Vessel != nil {
@@ -183,7 +183,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductVesselType,
 							MeasurementUnit: unit,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1)),
 							},
@@ -229,7 +229,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: head,
 							QuantityNotes:   "",
-							Quantity: types.OptionalFloat32Range{
+							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
 								Min: pointer.To(float32(1)),
 							},

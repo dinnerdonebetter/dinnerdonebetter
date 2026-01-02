@@ -204,7 +204,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &ounceMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](16),
 				},
 			},
@@ -279,7 +279,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -328,7 +328,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -392,7 +392,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -458,7 +458,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -535,7 +535,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -598,7 +598,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -650,7 +650,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},
@@ -713,7 +713,7 @@ func ClassicSmashBurgersRecipe(userID string, enums *Enumerations) []*mealplanni
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](4),
 				},
 			},

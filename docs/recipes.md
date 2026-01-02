@@ -128,9 +128,102 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 - **Usage**: Can be attached to both the recipe level and individual steps
 - **Note**: Currently a nascent concept. Planned to abstract to a general `UploadedMedia` type supporting images and videos. Recipe-level media might include finished product photos or full video tutorials, while step-level media provides preparation guidance
 
+## Recipe Step Products
+
+Recipe steps produce **products** - the outputs of each step that can be used in subsequent steps or as final outputs. Products can be either **discrete** (countable items like patties, cookies, or slices) or **continuous** (bulk quantities like sauce, liquid, or powder).
+
+### Discrete Products
+
+Discrete products represent countable items where the count should scale independently from the per-item measurement.
+
+**Fields:**
+- `ItemQuantity` (OptionalFloat32Range): The count of discrete items (e.g., 4 patties, 12 cookies, 8 slices)
+- `MeasurementQuantity` (OptionalFloat32Range): The weight/volume measurement **per item** (e.g., 4 ounces per patty)
+- `MeasurementUnit` (ValidMeasurementUnit): The unit for the per-item measurement (e.g. ounce)
+
+**Example - Discrete Product:**
+```json
+{
+  "name": "beef patties",
+  "type": "ingredient",
+  "itemQuantity": { "min": 4 },
+  "measurementQuantity": { "min": 4 },
+  "measurementUnitId": "ounce"
+}
+```
+This represents "4 patties, each 4 ounces" (16 ounces total).
+
+**When to Use:**
+- Items that should scale by count (patties, cookies, slices, pieces)
+- When the per-item size should remain constant when scaling
+- Example: A recipe that divides 16 ounces of meat into 4 patties of 4 ounces each
+
+### Continuous Products
+
+Continuous products represent bulk quantities where the total amount scales proportionally.
+
+**Fields:**
+- `ItemQuantity` (OptionalFloat32Range): Not set (both `Min` and `Max` are null) - indicates continuous product
+- `MeasurementQuantity` (OptionalFloat32Range): The **total** weight/volume quantity (e.g., 16 ounces of sauce)
+- `MeasurementUnit` (ValidMeasurementUnit): The unit for the total measurement
+
+**Example - Continuous Product:**
+```json
+{
+  "name": "sauce",
+  "type": "ingredient",
+  "itemQuantity": {},
+  "measurementQuantity": { "min": 16 },
+  "measurementUnitId": "ounce"
+}
+```
+This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is an empty object (both `min` and `max` are null/omitted).
+
+**When to Use:**
+- Bulk quantities (sauces, liquids, powders, mixtures)
+- When the total quantity should scale proportionally
+- Example: A recipe that produces 2 cups of sauce
+
+### Determining Product Type
+
+A product is **discrete** if `ItemQuantity.Min` or `ItemQuantity.Max` is set (not null). A product is **continuous** if both `ItemQuantity.Min` and `ItemQuantity.Max` are null/omitted.
+
 ## Recipe Scaling
 
 The system supports dynamic recipe scaling through the frontend interface. Users can adjust the scale of a recipe (e.g., 2x, 0.5x) which automatically multiplies ingredient quantities in all steps. For example, if a step calls for 1 clove of garlic and the recipe is scaled to 2x, it will display 2 cloves of garlic.
+
+### Scaling Behavior
+
+**Ingredients:**
+- Ingredient quantities are multiplied by the scale factor
+- Example: 1 clove of garlic at 2x scale = 2 cloves of garlic
+
+**Products - Discrete:**
+- `ItemQuantity` (count) is multiplied by the scale factor
+- `MeasurementQuantity` (per-item measurement) **remains constant**
+- Example: 4 patties (4 oz each) at 2x scale = 8 patties (still 4 oz each)
+- This ensures that when scaling a recipe, you get more items of the same size, not larger items
+
+**Products - Continuous:**
+- `MeasurementQuantity` (total quantity) is multiplied by the scale factor
+- Example: 16 ounces of sauce at 2x scale = 32 ounces of sauce
+- This is the traditional scaling behavior for bulk quantities
+
+### Scaling Examples
+
+**Discrete Product Scaling:**
+```
+Original: 4 patties, each 4 ounces (16 oz total)
+Scale 2x:  8 patties, each 4 ounces (32 oz total)
+           ↑ count doubles    ↑ per-item stays same
+```
+
+**Continuous Product Scaling:**
+```
+Original: 16 ounces of sauce
+Scale 2x:  32 ounces of sauce
+           ↑ total quantity doubles
+```
 
 **Future Enhancement**: The system may support step-level scaling modifiers, allowing certain ingredients to scale at different rates (e.g., garlic scaling at 75% of the overall scale).
 
@@ -212,7 +305,7 @@ When an ingredient, instrument, or vessel is the **output of a previous recipe s
           "name": "soaked pinto beans",
           "type": "ingredient",
           "measurementUnitId": "grams-id",
-          "quantity": { "min": 1000 }
+          "measurementQuantity": { "min": 1000 }
         }
       ]
     },
@@ -239,7 +332,7 @@ When an ingredient, instrument, or vessel is the **output of a previous recipe s
           "name": "cooked beans",
           "type": "ingredient",
           "measurementUnitId": "grams-id",
-          "quantity": { "min": 1000 }
+          "measurementQuantity": { "min": 1000 }
         }
       ]
     }
@@ -250,6 +343,56 @@ When an ingredient, instrument, or vessel is the **output of a previous recipe s
 Note in the example above:
 - Step 0's ingredient uses `validIngredientPreparationId` and `validIngredientMeasurementUnitId`
 - Step 1's ingredient uses `productOfRecipeStepIndex` and `productOfRecipeStepProductIndex` (referencing step 0's product)
+
+#### Example: Discrete Product (Cheeseburger Patties)
+
+This example shows how to create a discrete product where the count scales independently from the per-item measurement:
+
+```json
+{
+  "name": "Cheeseburgers",
+  "steps": [
+    {
+      "preparationId": "prep-shape-id",
+      "notes": "Shape the meat into patties",
+      "index": 0,
+      "ingredients": [
+        {
+          "name": "ground beef",
+          "validIngredientPreparationId": "vip-beef-shape-id",
+          "validIngredientMeasurementUnitId": "vimu-beef-ounce-id",
+          "quantity": { "min": 16 }
+        }
+      ],
+      "instruments": [
+        {
+          "name": "hands",
+          "validPreparationInstrumentId": "vpi-hands-shape-id"
+        }
+      ],
+      "products": [
+        {
+          "name": "beef patties",
+          "type": "ingredient",
+          "measurementUnitId": "ounce",
+          "itemQuantity": { "min": 4 },
+          "measurementQuantity": { "min": 4 }
+        }
+      ]
+    }
+  ]
+}
+```
+
+This creates 4 patties, each 4 ounces (16 ounces total). When the recipe is scaled 2x:
+- `itemQuantity` becomes 8 (8 patties)
+- `measurementQuantity` stays 4 (still 4 oz per patty)
+- Total meat needed: 32 ounces (for 8 patties of 4 oz each)
+
+**Key Points:**
+- `itemQuantity` specifies the count of discrete items (4 patties)
+- `measurementQuantity` specifies the per-item measurement (4 ounces per patty)
+- When scaling, the count multiplies but the per-item size stays constant
 
 ### Recipe Cloning Workflow
 1. User finds a recipe they like

@@ -266,7 +266,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -329,7 +329,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -392,7 +392,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -455,7 +455,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -517,7 +517,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -571,7 +571,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -634,7 +634,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -697,7 +697,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -756,7 +756,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -830,7 +830,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -925,7 +925,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 		},
 	}
@@ -978,7 +978,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 		},
 	}
@@ -1022,7 +1022,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
 			},
 		},
 	}

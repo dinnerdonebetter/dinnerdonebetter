@@ -302,7 +302,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -409,7 +409,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -479,7 +479,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -558,7 +558,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -609,7 +609,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -695,7 +695,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -754,7 +754,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](12),
 				},
 			},

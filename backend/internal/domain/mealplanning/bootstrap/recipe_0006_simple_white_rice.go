@@ -146,7 +146,7 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2.75),
 				},
 			},
@@ -209,7 +209,7 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2.75),
 				},
 			},
@@ -261,7 +261,7 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -315,7 +315,7 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -378,7 +378,7 @@ func SimpleWhiteRiceRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},

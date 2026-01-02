@@ -355,7 +355,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -366,7 +366,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -377,7 +377,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -388,7 +388,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               3,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -399,7 +399,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               4,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -410,7 +410,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               5,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -421,7 +421,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               6,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -432,7 +432,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               7,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -443,7 +443,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               8,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -454,7 +454,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               9,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -465,7 +465,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               10,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -476,7 +476,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               11,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -487,7 +487,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               12,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -575,7 +575,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -586,7 +586,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -597,7 +597,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -803,7 +803,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -814,7 +814,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -825,7 +825,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -836,7 +836,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               3,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -847,7 +847,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               4,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -858,7 +858,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               5,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -869,7 +869,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               6,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -880,7 +880,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               7,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -891,7 +891,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               8,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -902,7 +902,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               9,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -913,7 +913,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               10,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -924,7 +924,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               11,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -935,7 +935,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               12,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1141,7 +1141,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
@@ -1152,7 +1152,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1163,7 +1163,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1174,7 +1174,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               3,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1185,7 +1185,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               4,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -1196,7 +1196,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               5,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -1207,7 +1207,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               6,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -1218,7 +1218,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               7,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1229,7 +1229,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               8,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1240,7 +1240,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               9,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1251,7 +1251,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               10,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1262,7 +1262,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               11,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1273,7 +1273,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               12,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
@@ -1491,7 +1491,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](8),
 				},
 			},
@@ -1566,7 +1566,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1576,7 +1576,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Name:                "serving bowl with salad",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -1655,7 +1655,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},

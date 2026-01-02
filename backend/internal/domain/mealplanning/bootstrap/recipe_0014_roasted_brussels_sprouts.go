@@ -178,7 +178,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -228,7 +228,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -262,7 +262,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "oven with adjusted racks",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -308,7 +308,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "baking sheets in oven",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -359,7 +359,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "preheated oven with baking sheets at 500°F",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -457,7 +457,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -563,7 +563,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -573,7 +573,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Name:                "baking sheets with Brussels sprouts in oven",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -640,7 +640,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -739,7 +739,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](8),
 				},
 			},
@@ -804,7 +804,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -901,7 +901,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -998,7 +998,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},
@@ -1073,7 +1073,7 @@ func RoastedBrusselsSproutsRecipe(userID string, enums *Enumerations) []*mealpla
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
 			},

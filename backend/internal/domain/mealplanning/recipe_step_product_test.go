@@ -42,7 +42,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			Name:              t.Name(),
 			Type:              RecipeStepProductIngredientType,
 			MeasurementUnitID: pointer.To(t.Name()),
-			Quantity: types.OptionalFloat32Range{
+			MeasurementQuantity: types.OptionalFloat32Range{
 				Max: nil,
 				Min: pointer.To(fake.Float32()),
 			},
@@ -79,7 +79,7 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 			Name:                        pointer.To(t.Name()),
 			Type:                        pointer.To(RecipeStepProductIngredientType),
 			MeasurementUnitID:           pointer.To(t.Name()),
-			Quantity:                    types.OptionalFloat32Range{Max: pointer.To(fake.Float32()), Min: pointer.To(fake.Float32())},
+			MeasurementQuantity:         types.OptionalFloat32Range{Max: pointer.To(fake.Float32()), Min: pointer.To(fake.Float32())},
 			QuantityNotes:               pointer.To(t.Name()),
 			Compostable:                 pointer.To(fake.Bool()),
 			StorageTemperatureInCelsius: types.OptionalFloat32Range{Max: pointer.To(fake.Float32()), Min: pointer.To(fake.Float32())},

@@ -42,7 +42,8 @@ type (
 		CreatedAt                   time.Time                  `json:"createdAt"`
 		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
 		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		Quantity                    types.OptionalFloat32Range `json:"quantity"`
+		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
+		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
 		ArchivedAt                  *time.Time                 `json:"archivedAt"`
 		LastUpdatedAt               *time.Time                 `json:"lastUpdatedAt"`
 		MeasurementUnit             *ValidMeasurementUnit      `json:"measurementUnit"`
@@ -65,7 +66,8 @@ type (
 
 		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
 		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		Quantity                    types.OptionalFloat32Range `json:"quantity"`
+		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
+		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
 		MeasurementUnitID           *string                    `json:"measurementUnitID"`
 		ContainedInVesselIndex      *uint16                    `json:"containedInVesselIndex"`
 		QuantityNotes               string                     `json:"quantityNotes"`
@@ -84,7 +86,8 @@ type (
 
 		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"-"`
 		StorageDurationInSeconds    types.OptionalUint32Range  `json:"-"`
-		Quantity                    types.OptionalFloat32Range `json:"-"`
+		MeasurementQuantity         types.OptionalFloat32Range `json:"-"`
+		ItemQuantity                types.OptionalFloat32Range `json:"-"`
 		MeasurementUnitID           *string                    `json:"-"`
 		ContainedInVesselIndex      *uint16                    `json:"-"`
 		Name                        string                     `json:"-"`
@@ -110,7 +113,8 @@ type (
 		BelongsToRecipeStep         *string                    `json:"belongsToRecipeStep,omitempty"`
 		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
 		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
-		Quantity                    types.OptionalFloat32Range `json:"quantity"`
+		MeasurementQuantity         types.OptionalFloat32Range `json:"measurementQuantity"`
+		ItemQuantity                types.OptionalFloat32Range `json:"itemQuantity"`
 		Compostable                 *bool                      `json:"compostable,omitempty"`
 		StorageInstructions         *string                    `json:"storageInstructions,omitempty"`
 		IsLiquid                    *bool                      `json:"isLiquid,omitempty"`
@@ -153,12 +157,20 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
-	if input.Quantity.Min != nil && input.Quantity.Min != x.Quantity.Min {
-		x.Quantity.Min = input.Quantity.Min
+	if input.MeasurementQuantity.Min != nil && input.MeasurementQuantity.Min != x.MeasurementQuantity.Min {
+		x.MeasurementQuantity.Min = input.MeasurementQuantity.Min
 	}
 
-	if input.Quantity.Max != nil && input.Quantity.Max != x.Quantity.Max {
-		x.Quantity.Max = input.Quantity.Max
+	if input.MeasurementQuantity.Max != nil && input.MeasurementQuantity.Max != x.MeasurementQuantity.Max {
+		x.MeasurementQuantity.Max = input.MeasurementQuantity.Max
+	}
+
+	if input.ItemQuantity.Min != nil && input.ItemQuantity.Min != x.ItemQuantity.Min {
+		x.ItemQuantity.Min = input.ItemQuantity.Min
+	}
+
+	if input.ItemQuantity.Max != nil && input.ItemQuantity.Max != x.ItemQuantity.Max {
+		x.ItemQuantity.Max = input.ItemQuantity.Max
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
@@ -215,7 +227,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
-		validation.Field(&x.Quantity, validation.Required),
+		validation.Field(&x.MeasurementQuantity, validation.Required),
 	)
 }
 
@@ -243,6 +255,6 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
-		validation.Field(&x.Quantity, validation.Required),
+		validation.Field(&x.MeasurementQuantity, validation.Required),
 	)
 }

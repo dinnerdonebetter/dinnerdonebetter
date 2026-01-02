@@ -443,7 +443,7 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 				g.Text(ingredientName),
 			))
 
-			// Quantity and unit
+			// MeasurementQuantity and unit
 			if ing.Quantity != nil {
 				qtyStr := ""
 				if ing.Quantity.Min != 0 {
@@ -517,7 +517,7 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 		if ing.QuantityNotes != "" {
 			details = append(details, ghtml.Div(
 				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("Quantity notes: %s", ing.QuantityNotes)),
+				g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", ing.QuantityNotes)),
 			))
 		}
 
@@ -551,7 +551,7 @@ func (s *AdminFrontendServer) renderStepInstruments(instruments []*mealplannings
 			))
 		}
 
-		// Quantity (only show if not 1)
+		// MeasurementQuantity (only show if not 1)
 		if inst.Quantity != nil {
 			qtyStr := ""
 			if inst.Quantity.Min != 0 {
@@ -671,7 +671,7 @@ func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.Recip
 			))
 		}
 
-		// Quantity (only show if not 1)
+		// MeasurementQuantity (only show if not 1)
 		if vessel.Quantity != nil {
 			qtyStr := ""
 			if vessel.Quantity.Min != 0 {
@@ -744,13 +744,50 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 			g.Text(fmt.Sprintf("(%s)", productTypeStr)),
 		))
 
-		// Quantity and unit
-		if product.Quantity != nil {
+		// Quantity display: discrete vs continuous products
+		isDiscrete := product.ItemQuantity != nil && (product.ItemQuantity.Min != nil || product.ItemQuantity.Max != nil)
+
+		if isDiscrete {
+			// Discrete product: Display "4 patties (4 oz each)" format
+			itemQtyStr := ""
+			if product.ItemQuantity.Min != nil {
+				itemQtyStr = formatQuantity(*product.ItemQuantity.Min)
+				if product.ItemQuantity.Max != nil {
+					itemQtyStr += "-" + formatQuantity(*product.ItemQuantity.Max)
+				}
+			}
+
+			measurementQtyStr := ""
+			if product.MeasurementQuantity != nil && product.MeasurementQuantity.Min != nil {
+				measurementQtyStr = formatQuantity(*product.MeasurementQuantity.Min)
+				if product.MeasurementQuantity.Max != nil {
+					measurementQtyStr += "-" + formatQuantity(*product.MeasurementQuantity.Max)
+				}
+			}
+
+			if itemQtyStr != "" {
+				unitName := formatMeasurementUnitName(product.MeasurementUnit)
+				if measurementQtyStr != "" && unitName != "" {
+					// Format: "4 patties (4 oz each)"
+					details = append(details, ghtml.Span(
+						ghtml.Class("text-gray-600 ml-2"),
+						g.Text(fmt.Sprintf("%s (%s %s each)", itemQtyStr, measurementQtyStr, unitName)),
+					))
+				} else {
+					// Fallback: just show count if measurement is missing
+					details = append(details, ghtml.Span(
+						ghtml.Class("text-gray-600 ml-2"),
+						g.Text(itemQtyStr),
+					))
+				}
+			}
+		} else if product.MeasurementQuantity != nil {
+			// Continuous product: Display "16 oz" format (backward compatible)
 			qtyStr := ""
-			if product.Quantity.Min != nil {
-				qtyStr = formatQuantity(*product.Quantity.Min)
-				if product.Quantity.Max != nil {
-					qtyStr += "-" + formatQuantity(*product.Quantity.Max)
+			if product.MeasurementQuantity.Min != nil {
+				qtyStr = formatQuantity(*product.MeasurementQuantity.Min)
+				if product.MeasurementQuantity.Max != nil {
+					qtyStr += "-" + formatQuantity(*product.MeasurementQuantity.Max)
 				}
 			}
 			if qtyStr != "" {
@@ -835,7 +872,7 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 		if product.QuantityNotes != "" {
 			details = append(details, ghtml.Div(
 				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("Quantity notes: %s", product.QuantityNotes)),
+				g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", product.QuantityNotes)),
 			))
 		}
 

@@ -28,13 +28,13 @@ const (
 
 type Waitlist struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt     *timestamppb.Timestamp `json:"created_at,omitempty"      protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	LastUpdatedAt *timestamppb.Timestamp `json:"last_updated_at,omitempty" protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	ArchivedAt    *timestamppb.Timestamp `json:"archived_at,omitempty"     protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
-	Id            string                 `json:"id,omitempty"              protobuf:"bytes,4,opt,name=id,proto3"`
-	Name          string                 `json:"name,omitempty"            protobuf:"bytes,5,opt,name=name,proto3"`
-	Description   string                 `json:"description,omitempty"     protobuf:"bytes,6,opt,name=description,proto3"`
-	ValidUntil    *timestamppb.Timestamp `json:"valid_until,omitempty"     protobuf:"bytes,7,opt,name=valid_until,json=validUntil,proto3"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Id            string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	ValidUntil    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=valid_until,json=validUntil,proto3" json:"valid_until,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -120,14 +120,14 @@ func (x *Waitlist) GetValidUntil() *timestamppb.Timestamp {
 
 type WaitlistSignup struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	CreatedAt         *timestamppb.Timestamp `json:"created_at,omitempty"          protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3"`
-	LastUpdatedAt     *timestamppb.Timestamp `json:"last_updated_at,omitempty"     protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3"`
-	ArchivedAt        *timestamppb.Timestamp `json:"archived_at,omitempty"         protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3"`
-	Id                string                 `json:"id,omitempty"                  protobuf:"bytes,4,opt,name=id,proto3"`
-	Notes             string                 `json:"notes,omitempty"               protobuf:"bytes,5,opt,name=notes,proto3"`
-	BelongsToWaitlist string                 `json:"belongs_to_waitlist,omitempty" protobuf:"bytes,6,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3"`
-	BelongsToUser     string                 `json:"belongs_to_user,omitempty"     protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3"`
-	BelongsToAccount  string                 `json:"belongs_to_account,omitempty"  protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	LastUpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_updated_at,json=lastUpdatedAt,proto3" json:"last_updated_at,omitempty"`
+	ArchivedAt        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
+	Id                string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
+	Notes             string                 `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToWaitlist string                 `protobuf:"bytes,6,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3" json:"belongs_to_waitlist,omitempty"`
+	BelongsToUser     string                 `protobuf:"bytes,7,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	BelongsToAccount  string                 `protobuf:"bytes,8,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -220,9 +220,9 @@ func (x *WaitlistSignup) GetBelongsToAccount() string {
 
 type WaitlistCreationRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3"`
-	Description   string                 `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3"`
-	ValidUntil    *timestamppb.Timestamp `json:"valid_until,omitempty" protobuf:"bytes,3,opt,name=valid_until,json=validUntil,proto3"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ValidUntil    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=valid_until,json=validUntil,proto3" json:"valid_until,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -280,9 +280,9 @@ func (x *WaitlistCreationRequestInput) GetValidUntil() *timestamppb.Timestamp {
 
 type WaitlistUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          *string                `json:"name,omitempty"        protobuf:"bytes,1,opt,name=name,proto3,oneof"`
-	Description   *string                `json:"description,omitempty" protobuf:"bytes,2,opt,name=description,proto3,oneof"`
-	ValidUntil    *timestamppb.Timestamp `json:"valid_until,omitempty" protobuf:"bytes,3,opt,name=valid_until,json=validUntil,proto3,oneof"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	ValidUntil    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=valid_until,json=validUntil,proto3,oneof" json:"valid_until,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -340,10 +340,10 @@ func (x *WaitlistUpdateRequestInput) GetValidUntil() *timestamppb.Timestamp {
 
 type WaitlistSignupCreationRequestInput struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	Notes             string                 `json:"notes,omitempty"               protobuf:"bytes,1,opt,name=notes,proto3"`
-	BelongsToWaitlist string                 `json:"belongs_to_waitlist,omitempty" protobuf:"bytes,2,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3"`
-	BelongsToUser     string                 `json:"belongs_to_user,omitempty"     protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3"`
-	BelongsToAccount  string                 `json:"belongs_to_account,omitempty"  protobuf:"bytes,4,opt,name=belongs_to_account,json=belongsToAccount,proto3"`
+	Notes             string                 `protobuf:"bytes,1,opt,name=notes,proto3" json:"notes,omitempty"`
+	BelongsToWaitlist string                 `protobuf:"bytes,2,opt,name=belongs_to_waitlist,json=belongsToWaitlist,proto3" json:"belongs_to_waitlist,omitempty"`
+	BelongsToUser     string                 `protobuf:"bytes,3,opt,name=belongs_to_user,json=belongsToUser,proto3" json:"belongs_to_user,omitempty"`
+	BelongsToAccount  string                 `protobuf:"bytes,4,opt,name=belongs_to_account,json=belongsToAccount,proto3" json:"belongs_to_account,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -408,7 +408,7 @@ func (x *WaitlistSignupCreationRequestInput) GetBelongsToAccount() string {
 
 type WaitlistSignupUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Notes         *string                `json:"notes,omitempty" protobuf:"bytes,1,opt,name=notes,proto3,oneof"`
+	Notes         *string                `protobuf:"bytes,1,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -453,7 +453,7 @@ func (x *WaitlistSignupUpdateRequestInput) GetNotes() string {
 // CreateWaitlist
 type CreateWaitlistRequest struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
-	Input         *WaitlistCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *WaitlistCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -497,8 +497,8 @@ func (x *CreateWaitlistRequest) GetInput() *WaitlistCreationRequestInput {
 
 type CreateWaitlistResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *Waitlist              `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *Waitlist              `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -550,7 +550,7 @@ func (x *CreateWaitlistResponse) GetCreated() *Waitlist {
 // GetWaitlist
 type GetWaitlistRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistId    string                 `json:"waitlist_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3"`
+	WaitlistId    string                 `protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -594,8 +594,8 @@ func (x *GetWaitlistRequest) GetWaitlistId() string {
 
 type GetWaitlistResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *Waitlist              `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *Waitlist              `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -647,7 +647,7 @@ func (x *GetWaitlistResponse) GetResult() *Waitlist {
 // GetWaitlists
 type GetWaitlistsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -691,9 +691,9 @@ func (x *GetWaitlistsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetWaitlistsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Waitlist            `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Waitlist            `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -752,7 +752,7 @@ func (x *GetWaitlistsResponse) GetResults() []*Waitlist {
 // GetActiveWaitlists
 type GetActiveWaitlistsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty" protobuf:"bytes,1,opt,name=filter,proto3"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -796,9 +796,9 @@ func (x *GetActiveWaitlistsRequest) GetFilter() *filtering.QueryFilter {
 
 type GetActiveWaitlistsResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*Waitlist            `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*Waitlist            `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -857,8 +857,8 @@ func (x *GetActiveWaitlistsResponse) GetResults() []*Waitlist {
 // UpdateWaitlist
 type UpdateWaitlistRequest struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
-	WaitlistId    string                      `json:"waitlist_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3"`
-	Input         *WaitlistUpdateRequestInput `json:"input,omitempty"       protobuf:"bytes,2,opt,name=input,proto3"`
+	WaitlistId    string                      `protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
+	Input         *WaitlistUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -909,8 +909,8 @@ func (x *UpdateWaitlistRequest) GetInput() *WaitlistUpdateRequestInput {
 
 type UpdateWaitlistResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *Waitlist              `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *Waitlist              `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -962,7 +962,7 @@ func (x *UpdateWaitlistResponse) GetUpdated() *Waitlist {
 // ArchiveWaitlist
 type ArchiveWaitlistRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistId    string                 `json:"waitlist_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3"`
+	WaitlistId    string                 `protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1006,7 +1006,7 @@ func (x *ArchiveWaitlistRequest) GetWaitlistId() string {
 
 type ArchiveWaitlistResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1051,7 +1051,7 @@ func (x *ArchiveWaitlistResponse) GetResponseDetails() *types.ResponseDetails {
 // WaitlistIsNotExpired
 type WaitlistIsNotExpiredRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistId    string                 `json:"waitlist_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3"`
+	WaitlistId    string                 `protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1095,10 +1095,10 @@ func (x *WaitlistIsNotExpiredRequest) GetWaitlistId() string {
 
 type WaitlistIsNotExpiredResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
-	IsNotExpired    bool `json:"is_not_expired,omitempty" protobuf:"varint,2,opt,name=is_not_expired,json=isNotExpired,proto3"`
+	IsNotExpired    bool `protobuf:"varint,2,opt,name=is_not_expired,json=isNotExpired,proto3" json:"is_not_expired,omitempty"`
 }
 
 func (x *WaitlistIsNotExpiredResponse) Reset() {
@@ -1148,7 +1148,7 @@ func (x *WaitlistIsNotExpiredResponse) GetIsNotExpired() bool {
 // CreateWaitlistSignup
 type CreateWaitlistSignupRequest struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	Input         *WaitlistSignupCreationRequestInput `json:"input,omitempty" protobuf:"bytes,1,opt,name=input,proto3"`
+	Input         *WaitlistSignupCreationRequestInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1192,8 +1192,8 @@ func (x *CreateWaitlistSignupRequest) GetInput() *WaitlistSignupCreationRequestI
 
 type CreateWaitlistSignupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Created         *WaitlistSignup        `json:"created,omitempty"          protobuf:"bytes,2,opt,name=created,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Created         *WaitlistSignup        `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1245,8 +1245,8 @@ func (x *CreateWaitlistSignupResponse) GetCreated() *WaitlistSignup {
 // GetWaitlistSignup
 type GetWaitlistSignupRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistSignupId string                 `json:"waitlist_signup_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3"`
-	WaitlistId       string                 `json:"waitlist_id,omitempty"        protobuf:"bytes,2,opt,name=waitlist_id,json=waitlistId,proto3"`
+	WaitlistSignupId string                 `protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3" json:"waitlist_signup_id,omitempty"`
+	WaitlistId       string                 `protobuf:"bytes,2,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1297,8 +1297,8 @@ func (x *GetWaitlistSignupRequest) GetWaitlistId() string {
 
 type GetWaitlistSignupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Result          *WaitlistSignup        `json:"result,omitempty"           protobuf:"bytes,2,opt,name=result,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Result          *WaitlistSignup        `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1350,8 +1350,8 @@ func (x *GetWaitlistSignupResponse) GetResult() *WaitlistSignup {
 // GetWaitlistSignupsForWaitlist
 type GetWaitlistSignupsForWaitlistRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistId    string                 `json:"waitlist_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3"`
-	Filter        *filtering.QueryFilter `json:"filter,omitempty"      protobuf:"bytes,2,opt,name=filter,proto3"`
+	WaitlistId    string                 `protobuf:"bytes,1,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1402,9 +1402,9 @@ func (x *GetWaitlistSignupsForWaitlistRequest) GetFilter() *filtering.QueryFilte
 
 type GetWaitlistSignupsForWaitlistResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Pagination      *filtering.Pagination  `json:"pagination,omitempty"       protobuf:"bytes,2,opt,name=pagination,proto3"`
-	Results         []*WaitlistSignup      `json:"results,omitempty"          protobuf:"bytes,3,rep,name=results,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Pagination      *filtering.Pagination  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Results         []*WaitlistSignup      `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1463,9 +1463,9 @@ func (x *GetWaitlistSignupsForWaitlistResponse) GetResults() []*WaitlistSignup {
 // UpdateWaitlistSignup
 type UpdateWaitlistSignupRequest struct {
 	state            protoimpl.MessageState            `protogen:"open.v1"`
-	WaitlistSignupId string                            `json:"waitlist_signup_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3"`
-	WaitlistId       string                            `json:"waitlist_id,omitempty"        protobuf:"bytes,2,opt,name=waitlist_id,json=waitlistId,proto3"`
-	Input            *WaitlistSignupUpdateRequestInput `json:"input,omitempty"              protobuf:"bytes,3,opt,name=input,proto3"`
+	WaitlistSignupId string                            `protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3" json:"waitlist_signup_id,omitempty"`
+	WaitlistId       string                            `protobuf:"bytes,2,opt,name=waitlist_id,json=waitlistId,proto3" json:"waitlist_id,omitempty"`
+	Input            *WaitlistSignupUpdateRequestInput `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1523,8 +1523,8 @@ func (x *UpdateWaitlistSignupRequest) GetInput() *WaitlistSignupUpdateRequestInp
 
 type UpdateWaitlistSignupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
-	Updated         *WaitlistSignup        `json:"updated,omitempty"          protobuf:"bytes,2,opt,name=updated,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
+	Updated         *WaitlistSignup        `protobuf:"bytes,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1576,7 +1576,7 @@ func (x *UpdateWaitlistSignupResponse) GetUpdated() *WaitlistSignup {
 // ArchiveWaitlistSignup
 type ArchiveWaitlistSignupRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	WaitlistSignupId string                 `json:"waitlist_signup_id,omitempty" protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3"`
+	WaitlistSignupId string                 `protobuf:"bytes,1,opt,name=waitlist_signup_id,json=waitlistSignupId,proto3" json:"waitlist_signup_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1620,7 +1620,7 @@ func (x *ArchiveWaitlistSignupRequest) GetWaitlistSignupId() string {
 
 type ArchiveWaitlistSignupResponse struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	ResponseDetails *types.ResponseDetails `json:"response_details,omitempty" protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3"`
+	ResponseDetails *types.ResponseDetails `protobuf:"bytes,1,opt,name=response_details,json=responseDetails,proto3" json:"response_details,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }

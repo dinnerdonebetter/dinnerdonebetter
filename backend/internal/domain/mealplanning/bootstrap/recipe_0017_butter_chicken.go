@@ -201,7 +201,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -251,7 +251,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -297,7 +297,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "prepared baking sheet with foil boat",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -408,7 +408,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
@@ -418,7 +418,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "bowl with marinade",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
@@ -485,7 +485,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
 			},
 		},
 	}
@@ -530,7 +530,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "chicken on baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -608,7 +608,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -672,7 +672,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -726,7 +726,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -734,7 +734,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "bowl with cashews",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -783,7 +783,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -828,7 +828,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with hot oil",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
@@ -913,7 +913,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -921,7 +921,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with browned onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -990,7 +990,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -998,7 +998,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1056,7 +1056,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1064,7 +1064,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with spiced onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1140,7 +1140,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1148,7 +1148,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with sauce base",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1197,7 +1197,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1205,7 +1205,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with simmered sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1235,7 +1235,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "preheated broiler",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1292,7 +1292,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](2)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](2)},
 			},
 		},
 	}
@@ -1351,7 +1351,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1359,7 +1359,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with blended sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1438,7 +1438,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1446,7 +1446,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with makhani sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1502,7 +1502,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 			{
 				ID:                  identifiers.New(),
@@ -1510,7 +1510,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Name:                "Dutch oven with butter chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}
@@ -1554,7 +1554,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				Quantity:            types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
 			},
 		},
 	}

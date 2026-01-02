@@ -160,7 +160,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
@@ -237,7 +237,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
@@ -294,7 +294,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
@@ -368,7 +368,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](28),
 				},
 			},
@@ -422,7 +422,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &milliliterMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](60),
 				},
 			},
@@ -515,7 +515,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
@@ -659,7 +659,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
@@ -742,7 +742,7 @@ func PanSearedButterBastedSteakRecipe(userID string, enums *Enumerations) []*mea
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &gramMeasurement.ID,
-				Quantity: types.OptionalFloat32Range{
+				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
 				},
