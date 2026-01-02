@@ -7,7 +7,8 @@
 - [x] `recipe_0005_cheeseburgers.go`
 - [x] `recipe_0006_simple_white_rice.go`
 - [x] `recipe_0007_ultra_fluffy_mashed_potatoes.go`
-- [ ] `recipe_0008_caesar_roasted_broccoli.go`
+- [x] `recipe_0008_caesar_roasted_broccoli.go` (breadcrumbs)
+- [ ] `recipe_0008_caesar_roasted_broccoli.go` (broccoli that uses breadcrumbs) (waiting on #1104)
 - [ ] `recipe_0009_haricots_verts_amandine.go`
 - [ ] `recipe_0010_mixed_green_salad.go`
 - [ ] `recipe_0011_soy_sauce_braised_chicken_thighs.go`

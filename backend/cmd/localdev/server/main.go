@@ -230,33 +230,55 @@ func main() {
 			recipes := bootstrap.AllRecipes(adminUserID, enums)
 			logger.Info(fmt.Sprintf("Found %d recipes to create", len(recipes)))
 
-			for i, recipe := range recipes {
-				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-				_, err = repo.CreateRecipe(ctx, recipe)
-				if err != nil {
-					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
+			// Validate recipes if in dry run mode
+			if os.Getenv("DRY_RUN") == "true" {
+				logger.Info("DRY_RUN enabled: validating recipes instead of creating them...")
+				validator := bootstrap.NewRecipeValidatorFromEnumerations(enums)
+				for i, recipe := range recipes {
+					logger.Info(fmt.Sprintf("Validating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
+					if err := validator.ValidateAndPopulate(recipe); err != nil {
+						return fmt.Errorf("failed to validate recipe %s: %w", recipe.Name, err)
+					}
 				}
+				logger.Info("All bootstrap recipes validated successfully!")
+			} else {
+				for i, recipe := range recipes {
+					logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
+					_, err = repo.CreateRecipe(ctx, recipe)
+					if err != nil {
+						return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
+					}
+				}
+				logger.Info("All bootstrap recipes created successfully!")
 			}
 
-			logger.Info("All bootstrap recipes created successfully!")
+			// Skip meal creation in dry run mode since recipes don't exist in DB
+			if os.Getenv("DRY_RUN") == "true" {
+				logger.Info("DRY_RUN enabled: skipping meal creation (recipes not in database)")
+			} else {
+				logger.Info("Creating bootstrap meals...")
+				meals := bootstrap.AllMeals(adminUserID, recipes)
+				logger.Info(fmt.Sprintf("Found %d meals to create", len(meals)))
 
-			logger.Info("Creating bootstrap meals...")
-			meals := bootstrap.AllMeals(adminUserID, recipes)
-			logger.Info(fmt.Sprintf("Found %d meals to create", len(meals)))
-
-			for i, meal := range meals {
-				logger.Info(fmt.Sprintf("Creating meal %d: %s (%d components)", i+1, meal.Name, len(meal.Components)))
-				_, err = repo.CreateMeal(ctx, meal)
-				if err != nil {
-					return fmt.Errorf("failed to create meal %s: %w", meal.Name, err)
+				for i, meal := range meals {
+					logger.Info(fmt.Sprintf("Creating meal %d: %s (%d components)", i+1, meal.Name, len(meal.Components)))
+					_, err = repo.CreateMeal(ctx, meal)
+					if err != nil {
+						return fmt.Errorf("failed to create meal %s: %w", meal.Name, err)
+					}
 				}
-			}
 
-			logger.Info("All bootstrap meals created successfully!")
+				logger.Info("All bootstrap meals created successfully!")
+			}
 			return nil
 		}),
 		// Create meal plan with 3 chicken dishes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			if os.Getenv("DRY_RUN") == "true" {
+				logger.Info("DRY_RUN enabled: skipping meal plan creation")
+				return nil
+			}
+
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -368,6 +390,11 @@ func main() {
 		}),
 		// Create finalized meal plan with votes and extend current meal plan deadline
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			if os.Getenv("DRY_RUN") == "true" {
+				logger.Info("DRY_RUN enabled: skipping finalized meal plan creation")
+				return nil
+			}
+
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -545,6 +572,11 @@ func main() {
 		}),
 		// Run grocery list initializer and task creator workers for finalized meal plans
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			if os.Getenv("DRY_RUN") == "true" {
+				logger.Info("DRY_RUN enabled: skipping grocery list and task creator workers")
+				return nil
+			}
+
 			logger.Info("Running grocery list initializer and task creator workers...")
 
 			// Build grocery list initializer worker

@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -1755,6 +1756,40 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	return enums, nil
 }
 
+// NewRecipeValidatorFromEnumerations creates a RecipeValidator from the Enumerations bridge table data.
+func NewRecipeValidatorFromEnumerations(enums *Enumerations) *recipevalidator.RecipeValidator {
+	// Flatten the nested maps into flat maps keyed by ID
+	vipMap := make(map[string]*mealplanning.ValidIngredientPreparation)
+	for _, prepMap := range enums.IngredientPreparations {
+		for _, vip := range prepMap {
+			vipMap[vip.ID] = vip
+		}
+	}
+
+	vimuMap := make(map[string]*mealplanning.ValidIngredientMeasurementUnit)
+	for _, ingMap := range enums.IngredientMeasurementUnits {
+		for _, vimu := range ingMap {
+			vimuMap[vimu.ID] = vimu
+		}
+	}
+
+	vpiMap := make(map[string]*mealplanning.ValidPreparationInstrument)
+	for _, prepMap := range enums.PreparationInstruments {
+		for _, vpi := range prepMap {
+			vpiMap[vpi.ID] = vpi
+		}
+	}
+
+	vpvMap := make(map[string]*mealplanning.ValidPreparationVessel)
+	for _, prepMap := range enums.PreparationVessels {
+		for _, vpv := range prepMap {
+			vpvMap[vpv.ID] = vpv
+		}
+	}
+
+	return recipevalidator.NewRecipeValidator(vipMap, vimuMap, vpiMap, vpvMap)
+}
+
 // createSteakRecipeBridgeEntries creates all the bridge table entries needed for the steak recipe.
 func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repository, enums *Enumerations) error {
 	// Helper to get instrument with error checking
@@ -3389,8 +3424,8 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	// Get preparations for caesar roasted broccoli recipe
 	caesarMeltPrep := enums.Preparations["melt"]
 	caesarStirPrep := enums.Preparations["stir"]
-	caesarCookPrep := enums.Preparations["cook"]
-	caesarToastPrep := enums.Preparations["toast"]
+	caesarMixPrep := enums.Preparations["mix"]
+	caesarCoatPrep := enums.Preparations["coat"]
 	caesarSeasonPrep := enums.Preparations["season"]
 	caesarTransferPrep := enums.Preparations["transfer"]
 	caesarLinePrep := enums.Preparations["line"]
@@ -3461,25 +3496,22 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
-	// === COOK PREPARATION for breadcrumbs ===
-	if err = createVIP(caesarCookPrep, caesarAnchovyPaste); err != nil {
+	// === MIX PREPARATION for breadcrumbs ===
+	if err = createVIP(caesarMixPrep, caesarSaltedButter); err != nil {
 		return err
 	}
-	if err = createVIP(caesarCookPrep, caesarGarlic); err != nil {
-		return err
-	}
-	if err = createVPV(caesarCookPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarMixPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
 
-	// === TOAST PREPARATION for breadcrumbs ===
-	if err = createVIP(caesarToastPrep, caesarBreadcrumbs); err != nil {
+	// === COAT PREPARATION for breadcrumbs ===
+	if err = createVIP(caesarCoatPrep, caesarBreadcrumbs); err != nil {
 		return err
 	}
-	if err = createVPV(caesarToastPrep, caesarSmallNonstickSkillet); err != nil {
+	if err = createVPV(caesarCoatPrep, caesarSmallNonstickSkillet); err != nil {
 		return err
 	}
-	if err = createVPI(caesarToastPrep, caesarRubberSpatula); err != nil {
+	if err = createVPI(caesarCoatPrep, caesarRubberSpatula); err != nil {
 		return err
 	}
 
