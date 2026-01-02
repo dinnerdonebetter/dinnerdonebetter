@@ -4,9 +4,9 @@
 - [x] `recipe_0002_sous_vide_chicken_breast.go`
 - [x] `recipe_0003_roast_chicken.go`
 - [x] `recipe_0004_sous_vide_pork_chops.go`
-- [ ] `recipe_0005_cheeseburgers.go` (needs #1101)
-- [ ] `recipe_0006_simple_white_rice.go`
-- [ ] `recipe_0007_ultra_fluffy_mashed_potatoes.go`
+- [x] `recipe_0005_cheeseburgers.go`
+- [x] `recipe_0006_simple_white_rice.go`
+- [x] `recipe_0007_ultra_fluffy_mashed_potatoes.go`
 - [ ] `recipe_0008_caesar_roasted_broccoli.go`
 - [ ] `recipe_0009_haricots_verts_amandine.go`
 - [ ] `recipe_0010_mixed_green_salad.go`

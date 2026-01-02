@@ -3170,6 +3170,25 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === RINSE PREPARATION for rice ===
+	rinsePrep := enums.Preparations["rinse"]
+	riceSmallBowl := enums.Vessels["small bowl"]
+	if err = createVIP(rinsePrep, rice); err != nil {
+		return err
+	}
+	if err = createVIP(rinsePrep, riceWater); err != nil {
+		return err
+	}
+	if err = createVPV(rinsePrep, riceSmallBowl); err != nil {
+		return err
+	}
+
+	// === REMOVE FROM HEAT PREPARATION for rice ===
+	removeFromHeatPrep := enums.Preparations["remove from heat"]
+	if err = createVPV(removeFromHeatPrep, saucepan); err != nil {
+		return err
+	}
+
 	// Rice measurement units
 	if err = createVIMU(rice, cupMeasurement); err != nil {
 		return err
@@ -3188,12 +3207,13 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	// Get preparations for mashed potatoes recipe
 	peelPrep := enums.Preparations["peel"]
 	cubePrep = enums.Preparations["cube"]
-	rinsePrep := enums.Preparations["rinse"]
+	rinsePrep = enums.Preparations["rinse"]
 	submergePrep := enums.Preparations["submerge"]
 	boilPrep := enums.Preparations["boil"]
 	drainPrep := enums.Preparations["drain"]
 	mashedRestPrep := enums.Preparations["rest"]
 	ricePrep := enums.Preparations["rice"]
+	slicePrep = enums.Preparations["slice"]
 	foldPrep := enums.Preparations["fold"]
 	mashedSeasonPrep := enums.Preparations["season"]
 	mashedSimmerPrep := enums.Preparations["simmer"]
@@ -3304,6 +3324,17 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(ricePrep, mashedPot); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION for butter ===
+	if err = createVIP(slicePrep, mashedButter); err != nil {
+		return err
+	}
+	if err = createVPI(slicePrep, mashedKnife); err != nil {
+		return err
+	}
+	if err = createVPV(slicePrep, mashedCuttingBoard); err != nil {
 		return err
 	}
 
