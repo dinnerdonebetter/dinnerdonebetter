@@ -4974,7 +4974,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVPI(rbsDividePrep, rbsOvenMitt); err != nil {
 		return err
 	}
-	if err = createVPI(rbsDividePrep, rbsDishTowel); err != nil {
+	rbsTongs, err := getInstrument("tongs")
+	if err != nil {
+		return err
+	}
+	if err = createVPI(rbsDividePrep, rbsTongs); err != nil {
 		return err
 	}
 	if err = createVPI(rbsDividePrep, rbsBareHands); err != nil {

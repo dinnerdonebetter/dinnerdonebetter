@@ -750,27 +750,43 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 		isDiscrete := product.ItemQuantity != nil && (product.ItemQuantity.Min != nil || product.ItemQuantity.Max != nil)
 
 		if isDiscrete {
-			// Discrete product: Display "4 patties (4 oz each)" format
+			// Discrete product: Display "4 fillets (6 oz each)" format
 			itemQtyStr := ""
+			var itemQtyMin, itemQtyMax float32
 			if product.ItemQuantity.Min != nil {
-				itemQtyStr = formatQuantity(*product.ItemQuantity.Min)
+				itemQtyMin = *product.ItemQuantity.Min
+				itemQtyStr = formatQuantity(itemQtyMin)
 				if product.ItemQuantity.Max != nil {
-					itemQtyStr += "-" + formatQuantity(*product.ItemQuantity.Max)
+					itemQtyMax = *product.ItemQuantity.Max
+					itemQtyStr += "-" + formatQuantity(itemQtyMax)
+				} else {
+					itemQtyMax = itemQtyMin
 				}
 			}
 
 			measurementQtyStr := ""
-			if product.MeasurementQuantity != nil && product.MeasurementQuantity.Min != nil {
-				measurementQtyStr = formatQuantity(*product.MeasurementQuantity.Min)
+			if product.MeasurementQuantity != nil && product.MeasurementQuantity.Min != nil && itemQtyMin > 0 {
+				// Calculate per-item quantity by dividing total by item count
+				totalMin := *product.MeasurementQuantity.Min
+				perItemMin := totalMin / itemQtyMin
+				measurementQtyStr = formatQuantity(perItemMin)
+				
 				if product.MeasurementQuantity.Max != nil {
-					measurementQtyStr += "-" + formatQuantity(*product.MeasurementQuantity.Max)
+					totalMax := *product.MeasurementQuantity.Max
+					if product.ItemQuantity.Max != nil && itemQtyMax > 0 {
+						perItemMax := totalMax / itemQtyMax
+						measurementQtyStr += "-" + formatQuantity(perItemMax)
+					} else if itemQtyMin > 0 {
+						perItemMax := totalMax / itemQtyMin
+						measurementQtyStr += "-" + formatQuantity(perItemMax)
+					}
 				}
 			}
 
 			if itemQtyStr != "" {
 				unitName := formatMeasurementUnitName(product.MeasurementUnit)
 				if measurementQtyStr != "" && unitName != "" {
-					// Format: "4 patties (4 oz each)"
+					// Format: "4 fillets (6 oz each)"
 					details = append(details, ghtml.Span(
 						ghtml.Class("text-gray-600 ml-2"),
 						g.Text(fmt.Sprintf("%s (%s %s each)", itemQtyStr, measurementQtyStr, unitName)),

@@ -12,9 +12,9 @@
 - [ ] `recipe_0009_haricots_verts_amandine.go` (needs #1105)
 - [x] `recipe_0010_mixed_green_salad.go`
 - [x] `recipe_0011_soy_sauce_braised_chicken_thighs.go`
-- [ ] `recipe_0012_grilled_pork_tenderloin.go`
-- [ ] `recipe_0013_pan_seared_salmon_fillets.go`
-- [ ] `recipe_0014_roasted_brussels_sprouts.go`
+- [x] `recipe_0012_grilled_pork_tenderloin.go`
+- [x] `recipe_0013_pan_seared_salmon_fillets.go`
+- [x] `recipe_0014_roasted_brussels_sprouts.go`
 - [ ] `recipe_0015_refried_beans.go`
 - [ ] `recipe_0016_carne_asada.go`
 - [ ] `recipe_0017_butter_chicken.go`
