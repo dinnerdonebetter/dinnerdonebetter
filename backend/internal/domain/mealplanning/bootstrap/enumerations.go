@@ -1686,7 +1686,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"reserve", "Set aside for later use", "reserved", "reserve", false, false},
 		{"measure", "Determine the quantity or size of something", "measured", "measure", false, false},
 		{"discard", "Throw away or remove unwanted items", "discarded", "discard", false, false},
-		{"thin", "Add liquid to reduce thickness or consistency", "thinned", "thin", false, false},
+		{"dilute", "Add liquid to reduce thickness or consistency", "diluted", "dilute", false, false},
 		// Carne asada recipe preparations
 		{"microwave", "Heat food in a microwave oven", "microwaved", "microwave", false, false},
 		{"blend", "Mix ingredients together until smooth using a blender", "blended", "blend", false, false},
@@ -4934,12 +4934,19 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 
 	// === PLACE PREPARATION for baking sheets ===
+	if err = createVIP(rbsPlacePrep, rbsBrusselsSprouts); err != nil {
+		return err
+	}
 	if err = createVPV(rbsPlacePrep, rbsBakingSheet); err != nil {
 		return err
 	}
 	if err = createVPV(rbsPlacePrep, rbsOven); err != nil {
 		return err
 	}
+	if err = createVPI(rbsPlacePrep, rbsOvenMitt); err != nil {
+		return err
+	}
+	// Note: rbsTongs will be declared later in the divide preparation section and added to place prep there
 
 	// === PREHEAT PREPARATION for oven ===
 	if err = createVPV(rbsPreheatPrep, rbsOven); err != nil {
@@ -4979,6 +4986,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPI(rbsDividePrep, rbsTongs); err != nil {
+		return err
+	}
+	// Also add tongs to place preparation
+	if err = createVPI(rbsPlacePrep, rbsTongs); err != nil {
 		return err
 	}
 	if err = createVPI(rbsDividePrep, rbsBareHands); err != nil {
@@ -5148,7 +5159,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	rbThinPrep, err := getPreparation("thin")
+	rbDilutePrep, err := getPreparation("dilute")
 	if err != nil {
 		return err
 	}
@@ -5227,10 +5238,68 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	rbUnitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments for refried beans recipe
+	rbChefsKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
 	rbBeanMasher := enums.Instruments["bean masher"]
 	rbPotatoMasher := enums.Instruments["potato masher"]
 	rbStickBlender := enums.Instruments["stick blender"]
 	rbWoodenSpoon := enums.Instruments["wooden spoon"]
+
+	// Get vessels for refried beans recipe (cutting board)
+	rbCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	// Get preparations for halve, mince, and peel
+	rbHalvePrep, err := getPreparation("halve")
+	if err != nil {
+		return err
+	}
+	rbMincePrep, err := getPreparation("mince")
+	if err != nil {
+		return err
+	}
+	rbPeelPrep, err := getPreparation("peel")
+	if err != nil {
+		return err
+	}
+
+	// === HALVE PREPARATION for onion ===
+	if err = createVIP(rbHalvePrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err = createVPI(rbHalvePrep, rbChefsKnife); err != nil {
+		return err
+	}
+	if err = createVPV(rbHalvePrep, rbCuttingBoard); err != nil {
+		return err
+	}
+
+	// === MINCE PREPARATION for onion ===
+	if err = createVIP(rbMincePrep, rbWhiteOnion); err != nil {
+		return err
+	}
+	if err = createVPI(rbMincePrep, rbChefsKnife); err != nil {
+		return err
+	}
+	if err = createVPV(rbMincePrep, rbCuttingBoard); err != nil {
+		return err
+	}
+
+	// === PEEL PREPARATION for garlic ===
+	rbBareHandsInstrument, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	if err = createVIP(rbPeelPrep, rbGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(rbPeelPrep, rbBareHandsInstrument); err != nil {
+		return err
+	}
 
 	// === COVER PREPARATION for beans ===
 	if err = createVIP(rbCoverPrep, rbPintoBeans); err != nil {
@@ -5425,17 +5494,17 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
-	// === THIN PREPARATION for beans ===
-	if err = createVIP(rbThinPrep, rbPintoBeans); err != nil {
+	// === DILUTE PREPARATION for beans ===
+	if err = createVIP(rbDilutePrep, rbPintoBeans); err != nil {
 		return err
 	}
-	if err = createVIP(rbThinPrep, rbBlackBeans); err != nil {
+	if err = createVIP(rbDilutePrep, rbBlackBeans); err != nil {
 		return err
 	}
-	if err = createVIP(rbThinPrep, rbWater); err != nil {
+	if err = createVIP(rbDilutePrep, rbWater); err != nil {
 		return err
 	}
-	if err = createVPV(rbThinPrep, rbLargeSkillet); err != nil {
+	if err = createVPV(rbDilutePrep, rbLargeSkillet); err != nil {
 		return err
 	}
 
