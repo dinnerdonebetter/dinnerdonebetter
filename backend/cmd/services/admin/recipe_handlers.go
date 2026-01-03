@@ -285,15 +285,15 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 												if step.TemperatureInCelsius == nil || step.TemperatureInCelsius.Min == nil {
 													return ""
 												}
-												minC := *step.TemperatureInCelsius.Min
-												minF := (minC * 9.0 / 5.0) + 32.0
+												minC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Min)
+												minF := roundTemperatureToNearest5((minC * 9.0 / 5.0) + 32.0)
 
-												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > minC {
-													maxC := *step.TemperatureInCelsius.Max
-													maxF := (maxC * 9.0 / 5.0) + 32.0
-													return fmt.Sprintf("Temperature: %.1f-%.1f°F (%.1f-%.1f°C)", minF, maxF, minC, maxC)
+												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > *step.TemperatureInCelsius.Min {
+													maxC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Max)
+													maxF := roundTemperatureToNearest5((maxC * 9.0 / 5.0) + 32.0)
+													return fmt.Sprintf("Temperature: %.0f-%.0f°F (%.0f-%.0f°C)", minF, maxF, minC, maxC)
 												}
-												return fmt.Sprintf("Temperature: %.1f°F (%.1f°C)", minF, minC)
+												return fmt.Sprintf("Temperature: %.0f°F (%.0f°C)", minF, minC)
 											}()),
 										),
 									),
@@ -415,7 +415,8 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 		}
 
 		// Check if this ingredient comes from a previous step
-		if ing.RecipeStepProductId != nil {
+		isProductFromPriorStep := ing.RecipeStepProductId != nil
+		if isProductFromPriorStep {
 			productStep := s.findStepWithProduct(*ing.RecipeStepProductId, allSteps)
 			if productStep != nil {
 				// Format as "ingredient name from step X" without quantity
@@ -514,7 +515,8 @@ func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplannings
 				g.Text(fmt.Sprintf("Ingredient notes: %s", ing.IngredientNotes)),
 			))
 		}
-		if ing.QuantityNotes != "" {
+		// Only show quantity notes if this is not a product from a prior step
+		if !isProductFromPriorStep && ing.QuantityNotes != "" {
 			details = append(details, ghtml.Div(
 				ghtml.Class("text-xs text-gray-500 mt-1"),
 				g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", ing.QuantityNotes)),
@@ -811,9 +813,11 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 		if product.StorageTemperatureInCelsius != nil {
 			tempStr := ""
 			if product.StorageTemperatureInCelsius.Min != nil {
-				tempStr = fmt.Sprintf("%.1f", *product.StorageTemperatureInCelsius.Min)
+				minTemp := roundTemperatureToNearest5(*product.StorageTemperatureInCelsius.Min)
+				tempStr = fmt.Sprintf("%.0f", minTemp)
 				if product.StorageTemperatureInCelsius.Max != nil {
-					tempStr += fmt.Sprintf("-%.1f", *product.StorageTemperatureInCelsius.Max)
+					maxTemp := roundTemperatureToNearest5(*product.StorageTemperatureInCelsius.Max)
+					tempStr += fmt.Sprintf("-%.0f", maxTemp)
 				}
 				tempStr += "°C"
 			}
@@ -998,6 +1002,11 @@ func formatQuantity(qty float32) string {
 		return fmt.Sprintf("%d", int32(qty))
 	}
 	return fmt.Sprintf("%.2f", qty)
+}
+
+// roundTemperatureToNearest5 rounds a temperature to the nearest 5
+func roundTemperatureToNearest5(temp float32) float32 {
+	return float32(int((temp+2.5)/5.0) * 5)
 }
 
 // humanizeList formats a list of strings with Oxford comma and "and" (e.g., "red, white, and blue").

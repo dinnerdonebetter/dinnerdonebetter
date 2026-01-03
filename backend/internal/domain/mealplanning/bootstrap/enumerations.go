@@ -105,6 +105,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "turmeric", Description: "Ground turmeric", PluralName: "turmeric", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "turmeric", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cumin", Description: "Ground cumin", PluralName: "cumin", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cumin", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cinnamon", Description: "Ground cinnamon", PluralName: "cinnamon", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cinnamon", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "cinnamon stick", Description: "Whole cinnamon stick", PluralName: "cinnamon sticks", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cinnamon-stick", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "paprika", Description: "Sweet paprika", PluralName: "paprika", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "paprika", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "chili powder", Description: "Mild chili powder", PluralName: "chili powder", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "chili-powder", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "cayenne pepper", Description: "Ground cayenne pepper", PluralName: "cayenne pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "cayenne-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -8249,6 +8250,10 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 	if err != nil {
 		return err
 	}
+	unitMeasurement, err := getMeasurementUnit("unit")
+	if err != nil {
+		return err
+	}
 
 	// Helper function to create ValidIngredientPreparation bridge entry
 	createVIP := func(prep *mealplanning.ValidPreparation, ing *mealplanning.ValidIngredient) error {
@@ -8457,6 +8462,134 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 		return err
 	}
 
+	// === SOY SAUCE BRAISED CHICKEN THIGHS BRIDGE ENTRIES ===
+	// Get ingredients, preparations, instruments, and vessels
+	scallionsIngredient, err := getIngredient("scallions")
+	if err != nil {
+		return err
+	}
+	gingerIngredient, err := getIngredient("ginger")
+	if err != nil {
+		return err
+	}
+	chopPrep, err := getPreparation("chop")
+	if err != nil {
+		return err
+	}
+	peelPrep, err := getPreparation("peel")
+	if err != nil {
+		return err
+	}
+	slicePrep, err := getPreparation("slice")
+	if err != nil {
+		return err
+	}
+	knifeInstrument, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	bareHandsInstrument, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	cuttingBoardVessel, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	// CHOP preparation bridges (for scallions)
+	if err = createVIP(chopPrep, scallionsIngredient); err != nil {
+		return err
+	}
+	if err = createVPI(chopPrep, knifeInstrument); err != nil {
+		return err
+	}
+	if err = createVPV(chopPrep, cuttingBoardVessel); err != nil {
+		return err
+	}
+
+	// PEEL preparation bridges (for ginger and garlic)
+	if err = createVIP(peelPrep, gingerIngredient); err != nil {
+		return err
+	}
+	if err = createVIP(peelPrep, garlic); err != nil {
+		return err
+	}
+	if err = createVPI(peelPrep, bareHandsInstrument); err != nil {
+		return err
+	}
+	if err = createVPV(peelPrep, cuttingBoardVessel); err != nil {
+		return err
+	}
+
+	// SLICE preparation bridges (for ginger)
+	if err = createVIP(slicePrep, gingerIngredient); err != nil {
+		return err
+	}
+	if err = createVPI(slicePrep, knifeInstrument); err != nil {
+		return err
+	}
+	if err = createVPV(slicePrep, cuttingBoardVessel); err != nil {
+		return err
+	}
+
+	// === SOY SAUCE BRAISED CHICKEN THIGHS ADDITIONAL BRIDGE ENTRIES ===
+	// Get additional ingredients and preparation
+	cinnamonStickIngredient, err := getIngredient("cinnamon stick")
+	if err != nil {
+		return err
+	}
+	starAniseIngredient, err := getIngredient("star anise")
+	if err != nil {
+		return err
+	}
+	lightSoySauceIngredient, err := getIngredient("light soy sauce")
+	if err != nil {
+		return err
+	}
+	shaoxingWineIngredient, err := getIngredient("Shaoxing wine")
+	if err != nil {
+		return err
+	}
+	waterIngredient, err := getIngredient("water")
+	if err != nil {
+		return err
+	}
+	simmerPrep, err := getPreparation("simmer")
+	if err != nil {
+		return err
+	}
+
+	// SIMMER preparation bridges (for cinnamon stick, star anise, light soy sauce, Shaoxing wine, water)
+	if err = createVIP(simmerPrep, cinnamonStickIngredient); err != nil {
+		return err
+	}
+	if err = createVIP(simmerPrep, starAniseIngredient); err != nil {
+		return err
+	}
+	if err = createVIP(simmerPrep, lightSoySauceIngredient); err != nil {
+		return err
+	}
+	if err = createVIP(simmerPrep, shaoxingWineIngredient); err != nil {
+		return err
+	}
+	if err = createVIP(simmerPrep, waterIngredient); err != nil {
+		return err
+	}
+
+	// TRANSFER preparation bridges (for chicken with tongs)
+	transferPrep, err := getPreparation("transfer")
+	if err != nil {
+		return err
+	}
+	tongsInstrument, err := getInstrument("tongs")
+	if err != nil {
+		return err
+	}
+	if err = createVPI(transferPrep, tongsInstrument); err != nil {
+		return err
+	}
+
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
 	if err = createVIMU(greenBeans, poundMeasurement); err != nil {
 		return err
@@ -8474,6 +8607,10 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 		return err
 	}
 	if err = createVIMU(vegetableOil, tablespoonMeasurement); err != nil {
+		return err
+	}
+	// Cinnamon stick measurement unit bridge
+	if err = createVIMU(cinnamonStickIngredient, unitMeasurement); err != nil {
 		return err
 	}
 

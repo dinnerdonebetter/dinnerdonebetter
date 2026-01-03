@@ -230,10 +230,12 @@ func (s *AdminFrontendServer) ValidPrepTaskConfigPage(_ http.ResponseWriter, req
 									minTemp := ""
 									maxTemp := ""
 									if validPrepTaskConfig.StorageTemperatureInCelsius.Min != nil {
-										minTemp = fmt.Sprintf("%.1f°C", *validPrepTaskConfig.StorageTemperatureInCelsius.Min)
+										roundedMin := roundTemperatureToNearest5(*validPrepTaskConfig.StorageTemperatureInCelsius.Min)
+										minTemp = fmt.Sprintf("%.0f°C", roundedMin)
 									}
 									if validPrepTaskConfig.StorageTemperatureInCelsius.Max != nil {
-										maxTemp = fmt.Sprintf("%.1f°C", *validPrepTaskConfig.StorageTemperatureInCelsius.Max)
+										roundedMax := roundTemperatureToNearest5(*validPrepTaskConfig.StorageTemperatureInCelsius.Max)
+										maxTemp = fmt.Sprintf("%.0f°C", roundedMax)
 									}
 
 									switch {
