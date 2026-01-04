@@ -104,6 +104,8 @@ func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 		BelongsToRecipeStep:  result.BelongsToRecipeStep,
 		VesselPreposition:    result.VesselPredicate,
 		Name:                 result.Name,
+		Index:                uint16(result.Index),
+		OptionIndex:          uint16(result.OptionIndex),
 		UnavailableAfterStep: result.UnavailableAfterStep,
 	}
 
@@ -217,6 +219,7 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 			BelongsToRecipeStep:  result.BelongsToRecipeStep,
 			VesselPreposition:    result.VesselPredicate,
 			Name:                 result.Name,
+			Index:                uint16(result.Index),
 			UnavailableAfterStep: result.UnavailableAfterStep,
 		}
 
@@ -310,6 +313,8 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 			BelongsToRecipeStep:  result.BelongsToRecipeStep,
 			VesselPreposition:    result.VesselPredicate,
 			Name:                 result.Name,
+			Index:                uint16(result.Index),
+			OptionIndex:          uint16(result.OptionIndex),
 			UnavailableAfterStep: result.UnavailableAfterStep,
 		}
 
@@ -382,6 +387,8 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 		ValidVesselID:        database.NullStringFromStringPointer(input.VesselID),
 		MaximumQuantity:      database.NullInt32FromUint16Pointer(input.Quantity.Max),
 		MinimumQuantity:      int32(input.Quantity.Min),
+		Index:                int32(input.Index),
+		OptionIndex:          int32(input.OptionIndex),
 		UnavailableAfterStep: input.UnavailableAfterStep,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step vessel creation query")
@@ -398,6 +405,8 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 			Min: input.Quantity.Min,
 		},
 		VesselPreposition:    input.VesselPreposition,
+		Index:                input.Index,
+		OptionIndex:          input.OptionIndex,
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		CreatedAt:            q.CurrentTime(),
 	}
@@ -443,6 +452,8 @@ func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealpl
 		ValidVesselID:        database.NullStringFromStringPointer(vesselID),
 		MaximumQuantity:      database.NullInt32FromUint16Pointer(updated.Quantity.Max),
 		MinimumQuantity:      int32(updated.Quantity.Min),
+		Index:                int32(updated.Index),
+		OptionIndex:          int32(updated.OptionIndex),
 		UnavailableAfterStep: updated.UnavailableAfterStep,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")

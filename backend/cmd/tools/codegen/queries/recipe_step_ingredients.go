@@ -30,6 +30,7 @@ var recipeStepIngredientsColumns = []string{
 	"quantity_notes",
 	"recipe_step_product_id",
 	"ingredient_notes",
+	"index",
 	"option_index",
 	"to_taste",
 	"product_percentage_to_use",

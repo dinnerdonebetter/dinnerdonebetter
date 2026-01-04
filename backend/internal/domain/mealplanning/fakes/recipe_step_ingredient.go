@@ -23,6 +23,8 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		IngredientNotes:        buildUniqueString(),
 		CreatedAt:              BuildFakeTime(),
 		BelongsToRecipeStep:    BuildFakeID(),
+		Index:                  0, // Will be set from array index during recipe creation (via converter)
+		OptionIndex:            0, // Default to 0 for single-option items
 		VesselIndex:            pointer.To(fake.Uint16()),
 		ToTaste:                fake.Bool(),
 		ProductPercentageToUse: pointer.To(float32(buildFakeNumber())),

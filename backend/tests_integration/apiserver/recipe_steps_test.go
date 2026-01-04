@@ -147,6 +147,9 @@ func TestRecipeSteps_Listing(T *testing.T) {
 			for j := range exampleRecipeStep.Ingredients {
 				exampleRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 				exampleRecipeStep.Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
+				// Set Index to array position (will be used when Index is nil in creation input)
+				exampleRecipeStep.Ingredients[j].Index = uint16(j)
+				exampleRecipeStep.Ingredients[j].OptionIndex = 0
 			}
 
 			for j := range exampleRecipeStep.Products {
@@ -155,10 +158,16 @@ func TestRecipeSteps_Listing(T *testing.T) {
 
 			for j := range exampleRecipeStep.Instruments {
 				exampleRecipeStep.Instruments[j].Instrument = createdValidInstrument
+				// Set Index to array position (will be used when Index is nil in creation input)
+				exampleRecipeStep.Instruments[j].Index = uint16(j)
+				exampleRecipeStep.Instruments[j].OptionIndex = 0
 			}
 
 			for j := range exampleRecipeStep.Vessels {
 				exampleRecipeStep.Vessels[j].Vessel = createdValidVessel
+				// Set Index to array position (will be used when Index is nil in creation input)
+				exampleRecipeStep.Vessels[j].Index = uint16(j)
+				exampleRecipeStep.Vessels[j].OptionIndex = 0
 			}
 
 			for j := range exampleRecipeStep.CompletionConditions {

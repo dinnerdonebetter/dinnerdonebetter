@@ -265,9 +265,9 @@ struct StepProductsSectionView: View {
 
   private func formatProductQuantity(_ product: Mealplanning_RecipeStepProduct) -> String {
     // Check if product is discrete (has ItemQuantity set)
-    let isDiscrete = product.hasItemQuantity && 
-                     (product.itemQuantity.hasMin || product.itemQuantity.hasMax)
-    
+    let isDiscrete =
+      product.hasItemQuantity && (product.itemQuantity.hasMin || product.itemQuantity.hasMax)
+
     if isDiscrete {
       // Discrete product: Format as "4 patties (4 oz each)"
       var itemQtyStr = ""
@@ -284,7 +284,7 @@ struct StepProductsSectionView: View {
           itemQtyStr = formatQuantity(min)
         }
       }
-      
+
       var measurementQtyStr = ""
       if product.hasMeasurementQuantity && product.measurementQuantity.hasMin {
         let min = product.measurementQuantity.min
@@ -299,9 +299,9 @@ struct StepProductsSectionView: View {
           measurementQtyStr = formatQuantity(min)
         }
       }
-      
+
       let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
-      
+
       if !itemQtyStr.isEmpty && !measurementQtyStr.isEmpty && !unitName.isEmpty {
         // Format: "4 patties (4 oz each)"
         return "\(itemQtyStr) \(product.name) (\(measurementQtyStr) \(unitName) each)"
@@ -316,14 +316,14 @@ struct StepProductsSectionView: View {
       // Continuous product: Format as "product name: 16 oz"
       let min = product.measurementQuantity.min
       var qtyStr = formatQuantity(min)
-      
+
       if product.measurementQuantity.hasMax {
         let max = product.measurementQuantity.max
         if min != max {
           qtyStr = "\(qtyStr)-\(formatQuantity(max))"
         }
       }
-      
+
       let unitName = product.hasMeasurementUnit ? product.measurementUnit.name : ""
       if !unitName.isEmpty {
         return "\(product.name): \(qtyStr) \(unitName)"
@@ -331,11 +331,11 @@ struct StepProductsSectionView: View {
         return "\(product.name): \(qtyStr)"
       }
     }
-    
+
     // Fallback: just show name if no quantities
     return product.name
   }
-  
+
   private func formatQuantity(_ qty: Float) -> String {
     // Format numbers - use fewer decimals for whole numbers
     if qty.truncatingRemainder(dividingBy: 1) == 0 {

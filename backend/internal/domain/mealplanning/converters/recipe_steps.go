@@ -39,24 +39,24 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *meal
 	}
 
 	x.Ingredients = []*mealplanning.RecipeStepIngredientDatabaseCreationInput{}
-	for _, ingredient := range input.Ingredients {
-		convertedIngredient := ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient)
+	for i, ingredient := range input.Ingredients {
+		convertedIngredient := ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient, uint16(i))
 		convertedIngredient.ID = identifiers.New()
 		convertedIngredient.BelongsToRecipeStep = x.ID
 		x.Ingredients = append(x.Ingredients, convertedIngredient)
 	}
 
 	x.Instruments = []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{}
-	for _, instrument := range input.Instruments {
-		convertedInstrument := ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument)
+	for i, instrument := range input.Instruments {
+		convertedInstrument := ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument, uint16(i))
 		convertedInstrument.ID = identifiers.New()
 		convertedInstrument.BelongsToRecipeStep = x.ID
 		x.Instruments = append(x.Instruments, convertedInstrument)
 	}
 
 	x.Vessels = []*mealplanning.RecipeStepVesselDatabaseCreationInput{}
-	for _, vessel := range input.Vessels {
-		convertedVessel := ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(vessel)
+	for i, vessel := range input.Vessels {
+		convertedVessel := ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(vessel, uint16(i))
 		convertedVessel.ID = identifiers.New()
 		convertedVessel.BelongsToRecipeStep = x.ID
 		x.Vessels = append(x.Vessels, convertedVessel)

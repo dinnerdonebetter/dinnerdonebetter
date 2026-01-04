@@ -69,6 +69,7 @@ INSERT INTO recipe_step_instruments (
 	optional,
 	minimum_quantity,
 	maximum_quantity,
+	index,
 	option_index,
 	belongs_to_recipe_step
 ) VALUES (
@@ -82,7 +83,8 @@ INSERT INTO recipe_step_instruments (
 	$8,
 	$9,
 	$10,
-	$11
+	$11,
+	$12
 )
 `
 
@@ -96,6 +98,7 @@ type CreateRecipeStepInstrumentParams struct {
 	MaximumQuantity     sql.NullInt32
 	PreferenceRank      int32
 	MinimumQuantity     int32
+	Index               int32
 	OptionIndex         int32
 	Optional            bool
 }
@@ -111,6 +114,7 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 		arg.Optional,
 		arg.MinimumQuantity,
 		arg.MaximumQuantity,
+		arg.Index,
 		arg.OptionIndex,
 		arg.BelongsToRecipeStep,
 	)
@@ -140,6 +144,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -187,6 +192,7 @@ type GetRecipeStepInstrumentRow struct {
 	MaximumQuantity                               sql.NullInt32
 	PreferenceRank                                int32
 	MinimumQuantity                               int32
+	Index                                         int32
 	OptionIndex                                   int32
 	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
@@ -219,6 +225,7 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *Get
 		&i.Optional,
 		&i.MinimumQuantity,
 		&i.MaximumQuantity,
+		&i.Index,
 		&i.OptionIndex,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
@@ -251,6 +258,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -330,20 +338,21 @@ type GetRecipeStepInstrumentsRow struct {
 	Name                                          string
 	ID                                            string
 	RecipeStepProductID                           sql.NullString
-	ValidInstrumentName                           sql.NullString
+	ValidInstrumentDescription                    sql.NullString
 	ValidInstrumentID                             sql.NullString
 	ValidInstrumentSlug                           sql.NullString
-	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentName                           sql.NullString
 	ValidInstrumentPluralName                     sql.NullString
 	ValidInstrumentIconPath                       sql.NullString
 	FilteredCount                                 int64
 	TotalCount                                    int64
 	MaximumQuantity                               sql.NullInt32
 	MinimumQuantity                               int32
+	Index                                         int32
 	OptionIndex                                   int32
 	PreferenceRank                                int32
-	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentDisplayInSummaryLists          sql.NullBool
 	Optional                                      bool
 }
@@ -389,6 +398,7 @@ func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *Ge
 			&i.Optional,
 			&i.MinimumQuantity,
 			&i.MaximumQuantity,
+			&i.Index,
 			&i.OptionIndex,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
@@ -433,6 +443,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -471,6 +482,7 @@ type GetRecipeStepInstrumentsForRecipeRow struct {
 	MaximumQuantity                               sql.NullInt32
 	PreferenceRank                                int32
 	MinimumQuantity                               int32
+	Index                                         int32
 	OptionIndex                                   int32
 	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
@@ -509,6 +521,7 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX
 			&i.Optional,
 			&i.MinimumQuantity,
 			&i.MaximumQuantity,
+			&i.Index,
 			&i.OptionIndex,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
@@ -538,11 +551,12 @@ UPDATE recipe_step_instruments SET
 	optional = $6,
 	minimum_quantity = $7,
 	maximum_quantity = $8,
-	option_index = $9,
+	index = $9,
+	option_index = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = $10
-	AND id = $11
+	AND belongs_to_recipe_step = $11
+	AND id = $12
 `
 
 type UpdateRecipeStepInstrumentParams struct {
@@ -555,6 +569,7 @@ type UpdateRecipeStepInstrumentParams struct {
 	MaximumQuantity     sql.NullInt32
 	PreferenceRank      int32
 	MinimumQuantity     int32
+	Index               int32
 	OptionIndex         int32
 	Optional            bool
 }
@@ -569,6 +584,7 @@ func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 		arg.Optional,
 		arg.MinimumQuantity,
 		arg.MaximumQuantity,
+		arg.Index,
 		arg.OptionIndex,
 		arg.BelongsToRecipeStep,
 		arg.ID,

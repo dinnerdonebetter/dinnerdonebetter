@@ -193,6 +193,65 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	}
 }
 
+// GetIngredientOptionsByIndex returns all ingredient options for a given index.
+// This groups ingredients that represent the same logical position within the step.
+func (x *RecipeStep) GetIngredientOptionsByIndex(index uint16) []*RecipeStepIngredient {
+	var options []*RecipeStepIngredient
+	for _, ingredient := range x.Ingredients {
+		if ingredient.Index == index {
+			options = append(options, ingredient)
+		}
+	}
+	return options
+}
+
+// GetIngredientByIndexAndOptionIndex returns the ingredient with the specified index and optionIndex.
+// Returns nil if not found.
+func (x *RecipeStep) GetIngredientByIndexAndOptionIndex(index, optionIndex uint16) *RecipeStepIngredient {
+	for _, ingredient := range x.Ingredients {
+		if ingredient.Index == index && ingredient.OptionIndex == optionIndex {
+			return ingredient
+		}
+	}
+	return nil
+}
+
+// GetInstrumentOptionsByIndex returns all instrument options for a given index.
+// This groups instruments that represent the same logical position within the step.
+func (x *RecipeStep) GetInstrumentOptionsByIndex(index uint16) []*RecipeStepInstrument {
+	var options []*RecipeStepInstrument
+	for _, instrument := range x.Instruments {
+		if instrument.Index == index {
+			options = append(options, instrument)
+		}
+	}
+	return options
+}
+
+// GetInstrumentByIndexAndOptionIndex returns the instrument with the specified index and optionIndex.
+// Returns nil if not found.
+func (x *RecipeStep) GetInstrumentByIndexAndOptionIndex(index, optionIndex uint16) *RecipeStepInstrument {
+	for _, instrument := range x.Instruments {
+		if instrument.Index == index && instrument.OptionIndex == optionIndex {
+			return instrument
+		}
+	}
+	return nil
+}
+
+// GetVesselsByIndex returns all vessels for a given index.
+// Note: Vessels don't have OptionIndex, so multiple vessels with the same index
+// represent multiple vessels at the same position (e.g., "2 bowls").
+func (x *RecipeStep) GetVesselsByIndex(index uint16) []*RecipeStepVessel {
+	var vessels []*RecipeStepVessel
+	for _, vessel := range x.Vessels {
+		if vessel.Index == index {
+			vessels = append(vessels, vessel)
+		}
+	}
+	return vessels
+}
+
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepCreationRequestInput.

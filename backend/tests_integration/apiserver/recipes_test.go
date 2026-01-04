@@ -232,8 +232,10 @@ func TestRecipes_Creating(T *testing.T) {
 					Preparation: *soak, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
-							Name:       "whatever",
-							Instrument: createdValidInstrument,
+							Name:        "whatever",
+							Instrument:  createdValidInstrument,
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
@@ -244,6 +246,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 500,
 							},
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 						{
 							Ingredient:      water,
@@ -252,6 +256,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 5,
 							},
+							Index:       1, // Array index 1
+							OptionIndex: 0,
 						},
 					},
 					Index: 0,
@@ -273,8 +279,10 @@ func TestRecipes_Creating(T *testing.T) {
 					Preparation: *mix, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
-							Name:       "whatever",
-							Instrument: createdValidInstrument,
+							Name:        "whatever",
+							Instrument:  createdValidInstrument,
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
@@ -284,6 +292,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 1000,
 							},
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 						{
 							Ingredient:      garlicPaste,
@@ -292,6 +302,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 10,
 							},
+							Index:       1, // Array index 1
+							OptionIndex: 0,
 						},
 					},
 					Index: 1,

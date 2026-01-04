@@ -1077,7 +1077,11 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	convertedInput := converters.ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input)
+	if input.Index == nil {
+		return nil, fmt.Errorf("index is required when creating a recipe step instrument outside of initial recipe creation")
+	}
+
+	convertedInput := converters.ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, convertedInput.ID)
@@ -1229,7 +1233,11 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	convertedInput := converters.ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input)
+	if input.Index == nil {
+		return nil, fmt.Errorf("index is required when creating a recipe step ingredient outside of initial recipe creation")
+	}
+
+	convertedInput := converters.ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, convertedInput.ID)
@@ -1657,7 +1665,11 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	convertedInput := converters.ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input)
+	if input.Index == nil {
+		return nil, fmt.Errorf("index is required when creating a recipe step vessel outside of initial recipe creation")
+	}
+
+	convertedInput := converters.ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input, 0)
 	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, convertedInput.ID)

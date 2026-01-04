@@ -31,6 +31,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d instrument %d Notes", stepIndex, instrIndex)
 	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d MeasurementQuantity", stepIndex, instrIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d instrument %d Index", stepIndex, instrIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d instrument %d OptionIndex", stepIndex, instrIndex)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected step %d instrument %d PreferenceRank", stepIndex, instrIndex)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
@@ -65,12 +66,25 @@ func TestRecipeStepInstruments_CompleteLifecycle(T *testing.T) {
 		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
 		createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
 
+		// Get existing instruments to determine the next available index
+		existingInstrumentsRes, err := userClient.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		existingInstruments := existingInstrumentsRes.Results
+		nextIndex := uint16(len(existingInstruments)) // Start from the next index after existing ones
+
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 		exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
+		// Set Index to match what we'll use in the creation input - use nextIndex to avoid conflicts
+		exampleRecipeStepInstrument.Index = nextIndex
 		exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
 		// Set bridge table MealPlanTaskID (required)
 		exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
+		// Set Index (required for individual creation) - use nextIndex to ensure uniqueness
+		exampleRecipeStepInstrumentInput.Index = pointer.To(nextIndex)
 		createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
@@ -102,6 +116,9 @@ func TestRecipeStepInstruments_CompleteLifecycle(T *testing.T) {
 		newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 		newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 		newRecipeStepInstrument.Instrument = newValidInstrument
+		// Preserve the existing Index and OptionIndex to avoid conflicts
+		newRecipeStepInstrument.Index = createdRecipeStepInstrument.Index
+		newRecipeStepInstrument.OptionIndex = createdRecipeStepInstrument.OptionIndex
 		updateInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(newRecipeStepInstrument)
 		createdRecipeStepInstrument.Update(updateInput)
 
@@ -289,30 +306,44 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
 		createdValidPreparationInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, createdValidPreparation, createdValidInstrument)
 
+		// Get existing instruments to determine the next available index
+		existingInstrumentsRes, err := userClient.GetRecipeStepInstruments(ctx, &mealplanninggrpc.GetRecipeStepInstrumentsRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		existingInstruments := existingInstrumentsRes.Results
+		nextIndex := uint16(len(existingInstruments)) // Start from the next index after existing ones
+
 		var expected []*mealplanning.RecipeStepInstrument
 		for i := 0; i < 5; i++ {
 			exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
+			// Set Index to match what we'll use in the creation input - start from nextIndex to avoid conflicts
+			instrumentIndex := nextIndex + uint16(i)
+			exampleRecipeStepInstrument.Index = instrumentIndex
 			exampleRecipeStepInstrumentInput := mpconverters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
 			// Set bridge table MealPlanTaskID (required)
 			exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
-			createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
+			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
+			exampleRecipeStepInstrumentInput.Index = pointer.To(instrumentIndex)
+			createdRecipeStepInstrumentRes, createErr := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrumentInput),
 			})
-			require.NoError(t, err)
+			require.NoError(t, createErr)
 
 			createdRecipeStepInstrument := converters.ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(createdRecipeStepInstrumentRes.Created)
 			checkRecipeStepInstrumentEquality(t, i, i, exampleRecipeStepInstrument, createdRecipeStepInstrument)
 
-			fetchedRecipeStepInstrumentRes, err := userClient.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
+			fetchedRecipeStepInstrumentRes, createErr := userClient.GetRecipeStepInstrument(ctx, &mealplanninggrpc.GetRecipeStepInstrumentRequest{
 				RecipeId:               createdRecipe.ID,
 				RecipeStepId:           createdRecipeStepID,
 				RecipeStepInstrumentId: createdRecipeStepInstrument.ID,
 			})
-			require.NoError(t, err)
+			require.NoError(t, createErr)
 
 			createdRecipeStepInstrument = converters.ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(fetchedRecipeStepInstrumentRes.Result)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepInstrument.BelongsToRecipeStep)

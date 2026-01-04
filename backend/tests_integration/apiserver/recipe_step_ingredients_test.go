@@ -7,6 +7,7 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -30,6 +31,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, ex
 	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d ingredient %d MeasurementQuantity", stepIndex, ingIndex)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d ingredient %d QuantityNotes", stepIndex, ingIndex)
 	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected step %d ingredient %d IngredientNotes", stepIndex, ingIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d ingredient %d Index", stepIndex, ingIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d ingredient %d OptionIndex", stepIndex, ingIndex)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d ingredient %d Optional", stepIndex, ingIndex)
 	assert.Equal(t, expected.ToTaste, actual.ToTaste, "expected step %d ingredient %d ToTaste", stepIndex, ingIndex)
@@ -84,6 +86,9 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 		newRecipeStepIngredient.ID = createdRecipeStepIngredientID
 		newRecipeStepIngredient.Ingredient = createdValidIngredient
 		newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
+		// Preserve the existing Index and OptionIndex to avoid conflicts
+		newRecipeStepIngredient.Index = createdRecipeStepIngredient.Index
+		newRecipeStepIngredient.OptionIndex = createdRecipeStepIngredient.OptionIndex
 
 		updateInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient)
 		createdRecipeStepIngredient.Update(updateInput)
@@ -147,6 +152,15 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
 
+		// Get existing ingredients to determine the next available index
+		existingIngredientsRes, err := userClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		existingIngredients := existingIngredientsRes.Results
+		nextIndex := uint16(len(existingIngredients)) // Start from the next index after existing ones
+
 		var expected []*mealplanning.RecipeStepIngredient
 		for i := 0; i < 5; i++ {
 			x, _, _ := createRecipeForTest(t, nil)
@@ -161,28 +175,33 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepIngredient.Ingredient = createdValidIngredient
 			exampleRecipeStepIngredient.MeasurementUnit = mealplanning.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
+			// Set Index to match what we'll use in the creation input - start from nextIndex to avoid conflicts
+			ingredientIndex := nextIndex + uint16(i)
+			exampleRecipeStepIngredient.Index = ingredientIndex
 
 			exampleRecipeStepIngredientInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
 			// Set bridge table IDs (required)
 			exampleRecipeStepIngredientInput.ValidIngredientPreparationID = &createdVIP.ID
 			exampleRecipeStepIngredientInput.ValidIngredientMeasurementUnitID = &createdVIMU.ID
-			createdRecipeStepIngredientRes, err := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
+			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
+			exampleRecipeStepIngredientInput.Index = pointer.To(ingredientIndex)
+			createdRecipeStepIngredientRes, createErr := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredientInput),
 			})
-			require.NoError(t, err)
+			require.NoError(t, createErr)
 
 			createdRecipeStepIngredient := converters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(createdRecipeStepIngredientRes.Created)
 			checkRecipeStepIngredientEquality(t, -1, -1, exampleRecipeStepIngredient, createdRecipeStepIngredient)
 
-			retrievedRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
+			retrievedRecipeStepIngredientRes, getErr := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
 				RecipeId:               createdRecipe.ID,
 				RecipeStepId:           createdRecipeStepID,
 				RecipeStepIngredientId: createdRecipeStepIngredient.ID,
 			})
 			require.NotNil(t, retrievedRecipeStepIngredientRes.Result)
-			require.NoError(t, err)
+			require.NoError(t, getErr)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepIngredient.BelongsToRecipeStep)
 
 			expected = append(expected, createdRecipeStepIngredient)
