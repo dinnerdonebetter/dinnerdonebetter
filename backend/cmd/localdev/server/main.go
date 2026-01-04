@@ -234,7 +234,7 @@ func main() {
 			validator := bootstrap.NewRecipeValidatorFromEnumerations(enums)
 			for i, recipe := range recipes {
 				logger.Info(fmt.Sprintf("Validating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-				if err := validator.ValidateAndPopulate(recipe); err != nil {
+				if err = validator.ValidateAndPopulate(recipe); err != nil {
 					return fmt.Errorf("failed to validate recipe %s: %w", recipe.Name, err)
 				}
 			}

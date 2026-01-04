@@ -265,7 +265,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				BelongsToRecipeStep:             step2bID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &restButterVIP.ID,
+				ValidIngredientPreparationID:    &restButterVIP.ID,
 				IngredientID:                    &butter.ID,
 				MeasurementUnitID:               tablespoonMeasurement.ID,
 				Name:                            "melted butter",
@@ -501,7 +501,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixMilkVIP.ID,
 				IngredientID:                    &milk.ID,
-				MeasurementUnitID:              cupMeasurement.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "lukewarm milk",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1.25,
@@ -514,7 +514,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixButterVIP.ID,
 				IngredientID:                    &butter.ID,
-				MeasurementUnitID:              tablespoonMeasurement.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
 				Name:                            "melted and cooled butter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,

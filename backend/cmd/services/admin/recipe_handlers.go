@@ -770,7 +770,7 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 				totalMin := *product.MeasurementQuantity.Min
 				perItemMin := totalMin / itemQtyMin
 				measurementQtyStr = formatQuantity(perItemMin)
-				
+
 				if product.MeasurementQuantity.Max != nil {
 					totalMax := *product.MeasurementQuantity.Max
 					if product.ItemQuantity.Max != nil && itemQtyMax > 0 {
@@ -1020,7 +1020,7 @@ func formatQuantity(qty float32) string {
 	return fmt.Sprintf("%.2f", qty)
 }
 
-// roundTemperatureToNearest5 rounds a temperature to the nearest 5
+// roundTemperatureToNearest5 rounds a temperature to the nearest 5.
 func roundTemperatureToNearest5(temp float32) float32 {
 	return float32(int((temp+2.5)/5.0) * 5)
 }
