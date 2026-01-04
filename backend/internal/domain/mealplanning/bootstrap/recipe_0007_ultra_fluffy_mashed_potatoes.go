@@ -22,6 +22,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 	drainPrep := enums.Preparations["drain"]
 	restPrep := enums.Preparations["rest"]
 	ricePrep := enums.Preparations["rice"]
+	slicePrep := enums.Preparations["slice"]
 	foldPrep := enums.Preparations["fold"]
 	simmerPrep := enums.Preparations["simmer"]
 
@@ -92,6 +93,11 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 	ricePotatoVIP := enums.IngredientPreparations[ricePrep.ID][potato.ID]
 	ricePotatoRicerVPI := enums.PreparationInstruments[ricePrep.ID][potatoRicer.ID]
 	ricePotVPV := enums.PreparationVessels[ricePrep.ID][pot.ID]
+
+	// Slice preparation bridges
+	sliceButterVIP := enums.IngredientPreparations[slicePrep.ID][butter.ID]
+	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
+	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
 
 	// Fold preparation bridges
 	foldPotatoVIP := enums.IngredientPreparations[foldPrep.ID][potato.ID]
@@ -692,18 +698,79 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		},
 	}
 
-	// Step 10: Fold in butter
+	// Step 10: Cut butter into 1/2-inch pats
 	step10ID := identifiers.New()
 	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step10ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   foldPrep.ID,
+		PreparationID:   slicePrep.ID,
 		Index:           10,
-		Notes:           "Add butter and gently fold into potatoes.",
+		Notes:           "Cut room temperature unsalted butter into 1/2-inch pats.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step10ID,
+				ValidIngredientPreparationID:     &sliceButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				IngredientID:                     &butter.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "unsalted butter, room temperature",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 6, // 6 tablespoons
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step10ID,
+				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step10ID,
+				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step10ID,
+				Name:                "butter pats (1/2-inch)",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](6),
+				},
+			},
+		},
+	}
+
+	// Step 11: Fold in butter
+	step11ID := identifiers.New()
+	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11ID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   foldPrep.ID,
+		Index:           11,
+		Notes:           "Add butter pats and gently fold into potatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step10ID,
+				BelongsToRecipeStep:             step11ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
@@ -716,12 +783,14 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
+				BelongsToRecipeStep:              step11ID,
+				ProductOfRecipeStepIndex:         pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &foldButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				IngredientID:                     &butter.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "unsalted butter, room temperature, cut into 1/2-inch pats",
+				Name:                             "butter pats (1/2-inch)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 6, // 6 tablespoons
 				},
@@ -730,7 +799,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step10ID,
+				BelongsToRecipeStep:          step11ID,
 				ValidPreparationInstrumentID: &foldRubberSpatulaVPI.ID,
 				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "rubber spatula",
@@ -742,7 +811,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step10ID,
+				BelongsToRecipeStep:      step11ID,
 				ValidPreparationVesselID: &foldPotVPV.ID,
 				VesselID:                 &pot.ID,
 				Name:                     "pot",
@@ -754,7 +823,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step10ID,
+				BelongsToRecipeStep: step11ID,
 				Name:                "buttered potatoes",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -766,19 +835,19 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		},
 	}
 
-	// Step 11: Simmer milk
-	step11ID := identifiers.New()
-	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step11ID,
+	// Step 12: Simmer milk
+	step12ID := identifiers.New()
+	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step12ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   simmerPrep.ID,
-		Index:           11,
+		Index:           12,
 		Notes:           "Mound potatoes into the center of the pot and pour milk all around. Set over medium heat and bring milk to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				BelongsToRecipeStep:             step12ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
 				IngredientID:                    &potato.ID,
@@ -790,7 +859,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step11ID,
+				BelongsToRecipeStep:              step12ID,
 				ValidIngredientPreparationID:     &simmerMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				IngredientID:                     &milk.ID,
@@ -804,7 +873,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step11ID,
+				BelongsToRecipeStep:      step12ID,
 				ValidPreparationVesselID: &simmerPotVPV.ID,
 				VesselID:                 &pot.ID,
 				Name:                     "pot",
@@ -816,7 +885,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step11ID,
+				BelongsToRecipeStep: step12ID,
 				Name:                "potatoes with simmering milk",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -828,19 +897,19 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		},
 	}
 
-	// Step 12: Fold simmered milk into potatoes
-	step12ID := identifiers.New()
-	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step12ID,
+	// Step 13: Fold simmered milk into potatoes
+	step13ID := identifiers.New()
+	step13 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step13ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   foldPrep.ID,
-		Index:           12,
+		Index:           13,
 		Notes:           "Gently fold the simmered milk into the potatoes. If looser potatoes are desired, add additional milk in a similar fashion around the mashed potato mass and bring it to a simmer before folding into potatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				BelongsToRecipeStep:             step13ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
 				IngredientID:                    &potato.ID,
@@ -854,7 +923,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step12ID,
+				BelongsToRecipeStep:          step13ID,
 				ValidPreparationInstrumentID: &foldRubberSpatulaVPI.ID,
 				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "rubber spatula",
@@ -866,7 +935,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step12ID,
+				BelongsToRecipeStep:      step13ID,
 				ValidPreparationVesselID: &foldPotVPV.ID,
 				VesselID:                 &pot.ID,
 				Name:                     "pot",
@@ -878,7 +947,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step12ID,
+				BelongsToRecipeStep: step13ID,
 				Name:                "mashed potatoes with milk",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -890,19 +959,19 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		},
 	}
 
-	// Step 13: Season with salt and pepper
-	step13ID := identifiers.New()
-	step13 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step13ID,
+	// Step 14: Season with salt and pepper
+	step14ID := identifiers.New()
+	step14 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step14ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           13,
+		Index:           14,
 		Notes:           "Season with salt and freshly ground black pepper, then serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				BelongsToRecipeStep:             step14ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonPotatoVIP.ID,
 				IngredientID:                    &potato.ID,
@@ -914,7 +983,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step13ID,
+				BelongsToRecipeStep:              step14ID,
 				ValidIngredientPreparationID:     &seasonPepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
 				IngredientID:                     &blackPepper.ID,
@@ -928,7 +997,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step13ID,
+				BelongsToRecipeStep:      step14ID,
 				ValidPreparationVesselID: &seasonPotVPV.ID,
 				VesselID:                 &pot.ID,
 				Name:                     "pot",
@@ -940,7 +1009,7 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step13ID,
+				BelongsToRecipeStep: step14ID,
 				Name:                "ultra-fluffy mashed potatoes",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -949,6 +1018,32 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 					Min: pointer.To[float32](1),
 				},
 			},
+		},
+	}
+
+	// Prep task: Prepare potatoes up to 24 hours ahead
+	prepTask1ID := identifiers.New()
+	prepTask1 := &mealplanning.RecipePrepTaskDatabaseCreationInput{
+		ID:                          prepTask1ID,
+		BelongsToRecipe:             recipeID,
+		Name:                        "Prepare and soak potatoes",
+		Description:                 "Steps 1-4 (cube, rinse, submerge, and season potatoes) can be done up to 24 hours ahead of time if left submerged in water in the refrigerator.",
+		Notes:                       "Preparing the potatoes ahead saves time on the day of cooking.",
+		Optional:                    true,
+		ExplicitStorageInstructions: "Store the cubed and seasoned potatoes in the pot, covered with water, in the refrigerator for up to 24 hours.",
+		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: pointer.To[float32](4), // Refrigerator temperature
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Min: 0,
+			Max: pointer.To[uint32](86400), // 24 hours
+		},
+		TaskSteps: []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{
+			{ID: identifiers.New(), BelongsToRecipeStep: step1ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
+			{ID: identifiers.New(), BelongsToRecipeStep: step2ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
+			{ID: identifiers.New(), BelongsToRecipeStep: step3ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
+			{ID: identifiers.New(), BelongsToRecipeStep: step4ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: true},
 		},
 	}
 
@@ -969,7 +1064,10 @@ func UltraFluffyMashedPotatoesRecipe(userID string, enums *Enumerations) []*meal
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
+				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14,
+			},
+			PrepTasks: []*mealplanning.RecipePrepTaskDatabaseCreationInput{
+				prepTask1,
 			},
 		},
 	}

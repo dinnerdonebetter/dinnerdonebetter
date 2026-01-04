@@ -25,6 +25,8 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 	stirPrep := enums.Preparations["stir"]
 	cookPrep := enums.Preparations["cook"]
 	seasonPrep := enums.Preparations["season"]
+	cutPrep := enums.Preparations["cut"]
+	gratePrep := enums.Preparations["grate"]
 
 	// Get ingredients
 	elbowMacaroni := enums.Ingredients["elbow macaroni"]
@@ -51,12 +53,15 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 	// Get instruments
 	whisk := enums.Instruments["whisk"]
 	woodenSpoon := enums.Instruments["wooden spoon"]
+	knife := enums.Instruments["knife"]
+	microplane := enums.Instruments["microplane"]
 
 	// Get vessels
 	saucepan := enums.Vessels["saucepan"]
 	largeBowl := enums.Vessels["large bowl"]
 	mediumBowl := enums.Vessels["medium bowl"]
 	colander := enums.Vessels["colander"]
+	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get bridge table entries
 	// Submerge preparation bridges
@@ -117,6 +122,17 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonHotSauceVIP := enums.IngredientPreparations[seasonPrep.ID][hotSauce.ID]
 	seasonSaucepanVPV := enums.PreparationVessels[seasonPrep.ID][saucepan.ID]
+
+	// Cut preparation bridges
+	cutButterVIP := enums.IngredientPreparations[cutPrep.ID][butter.ID]
+	cutAmericanCheeseVIP := enums.IngredientPreparations[cutPrep.ID][americanCheese.ID]
+	cutKnifeVPI := enums.PreparationInstruments[cutPrep.ID][knife.ID]
+	cutCuttingBoardVPV := enums.PreparationVessels[cutPrep.ID][cuttingBoard.ID]
+
+	// Grate preparation bridges
+	grateCheddarVIP := enums.IngredientPreparations[gratePrep.ID][cheddarCheese.ID]
+	grateMicroplaneVPI := enums.PreparationInstruments[gratePrep.ID][microplane.ID]
+	grateCuttingBoardVPV := enums.PreparationVessels[gratePrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
 	macaroniPoundVIMU := enums.IngredientMeasurementUnits[elbowMacaroni.ID][poundMeasurement.ID]
@@ -530,35 +546,159 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		},
 	}
 
+	// Step 5a: Grate cheddar cheese
+	step5aID := identifiers.New()
+	step5a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step5aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   gratePrep.ID,
+		Index:           6,
+		Notes:           "Grate the cheddar cheese.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step5aID,
+				ValidIngredientPreparationID:     &grateCheddarVIP.ID,
+				ValidIngredientMeasurementUnitID: &cheddarPoundVIMU.ID,
+				IngredientID:                     &cheddarCheese.ID,
+				MeasurementUnitID:                poundMeasurement.ID,
+				Name:                             "extra-sharp cheddar cheese",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step5aID,
+				ValidPreparationInstrumentID: &grateMicroplaneVPI.ID,
+				InstrumentID:                 &microplane.ID,
+				Name:                         "microplane",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step5aID,
+				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step5aID,
+				Name:                "grated cheddar cheese",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 5b: Cut American cheese into cubes
+	step5bID := identifiers.New()
+	step5b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step5bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   cutPrep.ID,
+		Index:           7,
+		Notes:           "Cut the American cheese into 1/2-inch cubes.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step5bID,
+				ValidIngredientPreparationID:     &cutAmericanCheeseVIP.ID,
+				ValidIngredientMeasurementUnitID: &americanOunceVIMU.ID,
+				IngredientID:                     &americanCheese.ID,
+				MeasurementUnitID:                ounceMeasurement.ID,
+				Name:                             "American cheese",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 8,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step5bID,
+				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step5bID,
+				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step5bID,
+				Name:                "American cheese, cut into 1/2-inch cubes",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &ounceMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](8),
+				},
+			},
+		},
+	}
+
 	// Step 6: Toss cheeses with cornstarch
 	step6ID := identifiers.New()
 	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   tossPrep.ID,
-		Index:           6,
+		Index:           8,
 		Notes:           "Toss the cheeses with the cornstarch in a large bowl until thoroughly combined.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
-				ValidIngredientPreparationID:     &tossCheddarVIP.ID,
-				ValidIngredientMeasurementUnitID: &cheddarPoundVIMU.ID,
-				IngredientID:                     &cheddarCheese.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
-				Name:                             "extra-sharp cheddar, grated",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossCheddarVIP.ID,
+				IngredientID:                    &cheddarCheese.ID,
+				MeasurementUnitID:               poundMeasurement.ID,
+				Name:                            "grated cheddar cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
-				ValidIngredientPreparationID:     &tossAmericanVIP.ID,
-				ValidIngredientMeasurementUnitID: &americanOunceVIMU.ID,
-				IngredientID:                     &americanCheese.ID,
-				MeasurementUnitID:                ounceMeasurement.ID,
-				Name:                             "American cheese, cut into 1/2-inch cubes",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossAmericanVIP.ID,
+				IngredientID:                    &americanCheese.ID,
+				MeasurementUnitID:               ounceMeasurement.ID,
+				Name:                            "American cheese, cut into 1/2-inch cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
 				},
@@ -609,7 +749,7 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   drainPrep.ID,
-		Index:           7,
+		Index:           9,
 		Notes:           "When the pasta is cooked, drain it.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -660,13 +800,13 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   addPrep.ID,
-		Index:           8,
+		Index:           10,
 		Notes:           "Return the drained pasta to the saucepan and place over low heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &elbowMacaroni.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -703,19 +843,81 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		},
 	}
 
+	// Step 8a: Cut butter into chunks
+	step8aID := identifiers.New()
+	step8a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step8aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   cutPrep.ID,
+		Index:           11,
+		Notes:           "Cut the butter into 4 chunks.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step8aID,
+				ValidIngredientPreparationID:     &cutButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				IngredientID:                     &butter.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "unsalted butter",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 8, // 8 tablespoons = 1 stick
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step8aID,
+				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step8aID,
+				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step8aID,
+				Name:                "butter, cut into 4 chunks",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](8)},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
 	// Step 9: Add butter and stir until melted
 	step9ID := identifiers.New()
 	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step9ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   stirPrep.ID,
-		Index:           9,
+		Index:           12,
 		Notes:           "Add the butter and stir until melted.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step9ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &stirMacaroniVIP.ID,
 				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
@@ -727,13 +929,14 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step9ID,
-				ValidIngredientPreparationID:     &stirButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
-				IngredientID:                     &butter.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "unsalted butter, cut into 4 chunks",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step9ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &stirButterVIP.ID,
+				IngredientID:                    &butter.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "butter, cut into 4 chunks",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8, // 8 tablespoons = 1 stick
 				},
@@ -781,13 +984,13 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		ID:              step10ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   cookPrep.ID,
-		Index:           10,
+		Index:           13,
 		Notes:           "Add the milk mixture and cheese mixture and cook, stirring constantly, until the cheese is completely melted and the mixture is hot and creamy.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step10ID,
-				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:         pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &cookMacaroniVIP.ID,
 				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
@@ -814,7 +1017,7 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &cookCheddarVIP.ID,
 				IngredientID:                    &cheddarCheese.ID,
@@ -879,13 +1082,13 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 		ID:              step11ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           11,
+		Index:           14,
 		Notes:           "Season to taste with salt and more hot sauce. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &elbowMacaroni.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -967,7 +1170,7 @@ func StovetopMacAndCheeseRecipe(userID string, enums *Enumerations) []*mealplann
 			PluralPortionName: "servings",
 			EligibleForMeals:  true,
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11,
+				step0, step1, step2, step3, step4, step5, step5a, step5b, step6, step7, step8, step8a, step9, step10, step11,
 			},
 		},
 	}

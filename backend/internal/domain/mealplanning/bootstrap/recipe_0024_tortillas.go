@@ -15,6 +15,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	// Get preparations
 	mixPrep := enums.Preparations["mix"]
 	addPrep := enums.Preparations["add"]
+	heatPrep := enums.Preparations["heat"]
 	stirPrep := enums.Preparations["stir"]
 	kneadPrep := enums.Preparations["knead"]
 	dividePrep := enums.Preparations["divide"]
@@ -48,6 +49,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 
 	// Get vessels
 	mediumBowl := enums.Vessels["medium bowl"]
+	smallSaucepan := enums.Vessels["small saucepan"]
 	countertop := enums.Vessels["countertop"]
 	castIronSkillet := enums.Vessels["cast iron skillet"]
 	kitchenTowel := enums.Vessels["kitchen towel"]
@@ -153,8 +155,10 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	mixPastryBlenderVPI := getVPI("mix", "pastry blender")
 
 	addLardVIP := getVIP("add", "lard")
-	addWaterVIP := getVIP("add", "water")
 	addMediumBowlVPV := getVPV("add", "medium bowl")
+
+	heatWaterVIP := getVIP("heat", "water")
+	heatSmallSaucepanVPV := getVPV("heat", "small saucepan")
 
 	stirMediumBowlVPV := getVPV("stir", "medium bowl")
 	stirForkVPI := getVPI("stir", "fork")
@@ -404,13 +408,61 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		},
 	}
 
+	// Step 2a: Heat water to 110°F to 120°F
+	step2aID := identifiers.New()
+	step2a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   heatPrep.ID,
+		Index:           3,
+		Notes:           "Heat water in a small saucepan to 110°F to 120°F (43°C to 49°C).",
+		TemperatureInCelsius: types.OptionalFloat32Range{
+			Min: pointer.To[float32](43), // 110°F
+			Max: pointer.To[float32](49), // 120°F
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2aID,
+				ValidIngredientPreparationID:     vipID(heatWaterVIP),
+				ValidIngredientMeasurementUnitID: vimuID(waterCupVIMU),
+				IngredientID:                     &water.ID,
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "water",
+				QuantityNotes:                    "200g to 227g",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 0.875, Max: pointer.To[float32](1)},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2aID,
+				ValidPreparationVesselID: vpvID(heatSmallSaucepanVPV),
+				VesselID:                 &smallSaucepan.ID,
+				Name:                     "small saucepan",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2aID,
+				Name:                "hot water",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](0.875), Max: pointer.To[float32](1)},
+			},
+		},
+	}
+
 	// Step 3: Add hot water and stir to bring the dough together
 	step3ID := identifiers.New()
 	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   addPrep.ID,
-		Index:           3,
+		Index:           4,
 		Notes:           "Pour in the lesser amount of hot water (110°F to 120°F).",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -424,15 +476,14 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     vipID(addWaterVIP),
-				ValidIngredientMeasurementUnitID: vimuID(waterCupVIMU),
-				IngredientID:                     &water.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
-				Name:                             "hot water",
-				QuantityNotes:                    "200g to 227g, about 110°F to 120°F",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 0.875, Max: pointer.To[float32](1)},
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				IngredientID:                    &water.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "hot water",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.875, Max: pointer.To[float32](1)},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
@@ -473,13 +524,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   stirPrep.ID,
-		Index:           4,
+		Index:           14,
 		Notes:           "Stir briskly with a fork or whisk to bring the dough together into a shaggy mass. Stir in additional water as needed to bring the dough together.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -501,7 +552,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        vpvID(stirMediumBowlVPV),
 				VesselID:                        &mediumBowl.ID,
@@ -528,13 +579,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   kneadPrep.ID,
-		Index:           5,
+		Index:           14,
 		Notes:           "Turn the dough out onto a lightly floured counter and knead briefly, just until the dough forms a ball. If the dough is very sticky, gradually add a bit more flour.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(kneadFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -589,13 +640,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   dividePrep.ID,
-		Index:           6,
+		Index:           14,
 		Notes:           "Divide the dough into 8 pieces.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(divideFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -618,7 +669,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        vpvID(divideCountertopVPV),
 				VesselID:                        &countertop.ID,
@@ -652,13 +703,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   formPrep.ID,
-		Index:           7,
+		Index:           14,
 		Notes:           "Round the pieces into balls and flatten slightly. If you wish, coat each ball lightly in oil before covering; this ensures the dough doesn't dry out.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(formFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -681,7 +732,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        vpvID(formCountertopVPV),
 				VesselID:                        &countertop.ID,
@@ -715,13 +766,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   coverPrep.ID,
-		Index:           8,
+		Index:           14,
 		Notes:           "Cover the dough balls with a clean kitchen towel.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -733,7 +784,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				VesselID:                        &countertop.ID,
 				Name:                            "countertop with dough balls",
@@ -776,7 +827,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step9ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   restPrep.ID,
-		Index:           9,
+		Index:           14,
 		Notes:           "Allow them to rest, covered, for about 30 minutes. The resting period improves the texture of the dough by giving the flour time to absorb the water. The tortillas will roll out more easily if you include the rest.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1800), // 30 minutes
@@ -785,7 +836,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              step9DoughIngredientID,
 				BelongsToRecipeStep:             step9ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(restFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -798,7 +849,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step9ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        vpvID(restCountertopVPV),
 				VesselID:                        &countertop.ID,
@@ -848,7 +899,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step10ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   preheatPrep.ID,
-		Index:           10,
+		Index:           14,
 		Notes:           "While the dough rests, preheat an ungreased cast iron griddle or skillet over medium high heat, about 400°F.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](204), // 400°F = ~204°C
@@ -880,13 +931,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step11ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   rollPrep.ID,
-		Index:           11,
+		Index:           14,
 		Notes:           "Working with one piece of dough at a time, roll into a round about 8\" in diameter. Keep the remaining dough covered while you work.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(rollFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -909,7 +960,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        vpvID(rollCountertopVPV),
 				VesselID:                        &countertop.ID,
@@ -936,7 +987,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step12ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   cookPrep.ID,
-		Index:           12,
+		Index:           14,
 		Notes:           "Cook the tortilla in the ungreased pan for about 30 seconds on each side. Repeat with the remaining dough balls.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30),
@@ -949,7 +1000,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(cookFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -962,7 +1013,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        vpvID(cookCastIronSkilletVPV),
 				VesselID:                        &castIronSkillet.ID,
@@ -989,13 +1040,13 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step13ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   transferPrep.ID,
-		Index:           13,
+		Index:           14,
 		Notes:           "Wrap the tortilla in a clean cloth when it comes off the griddle, to keep it pliable.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step13ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    vipID(transferFlourVIP),
 				IngredientID:                    &flour.ID,
@@ -1042,7 +1093,7 @@ func TortillasRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		PluralPortionName: "tortillas",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
+			step0, step1, step2, step2a, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
 		},
 	}
 

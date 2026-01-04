@@ -13,6 +13,9 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	recipeID := identifiers.New()
 
 	// Get preparations
+	halvePrep := enums.Preparations["halve"]
+	mincePrep := enums.Preparations["mince"]
+	peelPrep := enums.Preparations["peel"]
 	coverPrep := enums.Preparations["cover"]
 	addPrep := enums.Preparations["add"]
 	boilPrep := enums.Preparations["boil"]
@@ -26,7 +29,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	sautPrep := enums.Preparations["sauté"]
 	stirPrep := enums.Preparations["stir"]
 	smashPrep := enums.Preparations["smash"]
-	thinPrep := enums.Preparations["thin"]
+	dilutePrep := enums.Preparations["dilute"]
 
 	// Get ingredients
 	pintoBeans := enums.Ingredients["pinto beans"]
@@ -47,14 +50,31 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
+	chefsKnife := enums.Instruments["knife"]
+	bareHands := enums.Instruments["bare hands"]
 	potatoMasher := enums.Instruments["potato masher"]
 
 	// Get vessels
+	cuttingBoard := enums.Vessels["cutting board"]
 	largePot := enums.Vessels["pot"]
 	largeSkillet := enums.Vessels["cast iron skillet"]
 	largeBowl := enums.Vessels["large bowl"]
 
 	// Get bridge table entries
+	// Halve
+	halveWhiteOnionVIP := enums.IngredientPreparations[halvePrep.ID][whiteOnion.ID]
+	halveChefsKnifeVPI := enums.PreparationInstruments[halvePrep.ID][chefsKnife.ID]
+	halveCuttingBoardVPV := enums.PreparationVessels[halvePrep.ID][cuttingBoard.ID]
+
+	// Mince
+	minceWhiteOnionVIP := enums.IngredientPreparations[mincePrep.ID][whiteOnion.ID]
+	minceChefsKnifeVPI := enums.PreparationInstruments[mincePrep.ID][chefsKnife.ID]
+	minceCuttingBoardVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
+
+	// Peel
+	peelGarlicVIP := enums.IngredientPreparations[peelPrep.ID][garlic.ID]
+	peelBareHandsVPI := enums.PreparationInstruments[peelPrep.ID][bareHands.ID]
+
 	// Cover
 	coverPintoBeansVIP := enums.IngredientPreparations[coverPrep.ID][pintoBeans.ID]
 	coverWaterVIP := enums.IngredientPreparations[coverPrep.ID][water.ID]
@@ -118,10 +138,10 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	smashLargeSkilletVPV := enums.PreparationVessels[smashPrep.ID][largeSkillet.ID]
 	smashPotatoMasherVPI := enums.PreparationInstruments[smashPrep.ID][potatoMasher.ID]
 
-	// Thin
-	thinPintoBeansVIP := enums.IngredientPreparations[thinPrep.ID][pintoBeans.ID]
-	thinWaterVIP := enums.IngredientPreparations[thinPrep.ID][water.ID]
-	thinLargeSkilletVPV := enums.PreparationVessels[thinPrep.ID][largeSkillet.ID]
+	// Dilute
+	dilutePintoBeansVIP := enums.IngredientPreparations[dilutePrep.ID][pintoBeans.ID]
+	diluteWaterVIP := enums.IngredientPreparations[dilutePrep.ID][water.ID]
+	diluteLargeSkilletVPV := enums.PreparationVessels[dilutePrep.ID][largeSkillet.ID]
 
 	// Measurement unit bridges
 	pintoBeansPoundVIMU := enums.IngredientMeasurementUnits[pintoBeans.ID][poundMeasurement.ID]
@@ -132,23 +152,84 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	lardTablespoonVIMU := enums.IngredientMeasurementUnits[lard.ID][tablespoonMeasurement.ID]
 
-	// Step 0: In a large pot, cover the beans with cold water by at least 2 inches
+	// Step 0: Halve the onion
 	step0ID := identifiers.New()
 	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step0ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   coverPrep.ID,
+		PreparationID:   halvePrep.ID,
 		Index:           0,
-		Notes:           "In a large pot, cover the beans with cold water by at least 2 inches.",
+		Notes:           "Halve the medium white onion.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
+				ValidIngredientPreparationID:     &halveWhiteOnionVIP.ID,
+				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
+				IngredientID:                     &whiteOnion.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "medium white onion",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step0ID,
+				ValidPreparationInstrumentID: &halveChefsKnifeVPI.ID,
+				InstrumentID:                 &chefsKnife.ID,
+				Name:                         "chef's knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step0ID,
+				ValidPreparationVesselID: &halveCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step0ID,
+				Name:                "halved onion (2 halves)",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step 1: In a large pot, cover the beans with cold water by at least 2 inches
+	step1ID := identifiers.New()
+	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step1ID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   coverPrep.ID,
+		Index:           1,
+		Notes:           "In a large pot, cover the beans with cold water by at least 2 inches.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step1ID,
 				ValidIngredientPreparationID:     &coverPintoBeansVIP.ID,
 				ValidIngredientMeasurementUnitID: &pintoBeansPoundVIMU.ID,
 				IngredientID:                     &pintoBeans.ID,
 				MeasurementUnitID:                poundMeasurement.ID,
-				Name:                             "dried pinto or black beans",
+				Name:                             "dried pinto beans",
 				QuantityNotes:                    "1/2 pound (227 g)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -156,7 +237,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
+				BelongsToRecipeStep:              step1ID,
 				ValidIngredientPreparationID:     &coverWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				IngredientID:                     &water.ID,
@@ -171,7 +252,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step0ID,
+				BelongsToRecipeStep:      step1ID,
 				ValidPreparationVesselID: &coverLargePotVPV.ID,
 				VesselID:                 &largePot.ID,
 				Name:                     "large pot",
@@ -183,7 +264,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "beans covered with water",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
@@ -194,44 +275,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 1: Add herb sprigs, the whole onion half, and garlic cloves
-	step1ID := identifiers.New()
-	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step1ID,
+	// Step 2: Peel garlic cloves
+	step2ID := identifiers.New()
+	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   addPrep.ID,
-		Index:           1,
-		Notes:           "Add herb sprigs, the whole onion half, and garlic cloves.",
+		PreparationID:   peelPrep.ID,
+		Index:           2,
+		Notes:           "Peel 2 medium cloves garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step1ID,
-				ValidIngredientPreparationID:     &addEpazoteVIP.ID,
-				ValidIngredientMeasurementUnitID: &epazoteSprigVIMU.ID,
-				IngredientID:                     &epazote.ID,
-				MeasurementUnitID:                sprigMeasurement.ID,
-				Name:                             "fresh epazote or oregano",
-				QuantityNotes:                    "2 sprigs",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
-				},
-			},
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step1ID,
-				ValidIngredientPreparationID:     &addWhiteOnionVIP.ID,
-				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
-				IngredientID:                     &whiteOnion.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "medium white onion, 1/2 left whole",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 0.5,
-				},
-			},
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step1ID,
-				ValidIngredientPreparationID:     &addGarlicVIP.ID,
+				BelongsToRecipeStep:              step2ID,
+				ValidIngredientPreparationID:     &peelGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				IngredientID:                     &garlic.ID,
 				MeasurementUnitID:                cloveMeasurement.ID,
@@ -242,11 +298,87 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				},
 			},
 		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2ID,
+				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
+				InstrumentID:                 &bareHands.ID,
+				Name:                         "bare hands",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2ID,
+				Name:                "peeled garlic cloves",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cloveMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step 3: Add herb sprigs, the whole onion half, and peeled garlic cloves
+	step3ID := identifiers.New()
+	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step3ID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   addPrep.ID,
+		Index:           3,
+		Notes:           "Add herb sprigs, the whole onion half, and peeled garlic cloves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step3ID,
+				ValidIngredientPreparationID:     &addEpazoteVIP.ID,
+				ValidIngredientMeasurementUnitID: &epazoteSprigVIMU.ID,
+				IngredientID:                     &epazote.ID,
+				MeasurementUnitID:                sprigMeasurement.ID,
+				Name:                             "fresh epazote",
+				QuantityNotes:                    "2 sprigs",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addWhiteOnionVIP.ID,
+				IngredientID:                    &whiteOnion.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "onion half (left whole)",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.5,
+				},
+			},
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addGarlicVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               cloveMeasurement.ID,
+				Name:                            "peeled garlic cloves",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &addLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -259,7 +391,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "beans with aromatics in pot",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
@@ -270,20 +402,20 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 2: Bring to a boil over high heat
-	step2ID := identifiers.New()
-	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step2ID,
+	// Step 4: Bring to a boil over high heat
+	step4ID := identifiers.New()
+	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   boilPrep.ID,
-		Index:           2,
+		Index:           4,
 		Notes:           "Bring to a boil over high heat.",
 		Ingredients:     []*mealplanning.RecipeStepIngredientDatabaseCreationInput{},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				BelongsToRecipeStep:             step4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &boilLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -296,7 +428,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step3ID,
 				Name:                "boiling beans with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
@@ -307,19 +439,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 3: Reduce heat to simmer
-	step3ID := identifiers.New()
-	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step3ID,
+	// Step 5: Reduce heat to simmer
+	step5ID := identifiers.New()
+	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   reducePrep.ID,
-		Index:           3,
+		Index:           5,
 		Notes:           "Reduce heat to simmer.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step5ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &reduceLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -332,7 +464,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step5ID,
 				Name:                "beans ready to simmer",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
@@ -343,16 +475,16 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 4: Simmer until beans are very tender, about 1 to 2 hours
-	step4ID := identifiers.New()
-	step4BeansIngredientID := identifiers.New()
-	step4CompletionConditionID := identifiers.New()
+	// Step 6: Simmer until beans are very tender, about 1 to 2 hours
+	step6ID := identifiers.New()
+	step6BeansIngredientID := identifiers.New()
+	step6CompletionConditionID := identifiers.New()
 	tenderState := enums.IngredientStates["tender"]
-	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step4ID,
+	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   simmerPrep.ID,
-		Index:           4,
+		Index:           6,
 		Notes:           "Simmer until beans are very tender, about 1 to 2 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](3600), // 1 hour
@@ -360,9 +492,9 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              step4BeansIngredientID,
-				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ID:                              step6BeansIngredientID,
+				BelongsToRecipeStep:             step6ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &simmerPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -376,7 +508,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
+				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &simmerLargePotVPV.ID,
@@ -390,7 +522,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4ID,
+				BelongsToRecipeStep: step6ID,
 				Name:                "very tender cooked beans",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -401,7 +533,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4ID,
+				BelongsToRecipeStep: step6ID,
 				Name:                "pot with cooked beans and cooking liquid",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
@@ -412,15 +544,15 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step4CompletionConditionID,
-				BelongsToRecipeStep: step4ID,
+				ID:                  step6CompletionConditionID,
+				BelongsToRecipeStep: step6ID,
 				IngredientStateID:   tenderState.ID,
 				Notes:               "Beans should be very tender",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step4CompletionConditionID,
-						RecipeStepIngredient:                   step4BeansIngredientID,
+						BelongsToRecipeStepCompletionCondition: step6CompletionConditionID,
+						RecipeStepIngredient:                   step6BeansIngredientID,
 					},
 				},
 				Optional: false,
@@ -428,19 +560,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 5: Season with salt
-	step5ID := identifiers.New()
-	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step5ID,
+	// Step 7: Season with salt
+	step7ID := identifiers.New()
+	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           5,
+		Index:           7,
 		Notes:           "Season with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				BelongsToRecipeStep:             step7ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -452,7 +584,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step5ID,
+				BelongsToRecipeStep:              step7ID,
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				IngredientID:                     &salt.ID,
@@ -466,8 +598,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				BelongsToRecipeStep:             step7ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &seasonLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -480,7 +612,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step5ID,
+				BelongsToRecipeStep: step7ID,
 				Name:                "seasoned cooked beans",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -492,19 +624,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 6: Drain beans, reserving bean-cooking liquid
-	step6ID := identifiers.New()
-	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step6ID,
+	// Step 8: Drain beans, reserving bean-cooking liquid
+	step8ID := identifiers.New()
+	step8 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   drainPrep.ID,
-		Index:           6,
+		Index:           8,
 		Notes:           "Drain beans, reserving bean-cooking liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				BelongsToRecipeStep:             step8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &drainPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -518,8 +650,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				BelongsToRecipeStep:             step8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &drainLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -542,7 +674,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step6ID,
+				BelongsToRecipeStep: step8ID,
 				Name:                "drained cooked beans",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -553,7 +685,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step6ID,
+				BelongsToRecipeStep: step8ID,
 				Name:                "reserved bean-cooking liquid",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
@@ -565,20 +697,20 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 7: Measure out 3 cups of beans (if you have more, reserve the rest for another use)
-	step7ID := identifiers.New()
-	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step7ID,
+	// Step 9: Measure out 3 cups of beans (if you have more, reserve the rest for another use)
+	step9ID := identifiers.New()
+	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step9ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   measurePrep.ID,
-		Index:           7,
+		Index:           9,
 		Notes:           "You should have about 3 cups of cooked beans; if you have more, measure out 3 cups of beans and reserve the rest for another use.",
 		Optional:        true,
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				BelongsToRecipeStep:             step9ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &measurePintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -604,7 +736,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step7ID,
+				BelongsToRecipeStep: step9ID,
 				Name:                "3 cups of cooked beans",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -616,18 +748,18 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 8: Discard herb sprigs, onion, and garlic
-	step8ID := identifiers.New()
-	step8 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step8ID,
+	// Step 10: Discard herb sprigs, onion, and garlic
+	step10ID := identifiers.New()
+	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step10ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   discardPrep.ID,
-		Index:           8,
+		Index:           10,
 		Notes:           "Discard herb sprigs, onion, and garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step8ID,
+				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &discardEpazoteVIP.ID,
 				ValidIngredientMeasurementUnitID: &epazoteSprigVIMU.ID,
 				IngredientID:                     &epazote.ID,
@@ -639,7 +771,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step8ID,
+				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &discardWhiteOnionVIP.ID,
 				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
 				IngredientID:                     &whiteOnion.ID,
@@ -651,7 +783,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step8ID,
+				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &discardGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				IngredientID:                     &garlic.ID,
@@ -665,8 +797,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				BelongsToRecipeStep:             step10ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &discardLargePotVPV.ID,
 				VesselID:                        &largePot.ID,
@@ -678,21 +810,83 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 9: In a large skillet, heat lard, bacon drippings, or oil until shimmering, or butter until foaming, over medium-high heat
-	step9ID := identifiers.New()
-	step9FatIngredientID := identifiers.New()
-	step9CompletionConditionID := identifiers.New()
+	// Step 11: Mince one half of the onion
+	step11ID := identifiers.New()
+	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11ID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   mincePrep.ID,
+		Index:           11,
+		Notes:           "Mince one half of the halved onion.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step11ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &minceWhiteOnionVIP.ID,
+				IngredientID:                    &whiteOnion.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "onion half",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.5,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step10ID,
+				ValidPreparationInstrumentID: &minceChefsKnifeVPI.ID,
+				InstrumentID:                 &chefsKnife.ID,
+				Name:                         "chef's knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step10ID,
+				ValidPreparationVesselID: &minceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step10ID,
+				Name:                "minced white onion",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](0.5),
+				},
+			},
+		},
+	}
+
+	// Step 12: In a large skillet, heat lard until shimmering over medium-high heat
+	step12ID := identifiers.New()
+	step12FatIngredientID := identifiers.New()
+	step12CompletionConditionID := identifiers.New()
 	shimmeringState := enums.IngredientStates["shimmering"]
-	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step9ID,
+	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step12ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   heatPrep.ID,
-		Index:           9,
+		Index:           12,
 		Notes:           "In a large skillet, heat lard until shimmering over medium-high heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               step9FatIngredientID,
-				BelongsToRecipeStep:              step9ID,
+				ID:                               step12FatIngredientID,
+				BelongsToRecipeStep:              step12ID,
 				ValidIngredientPreparationID:     &heatLardVIP.ID,
 				ValidIngredientMeasurementUnitID: &lardTablespoonVIMU.ID,
 				IngredientID:                     &lard.ID,
@@ -707,7 +901,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step9ID,
+				BelongsToRecipeStep:      step11ID,
 				ValidPreparationVesselID: &heatLargeSkilletVPV.ID,
 				VesselID:                 &largeSkillet.ID,
 				Name:                     "large skillet",
@@ -719,7 +913,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step9ID,
+				BelongsToRecipeStep: step11ID,
 				Name:                "heated fat in skillet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
@@ -730,15 +924,15 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step9CompletionConditionID,
-				BelongsToRecipeStep: step9ID,
+				ID:                  step12CompletionConditionID,
+				BelongsToRecipeStep: step12ID,
 				IngredientStateID:   shimmeringState.ID,
 				Notes:               "Lard, bacon drippings, or oil should shimmer; butter should foam",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step9CompletionConditionID,
-						RecipeStepIngredient:                   step9FatIngredientID,
+						BelongsToRecipeStepCompletionCondition: step12CompletionConditionID,
+						RecipeStepIngredient:                   step12FatIngredientID,
 					},
 				},
 				Optional: false,
@@ -746,30 +940,30 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 10: Add minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes
-	step10ID := identifiers.New()
-	step10OnionIngredientID := identifiers.New()
-	step10CompletionConditionID := identifiers.New()
+	// Step 13: Add minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes
+	step13ID := identifiers.New()
+	step13OnionIngredientID := identifiers.New()
+	step13CompletionConditionID := identifiers.New()
 	translucentState := enums.IngredientStates["translucent"]
-	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step10ID,
+	step13 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step13ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   sautPrep.ID,
-		Index:           10,
+		Index:           13,
 		Notes:           "Add minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](420), // 7 minutes
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               step10OnionIngredientID,
-				BelongsToRecipeStep:              step10ID,
-				ValidIngredientPreparationID:     &sautWhiteOnionVIP.ID,
-				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
-				IngredientID:                     &whiteOnion.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "minced white onion",
-				QuantityNotes:                    "1/2 minced (about 1/2 cup; 26 g)",
+				ID:                              step13OnionIngredientID,
+				BelongsToRecipeStep:             step13ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sautWhiteOnionVIP.ID,
+				IngredientID:                    &whiteOnion.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "minced white onion",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
@@ -778,8 +972,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				BelongsToRecipeStep:             step13ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &sautLargeSkilletVPV.ID,
 				VesselID:                        &largeSkillet.ID,
@@ -804,15 +998,15 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step10CompletionConditionID,
-				BelongsToRecipeStep: step10ID,
+				ID:                  step13CompletionConditionID,
+				BelongsToRecipeStep: step13ID,
 				IngredientStateID:   translucentState.ID,
 				Notes:               "Onion should be translucent and lightly golden",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step10CompletionConditionID,
-						RecipeStepIngredient:                   step10OnionIngredientID,
+						BelongsToRecipeStepCompletionCondition: step13CompletionConditionID,
+						RecipeStepIngredient:                   step13OnionIngredientID,
 					},
 				},
 				Optional: false,
@@ -820,13 +1014,13 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 11: Stir in beans and cook for 2 minutes
-	step11ID := identifiers.New()
-	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step11ID,
+	// Step 14: Stir in beans and cook for 2 minutes
+	step14ID := identifiers.New()
+	step14 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step14ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   stirPrep.ID,
-		Index:           11,
+		Index:           14,
 		Notes:           "Stir in beans and cook for 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
@@ -834,8 +1028,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				BelongsToRecipeStep:             step14ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &stirPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -847,8 +1041,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				BelongsToRecipeStep:             step14ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &stirWhiteOnionVIP.ID,
 				IngredientID:                    &whiteOnion.ID,
@@ -862,8 +1056,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				BelongsToRecipeStep:             step14ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &stirLargeSkilletVPV.ID,
 				VesselID:                        &largeSkillet.ID,
@@ -876,7 +1070,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step11ID,
+				BelongsToRecipeStep: step13ID,
 				Name:                "beans and onion in skillet",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -888,19 +1082,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 12: Add 1/4 cup of reserved bean-cooking liquid
-	step12ID := identifiers.New()
-	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step12ID,
+	// Step 15: Add 1/4 cup of reserved bean-cooking liquid
+	step15ID := identifiers.New()
+	step15 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step15ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   addPrep.ID,
-		Index:           12,
+		Index:           15,
 		Notes:           "Add 1/4 cup of reserved bean-cooking liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				BelongsToRecipeStep:             step15ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &addWaterVIP.ID,
 				IngredientID:                    &water.ID,
@@ -914,8 +1108,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				BelongsToRecipeStep:             step15ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				VesselID:                        &largeSkillet.ID,
 				Name:                            "skillet with beans and onion",
@@ -939,19 +1133,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 13: Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée
-	step13ID := identifiers.New()
-	step13 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step13ID,
+	// Step 16: Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée
+	step16ID := identifiers.New()
+	step16 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step16ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   smashPrep.ID,
-		Index:           13,
+		Index:           16,
 		Notes:           "Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				BelongsToRecipeStep:             step16ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &smashPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -965,7 +1159,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 			{
 				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step13ID,
+				BelongsToRecipeStep:          step16ID,
 				ValidPreparationInstrumentID: &smashPotatoMasherVPI.ID,
 				InstrumentID:                 &potatoMasher.ID,
 				Name:                         "potato masher",
@@ -977,8 +1171,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				BelongsToRecipeStep:             step16ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &smashLargeSkilletVPV.ID,
 				VesselID:                        &largeSkillet.ID,
@@ -1003,24 +1197,24 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 14: Thin with more bean cooking water until desired consistency is reached. If refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.
-	step14ID := identifiers.New()
-	step14BeansIngredientID := identifiers.New()
-	step14CompletionConditionID := identifiers.New()
+	// Step 17: Thin with more bean cooking water until desired consistency is reached. If refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.
+	step17ID := identifiers.New()
+	step17BeansIngredientID := identifiers.New()
+	step17CompletionConditionID := identifiers.New()
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
-	step14 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step14ID,
+	step17 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step17ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   thinPrep.ID,
-		Index:           14,
+		PreparationID:   dilutePrep.ID,
+		Index:           17,
 		Notes:           "Thin with more bean cooking water until desired consistency is reached. If refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              step14BeansIngredientID,
-				BelongsToRecipeStep:             step14ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ID:                              step17BeansIngredientID,
+				BelongsToRecipeStep:             step17ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &thinPintoBeansVIP.ID,
+				ValidIngredientPreparationID:    &dilutePintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "mashed beans",
@@ -1030,10 +1224,10 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step14ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				BelongsToRecipeStep:             step17ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &thinWaterVIP.ID,
+				ValidIngredientPreparationID:    &diluteWaterVIP.ID,
 				IngredientID:                    &water.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "reserved bean-cooking liquid",
@@ -1045,10 +1239,10 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step14ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				BelongsToRecipeStep:             step17ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &thinLargeSkilletVPV.ID,
+				ValidPreparationVesselID:        &diluteLargeSkilletVPV.ID,
 				VesselID:                        &largeSkillet.ID,
 				Name:                            "skillet with beans and onion",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -1071,15 +1265,15 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step14CompletionConditionID,
-				BelongsToRecipeStep: step14ID,
+				ID:                  step17CompletionConditionID,
+				BelongsToRecipeStep: step17ID,
 				IngredientStateID:   desiredConsistencyState.ID,
 				Notes:               "Refried beans should reach desired consistency - not too wet or too dry",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step14CompletionConditionID,
-						RecipeStepIngredient:                   step14BeansIngredientID,
+						BelongsToRecipeStepCompletionCondition: step17CompletionConditionID,
+						RecipeStepIngredient:                   step17BeansIngredientID,
 					},
 				},
 				Optional: false,
@@ -1087,19 +1281,19 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		},
 	}
 
-	// Step 15: Season with salt and serve
-	step15ID := identifiers.New()
-	step15 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step15ID,
+	// Step 18: Season with salt and serve
+	step18ID := identifiers.New()
+	step18 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step18ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           15,
+		Index:           18,
 		Notes:           "Season with salt and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step15ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				BelongsToRecipeStep:             step18ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonPintoBeansVIP.ID,
 				IngredientID:                    &pintoBeans.ID,
@@ -1111,7 +1305,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step15ID,
+				BelongsToRecipeStep:              step18ID,
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				IngredientID:                     &salt.ID,
@@ -1125,8 +1319,8 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step15ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				BelongsToRecipeStep:             step18ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &seasonLargeSkilletVPV.ID,
 				VesselID:                        &largeSkillet.ID,
@@ -1166,7 +1360,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 		PluralPortionName: "cups",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15,
+			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18,
 		},
 	}
 

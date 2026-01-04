@@ -37,6 +37,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	salt := enums.Ingredients["salt"]
 	blackPepper := enums.Ingredients["black pepper"]
 	water := enums.Ingredients["water"]
+	iceCubes := enums.Ingredients["ice cubes"]
 
 	// Get measurement units
 	poundMeasurement := enums.MeasurementUnits["pound"]
@@ -44,6 +45,8 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	ounceMeasurement := enums.MeasurementUnits["ounce"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	trayMeasurement := enums.MeasurementUnits["tray"]
+	cupMeasurement := enums.MeasurementUnits["cup"]
 
 	// Get instruments
 	wireMeshSpider := enums.Instruments["wire mesh spider"]
@@ -108,6 +111,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	// Stir
 	stirLemonVIP := enums.IngredientPreparations[stirPrep.ID][lemon.ID]
 	stirWaterVIP := enums.IngredientPreparations[stirPrep.ID][water.ID]
+	stirIceCubesVIP := enums.IngredientPreparations[stirPrep.ID][iceCubes.ID]
 	stirSkilletVPV := enums.PreparationVessels[stirPrep.ID][mediumSkillet.ID]
 	stirLargeBowlVPV := enums.PreparationVessels[stirPrep.ID][largeBowl.ID]
 
@@ -137,6 +141,8 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 	pepperTeaspoonVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][teaspoonMeasurement.ID]
 	waterTablespoonVIMU := enums.IngredientMeasurementUnits[water.ID][tablespoonMeasurement.ID]
+	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
+	iceCubesTrayVIMU := enums.IngredientMeasurementUnits[iceCubes.ID][trayMeasurement.ID]
 
 	// Step 0: Bring a large pot of salted water to a boil
 	step0ID := identifiers.New()
@@ -198,6 +204,16 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step0ID,
+				Name:                "pot with boiling salted water",
+				Type:                mealplanning.RecipeStepProductVesselType,
+				Index:               1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
@@ -214,11 +230,24 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step1ID,
 				ValidIngredientPreparationID:     &stirWaterVIP.ID,
-				ValidIngredientMeasurementUnitID: &waterTablespoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				IngredientID:                     &water.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "ice water",
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "cold water",
 				QuantityNotes:                    "enough to submerge green beans",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+			},
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step1ID,
+				ValidIngredientPreparationID:     &stirIceCubesVIP.ID,
+				ValidIngredientMeasurementUnitID: &iceCubesTrayVIMU.ID,
+				IngredientID:                     &iceCubes.ID,
+				MeasurementUnitID:                trayMeasurement.ID,
+				Name:                             "ice cubes",
+				QuantityNotes:                    "about 1 tray",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -365,11 +394,13 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step3ID,
-				ValidPreparationVesselID: &blanchPotVPV.ID,
-				VesselID:                 &pot.ID,
-				Name:                     "large pot",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &blanchPotVPV.ID,
+				VesselID:                        &pot.ID,
+				Name:                            "pot with boiling salted water",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -569,8 +600,11 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 
 	// Step 7: Heat butter and almonds in skillet, toast until deeply browned (combined step)
 	step7ID := identifiers.New()
+	step7ButterIngredientID := identifiers.New()
 	step7AlmondsIngredientID := identifiers.New()
-	step7CompletionConditionID := identifiers.New()
+	step7AlmondsCompletionConditionID := identifiers.New()
+	step7ButterCompletionConditionID := identifiers.New()
+	brownedState := enums.IngredientStates["browned"]
 	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
@@ -582,7 +616,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
+				ID:                               step7ButterIngredientID,
 				BelongsToRecipeStep:              step7ID,
 				ValidIngredientPreparationID:     &heatButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
@@ -655,14 +689,28 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
 			{
-				ID:                  step7CompletionConditionID,
+				ID:                  step7ButterCompletionConditionID,
+				BelongsToRecipeStep: step7ID,
+				IngredientStateID:   brownedState.ID,
+				Notes:               "Butter should be browned and nutty",
+				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+					{
+						ID:                                     identifiers.New(),
+						BelongsToRecipeStepCompletionCondition: step7ButterCompletionConditionID,
+						RecipeStepIngredient:                   step7ButterIngredientID,
+					},
+				},
+				Optional: false,
+			},
+			{
+				ID:                  step7AlmondsCompletionConditionID,
 				BelongsToRecipeStep: step7ID,
 				IngredientStateID:   toastedState.ID,
 				Notes:               "Almonds should be deeply browned and nutty",
 				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
 					{
 						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step7CompletionConditionID,
+						BelongsToRecipeStepCompletionCondition: step7AlmondsCompletionConditionID,
 						RecipeStepIngredient:                   step7AlmondsIngredientID,
 					},
 				},
@@ -862,6 +910,9 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 
 	// Step 10: Emulsify the sauce
 	step10ID := identifiers.New()
+	step10SauceIngredientID := identifiers.New()
+	step10CompletionConditionID := identifiers.New()
+	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step10ID,
 		BelongsToRecipe: recipeID,
@@ -873,7 +924,7 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              identifiers.New(),
+				ID:                              step10SauceIngredientID,
 				BelongsToRecipeStep:             step10ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
@@ -920,6 +971,22 @@ func HaricotsVertsAmandineRecipe(userID string, enums *Enumerations) []*mealplan
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+			{
+				ID:                  step10CompletionConditionID,
+				BelongsToRecipeStep: step10ID,
+				IngredientStateID:   desiredConsistencyState.ID,
+				Notes:               "Sauce should have a glossy sheen and be emulsified, not watery or greasy",
+				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+					{
+						ID:                                     identifiers.New(),
+						BelongsToRecipeStepCompletionCondition: step10CompletionConditionID,
+						RecipeStepIngredient:                   step10SauceIngredientID,
+					},
+				},
+				Optional: false,
 			},
 		},
 	}

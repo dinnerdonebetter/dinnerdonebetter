@@ -13,10 +13,10 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	recipeID := identifiers.New()
 
 	// Get preparations
-	trimPrep := enums.Preparations["trim"]
-	slicePrep := enums.Preparations["slice"]
+	inspectPrep := enums.Preparations["inspect"]
 	rinsePrep := enums.Preparations["rinse"]
 	dryPrep := enums.Preparations["dry"]
+	slicePrep := enums.Preparations["slice"]
 	mixPrep := enums.Preparations["mix"]
 	tossPrep := enums.Preparations["toss"]
 	seasonPrep := enums.Preparations["season"]
@@ -56,22 +56,22 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	servingBowl := enums.Vessels["serving bowl"]
 
 	// Get bridge table entries
-	// Trim
-	trimLettuceVIP := enums.IngredientPreparations[trimPrep.ID][lettuce.ID]
-	trimRadicchioVIP := enums.IngredientPreparations[trimPrep.ID][radicchio.ID]
-	trimEndiveVIP := enums.IngredientPreparations[trimPrep.ID][endive.ID]
-	trimFriseeVIP := enums.IngredientPreparations[trimPrep.ID][frisee.ID]
-	trimKaleVIP := enums.IngredientPreparations[trimPrep.ID][kale.ID]
-	trimDandelionGreensVIP := enums.IngredientPreparations[trimPrep.ID][dandelionGreens.ID]
-	trimPurslaneVIP := enums.IngredientPreparations[trimPrep.ID][purslane.ID]
-	trimFennelFrondsVIP := enums.IngredientPreparations[trimPrep.ID][fennelFronds.ID]
-	trimParsleyVIP := enums.IngredientPreparations[trimPrep.ID][parsley.ID]
-	trimTarragonVIP := enums.IngredientPreparations[trimPrep.ID][tarragon.ID]
-	trimChervilVIP := enums.IngredientPreparations[trimPrep.ID][chervil.ID]
-	trimBasilVIP := enums.IngredientPreparations[trimPrep.ID][basil.ID]
-	trimMintVIP := enums.IngredientPreparations[trimPrep.ID][mint.ID]
-	trimCuttingBoardVPV := enums.PreparationVessels[trimPrep.ID][cuttingBoard.ID]
-	trimBareHandsVPI := enums.PreparationInstruments[trimPrep.ID][bareHands.ID]
+	// Inspect
+	inspectLettuceVIP := enums.IngredientPreparations[inspectPrep.ID][lettuce.ID]
+	inspectRadicchioVIP := enums.IngredientPreparations[inspectPrep.ID][radicchio.ID]
+	inspectEndiveVIP := enums.IngredientPreparations[inspectPrep.ID][endive.ID]
+	inspectFriseeVIP := enums.IngredientPreparations[inspectPrep.ID][frisee.ID]
+	inspectKaleVIP := enums.IngredientPreparations[inspectPrep.ID][kale.ID]
+	inspectDandelionGreensVIP := enums.IngredientPreparations[inspectPrep.ID][dandelionGreens.ID]
+	inspectPurslaneVIP := enums.IngredientPreparations[inspectPrep.ID][purslane.ID]
+	inspectFennelFrondsVIP := enums.IngredientPreparations[inspectPrep.ID][fennelFronds.ID]
+	inspectParsleyVIP := enums.IngredientPreparations[inspectPrep.ID][parsley.ID]
+	inspectTarragonVIP := enums.IngredientPreparations[inspectPrep.ID][tarragon.ID]
+	inspectChervilVIP := enums.IngredientPreparations[inspectPrep.ID][chervil.ID]
+	inspectBasilVIP := enums.IngredientPreparations[inspectPrep.ID][basil.ID]
+	inspectMintVIP := enums.IngredientPreparations[inspectPrep.ID][mint.ID]
+	inspectCuttingBoardVPV := enums.PreparationVessels[inspectPrep.ID][cuttingBoard.ID]
+	inspectBareHandsVPI := enums.PreparationInstruments[inspectPrep.ID][bareHands.ID]
 
 	// Slice
 	sliceLettuceVIP := enums.IngredientPreparations[slicePrep.ID][lettuce.ID]
@@ -162,14 +162,14 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step0ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   trimPrep.ID,
+		PreparationID:   inspectPrep.ID,
 		Index:           0,
 		Notes:           "Pick over the leafy vegetables, discarding any wilted or damaged leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimLettuceVIP.ID,
+				ValidIngredientPreparationID:     &inspectLettuceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lettuceCupVIMU.ID,
 				IngredientID:                     &lettuce.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -181,7 +181,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimRadicchioVIP.ID,
+				ValidIngredientPreparationID:     &inspectRadicchioVIP.ID,
 				ValidIngredientMeasurementUnitID: &radicchioCupVIMU.ID,
 				IngredientID:                     &radicchio.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -193,7 +193,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimEndiveVIP.ID,
+				ValidIngredientPreparationID:     &inspectEndiveVIP.ID,
 				ValidIngredientMeasurementUnitID: &endiveCupVIMU.ID,
 				IngredientID:                     &endive.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -205,7 +205,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimFriseeVIP.ID,
+				ValidIngredientPreparationID:     &inspectFriseeVIP.ID,
 				ValidIngredientMeasurementUnitID: &friseeCupVIMU.ID,
 				IngredientID:                     &frisee.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -217,7 +217,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimKaleVIP.ID,
+				ValidIngredientPreparationID:     &inspectKaleVIP.ID,
 				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
 				IngredientID:                     &kale.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -229,7 +229,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimDandelionGreensVIP.ID,
+				ValidIngredientPreparationID:     &inspectDandelionGreensVIP.ID,
 				ValidIngredientMeasurementUnitID: &dandelionGreensCupVIMU.ID,
 				IngredientID:                     &dandelionGreens.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -241,7 +241,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimPurslaneVIP.ID,
+				ValidIngredientPreparationID:     &inspectPurslaneVIP.ID,
 				ValidIngredientMeasurementUnitID: &purslaneCupVIMU.ID,
 				IngredientID:                     &purslane.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -253,7 +253,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimFennelFrondsVIP.ID,
+				ValidIngredientPreparationID:     &inspectFennelFrondsVIP.ID,
 				ValidIngredientMeasurementUnitID: &fennelFrondsCupVIMU.ID,
 				IngredientID:                     &fennelFronds.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -265,7 +265,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimParsleyVIP.ID,
+				ValidIngredientPreparationID:     &inspectParsleyVIP.ID,
 				ValidIngredientMeasurementUnitID: &parsleyCupVIMU.ID,
 				IngredientID:                     &parsley.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -277,7 +277,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimTarragonVIP.ID,
+				ValidIngredientPreparationID:     &inspectTarragonVIP.ID,
 				ValidIngredientMeasurementUnitID: &tarragonCupVIMU.ID,
 				IngredientID:                     &tarragon.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -289,7 +289,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimChervilVIP.ID,
+				ValidIngredientPreparationID:     &inspectChervilVIP.ID,
 				ValidIngredientMeasurementUnitID: &chervilCupVIMU.ID,
 				IngredientID:                     &chervil.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -301,7 +301,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimBasilVIP.ID,
+				ValidIngredientPreparationID:     &inspectBasilVIP.ID,
 				ValidIngredientMeasurementUnitID: &basilCupVIMU.ID,
 				IngredientID:                     &basil.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -313,7 +313,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
-				ValidIngredientPreparationID:     &trimMintVIP.ID,
+				ValidIngredientPreparationID:     &inspectMintVIP.ID,
 				ValidIngredientMeasurementUnitID: &mintCupVIMU.ID,
 				IngredientID:                     &mint.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -327,7 +327,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step0ID,
-				ValidPreparationInstrumentID: &trimBareHandsVPI.ID,
+				ValidPreparationInstrumentID: &inspectBareHandsVPI.ID,
 				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -339,7 +339,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step0ID,
-				ValidPreparationVesselID: &trimCuttingBoardVPV.ID,
+				ValidPreparationVesselID: &inspectCuttingBoardVPV.ID,
 				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -494,21 +494,21 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		},
 	}
 
-	// Step 1: Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive
+	// Step 1: Wash everything in several changes of water until no dirt or grit remains
 	step1ID := identifiers.New()
 	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step1ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   slicePrep.ID,
+		PreparationID:   rinsePrep.ID,
 		Index:           1,
-		Notes:           "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
+		Notes:           "Wash everything in several changes of water until no dirt or grit remains.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &sliceLettuceVIP.ID,
+				ValidIngredientPreparationID:    &rinseLettuceVIP.ID,
 				IngredientID:                    &lettuce.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected lettuce",
@@ -521,7 +521,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &sliceRadicchioVIP.ID,
+				ValidIngredientPreparationID:    &rinseRadicchioVIP.ID,
 				IngredientID:                    &radicchio.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected radicchio",
@@ -534,7 +534,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
-				ValidIngredientPreparationID:    &sliceEndiveVIP.ID,
+				ValidIngredientPreparationID:    &rinseEndiveVIP.ID,
 				IngredientID:                    &endive.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected endive",
@@ -542,119 +542,9 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 					Min: 1,
 				},
 			},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
-			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step1ID,
-				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
-				InstrumentID:                 &knife.ID,
-				Name:                         "knife",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
-			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step1ID,
-				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
-				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "prepared lettuce",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
-				},
-			},
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "prepared radicchio",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
-				},
-			},
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "prepared endive",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               2,
-				MeasurementUnitID:   &cupMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
-				},
-			},
-		},
-	}
-
-	// Step 2: Wash everything in several changes of water until no dirt or grit remains
-	step2ID := identifiers.New()
-	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step2ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   rinsePrep.ID,
-		Index:           2,
-		Notes:           "Wash everything in several changes of water until no dirt or grit remains.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &rinseLettuceVIP.ID,
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "prepared lettuce",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
-				},
-			},
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidIngredientPreparationID:    &rinseRadicchioVIP.ID,
-				IngredientID:                    &radicchio.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "prepared radicchio",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
-				ValidIngredientPreparationID:    &rinseEndiveVIP.ID,
-				IngredientID:                    &endive.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "prepared endive",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &rinseFriseeVIP.ID,
@@ -667,7 +557,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &rinseKaleVIP.ID,
@@ -680,7 +570,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &rinseDandelionGreensVIP.ID,
@@ -693,7 +583,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &rinsePurslaneVIP.ID,
@@ -706,7 +596,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &rinseFennelFrondsVIP.ID,
@@ -719,7 +609,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &rinseParsleyVIP.ID,
@@ -732,7 +622,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &rinseTarragonVIP.ID,
@@ -745,7 +635,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &rinseChervilVIP.ID,
@@ -758,7 +648,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &rinseBasilVIP.ID,
@@ -771,7 +661,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
+				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &rinseMintVIP.ID,
@@ -786,7 +676,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step2ID,
+				BelongsToRecipeStep:      step1ID,
 				ValidPreparationVesselID: &rinseLargeBowlVPV.ID,
 				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
@@ -798,7 +688,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed lettuce",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -809,7 +699,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed radicchio",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
@@ -820,7 +710,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed endive",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
@@ -831,7 +721,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed frisée",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               3,
@@ -842,7 +732,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed kale",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               4,
@@ -853,7 +743,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed dandelion greens",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               5,
@@ -864,7 +754,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed purslane",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               6,
@@ -875,7 +765,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed fennel fronds",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               7,
@@ -886,7 +776,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed parsley",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               8,
@@ -897,7 +787,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed tarragon",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               9,
@@ -908,7 +798,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed chervil",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               10,
@@ -919,7 +809,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed basil",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               11,
@@ -930,7 +820,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
+				BelongsToRecipeStep: step1ID,
 				Name:                "washed mint",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               12,
@@ -942,19 +832,19 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		},
 	}
 
-	// Step 3: Dry well in a salad spinner
-	step3ID := identifiers.New()
-	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step3ID,
+	// Step 2: Dry well in a salad spinner
+	step2ID := identifiers.New()
+	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   dryPrep.ID,
-		Index:           3,
+		Index:           2,
 		Notes:           "Dry well in a salad spinner.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &dryLettuceVIP.ID,
 				IngredientID:                    &lettuce.ID,
@@ -966,8 +856,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &dryRadicchioVIP.ID,
 				IngredientID:                    &radicchio.ID,
@@ -979,8 +869,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &dryEndiveVIP.ID,
 				IngredientID:                    &endive.ID,
@@ -992,8 +882,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &dryFriseeVIP.ID,
 				IngredientID:                    &frisee.ID,
@@ -1005,8 +895,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &dryKaleVIP.ID,
 				IngredientID:                    &kale.ID,
@@ -1018,8 +908,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &dryDandelionGreensVIP.ID,
 				IngredientID:                    &dandelionGreens.ID,
@@ -1031,8 +921,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &dryPurslaneVIP.ID,
 				IngredientID:                    &purslane.ID,
@@ -1044,8 +934,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &dryFennelFrondsVIP.ID,
 				IngredientID:                    &fennelFronds.ID,
@@ -1057,8 +947,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &dryParsleyVIP.ID,
 				IngredientID:                    &parsley.ID,
@@ -1070,8 +960,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &dryTarragonVIP.ID,
 				IngredientID:                    &tarragon.ID,
@@ -1083,8 +973,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &dryChervilVIP.ID,
 				IngredientID:                    &chervil.ID,
@@ -1096,8 +986,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &dryBasilVIP.ID,
 				IngredientID:                    &basil.ID,
@@ -1109,8 +999,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &dryMintVIP.ID,
 				IngredientID:                    &mint.ID,
@@ -1124,7 +1014,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step3ID,
+				BelongsToRecipeStep:      step2ID,
 				ValidPreparationVesselID: &drySaladSpinnerVPV.ID,
 				VesselID:                 &saladSpinner.ID,
 				Name:                     "salad spinner",
@@ -1136,7 +1026,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried lettuce",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -1147,7 +1037,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried radicchio",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
@@ -1158,7 +1048,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried endive",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               2,
@@ -1169,7 +1059,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried frisée",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               3,
@@ -1180,7 +1070,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried kale",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               4,
@@ -1191,7 +1081,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried dandelion greens",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               5,
@@ -1202,7 +1092,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried purslane",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               6,
@@ -1213,7 +1103,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried fennel fronds",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               7,
@@ -1224,7 +1114,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried parsley",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               8,
@@ -1235,7 +1125,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried tarragon",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               9,
@@ -1246,7 +1136,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried chervil",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               10,
@@ -1257,7 +1147,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried basil",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               11,
@@ -1268,13 +1158,123 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			},
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
+				BelongsToRecipeStep: step2ID,
 				Name:                "dried mint",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               12,
 				MeasurementUnitID:   &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
+				},
+			},
+		},
+	}
+
+	// Step 3: Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive
+	step3ID := identifiers.New()
+	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step3ID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   slicePrep.ID,
+		Index:           3,
+		Notes:           "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sliceLettuceVIP.ID,
+				IngredientID:                    &lettuce.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "dried lettuce",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidIngredientPreparationID:    &sliceRadicchioVIP.ID,
+				IngredientID:                    &radicchio.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "dried radicchio",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
+				ValidIngredientPreparationID:    &sliceEndiveVIP.ID,
+				IngredientID:                    &endive.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "dried endive",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step3ID,
+				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step3ID,
+				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step3ID,
+				Name:                "prepared lettuce",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step3ID,
+				Name:                "prepared radicchio",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               1,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step3ID,
+				Name:                "prepared endive",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               2,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -1292,12 +1292,12 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixLettuceVIP.ID,
 				IngredientID:                    &lettuce.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "dried lettuce",
+				Name:                            "prepared lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -1305,12 +1305,12 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &mixRadicchioVIP.ID,
 				IngredientID:                    &radicchio.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "dried radicchio",
+				Name:                            "prepared radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1318,12 +1318,12 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &mixEndiveVIP.ID,
 				IngredientID:                    &endive.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
-				Name:                            "dried endive",
+				Name:                            "prepared endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -1331,7 +1331,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &mixFriseeVIP.ID,
 				IngredientID:                    &frisee.ID,
@@ -1344,7 +1344,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &mixKaleVIP.ID,
 				IngredientID:                    &kale.ID,
@@ -1357,7 +1357,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &mixDandelionGreensVIP.ID,
 				IngredientID:                    &dandelionGreens.ID,
@@ -1370,7 +1370,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &mixPurslaneVIP.ID,
 				IngredientID:                    &purslane.ID,
@@ -1383,7 +1383,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &mixFennelFrondsVIP.ID,
 				IngredientID:                    &fennelFronds.ID,
@@ -1396,7 +1396,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &mixParsleyVIP.ID,
 				IngredientID:                    &parsley.ID,
@@ -1409,7 +1409,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &mixTarragonVIP.ID,
 				IngredientID:                    &tarragon.ID,
@@ -1422,7 +1422,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &mixChervilVIP.ID,
 				IngredientID:                    &chervil.ID,
@@ -1435,7 +1435,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &mixBasilVIP.ID,
 				IngredientID:                    &basil.ID,
@@ -1448,7 +1448,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &mixMintVIP.ID,
 				IngredientID:                    &mint.ID,
@@ -1499,7 +1499,10 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 5: In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves
+	coatedState := enums.IngredientStates["coated"]
 	step5ID := identifiers.New()
+	step5GreensIngredientID := identifiers.New()
+	step5CompletionConditionID := identifiers.New()
 	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step5ID,
 		BelongsToRecipe: recipeID,
@@ -1508,7 +1511,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Notes:           "In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              identifiers.New(),
+				ID:                              step5GreensIngredientID,
 				BelongsToRecipeStep:             step5ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
@@ -1558,6 +1561,22 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				},
 			},
 		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+			{
+				ID:                  step5CompletionConditionID,
+				BelongsToRecipeStep: step5ID,
+				IngredientStateID:   coatedState.ID,
+				Notes:               "Leaves should be evenly coated in olive oil",
+				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+					{
+						ID:                                     identifiers.New(),
+						BelongsToRecipeStepCompletionCondition: step5CompletionConditionID,
+						RecipeStepIngredient:                   step5GreensIngredientID,
+					},
+				},
+				Optional: false,
+			},
+		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
@@ -1585,6 +1604,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 
 	// Step 6: Add splash of lemon juice and salt to taste, tossing to combine. Serve.
 	step6ID := identifiers.New()
+	step6GreensIngredientID := identifiers.New()
+	step6CompletionConditionID := identifiers.New()
 	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
@@ -1593,7 +1614,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		Notes:           "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                              identifiers.New(),
+				ID:                              step6GreensIngredientID,
 				BelongsToRecipeStep:             step6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
@@ -1612,7 +1633,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				IngredientID:                     &lemon.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "fresh lemon juice",
-				QuantityNotes:                    "a splash, to taste",
+				QuantityNotes:                    "a splash",
+				ToTaste:                          true,
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 					Max: pointer.To[float32](1),
@@ -1626,7 +1648,7 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				IngredientID:                     &salt.ID,
 				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "kosher or sea salt",
-				QuantityNotes:                    "to taste",
+				ToTaste:                          true,
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 					Max: pointer.To[float32](0.5),
@@ -1645,6 +1667,22 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
+			},
+		},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+			{
+				ID:                  step6CompletionConditionID,
+				BelongsToRecipeStep: step6ID,
+				IngredientStateID:   coatedState.ID,
+				Notes:               "Leaves should be evenly coated in olive oil",
+				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+					{
+						ID:                                     identifiers.New(),
+						BelongsToRecipeStepCompletionCondition: step6CompletionConditionID,
+						RecipeStepIngredient:                   step6GreensIngredientID,
+					},
+				},
+				Optional: false,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{

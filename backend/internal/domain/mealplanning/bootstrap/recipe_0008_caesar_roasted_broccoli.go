@@ -17,8 +17,8 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	// Get preparations
 	meltPrep := enums.Preparations["melt"]
 	stirPrep := enums.Preparations["stir"]
-	cookPrep := enums.Preparations["cook"]
-	toastPrep := enums.Preparations["toast"]
+	mixPrep := enums.Preparations["mix"]
+	coatPrep := enums.Preparations["coat"]
 	seasonPrep := enums.Preparations["season"]
 	transferPrep := enums.Preparations["transfer"]
 
@@ -54,11 +54,12 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	stirSkilletVPV := enums.PreparationVessels[stirPrep.ID][smallNonstickSkillet.ID]
 	stirSpatulaVPI := enums.PreparationInstruments[stirPrep.ID][rubberSpatula.ID]
 
-	cookSkilletVPV := enums.PreparationVessels[cookPrep.ID][smallNonstickSkillet.ID]
+	mixButterVIP := enums.IngredientPreparations[mixPrep.ID][saltedButter.ID]
+	mixSkilletVPV := enums.PreparationVessels[mixPrep.ID][smallNonstickSkillet.ID]
 
-	toastBreadcrumbsVIP := enums.IngredientPreparations[toastPrep.ID][breadcrumbs.ID]
-	toastSkilletVPV := enums.PreparationVessels[toastPrep.ID][smallNonstickSkillet.ID]
-	toastSpatulaVPI := enums.PreparationInstruments[toastPrep.ID][rubberSpatula.ID]
+	coatBreadcrumbsVIP := enums.IngredientPreparations[coatPrep.ID][breadcrumbs.ID]
+	coatSkilletVPV := enums.PreparationVessels[coatPrep.ID][smallNonstickSkillet.ID]
+	coatSpatulaVPI := enums.PreparationInstruments[coatPrep.ID][rubberSpatula.ID]
 
 	seasonBreadcrumbsVIP := enums.IngredientPreparations[seasonPrep.ID][breadcrumbs.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
@@ -210,12 +211,12 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
-	// Breadcrumbs Step 2: Cook until fragrant
+	// Breadcrumbs Step 2: Mix until fragrant
 	bcStep2ID := identifiers.New()
 	bcStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              bcStep2ID,
 		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   cookPrep.ID,
+		PreparationID:   mixPrep.ID,
 		Index:           2,
 		Notes:           "Cook until fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -227,6 +228,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				BelongsToRecipeStep:             bcStep2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &mixButterVIP.ID,
 				IngredientID:                    &saltedButter.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "butter with anchovy and garlic",
@@ -239,7 +241,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      bcStep2ID,
-				ValidPreparationVesselID: &cookSkilletVPV.ID,
+				ValidPreparationVesselID: &mixSkilletVPV.ID,
 				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -335,12 +337,12 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
-	// Breadcrumbs Step 4: Toast breadcrumbs until golden brown
+	// Breadcrumbs Step 4: Coat breadcrumbs until golden brown
 	bcStep4ID := identifiers.New()
 	bcStep4 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              bcStep4ID,
 		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   toastPrep.ID,
+		PreparationID:   coatPrep.ID,
 		Index:           4,
 		Notes:           "Cook, stirring constantly until breadcrumbs are golden brown, about 3 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -352,7 +354,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				BelongsToRecipeStep:              bcStep4ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &toastBreadcrumbsVIP.ID,
+				ValidIngredientPreparationID:     &coatBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
 				IngredientID:                     &breadcrumbs.ID,
 				MeasurementUnitID:                cupMeasurement.ID,
@@ -366,7 +368,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          bcStep4ID,
-				ValidPreparationInstrumentID: &toastSpatulaVPI.ID,
+				ValidPreparationInstrumentID: &coatSpatulaVPI.ID,
 				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "flexible spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -378,7 +380,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      bcStep4ID,
-				ValidPreparationVesselID: &toastSkilletVPV.ID,
+				ValidPreparationVesselID: &coatSkilletVPV.ID,
 				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{

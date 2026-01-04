@@ -199,6 +199,66 @@ func (x *Recipe) GetRelatedRecipeIDs() []string {
 	return relatedIDs
 }
 
+// GetUnconsumedProducts returns all recipe step products that are not consumed
+// (referenced as ingredients, instruments, or vessels) in any later step.
+func (x *Recipe) GetUnconsumedProducts() []*RecipeStepProduct {
+	// Build a map from product ID to the step index where it's produced
+	productToStepIndex := make(map[string]int)
+	for stepIdx, step := range x.Steps {
+		for _, product := range step.Products {
+			productToStepIndex[product.ID] = stepIdx
+		}
+	}
+
+	// Build a set of all product IDs that are consumed in later steps
+	consumedProductIDs := make(map[string]struct{})
+
+	// Iterate through all steps
+	for stepIdx, step := range x.Steps {
+		// For each step, check all ingredients, instruments, and vessels
+		// that reference products from earlier steps (consumption happens in later steps)
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "" {
+				productStepIdx, exists := productToStepIndex[*ingredient.RecipeStepProductID]
+				// Only mark as consumed if the product is from an earlier step
+				if exists && productStepIdx < stepIdx {
+					consumedProductIDs[*ingredient.RecipeStepProductID] = struct{}{}
+				}
+			}
+		}
+
+		for _, instrument := range step.Instruments {
+			if instrument.RecipeStepProductID != nil && *instrument.RecipeStepProductID != "" {
+				productStepIdx, exists := productToStepIndex[*instrument.RecipeStepProductID]
+				if exists && productStepIdx < stepIdx {
+					consumedProductIDs[*instrument.RecipeStepProductID] = struct{}{}
+				}
+			}
+		}
+
+		for _, vessel := range step.Vessels {
+			if vessel.RecipeStepProductID != nil && *vessel.RecipeStepProductID != "" {
+				productStepIdx, exists := productToStepIndex[*vessel.RecipeStepProductID]
+				if exists && productStepIdx < stepIdx {
+					consumedProductIDs[*vessel.RecipeStepProductID] = struct{}{}
+				}
+			}
+		}
+	}
+
+	// Collect all products that are not consumed
+	var unconsumedProducts []*RecipeStepProduct
+	for _, step := range x.Steps {
+		for _, product := range step.Products {
+			if _, isConsumed := consumedProductIDs[product.ID]; !isConsumed {
+				unconsumedProducts = append(unconsumedProducts, product)
+			}
+		}
+	}
+
+	return unconsumedProducts
+}
+
 // FindStepIndexByID finds a step for a given ID.
 func (x *Recipe) FindStepIndexByID(id string) int {
 	for i, step := range x.Steps {

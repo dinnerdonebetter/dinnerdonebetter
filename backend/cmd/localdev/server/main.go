@@ -230,6 +230,17 @@ func main() {
 			recipes := bootstrap.AllRecipes(adminUserID, enums)
 			logger.Info(fmt.Sprintf("Found %d recipes to create", len(recipes)))
 
+			// Always validate recipes
+			validator := bootstrap.NewRecipeValidatorFromEnumerations(enums)
+			for i, recipe := range recipes {
+				logger.Info(fmt.Sprintf("Validating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
+				if err = validator.ValidateAndPopulate(recipe); err != nil {
+					return fmt.Errorf("failed to validate recipe %s: %w", recipe.Name, err)
+				}
+			}
+			logger.Info("All bootstrap recipes validated successfully!")
+
+			// Always create recipes
 			for i, recipe := range recipes {
 				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
 				_, err = repo.CreateRecipe(ctx, recipe)
@@ -237,9 +248,9 @@ func main() {
 					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
 				}
 			}
-
 			logger.Info("All bootstrap recipes created successfully!")
 
+			// Always create meals
 			logger.Info("Creating bootstrap meals...")
 			meals := bootstrap.AllMeals(adminUserID, recipes)
 			logger.Info(fmt.Sprintf("Found %d meals to create", len(meals)))
@@ -251,8 +262,8 @@ func main() {
 					return fmt.Errorf("failed to create meal %s: %w", meal.Name, err)
 				}
 			}
-
 			logger.Info("All bootstrap meals created successfully!")
+
 			return nil
 		}),
 		// Create meal plan with 3 chicken dishes

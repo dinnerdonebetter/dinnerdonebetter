@@ -14,7 +14,6 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 
 	// Get preparations
 	meltPrep := enums.Preparations["melt"]
-	cookPrep := enums.Preparations["cook"]
 	addPrep := enums.Preparations["add"]
 	coverPrep := enums.Preparations["cover"]
 	boilPrep := enums.Preparations["boil"]
@@ -24,6 +23,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	discardPrep := enums.Preparations["discard"]
 	seasonPrep := enums.Preparations["season"]
 	sprinklePrep := enums.Preparations["sprinkle"]
+	peelPrep := enums.Preparations["peel"]
+	slicePrep := enums.Preparations["slice"]
+	chopPrep := enums.Preparations["chop"]
 
 	// Get ingredients
 	butter := enums.Ingredients["butter"]
@@ -36,6 +38,8 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	blackPepper := enums.Ingredients["black pepper"]
 	appleCiderVinegar := enums.Ingredients["apple cider vinegar"]
 	parsley := enums.Ingredients["parsley"]
+	chives := enums.Ingredients["chives"]
+	tarragon := enums.Ingredients["tarragon"]
 
 	// Get measurement units
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
@@ -44,13 +48,17 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	poundMeasurement := enums.MeasurementUnits["pound"]
 	sprigMeasurement := enums.MeasurementUnits["sprig"]
 	unitMeasurement := enums.MeasurementUnits["unit"]
+	gramMeasurement := enums.MeasurementUnits["gram"]
 
 	// Get instruments
 	spoon := enums.Instruments["spoon"]
+	knife := enums.Instruments["knife"]
+	vegetablePeeler := enums.Instruments["vegetable peeler"]
 
 	// Get vessels
 	pan := enums.Vessels["pan"]
 	servingBowl := enums.Vessels["serving bowl"]
+	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get ingredient states for completion conditions
 	crispState := enums.IngredientStates["crisp"]
@@ -64,19 +72,16 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	meltPanVPV := enums.PreparationVessels[meltPrep.ID][pan.ID]
 	meltSpoonVPI := enums.PreparationInstruments[meltPrep.ID][spoon.ID]
 
-	// Cook preparation bridges
-	cookSageVIP := enums.IngredientPreparations[cookPrep.ID][sage.ID]
-	cookPanVPV := enums.PreparationVessels[cookPrep.ID][pan.ID]
-	cookSpoonVPI := enums.PreparationInstruments[cookPrep.ID][spoon.ID]
-
 	// Add preparation bridges
 	addCarrotVIP := enums.IngredientPreparations[addPrep.ID][carrot.ID]
+	addSageVIP := enums.IngredientPreparations[addPrep.ID][sage.ID]
 	addAppleCiderVIP := enums.IngredientPreparations[addPrep.ID][appleCider.ID]
 	addChickenStockVIP := enums.IngredientPreparations[addPrep.ID][chickenStock.ID]
 	addHoneyVIP := enums.IngredientPreparations[addPrep.ID][honey.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addBlackPepperVIP := enums.IngredientPreparations[addPrep.ID][blackPepper.ID]
 	addPanVPV := enums.PreparationVessels[addPrep.ID][pan.ID]
+	addSpoonVPI := enums.PreparationInstruments[addPrep.ID][spoon.ID]
 
 	// Boil preparation bridges
 	boilCarrotVIP := enums.IngredientPreparations[boilPrep.ID][carrot.ID]
@@ -110,7 +115,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	sprinkleServingBowlVPV := enums.PreparationVessels[sprinklePrep.ID][servingBowl.ID]
 
 	// Measurement unit bridges
-	butterTablespoonVIMU := enums.IngredientMeasurementUnits[butter.ID][tablespoonMeasurement.ID]
+	butterGramVIMU := enums.IngredientMeasurementUnits[butter.ID][gramMeasurement.ID]
 	sageSprigVIMU := enums.IngredientMeasurementUnits[sage.ID][sprigMeasurement.ID]
 	carrotPoundVIMU := enums.IngredientMeasurementUnits[carrot.ID][poundMeasurement.ID]
 	appleCiderCupVIMU := enums.IngredientMeasurementUnits[appleCider.ID][cupMeasurement.ID]
@@ -120,6 +125,25 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	blackPepperTeaspoonVIMU := enums.IngredientMeasurementUnits[blackPepper.ID][teaspoonMeasurement.ID]
 	appleCiderVinegarTeaspoonVIMU := enums.IngredientMeasurementUnits[appleCiderVinegar.ID][teaspoonMeasurement.ID]
 	parsleyTablespoonVIMU := enums.IngredientMeasurementUnits[parsley.ID][tablespoonMeasurement.ID]
+	chivesTablespoonVIMU := enums.IngredientMeasurementUnits[chives.ID][tablespoonMeasurement.ID]
+	tarragonTablespoonVIMU := enums.IngredientMeasurementUnits[tarragon.ID][tablespoonMeasurement.ID]
+
+	// Peel preparation bridges
+	peelCarrotVIP := enums.IngredientPreparations[peelPrep.ID][carrot.ID]
+	peelVegetablePeelerVPI := enums.PreparationInstruments[peelPrep.ID][vegetablePeeler.ID]
+	peelCuttingBoardVPV := enums.PreparationVessels[peelPrep.ID][cuttingBoard.ID]
+
+	// Slice preparation bridges
+	sliceCarrotVIP := enums.IngredientPreparations[slicePrep.ID][carrot.ID]
+	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
+	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
+
+	// Chop preparation bridges
+	chopParsleyVIP := enums.IngredientPreparations[chopPrep.ID][parsley.ID]
+	chopChivesVIP := enums.IngredientPreparations[chopPrep.ID][chives.ID]
+	chopTarragonVIP := enums.IngredientPreparations[chopPrep.ID][tarragon.ID]
+	chopKnifeVPI := enums.PreparationInstruments[chopPrep.ID][knife.ID]
+	chopCuttingBoardVPV := enums.PreparationVessels[chopPrep.ID][cuttingBoard.ID]
 
 	// ==================== RECIPE STEPS ====================
 
@@ -140,13 +164,12 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				IngredientID:                     &butter.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "unsalted butter, cut into 6 pieces",
-				QuantityNotes:                    "about 75g",
+				MeasurementUnitID:                gramMeasurement.ID,
+				Name:                             "unsalted butter",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 6,
+					Min: 75,
 				},
 			},
 		},
@@ -210,7 +233,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step1ID,
 		BelongsToRecipe: recipeID,
-		PreparationID:   cookPrep.ID,
+		PreparationID:   addPrep.ID,
 		Index:           1,
 		Notes:           "Add sage sprigs; cook, stirring constantly, until sage leaves darken and crisp and butter foams and browns, 1 to 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -233,7 +256,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              step1ID,
-				ValidIngredientPreparationID:     &cookSageVIP.ID,
+				ValidIngredientPreparationID:     &addSageVIP.ID,
 				ValidIngredientMeasurementUnitID: &sageSprigVIMU.ID,
 				IngredientID:                     &sage.ID,
 				MeasurementUnitID:                sprigMeasurement.ID,
@@ -247,7 +270,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step1ID,
-				ValidPreparationInstrumentID: &cookSpoonVPI.ID,
+				ValidPreparationInstrumentID: &addSpoonVPI.ID,
 				InstrumentID:                 &spoon.ID,
 				Name:                         "spoon",
 				Quantity: types.Uint32RangeWithOptionalMax{
@@ -261,7 +284,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &cookPanVPV.ID,
+				ValidPreparationVesselID:        &addPanVPV.ID,
 				VesselID:                        &pan.ID,
 				Name:                            "skillet with browning butter",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -300,13 +323,137 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		},
 	}
 
+	// Step 2a: Peel carrots
+	step2aID := identifiers.New()
+	step2a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   peelPrep.ID,
+		Index:           2,
+		Notes:           "Peel medium carrots.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2aID,
+				ValidIngredientPreparationID:     &peelCarrotVIP.ID,
+				ValidIngredientMeasurementUnitID: &carrotPoundVIMU.ID,
+				IngredientID:                     &carrot.ID,
+				MeasurementUnitID:                poundMeasurement.ID,
+				Name:                             "medium carrots",
+				QuantityNotes:                    "about 910g",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2aID,
+				ValidPreparationInstrumentID: &peelVegetablePeelerVPI.ID,
+				InstrumentID:                 &vegetablePeeler.ID,
+				Name:                         "vegetable peeler",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2aID,
+				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2aID,
+				Name:                "peeled carrots",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step 2b: Slice carrots
+	step2bID := identifiers.New()
+	step2b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   slicePrep.ID,
+		Index:           3,
+		Notes:           "Slice peeled carrots on the bias into 1/2 inch–thick discs.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sliceCarrotVIP.ID,
+				IngredientID:                    &carrot.ID,
+				MeasurementUnitID:               poundMeasurement.ID,
+				Name:                            "peeled carrots",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2bID,
+				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2bID,
+				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2bID,
+				Name:                "medium carrots, peeled and sliced on the bias into 1/2 inch–thick discs",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
 	// Step 2: Add carrots and liquids
 	step2ID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   addPrep.ID,
-		Index:           2,
+		Index:           4,
 		Notes:           "Quickly add carrots, apple cider, chicken or vegetable stock, honey, salt, and pepper to brown butter in skillet. Carrots should be almost submerged, if not, add a small amount of stock until they are.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -322,14 +469,14 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &addCarrotVIP.ID,
-				ValidIngredientMeasurementUnitID: &carrotPoundVIMU.ID,
-				IngredientID:                     &carrot.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
-				Name:                             "medium carrots, peeled and sliced on the bias into 1/2 inch–thick discs",
-				QuantityNotes:                    "about 910g",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &addCarrotVIP.ID,
+				IngredientID:                    &carrot.ID,
+				MeasurementUnitID:               poundMeasurement.ID,
+				Name:                            "medium carrots, peeled and sliced on the bias into 1/2 inch–thick discs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -380,11 +527,12 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				IngredientID:                     &salt.ID,
 				MeasurementUnitID:                teaspoonMeasurement.ID,
-				Name:                             "Diamond Crystal kosher salt",
-				QuantityNotes:                    "plus more to taste; for table salt use half as much by volume",
+				Name:                             "kosher salt",
+				QuantityNotes:                    "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
+				Optional: true,
 			},
 			{
 				ID:                               identifiers.New(),
@@ -432,13 +580,13 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   boilPrep.ID,
-		Index:           3,
+		Index:           5,
 		Notes:           "Bring to a boil over high heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &boilCarrotVIP.ID,
 				IngredientID:                    &carrot.ID,
@@ -482,7 +630,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   coverPrep.ID,
-		Index:           4,
+		Index:           6,
 		Notes:           "Cover, reduce heat to medium-high, and continue to boil, vigorously shaking the skillet occasionally, until carrots are crisp/tender and still firm in the center, about 8 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](480), // 8 minutes
@@ -491,7 +639,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &carrot.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -543,13 +691,13 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   uncoverPrep.ID,
-		Index:           5,
+		Index:           7,
 		Notes:           "Reduce heat to medium, uncover (the liquid should look creamy and still almost cover the carrots).",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &carrot.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -592,7 +740,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   reducePrep.ID,
-		Index:           6,
+		Index:           8,
 		Notes:           "Continue to boil, vigorously stirring and shaking skillet often, until the mixture is reduced to a glaze that coats and clings to the carrots, 12 to 14 minutes. If the sauce begins to break and you see oily, butter-colored specks, add a splash of water (about 2 tablespoons) and return to a vigorous simmer, stirring constantly, until the mixture looks creamy and homogenous again.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](720), // 12 minutes
@@ -602,7 +750,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &carrot.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -666,13 +814,13 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   removeFromHeatPrep.ID,
-		Index:           7,
+		Index:           9,
 		Notes:           "Remove from heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &carrot.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -715,13 +863,13 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   discardPrep.ID,
-		Index:           8,
+		Index:           10,
 		Notes:           "Discard sage sprigs.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &discardSageVIP.ID,
 				IngredientID:                    &sage.ID,
@@ -765,13 +913,13 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		ID:              step9ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           9,
-		Notes:           "Stir in vinegar and season with salt to taste.",
+		Index:           11,
+		Notes:           "Stir in apple cider vinegar and season with salt to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step9ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonCarrotVIP.ID,
 				IngredientID:                    &carrot.ID,
@@ -788,7 +936,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				ValidIngredientMeasurementUnitID: &appleCiderVinegarTeaspoonVIMU.ID,
 				IngredientID:                     &appleCiderVinegar.ID,
 				MeasurementUnitID:                teaspoonMeasurement.ID,
-				Name:                             "apple cider vinegar, white wine vinegar, or unseasoned rice vinegar",
+				Name:                             "apple cider vinegar",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -833,19 +981,111 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		},
 	}
 
+	// Step 9a: Chop herbs
+	step9aID := identifiers.New()
+	step9a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step9aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   chopPrep.ID,
+		Index:           12,
+		Notes:           "Chop fresh tender herbs (parsley, chives, and tarragon) into small pieces.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step9aID,
+				ValidIngredientPreparationID:     &chopParsleyVIP.ID,
+				ValidIngredientMeasurementUnitID: &parsleyTablespoonVIMU.ID,
+				IngredientID:                     &parsley.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "fresh flat-leaf parsley",
+				QuantityNotes:                    "equal parts with chives and tarragon",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.33,
+					Max: pointer.To[float32](0.67),
+				},
+			},
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step9aID,
+				ValidIngredientPreparationID:     &chopChivesVIP.ID,
+				ValidIngredientMeasurementUnitID: &chivesTablespoonVIMU.ID,
+				IngredientID:                     &chives.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "fresh chives",
+				QuantityNotes:                    "equal parts with parsley and tarragon",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.33,
+					Max: pointer.To[float32](0.67),
+				},
+			},
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step9aID,
+				ValidIngredientPreparationID:     &chopTarragonVIP.ID,
+				ValidIngredientMeasurementUnitID: &tarragonTablespoonVIMU.ID,
+				IngredientID:                     &tarragon.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "fresh tarragon",
+				QuantityNotes:                    "equal parts with parsley and chives",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 0.33,
+					Max: pointer.To[float32](0.67),
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step9aID,
+				ValidPreparationInstrumentID: &chopKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step9aID,
+				ValidPreparationVesselID: &chopCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step9aID,
+				Name:                "chopped fresh tender herbs (parsley, chives, and tarragon)",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+					Max: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
 	// Step 10: Sprinkle with herbs and serve
 	step10ID := identifiers.New()
 	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step10ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   sprinklePrep.ID,
-		Index:           10,
-		Notes:           "Sprinkle with herbs. Serve immediately.",
+		Index:           13,
+		Notes:           "Sprinkle with chopped herbs. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &carrot.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -855,14 +1095,14 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
-				ValidIngredientPreparationID:     &sprinkleParsleyVIP.ID,
-				ValidIngredientMeasurementUnitID: &parsleyTablespoonVIMU.ID,
-				IngredientID:                     &parsley.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "chopped fresh tender herbs such as flat-leaf parsley, chives, and/or tarragon",
-				QuantityNotes:                    "1-2 tablespoons, can use a combination",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step10ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sprinkleParsleyVIP.ID,
+				IngredientID:                    &parsley.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "chopped fresh tender herbs (parsley, chives, and tarragon)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 					Max: pointer.To[float32](2),
@@ -913,7 +1153,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(userID string, enums *Enumeration
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10,
+			step0, step1, step2a, step2b, step2, step3, step4, step5, step6, step7, step8, step9, step9a, step10,
 		},
 	}
 

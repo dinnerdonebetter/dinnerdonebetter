@@ -11,6 +11,9 @@ import (
 // Source: https://www.seriouseats.com/the-best-caesar-salad-recipe
 // This returns three recipes: Garlic Croutons (component), Caesar Dressing (component), and Caesar Salad (main recipe).
 func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
+	// Define recipe IDs first so they can be referenced across recipes
+	dressingRecipeID := identifiers.New()
+
 	// ==================== GARLIC CROUTONS RECIPE ====================
 	croutonsRecipeID := identifiers.New()
 
@@ -18,7 +21,6 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	preheatPrep := enums.Preparations["preheat"]
 	combinePrep := enums.Preparations["combine"]
 	mixPrep := enums.Preparations["mix"]
-	strainPrep := enums.Preparations["strain"]
 	addPrep := enums.Preparations["add"]
 	tossPrep := enums.Preparations["toss"]
 	seasonPrep := enums.Preparations["season"]
@@ -27,6 +29,13 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	coolPrep := enums.Preparations["cool"]
 	blendPrep := enums.Preparations["blend"]
 	sprinklePrep := enums.Preparations["sprinkle"]
+	inspectPrep := enums.Preparations["inspect"]
+	rinsePrep := enums.Preparations["rinse"]
+	dryPrep := enums.Preparations["dry"]
+	mincePrep := enums.Preparations["mince"]
+	pressPrep := enums.Preparations["press"]
+	cubePrep := enums.Preparations["cube"]
+	gratePrep := enums.Preparations["grate"]
 
 	// Get ingredients
 	oliveOil := enums.Ingredients["olive oil"]
@@ -51,8 +60,11 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 
 	// Get instruments
 	whisk := enums.Instruments["whisk"]
-	stickBlender := enums.Instruments["stick blender"]
+	stickBlender := enums.Instruments["immersion blender"]
 	spoon := enums.Instruments["spoon"]
+	bareHands := enums.Instruments["bare hands"]
+	knife := enums.Instruments["knife"]
+	cheeseGrater := enums.Instruments["cheese grater"]
 
 	// Get vessels
 	smallBowl := enums.Vessels["small bowl"]
@@ -63,6 +75,8 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	oven := enums.Vessels["oven"]
 	immersionBlenderCup := enums.Vessels["immersion blender cup"]
 	servingBowl := enums.Vessels["serving bowl"]
+	saladSpinner := enums.Vessels["salad spinner"]
+	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get ingredient states for completion conditions
 	goldenBrownState := enums.IngredientStates["browned"]
@@ -72,22 +86,20 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	// Preheat preparation bridges
 	preheatOvenVPV := enums.PreparationVessels[preheatPrep.ID][oven.ID]
 
-	// Combine preparation bridges
-	combineOliveOilVIP := enums.IngredientPreparations[combinePrep.ID][oliveOil.ID]
-	combineGarlicVIP := enums.IngredientPreparations[combinePrep.ID][garlic.ID]
-	combineSmallBowlVPV := enums.PreparationVessels[combinePrep.ID][smallBowl.ID]
-	combineWhiskVPI := enums.PreparationInstruments[combinePrep.ID][whisk.ID]
-
-	// Whisk preparation bridges
+	// Whisk preparation bridges (used in dressing recipe)
 	whiskOliveOilVIP := enums.IngredientPreparations[mixPrep.ID][oliveOil.ID]
 	whiskWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
 	whiskMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
-	// Strain preparation bridges
-	strainOliveOilVIP := enums.IngredientPreparations[strainPrep.ID][oliveOil.ID]
-	strainSpoonVPI := enums.PreparationInstruments[strainPrep.ID][spoon.ID]
-	strainFineMeshStrainerVPV := enums.PreparationVessels[strainPrep.ID][fineMeshStrainer.ID]
-	strainLargeBowlVPV := enums.PreparationVessels[strainPrep.ID][largeBowl.ID]
+	// Cube preparation bridges
+	cubeBreadVIP := enums.IngredientPreparations[cubePrep.ID][heartyBread.ID]
+	cubeKnifeVPI := enums.PreparationInstruments[cubePrep.ID][knife.ID]
+	cubeCuttingBoardVPV := enums.PreparationVessels[cubePrep.ID][cuttingBoard.ID]
+
+	// Grate preparation bridges
+	grateParmesanVIP := enums.IngredientPreparations[gratePrep.ID][parmesanCheese.ID]
+	grateCheeseGraterVPI := enums.PreparationInstruments[gratePrep.ID][cheeseGrater.ID]
+	grateCuttingBoardVPV := enums.PreparationVessels[gratePrep.ID][cuttingBoard.ID]
 
 	// Add preparation bridges
 	addBreadVIP := enums.IngredientPreparations[addPrep.ID][heartyBread.ID]
@@ -124,7 +136,6 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
 	oliveOilCupVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][cupMeasurement.ID]
 	garlicCloveVIMU := enums.IngredientMeasurementUnits[garlic.ID][cloveMeasurement.ID]
-	garlicTeaspoonVIMU := enums.IngredientMeasurementUnits[garlic.ID][teaspoonMeasurement.ID]
 	breadCupVIMU := enums.IngredientMeasurementUnits[heartyBread.ID][cupMeasurement.ID]
 	parmesanTablespoonVIMU := enums.IngredientMeasurementUnits[parmesanCheese.ID][tablespoonMeasurement.ID]
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
@@ -166,38 +177,25 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 1: Combine olive oil with minced garlic and whisk
+	// Step 1: Cut bread into 3/4-inch cubes
 	crStep1ID := identifiers.New()
 	crStep1 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              crStep1ID,
 		BelongsToRecipe: croutonsRecipeID,
-		PreparationID:   combinePrep.ID,
+		PreparationID:   cubePrep.ID,
 		Index:           1,
-		Notes:           "In a small bowl, combine 3 tablespoons olive oil with minced garlic and whisk for 30 seconds.",
+		Notes:           "Cut the hearty bread into 3/4-inch cubes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              crStep1ID,
-				ValidIngredientPreparationID:     &combineOliveOilVIP.ID,
-				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
-				IngredientID:                     &oliveOil.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "extra-virgin olive oil",
+				ValidIngredientPreparationID:     &cubeBreadVIP.ID,
+				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
+				IngredientID:                     &heartyBread.ID,
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "hearty bread",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
-				},
-			},
-			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              crStep1ID,
-				ValidIngredientPreparationID:     &combineGarlicVIP.ID,
-				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
-				IngredientID:                     &garlic.ID,
-				MeasurementUnitID:                cloveMeasurement.ID,
-				Name:                             "garlic, minced",
-				QuantityNotes:                    "about 2 teaspoons",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 2,
 				},
 			},
 		},
@@ -205,9 +203,9 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          crStep1ID,
-				ValidPreparationInstrumentID: &combineWhiskVPI.ID,
-				InstrumentID:                 &whisk.ID,
-				Name:                         "whisk",
+				ValidPreparationInstrumentID: &cubeKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -217,9 +215,9 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      crStep1ID,
-				ValidPreparationVesselID: &combineSmallBowlVPV.ID,
-				VesselID:                 &smallBowl.ID,
-				Name:                     "small bowl",
+				ValidPreparationVesselID: &cubeCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -229,49 +227,49 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: crStep1ID,
-				Name:                "garlic oil mixture",
+				Name:                "hearty bread, cut into 3/4-inch cubes",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](3),
 				},
 			},
 		},
 	}
 
-	// Step 2: Strain garlic oil through fine-mesh strainer
+	// Step 2: Add bread cubes to garlic-infused olive oil and toss to coat
 	crStep2ID := identifiers.New()
 	crStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              crStep2ID,
 		BelongsToRecipe: croutonsRecipeID,
-		PreparationID:   strainPrep.ID,
+		PreparationID:   addPrep.ID,
 		Index:           2,
-		Notes:           "Transfer garlic oil mixture to a fine-mesh strainer set over a large bowl and press with the back of a spoon to extract as much oil as possible, leaving garlic behind. Reserve pressed garlic separately.",
+		Notes:           "Add bread cubes to garlic-infused olive oil from the dressing recipe and toss to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              crStep2ID,
+				RecipeStepProductRecipeID:        &dressingRecipeID,
+				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
+				IngredientID:                     &oliveOil.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "garlic-infused olive oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 3,
+				},
+			},
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             crStep2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &strainOliveOilVIP.ID,
-				IngredientID:                    &oliveOil.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "garlic oil mixture",
+				ValidIngredientPreparationID:    &addBreadVIP.ID,
+				IngredientID:                    &heartyBread.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "hearty bread, cut into 3/4-inch cubes",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
-			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          crStep2ID,
-				ValidPreparationInstrumentID: &strainSpoonVPI.ID,
-				InstrumentID:                 &spoon.ID,
-				Name:                         "spoon",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
+					Min: 3,
 				},
 			},
 		},
@@ -279,17 +277,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      crStep2ID,
-				ValidPreparationVesselID: &strainFineMeshStrainerVPV.ID,
-				VesselID:                 &fineMeshStrainer.ID,
-				Name:                     "fine-mesh strainer",
-				Quantity: types.Uint16RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      crStep2ID,
-				ValidPreparationVesselID: &strainLargeBowlVPV.ID,
+				ValidPreparationVesselID: &addLargeBowlVPV.ID,
 				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
@@ -301,7 +289,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: crStep2ID,
-				Name:                "garlic-infused oil",
+				Name:                "oiled bread cubes",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
@@ -309,63 +297,50 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 					Min: pointer.To[float32](1),
 				},
 			},
-			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: crStep2ID,
-				Name:                "pressed garlic",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &teaspoonMeasurement.ID,
-				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](2),
-				},
-			},
 		},
 	}
 
-	// Step 3: Add bread cubes to garlic oil and toss to coat
+	// Step 3: Grate parmesan cheese
 	crStep3ID := identifiers.New()
 	crStep3 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              crStep3ID,
 		BelongsToRecipe: croutonsRecipeID,
-		PreparationID:   addPrep.ID,
+		PreparationID:   gratePrep.ID,
 		Index:           3,
-		Notes:           "Add bread cubes to garlic oil and toss to coat.",
+		Notes:           "Finely grate 4 tablespoons parmesan cheese.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
-			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             crStep3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &oliveOil.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                            "garlic-infused oil",
-				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
 			{
 				ID:                               identifiers.New(),
 				BelongsToRecipeStep:              crStep3ID,
-				ValidIngredientPreparationID:     &addBreadVIP.ID,
-				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
-				IngredientID:                     &heartyBread.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
-				Name:                             "hearty bread, cut into 3/4-inch cubes",
+				ValidIngredientPreparationID:     &grateParmesanVIP.ID,
+				ValidIngredientMeasurementUnitID: &parmesanTablespoonVIMU.ID,
+				IngredientID:                     &parmesanCheese.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "parmesan cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
-					Min: 3,
+					Min: 4,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          crStep3ID,
+				ValidPreparationInstrumentID: &grateCheeseGraterVPI.ID,
+				InstrumentID:                 &cheeseGrater.ID,
+				Name:                         "cheese grater",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
 				},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             crStep3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidPreparationVesselID:        &addLargeBowlVPV.ID,
-				VesselID:                        &largeBowl.ID,
-				Name:                            "large bowl",
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      crStep3ID,
+				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -375,12 +350,12 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 			{
 				ID:                  identifiers.New(),
 				BelongsToRecipeStep: crStep3ID,
-				Name:                "oiled bread cubes",
+				Name:                "finely grated parmesan cheese",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
-					Min: pointer.To[float32](1),
+					Min: pointer.To[float32](4),
 				},
 			},
 		},
@@ -393,12 +368,12 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		BelongsToRecipe: croutonsRecipeID,
 		PreparationID:   tossPrep.ID,
 		Index:           4,
-		Notes:           "Add 2 tablespoons parmesan cheese, toss again, and season to taste with salt and pepper.",
+		Notes:           "Add 2 tablespoons grated parmesan cheese, toss again, and season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             crStep4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossBreadVIP.ID,
 				IngredientID:                    &heartyBread.ID,
@@ -409,13 +384,15 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              crStep4ID,
-				ValidIngredientPreparationID:     &tossParmesanVIP.ID,
-				ValidIngredientMeasurementUnitID: &parmesanTablespoonVIMU.ID,
-				IngredientID:                     &parmesanCheese.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "finely grated parmesan cheese",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             crStep4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
+				IngredientID:                    &parmesanCheese.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "finely grated parmesan cheese",
+				QuantityNotes:                   "2 tablespoons",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -659,7 +636,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		BelongsToRecipe: croutonsRecipeID,
 		PreparationID:   tossPrep.ID,
 		Index:           8,
-		Notes:           "Remove from oven and toss with 2 more tablespoons parmesan.",
+		Notes:           "Remove from oven and toss with 2 more tablespoons grated parmesan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
@@ -675,13 +652,15 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              crStep8ID,
-				ValidIngredientPreparationID:     &tossParmesanVIP.ID,
-				ValidIngredientMeasurementUnitID: &parmesanTablespoonVIMU.ID,
-				IngredientID:                     &parmesanCheese.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "finely grated parmesan cheese",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             crStep8ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
+				IngredientID:                    &parmesanCheese.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "finely grated parmesan cheese",
+				QuantityNotes:                   "2 tablespoons",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -787,7 +766,23 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	}
 
 	// ==================== CAESAR DRESSING RECIPE ====================
-	dressingRecipeID := identifiers.New()
+
+	// Mince preparation bridges for dressing
+	minceGarlicDressingVIP := enums.IngredientPreparations[mincePrep.ID][garlic.ID]
+	minceKnifeDressingVPI := enums.PreparationInstruments[mincePrep.ID][knife.ID]
+	minceCuttingBoardDressingVPV := enums.PreparationVessels[mincePrep.ID][cuttingBoard.ID]
+
+	// Press preparation bridges for dressing (for pressing garlic through strainer)
+	pressGarlicDressingVIP := enums.IngredientPreparations[pressPrep.ID][garlic.ID]
+	pressSpoonDressingVPI := enums.PreparationInstruments[pressPrep.ID][spoon.ID]
+	pressFineMeshStrainerDressingVPV := enums.PreparationVessels[pressPrep.ID][fineMeshStrainer.ID]
+	pressLargeBowlDressingVPV := enums.PreparationVessels[pressPrep.ID][largeBowl.ID]
+
+	// Combine preparation bridges for dressing (for garlic oil mixture)
+	combineOliveOilDressingVIP := enums.IngredientPreparations[combinePrep.ID][oliveOil.ID]
+	combineGarlicDressingVIP := enums.IngredientPreparations[combinePrep.ID][garlic.ID]
+	combineSmallBowlDressingVPV := enums.PreparationVessels[combinePrep.ID][smallBowl.ID]
+	combineWhiskDressingVPI := enums.PreparationInstruments[combinePrep.ID][whisk.ID]
 
 	// Blend preparation bridges for dressing
 	blendEggYolkVIP := enums.IngredientPreparations[blendPrep.ID][eggYolk.ID]
@@ -811,14 +806,233 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	parmesanCupVIMU := enums.IngredientMeasurementUnits[parmesanCheese.ID][cupMeasurement.ID]
 	canolaOilCupVIMU := enums.IngredientMeasurementUnits[canolaOil.ID][cupMeasurement.ID]
 
+	// Step -1: Mince garlic
+	drStepNeg1ID := identifiers.New()
+	drStepNeg1 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              drStepNeg1ID,
+		BelongsToRecipe: dressingRecipeID,
+		PreparationID:   mincePrep.ID,
+		Index:           0,
+		Notes:           "Mince the garlic cloves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              drStepNeg1ID,
+				ValidIngredientPreparationID:     &minceGarlicDressingVIP.ID,
+				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
+				IngredientID:                     &garlic.ID,
+				MeasurementUnitID:                cloveMeasurement.ID,
+				Name:                             "garlic cloves",
+				QuantityNotes:                    "about 2 teaspoons when minced",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          drStepNeg1ID,
+				ValidPreparationInstrumentID: &minceKnifeDressingVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      drStepNeg1ID,
+				ValidPreparationVesselID: &minceCuttingBoardDressingVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: drStepNeg1ID,
+				Name:                "minced garlic",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &teaspoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step -0.5: Combine olive oil with minced garlic and whisk
+	drStepNeg05ID := identifiers.New()
+	drStepNeg05 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              drStepNeg05ID,
+		BelongsToRecipe: dressingRecipeID,
+		PreparationID:   combinePrep.ID,
+		Index:           1,
+		Notes:           "In a small bowl, combine 3 tablespoons olive oil with minced garlic and whisk for 30 seconds.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              drStepNeg05ID,
+				ValidIngredientPreparationID:     &combineOliveOilDressingVIP.ID,
+				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
+				IngredientID:                     &oliveOil.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "extra-virgin olive oil",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 3,
+				},
+			},
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             drStepNeg05ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &combineGarlicDressingVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               teaspoonMeasurement.ID,
+				Name:                            "minced garlic",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          drStepNeg05ID,
+				ValidPreparationInstrumentID: &combineWhiskDressingVPI.ID,
+				InstrumentID:                 &whisk.ID,
+				Name:                         "whisk",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      drStepNeg05ID,
+				ValidPreparationVesselID: &combineSmallBowlDressingVPV.ID,
+				VesselID:                 &smallBowl.ID,
+				Name:                     "small bowl",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: drStepNeg05ID,
+				Name:                "garlic oil mixture",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step -0.25: Press garlic through fine-mesh strainer to get pressed garlic
+	drStepNeg025ID := identifiers.New()
+	drStepNeg025 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              drStepNeg025ID,
+		BelongsToRecipe: dressingRecipeID,
+		PreparationID:   pressPrep.ID,
+		Index:           2,
+		Notes:           "Transfer garlic oil mixture to a fine-mesh strainer set over a large bowl and press with the back of a spoon to extract as much oil as possible, leaving garlic behind. Reserve pressed garlic for dressing.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             drStepNeg025ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &pressGarlicDressingVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "garlic oil mixture",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          drStepNeg025ID,
+				ValidPreparationInstrumentID: &pressSpoonDressingVPI.ID,
+				InstrumentID:                 &spoon.ID,
+				Name:                         "spoon",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      drStepNeg025ID,
+				ValidPreparationVesselID: &pressFineMeshStrainerDressingVPV.ID,
+				VesselID:                 &fineMeshStrainer.ID,
+				Name:                     "fine-mesh strainer",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      drStepNeg025ID,
+				ValidPreparationVesselID: &pressLargeBowlDressingVPV.ID,
+				VesselID:                 &largeBowl.ID,
+				Name:                     "large bowl",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: drStepNeg025ID,
+				Name:                "garlic-infused olive oil",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](3),
+				},
+			},
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: drStepNeg025ID,
+				Name:                "pressed garlic",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               1,
+				MeasurementUnitID:   &teaspoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
 	// Step 0: Combine dressing ingredients in immersion blender cup
 	drStep0ID := identifiers.New()
 	drStep0 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              drStep0ID,
 		BelongsToRecipe: dressingRecipeID,
 		PreparationID:   blendPrep.ID,
-		Index:           0,
-		Notes:           "Combine egg yolk, lemon juice, anchovies, Worcestershire sauce, pressed garlic, and 1/4 cup parmesan cheese in the bottom of a cup that just fits the head of an immersion blender. With blender running, slowly drizzle in canola oil until a smooth emulsion forms.",
+		Index:           3,
+		Notes:           "Combine egg yolk, lemon juice, anchovies, Worcestershire sauce, reserved pressed garlic, and 1/4 cup parmesan cheese in the bottom of a cup that just fits the head of an immersion blender. With blender running, slowly drizzle in canola oil until a smooth emulsion forms.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                               identifiers.New(),
@@ -871,13 +1085,14 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              drStep0ID,
-				ValidIngredientPreparationID:     &blendGarlicVIP.ID,
-				ValidIngredientMeasurementUnitID: &garlicTeaspoonVIMU.ID,
-				IngredientID:                     &garlic.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
-				Name:                             "pressed garlic (reserved from croutons)",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             drStep0ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidIngredientPreparationID:    &blendGarlicVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               teaspoonMeasurement.ID,
+				Name:                            "pressed garlic",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -962,13 +1177,13 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		ID:              drStep1ID,
 		BelongsToRecipe: dressingRecipeID,
 		PreparationID:   transferPrep.ID,
-		Index:           1,
+		Index:           4,
 		Notes:           "Transfer mixture to a medium bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             drStep1ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &canolaOil.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -1011,13 +1226,13 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		ID:              drStep2ID,
 		BelongsToRecipe: dressingRecipeID,
 		PreparationID:   mixPrep.ID,
-		Index:           2,
+		Index:           5,
 		Notes:           "Whisking constantly, slowly drizzle in remaining 1/4 cup extra-virgin olive oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             drStep2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &whiskCanolaOilVIP.ID,
 				IngredientID:                    &canolaOil.ID,
@@ -1085,13 +1300,13 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		ID:              drStep3ID,
 		BelongsToRecipe: dressingRecipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           3,
+		Index:           6,
 		Notes:           "Season to taste generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             drStep3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &canolaOil.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -1172,7 +1387,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		PluralPortionName: "servings",
 		EligibleForMeals:  false,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			drStep0, drStep1, drStep2, drStep3,
+			drStepNeg1, drStepNeg05, drStepNeg025, drStep0, drStep1, drStep2, drStep3,
 		},
 	}
 
@@ -1182,10 +1397,185 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 	// Measurement unit bridges for salad
 	romaineUnitVIMU := enums.IngredientMeasurementUnits[romaineLettuce.ID][unitMeasurement.ID]
 
+	// Inspect preparation bridges for salad
+	inspectRomaineVIP := enums.IngredientPreparations[inspectPrep.ID][romaineLettuce.ID]
+	inspectCuttingBoardSaladVPV := enums.PreparationVessels[inspectPrep.ID][cuttingBoard.ID]
+	inspectBareHandsSaladVPI := enums.PreparationInstruments[inspectPrep.ID][bareHands.ID]
+
+	// Rinse preparation bridges for salad
+	rinseRomaineVIP := enums.IngredientPreparations[rinsePrep.ID][romaineLettuce.ID]
+	rinseLargeBowlSaladVPV := enums.PreparationVessels[rinsePrep.ID][largeBowl.ID]
+
+	// Dry preparation bridges for salad
+	dryRomaineVIP := enums.IngredientPreparations[dryPrep.ID][romaineLettuce.ID]
+	drySaladSpinnerSaladVPV := enums.PreparationVessels[dryPrep.ID][saladSpinner.ID]
+
 	// Sprinkle preparation bridges
 	sprinkleParmesanVIP := enums.IngredientPreparations[sprinklePrep.ID][parmesanCheese.ID]
 	sprinkleBreadVIP := enums.IngredientPreparations[sprinklePrep.ID][heartyBread.ID]
 	sprinkleServingBowlVPV := enums.PreparationVessels[sprinklePrep.ID][servingBowl.ID]
+
+	// Step -2: Select inner romaine leaves
+	slStepNeg2ID := identifiers.New()
+	slStepNeg2 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStepNeg2ID,
+		BelongsToRecipe: saladRecipeID,
+		PreparationID:   inspectPrep.ID,
+		Index:           0,
+		Notes:           "Select the inner romaine leaves, discarding the outer leaves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              slStepNeg2ID,
+				ValidIngredientPreparationID:     &inspectRomaineVIP.ID,
+				ValidIngredientMeasurementUnitID: &romaineUnitVIMU.ID,
+				IngredientID:                     &romaineLettuce.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "romaine lettuce",
+				QuantityNotes:                    "select inner leaves only",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          slStepNeg2ID,
+				ValidPreparationInstrumentID: &inspectBareHandsSaladVPI.ID,
+				InstrumentID:                 &bareHands.ID,
+				Name:                         "bare hands",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      slStepNeg2ID,
+				ValidPreparationVesselID: &inspectCuttingBoardSaladVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: slStepNeg2ID,
+				Name:                "inner romaine leaves",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step -1: Wash romaine leaves
+	slStepNeg1ID := identifiers.New()
+	slStepNeg1 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStepNeg1ID,
+		BelongsToRecipe: saladRecipeID,
+		PreparationID:   rinsePrep.ID,
+		Index:           1,
+		Notes:           "Wash the inner romaine leaves in several changes of water until no dirt or grit remains.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             slStepNeg1ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &rinseRomaineVIP.ID,
+				IngredientID:                    &romaineLettuce.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "inner romaine leaves",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      slStepNeg1ID,
+				ValidPreparationVesselID: &rinseLargeBowlSaladVPV.ID,
+				VesselID:                 &largeBowl.ID,
+				Name:                     "large bowl",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: slStepNeg1ID,
+				Name:                "washed inner romaine leaves",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
+	// Step -0.5: Dry romaine leaves
+	slStepNeg05ID := identifiers.New()
+	slStepNeg05 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStepNeg05ID,
+		BelongsToRecipe: saladRecipeID,
+		PreparationID:   dryPrep.ID,
+		Index:           2,
+		Notes:           "Carefully dry the washed romaine leaves using a salad spinner or paper towels.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             slStepNeg05ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &dryRomaineVIP.ID,
+				IngredientID:                    &romaineLettuce.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "washed inner romaine leaves",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      slStepNeg05ID,
+				ValidPreparationVesselID: &drySaladSpinnerSaladVPV.ID,
+				VesselID:                 &saladSpinner.ID,
+				Name:                     "salad spinner",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: slStepNeg05ID,
+				Name:                "romaine lettuce, inner leaves only, washed and carefully dried",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
 
 	// Step 0: Toss lettuce with dressing
 	slStep0ID := identifiers.New()
@@ -1193,18 +1583,19 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		ID:              slStep0ID,
 		BelongsToRecipe: saladRecipeID,
 		PreparationID:   tossPrep.ID,
-		Index:           0,
-		Notes:           "Toss lettuce with a few tablespoons of dressing, adding more if desired.",
+		Index:           3,
+		Notes:           "Toss lettuce with a few tablespoons of dressing, adding more if desired. Large leaves should be torn into smaller pieces, smaller leaves left intact.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              slStep0ID,
-				ValidIngredientPreparationID:     &tossRomaineVIP.ID,
-				ValidIngredientMeasurementUnitID: &romaineUnitVIMU.ID,
-				IngredientID:                     &romaineLettuce.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "romaine lettuce, inner leaves only, washed and carefully dried",
-				QuantityNotes:                    "large leaves torn into smaller pieces, smaller leaves left intact",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             slStep0ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossRomaineVIP.ID,
+				IngredientID:                    &romaineLettuce.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "romaine lettuce, inner leaves only, washed and carefully dried",
+				QuantityNotes:                   "large leaves torn into smaller pieces, smaller leaves left intact",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -1251,19 +1642,80 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 1: Add cheese and croutons, toss again
+	// Step 1: Grate parmesan cheese
 	slStep1ID := identifiers.New()
 	slStep1 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              slStep1ID,
 		BelongsToRecipe: saladRecipeID,
+		PreparationID:   gratePrep.ID,
+		Index:           4,
+		Notes:           "Finely grate 1 cup parmesan cheese.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              slStep1ID,
+				ValidIngredientPreparationID:     &grateParmesanVIP.ID,
+				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
+				IngredientID:                     &parmesanCheese.ID,
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "parmesan cheese",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          slStep1ID,
+				ValidPreparationInstrumentID: &grateCheeseGraterVPI.ID,
+				InstrumentID:                 &cheeseGrater.ID,
+				Name:                         "cheese grater",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      slStep1ID,
+				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: slStep1ID,
+				Name:                "finely grated parmesan cheese",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 2: Add cheese and croutons, toss again
+	slStep2ID := identifiers.New()
+	slStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStep2ID,
+		BelongsToRecipe: saladRecipeID,
 		PreparationID:   tossPrep.ID,
-		Index:           1,
+		Index:           5,
 		Notes:           "Once lettuce is coated, add half of remaining cheese and three-quarters of croutons and toss again.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             slStep1ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				BelongsToRecipeStep:             slStep2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &tossRomaineVIP.ID,
 				IngredientID:                    &romaineLettuce.ID,
@@ -1274,14 +1726,15 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              slStep1ID,
-				ValidIngredientPreparationID:     &tossParmesanVIP.ID,
-				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
-				IngredientID:                     &parmesanCheese.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
-				Name:                             "finely grated parmesan cheese",
-				QuantityNotes:                    "half of remaining cheese",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             slStep2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &tossParmesanVIP.ID,
+				IngredientID:                    &parmesanCheese.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "finely grated parmesan cheese",
+				QuantityNotes:                   "half of remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
@@ -1304,7 +1757,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      slStep1ID,
+				BelongsToRecipeStep:      slStep2ID,
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
 				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
@@ -1316,7 +1769,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: slStep1ID,
+				BelongsToRecipeStep: slStep2ID,
 				Name:                "tossed Caesar salad",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -1328,19 +1781,19 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 2: Transfer to serving bowl and sprinkle with remaining cheese and croutons
-	slStep2ID := identifiers.New()
-	slStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              slStep2ID,
+	// Step 3: Transfer to serving bowl
+	slStep3ID := identifiers.New()
+	slStep3 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStep3ID,
 		BelongsToRecipe: saladRecipeID,
 		PreparationID:   transferPrep.ID,
-		Index:           2,
-		Notes:           "Transfer to a salad bowl and sprinkle with remaining cheese and croutons. Serve.",
+		Index:           6,
+		Notes:           "Transfer to a salad bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             slStep2ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				BelongsToRecipeStep:             slStep3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &romaineLettuce.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -1353,7 +1806,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      slStep2ID,
+				BelongsToRecipeStep:      slStep3ID,
 				ValidPreparationVesselID: &transferServingBowlVPV.ID,
 				VesselID:                 &servingBowl.ID,
 				Name:                     "salad bowl",
@@ -1365,7 +1818,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: slStep2ID,
+				BelongsToRecipeStep: slStep3ID,
 				Name:                "Caesar salad in serving bowl",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -1377,19 +1830,19 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		},
 	}
 
-	// Step 3: Sprinkle with remaining cheese and croutons
-	slStep3ID := identifiers.New()
-	slStep3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              slStep3ID,
+	// Step 4: Sprinkle with remaining cheese and croutons
+	slStep4ID := identifiers.New()
+	slStep4 := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              slStep4ID,
 		BelongsToRecipe: saladRecipeID,
 		PreparationID:   sprinklePrep.ID,
-		Index:           3,
+		Index:           7,
 		Notes:           "Sprinkle with remaining cheese and croutons. Serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             slStep3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				BelongsToRecipeStep:             slStep4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &romaineLettuce.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -1399,21 +1852,22 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              slStep3ID,
-				ValidIngredientPreparationID:     &sprinkleParmesanVIP.ID,
-				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
-				IngredientID:                     &parmesanCheese.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
-				Name:                             "finely grated parmesan cheese",
-				QuantityNotes:                    "remaining cheese",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             slStep4ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sprinkleParmesanVIP.ID,
+				IngredientID:                    &parmesanCheese.ID,
+				MeasurementUnitID:               cupMeasurement.ID,
+				Name:                            "finely grated parmesan cheese",
+				QuantityNotes:                   "remaining cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
 				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              slStep3ID,
+				BelongsToRecipeStep:              slStep4ID,
 				RecipeStepProductRecipeID:        &croutonsRecipeID,
 				ValidIngredientPreparationID:     &sprinkleBreadVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
@@ -1429,7 +1883,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      slStep3ID,
+				BelongsToRecipeStep:      slStep4ID,
 				ValidPreparationVesselID: &sprinkleServingBowlVPV.ID,
 				VesselID:                 &servingBowl.ID,
 				Name:                     "salad bowl",
@@ -1441,7 +1895,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 			{
 				ID:                  identifiers.New(),
-				BelongsToRecipeStep: slStep3ID,
+				BelongsToRecipeStep: slStep4ID,
 				Name:                "Caesar salad",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
@@ -1468,13 +1922,13 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			slStep0, slStep1, slStep2, slStep3,
+			slStepNeg2, slStepNeg1, slStepNeg05, slStep0, slStep1, slStep2, slStep3, slStep4,
 		},
 	}
 
 	return []*mealplanning.RecipeDatabaseCreationInput{
-		croutonsRecipe,
 		dressingRecipe,
+		croutonsRecipe,
 		saladRecipe,
 	}
 }
