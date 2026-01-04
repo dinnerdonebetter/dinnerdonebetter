@@ -28,6 +28,13 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	preheatPrep := enums.Preparations["preheat"]
 	broilPrep := enums.Preparations["broil"]
 	blendPrep := enums.Preparations["blend"]
+	peelPrep := enums.Preparations["peel"]
+	gratePrep := enums.Preparations["grate"]
+	cutPrep := enums.Preparations["cut"]
+	slicePrep := enums.Preparations["slice"]
+	smashPrep := enums.Preparations["smash"]
+	chopPrep := enums.Preparations["chop"]
+	dicePrep := enums.Preparations["dice"]
 
 	// Get ingredients
 	kasuriMethi := enums.Ingredients["kasuri methi"]
@@ -62,9 +69,13 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	// Get instruments
 	spiceGrinder := enums.Instruments["spice grinder"]
 	woodenSpoon := enums.Instruments["wooden spoon"]
-	stickBlender := enums.Instruments["stick blender"]
+	stickBlender := enums.Instruments["immersion blender"]
 	bareHands := enums.Instruments["bare hands"]
 	aluminumFoil := enums.Instruments["aluminum foil"]
+	knife := enums.Instruments["knife"]
+	microplane := enums.Instruments["microplane"]
+	vegetablePeeler := enums.Instruments["vegetable peeler"]
+	cleaver := enums.Instruments["cleaver"]
 
 	// Get vessels
 	smallSkillet := enums.Vessels["small skillet"]
@@ -74,6 +85,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	dutchOven := enums.Vessels["dutch oven"]
 	oven := enums.Vessels["oven"]
 	servingBowl := enums.Vessels["serving bowl"]
+	cuttingBoard := enums.Vessels["cutting board"]
 
 	// Get bridge table entries for marinade ingredients
 	toastKasuriMethiVIP := enums.IngredientPreparations[toastPrep.ID][kasuriMethi.ID]
@@ -134,6 +146,30 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 	blendStickBlenderVPI := enums.PreparationInstruments[blendPrep.ID][stickBlender.ID]
 	blendDutchOvenVPV := enums.PreparationVessels[blendPrep.ID][dutchOven.ID]
 	transferServingBowlVPV := enums.PreparationVessels[transferPrep.ID][servingBowl.ID]
+	peelGingerVIP := enums.IngredientPreparations[peelPrep.ID][ginger.ID]
+	peelOnionVIP := enums.IngredientPreparations[peelPrep.ID][whiteOnion.ID]
+	peelGarlicVIP := enums.IngredientPreparations[peelPrep.ID][garlic.ID]
+	grateGingerVIP := enums.IngredientPreparations[gratePrep.ID][ginger.ID]
+	cutButterVIP := enums.IngredientPreparations[cutPrep.ID][butter.ID]
+	sliceGingerVIP := enums.IngredientPreparations[slicePrep.ID][ginger.ID]
+	smashGarlicVIP := enums.IngredientPreparations[smashPrep.ID][garlic.ID]
+	chopGarlicVIP := enums.IngredientPreparations[chopPrep.ID][garlic.ID]
+	diceOnionVIP := enums.IngredientPreparations[dicePrep.ID][whiteOnion.ID]
+	peelVegetablePeelerVPI := enums.PreparationInstruments[peelPrep.ID][vegetablePeeler.ID]
+	peelKnifeVPI := enums.PreparationInstruments[peelPrep.ID][knife.ID]
+	peelCuttingBoardVPV := enums.PreparationVessels[peelPrep.ID][cuttingBoard.ID]
+	grateMicroplaneVPI := enums.PreparationInstruments[gratePrep.ID][microplane.ID]
+	grateCuttingBoardVPV := enums.PreparationVessels[gratePrep.ID][cuttingBoard.ID]
+	cutKnifeVPI := enums.PreparationInstruments[cutPrep.ID][knife.ID]
+	cutCuttingBoardVPV := enums.PreparationVessels[cutPrep.ID][cuttingBoard.ID]
+	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
+	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
+	smashCleaverVPI := enums.PreparationInstruments[smashPrep.ID][cleaver.ID]
+	smashCuttingBoardVPV := enums.PreparationVessels[smashPrep.ID][cuttingBoard.ID]
+	chopKnifeVPI := enums.PreparationInstruments[chopPrep.ID][knife.ID]
+	chopCuttingBoardVPV := enums.PreparationVessels[chopPrep.ID][cuttingBoard.ID]
+	diceKnifeVPI := enums.PreparationInstruments[dicePrep.ID][knife.ID]
+	diceCuttingBoardVPV := enums.PreparationVessels[dicePrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
 	kasuriMethiTablespoonVIMU := enums.IngredientMeasurementUnits[kasuriMethi.ID][tablespoonMeasurement.ID]
@@ -304,13 +340,138 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
+	// Step 2a: Peel ginger
+	step2aID := identifiers.New()
+	step2a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   peelPrep.ID,
+		Index:           3,
+		Notes:           "Peel the ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2aID,
+				ValidIngredientPreparationID:     &peelGingerVIP.ID,
+				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
+				IngredientID:                     &ginger.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "fresh ginger",
+				QuantityNotes:                    "1-inch piece",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2aID,
+				ValidPreparationInstrumentID: &peelVegetablePeelerVPI.ID,
+				InstrumentID:                 &vegetablePeeler.ID,
+				Name:                         "vegetable peeler",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2aID,
+				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2aID,
+				Name:                "peeled ginger",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
+	// Step 2b: Grate ginger
+	step2bID := identifiers.New()
+	step2b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   gratePrep.ID,
+		Index:           4,
+		Notes:           "Finely grate the peeled ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &grateGingerVIP.ID,
+				IngredientID:                    &ginger.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "peeled ginger",
+				QuantityNotes:                   "1-inch piece",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step2bID,
+				ValidPreparationInstrumentID: &grateMicroplaneVPI.ID,
+				InstrumentID:                 &microplane.ID,
+				Name:                         "microplane",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2bID,
+				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2bID,
+				Name:                "grated ginger",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
 	// Step 3: Combine marinade ingredients in medium bowl
 	step3ID := identifiers.New()
 	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   combinePrep.ID,
-		Index:           3,
+		Index:           5,
 		Notes:           "In a medium mixing bowl, stir together yogurt, garam masala, salt, black salt, grated ginger, and ground fenugreek leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -351,14 +512,15 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     &combineGingerVIP.ID,
-				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
-				IngredientID:                     &ginger.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "fresh ginger, peeled and finely grated",
-				QuantityNotes:                    "1-inch piece",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &combineGingerVIP.ID,
+				IngredientID:                    &ginger.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "grated ginger",
+				QuantityNotes:                   "1-inch piece",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -382,7 +544,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				IngredientID:                     &salt.ID,
 				MeasurementUnitID:                teaspoonMeasurement.ID,
-				Name:                             "Diamond Crystal kosher salt",
+				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -447,7 +609,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &yogurt.ID,
 				MeasurementUnitID:               cupMeasurement.ID,
@@ -469,7 +631,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &coatMediumBowlVPV.ID,
 				VesselID:                        &mediumBowl.ID,
@@ -650,7 +812,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				IngredientID:                     &salt.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "Diamond Crystal kosher salt",
+				Name:                             "kosher salt",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
 			},
 		},
@@ -849,13 +1011,120 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
+	// Step 10a: Peel onion
+	step10aID := identifiers.New()
+	step10a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step10aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   peelPrep.ID,
+		Index:           13,
+		Notes:           "Peel the onion.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step10aID,
+				ValidIngredientPreparationID:     &peelOnionVIP.ID,
+				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
+				IngredientID:                     &whiteOnion.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "medium white onion",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step10aID,
+				ValidPreparationInstrumentID: &peelKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step10aID,
+				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step10aID,
+				Name:                "peeled onion",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+		},
+	}
+
+	// Step 10b: Dice onion
+	step10bID := identifiers.New()
+	step10b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step10bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   dicePrep.ID,
+		Index:           14,
+		Notes:           "Cut the peeled onion into 1/2-inch dice.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step10bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &diceOnionVIP.ID,
+				IngredientID:                    &whiteOnion.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "peeled onion",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step10bID,
+				ValidPreparationInstrumentID: &diceKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step10bID,
+				ValidPreparationVesselID: &diceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step10bID,
+				Name:                "diced onion",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+		},
+	}
+
 	// Step 11: Cook onions with baking soda
 	step11ID := identifiers.New()
 	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step11ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   cookPrep.ID,
-		Index:           11,
+		Index:           15,
 		Notes:           "Add onions and baking soda and, using a wooden spoon, stir to coat onions in oil and distribute baking soda. Cook, stirring occasionally, until onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](840),
@@ -863,14 +1132,15 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step11ID,
-				ValidIngredientPreparationID:     &cookOnionVIP.ID,
-				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
-				IngredientID:                     &whiteOnion.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "medium white onion, peeled and cut into 1/2-inch dice",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step11ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookOnionVIP.ID,
+				IngredientID:                    &whiteOnion.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "diced onion",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
 				ID:                               identifiers.New(),
@@ -897,7 +1167,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &cookDutchOvenVPV.ID,
 				VesselID:                        &dutchOven.ID,
@@ -926,38 +1196,310 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
+	// Step 11a: Peel ginger
+	step11aID := identifiers.New()
+	step11a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   peelPrep.ID,
+		Index:           16,
+		Notes:           "Peel the ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step11aID,
+				ValidIngredientPreparationID:     &peelGingerVIP.ID,
+				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
+				IngredientID:                     &ginger.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "fresh ginger",
+				QuantityNotes:                    "1-inch piece",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step11aID,
+				ValidPreparationInstrumentID: &peelVegetablePeelerVPI.ID,
+				InstrumentID:                 &vegetablePeeler.ID,
+				Name:                         "vegetable peeler",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step11aID,
+				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step11aID,
+				Name:                "peeled ginger",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+		},
+	}
+
+	// Step 11b: Slice ginger
+	step11bID := identifiers.New()
+	step11b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   slicePrep.ID,
+		Index:           17,
+		Notes:           "Thinly slice the peeled ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step11bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &sliceGingerVIP.ID,
+				IngredientID:                    &ginger.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "peeled ginger",
+				QuantityNotes:                   "1-inch piece",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step11bID,
+				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step11bID,
+				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step11bID,
+				Name:                "sliced ginger",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &unitMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)},
+			},
+		},
+	}
+
+	// Step 11c: Peel garlic
+	step11cID := identifiers.New()
+	step11c := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11cID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   peelPrep.ID,
+		Index:           18,
+		Notes:           "Peel the garlic cloves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step11cID,
+				ValidIngredientPreparationID:     &peelGarlicVIP.ID,
+				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
+				IngredientID:                     &garlic.ID,
+				MeasurementUnitID:                cloveMeasurement.ID,
+				Name:                             "garlic cloves",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 4},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step11cID,
+				ValidPreparationInstrumentID: &peelKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step11cID,
+				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step11cID,
+				Name:                "peeled garlic cloves",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cloveMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+			},
+		},
+	}
+
+	// Step 11d: Smash garlic
+	step11dID := identifiers.New()
+	step11d := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11dID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   smashPrep.ID,
+		Index:           19,
+		Notes:           "Smash the peeled garlic cloves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step11dID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &smashGarlicVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               cloveMeasurement.ID,
+				Name:                            "peeled garlic cloves",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step11dID,
+				ValidPreparationInstrumentID: &smashCleaverVPI.ID,
+				InstrumentID:                 &cleaver.ID,
+				Name:                         "cleaver",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step11dID,
+				ValidPreparationVesselID: &smashCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step11dID,
+				Name:                "smashed garlic",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cloveMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+			},
+		},
+	}
+
+	// Step 11e: Chop garlic
+	step11eID := identifiers.New()
+	step11e := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step11eID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   chopPrep.ID,
+		Index:           20,
+		Notes:           "Roughly chop the smashed garlic.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step11eID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &chopGarlicVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               cloveMeasurement.ID,
+				Name:                            "smashed garlic",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step11eID,
+				ValidPreparationInstrumentID: &chopKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step11eID,
+				ValidPreparationVesselID: &chopCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step11eID,
+				Name:                "chopped garlic",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cloveMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+			},
+		},
+	}
+
 	// Step 12: Cook ginger and garlic
 	step12ID := identifiers.New()
 	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step12ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   cookPrep.ID,
-		Index:           12,
+		Index:           21,
 		Notes:           "Reduce heat to medium low. Add ginger and garlic to pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step12ID,
-				ValidIngredientPreparationID:     &cookGingerVIP.ID,
-				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
-				IngredientID:                     &ginger.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "fresh ginger, peeled and thinly sliced",
-				QuantityNotes:                    "1-inch piece",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step12ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookGingerVIP.ID,
+				IngredientID:                    &ginger.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "sliced ginger",
+				QuantityNotes:                   "1-inch piece",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step12ID,
-				ValidIngredientPreparationID:     &cookGarlicVIP.ID,
-				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
-				IngredientID:                     &garlic.ID,
-				MeasurementUnitID:                cloveMeasurement.ID,
-				Name:                             "garlic, smashed and roughly chopped",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 4},
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step12ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](20),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &cookGarlicVIP.ID,
+				IngredientID:                    &garlic.ID,
+				MeasurementUnitID:               cloveMeasurement.ID,
+				Name:                            "chopped garlic",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
@@ -974,7 +1516,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step12ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &cookDutchOvenVPV.ID,
 				VesselID:                        &dutchOven.ID,
@@ -1096,7 +1638,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				ValidIngredientMeasurementUnitID: &cannedTomatoesOunceVIMU.ID,
 				IngredientID:                     &cannedTomatoes.ID,
 				MeasurementUnitID:                ounceMeasurement.ID,
-				Name:                             "whole fire-roasted canned tomatoes with their juices",
+				Name:                             "canned tomatoes with their juices",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 28},
 			},
 			{
@@ -1364,13 +1906,69 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		},
 	}
 
+	// Step 18a: Cut butter
+	step18aID := identifiers.New()
+	step18a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step18aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   cutPrep.ID,
+		Index:           28,
+		Notes:           "Cut the butter into 4 pieces.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step18aID,
+				ValidIngredientPreparationID:     &cutButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				IngredientID:                     &butter.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "unsalted butter",
+				Quantity:                         types.Float32RangeWithOptionalMax{Min: 4},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step18aID,
+				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
+				InstrumentID:                 &knife.ID,
+				Name:                         "knife",
+				Quantity:                     types.Uint32RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step18aID,
+				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step18aID,
+				Name:                "butter, cut into 4 pieces",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)},
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
 	// Step 19: Add butter and cream
 	step19ID := identifiers.New()
 	step19 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step19ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   blendPrep.ID,
-		Index:           19,
+		Index:           29,
 		Notes:           "Add butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
@@ -1379,7 +1977,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step19ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](27),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &blendTomatoesVIP.ID,
 				IngredientID:                    &cannedTomatoes.ID,
@@ -1388,14 +1986,15 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step19ID,
-				ValidIngredientPreparationID:     &blendButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
-				IngredientID:                     &butter.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "unsalted butter, cut into 4 pieces",
-				Quantity:                         types.Float32RangeWithOptionalMax{Min: 4},
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step19ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](28),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &blendButterVIP.ID,
+				IngredientID:                    &butter.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "butter, cut into 4 pieces",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 4},
 			},
 			{
 				ID:                               identifiers.New(),
@@ -1422,7 +2021,7 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step19ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](27),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &blendDutchOvenVPV.ID,
 				VesselID:                        &dutchOven.ID,
@@ -1576,8 +2175,8 @@ func ButterChickenRecipe(userID string, enums *Enumerations) []*mealplanning.Rec
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9,
-			step10, step11, step12, step13, step14, step15, step16, step17, step18, step19,
+			step0, step1, step2, step2a, step2b, step3, step4, step5, step6, step7, step8, step9,
+			step10, step10a, step10b, step11, step11a, step11b, step11c, step11d, step11e, step12, step13, step14, step15, step16, step17, step18, step18a, step19,
 			step20, step21,
 		},
 	}

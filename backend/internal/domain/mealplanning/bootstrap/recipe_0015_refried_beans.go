@@ -229,7 +229,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				ValidIngredientMeasurementUnitID: &pintoBeansPoundVIMU.ID,
 				IngredientID:                     &pintoBeans.ID,
 				MeasurementUnitID:                poundMeasurement.ID,
-				Name:                             "dried pinto or black beans",
+				Name:                             "dried pinto beans",
 				QuantityNotes:                    "1/2 pound (227 g)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
@@ -827,7 +827,7 @@ func RefriedBeansRecipe(userID string, enums *Enumerations) []*mealplanning.Reci
 				ValidIngredientPreparationID:    &minceWhiteOnionVIP.ID,
 				IngredientID:                    &whiteOnion.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
-				Name:                           "onion half",
+				Name:                            "onion half",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},

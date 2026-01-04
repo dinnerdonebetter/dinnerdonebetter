@@ -36,6 +36,8 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 	marinatePrep := enums.Preparations["marinate"]
 	removeAirPrep := enums.Preparations["remove air"]
 	unrefrigeratePrep := enums.Preparations["unrefrigerate"]
+	pluckPrep := enums.Preparations["pluck"]
+	trimPrep := enums.Preparations["trim"]
 
 	// Get ingredients
 	anchoChiles := enums.Ingredients["dried ancho chile"]
@@ -69,6 +71,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 	tongs := enums.Instruments["tongs"]
 	thermometer := enums.Instruments["instant-read thermometer"]
 	carvingKnife := enums.Instruments["carving knife"]
+	molcajeteInstrument := enums.Instruments["molcajete"]
 
 	// Get vessels
 	microwaveSafePlate := enums.Vessels["microwave-safe plate"]
@@ -84,6 +87,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 	grillingGrate := enums.Vessels["grilling grate"]
 	cuttingBoard := enums.Vessels["cutting board"]
 	smallSkillet := enums.Vessels["small skillet"]
+	molcajete := enums.Vessels["molcajete"]
 
 	// Get ingredient states for completion conditions
 	atTemperatureState := enums.IngredientStates["at temperature"]
@@ -182,8 +186,16 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 
 	// Grind
 	grindCuminSeedsVIP := enums.IngredientPreparations[grindPrep.ID][cuminSeeds.ID]
-	grindBlenderJarVPV := enums.PreparationVessels[grindPrep.ID][blenderJar.ID]
-	grindBlenderVPI := enums.PreparationInstruments[grindPrep.ID][blender.ID]
+	grindMolcajeteVPV := enums.PreparationVessels[grindPrep.ID][molcajete.ID]
+	grindMolcajeteVPI := enums.PreparationInstruments[grindPrep.ID][molcajeteInstrument.ID]
+
+	// Pluck
+	pluckCilantroVIP := enums.IngredientPreparations[pluckPrep.ID][cilantro.ID]
+
+	// Trim
+	trimSkirtSteakVIP := enums.IngredientPreparations[trimPrep.ID][skirtSteak.ID]
+	trimCarvingKnifeVPI := enums.PreparationInstruments[trimPrep.ID][carvingKnife.ID]
+	trimCuttingBoardVPV := enums.PreparationVessels[trimPrep.ID][cuttingBoard.ID]
 
 	// Divide
 	divideMarinadeVIP := enums.IngredientPreparations[dividePrep.ID][anchoChiles.ID] // Using ancho chiles as proxy for marinade
@@ -310,9 +322,9 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                       identifiers.New(),
 				BelongsToRecipeStep:      step0bID,
-				ValidPreparationVesselID: &grindBlenderJarVPV.ID,
-				VesselID:                 &blenderJar.ID,
-				Name:                     "blender jar",
+				ValidPreparationVesselID: &grindMolcajeteVPV.ID,
+				VesselID:                 &molcajete.ID,
+				Name:                     "molcajete",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -322,9 +334,9 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                           identifiers.New(),
 				BelongsToRecipeStep:          step0bID,
-				ValidPreparationInstrumentID: &grindBlenderVPI.ID,
-				InstrumentID:                 &blender.ID,
-				Name:                         "blender",
+				ValidPreparationInstrumentID: &grindMolcajeteVPI.ID,
+				InstrumentID:                 &molcajeteInstrument.ID,
+				Name:                         "molcajete",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -426,13 +438,49 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		},
 	}
 
+	// Step 1b: Pluck cilantro leaves and tender stems
+	step1bID := identifiers.New()
+	step1b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step1bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   pluckPrep.ID,
+		Index:           3,
+		Notes:           "Pluck cilantro leaves and tender stems from the stems.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step1bID,
+				ValidIngredientPreparationID:     &pluckCilantroVIP.ID,
+				ValidIngredientMeasurementUnitID: &cilantroUnitVIMU.ID,
+				IngredientID:                     &cilantro.ID,
+				MeasurementUnitID:                unitMeasurement.ID,
+				Name:                             "cilantro",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step1bID,
+				Name:                "cilantro, leaves and tender stems only",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
+		},
+	}
+
 	// Step 2: Transfer chiles to blender jar, add all marinade ingredients, and blend until a smooth sauce has formed, about 1 minute
 	step2ID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   blendPrep.ID,
-		Index:           3,
+		Index:           4,
 		Notes:           "Transfer chiles to blender jar, add chipotle peppers, orange juice, lime juice, olive oil, soy sauce, fish sauce, brown sugar, cilantro, garlic, cumin seed, and coriander seed, then blend until a smooth sauce has formed, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
@@ -549,13 +597,14 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step2ID,
-				ValidIngredientPreparationID:     &blendCilantroVIP.ID,
-				ValidIngredientMeasurementUnitID: &cilantroUnitVIMU.ID,
-				IngredientID:                     &cilantro.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
-				Name:                             "cilantro, leaves and tender stems only",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &blendCilantroVIP.ID,
+				IngredientID:                    &cilantro.ID,
+				MeasurementUnitID:               unitMeasurement.ID,
+				Name:                            "cilantro, leaves and tender stems only",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -644,13 +693,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           4,
+		Index:           5,
 		Notes:           "Season to taste with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step3ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonSaltVIP.ID,
 				IngredientID:                    &salt.ID,
@@ -694,13 +743,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   dividePrep.ID,
-		Index:           5,
+		Index:           6,
 		Notes:           "Transfer half of the marinade to a large bowl and the other half to a sealed container.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &divideMarinadeVIP.ID,
 				IngredientID:                    &anchoChiles.ID,
@@ -763,13 +812,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   refrigeratePrep.ID,
-		Index:           6,
+		Index:           7,
 		Notes:           "Set aside the sealed container in the refrigerator.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &refrigerateSealedContainerVPV.ID,
 				VesselID:                        &sealedContainer.ID,
@@ -809,7 +858,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   seasonPrep.ID,
-		Index:           7,
+		Index:           8,
 		Notes:           "Add an extra 2 teaspoons of salt to the marinade in the bowl. It should taste slightly saltier than is comfortable to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -829,7 +878,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &divideLargeBowlVPV.ID,
 				VesselID:                        &largeBowl.ID,
@@ -853,23 +902,85 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		},
 	}
 
+	// Step 6b: Trim skirt steak and cut with the grain into 5- to 6-inch lengths
+	step6bID := identifiers.New()
+	step6b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step6bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   trimPrep.ID,
+		Index:           9,
+		Notes:           "Trim skirt steak and cut with the grain into 5- to 6-inch lengths.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step6bID,
+				ValidIngredientPreparationID:     &trimSkirtSteakVIP.ID,
+				ValidIngredientMeasurementUnitID: &skirtSteakPoundVIMU.ID,
+				IngredientID:                     &skirtSteak.ID,
+				MeasurementUnitID:                poundMeasurement.ID,
+				Name:                             "skirt steak",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 2,
+				},
+			},
+		},
+		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+			{
+				ID:                           identifiers.New(),
+				BelongsToRecipeStep:          step6bID,
+				ValidPreparationInstrumentID: &trimCarvingKnifeVPI.ID,
+				InstrumentID:                 &carvingKnife.ID,
+				Name:                         "carving knife",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step6bID,
+				ValidPreparationVesselID: &trimCuttingBoardVPV.ID,
+				VesselID:                 &cuttingBoard.ID,
+				Name:                     "cutting board",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step6bID,
+				Name:                "skirt steak, trimmed and cut with the grain into 5- to 6-inch lengths",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
+		},
+	}
+
 	// Step 7: Marinate steak pieces one at a time in the bowl, turning to coat, then transfer to a gallon-sized zipper-lock bag
 	step7ID := identifiers.New()
 	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   marinatePrep.ID,
-		Index:           8,
+		Index:           10,
 		Notes:           "Add 1 piece of steak to bowl and turn to coat. Repeat with remaining steaks, adding them all to the same zipper-lock bag with the top folded over to prevent excess sauce and meat juices from contaminating the seal.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step7ID,
-				ValidIngredientPreparationID:     &marinateSkirtSteakVIP.ID,
-				ValidIngredientMeasurementUnitID: &skirtSteakPoundVIMU.ID,
-				IngredientID:                     &skirtSteak.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
-				Name:                             "skirt steak, trimmed and cut with the grain into 5- to 6-inch lengths",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step7ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &marinateSkirtSteakVIP.ID,
+				IngredientID:                    &skirtSteak.ID,
+				MeasurementUnitID:               poundMeasurement.ID,
+				Name:                            "skirt steak, trimmed and cut with the grain into 5- to 6-inch lengths",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -919,13 +1030,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   pourPrep.ID,
-		Index:           9,
+		Index:           11,
 		Notes:           "Pour any excess marinade over the steaks.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &addSaltVIP.ID,
 				IngredientID:                    &salt.ID,
@@ -940,7 +1051,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &pourChimneyStarterVPV.ID,
 				VesselID:                        &zipperLockBag.ID,
@@ -976,7 +1087,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step9ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &removeAirZipperLockBagVPV.ID,
 				VesselID:                        &zipperLockBag.ID,
@@ -1016,7 +1127,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &refrigerateSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1031,7 +1142,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step10ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &refrigerateZipperLockBagVPV.ID,
 				VesselID:                        &zipperLockBag.ID,
@@ -1072,13 +1183,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step11ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   unrefrigeratePrep.ID,
-		Index:           12,
+		Index:           14,
 		Notes:           "When ready to cook, remove the extra marinade from the fridge to allow it to warm up a little.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step11ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &unrefrigerateSealedContainerVPV.ID,
 				VesselID:                        &sealedContainer.ID,
@@ -1120,7 +1231,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step12ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   lightPrep.ID,
-		Index:           13,
+		Index:           15,
 		Notes:           "Light one chimney full of charcoal. When all the charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the charcoal grate.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
@@ -1166,13 +1277,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step13ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   pourPrep.ID,
-		Index:           14,
+		Index:           16,
 		Notes:           "Pour out and arrange coals on one side of the charcoal grate.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step13ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &pourChimneyStarterVPV.ID,
 				VesselID:                        &chimneyStarter.ID,
@@ -1212,7 +1323,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step14ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   setPrep.ID,
-		Index:           15,
+		Index:           17,
 		Notes:           "Set cooking grate in place. Alternatively, set half the burners on a gas grill to the highest heat setting.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
@@ -1256,7 +1367,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step15ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   preheatPrep.ID,
-		Index:           16,
+		Index:           18,
 		Notes:           "Cover grill and preheat for 5 minutes. Alternatively, for gas grill, preheat for 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -1266,7 +1377,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step15ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &coverGrillVPV.ID,
 				VesselID:                        &grill.ID,
@@ -1278,7 +1389,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step15ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &preheatGrillVPV.ID,
 				VesselID:                        &grill.ID,
@@ -1308,13 +1419,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step16ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   cleanPrep.ID,
-		Index:           17,
+		Index:           19,
 		Notes:           "Clean and oil the grilling grate.",
 		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step16ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &cleanGrillingGrateVPV.ID,
 				VesselID:                        &grillingGrate.ID,
@@ -1356,7 +1467,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step17ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   oilPrep.ID,
-		Index:           18,
+		Index:           20,
 		Notes:           "Oil the grilling grate.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -1376,7 +1487,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step17ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](17),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &oilGrillingGrateVPV.ID,
 				VesselID:                        &grillingGrate.ID,
@@ -1406,13 +1517,13 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step18ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   removePrep.ID,
-		Index:           19,
+		Index:           21,
 		Notes:           "Remove steaks from marinade and wipe off excess.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step18ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &removeSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1427,7 +1538,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step18ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &removeZipperLockBagVPV.ID,
 				VesselID:                        &zipperLockBag.ID,
@@ -1460,7 +1571,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		ID:              step19ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   grillPrep.ID,
-		Index:           20,
+		Index:           22,
 		Notes:           "Place steaks directly over the hot side of the grill. If using a gas grill, cover; if using a charcoal grill, leave exposed. Cook, turning occasionally, until steaks are well charred on outside and center registers 110°F (43°C) on an instant-read thermometer, 5 to 10 minutes total.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -1470,7 +1581,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              step19SteakIngredientID,
 				BelongsToRecipeStep:             step19ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &grillSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1485,7 +1596,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step19ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](20),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &grillGrillingGrateVPV.ID,
 				VesselID:                        &grillingGrate.ID,
@@ -1497,7 +1608,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step19ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &grillGrillVPV.ID,
 				VesselID:                        &grill.ID,
@@ -1586,7 +1697,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step20ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](20),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](22),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1638,7 +1749,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step21ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](21),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &restSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1653,7 +1764,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step21ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](21),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](23),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &restCuttingBoardVPV.ID,
 				VesselID:                        &cuttingBoard.ID,
@@ -1690,7 +1801,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step22ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](22),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](24),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sliceSkirtSteakVIP.ID,
 				IngredientID:                    &skirtSteak.ID,
@@ -1795,7 +1906,7 @@ func CarneAsadaRecipe(userID string, enums *Enumerations) []*mealplanning.Recipe
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step0b, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19, step20, step21, step22,
+			step0, step0b, step1, step1b, step2, step3, step4, step5, step6, step6b, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19, step20, step21, step22,
 		},
 		PrepTasks: []*mealplanning.RecipePrepTaskDatabaseCreationInput{
 			prepTask0,

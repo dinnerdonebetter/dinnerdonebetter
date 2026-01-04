@@ -884,9 +884,11 @@ func findCreatedRecipeStepProductsForInstruments(recipe *mealplanning.RecipeData
 			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
 				enoughSteps := len(recipe.Steps) > int(*instrument.ProductOfRecipeStepIndex)
 				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
-				relevantProductIsInstrument := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductInstrumentType
-				if enoughSteps && enoughRecipeStepProducts && relevantProductIsInstrument {
-					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+				if enoughSteps && enoughRecipeStepProducts {
+					relevantProductIsInstrument := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductInstrumentType
+					if relevantProductIsInstrument {
+						instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+					}
 				}
 			}
 		}
@@ -899,11 +901,15 @@ func findCreatedRecipeStepProductsForVessels(recipe *mealplanning.RecipeDatabase
 			if vessel.ProductOfRecipeStepIndex != nil && vessel.ProductOfRecipeStepProductIndex != nil {
 				enoughSteps := len(recipe.Steps) > int(*vessel.ProductOfRecipeStepIndex)
 				enoughRecipeStepProducts := len(recipe.Steps[int(*vessel.ProductOfRecipeStepIndex)].Products) > int(*vessel.ProductOfRecipeStepProductIndex)
-				relevantProductIsVessel := recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductVesselType
-				if enoughSteps && enoughRecipeStepProducts && relevantProductIsVessel {
-					vessel.RecipeStepProductID = &recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].ID
+				if enoughSteps && enoughRecipeStepProducts {
+					relevantProductIsVessel := recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductVesselType
+					if relevantProductIsVessel {
+						vessel.RecipeStepProductID = &recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].ID
+					} else {
+						log.Printf("for recipe step id %q, vessel MealPlanTaskID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
+					}
 				} else {
-					log.Printf("for recipe step id %q, vessel MealPlanTaskID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
+					log.Printf("for recipe step id %q, vessel MealPlanTaskID %q, not enough steps: %t, not enough recipe step products: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts)
 				}
 			}
 		}

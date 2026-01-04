@@ -15,10 +15,10 @@
 - [x] `recipe_0012_grilled_pork_tenderloin.go`
 - [x] `recipe_0013_pan_seared_salmon_fillets.go`
 - [x] `recipe_0014_roasted_brussels_sprouts.go`
-- [ ] `recipe_0015_refried_beans.go`
-- [ ] `recipe_0016_carne_asada.go`
-- [ ] `recipe_0017_butter_chicken.go`
-- [ ] `recipe_0018_stovetop_mac_and_cheese.go`
+- [x] `recipe_0015_refried_beans.go`
+- [x] `recipe_0016_carne_asada.go`
+- [x] `recipe_0017_butter_chicken.go`
+- [x] `recipe_0018_stovetop_mac_and_cheese.go`
 - [ ] `recipe_0019_caesar_salad.go`
 - [ ] `recipe_0020_glazed_carrots.go`
 - [ ] `recipe_0021_cornbread.go`

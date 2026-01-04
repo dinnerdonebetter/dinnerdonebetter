@@ -296,10 +296,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Refried beans recipe instruments
 		{"bean masher", "A tool for mashing beans", "bean mashers", "bean-masher", "bean masher"},
 		{"potato masher", "A tool for mashing potatoes and other soft foods", "potato mashers", "potato-masher", "potato masher"},
-		{"stick blender", "An immersion blender for puréeing food", "stick blenders", "stick-blender", "stick blender"},
+		{"immersion blender", "An immersion blender for puréeing food", "immersion blenders", "stick-blender", "immersion blender"},
 		// Carne asada recipe instruments
 		{"blender", "An electric appliance for blending and puréeing ingredients", "blenders", "blender", "blender"},
 		{"chimney starter", "A metal cylinder for lighting charcoal", "chimney starters", "chimney-starter", "chimney starter"},
+		{"molcajete", "A traditional Mexican mortar and pestle made of volcanic stone", "molcajetes", "molcajete", "molcajete"},
 		// Mashed potatoes recipe instruments
 		{"vegetable peeler", "A hand-held tool for peeling vegetables", "vegetable peelers", "vegetable-peeler", "vegetable peeler"},
 		{"potato ricer", "A kitchen tool that processes potatoes by forcing them through small holes", "potato ricers", "potato-ricer", "potato ricer"},
@@ -1114,6 +1115,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["serving platter"] = servingPlatter
 
+	// Create molcajete for carne asada recipe
+	molcajete, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "molcajete",
+		Description:                    "A traditional Mexican mortar and pestle made of volcanic stone",
+		PluralName:                     "molcajetes",
+		Slug:                           "molcajete",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
+		WidthInMillimeters:             150,
+		LengthInMillimeters:            150,
+		HeightInMillimeters:            80,
+		Shape:                          mealplanning.VesselShapeHemisphere,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create molcajete vessel: %w", err)
+	}
+	enums.Vessels["molcajete"] = molcajete
+
 	oven, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
 		Name:                           "oven",
@@ -1727,6 +1749,11 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"knead", "Work dough by folding, pressing, and turning to develop gluten", "kneaded", "knead", false, false},
 		{"roll", "Flatten dough using a rolling pin", "rolled", "roll", false, false},
 		{"fry", "Cook in a hot pan or griddle without oil", "fried", "fry", true, true},
+		// Carne asada recipe preparations
+		{"pluck", "Remove leaves or small parts from stems or larger pieces", "plucked", "pluck", false, false},
+		// Butter chicken recipe preparations
+		{"grate", "Reduce to small particles using a grater", "grated", "grate", false, false},
+		{"cut", "Divide into pieces using a knife or cutting tool", "cut", "cut", false, false},
 	}
 
 	for i := range prepInputs {
@@ -5244,7 +5271,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	}
 	rbBeanMasher := enums.Instruments["bean masher"]
 	rbPotatoMasher := enums.Instruments["potato masher"]
-	rbStickBlender := enums.Instruments["stick blender"]
+	rbStickBlender := enums.Instruments["immersion blender"]
 	rbWoodenSpoon := enums.Instruments["wooden spoon"]
 
 	// Get vessels for refried beans recipe (cutting board)
@@ -5659,6 +5686,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	caPluckPrep, err := getPreparation("pluck")
+	if err != nil {
+		return err
+	}
+	caTrimPrep, err := getPreparation("trim")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for carne asada recipe
 	caAnchoChiles := enums.Ingredients["dried ancho chile"]
@@ -5726,6 +5761,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	caMolcajete, err := getVessel("molcajete")
+	if err != nil {
+		return err
+	}
 
 	// Get measurement units for carne asada recipe
 	caUnitMeasurement := enums.MeasurementUnits["unit"]
@@ -5742,6 +5781,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caTongs := enums.Instruments["tongs"]
 	caThermometer := enums.Instruments["instant-read thermometer"]
 	caCarvingKnife := enums.Instruments["carving knife"]
+	caMolcajeteInstrument := enums.Instruments["molcajete"]
 
 	// === TOAST PREPARATION for seeds ===
 	if err = createVIP(caToastPrep, caCuminSeeds); err != nil {
@@ -5765,10 +5805,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err = createVIP(caGrindPrep, caCorianderSeeds); err != nil {
 		return err
 	}
-	if err = createVPV(caGrindPrep, caBlenderJar); err != nil {
+	if err = createVPV(caGrindPrep, caMolcajete); err != nil {
 		return err
 	}
-	if err = createVPI(caGrindPrep, caBlender); err != nil {
+	if err = createVPI(caGrindPrep, caMolcajeteInstrument); err != nil {
 		return err
 	}
 
@@ -6101,6 +6141,22 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === PLUCK PREPARATION for cilantro ===
+	if err = createVIP(caPluckPrep, caCilantro); err != nil {
+		return err
+	}
+
+	// === TRIM PREPARATION for skirt steak ===
+	if err = createVIP(caTrimPrep, caSkirtSteak); err != nil {
+		return err
+	}
+	if err = createVPI(caTrimPrep, caCarvingKnife); err != nil {
+		return err
+	}
+	if err = createVPV(caTrimPrep, caCuttingBoard); err != nil {
+		return err
+	}
+
 	// === CARNE ASADA INGREDIENT MEASUREMENT UNITS ===
 	if err = createVIMU(caAnchoChiles, caUnitMeasurement); err != nil {
 		return err
@@ -6258,7 +6314,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	bcStickBlender, err := getInstrument("stick blender")
+	bcStickBlender, err := getInstrument("immersion blender")
 	if err != nil {
 		return err
 	}
@@ -6617,6 +6673,146 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// Get additional preparations for butter chicken recipe
+	bcPeelPrep, err := getPreparation("peel")
+	if err != nil {
+		return err
+	}
+	bcGratePrep, err := getPreparation("grate")
+	if err != nil {
+		return err
+	}
+	bcCutPrep, err := getPreparation("cut")
+	if err != nil {
+		return err
+	}
+	bcSlicePrep, err := getPreparation("slice")
+	if err != nil {
+		return err
+	}
+	bcSmashPrep, err := getPreparation("smash")
+	if err != nil {
+		return err
+	}
+	bcChopPrep, err := getPreparation("chop")
+	if err != nil {
+		return err
+	}
+	bcDicePrep, err := getPreparation("dice")
+	if err != nil {
+		return err
+	}
+
+	// Get additional instruments for butter chicken recipe
+	bcKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	bcMicroplane, err := getInstrument("microplane")
+	if err != nil {
+		return err
+	}
+	bcVegetablePeeler, err := getInstrument("vegetable peeler")
+	if err != nil {
+		return err
+	}
+	bcCleaver, err := getInstrument("cleaver")
+	if err != nil {
+		return err
+	}
+
+	// Get additional vessels for butter chicken recipe
+	bcCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+
+	// === PEEL PREPARATION ===
+	if err = createVIP(bcPeelPrep, bcGinger); err != nil {
+		return err
+	}
+	if err = createVIP(bcPeelPrep, bcWhiteOnion); err != nil {
+		return err
+	}
+	if err = createVIP(bcPeelPrep, bcGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(bcPeelPrep, bcVegetablePeeler); err != nil {
+		return err
+	}
+	if err = createVPI(bcPeelPrep, bcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(bcPeelPrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === GRATE PREPARATION ===
+	if err = createVIP(bcGratePrep, bcGinger); err != nil {
+		return err
+	}
+	if err = createVPI(bcGratePrep, bcMicroplane); err != nil {
+		return err
+	}
+	if err = createVPV(bcGratePrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CUT PREPARATION ===
+	if err = createVIP(bcCutPrep, bcButter); err != nil {
+		return err
+	}
+	if err = createVPI(bcCutPrep, bcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(bcCutPrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION ===
+	if err = createVIP(bcSlicePrep, bcGinger); err != nil {
+		return err
+	}
+	if err = createVPI(bcSlicePrep, bcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(bcSlicePrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === SMASH PREPARATION ===
+	if err = createVIP(bcSmashPrep, bcGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(bcSmashPrep, bcCleaver); err != nil {
+		return err
+	}
+	if err = createVPV(bcSmashPrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CHOP PREPARATION ===
+	if err = createVIP(bcChopPrep, bcGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(bcChopPrep, bcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(bcChopPrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === DICE PREPARATION ===
+	if err = createVIP(bcDicePrep, bcWhiteOnion); err != nil {
+		return err
+	}
+	if err = createVPI(bcDicePrep, bcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(bcDicePrep, bcCuttingBoard); err != nil {
+		return err
+	}
+
 	// === MAC AND CHEESE RECIPE BRIDGE ENTRIES ===
 	// Get preparations for mac and cheese recipe
 	macSubmergePrep := enums.Preparations["submerge"]
@@ -6631,6 +6827,8 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	macSeasonPrep := enums.Preparations["season"]
 	macStirPrep := enums.Preparations["stir"]
 	macAddPrep := enums.Preparations["add"]
+	macGratePrep := enums.Preparations["grate"]
+	macCutPrep := enums.Preparations["cut"]
 
 	// Get ingredients for mac and cheese recipe
 	macElbowMacaroni := enums.Ingredients["elbow macaroni"]
@@ -6653,10 +6851,22 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	macLargeBowl := enums.Vessels["large bowl"]
 	macMediumBowl := enums.Vessels["medium bowl"]
 	macColander := enums.Vessels["colander"]
+	macCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
 
 	// Get instruments for mac and cheese recipe
 	macWhisk := enums.Instruments["whisk"]
 	macWoodenSpoon := enums.Instruments["wooden spoon"]
+	macKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	macMicroplane, err := getInstrument("microplane")
+	if err != nil {
+		return err
+	}
 
 	// Get measurement units for mac and cheese recipe
 	macPoundMeasurement := enums.MeasurementUnits["pound"]
@@ -6863,6 +7073,31 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === GRATE PREPARATION for mac and cheese ===
+	if err = createVIP(macGratePrep, macCheddarCheese); err != nil {
+		return err
+	}
+	if err = createVPI(macGratePrep, macMicroplane); err != nil {
+		return err
+	}
+	if err = createVPV(macGratePrep, macCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CUT PREPARATION for mac and cheese ===
+	if err = createVIP(macCutPrep, macAmericanCheese); err != nil {
+		return err
+	}
+	if err = createVIP(macCutPrep, macButter); err != nil {
+		return err
+	}
+	if err = createVPI(macCutPrep, macKnife); err != nil {
+		return err
+	}
+	if err = createVPV(macCutPrep, macCuttingBoard); err != nil {
+		return err
+	}
+
 	// =======================================================
 	// CAESAR SALAD BRIDGE ENTRIES
 	// =======================================================
@@ -6940,7 +7175,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
-	csStickBlender, err := getInstrument("stick blender")
+	csStickBlender, err := getInstrument("immersion blender")
 	if err != nil {
 		return err
 	}

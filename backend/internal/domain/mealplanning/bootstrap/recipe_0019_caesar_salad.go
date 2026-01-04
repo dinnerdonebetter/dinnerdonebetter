@@ -51,7 +51,7 @@ func CaesarSaladRecipe(userID string, enums *Enumerations) []*mealplanning.Recip
 
 	// Get instruments
 	whisk := enums.Instruments["whisk"]
-	stickBlender := enums.Instruments["stick blender"]
+	stickBlender := enums.Instruments["immersion blender"]
 	spoon := enums.Instruments["spoon"]
 
 	// Get vessels
