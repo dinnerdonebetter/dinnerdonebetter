@@ -308,6 +308,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		// Caesar roasted broccoli recipe instruments
 		{"aluminum foil", "Aluminum foil for lining pans and wrapping food", "aluminum foil", "aluminum-foil", "aluminum foil"},
 		{"microplane", "A fine grater for zesting citrus and grating hard cheeses", "microplanes", "microplane", "microplane"},
+		{"cheese grater", "A grater with multiple grating surfaces for grating cheese", "cheese graters", "cheese-grater", "cheese grater"},
 		// Haricots verts amandine recipe instruments
 		{"wire mesh spider", "A wide shallow wire-mesh strainer on a long handle for scooping food from hot liquids", "wire mesh spiders", "wire-mesh-spider", "wire mesh spider"},
 		// Butter chicken recipe instruments
@@ -7155,6 +7156,34 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	csMincePrep, err := getPreparation("mince")
+	if err != nil {
+		return err
+	}
+	csPressPrep, err := getPreparation("press")
+	if err != nil {
+		return err
+	}
+	csInspectPrep, err := getPreparation("inspect")
+	if err != nil {
+		return err
+	}
+	csRinsePrep, err := getPreparation("rinse")
+	if err != nil {
+		return err
+	}
+	csDryPrep, err := getPreparation("dry")
+	if err != nil {
+		return err
+	}
+	csCubePrep, err := getPreparation("cube")
+	if err != nil {
+		return err
+	}
+	csGratePrep, err := getPreparation("grate")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for Caesar Salad
 	csOliveOil := enums.Ingredients["olive oil"]
@@ -7180,6 +7209,18 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	csSpoon, err := getInstrument("spoon")
+	if err != nil {
+		return err
+	}
+	csKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	csBareHands, err := getInstrument("bare hands")
+	if err != nil {
+		return err
+	}
+	csCheeseGrater, err := getInstrument("cheese grater")
 	if err != nil {
 		return err
 	}
@@ -7214,6 +7255,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	csServingBowl, err := getVessel("serving bowl")
+	if err != nil {
+		return err
+	}
+	csCuttingBoard, err := getVessel("cutting board")
+	if err != nil {
+		return err
+	}
+	csSaladSpinner, err := getVessel("salad spinner")
 	if err != nil {
 		return err
 	}
@@ -7279,6 +7328,83 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(csStrainPrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === MINCE PREPARATION ===
+	if err = createVIP(csMincePrep, csGarlic); err != nil {
+		return err
+	}
+	if err = createVPI(csMincePrep, csKnife); err != nil {
+		return err
+	}
+	if err = createVPV(csMincePrep, csCuttingBoard); err != nil {
+		return err
+	}
+
+	// === PRESS PREPARATION ===
+	if err = createVIP(csPressPrep, csGarlic); err != nil {
+		return err
+	}
+	if err = createVIP(csPressPrep, csOliveOil); err != nil {
+		return err
+	}
+	if err = createVPI(csPressPrep, csSpoon); err != nil {
+		return err
+	}
+	if err = createVPV(csPressPrep, csFineMeshStrainer); err != nil {
+		return err
+	}
+	if err = createVPV(csPressPrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === INSPECT PREPARATION ===
+	if err = createVIP(csInspectPrep, csRomaineLettuce); err != nil {
+		return err
+	}
+	if err = createVPI(csInspectPrep, csBareHands); err != nil {
+		return err
+	}
+	if err = createVPV(csInspectPrep, csCuttingBoard); err != nil {
+		return err
+	}
+
+	// === RINSE PREPARATION ===
+	if err = createVIP(csRinsePrep, csRomaineLettuce); err != nil {
+		return err
+	}
+	if err = createVPV(csRinsePrep, csLargeBowl); err != nil {
+		return err
+	}
+
+	// === DRY PREPARATION ===
+	if err = createVIP(csDryPrep, csRomaineLettuce); err != nil {
+		return err
+	}
+	if err = createVPV(csDryPrep, csSaladSpinner); err != nil {
+		return err
+	}
+
+	// === CUBE PREPARATION for bread ===
+	if err = createVIP(csCubePrep, csHeartyBread); err != nil {
+		return err
+	}
+	if err = createVPI(csCubePrep, csKnife); err != nil {
+		return err
+	}
+	if err = createVPV(csCubePrep, csCuttingBoard); err != nil {
+		return err
+	}
+
+	// === GRATE PREPARATION for parmesan ===
+	if err = createVIP(csGratePrep, csParmesanCheese); err != nil {
+		return err
+	}
+	if err = createVPI(csGratePrep, csCheeseGrater); err != nil {
+		return err
+	}
+	if err = createVPV(csGratePrep, csCuttingBoard); err != nil {
 		return err
 	}
 

@@ -80,9 +80,10 @@ func isRecipeStepProductIngredient(ingredient *mealplanning.RecipeStepIngredient
 	if ingredient == nil {
 		return false
 	}
-	// A recipe step product is indicated by having a RecipeStepProductID or ProductOfRecipeStepIndex set
+	// A recipe step product is indicated by having a RecipeStepProductID, ProductOfRecipeStepIndex, or RecipeStepProductRecipeID set
 	return (ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID != "") ||
-		ingredient.ProductOfRecipeStepIndex != nil
+		ingredient.ProductOfRecipeStepIndex != nil ||
+		(ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "")
 }
 
 // isRecipeStepProductInstrument returns true if the instrument is a recipe step product (output from a previous step).
@@ -109,7 +110,22 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 	preparationID string,
 	ingredient *mealplanning.RecipeStepIngredientDatabaseCreationInput,
 ) error {
-	if ingredient == nil || isRecipeStepProductIngredient(ingredient) {
+	if ingredient == nil {
+		return nil
+	}
+
+	// Check if this is a recipe step product (from same recipe or another recipe)
+	isRecipeStepProduct := isRecipeStepProductIngredient(ingredient)
+	isFromAnotherRecipe := ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != ""
+
+	// If it's a recipe step product from the same recipe, skip all validation
+	if isRecipeStepProduct && !isFromAnotherRecipe {
+		return nil
+	}
+
+	// For ingredients from another recipe, skip all bridge table validation
+	// as the product was already validated in its own recipe
+	if isFromAnotherRecipe {
 		return nil
 	}
 
