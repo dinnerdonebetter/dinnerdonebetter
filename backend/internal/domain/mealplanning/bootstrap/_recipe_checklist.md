@@ -20,7 +20,7 @@
 - [x] `recipe_0017_butter_chicken.go`
 - [x] `recipe_0018_stovetop_mac_and_cheese.go`
 - [x] `recipe_0019_caesar_salad.go`
-- [ ] `recipe_0020_glazed_carrots.go`
+- [x] `recipe_0020_glazed_carrots.go`
 - [ ] `recipe_0021_cornbread.go`
 - [ ] `recipe_0022_grilled_whole_cauliflower.go`
 - [ ] `recipe_0023_stir_fried_green_beans.go`

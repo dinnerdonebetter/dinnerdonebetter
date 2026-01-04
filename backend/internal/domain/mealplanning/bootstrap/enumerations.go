@@ -7639,6 +7639,18 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	gcPeelPrep, err := getPreparation("peel")
+	if err != nil {
+		return err
+	}
+	gcSlicePrep, err := getPreparation("slice")
+	if err != nil {
+		return err
+	}
+	gcChopPrep, err := getPreparation("chop")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for glazed carrots recipe
 	gcButter := enums.Ingredients["butter"]
@@ -7659,10 +7671,22 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	gcKnife, err := getInstrument("knife")
+	if err != nil {
+		return err
+	}
+	gcVegetablePeeler, err := getInstrument("vegetable peeler")
+	if err != nil {
+		return err
+	}
 
 	// Get vessels for glazed carrots recipe
 	gcPan := enums.Vessels["pan"]
 	gcServingBowl, err := getVessel("serving bowl")
+	if err != nil {
+		return err
+	}
+	gcCuttingBoard, err := getVessel("cutting board")
 	if err != nil {
 		return err
 	}
@@ -7674,6 +7698,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	gcPoundMeasurement := enums.MeasurementUnits["pound"]
 	gcSprigMeasurement := enums.MeasurementUnits["sprig"]
 	gcUnitMeasurement := enums.MeasurementUnits["unit"]
+	gcGramMeasurement := enums.MeasurementUnits["gram"]
 
 	// === MELT PREPARATION for butter ===
 	if err = createVIP(gcMeltPrep, gcButter); err != nil {
@@ -7737,6 +7762,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(gcAddPrep, gcPan); err != nil {
+		return err
+	}
+	if err = createVPI(gcAddPrep, gcSpoon); err != nil {
 		return err
 	}
 
@@ -7826,7 +7854,49 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === PEEL PREPARATION for carrots ===
+	if err = createVIP(gcPeelPrep, gcCarrot); err != nil {
+		return err
+	}
+	if err = createVPI(gcPeelPrep, gcVegetablePeeler); err != nil {
+		return err
+	}
+	if err = createVPV(gcPeelPrep, gcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === SLICE PREPARATION for carrots ===
+	if err = createVIP(gcSlicePrep, gcCarrot); err != nil {
+		return err
+	}
+	if err = createVPI(gcSlicePrep, gcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(gcSlicePrep, gcCuttingBoard); err != nil {
+		return err
+	}
+
+	// === CHOP PREPARATION for herbs ===
+	if err = createVIP(gcChopPrep, gcParsley); err != nil {
+		return err
+	}
+	if err = createVIP(gcChopPrep, gcChives); err != nil {
+		return err
+	}
+	if err = createVIP(gcChopPrep, gcTarragon); err != nil {
+		return err
+	}
+	if err = createVPI(gcChopPrep, gcKnife); err != nil {
+		return err
+	}
+	if err = createVPV(gcChopPrep, gcCuttingBoard); err != nil {
+		return err
+	}
+
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
+	if err = createVIMU(gcButter, gcGramMeasurement); err != nil {
+		return err
+	}
 	if err = createVIMU(gcButter, gcTablespoonMeasurement); err != nil {
 		return err
 	}
@@ -7849,6 +7919,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(gcParsley, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gcChives, gcTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(gcTarragon, gcTablespoonMeasurement); err != nil {
 		return err
 	}
 	if err = createVIMU(gcChives, gcTablespoonMeasurement); err != nil {
