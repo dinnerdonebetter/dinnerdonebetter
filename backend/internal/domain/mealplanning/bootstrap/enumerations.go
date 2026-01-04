@@ -1012,6 +1012,27 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 	}
 	enums.Vessels["saucepan"] = saucepan
 
+	// Create small saucepan for cornbread recipe
+	smallSaucepan, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
+		ID:                             identifiers.New(),
+		Name:                           "small saucepan",
+		Description:                    "A small saucepan for heating liquids",
+		PluralName:                     "small saucepans",
+		Slug:                           "small-saucepan",
+		IncludeInGeneratedInstructions: true,
+		DisplayInSummaryLists:          true,
+		CapacityUnitID:                 &enums.MeasurementUnits["gram"].ID,
+		WidthInMillimeters:             120,
+		LengthInMillimeters:            120,
+		HeightInMillimeters:            80,
+		Shape:                          mealplanning.VesselShapeCylinder,
+		UsableForStorage:               false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create small saucepan vessel: %w", err)
+	}
+	enums.Vessels["small saucepan"] = smallSaucepan
+
 	// Create fine-mesh strainer for rice recipe
 	fineMeshStrainer, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
 		ID:                             identifiers.New(),
@@ -1735,6 +1756,8 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"strain", "Pass a mixture through a strainer to separate solids from liquids", "strained", "strain", false, false},
 		{"cool", "Allow food to decrease in temperature after cooking", "cooled", "cool", false, true},
 		{"sprinkle", "Scatter or distribute small pieces or particles over a surface", "sprinkled", "sprinkle", false, false},
+		// Grilled cauliflower recipe preparations
+		{"dissolve", "Mix a solid ingredient into a liquid until it is completely incorporated", "dissolved", "dissolve", false, false},
 		// Glazed carrots recipe preparations
 		{"uncover", "Remove a lid, wrap, or foil from a vessel", "uncovered", "uncover", false, false},
 		{"swirl", "Move a vessel in a circular motion to mix or coat contents", "swirled", "swirl", false, false},
@@ -7974,6 +7997,18 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	cbMeltPrep, err := getPreparation("melt")
+	if err != nil {
+		return err
+	}
+	cbRestPrep, err := getPreparation("rest")
+	if err != nil {
+		return err
+	}
+	cbHeatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients
 	cbFlour, err := getIngredient("flour")
@@ -8035,6 +8070,14 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	cbWireRack, err := getVessel("wire rack")
+	if err != nil {
+		return err
+	}
+	cbSmallBowl, err := getVessel("small bowl")
+	if err != nil {
+		return err
+	}
+	cbSmallSaucepan, err := getVessel("small saucepan")
 	if err != nil {
 		return err
 	}
@@ -8153,6 +8196,30 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVPV(cbCoolPrep, cbBakingPan); err != nil {
+		return err
+	}
+
+	// === MELT PREPARATION for butter ===
+	if err = createVIP(cbMeltPrep, cbButter); err != nil {
+		return err
+	}
+	if err = createVPV(cbMeltPrep, cbSmallSaucepan); err != nil {
+		return err
+	}
+
+	// === REST PREPARATION for cooling butter ===
+	if err = createVIP(cbRestPrep, cbButter); err != nil {
+		return err
+	}
+	if err = createVPV(cbRestPrep, cbSmallBowl); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION for milk ===
+	if err = createVIP(cbHeatPrep, cbMilk); err != nil {
+		return err
+	}
+	if err = createVPV(cbHeatPrep, cbSmallSaucepan); err != nil {
 		return err
 	}
 
@@ -8308,7 +8375,8 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		return p
 	}
 	addPrep := getPrep("add")
-	whiskPrep := getPrep("whisk")
+	combinePrep := getPrep("combine")
+	dissolvePrep := getPrep("dissolve")
 	boilPrep := getPrep("boil")
 	reducePrep := getPrep("reduce")
 	stirPrep := getPrep("stir")
@@ -8350,7 +8418,6 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 	poundMeasurement := enums.MeasurementUnits["pound"]
 
 	// Get instruments
-	whisk := enums.Instruments["whisk"]
 	spoon := enums.Instruments["spoon"]
 	tongs := enums.Instruments["tongs"]
 	brush := enums.Instruments["brush"]
@@ -8386,11 +8453,13 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		return err
 	}
 
-	// WHISK preparation bridges
-	if err := createVPV(whiskPrep, saucepan); err != nil {
+	// COMBINE preparation bridges
+	if err := createVPV(combinePrep, saucepan); err != nil {
 		return err
 	}
-	if err := createVPI(whiskPrep, whisk); err != nil {
+
+	// DISSOLVE preparation bridges
+	if err := createVPV(dissolvePrep, pot); err != nil {
 		return err
 	}
 
@@ -8559,10 +8628,7 @@ func createGrilledCauliflowerBridgeEntries(ctx context.Context, repo mealplannin
 		return err
 	}
 
-	// WHISK bridges for pot
-	if err := createVPV(whiskPrep, pot); err != nil {
-		return err
-	}
+	// COMBINE bridges for pot (already created above with saucepan)
 
 	// === INGREDIENT MEASUREMENT UNIT BRIDGES ===
 	if err := createVIMU(soySauce, cupMeasurement); err != nil {
@@ -9552,6 +9618,22 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 		return err
 	}
 	if err = createVPV(coverPrep, countertop); err != nil {
+		return err
+	}
+
+	// === HEAT preparation bridges ===
+	heatPrep, err := getPreparation("heat")
+	if err != nil {
+		return err
+	}
+	smallSaucepan, err := getVessel("small saucepan")
+	if err != nil {
+		return err
+	}
+	if err = createVIP(heatPrep, water); err != nil {
+		return err
+	}
+	if err = createVPV(heatPrep, smallSaucepan); err != nil {
 		return err
 	}
 

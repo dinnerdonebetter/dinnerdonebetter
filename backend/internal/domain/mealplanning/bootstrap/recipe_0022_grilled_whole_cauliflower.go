@@ -15,7 +15,7 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 
 	// Get preparations
 	addPrep := enums.Preparations["add"]
-	whiskPrep := enums.Preparations["whisk"]
+	combinePrep := enums.Preparations["combine"]
 	boilPrep := enums.Preparations["boil"]
 	reducePrep := enums.Preparations["reduce"]
 	stirPrep := enums.Preparations["stir"]
@@ -36,7 +36,6 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Get instruments
-	whisk := enums.Instruments["whisk"]
 	spoon := enums.Instruments["spoon"]
 
 	// Get vessels
@@ -141,8 +140,7 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 	addDashiVIP := getVIP("add", "dashi powder")
 	addSaucepanVPV := getVPV("add", "saucepan")
 
-	whiskSaucepanVPV := getVPV("whisk", "saucepan")
-	whiskWhiskVPI := getVPI("whisk", "whisk")
+	combineSaucepanVPV := getVPV("combine", "saucepan")
 
 	boilSaucepanVPV := getVPV("boil", "saucepan")
 
@@ -172,7 +170,7 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 		Index:           0,
 		Notes:           "In a medium saucepan, add shoyu, sake, mirin, sugar, and powdered dashi.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
-			{ID: identifiers.New(), BelongsToRecipeStep: ts0ID, ValidIngredientPreparationID: vipID(addSoySauceVIP), ValidIngredientMeasurementUnitID: vimuID(soySauceCupVIMU), IngredientID: &soySauce.ID, MeasurementUnitID: cupMeasurement.ID, Name: "Koikuchi shoyu, tamari, or saishikomi shoyu", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
+			{ID: identifiers.New(), BelongsToRecipeStep: ts0ID, ValidIngredientPreparationID: vipID(addSoySauceVIP), ValidIngredientMeasurementUnitID: vimuID(soySauceCupVIMU), IngredientID: &soySauce.ID, MeasurementUnitID: cupMeasurement.ID, Name: "soy sauce", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
 			{ID: identifiers.New(), BelongsToRecipeStep: ts0ID, ValidIngredientPreparationID: vipID(addSakeVIP), ValidIngredientMeasurementUnitID: vimuID(sakeCupVIMU), IngredientID: &sake.ID, MeasurementUnitID: cupMeasurement.ID, Name: "sake", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
 			{ID: identifiers.New(), BelongsToRecipeStep: ts0ID, ValidIngredientPreparationID: vipID(addMirinVIP), ValidIngredientMeasurementUnitID: vimuID(mirinCupVIMU), IngredientID: &mirin.ID, MeasurementUnitID: cupMeasurement.ID, Name: "mirin", QuantityNotes: "about 60ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.25}},
 			{ID: identifiers.New(), BelongsToRecipeStep: ts0ID, ValidIngredientPreparationID: vipID(addSugarVIP), ValidIngredientMeasurementUnitID: vimuID(sugarTablespoonVIMU), IngredientID: &sugar.ID, MeasurementUnitID: tablespoonMeasurement.ID, Name: "granulated sugar", QuantityNotes: "about 60g", Quantity: types.Float32RangeWithOptionalMax{Min: 5}},
@@ -184,10 +182,9 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 
 	ts1ID := identifiers.New()
 	ts1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID: ts1ID, BelongsToRecipe: teriyakiRecipeID, PreparationID: whiskPrep.ID, Index: 1, Notes: "Whisk until combined.",
+		ID: ts1ID, BelongsToRecipe: teriyakiRecipeID, PreparationID: combinePrep.ID, Index: 1, Notes: "Combine until mixed.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts1ID, ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), IngredientID: &soySauce.ID, MeasurementUnitID: unitMeasurement.ID, Name: "sauce ingredients in saucepan", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts1ID, ValidPreparationInstrumentID: vpiID(whiskWhiskVPI), InstrumentID: &whisk.ID, Name: "whisk", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
-		Vessels:     []*mealplanning.RecipeStepVesselDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts1ID, ValidPreparationVesselID: vpvID(whiskSaucepanVPV), VesselID: &saucepan.ID, Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
+		Vessels:     []*mealplanning.RecipeStepVesselDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts1ID, ValidPreparationVesselID: vpvID(combineSaucepanVPV), VesselID: &saucepan.ID, Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products:    []*mealplanning.RecipeStepProductDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts1ID, Name: "combined sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
 	}
 
@@ -213,10 +210,10 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 
 	ts4ID := identifiers.New()
 	ts4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID: ts4ID, BelongsToRecipe: teriyakiRecipeID, PreparationID: stirPrep.ID, Index: 4, Notes: "Off heat, stir in rendered chicken fat or butter and sesame oil. Set aside.",
+		ID: ts4ID, BelongsToRecipe: teriyakiRecipeID, PreparationID: stirPrep.ID, Index: 4, Notes: "Off heat, stir in butter and sesame oil. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{ID: identifiers.New(), BelongsToRecipeStep: ts4ID, ProductOfRecipeStepIndex: pointer.To[uint64](3), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), IngredientID: &soySauce.ID, MeasurementUnitID: cupMeasurement.ID, Name: "reduced teriyaki sauce", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
-			{ID: identifiers.New(), BelongsToRecipeStep: ts4ID, ValidIngredientPreparationID: vipID(stirChickenFatVIP), ValidIngredientMeasurementUnitID: vimuID(chickenFatTablespoonVIMU), IngredientID: &chickenFat.ID, MeasurementUnitID: tablespoonMeasurement.ID, Name: "rendered chicken fat or unsalted butter", Quantity: types.Float32RangeWithOptionalMax{Min: 3}},
+			{ID: identifiers.New(), BelongsToRecipeStep: ts4ID, ValidIngredientPreparationID: vipID(stirChickenFatVIP), ValidIngredientMeasurementUnitID: vimuID(chickenFatTablespoonVIMU), IngredientID: &chickenFat.ID, MeasurementUnitID: tablespoonMeasurement.ID, Name: "unsalted butter", Quantity: types.Float32RangeWithOptionalMax{Min: 3}},
 			{ID: identifiers.New(), BelongsToRecipeStep: ts4ID, ValidIngredientPreparationID: vipID(stirSesameOilVIP), ValidIngredientMeasurementUnitID: vimuID(sesameOilTablespoonVIMU), IngredientID: &sesameOil.ID, MeasurementUnitID: tablespoonMeasurement.ID, Name: "toasted sesame oil", QuantityNotes: "about 14g", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: ts4ID, ValidPreparationInstrumentID: vpiID(stirSpoonVPI), InstrumentID: &spoon.ID, Name: "spoon", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
@@ -239,6 +236,7 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 	// Additional preparations for cauliflower
 	trimPrep := enums.Preparations["trim"]
 	slicePrep := enums.Preparations["slice"]
+	dissolvePrep := enums.Preparations["dissolve"]
 	submergePrep := enums.Preparations["submerge"]
 	brinePrep := enums.Preparations["brine"]
 	lightPrep := enums.Preparations["light"]
@@ -295,7 +293,7 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addPotVPV := enums.PreparationVessels[addPrep.ID][pot.ID]
 
-	whiskPotVPV := enums.PreparationVessels[whiskPrep.ID][pot.ID]
+	dissolvePotVPV := enums.PreparationVessels[dissolvePrep.ID][pot.ID]
 
 	submergeCauliflowerVIP := enums.IngredientPreparations[submergePrep.ID][cauliflower.ID]
 	submergePotVPV := enums.PreparationVessels[submergePrep.ID][pot.ID]
@@ -370,15 +368,14 @@ func GrilledWholeCauliflowerRecipe(userID string, enums *Enumerations) []*mealpl
 		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: gc2ID, Name: "water and salt in container", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
 	}
 
-	// Step 3: Whisk until salt dissolved
+	// Step 3: Dissolve salt in water
 	gc3ID := identifiers.New()
 	gc3SaltIngredientID := identifiers.New()
 	gc3CompletionConditionID := identifiers.New()
 	gc3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID: gc3ID, BelongsToRecipe: cauliflowerRecipeID, PreparationID: whiskPrep.ID, Index: 3, Notes: "Whisk water and salt until dissolved.",
+		ID: gc3ID, BelongsToRecipe: cauliflowerRecipeID, PreparationID: dissolvePrep.ID, Index: 3, Notes: "Dissolve salt in water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{{ID: gc3SaltIngredientID, BelongsToRecipeStep: gc3ID, ProductOfRecipeStepIndex: pointer.To[uint64](2), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), IngredientID: &water.ID, MeasurementUnitID: unitMeasurement.ID, Name: "water and salt in container", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: gc3ID, ValidPreparationInstrumentID: vpiID(whiskWhiskVPI), InstrumentID: &whisk.ID, Name: "whisk", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
-		Vessels:     []*mealplanning.RecipeStepVesselDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: gc3ID, ValidPreparationVesselID: vpvID(whiskPotVPV), VesselID: &pot.ID, Name: "container", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
+		Vessels:     []*mealplanning.RecipeStepVesselDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: gc3ID, ValidPreparationVesselID: vpvID(dissolvePotVPV), VesselID: &pot.ID, Name: "container", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products:    []*mealplanning.RecipeStepProductDatabaseCreationInput{{ID: identifiers.New(), BelongsToRecipeStep: gc3ID, Name: "saltwater brine", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{{
 			ID: gc3CompletionConditionID, BelongsToRecipeStep: gc3ID, IngredientStateID: dissolvedState.ID, Notes: "Salt should be completely dissolved in the water", Optional: false,

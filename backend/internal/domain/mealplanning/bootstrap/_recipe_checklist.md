@@ -21,7 +21,7 @@
 - [x] `recipe_0018_stovetop_mac_and_cheese.go`
 - [x] `recipe_0019_caesar_salad.go`
 - [x] `recipe_0020_glazed_carrots.go`
-- [ ] `recipe_0021_cornbread.go`
-- [ ] `recipe_0022_grilled_whole_cauliflower.go`
-- [ ] `recipe_0023_stir_fried_green_beans.go`
-- [ ] `recipe_0024_tortillas.go`
+- [x] `recipe_0021_cornbread.go`
+- [x] `recipe_0022_grilled_whole_cauliflower.go`
+- [x] `recipe_0023_stir_fried_green_beans.go`
+- [x] `recipe_0024_tortillas.go`

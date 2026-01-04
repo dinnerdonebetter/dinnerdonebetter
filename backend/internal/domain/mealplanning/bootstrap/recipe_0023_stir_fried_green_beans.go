@@ -750,7 +750,7 @@ func StirFriedGreenBeansRecipe(userID string, enums *Enumerations) []*mealplanni
 				ValidIngredientMeasurementUnitID: vimuID(stockTablespoonVIMU),
 				IngredientID:                     &vegetableStock.ID,
 				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "meat or vegetable stock",
+				Name:                             "vegetable stock",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 5},
 			},
 		},

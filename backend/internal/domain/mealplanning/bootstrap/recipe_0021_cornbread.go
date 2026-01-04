@@ -20,6 +20,9 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	combinePrep := enums.Preparations["combine"]
 	bakePrep := enums.Preparations["bake"]
 	coolPrep := enums.Preparations["cool"]
+	meltPrep := enums.Preparations["melt"]
+	restPrep := enums.Preparations["rest"]
+	heatPrep := enums.Preparations["heat"]
 
 	// Get ingredients
 	flour := enums.Ingredients["flour"]
@@ -49,6 +52,8 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 	mediumBowl := enums.Vessels["medium bowl"]
 	largeBowl := enums.Vessels["large bowl"]
 	wireRack := enums.Vessels["wire rack"]
+	smallBowl := enums.Vessels["small bowl"]
+	smallSaucepan := enums.Vessels["small saucepan"]
 
 	// Get ingredient states for completion conditions
 	combinedState := enums.IngredientStates["combined"]
@@ -91,6 +96,18 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 
 	// Cool preparation bridges
 	coolWireRackVPV := enums.PreparationVessels[coolPrep.ID][wireRack.ID]
+
+	// Melt preparation bridges
+	meltButterVIP := enums.IngredientPreparations[meltPrep.ID][butter.ID]
+	meltSmallSaucepanVPV := enums.PreparationVessels[meltPrep.ID][smallSaucepan.ID]
+
+	// Rest preparation bridges (for cooling butter)
+	restButterVIP := enums.IngredientPreparations[restPrep.ID][butter.ID]
+	restSmallBowlVPV := enums.PreparationVessels[restPrep.ID][smallBowl.ID]
+
+	// Heat preparation bridges (for heating milk)
+	heatMilkVIP := enums.IngredientPreparations[heatPrep.ID][milk.ID]
+	heatSmallSaucepanVPV := enums.PreparationVessels[heatPrep.ID][smallSaucepan.ID]
 
 	// Measurement unit bridges
 	flourCupVIMU := enums.IngredientMeasurementUnits[flour.ID][cupMeasurement.ID]
@@ -185,13 +202,165 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		},
 	}
 
+	// Step 2a: Melt butter
+	step2aID := identifiers.New()
+	step2a := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2aID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   meltPrep.ID,
+		Index:           2,
+		Notes:           "Melt 4 tablespoons butter in a small saucepan over low heat.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2aID,
+				ValidIngredientPreparationID:     &meltButterVIP.ID,
+				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
+				IngredientID:                     &butter.ID,
+				MeasurementUnitID:                tablespoonMeasurement.ID,
+				Name:                             "unsalted butter",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2aID,
+				ValidPreparationVesselID: &meltSmallSaucepanVPV.ID,
+				VesselID:                 &smallSaucepan.ID,
+				Name:                     "small saucepan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2aID,
+				Name:                "melted butter",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
+	// Step 2b: Cool butter
+	step2bID := identifiers.New()
+	step2b := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2bID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   restPrep.ID,
+		Index:           3,
+		Notes:           "Transfer melted butter to a small bowl and allow to cool to room temperature.",
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step2bID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:     &restButterVIP.ID,
+				IngredientID:                    &butter.ID,
+				MeasurementUnitID:               tablespoonMeasurement.ID,
+				Name:                            "melted butter",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 4,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2bID,
+				ValidPreparationVesselID: &restSmallBowlVPV.ID,
+				VesselID:                 &smallBowl.ID,
+				Name:                     "small bowl",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2bID,
+				Name:                "melted and cooled butter",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](4),
+				},
+			},
+		},
+	}
+
+	// Step 2c: Heat milk to lukewarm
+	step2cID := identifiers.New()
+	step2c := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:              step2cID,
+		BelongsToRecipe: recipeID,
+		PreparationID:   heatPrep.ID,
+		Index:           4,
+		Notes:           "Heat milk in a small saucepan over low heat until lukewarm (about 100°F or 38°C).",
+		TemperatureInCelsius: types.OptionalFloat32Range{
+			Min: pointer.To[float32](35), // ~95°F
+			Max: pointer.To[float32](40), // ~104°F
+		},
+		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+			{
+				ID:                               identifiers.New(),
+				BelongsToRecipeStep:              step2cID,
+				ValidIngredientPreparationID:     &heatMilkVIP.ID,
+				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
+				IngredientID:                     &milk.ID,
+				MeasurementUnitID:                cupMeasurement.ID,
+				Name:                             "milk",
+				Quantity: types.Float32RangeWithOptionalMax{
+					Min: 1.25,
+				},
+			},
+		},
+		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+			{
+				ID:                       identifiers.New(),
+				BelongsToRecipeStep:      step2cID,
+				ValidPreparationVesselID: &heatSmallSaucepanVPV.ID,
+				VesselID:                 &smallSaucepan.ID,
+				Name:                     "small saucepan",
+				Quantity: types.Uint16RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
+		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+			{
+				ID:                  identifiers.New(),
+				BelongsToRecipeStep: step2cID,
+				Name:                "lukewarm milk",
+				Type:                mealplanning.RecipeStepProductIngredientType,
+				Index:               0,
+				MeasurementUnitID:   &cupMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1.25),
+				},
+			},
+		},
+	}
+
 	// Step 2: Whisk together the dry ingredients in a medium bowl
 	step2ID := identifiers.New()
 	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
 		ID:              step2ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   mixPrep.ID,
-		Index:           2,
+		Index:           5,
 		Notes:           "In a medium bowl, mix together the flour, cornmeal, sugar, baking powder, baking soda, and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
@@ -322,31 +491,31 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step3ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   mixPrep.ID,
-		Index:           3,
-		Notes:           "In another bowl or large measuring cup, mix together the milk, melted butter, vegetable oil, and egg.",
+		Index:           6,
+		Notes:           "In another bowl or large measuring cup, mix together the lukewarm milk, melted and cooled butter, vegetable oil, and egg.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     &mixMilkVIP.ID,
-				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
-				IngredientID:                     &milk.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
-				Name:                             "milk, lukewarm",
-				QuantityNotes:                    "283g",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &mixMilkVIP.ID,
+				IngredientID:                    &milk.ID,
+				MeasurementUnitID:              cupMeasurement.ID,
+				Name:                            "lukewarm milk",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step3ID,
-				ValidIngredientPreparationID:     &mixButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
-				IngredientID:                     &butter.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
-				Name:                             "unsalted butter, melted, cooled",
-				QuantityNotes:                    "57g",
+				ID:                              identifiers.New(),
+				BelongsToRecipeStep:             step3ID,
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    &mixButterVIP.ID,
+				IngredientID:                    &butter.ID,
+				MeasurementUnitID:              tablespoonMeasurement.ID,
+				Name:                            "melted and cooled butter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 4,
 				},
@@ -429,13 +598,13 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step4ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   combinePrep.ID,
-		Index:           4,
+		Index:           7,
 		Notes:           "Pour the liquid all at once into the flour mixture.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &milk.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -447,7 +616,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -461,7 +630,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step4ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &combineMediumBowlVPV.ID,
 				VesselID:                        &mediumBowl.ID,
@@ -499,13 +668,13 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step5ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   mixPrep.ID,
-		Index:           5,
+		Index:           8,
 		Notes:           "Mix quickly and gently until just combined. Don't over mix: stir the batter just enough to bring it together and evenly moisten the ingredients.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -531,7 +700,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step5ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &mixMediumBowlVPV.ID,
 				VesselID:                        &mediumBowl.ID,
@@ -571,13 +740,13 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step6ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   pourPrep.ID,
-		Index:           6,
+		Index:           9,
 		Notes:           "Spread the batter into the prepared pan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step6ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -629,7 +798,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step7ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   bakePrep.ID,
-		Index:           7,
+		Index:           10,
 		Notes:           "Bake the bread for 20 to 25 minutes, until the edges just begin to pull away from the pan and a cake tester or paring knife inserted in the center comes out clean.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1200), // 20 minutes
@@ -642,7 +811,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -668,7 +837,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step7ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &bakeBakingPanVPV.ID,
 				VesselID:                        &bakingPan.ID,
@@ -715,7 +884,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		ID:              step8ID,
 		BelongsToRecipe: recipeID,
 		PreparationID:   coolPrep.ID,
-		Index:           8,
+		Index:           11,
 		Notes:           "Remove the bread from the oven and cool it on a rack for 5 minutes before cutting; serve warm.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -724,7 +893,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 			{
 				ID:                              identifiers.New(),
 				BelongsToRecipeStep:             step8ID,
-				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				IngredientID:                    &flour.ID,
 				MeasurementUnitID:               unitMeasurement.ID,
@@ -776,7 +945,7 @@ func CornbreadRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeD
 		PluralPortionName: "pieces",
 		EligibleForMeals:  true,
 		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8,
+			step0, step1, step2a, step2b, step2c, step2, step3, step4, step5, step6, step7, step8,
 		},
 	}
 
