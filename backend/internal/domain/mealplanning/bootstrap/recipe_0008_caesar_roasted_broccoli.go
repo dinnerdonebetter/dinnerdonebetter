@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
@@ -10,9 +9,8 @@ import (
 // CaesarRoastedBroccoliRecipe creates the Caesar Roasted Broccoli recipe.
 // Source: https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043
 // This returns two recipes: Caesar Breadcrumbs (component) and Caesar Roasted Broccoli (main recipe).
-func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
+func CaesarRoastedBroccoliRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	// ==================== CAESAR BREADCRUMBS RECIPE ====================
-	breadcrumbsRecipeID := identifiers.New()
 
 	// Get preparations
 	meltPrep := enums.Preparations["melt"]
@@ -77,47 +75,35 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 
 	// Breadcrumbs Step 0: Melt butter in a small nonstick skillet
-	bcStep0ID := identifiers.New()
-	bcStep0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep0ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   meltPrep.ID,
-		Index:           0,
-		Notes:           "In a small nonstick skillet, melt butter over medium-low heat.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep0 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: meltPrep.ID,
+		Index:         0,
+		Notes:         "In a small nonstick skillet, melt butter over medium-low heat.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep0ID,
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
-				IngredientID:                     &saltedButter.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "salted butter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep0ID,
 				ValidPreparationVesselID: &meltSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep0ID,
-				Name:                "melted butter",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				Name:              "melted butter",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &tablespoonMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -126,45 +112,30 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 1: Stir in anchovy paste and garlic
-	bcStep1ID := identifiers.New()
-	bcStep1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep1ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   stirPrep.ID,
-		Index:           1,
-		Notes:           "Stir in anchovy paste and garlic.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: stirPrep.ID,
+		Index:         1,
+		Notes:         "Stir in anchovy paste and garlic.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             bcStep1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &saltedButter.ID,
-				MeasurementUnitID:               tablespoonMeasurement.ID,
 				Name:                            "melted butter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep1ID,
 				ValidIngredientPreparationID:     &stirAnchovyVIP.ID,
 				ValidIngredientMeasurementUnitID: &anchovyTeaspoonVIMU.ID,
-				IngredientID:                     &anchovyPaste.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "anchovy paste",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep1ID,
 				ValidIngredientPreparationID:     &stirGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicUnitVIMU.ID,
-				IngredientID:                     &garlic.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
 				Name:                             "garlic, minced",
 				QuantityNotes:                    "1 small clove",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -172,38 +143,30 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          bcStep1ID,
 				ValidPreparationInstrumentID: &stirSpatulaVPI.ID,
-				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "flexible spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep1ID,
 				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep1ID,
-				Name:                "butter with anchovy and garlic",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "butter with anchovy and garlic",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -212,51 +175,39 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 2: Mix until fragrant
-	bcStep2ID := identifiers.New()
-	bcStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep2ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   mixPrep.ID,
-		Index:           2,
-		Notes:           "Cook until fragrant, about 1 minute.",
+	bcStep2 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: mixPrep.ID,
+		Index:         2,
+		Notes:         "Cook until fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             bcStep2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixButterVIP.ID,
-				IngredientID:                    &saltedButter.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "butter with anchovy and garlic",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep2ID,
 				ValidPreparationVesselID: &mixSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep2ID,
-				Name:                "fragrant butter mixture",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "fragrant butter mixture",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -265,71 +216,52 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 3: Add breadcrumbs and toss to coat
-	bcStep3ID := identifiers.New()
-	bcStep3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep3ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   stirPrep.ID,
-		Index:           3,
-		Notes:           "Add breadcrumbs and, using a flexible spatula, toss to coat.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep3 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: stirPrep.ID,
+		Index:         3,
+		Notes:         "Add breadcrumbs and, using a flexible spatula, toss to coat.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             bcStep3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &saltedButter.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "fragrant butter mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep3ID,
 				ValidIngredientPreparationID:     &stirBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
-				IngredientID:                     &breadcrumbs.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "plain breadcrumbs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          bcStep3ID,
 				ValidPreparationInstrumentID: &stirSpatulaVPI.ID,
-				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "flexible spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep3ID,
 				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep3ID,
-				Name:                "coated breadcrumbs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "coated breadcrumbs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -338,64 +270,49 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 4: Coat breadcrumbs until golden brown
-	bcStep4ID := identifiers.New()
-	bcStep4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep4ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   coatPrep.ID,
-		Index:           4,
-		Notes:           "Cook, stirring constantly until breadcrumbs are golden brown, about 3 minutes.",
+	bcStep4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: coatPrep.ID,
+		Index:         4,
+		Notes:         "Cook, stirring constantly until breadcrumbs are golden brown, about 3 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180),
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep4ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &coatBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
-				IngredientID:                     &breadcrumbs.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "coated breadcrumbs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          bcStep4ID,
 				ValidPreparationInstrumentID: &coatSpatulaVPI.ID,
-				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "flexible spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep4ID,
 				ValidPreparationVesselID: &coatSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep4ID,
-				Name:                "toasted breadcrumbs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "toasted breadcrumbs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -404,71 +321,52 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 5: Stir in lemon zest (off heat)
-	bcStep5ID := identifiers.New()
-	bcStep5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep5ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   stirPrep.ID,
-		Index:           5,
-		Notes:           "Off heat, stir in 1/2 teaspoon lemon zest.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: stirPrep.ID,
+		Index:         5,
+		Notes:         "Off heat, stir in 1/2 teaspoon lemon zest.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             bcStep5ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &breadcrumbs.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "toasted breadcrumbs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep5ID,
 				ValidIngredientPreparationID:     &stirLemonVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonTeaspoonVIMU.ID,
-				IngredientID:                     &lemon.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          bcStep5ID,
 				ValidPreparationInstrumentID: &stirSpatulaVPI.ID,
-				InstrumentID:                 &rubberSpatula.ID,
 				Name:                         "flexible spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep5ID,
 				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep5ID,
-				Name:                "breadcrumbs with lemon zest",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "breadcrumbs with lemon zest",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -477,35 +375,24 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 6: Season breadcrumbs with salt
-	bcStep6ID := identifiers.New()
-	bcStep6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep6ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   seasonPrep.ID,
-		Index:           6,
-		Notes:           "Season with salt to taste.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: seasonPrep.ID,
+		Index:         6,
+		Notes:         "Season with salt to taste.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep6ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &seasonBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
-				IngredientID:                     &breadcrumbs.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "breadcrumbs with lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep6ID,
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
-				IngredientID:                     &salt.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "kosher salt",
 				QuantityNotes:                    "to taste",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -513,26 +400,21 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep6ID,
 				ValidPreparationVesselID: &seasonSkilletVPV.ID,
-				VesselID:                 &smallNonstickSkillet.ID,
 				Name:                     "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep6ID,
-				Name:                "seasoned caesar breadcrumbs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "seasoned caesar breadcrumbs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -541,49 +423,37 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Breadcrumbs Step 7: Transfer breadcrumbs to bowl and let cool
-	bcStep7ID := identifiers.New()
-	bcStep7 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              bcStep7ID,
-		BelongsToRecipe: breadcrumbsRecipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           7,
-		Notes:           "Transfer to a bowl and let cool completely.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	bcStep7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         7,
+		Notes:         "Transfer to a bowl and let cool completely.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              bcStep7ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
-				IngredientID:                     &breadcrumbs.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "seasoned caesar breadcrumbs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      bcStep7ID,
 				ValidPreparationVesselID: &transferSmallBowlVPV.ID,
-				VesselID:                 &smallBowl.ID,
 				Name:                     "small bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: bcStep7ID,
-				Name:                "caesar breadcrumbs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "caesar breadcrumbs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -591,9 +461,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
-	caesarBreadcrumbsRecipe := &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  breadcrumbsRecipeID,
-		CreatedByUser:       userID,
+	caesarBreadcrumbsRecipe := &mealplanning.RecipeCreationRequestInput{
 		Name:                "Caesar Breadcrumbs",
 		Slug:                "caesar-breadcrumbs",
 		Source:              "https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043",
@@ -605,13 +473,13 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		PortionName:       "cup",
 		PluralPortionName: "cups",
 		EligibleForMeals:  false, // This is a component, not a standalone meal
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			bcStep0, bcStep1, bcStep2, bcStep3, bcStep4, bcStep5, bcStep6, bcStep7,
-		},
+		Steps:             []*mealplanning.RecipeStepCreationRequestInput{bcStep0, bcStep1, bcStep2, bcStep3, bcStep4, bcStep5, bcStep6, bcStep7},
+		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
+		AlsoCreateMeal:    false,
 	}
 
 	// ==================== CAESAR ROASTED BROCCOLI RECIPE ====================
-	broccoliRecipeID := identifiers.New()
 
 	// Additional preparations for broccoli
 	linePrep := enums.Preparations["line"]
@@ -672,44 +540,33 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	parmesanTablespoonVIMU := enums.IngredientMeasurementUnits[parmesan.ID][tablespoonMeasurement.ID]
 
 	// Broccoli Step 0: Line baking sheet with aluminum foil
-	brStep0ID := identifiers.New()
-	brStep0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep0ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   linePrep.ID,
-		Index:           0,
-		Notes:           "Line a rimmed baking sheet with aluminum foil.",
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+	brStep0 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: linePrep.ID,
+		Index:         0,
+		Notes:         "Line a rimmed baking sheet with aluminum foil.",
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          brStep0ID,
 				ValidPreparationInstrumentID: &lineFoilVPI.ID,
-				InstrumentID:                 &aluminumFoil.ID,
 				Name:                         "aluminum foil",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep0ID,
 				ValidPreparationVesselID: &lineBakingSheetVPV.ID,
-				VesselID:                 &bakingSheet.ID,
 				Name:                     "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep0ID,
-				Name:                "foil-lined baking sheet",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "foil-lined baking sheet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -718,35 +575,27 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 1: Preheat oven to 500°F
-	brStep1ID := identifiers.New()
-	brStep1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep1ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   preheatPrep.ID,
-		Index:           1,
-		Notes:           "Adjust oven rack to upper position and preheat oven to 500°F (260°C).",
+	brStep1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: preheatPrep.ID,
+		Index:         1,
+		Notes:         "Adjust oven rack to upper position and preheat oven to 500°F (260°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](260),
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep1ID,
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
-				VesselID:                 &oven.ID,
 				Name:                     "oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep1ID,
-				Name:                "preheated oven",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "preheated oven",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -755,35 +604,29 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 2: Place baking sheet in oven to preheat
-	brStep2ID := identifiers.New()
-	brStep2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep2ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   preheatPrep.ID,
-		Index:           2,
-		Notes:           "Place the foil-lined baking sheet on oven rack to preheat.",
+	brStep2 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: preheatPrep.ID,
+		Index:         2,
+		Notes:         "Place the foil-lined baking sheet on oven rack to preheat.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](260),
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep2ID,
-				ValidPreparationVesselID: &preheatBakingSheetVPV.ID,
-				VesselID:                 &bakingSheet.ID,
-				Name:                     "foil-lined baking sheet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &preheatBakingSheetVPV.ID,
+				Name:                            "foil-lined baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep2ID,
-				Name:                "preheated baking sheet",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "preheated baking sheet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -792,21 +635,14 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 3: Toss broccoli with olive oil, salt, and pepper
-	brStep3ID := identifiers.New()
-	brStep3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep3ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   tossPrep.ID,
-		Index:           3,
-		Notes:           "In a large bowl, toss broccoli florets with olive oil, salt, and pepper.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	brStep3 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: tossPrep.ID,
+		Index:         3,
+		Notes:         "In a large bowl, toss broccoli florets with olive oil, salt, and pepper.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep3ID,
 				ValidIngredientPreparationID:     &tossBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
-				IngredientID:                     &broccoli.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
 				Name:                             "broccoli florets",
 				QuantityNotes:                    "cut into 1 1/2 to 2-inch pieces",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -814,62 +650,45 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep3ID,
 				ValidIngredientPreparationID:     &tossOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
-				IngredientID:                     &oliveOil.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "extra-virgin olive oil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep3ID,
 				ValidIngredientPreparationID:     &tossSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
-				IngredientID:                     &salt.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "Diamond Crystal kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.75,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep3ID,
 				ValidIngredientPreparationID:     &tossPepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &pepperGramVIMU.ID,
-				IngredientID:                     &blackPepper.ID,
-				MeasurementUnitID:                gramMeasurement.ID,
 				Name:                             "freshly ground black pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep3ID,
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep3ID,
-				Name:                "seasoned broccoli",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "seasoned broccoli",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -878,49 +697,39 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 4: Add broccoli to preheated baking sheet
-	brStep4ID := identifiers.New()
-	brStep4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep4ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           4,
-		Notes:           "Carefully add broccoli to preheated baking sheet in a single layer.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	brStep4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         4,
+		Notes:         "Carefully add broccoli to preheated baking sheet in a single layer.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep4ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &transferBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
-				IngredientID:                     &broccoli.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
 				Name:                             "seasoned broccoli",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep4ID,
-				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
-				VesselID:                 &bakingSheet.ID,
-				Name:                     "preheated baking sheet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidPreparationVesselID:        &transferBakingSheetVPV.ID,
+				Name:                            "preheated baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep4ID,
-				Name:                "broccoli on baking sheet",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "broccoli on baking sheet",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -929,55 +738,43 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 5: Roast broccoli
-	brStep5ID := identifiers.New()
-	brStep5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep5ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   roastPrep.ID,
-		Index:           5,
-		Notes:           "Roast until broccoli is tender and deeply browned in spots, about 20 minutes.",
+	brStep5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: roastPrep.ID,
+		Index:         5,
+		Notes:         "Roast until broccoli is tender and deeply browned in spots, about 20 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1200), // 20 minutes
 		},
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](260),
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep5ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &roastBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
-				IngredientID:                     &broccoli.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
 				Name:                             "broccoli on baking sheet",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep5ID,
 				ValidPreparationVesselID: &roastBakingSheetVPV.ID,
-				VesselID:                 &bakingSheet.ID,
 				Name:                     "baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep5ID,
-				Name:                "roasted broccoli",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "roasted broccoli",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -986,59 +783,43 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 6: Toss roasted broccoli with lemon zest
-	brStep6ID := identifiers.New()
-	brStep6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep6ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   tossPrep.ID,
-		Index:           6,
-		Notes:           "In the now empty bowl, toss broccoli with 1 teaspoon lemon zest.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	brStep6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: tossPrep.ID,
+		Index:         6,
+		Notes:         "In the now empty bowl, toss broccoli with 1 teaspoon lemon zest.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             brStep6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &broccoli.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "roasted broccoli",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep6ID,
 				ValidIngredientPreparationID:     &tossLemonVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonTeaspoonVIMU.ID,
-				IngredientID:                     &lemon.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep6ID,
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep6ID,
-				Name:                "broccoli with lemon zest",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "broccoli with lemon zest",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1047,47 +828,35 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 	}
 
 	// Broccoli Step 7: Transfer broccoli to serving platter
-	brStep7ID := identifiers.New()
-	brStep7 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep7ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           7,
-		Notes:           "Transfer broccoli to a serving platter.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	brStep7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         7,
+		Notes:         "Transfer broccoli to a serving platter.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             brStep7ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &broccoli.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "broccoli with lemon zest",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep7ID,
 				ValidPreparationVesselID: &transferServingPlatterVPV.ID,
-				VesselID:                 &servingPlatter.ID,
 				Name:                     "serving platter",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep7ID,
-				Name:                "broccoli on serving platter",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "broccoli on serving platter",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1097,23 +866,18 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 
 	// Broccoli Step 8: Sprinkle with breadcrumbs and Parmigiano-Reggiano
 	// This step references the Caesar Breadcrumbs recipe as a component
-	brStep8ID := identifiers.New()
-	brStep8 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              brStep8ID,
-		BelongsToRecipe: broccoliRecipeID,
-		PreparationID:   topPrep.ID,
-		Index:           8,
-		Notes:           "Sprinkle with breadcrumbs and Parmigiano-Reggiano and serve.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	// Note: RecipeStepProductRecipeID will need to be set when creating the recipe,
+	// as it references the breadcrumbs recipe that will be created first
+	brStep8 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: topPrep.ID,
+		Index:         8,
+		Notes:         "Sprinkle with breadcrumbs and Parmigiano-Reggiano and serve.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep8ID,
 				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				ValidIngredientPreparationID:     &topBroccoliVIP.ID,
 				ValidIngredientMeasurementUnitID: &broccoliPoundVIMU.ID,
-				IngredientID:                     &broccoli.ID,
-				MeasurementUnitID:                poundMeasurement.ID,
 				Name:                             "broccoli on serving platter",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
@@ -1121,53 +885,41 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 			},
 			{
 				// This ingredient references the Caesar Breadcrumbs recipe
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep8ID,
-				RecipeStepProductRecipeID:        &breadcrumbsRecipeID,
+				// RecipeStepProductRecipeID will be set when creating the recipe
+				RecipeStepProductRecipeID:        nil,                   // Will be set to breadcrumbs recipe ID when creating
 				ProductOfRecipeStepIndex:         pointer.To[uint64](7), // Final step of breadcrumbs recipe
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0), // First product of that step
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
-				IngredientID:                     &breadcrumbs.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "caesar breadcrumbs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              brStep8ID,
 				ValidIngredientPreparationID:     &topParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanTablespoonVIMU.ID,
-				IngredientID:                     &parmesan.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "grated Parmigiano-Reggiano cheese",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      brStep8ID,
 				ValidPreparationVesselID: &topServingPlatterVPV.ID,
-				VesselID:                 &servingPlatter.ID,
 				Name:                     "serving platter",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: brStep8ID,
-				Name:                "caesar roasted broccoli",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "caesar roasted broccoli",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1175,9 +927,7 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		},
 	}
 
-	caesarRoastedBroccoliRecipe := &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  broccoliRecipeID,
-		CreatedByUser:       userID,
+	caesarRoastedBroccoliRecipe := &mealplanning.RecipeCreationRequestInput{
 		Name:                "Caesar Roasted Broccoli",
 		Slug:                "caesar-roasted-broccoli",
 		Source:              "https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043",
@@ -1189,13 +939,14 @@ func CaesarRoastedBroccoliRecipe(userID string, enums *Enumerations) []*mealplan
 		PortionName:       "serving",
 		PluralPortionName: "servings",
 		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			brStep0, brStep1, brStep2, brStep3, brStep4, brStep5, brStep6, brStep7, brStep8,
-		},
+		Steps:             []*mealplanning.RecipeStepCreationRequestInput{brStep0, brStep1, brStep2, brStep3, brStep4, brStep5, brStep6, brStep7, brStep8},
+		PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+		Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
+		AlsoCreateMeal:    false,
 	}
 
 	// Return both recipes - breadcrumbs first since broccoli depends on it
-	return []*mealplanning.RecipeDatabaseCreationInput{
+	return []*mealplanning.RecipeCreationRequestInput{
 		caesarBreadcrumbsRecipe,
 		caesarRoastedBroccoliRecipe,
 	}

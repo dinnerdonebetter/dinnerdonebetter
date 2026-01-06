@@ -17,13 +17,19 @@ import (
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/bootstrap"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	identitygenerated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
 
@@ -226,27 +232,46 @@ func main() {
 			}
 			logger.Info("Enumerations created successfully!")
 
-			logger.Info("Creating bootstrap recipes...")
-			recipes := bootstrap.AllRecipes(adminUserID, enums)
-			logger.Info(fmt.Sprintf("Found %d recipes to create", len(recipes)))
-
-			// Always validate recipes
-			validator := bootstrap.NewRecipeValidatorFromEnumerations(enums)
-			for i, recipe := range recipes {
-				logger.Info(fmt.Sprintf("Validating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-				if err = validator.ValidateAndPopulate(recipe); err != nil {
-					return fmt.Errorf("failed to validate recipe %s: %w", recipe.Name, err)
-				}
+			// Create RecipeManager to create the first recipe
+			logger.Info("Creating RecipeManager...")
+			queueCfg := &msgconfig.QueuesConfig{
+				DataChangesTopicName: "data_changes",
 			}
-			logger.Info("All bootstrap recipes validated successfully!")
+			publisherProvider := messagequeue.NewNoopPublisherProvider()
+			recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
+			searchConfig := &textsearchcfg.Config{}
+			metricsProvider := metrics.NewNoopMetricsProvider()
 
+			recipeManager, recipeManagerErr := managers.NewRecipeManager(
+				ctx,
+				logger,
+				tracerProvider,
+				repo,
+				queueCfg,
+				publisherProvider,
+				recipeAnalyzer,
+				searchConfig,
+				metricsProvider,
+			)
+			if recipeManagerErr != nil {
+				return fmt.Errorf("failed to create recipe manager: %w", recipeManagerErr)
+			}
+			logger.Info("RecipeManager created successfully!")
+
+			logger.Info("Creating remaining bootstrap recipes...")
+			allRecipes := bootstrap.AllRecipes(enums)
+			logger.Info(fmt.Sprintf("Found %d recipes to create", len(allRecipes)))
+
+			var recipes []*mealplanning.Recipe
 			// Always create recipes
-			for i, recipe := range recipes {
+			for i, recipe := range allRecipes {
 				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-				_, err = repo.CreateRecipe(ctx, recipe)
-				if err != nil {
-					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, err)
+				r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
+				if createErr != nil {
+					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, createErr)
 				}
+
+				recipes = append(recipes, r)
 			}
 			logger.Info("All bootstrap recipes created successfully!")
 

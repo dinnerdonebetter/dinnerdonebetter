@@ -10,11 +10,11 @@ import (
 // AllMeals returns all bootstrap meal creation inputs.
 // Each meal pairs main dishes with appropriate side dishes.
 // Each meal is created with the provided userID as the creator.
-func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput) []*mealplanning.MealDatabaseCreationInput {
+func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.MealDatabaseCreationInput {
 	// Build maps of recipes by component type and by name for easy lookup
-	mainRecipes := make(map[string]*mealplanning.RecipeDatabaseCreationInput)
-	sideRecipes := make(map[string]*mealplanning.RecipeDatabaseCreationInput)
-	saladRecipes := make(map[string]*mealplanning.RecipeDatabaseCreationInput)
+	mainRecipes := make(map[string]*mealplanning.Recipe)
+	sideRecipes := make(map[string]*mealplanning.Recipe)
+	saladRecipes := make(map[string]*mealplanning.Recipe)
 
 	for _, recipe := range recipes {
 		switch recipe.YieldsComponentType {
@@ -39,7 +39,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 	}
 
 	// Helper function to create a meal component
-	createComponent := func(recipe *mealplanning.RecipeDatabaseCreationInput, componentType string, scale float32) *mealplanning.MealComponentDatabaseCreationInput {
+	createComponent := func(recipe *mealplanning.Recipe, componentType string, scale float32) *mealplanning.MealComponentDatabaseCreationInput {
 		return &mealplanning.MealComponentDatabaseCreationInput{
 			RecipeID:      recipe.ID,
 			ComponentType: componentType,
@@ -48,7 +48,7 @@ func AllMeals(userID string, recipes []*mealplanning.RecipeDatabaseCreationInput
 	}
 
 	// Helper function to get main portion range
-	getMainPortions := func(recipe *mealplanning.RecipeDatabaseCreationInput) (minimum float32, maximum *float32) {
+	getMainPortions := func(recipe *mealplanning.Recipe) (minimum float32, maximum *float32) {
 		minimum = recipe.EstimatedPortions.Min
 		if recipe.EstimatedPortions.Max != nil {
 			maximum = pointer.To(*recipe.EstimatedPortions.Max)

@@ -2,15 +2,13 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // SoySauceBraisedChickenThighsRecipe creates the Soy Sauce–Braised Chicken Thighs recipe.
 // Source: https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800
-func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
-	recipeID := identifiers.New()
+func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 
 	// Get preparations
 	combinePrep := enums.Preparations["combine"]
@@ -170,107 +168,76 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	waterCupVIMU := enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID]
 
 	// Step 0: In a small bowl, whisk together salt, MSG, 1/2 teaspoon five spice powder, 3 tablespoons dark brown sugar, and ground white pepper to combine. Set aside.
-	step0ID := identifiers.New()
-	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step0ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   combinePrep.ID,
-		Index:           0,
-		Notes:           "In a small bowl, whisk together salt, MSG, 1/2 teaspoon five spice powder, 3 tablespoons dark brown sugar, and ground white pepper to combine. Set aside.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step0 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: combinePrep.ID,
+		Index:         0,
+		Notes:         "In a small bowl, whisk together salt, MSG, 1/2 teaspoon five spice powder, 3 tablespoons dark brown sugar, and ground white pepper to combine. Set aside.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTablespoonVIMU.ID,
-				IngredientID:                     &salt.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &combineMSGVIP.ID,
 				ValidIngredientMeasurementUnitID: &msgTeaspoonVIMU.ID,
-				IngredientID:                     &msg.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "MSG",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &combineFiveSpiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fiveSpiceTeaspoonVIMU.ID,
-				IngredientID:                     &fiveSpice.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "five spice powder",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &combineDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
-				IngredientID:                     &darkBrownSugar.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "dark brown sugar",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &combineWhitePepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &whitePepperTeaspoonVIMU.ID,
-				IngredientID:                     &whitePepper.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "ground white pepper",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step0ID,
 				ValidPreparationInstrumentID: &combineWhiskVPI.ID,
-				InstrumentID:                 &whisk.ID,
 				Name:                         "whisk",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step0ID,
 				ValidPreparationVesselID: &combineSmallBowlVPV.ID,
-				VesselID:                 &smallBowl.ID,
 				Name:                     "small bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "dry brine mixture",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "dry brine mixture",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -279,67 +246,49 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 1: Transfer chicken thighs to a wire rack set in a rimmed 13- by 18-inch baking sheet
-	step1ID := identifiers.New()
-	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step1ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           1,
-		Notes:           "Transfer chicken thighs to a wire rack set in a rimmed 13- by 18-inch baking sheet.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         1,
+		Notes:         "Transfer chicken thighs to a wire rack set in a rimmed 13- by 18-inch baking sheet.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step1ID,
 				ValidIngredientPreparationID: &transferChickenVIP.ID,
-				IngredientID:                 &chickenThighs.ID,
-				MeasurementUnitID:            poundMeasurement.ID,
 				Name:                         "bone-in, skin-on chicken thighs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step1ID,
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step1ID,
 				ValidPreparationVesselID: &transferWireRackVPV.ID,
-				VesselID:                 &wireRack.ID,
 				Name:                     "wire rack",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step1ID,
 				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
-				VesselID:                 &bakingSheet.ID,
 				Name:                     "rimmed 13- by 18-inch baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "chicken on wire rack",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "chicken on wire rack",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -348,47 +297,35 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 2: Using paper towels, pat chicken dry
-	step2ID := identifiers.New()
-	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step2ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   dryPrep.ID,
-		Index:           2,
-		Notes:           "Using paper towels, pat chicken dry.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step2 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: dryPrep.ID,
+		Index:         2,
+		Notes:         "Using paper towels, pat chicken dry.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &dryChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "chicken on wire rack",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step2ID,
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
-				InstrumentID:                 &paperTowels.ID,
 				Name:                         "paper towels",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried chicken on wire rack",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "dried chicken on wire rack",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -397,59 +334,43 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 3: Season chicken generously on all sides with salt mixture
-	step3ID := identifiers.New()
-	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step3ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   seasonPrep.ID,
-		Index:           3,
-		Notes:           "Season chicken generously on all sides with salt mixture.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step3 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: seasonPrep.ID,
+		Index:         3,
+		Notes:         "Season chicken generously on all sides with salt mixture.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &seasonChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "dried chicken on wire rack",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &salt.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "dry brine mixture",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step3ID,
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
-				Name:                "chicken on wire rack",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "chicken on wire rack",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -458,35 +379,27 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 4: When ready to cook, adjust oven rack to middle position and preheat to 300°F (150°C)
-	step4ID := identifiers.New()
-	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step4ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   preheatPrep.ID,
-		Index:           4,
-		Notes:           "When ready to cook, adjust oven rack to middle position and preheat to 300°F (150°C).",
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: preheatPrep.ID,
+		Index:         4,
+		Notes:         "When ready to cook, adjust oven rack to middle position and preheat to 300°F (150°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](150), // 300°F
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step4ID,
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
-				VesselID:                 &oven.ID,
 				Name:                     "oven",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4ID,
-				Name:                "preheated oven at 300°F",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "preheated oven at 300°F",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -495,21 +408,14 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 5: Cut scallions into 2-inch segments
-	step5ID := identifiers.New()
-	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step5ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   cutPrep.ID,
-		Index:           5,
-		Notes:           "Cut scallions, green and white parts, into 2-inch segments.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: cutPrep.ID,
+		Index:         5,
+		Notes:         "Cut scallions, green and white parts, into 2-inch segments.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step5ID,
 				ValidIngredientPreparationID:     &cutScallionsVIP.ID,
 				ValidIngredientMeasurementUnitID: &scallionsUnitVIMU.ID,
-				IngredientID:                     &scallions.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
 				Name:                             "scallions",
 				QuantityNotes:                    "8 scallions",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -517,38 +423,30 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
-				InstrumentID:                 &knife.ID,
 				Name:                         "knife",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step5ID,
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step5ID,
-				Name:                "cut scallions",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "cut scallions",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](8),
 				},
@@ -557,21 +455,14 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 6: Peel ginger
-	step6ID := identifiers.New()
-	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step6ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   peelPrep.ID,
-		Index:           6,
-		Notes:           "Peel ginger.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: peelPrep.ID,
+		Index:         6,
+		Notes:         "Peel ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
 				ValidIngredientPreparationID:     &peelGingerVIP.ID,
 				ValidIngredientMeasurementUnitID: &gingerUnitVIMU.ID,
-				IngredientID:                     &ginger.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
 				Name:                             "ginger",
 				QuantityNotes:                    "One 2-inch piece",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -579,38 +470,30 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step6ID,
 				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step6ID,
 				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step6ID,
-				Name:                "peeled ginger",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "peeled ginger",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -619,60 +502,45 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 7: Slice ginger thinly
-	step7ID := identifiers.New()
-	step7 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step7ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   slicePrep.ID,
-		Index:           7,
-		Notes:           "Thinly slice the peeled ginger.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step7 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: slicePrep.ID,
+		Index:         7,
+		Notes:         "Thinly slice the peeled ginger.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step7ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sliceGingerVIP.ID,
-				IngredientID:                    &ginger.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "peeled ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step7ID,
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
-				InstrumentID:                 &knife.ID,
 				Name:                         "knife",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step7ID,
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step7ID,
-				Name:                "sliced ginger",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "sliced ginger",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -681,21 +549,14 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 8: Peel garlic cloves
-	step8ID := identifiers.New()
-	step8 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step8ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   peelPrep.ID,
-		Index:           8,
-		Notes:           "Peel 5 medium cloves of garlic.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step8 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: peelPrep.ID,
+		Index:         8,
+		Notes:         "Peel 5 medium cloves of garlic.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step8ID,
 				ValidIngredientPreparationID:     &peelGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
-				IngredientID:                     &garlic.ID,
-				MeasurementUnitID:                cloveMeasurement.ID,
 				Name:                             "garlic",
 				QuantityNotes:                    "5 medium cloves",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -703,38 +564,30 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step8ID,
 				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step8ID,
 				ValidPreparationVesselID: &peelCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step8ID,
-				Name:                "peeled garlic cloves",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cloveMeasurement.ID,
+				Name:              "peeled garlic cloves",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cloveMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](5),
 				},
@@ -743,143 +596,104 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 9: In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering
-	step9ID := identifiers.New()
-	step9OilIngredientID := identifiers.New()
-	step9CompletionConditionID := identifiers.New()
 	shimmeringState := enums.IngredientStates["shimmering"]
-	step9 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step9ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   heatPrep.ID,
-		Index:           9,
-		Notes:           "In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step9 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: heatPrep.ID,
+		Index:         9,
+		Notes:         "In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               step9OilIngredientID,
-				BelongsToRecipeStep:              step9ID,
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
-				IngredientID:                     &vegetableOil.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "neutral oil, such as vegetable",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step9ID,
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
-				VesselID:                 &castIronSkillet.ID,
 				Name:                     "large cast iron or carbon steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step9ID,
-				Name:                "heated skillet with oil",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "heated skillet with oil",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 		},
-		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
-				ID:                  step9CompletionConditionID,
-				BelongsToRecipeStep: step9ID,
-				IngredientStateID:   shimmeringState.ID,
-				Notes:               "Oil should shimmer when viewed",
-				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
-					{
-						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step9CompletionConditionID,
-						RecipeStepIngredient:                   step9OilIngredientID,
-					},
-				},
-				Optional: false,
+				IngredientStateID: shimmeringState.ID,
+				Notes:             "Oil should shimmer when viewed",
+				Ingredients:       []uint64{0}, // Index of oil ingredient in the step
+				Optional:          false,
 			},
 		},
 	}
 
 	// Step 10: Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes
-	step10ID := identifiers.New()
-	step10 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step10ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   panSearPrep.ID,
-		Index:           10,
-		Notes:           "Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
+	step10 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: panSearPrep.ID,
+		Index:         10,
+		Notes:         "Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240), // 4 minutes
 			Max: pointer.To[uint32](360), // 6 minutes
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step10ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &panSearChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "chicken on wire rack",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step10ID,
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step10ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "heated skillet with oil",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step10ID,
-				Name:                "seared chicken thighs (skin-side)",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "seared chicken thighs (skin-side)",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step10ID,
-				Name:                "skillet with seared chicken",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with seared chicken",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -888,75 +702,58 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 11: Flip chicken and cook lightly on second side, about 2 minutes
-	step11ID := identifiers.New()
-	step11 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step11ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   flipPrep.ID,
-		Index:           11,
-		Notes:           "Flip chicken and cook lightly on second side, about 2 minutes.",
+	step11 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: flipPrep.ID,
+		Index:         11,
+		Notes:         "Flip chicken and cook lightly on second side, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &flipChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "seared chicken thighs (skin-side)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step11ID,
 				ValidPreparationInstrumentID: &flipTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step11ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &flipSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with seared chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step11ID,
-				Name:                "seared chicken thighs (both sides)",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "seared chicken thighs (both sides)",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step11ID,
-				Name:                "skillet with seared chicken",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with seared chicken",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -965,59 +762,44 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 12: Transfer chicken to a large plate and set aside
-	step12ID := identifiers.New()
-	step12 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step12ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           12,
-		Notes:           "Transfer chicken to a large plate and set aside.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step12 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         12,
+		Notes:         "Transfer chicken to a large plate and set aside.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step12ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "seared chicken thighs (both sides)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step12ID,
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step12ID,
 				ValidPreparationVesselID: &transferLargePlateVPV.ID,
-				VesselID:                 &largePlate.ID,
 				Name:                     "large plate",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step12ID,
-				Name:                "seared chicken on plate",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               0,
+				Name:  "seared chicken on plate",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 0,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1026,126 +808,93 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 13: Reduce heat to medium-low. Add scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes
-	step13ID := identifiers.New()
-	step13 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step13ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   sautPrep.ID,
-		Index:           13,
-		Notes:           "Reduce heat to medium-low. Add scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes.",
+	step13 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: sautPrep.ID,
+		Index:         13,
+		Notes:         "Reduce heat to medium-low. Add scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180), // 3 minutes
 			Max: pointer.To[uint32](300), // 5 minutes
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sautScallionsVIP.ID,
-				IngredientID:                    &scallions.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "cut scallions",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sautGingerVIP.ID,
-				IngredientID:                    &ginger.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "sliced ginger",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sautGarlicVIP.ID,
-				IngredientID:                    &garlic.ID,
-				MeasurementUnitID:               cloveMeasurement.ID,
 				Name:                            "peeled garlic cloves",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 5,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step13ID,
 				ValidIngredientPreparationID:     &sautFiveSpiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &fiveSpiceTeaspoonVIMU.ID,
-				IngredientID:                     &fiveSpice.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "five spice powder",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step13ID,
 				ValidIngredientPreparationID:     &sautDarkBrownSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &darkBrownSugarTablespoonVIMU.ID,
-				IngredientID:                     &darkBrownSugar.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "dark brown sugar",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step13ID,
 				ValidPreparationInstrumentID: &sautWoodenSpoonVPI.ID,
-				InstrumentID:                 &woodenSpoon.ID,
 				Name:                         "wooden spoon",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step13ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &sautSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with seared chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step13ID,
-				Name:                "cooked aromatics",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "cooked aromatics",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step13ID,
-				Name:                "skillet with aromatics",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with aromatics",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1154,45 +903,30 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 14: Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat
-	step14ID := identifiers.New()
-	step14 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step14ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   simmerPrep.ID,
-		Index:           14,
-		Notes:           "Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step14 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: simmerPrep.ID,
+		Index:         14,
+		Notes:         "Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step14ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &scallions.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "cooked aromatics",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step14ID,
 				ValidIngredientPreparationID:     &simmerStarAniseVIP.ID,
 				ValidIngredientMeasurementUnitID: &starAniseUnitVIMU.ID,
-				IngredientID:                     &starAnise.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
 				Name:                             "star anise",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 3,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step14ID,
 				ValidIngredientPreparationID:     &simmerCinnamonStickVIP.ID,
 				ValidIngredientMeasurementUnitID: &cinnamonStickUnitVIMU.ID,
-				IngredientID:                     &cinnamonStick.ID,
-				MeasurementUnitID:                unitMeasurement.ID,
 				Name:                             "cinnamon stick",
 				QuantityNotes:                    "One 2-inch piece",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1200,74 +934,55 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &simmerLightSoySauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lightSoySauceCupVIMU.ID,
-				IngredientID:                     &lightSoySauce.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "light soy sauce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &simmerShaoxingWineVIP.ID,
 				ValidIngredientMeasurementUnitID: &shaoxingWineCupVIMU.ID,
-				IngredientID:                     &shaoxingWine.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "Shaoxing wine",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step10ID,
 				ValidIngredientPreparationID:     &simmerWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
-				IngredientID:                     &water.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "water",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1.5,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step14ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &simmerSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with aromatics",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step14ID,
-				Name:                "simmering braising liquid",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "simmering braising liquid",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step14ID,
-				Name:                "skillet with braising liquid",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with braising liquid",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1276,72 +991,55 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 15: Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat
-	step15ID := identifiers.New()
-	step15 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step15ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           15,
-		Notes:           "Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step15 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         15,
+		Notes:         "Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step15ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "seared chicken on plate",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step15ID,
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
-				InstrumentID:                 &tongs.ID,
 				Name:                         "tongs",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step15ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](14),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &transferSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with braising liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step15ID,
-				Name:                "chicken in braising liquid",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "chicken in braising liquid",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step11ID,
-				Name:                "skillet with chicken in braising liquid",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with chicken in braising liquid",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1350,158 +1048,116 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Step 16: Transfer skillet to oven and cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes
-	step16ID := identifiers.New()
-	step16ChickenIngredientID := identifiers.New()
-	step16CompletionConditionID := identifiers.New()
 	atTemperatureState := enums.IngredientStates["at temperature"]
-	step16 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step16ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   braisePrep.ID,
-		Index:           16,
-		Notes:           "Transfer skillet to oven and cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
+	step16 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: braisePrep.ID,
+		Index:         16,
+		Notes:         "Transfer skillet to oven and cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1800), // 30 minutes
 		},
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              step16ChickenIngredientID,
-				BelongsToRecipeStep:             step16ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &braiseChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "chicken in braising liquid",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step16ID,
 				ValidPreparationInstrumentID: &braiseThermometerVPI.ID,
-				InstrumentID:                 &thermometer.ID,
 				Name:                         "instant-read thermometer",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step16ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](15),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &braiseSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with chicken in braising liquid",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step16ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidPreparationVesselID:        &braiseOvenVPV.ID,
-				VesselID:                        &oven.ID,
 				Name:                            "preheated oven at 300°F",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step16ID,
-				Name:                "braised chicken thighs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:              "braised chicken thighs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &poundMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step16ID,
-				Name:                "skillet with braised chicken",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "skillet with braised chicken",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 		},
-		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
-				ID:                  step16CompletionConditionID,
-				BelongsToRecipeStep: step16ID,
-				IngredientStateID:   atTemperatureState.ID,
-				Notes:               "Chicken should register at least 175°F (79°C) on an instant-read thermometer",
-				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
-					{
-						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step16CompletionConditionID,
-						RecipeStepIngredient:                   step16ChickenIngredientID,
-					},
-				},
-				Optional: false,
+				IngredientStateID: atTemperatureState.ID,
+				Notes:             "Chicken should register at least 175°F (79°C) on an instant-read thermometer",
+				Ingredients:       []uint64{0}, // Index of chicken ingredient in the step
+				Optional:          false,
 			},
 		},
 	}
 
 	// Step 17: Remove pan from oven
-	step17ID := identifiers.New()
-	step17 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step17ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   transferPrep.ID,
-		Index:           17,
-		Notes:           "Remove pan from oven.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step17 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: transferPrep.ID,
+		Index:         17,
+		Notes:         "Remove pan from oven.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step17ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
-				IngredientID:                    &chickenThighs.ID,
-				MeasurementUnitID:               poundMeasurement.ID,
 				Name:                            "braised chicken thighs",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step17ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &transferSkilletVPV.ID,
-				VesselID:                        &castIronSkillet.ID,
 				Name:                            "skillet with braised chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step17ID,
-				Name:                "soy sauce braised chicken thighs",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "soy sauce braised chicken thighs",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1510,10 +1166,7 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 	}
 
 	// Create prep task for dry-brining chicken ahead of time
-	prepTask1ID := identifiers.New()
-	prepTask1 := &mealplanning.RecipePrepTaskDatabaseCreationInput{
-		ID:                          prepTask1ID,
-		BelongsToRecipe:             recipeID,
+	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
 		Name:                        "Dry-brine chicken thighs",
 		Description:                 "The chicken can be dry-brined at least 8 hours and up to 72 hours in advance. Store in the refrigerator uncovered on a wire rack set in a rimmed baking sheet.",
 		Notes:                       "Dry-brining yields tender, juicy meat with crackly skin.",
@@ -1527,37 +1180,31 @@ func SoySauceBraisedChickenThighsRecipe(userID string, enums *Enumerations) []*m
 			Min: 28800,                      // 8 hours
 			Max: pointer.To[uint32](259200), // 72 hours
 		},
-		TaskSteps: []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{
-			{ID: identifiers.New(), BelongsToRecipeStep: step0ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
-			{ID: identifiers.New(), BelongsToRecipeStep: step1ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
-			{ID: identifiers.New(), BelongsToRecipeStep: step2ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: false},
-			{ID: identifiers.New(), BelongsToRecipeStep: step3ID, BelongsToRecipePrepTask: prepTask1ID, SatisfiesRecipeStep: true},
+		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
+			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: true},
 		},
 	}
 
-	soySauceBraisedChickenThighsRecipe := &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Soy Sauce–Braised Chicken Thighs",
-		Slug:                "soy-sauce-braised-chicken-thighs",
-		Source:              "https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800",
-		Description:         "Bathed in a fragrant blend of soy sauce, brown sugar, and warm spices, these tender chicken thighs evoke the flavors of classic Cantonese soy sauce chicken. The chicken is seared until crispy, then gently braised in the oven.",
-		YieldsComponentType: mealplanning.MealComponentTypesMain,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 4,
+	return []*mealplanning.RecipeCreationRequestInput{
+		{
+			Name:                "Soy Sauce–Braised Chicken Thighs",
+			Slug:                "soy-sauce-braised-chicken-thighs",
+			Source:              "https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800",
+			Description:         "Bathed in a fragrant blend of soy sauce, brown sugar, and warm spices, these tender chicken thighs evoke the flavors of classic Cantonese soy sauce chicken. The chicken is seared until crispy, then gently braised in the oven.",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
+			AlsoCreateMeal:    false,
 		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17,
-		},
-		PrepTasks: []*mealplanning.RecipePrepTaskDatabaseCreationInput{
-			prepTask1,
-		},
-	}
-
-	return []*mealplanning.RecipeDatabaseCreationInput{
-		soySauceBraisedChickenThighsRecipe,
 	}
 }
