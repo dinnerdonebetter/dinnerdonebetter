@@ -62,7 +62,8 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                                struct{}                          `json:"-"`
+		_ struct{} `json:"-"`
+
 		Quantity                         types.Float32RangeWithOptionalMax `json:"quantity"`
 		ValidIngredientMeasurementUnitID *string                           `json:"validIngredientMeasurementUnitID"`
 		Index                            *uint16                           `json:"index,omitempty"`
@@ -82,7 +83,8 @@ type (
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                                struct{}                          `json:"-"`
+		_ struct{} `json:"-"`
+
 		Quantity                         types.Float32RangeWithOptionalMax `json:"-"`
 		RecipeStepProductRecipeID        *string                           `json:"-"`
 		IngredientID                     *string                           `json:"-"`

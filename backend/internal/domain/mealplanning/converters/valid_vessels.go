@@ -105,6 +105,11 @@ func ConvertNullableValidVesselToValidVessel(x *types.NullableValidVessel) *type
 
 // ConvertValidVesselToValidVesselCreationRequestInput builds a ValidVesselCreationRequestInput from a ValidVessel.
 func ConvertValidVesselToValidVesselCreationRequestInput(x *types.ValidVessel) *types.ValidVesselCreationRequestInput {
+	var capacityUnitID *string
+	if x.CapacityUnit != nil {
+		capacityUnitID = &x.CapacityUnit.ID
+	}
+
 	v := &types.ValidVesselCreationRequestInput{
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
@@ -119,10 +124,7 @@ func ConvertValidVesselToValidVesselCreationRequestInput(x *types.ValidVessel) *
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
 		Shape:                          x.Shape,
-	}
-
-	if x.CapacityUnit != nil {
-		v.CapacityUnitID = &x.CapacityUnit.ID
+		CapacityUnitID:                 capacityUnitID,
 	}
 
 	return v

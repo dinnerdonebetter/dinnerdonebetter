@@ -4,14 +4,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 )
 
-// AllRecipes returns all bootstrap recipe creation inputs.
+// AllRecipes returns all bootstrap recipe creation inputs that do not have prerequisites.
 // Each recipe is created with the provided userID as the creator.
 // Note: PanSearedButterBastedSteakRecipe is excluded as it's created separately using RecipeManager.
 func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	var recipes []*mealplanning.RecipeCreationRequestInput
 
-	// working recipes here
-
+	// Recipes without prerequisites
 	recipes = append(recipes, PanSearedButterBastedSteakRecipe(enums)...)
 	recipes = append(recipes, SousVideChickenBreastRecipe(enums)...)
 	recipes = append(recipes, PerfectRoastChickenRecipe(enums)...)
@@ -24,7 +23,6 @@ func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput 
 	recipes = append(recipes, RoastedBrusselsSproutsRecipe(enums)...)
 	recipes = append(recipes, StovetopMacAndCheeseRecipe(enums)...)
 	recipes = append(recipes, CaesarDressingRecipe(enums)...)
-	recipes = append(recipes, GarlicParmesanCroutonsRecipe(enums)...)
 	recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(enums)...)
 	recipes = append(recipes, StirFriedGreenBeansRecipe(enums)...)
 	recipes = append(recipes, TortillasRecipe(enums)...)
@@ -38,10 +36,20 @@ func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput 
 	recipes = append(recipes, TeriyakiSauceRecipe(enums)...)
 	recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(enums)...)
 
-	// these recipes have prerequisites
-	// recipes = append(recipes, GrilledWholeCauliflowerRecipe(enums)...)
-	// recipes = append(recipes, CaesarSaladRecipe(enums)...)
-	// recipes = append(recipes, CaesarRoastedBroccoliRecipe(enums)...)
+	return recipes
+}
+
+// AllRecipesWithPrerequisites returns all bootstrap recipe creation inputs that have prerequisites.
+// The createdRecipes map should contain recipes keyed by their slug (e.g., "teriyaki-sauce", "caesar-dressing").
+// Each recipe is created with the provided userID as the creator.
+func AllRecipesWithPrerequisites(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
+	var recipes []*mealplanning.RecipeCreationRequestInput
+
+	// Recipes with prerequisites - these need the lookup map to resolve prerequisite IDs
+	recipes = append(recipes, GarlicParmesanCroutonsRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, GrilledWholeCauliflowerRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, CaesarSaladRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, CaesarRoastedBroccoliRecipe(enums, createdRecipes)...)
 
 	return recipes
 }

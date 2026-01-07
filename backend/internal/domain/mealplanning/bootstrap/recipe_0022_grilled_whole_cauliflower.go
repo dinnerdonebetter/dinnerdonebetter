@@ -9,8 +9,8 @@ import (
 // GrilledWholeCauliflowerRecipe creates the Grilled Whole Cauliflower with Teriyaki Sauce recipe.
 // Source: https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549
 // Note: This recipe references the Teriyaki Sauce recipe, which must be created first.
-func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
+// The createdRecipes map should contain the "teriyaki-sauce" recipe keyed by its slug.
+func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Helper to safely get MealPlanTaskID pointer from VIP
 	vipID := func(v *mealplanning.ValidIngredientPreparation) *string {
 		if v == nil {
@@ -277,17 +277,25 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 
 	// Step 11: Brush first layer of sauce
 	gc11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: brushPrep.ID, Index: 11, Notes: "Uncover grill, and using a heatproof brush, brush one layer of reserved sauce over cauliflower heads.",
+		PreparationID: brushPrep.ID,
+		Index:         11,
+		Notes:         "Uncover grill, and using a heatproof brush, brush one layer of reserved sauce over cauliflower heads.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ProductOfRecipeStepIndex: pointer.To[uint64](10), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "partially cooked cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1},
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    vipID(brushCauliflowerVIP),
+				Name:                            "partially cooked cauliflower",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID: nil,
-				Name:                      "teriyaki sauce",
-				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
+				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				Name:                            "teriyaki sauce",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(brushBrushVPI), Name: "heatproof brush", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
@@ -296,11 +304,17 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 
 	// Step 12: Continue cooking until tender
 	gc12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: grillPrep.ID, Index: 12,
+		PreparationID:          grillPrep.ID,
+		Index:                  12,
 		Notes:                  "Cover and continue cooking until thermometer registers 175°F at the thickest part of the core, and cauliflower is tan, but not well browned yet, rotating cauliflower occasionally, 20 to 30 minutes longer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](1200), Max: pointer.To[uint32](1800)},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{ProductOfRecipeStepIndex: pointer.To[uint64](11), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(grillCauliflowerVIP), Name: "sauced cauliflower (first coat)", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
+			{
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    vipID(grillCauliflowerVIP),
+				Name:                            "sauced cauliflower (first coat)",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1}},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{ValidPreparationInstrumentID: vpiID(grillTongsVPI), Name: "tongs", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}},
@@ -317,13 +331,21 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 	gc13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: brushPrep.ID, Index: 13, Notes: "Uncover grill and brush cauliflower with a second layer of sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{ProductOfRecipeStepIndex: pointer.To[uint64](12), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "tender cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 			{
-				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID: nil,
-				Name:                      "teriyaki sauce",
-				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ValidIngredientPreparationID:    vipID(brushCauliflowerVIP),
+				Name:                            "tender cauliflower",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
+			},
+			{
+				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				Name:                            "teriyaki sauce",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(brushBrushVPI), Name: "heatproof brush", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
@@ -358,11 +380,13 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](15), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "lightly browned cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 			{
-				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID: nil,
-				Name:                      "teriyaki sauce",
-				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
+				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
+				Name:                            "teriyaki sauce",
+				Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{

@@ -9,7 +9,6 @@ import (
 // StovetopMacAndCheeseRecipe creates the Ultra-Gooey Stovetop Mac and Cheese recipe.
 // Source: https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese
 func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	submergePrep := enums.Preparations["submerge"]
 	boilPrep := enums.Preparations["boil"]

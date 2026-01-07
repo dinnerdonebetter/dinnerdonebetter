@@ -9,7 +9,6 @@ import (
 // UltraFluffyMashedPotatoesRecipe creates the Ultra-Fluffy Mashed Potatoes recipe.
 // Source: https://www.seriouseats.com/ultra-fluffy-mashed-potatoes-recipe
 func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	peelPrep := enums.Preparations["peel"]
 	cubePrep := enums.Preparations["cube"]

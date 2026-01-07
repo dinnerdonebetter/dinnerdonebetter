@@ -337,6 +337,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:          identifiers.New(),
 			Name:        "sopa de frijol",
 			Description: "",
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
@@ -397,7 +398,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 			},
 		}
 
-		findCreatedRecipeStepProductsForIngredients(exampleRecipeInput)
+		ctx := t.Context()
+		c := buildInertClientForTest(t)
+		err := c.findCreatedRecipeStepProductsForIngredients(ctx, exampleRecipeInput)
+		require.NoError(t, err)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
@@ -413,6 +417,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:          identifiers.New(),
 			Name:        "sopa de frijol",
 			Description: "",
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
@@ -526,7 +531,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 			},
 		}
 
-		findCreatedRecipeStepProductsForIngredients(exampleRecipeInput)
+		ctx := t.Context()
+		c := buildInertClientForTest(t)
+		err := c.findCreatedRecipeStepProductsForIngredients(ctx, exampleRecipeInput)
+		require.NoError(t, err)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)

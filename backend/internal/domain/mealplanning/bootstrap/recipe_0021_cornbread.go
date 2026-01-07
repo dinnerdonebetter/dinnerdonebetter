@@ -9,7 +9,6 @@ import (
 // CornbreadRecipe creates the Cornbread recipe.
 // Source: https://www.kingarthurbaking.com/recipes/cornbread-recipe
 func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	preheatPrep := enums.Preparations["preheat"]
 	greasePrep := enums.Preparations["grease"]

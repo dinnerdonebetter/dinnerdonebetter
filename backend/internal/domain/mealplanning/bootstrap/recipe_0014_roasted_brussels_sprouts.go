@@ -9,7 +9,6 @@ import (
 // RoastedBrusselsSproutsRecipe creates the Roasted Brussels Sprouts recipe.
 // Source: https://www.seriouseats.com/roasted-brussels-sprouts-and-shallots-with-balsamic-vinegar-thanksgiving-recipe
 func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	trimPrep := enums.Preparations["trim"]
 	halvePrep := enums.Preparations["halve"]

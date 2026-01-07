@@ -9,7 +9,6 @@ import (
 // SimpleWhiteRiceRecipe creates the Simple White Rice recipe.
 // Source: https://www.seriouseats.com/essentials-how-to-cook-rice
 func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	rinsePrep := enums.Preparations["rinse"]
 	simmerPrep := enums.Preparations["simmer"]

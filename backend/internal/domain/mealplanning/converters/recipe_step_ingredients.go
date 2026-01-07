@@ -31,6 +31,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		OptionIndex:                     input.OptionIndex,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		RecipeStepProductRecipeID:       input.RecipeStepProductRecipeID,
 		VesselIndex:                     input.VesselIndex,
 		ToTaste:                         input.ToTaste,
 		ProductPercentageToUse:          input.ProductPercentageToUse,

@@ -7,7 +7,6 @@ import (
 )
 
 func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	mixPrep := enums.Preparations["mix"]
 	seasonPrep := enums.Preparations["season"]

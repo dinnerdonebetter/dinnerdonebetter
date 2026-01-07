@@ -7,7 +7,6 @@ import (
 )
 
 func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	dryPrep := enums.Preparations["dry"]
 	seasonPrep := enums.Preparations["season"]

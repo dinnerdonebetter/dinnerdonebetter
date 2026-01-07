@@ -9,7 +9,6 @@ import (
 // TortillasRecipe creates the Simple Tortillas recipe.
 // Source: https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe
 func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	mixPrep := enums.Preparations["mix"]
 	addPrep := enums.Preparations["add"]

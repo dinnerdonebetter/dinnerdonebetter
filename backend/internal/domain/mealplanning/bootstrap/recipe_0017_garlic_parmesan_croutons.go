@@ -9,7 +9,8 @@ import (
 // GarlicParmesanCroutonsRecipe creates the Garlic Parmesan Croutons recipe.
 // Source: https://www.seriouseats.com/the-best-caesar-salad-recipe
 // Note: This recipe references the Caesar Dressing recipe for "garlic-infused olive oil", which must be created first.
-func GarlicParmesanCroutonsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
+// The createdRecipes map should contain the "caesar-dressing" recipe keyed by its slug.
+func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
 	preheatPrep := enums.Preparations["preheat"]
 	addPrep := enums.Preparations["add"]
@@ -176,10 +177,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Notes:         "Add bread cubes to garlic-infused olive oil from the dressing recipe and toss to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				// RecipeStepProductRecipeID should reference the "Caesar Dressing" recipe (slug: "caesar-dressing")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				// The product should be "garlic-infused olive oil" from step 2 (index 2), product index 0
-				RecipeStepProductRecipeID:        nil,
+				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
+				// The product "garlic-infused olive oil" is from step 2 (index 2), product index 0
+				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "garlic-infused olive oil",
 				Quantity: types.Float32RangeWithOptionalMax{

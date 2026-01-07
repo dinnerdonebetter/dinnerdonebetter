@@ -9,7 +9,6 @@ import (
 // GlazedCarrotsWithBrownButterAndSageRecipe creates the Glazed Carrots with Brown Butter and Sage recipe.
 // Source: https://www.seriouseats.com/glazed-carrots-recipe-11856362
 func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	meltPrep := enums.Preparations["melt"]
 	addPrep := enums.Preparations["add"]

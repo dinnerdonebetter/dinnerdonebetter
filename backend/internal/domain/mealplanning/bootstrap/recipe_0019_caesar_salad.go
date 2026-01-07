@@ -9,7 +9,8 @@ import (
 // CaesarSaladRecipe creates the Caesar Salad recipe.
 // Source: https://www.seriouseats.com/the-best-caesar-salad-recipe
 // Note: This recipe references the Caesar Dressing and Garlic Parmesan Croutons recipes, which must be created first.
-func CaesarSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
+// The createdRecipes map should contain the "caesar-dressing" and "garlic-parmesan-croutons" recipes keyed by their slugs.
+func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
 	tossPrep := enums.Preparations["toss"]
 	sprinklePrep := enums.Preparations["sprinkle"]
@@ -221,9 +222,11 @@ func CaesarSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				// RecipeStepProductRecipeID should reference the "Caesar Dressing" recipe (slug: "caesar-dressing")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID:        nil,
+				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
+				// The product "Caesar dressing" is from step 6 (index 6), product index 0
+				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
 				Name:                             "Caesar dressing",
 				QuantityNotes:                    "add more if desired",
@@ -327,9 +330,11 @@ func CaesarSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				// RecipeStepProductRecipeID should reference the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID:        nil,
+				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
+				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
+				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
 				ValidIngredientPreparationID:     &tossBreadVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
 				Name:                             "garlic parmesan croutons",
@@ -423,9 +428,11 @@ func CaesarSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 				},
 			},
 			{
-				// RecipeStepProductRecipeID should reference the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				RecipeStepProductRecipeID:        nil,
+				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
+				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
+				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
 				ValidIngredientPreparationID:     &sprinkleBreadVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadCupVIMU.ID,
 				Name:                             "garlic parmesan croutons",

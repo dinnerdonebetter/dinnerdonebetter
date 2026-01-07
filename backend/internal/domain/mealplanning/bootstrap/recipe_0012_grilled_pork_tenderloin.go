@@ -9,7 +9,6 @@ import (
 // GrilledPorkTenderloinRecipe creates the Grilled Pork Tenderloin recipe.
 // Source: https://www.seriouseats.com/grilled-pork-tenderloin-recipe-7505776
 func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	trimPrep := enums.Preparations["trim"]
 	seasonPrep := enums.Preparations["season"]

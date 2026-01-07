@@ -7,7 +7,6 @@ import (
 )
 
 func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	heatPrep := enums.Preparations["heat"]
 	seasonPrep := enums.Preparations["season"]

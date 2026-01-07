@@ -9,7 +9,6 @@ import (
 // RefriedBeansRecipe creates the Perfect Frijoles Refritos (Mexican Refried Beans) recipe.
 // Source: https://www.seriouseats.com/perfect-refried-beans
 func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	halvePrep := enums.Preparations["halve"]
 	mincePrep := enums.Preparations["mince"]

@@ -9,7 +9,6 @@ import (
 // HaricotsVertsAmandineRecipe creates the Haricots Verts Amandine (French-Style Green Beans With Almonds) recipe.
 // Source: https://www.seriouseats.com/green-beans-amandine-french-almondine-recipe
 func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	boilPrep := enums.Preparations["boil"]
 	blanchPrep := enums.Preparations["blanch"]

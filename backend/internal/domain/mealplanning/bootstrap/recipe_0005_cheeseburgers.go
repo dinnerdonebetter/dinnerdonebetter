@@ -8,7 +8,6 @@ import (
 
 // ClassicSmashBurgersRecipe creates the Classic Smashed Burgers recipe from Serious Eats.
 func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	heatPrep := enums.Preparations["heat"]
 	formPrep := enums.Preparations["form"]

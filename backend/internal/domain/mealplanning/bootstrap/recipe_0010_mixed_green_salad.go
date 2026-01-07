@@ -9,7 +9,6 @@ import (
 // MixedGreenSaladRecipe creates the Mixed Green Salad (Misticanza alla Romana) recipe.
 // Source: https://www.seriouseats.com/roman-mixed-green-salad-misticanza-recipe
 func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	inspectPrep := enums.Preparations["inspect"]
 	rinsePrep := enums.Preparations["rinse"]

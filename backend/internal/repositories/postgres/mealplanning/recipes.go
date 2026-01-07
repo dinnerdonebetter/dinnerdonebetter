@@ -779,9 +779,20 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Media:               []*mealplanning.RecipeMedia{},
 	}
 
-	findCreatedRecipeStepProductsForIngredients(input)
+	if input.Name == "Garlic Parmesan Croutons" {
+		fmt.Println(input.Steps[2].Ingredients[0].RecipeStepProductRecipeID)
+	}
+
+	if err = q.findCreatedRecipeStepProductsForIngredients(ctx, input); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "finding recipe step products for ingredients")
+	}
 	findCreatedRecipeStepProductsForInstruments(input)
 	findCreatedRecipeStepProductsForVessels(input)
+
+	if input.Name == "Garlic Parmesan Croutons" {
+		fmt.Println(input.Steps[2].Ingredients[0].RecipeStepProductRecipeID)
+	}
 
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
@@ -862,24 +873,69 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	return x, nil
 }
 
-func findCreatedRecipeStepProductsForIngredients(recipe *mealplanning.RecipeDatabaseCreationInput) {
+// findCreatedRecipeStepProductsForIngredients finds and links recipe step products for ingredients.
+// It handles both products from the same recipe and products from other recipes (via RecipeStepProductRecipeID).
+func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Context, recipe *mealplanning.RecipeDatabaseCreationInput) error {
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
-			if ingredient.ProductOfRecipeStepIndex != nil && ingredient.ProductOfRecipeStepProductIndex != nil {
-				enoughSteps := len(recipe.Steps) > int(*ingredient.ProductOfRecipeStepIndex)
-				enoughRecipeStepProducts := len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products) > int(*ingredient.ProductOfRecipeStepProductIndex)
-				relevantProductIsIngredient := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductIngredientType
-				if enoughSteps && enoughRecipeStepProducts && relevantProductIsIngredient {
-					product := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex]
+			if ingredient.ProductOfRecipeStepIndex == nil || ingredient.ProductOfRecipeStepProductIndex == nil {
+				continue
+			}
+
+			// Check if this references a product from a different recipe
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != recipe.ID {
+				// Look up the referenced recipe
+				referencedRecipe, err := q.getRecipe(ctx, *ingredient.RecipeStepProductRecipeID)
+				if err != nil {
+					return fmt.Errorf("failed to get referenced recipe %s: %w", *ingredient.RecipeStepProductRecipeID, err)
+				}
+
+				// Find the product by step index and product index
+				stepIndex := int(*ingredient.ProductOfRecipeStepIndex)
+				if stepIndex >= len(referencedRecipe.Steps) {
+					continue
+				}
+
+				referencedStep := referencedRecipe.Steps[stepIndex]
+				productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
+				if productIndex >= len(referencedStep.Products) {
+					continue
+				}
+
+				product := referencedStep.Products[productIndex]
+				if product.Type == mealplanning.RecipeStepProductIngredientType {
 					ingredient.RecipeStepProductID = &product.ID
 					// Inherit measurement unit from the product if not already set
-					if ingredient.MeasurementUnitID == "" && product.MeasurementUnitID != nil {
-						ingredient.MeasurementUnitID = *product.MeasurementUnitID
+					if ingredient.MeasurementUnitID == "" && product.MeasurementUnit != nil {
+						ingredient.MeasurementUnitID = product.MeasurementUnit.ID
 					}
+				}
+				continue
+			}
+
+			// Original logic: product from the same recipe
+			enoughSteps := len(recipe.Steps) > int(*ingredient.ProductOfRecipeStepIndex)
+			if !enoughSteps {
+				continue
+			}
+
+			enoughRecipeStepProducts := len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products) > int(*ingredient.ProductOfRecipeStepProductIndex)
+			if !enoughRecipeStepProducts {
+				continue
+			}
+
+			relevantProductIsIngredient := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].Type == mealplanning.RecipeStepProductIngredientType
+			if relevantProductIsIngredient {
+				product := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex]
+				ingredient.RecipeStepProductID = &product.ID
+				// Inherit measurement unit from the product if not already set
+				if ingredient.MeasurementUnitID == "" && product.MeasurementUnitID != nil {
+					ingredient.MeasurementUnitID = *product.MeasurementUnitID
 				}
 			}
 		}
 	}
+	return nil
 }
 
 func findCreatedRecipeStepProductsForInstruments(recipe *mealplanning.RecipeDatabaseCreationInput) {

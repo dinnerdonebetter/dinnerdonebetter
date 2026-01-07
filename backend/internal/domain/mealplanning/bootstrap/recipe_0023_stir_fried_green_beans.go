@@ -9,7 +9,6 @@ import (
 // StirFriedGreenBeansRecipe creates the Stir-Fried Green Beans recipe.
 // Source: https://www.seriouseats.com/stir-fried-green-beans-recipe
 func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	trimPrep := enums.Preparations["trim"]
 	snapPrep := enums.Preparations["snap"]

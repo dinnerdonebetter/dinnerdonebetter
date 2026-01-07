@@ -9,7 +9,6 @@ import (
 // ButterChickenRecipe creates the Butter Chicken recipe.
 // Source: https://www.seriouseats.com/stovetop-butter-chicken
 func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	toastPrep := enums.Preparations["toast"]
 	grindPrep := enums.Preparations["grind"]

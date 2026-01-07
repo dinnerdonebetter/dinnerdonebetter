@@ -9,7 +9,6 @@ import (
 // PanSearedSalmonFilletsRecipe creates the Crispy Pan-Seared Salmon Fillets recipe.
 // Source: https://www.seriouseats.com/crispy-pan-seared-salmon-fillets-recipe
 func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	dryPrep := enums.Preparations["dry"]
 	seasonPrep := enums.Preparations["season"]

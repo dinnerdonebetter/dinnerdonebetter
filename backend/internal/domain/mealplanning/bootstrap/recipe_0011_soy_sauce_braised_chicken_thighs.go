@@ -9,7 +9,6 @@ import (
 // SoySauceBraisedChickenThighsRecipe creates the Soy Sauce–Braised Chicken Thighs recipe.
 // Source: https://www.seriouseats.com/soy-sauce-braised-chicken-thighs-recipe-8737800
 func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	combinePrep := enums.Preparations["combine"]
 	dryPrep := enums.Preparations["dry"]

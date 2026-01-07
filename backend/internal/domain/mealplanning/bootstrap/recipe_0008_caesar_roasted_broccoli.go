@@ -9,8 +9,8 @@ import (
 // CaesarRoastedBroccoliRecipe creates the Caesar Roasted Broccoli recipe.
 // Source: https://www.seriouseats.com/caesar-roasted-broccoli-recipe-8672043
 // Note: This recipe references the Caesar Breadcrumbs recipe, which must be created first.
-func CaesarRoastedBroccoliRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
+// The createdRecipes map should contain the "caesar-breadcrumbs" recipe keyed by its slug.
+func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
 	linePrep := enums.Preparations["line"]
 	preheatPrep := enums.Preparations["preheat"]
@@ -427,10 +427,11 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				},
 			},
 			{
-				// RecipeStepProductRecipeID should reference the "Caesar Breadcrumbs" recipe (slug: "caesar-breadcrumbs")
-				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
-				// The product should be "caesar breadcrumbs" from step 7 (index 7), product index 0
-				RecipeStepProductRecipeID:        nil,
+				// RecipeStepProductRecipeID references the "Caesar Breadcrumbs" recipe (slug: "caesar-breadcrumbs")
+				// The product "caesar breadcrumbs" is from step 7 (index 7), product index 0
+				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
+				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-breadcrumbs"),
 				ValidIngredientPreparationID:     &topBreadcrumbsVIP.ID,
 				ValidIngredientMeasurementUnitID: &breadcrumbsCupVIMU.ID,
 				Name:                             "caesar breadcrumbs",

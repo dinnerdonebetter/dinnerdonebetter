@@ -7,15 +7,17 @@ import (
 
 // ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput creates a ValidMeasurementUnitConversionUpdateRequestInput from a ValidMeasurementUnitConversion.
 func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput(input *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionUpdateRequestInput {
-	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
-		From:     &input.From.ID,
-		To:       &input.To.ID,
-		Modifier: &input.Modifier,
-		Notes:    &input.Notes,
+	var onlyForIngredient *string
+	if input.OnlyForIngredient != nil {
+		onlyForIngredient = &input.OnlyForIngredient.ID
 	}
 
-	if input.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &input.OnlyForIngredient.ID
+	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
+		From:              &input.From.ID,
+		To:                &input.To.ID,
+		Modifier:          &input.Modifier,
+		Notes:             &input.Notes,
+		OnlyForIngredient: onlyForIngredient,
 	}
 
 	return x
@@ -37,15 +39,17 @@ func ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurement
 
 // ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput builds a ValidMeasurementUnitConversionCreationRequestInput from a ValidMeasurementUnitConversion.
 func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(validMeasurementUnitConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionCreationRequestInput {
-	x := &types.ValidMeasurementUnitConversionCreationRequestInput{
-		From:     validMeasurementUnitConversion.From.ID,
-		To:       validMeasurementUnitConversion.To.ID,
-		Modifier: validMeasurementUnitConversion.Modifier,
-		Notes:    validMeasurementUnitConversion.Notes,
+	var onlyForIngredient *string
+	if validMeasurementUnitConversion.OnlyForIngredient != nil {
+		onlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
 	}
 
-	if validMeasurementUnitConversion.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
+	x := &types.ValidMeasurementUnitConversionCreationRequestInput{
+		From:              validMeasurementUnitConversion.From.ID,
+		To:                validMeasurementUnitConversion.To.ID,
+		Modifier:          validMeasurementUnitConversion.Modifier,
+		Notes:             validMeasurementUnitConversion.Notes,
+		OnlyForIngredient: onlyForIngredient,
 	}
 
 	return x
@@ -53,16 +57,18 @@ func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreati
 
 // ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput builds a ValidMeasurementUnitConversionDatabaseCreationInput from a ValidMeasurementUnitConversion.
 func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput(validMeasurementUnitConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionDatabaseCreationInput {
-	x := &types.ValidMeasurementUnitConversionDatabaseCreationInput{
-		ID:       validMeasurementUnitConversion.ID,
-		From:     validMeasurementUnitConversion.From.ID,
-		To:       validMeasurementUnitConversion.To.ID,
-		Modifier: validMeasurementUnitConversion.Modifier,
-		Notes:    validMeasurementUnitConversion.Notes,
+	var onlyForIngredient *string
+	if validMeasurementUnitConversion.OnlyForIngredient != nil {
+		onlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
 	}
 
-	if validMeasurementUnitConversion.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
+	x := &types.ValidMeasurementUnitConversionDatabaseCreationInput{
+		ID:                validMeasurementUnitConversion.ID,
+		From:              validMeasurementUnitConversion.From.ID,
+		To:                validMeasurementUnitConversion.To.ID,
+		Modifier:          validMeasurementUnitConversion.Modifier,
+		Notes:             validMeasurementUnitConversion.Notes,
+		OnlyForIngredient: onlyForIngredient,
 	}
 
 	return x

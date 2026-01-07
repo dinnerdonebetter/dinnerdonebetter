@@ -9,7 +9,6 @@ import (
 // CarneAsadaRecipe creates the Best Carne Asada recipe.
 // Source: https://www.seriouseats.com/carne-asada-food-lab-recipe-kenji
 func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-
 	// Get preparations
 	microwavePrep := enums.Preparations["microwave"]
 	transferPrep := enums.Preparations["transfer"]

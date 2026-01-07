@@ -12,6 +12,8 @@ func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPl
 		Notes:                  &input.Notes,
 		MealScale:              &input.MealScale,
 		BelongsToMealPlanEvent: &input.BelongsToMealPlanEvent,
+		AssignedCook:           input.AssignedCook,
+		AssignedDishwasher:     input.AssignedDishwasher,
 	}
 
 	return x
