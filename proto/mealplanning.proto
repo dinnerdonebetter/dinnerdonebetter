@@ -1707,6 +1707,7 @@ message Recipe {
   repeated RecipeMedia media = 17;
   string status = 19;
   bool eligible_for_meals = 20;
+  repeated Recipe associated_recipes = 21;
 }
 
 message RecipeCreationRequestInput {

@@ -710,6 +710,11 @@ func ConvertRecipeToGRPCRecipe(input *mealplanning.Recipe) *mealplanningsvc.Reci
 		recipePrepTasks = append(recipePrepTasks, ConvertRecipePrepTaskToGRPCRecipePrepTask(rps))
 	}
 
+	var associatedRecipes []*mealplanningsvc.Recipe
+	for _, r := range input.AssociatedRecipes {
+		associatedRecipes = append(associatedRecipes, ConvertRecipeToGRPCRecipe(r))
+	}
+
 	recipe := &mealplanningsvc.Recipe{
 		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
@@ -733,6 +738,7 @@ func ConvertRecipeToGRPCRecipe(input *mealplanning.Recipe) *mealplanningsvc.Reci
 		Media:               recipeMedia,
 		PrepTasks:           recipePrepTasks,
 		InspiredByRecipeId:  input.InspiredByRecipeID,
+		AssociatedRecipes:   associatedRecipes,
 	}
 
 	return recipe
@@ -752,6 +758,11 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 	recipePrepTasks := []*mealplanning.RecipePrepTask{}
 	for _, rps := range input.PrepTasks {
 		recipePrepTasks = append(recipePrepTasks, ConvertGRPCRecipePrepTaskToRecipePrepTask(rps))
+	}
+
+	associatedRecipes := []*mealplanning.Recipe{}
+	for _, r := range input.AssociatedRecipes {
+		associatedRecipes = append(associatedRecipes, ConvertGRPCRecipeToRecipe(r))
 	}
 
 	recipe := &mealplanning.Recipe{
@@ -777,6 +788,7 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 		Media:               recipeMedia,
 		PrepTasks:           recipePrepTasks,
 		InspiredByRecipeID:  input.InspiredByRecipeId,
+		AssociatedRecipes:   associatedRecipes,
 	}
 
 	return recipe

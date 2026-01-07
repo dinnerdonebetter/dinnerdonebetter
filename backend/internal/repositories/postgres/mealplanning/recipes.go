@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -219,6 +220,24 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 			return nil, observability.PrepareError(err, span, "fetching recipe media for recipe step")
 		}
 		x.Steps[i].Media = recipeMedia
+	}
+
+	// Check for cross-recipe product references and print steps that have them
+	var relatedRecipes []string
+	for _, step := range x.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" && *ingredient.RecipeStepProductRecipeID != x.ID {
+				relatedRecipes = append(relatedRecipes, pointer.Dereference(ingredient.RecipeStepProductRecipeID))
+			}
+		}
+	}
+
+	for _, associatedRecipeID := range relatedRecipes {
+		associatedRecipe, associatedRecipeErr := q.getRecipe(ctx, associatedRecipeID)
+		if associatedRecipeErr != nil {
+			return nil, observability.PrepareError(associatedRecipeErr, span, "fetching associated recipe for recipe step")
+		}
+		x.AssociatedRecipes = append(x.AssociatedRecipes, associatedRecipe)
 	}
 
 	return x, nil
@@ -779,20 +798,12 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Media:               []*mealplanning.RecipeMedia{},
 	}
 
-	if input.Name == "Garlic Parmesan Croutons" {
-		fmt.Println(input.Steps[2].Ingredients[0].RecipeStepProductRecipeID)
-	}
-
 	if err = q.findCreatedRecipeStepProductsForIngredients(ctx, input); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "finding recipe step products for ingredients")
 	}
 	findCreatedRecipeStepProductsForInstruments(input)
 	findCreatedRecipeStepProductsForVessels(input)
-
-	if input.Name == "Garlic Parmesan Croutons" {
-		fmt.Println(input.Steps[2].Ingredients[0].RecipeStepProductRecipeID)
-	}
 
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
