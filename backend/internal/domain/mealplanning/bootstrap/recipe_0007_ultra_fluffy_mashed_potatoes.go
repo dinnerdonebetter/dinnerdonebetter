@@ -99,7 +99,6 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 
 	// Fold preparation bridges
 	foldPotatoVIP := enums.IngredientPreparations[foldPrep.ID][potato.ID]
-	foldButterVIP := enums.IngredientPreparations[foldPrep.ID][butter.ID]
 	foldRubberSpatulaVPI := enums.PreparationInstruments[foldPrep.ID][rubberSpatula.ID]
 	foldPotVPV := enums.PreparationVessels[foldPrep.ID][pot.ID]
 
@@ -614,18 +613,15 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
 				Name:                            "riced potatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ProductOfRecipeStepIndex:         pointer.To[uint64](10),
-				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
-				ValidIngredientPreparationID:     &foldButterVIP.ID,
-				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
-				Name:                             "butter pats (1/2-inch)",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "butter pats (1/2-inch)",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 6, // 6 tablespoons
 				},
@@ -671,7 +667,6 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				ValidIngredientPreparationID:    &foldPotatoVIP.ID,
 				Name:                            "buttered potatoes",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,

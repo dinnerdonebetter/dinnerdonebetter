@@ -721,6 +721,10 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, input.ID)
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating recipe input")
+	}
+
 	// Validate and populate bridge table IDs if any are present
 	if err := q.validateAndPopulateRecipeInput(ctx, input); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating recipe input")

@@ -503,6 +503,15 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:              "fully cooked salmon fillets",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &ounceMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](24),
+				},
+			},
 		},
 	}
 
@@ -514,9 +523,9 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &drainSalmonVIP.ID,
-				Name:                            "salmon fillets on plate",
+				Name:                            "fully cooked salmon fillets",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 24,
 				},

@@ -12,33 +12,36 @@ func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput 
 
 	// working recipes here
 
-	// recipes = append(recipes, PanSearedButterBastedSteakRecipe(enums)...)
-	// recipes = append(recipes, SousVideChickenBreastRecipe(enums)...)
-	// recipes = append(recipes, PerfectRoastChickenRecipe(enums)...)
-	// recipes = append(recipes, SousVidePorkChopsRecipe(enums)...)
-	// recipes = append(recipes, ClassicSmashBurgersRecipe(enums)...)
-	// recipes = append(recipes, SimpleWhiteRiceRecipe(enums)...)
-	// recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(enums)...)
-	// recipes = append(recipes, CaesarRoastedBroccoliRecipe(enums)...)
-	// recipes = append(recipes, HaricotsVertsAmandineRecipe(enums)...)
-	// recipes = append(recipes, MixedGreenSaladRecipe(enums)...)
-	// recipes = append(recipes, RoastedBrusselsSproutsRecipe(enums)...)
-	// recipes = append(recipes, StovetopMacAndCheeseRecipe(enums)...)
-	// recipes = append(recipes, CaesarSaladRecipe(enums)...)
-	// recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(enums)...)
-	// recipes = append(recipes, StirFriedGreenBeansRecipe(enums)...)
-	// recipes = append(recipes, TortillasRecipe(enums)...)
-
-	// non-working recipes here
-
+	recipes = append(recipes, PanSearedButterBastedSteakRecipe(enums)...)
+	recipes = append(recipes, SousVideChickenBreastRecipe(enums)...)
+	recipes = append(recipes, PerfectRoastChickenRecipe(enums)...)
+	recipes = append(recipes, SousVidePorkChopsRecipe(enums)...)
+	recipes = append(recipes, ClassicSmashBurgersRecipe(enums)...)
+	recipes = append(recipes, SimpleWhiteRiceRecipe(enums)...)
+	recipes = append(recipes, CaesarBreadcrumbsRecipe(enums)...)
+	recipes = append(recipes, HaricotsVertsAmandineRecipe(enums)...)
+	recipes = append(recipes, MixedGreenSaladRecipe(enums)...)
+	recipes = append(recipes, RoastedBrusselsSproutsRecipe(enums)...)
+	recipes = append(recipes, StovetopMacAndCheeseRecipe(enums)...)
+	recipes = append(recipes, CaesarDressingRecipe(enums)...)
+	recipes = append(recipes, GarlicParmesanCroutonsRecipe(enums)...)
+	recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(enums)...)
+	recipes = append(recipes, StirFriedGreenBeansRecipe(enums)...)
+	recipes = append(recipes, TortillasRecipe(enums)...)
 	recipes = append(recipes, SoySauceBraisedChickenThighsRecipe(enums)...)
-	//recipes = append(recipes, GrilledPorkTenderloinRecipe(enums)...)
-	//recipes = append(recipes, PanSearedSalmonFilletsRecipe(enums)...)
-	//recipes = append(recipes, RefriedBeansRecipe(enums)...)
-	//recipes = append(recipes, CarneAsadaRecipe(enums)...)
-	//recipes = append(recipes, ButterChickenRecipe(enums)...)
-	//recipes = append(recipes, CornbreadRecipe(enums)...)
-	//recipes = append(recipes, GrilledWholeCauliflowerRecipe(enums)...)
+	recipes = append(recipes, GrilledPorkTenderloinRecipe(enums)...)
+	recipes = append(recipes, PanSearedSalmonFilletsRecipe(enums)...)
+	recipes = append(recipes, RefriedBeansRecipe(enums)...)
+	recipes = append(recipes, CarneAsadaRecipe(enums)...)
+	recipes = append(recipes, ButterChickenRecipe(enums)...)
+	recipes = append(recipes, CornbreadRecipe(enums)...)
+	recipes = append(recipes, TeriyakiSauceRecipe(enums)...)
+	recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(enums)...)
+
+	// these recipes have prerequisites
+	// recipes = append(recipes, GrilledWholeCauliflowerRecipe(enums)...)
+	// recipes = append(recipes, CaesarSaladRecipe(enums)...)
+	// recipes = append(recipes, CaesarRoastedBroccoliRecipe(enums)...)
 
 	return recipes
 }

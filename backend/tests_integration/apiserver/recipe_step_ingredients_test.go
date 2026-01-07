@@ -24,7 +24,7 @@ func checkRecipeStepIngredientSliceEquality(t *testing.T, stepIndex int, expecte
 
 func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, expected, actual *mealplanning.RecipeStepIngredient) {
 	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have MealPlanTaskID", stepIndex, ingIndex)
+	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have ID", stepIndex, ingIndex)
 	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d ingredient %d to have CreatedAt", stepIndex, ingIndex)
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d ingredient %d to have BelongsToRecipeStep", stepIndex, ingIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d ingredient %d Name", stepIndex, ingIndex)

@@ -8,79 +8,8 @@ import (
 
 // GrilledWholeCauliflowerRecipe creates the Grilled Whole Cauliflower with Teriyaki Sauce recipe.
 // Source: https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549
+// Note: This recipe references the Teriyaki Sauce recipe, which must be created first.
 func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
-	// ==================== TERIYAKI SAUCE RECIPE ====================
-
-	// Get preparations
-	addPrep := enums.Preparations["add"]
-	combinePrep := enums.Preparations["combine"]
-	boilPrep := enums.Preparations["boil"]
-	reducePrep := enums.Preparations["reduce"]
-	stirPrep := enums.Preparations["stir"]
-
-	// Get measurement units
-	cupMeasurement := enums.MeasurementUnits["cup"]
-	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
-	unitMeasurement := enums.MeasurementUnits["unit"]
-
-	// Get ingredient states
-	thickenedState := enums.IngredientStates["at desired consistency"]
-
-	// Helper to safely get VIP bridge
-	getVIP := func(prep, ingName string) *mealplanning.ValidIngredientPreparation {
-		p := enums.Preparations[prep]
-		i := enums.Ingredients[ingName]
-		if p == nil || i == nil {
-			return nil
-		}
-		prepMap := enums.IngredientPreparations[p.ID]
-		if prepMap == nil {
-			return nil
-		}
-		return prepMap[i.ID]
-	}
-
-	// Helper to safely get VPV bridge
-	getVPV := func(prep, vesselName string) *mealplanning.ValidPreparationVessel {
-		p := enums.Preparations[prep]
-		v := enums.Vessels[vesselName]
-		if p == nil || v == nil {
-			return nil
-		}
-		prepMap := enums.PreparationVessels[p.ID]
-		if prepMap == nil {
-			return nil
-		}
-		return prepMap[v.ID]
-	}
-
-	// Helper to safely get VPI bridge
-	getVPI := func(prep, instName string) *mealplanning.ValidPreparationInstrument {
-		p := enums.Preparations[prep]
-		i := enums.Instruments[instName]
-		if p == nil || i == nil {
-			return nil
-		}
-		prepMap := enums.PreparationInstruments[p.ID]
-		if prepMap == nil {
-			return nil
-		}
-		return prepMap[i.ID]
-	}
-
-	// Helper to safely get VIMU bridge
-	getVIMU := func(ingName, unitName string) *mealplanning.ValidIngredientMeasurementUnit {
-		i := enums.Ingredients[ingName]
-		u := enums.MeasurementUnits[unitName]
-		if i == nil || u == nil {
-			return nil
-		}
-		ingMap := enums.IngredientMeasurementUnits[i.ID]
-		if ingMap == nil {
-			return nil
-		}
-		return ingMap[u.ID]
-	}
 
 	// Helper to safely get MealPlanTaskID pointer from VIP
 	vipID := func(v *mealplanning.ValidIngredientPreparation) *string {
@@ -114,119 +43,9 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 		return &v.ID
 	}
 
-	// Bridge entries for teriyaki sauce
-	addSoySauceVIP := getVIP("add", "soy sauce")
-	addSakeVIP := getVIP("add", "sake")
-	addMirinVIP := getVIP("add", "mirin")
-	addSugarVIP := getVIP("add", "sugar")
-	addDashiVIP := getVIP("add", "dashi powder")
-	addSaucepanVPV := getVPV("add", "saucepan")
-
-	combineSaucepanVPV := getVPV("combine", "saucepan")
-
-	boilSaucepanVPV := getVPV("boil", "saucepan")
-
-	reduceSaucepanVPV := getVPV("reduce", "saucepan")
-	reduceSpoonVPI := getVPI("reduce", "spoon")
-
-	stirChickenFatVIP := getVIP("stir", "rendered chicken fat")
-	stirSesameOilVIP := getVIP("stir", "toasted sesame oil")
-	stirSaucepanVPV := getVPV("stir", "saucepan")
-	stirSpoonVPI := getVPI("stir", "spoon")
-
-	// Measurement unit bridges
-	soySauceCupVIMU := getVIMU("soy sauce", "cup")
-	sakeCupVIMU := getVIMU("sake", "cup")
-	mirinCupVIMU := getVIMU("mirin", "cup")
-	sugarTablespoonVIMU := getVIMU("sugar", "tablespoon")
-	dashiTeaspoonVIMU := getVIMU("dashi powder", "teaspoon")
-	chickenFatTablespoonVIMU := getVIMU("rendered chicken fat", "tablespoon")
-	sesameOilTablespoonVIMU := getVIMU("toasted sesame oil", "tablespoon")
-
-	// === TERIYAKI SAUCE STEPS ===
-	ts0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         0,
-		Notes:         "In a medium saucepan, add shoyu, sake, mirin, sugar, and powdered dashi.",
-		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{ValidIngredientPreparationID: vipID(addSoySauceVIP), ValidIngredientMeasurementUnitID: vimuID(soySauceCupVIMU), Name: "soy sauce", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
-			{ValidIngredientPreparationID: vipID(addSakeVIP), ValidIngredientMeasurementUnitID: vimuID(sakeCupVIMU), Name: "sake", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
-			{ValidIngredientPreparationID: vipID(addMirinVIP), ValidIngredientMeasurementUnitID: vimuID(mirinCupVIMU), Name: "mirin", QuantityNotes: "about 60ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.25}},
-			{ValidIngredientPreparationID: vipID(addSugarVIP), ValidIngredientMeasurementUnitID: vimuID(sugarTablespoonVIMU), Name: "granulated sugar", QuantityNotes: "about 60g", Quantity: types.Float32RangeWithOptionalMax{Min: 5}},
-			{ValidIngredientPreparationID: vipID(addDashiVIP), ValidIngredientMeasurementUnitID: vimuID(dashiTeaspoonVIMU), Name: "powdered dashi", QuantityNotes: "about 8g", Quantity: types.Float32RangeWithOptionalMax{Min: 1.5}},
-		},
-		Vessels:  []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(addSaucepanVPV), Name: "medium saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
-		Products: []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "sauce ingredients in saucepan", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
-	}
-
-	ts1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: combinePrep.ID,
-		Index:         1,
-		Notes:         "Combine until mixed.",
-		Ingredients:   []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "sauce ingredients in saucepan", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
-		Vessels:       []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(combineSaucepanVPV), Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
-		Products:      []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "combined sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
-	}
-
-	ts2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: boilPrep.ID, Index: 2, Notes: "Bring mixture to a boil.",
-		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](1), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "combined sauce mixture", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
-		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(boilSaucepanVPV), Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
-		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "boiling sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
-	}
-
-	ts3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:          reducePrep.ID,
-		Index:                  3,
-		Notes:                  "Cook over medium heat, swirling pan occasionally, until temperature reaches 225°F (107℃) and sauce thickens and is reduced to a scant 1 cup, 12 to 16 minutes.",
-		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](720), Max: pointer.To[uint32](960)},
-		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{
-				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				Name:                            "boiling sauce mixture",
-				Quantity:                        types.Float32RangeWithOptionalMax{Min: 1},
-			},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
-			{ValidPreparationInstrumentID: vpiID(reduceSpoonVPI), Name: "spoon", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}},
-		},
-		Vessels:              []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(reduceSaucepanVPV), Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
-		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{{IngredientStateID: thickenedState.ID, Notes: "Sauce should reach 225°F (107℃) and reduce to a scant 1 cup", Ingredients: []uint64{0}, Optional: false}},
-		Products:             []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "reduced teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
-	}
-
-	ts4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID, Index: 4, Notes: "Off heat, stir in butter and sesame oil. Set aside.",
-		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
-			{ProductOfRecipeStepIndex: pointer.To[uint64](3), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "reduced teriyaki sauce", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
-			{ValidIngredientPreparationID: vipID(stirChickenFatVIP), ValidIngredientMeasurementUnitID: vimuID(chickenFatTablespoonVIMU), Name: "unsalted butter", Quantity: types.Float32RangeWithOptionalMax{Min: 3}},
-			{ValidIngredientPreparationID: vipID(stirSesameOilVIP), ValidIngredientMeasurementUnitID: vimuID(sesameOilTablespoonVIMU), Name: "toasted sesame oil", QuantityNotes: "about 14g", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
-		},
-		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(stirSpoonVPI), Name: "spoon", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
-		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(stirSaucepanVPV), Name: "saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
-		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
-	}
-
-	teriyakiSauceRecipe := &mealplanning.RecipeCreationRequestInput{
-		Name:                "Teriyaki Sauce",
-		Slug:                "teriyaki-sauce",
-		Source:              "https://www.seriouseats.com/grilled-whole-cauliflower-with-teriyaki-sauce-recipe-8678549",
-		Description:         "A savory, sweet, and umami-rich teriyaki sauce made with shoyu, sake, mirin, sugar, and dashi, finished with chicken fat and sesame oil.",
-		YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
-		EstimatedPortions:   types.Float32RangeWithOptionalMax{Min: 1},
-		PortionName:         "cup",
-		PluralPortionName:   "cups",
-		EligibleForMeals:    false,
-		Steps:               []*mealplanning.RecipeStepCreationRequestInput{ts0, ts1, ts2, ts3, ts4},
-		PrepTasks:           []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
-		Media:               []*mealplanning.RecipeMediaCreationRequestInput{},
-	}
-
-	// ==================== GRILLED CAULIFLOWER RECIPE ====================
-
-	// Additional preparations for cauliflower
+	// Get preparations
 	trimPrep := enums.Preparations["trim"]
+	addPrep := enums.Preparations["add"]
 	slicePrep := enums.Preparations["slice"]
 	dissolvePrep := enums.Preparations["dissolve"]
 	submergePrep := enums.Preparations["submerge"]
@@ -250,8 +69,11 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 	charcoal := enums.Ingredients["charcoal briquettes"]
 
 	// Measurement units
+	cupMeasurement := enums.MeasurementUnits["cup"]
 	literMeasurement := enums.MeasurementUnits["liter"]
 	poundMeasurement := enums.MeasurementUnits["pound"]
+	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
+	unitMeasurement := enums.MeasurementUnits["unit"]
 
 	// Instruments
 	knife := enums.Instruments["knife"]
@@ -461,8 +283,11 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 				ProductOfRecipeStepIndex: pointer.To[uint64](10), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "partially cooked cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1},
 			},
 			{
-				RecipeStepProductRecipeID: nil, // Will be resolved during recipe creation - references Teriyaki Sauce recipe
-				Name:                      "teriyaki sauce", Quantity: types.Float32RangeWithOptionalMax{Min: 0.33},
+				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
+				RecipeStepProductRecipeID: nil,
+				Name:                      "teriyaki sauce",
+				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(brushBrushVPI), Name: "heatproof brush", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
@@ -493,8 +318,13 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 		PreparationID: brushPrep.ID, Index: 13, Notes: "Uncover grill and brush cauliflower with a second layer of sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](12), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "tender cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
-			{RecipeStepProductRecipeID: nil, // Will be resolved during recipe creation - references Teriyaki Sauce recipe
-				Name: "teriyaki sauce", Quantity: types.Float32RangeWithOptionalMax{Min: 0.33}},
+			{
+				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
+				RecipeStepProductRecipeID: nil,
+				Name:                      "teriyaki sauce",
+				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
+			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(brushBrushVPI), Name: "heatproof brush", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "sauced cauliflower (second coat)", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
@@ -527,8 +357,13 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 		PreparationID: brushPrep.ID, Index: 16, Notes: "Uncover grill, flip cauliflower heads stem side down, and brush florets all over with a final layer of sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](15), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "lightly browned cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
-			{RecipeStepProductRecipeID: nil, // Will be resolved during recipe creation - references Teriyaki Sauce recipe
-				Name: "teriyaki sauce", Quantity: types.Float32RangeWithOptionalMax{Min: 0.33}},
+			{
+				// RecipeStepProductRecipeID should reference the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
+				// This needs to be resolved by looking up the recipe by name or slug during recipe creation
+				RecipeStepProductRecipeID: nil,
+				Name:                      "teriyaki sauce",
+				Quantity:                  types.Float32RangeWithOptionalMax{Min: 0.33},
+			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{ValidPreparationInstrumentID: vpiID(brushBrushVPI), Name: "heatproof brush", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}},
@@ -607,7 +442,6 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations) []*mealplanning.RecipeCr
 	}
 
 	return []*mealplanning.RecipeCreationRequestInput{
-		teriyakiSauceRecipe,
 		grilledCauliflowerRecipe,
 	}
 }

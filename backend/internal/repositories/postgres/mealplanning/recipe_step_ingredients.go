@@ -437,6 +437,10 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	// create the recipe step ingredient.
+	var measurementUnit sql.NullString
+	if input.MeasurementUnitID != "" {
+		measurementUnit = database.NullStringFromString(input.MeasurementUnitID)
+	}
 	if err := q.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
 		QuantityNotes:             input.QuantityNotes,
 		Name:                      input.Name,
@@ -446,7 +450,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		MinimumQuantityValue:      database.StringFromFloat32(input.Quantity.Min),
 		RecipeStepProductID:       database.NullStringFromStringPointer(input.RecipeStepProductID),
 		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(input.Quantity.Max),
-		MeasurementUnit:           database.NullStringFromString(input.MeasurementUnitID),
+		MeasurementUnit:           measurementUnit,
 		IngredientID:              database.NullStringFromStringPointer(input.IngredientID),
 		ProductPercentageToUse:    database.NullStringFromFloat32Pointer(input.ProductPercentageToUse),
 		RecipeStepProductRecipeID: database.NullStringFromStringPointer(input.RecipeStepProductRecipeID),

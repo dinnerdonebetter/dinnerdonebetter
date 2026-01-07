@@ -33,7 +33,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 
 	// Get instruments
-	chefsKnife := enums.Instruments["chef's knife"]
+	chefsKnife := enums.Instruments["knife"]
 	bareHands := enums.Instruments["bare hands"]
 	grillBrush := enums.Instruments["grill brush"]
 	brush := enums.Instruments["brush"]
@@ -224,6 +224,15 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:              "pork tenderloins",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
 		},
 	}
 
@@ -346,9 +355,9 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &seasonPorkVIP.ID,
-				Name:                            "pork tenderloins on wire rack",
+				Name:                            "pork tenderloins",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
@@ -553,6 +562,15 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:              "cooked pork tenderloins",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &poundMeasurement.ID,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](2),
+				},
+			},
 		},
 	}
 
@@ -567,9 +585,9 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
-				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &restPorkVIP.ID,
-				Name:                            "pork tenderloins on carving board",
+				Name:                            "cooked pork tenderloins",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},

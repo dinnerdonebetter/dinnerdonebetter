@@ -268,7 +268,7 @@ func main() {
 				logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
 				r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
 				if createErr != nil {
-					return fmt.Errorf("failed to create recipe %s: %w", recipe.Name, createErr)
+					return fmt.Errorf("failed to create recipe #%d %s: %w", i, recipe.Name, createErr)
 				}
 
 				recipes = append(recipes, r)
