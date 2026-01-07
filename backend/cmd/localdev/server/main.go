@@ -10,8 +10,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
-	mealplantaskcreatorbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
+	// mealplangrocerylistinitializerbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_grocery_list_initializer"
+	// mealplantaskcreatorbuild "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_task_creator"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
@@ -65,7 +65,7 @@ func main() {
 
 	var adminUserID string
 	var adminAccountID string
-	var currentMealPlanID string
+	// var currentMealPlanID string
 	var memberUserIDs []string
 
 	server, err := localdev.AllInOne(
@@ -291,348 +291,354 @@ func main() {
 
 			return nil
 		}),
-		// Create meal plan with 3 chicken dishes
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			if adminUserID == "" || adminAccountID == "" {
-				return fmt.Errorf("admin user ID or account ID not set")
-			}
 
-			logger.Info("Creating meal plan with chicken dishes...")
+		/*
 
-			// Get all meals created by admin user
-			mealsResult, mealsErr := repo.GetMealsCreatedByUser(ctx, adminUserID, nil)
-			if mealsErr != nil {
-				return fmt.Errorf("failed to get meals: %w", mealsErr)
-			}
+			// Create meal plan with 3 chicken dishes
+			localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+				if adminUserID == "" || adminAccountID == "" {
+					return fmt.Errorf("admin user ID or account ID not set")
+				}
 
-			// Find the 3 chicken dishes
-			chickenMealNames := []string{
-				"Sous Vide Chicken Breast with Rice",
-				"Roast Chicken with Caesar Broccoli",
-				"Soy Sauce Braised Chicken Thighs with Rice",
-			}
+				logger.Info("Creating meal plan with chicken dishes...")
 
-			otherMealNames := []string{
-				"Pan-Seared Steak with Mashed Potatoes",
-				"Classic Burgers with Mixed Green Salad",
-				"Grilled Pork Tenderloin with Brussels Sprouts",
-			}
+				// Get all meals created by admin user
+				mealsResult, mealsErr := repo.GetMealsCreatedByUser(ctx, adminUserID, nil)
+				if mealsErr != nil {
+					return fmt.Errorf("failed to get meals: %w", mealsErr)
+				}
 
-			var (
-				chickenMeals []*mealplanning.Meal
-				otherMeals   []*mealplanning.Meal
-			)
-			for _, meal := range mealsResult.Data {
-				for _, name := range chickenMealNames {
-					if meal.Name == name {
-						chickenMeals = append(chickenMeals, meal)
-						break
+				// Find the 3 chicken dishes
+				chickenMealNames := []string{
+					"Sous Vide Chicken Breast with Rice",
+					"Roast Chicken with Caesar Broccoli",
+					"Soy Sauce Braised Chicken Thighs with Rice",
+				}
+
+				otherMealNames := []string{
+					"Pan-Seared Steak with Mashed Potatoes",
+					"Classic Burgers with Mixed Green Salad",
+					"Grilled Pork Tenderloin with Brussels Sprouts",
+				}
+
+				var (
+					chickenMeals []*mealplanning.Meal
+					otherMeals   []*mealplanning.Meal
+				)
+				for _, meal := range mealsResult.Data {
+					for _, name := range chickenMealNames {
+						if meal.Name == name {
+							chickenMeals = append(chickenMeals, meal)
+							break
+						}
+					}
+
+					for _, name := range otherMealNames {
+						if meal.Name == name {
+							otherMeals = append(otherMeals, meal)
+						}
 					}
 				}
 
-				for _, name := range otherMealNames {
-					if meal.Name == name {
-						otherMeals = append(otherMeals, meal)
-					}
-				}
-			}
+				now := time.Now()
 
-			now := time.Now()
+				// Voting deadline is Friday before the event (midnight)
+				votingDeadline := cloneTime(now).Add(24 * time.Hour * 3)
 
-			// Voting deadline is Friday before the event (midnight)
-			votingDeadline := cloneTime(now).Add(24 * time.Hour * 3)
+				eventStart := cloneTime(votingDeadline).Add(24 * time.Hour)
+				eventEnd := cloneTime(eventStart).Add(2 * time.Hour) // 2 hour duration
 
-			eventStart := cloneTime(votingDeadline).Add(24 * time.Hour)
-			eventEnd := cloneTime(eventStart).Add(2 * time.Hour) // 2 hour duration
-
-			// Create options for all three chicken meals
-			var chickenOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
-			for _, chickenMeal := range chickenMeals {
-				chickenOptions = append(chickenOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:        identifiers.New(),
-					MealID:    chickenMeal.ID,
-					MealScale: 1.0,
-				})
-			}
-
-			var otherOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
-			for _, otherMeal := range otherMeals {
-				otherOptions = append(otherOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:        identifiers.New(),
-					MealID:    otherMeal.ID,
-					MealScale: 1.0,
-				})
-			}
-
-			// Create a single event with all three chickenOptions
-			events := []*mealplanning.MealPlanEventDatabaseCreationInput{
-				{
-					ID:       identifiers.New(),
-					StartsAt: eventStart,
-					EndsAt:   eventEnd,
-					MealName: mealplanning.DinnerMealName,
-					Options:  chickenOptions,
-				},
-				{
-					ID:       identifiers.New(),
-					StartsAt: cloneTime(eventStart).Add(24 * time.Hour),
-					EndsAt:   cloneTime(eventEnd).Add(24 * time.Hour),
-					MealName: mealplanning.SupperMealName,
-					Options:  otherOptions,
-				},
-			}
-
-			// Create meal plan
-			mealPlanInput := &mealplanning.MealPlanDatabaseCreationInput{
-				ID:               identifiers.New(),
-				Notes:            "Example 	Meal Plan",
-				VotingDeadline:   votingDeadline,
-				ElectionMethod:   mealplanning.MealPlanElectionMethodSchulze,
-				BelongsToAccount: adminAccountID,
-				CreatedByUser:    adminUserID,
-				Events:           events,
-			}
-
-			createdMealPlan, mealPlanErr := repo.CreateMealPlan(ctx, mealPlanInput)
-			if mealPlanErr != nil {
-				return fmt.Errorf("failed to create meal plan: %w", mealPlanErr)
-			}
-
-			currentMealPlanID = createdMealPlan.ID
-			logger.Info(fmt.Sprintf("Created meal plan %s with %d events", createdMealPlan.ID, len(events)))
-			return nil
-		}),
-		// Create finalized meal plan with votes and extend current meal plan deadline
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			if adminUserID == "" || adminAccountID == "" {
-				return fmt.Errorf("admin user ID or account ID not set")
-			}
-
-			if currentMealPlanID == "" {
-				return fmt.Errorf("current meal plan ID not set")
-			}
-
-			if len(memberUserIDs) == 0 {
-				return fmt.Errorf("member user IDs not set")
-			}
-
-			// Get the current meal plan to use its timing
-			currentMealPlan, mealPlanErr := repo.GetMealPlan(ctx, currentMealPlanID, adminAccountID)
-			if mealPlanErr != nil {
-				return fmt.Errorf("failed to get current meal plan: %w", mealPlanErr)
-			}
-
-			logger.Info("Creating finalized meal plan with votes...")
-
-			// Get all meals created by admin user
-			mealsResult, mealsErr := repo.GetMealsCreatedByUser(ctx, adminUserID, nil)
-			if mealsErr != nil {
-				return fmt.Errorf("failed to get meals: %w", mealsErr)
-			}
-
-			// Find the 3 chicken dishes
-			chickenMealNames := []string{
-				"Sous Vide Chicken Breast with Rice",
-				"Roast Chicken with Caesar Broccoli",
-				"Soy Sauce Braised Chicken Thighs with Rice",
-			}
-
-			otherMealNames := []string{
-				"Pan-Seared Steak with Mashed Potatoes",
-				"Classic Burgers with Mixed Green Salad",
-				"Grilled Pork Tenderloin with Brussels Sprouts",
-			}
-
-			var (
-				chickenMeals []*mealplanning.Meal
-				otherMeals   []*mealplanning.Meal
-			)
-			for _, meal := range mealsResult.Data {
-				for _, name := range chickenMealNames {
-					if meal.Name == name {
-						chickenMeals = append(chickenMeals, meal)
-						break
-					}
+				// Create options for all three chicken meals
+				var chickenOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
+				for _, chickenMeal := range chickenMeals {
+					chickenOptions = append(chickenOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
+						ID:        identifiers.New(),
+						MealID:    chickenMeal.ID,
+						MealScale: 1.0,
+					})
 				}
 
-				for _, name := range otherMealNames {
-					if meal.Name == name {
-						otherMeals = append(otherMeals, meal)
+				var otherOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
+				for _, otherMeal := range otherMeals {
+					otherOptions = append(otherOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
+						ID:        identifiers.New(),
+						MealID:    otherMeal.ID,
+						MealScale: 1.0,
+					})
+				}
+
+				// Create a single event with all three chickenOptions
+				events := []*mealplanning.MealPlanEventDatabaseCreationInput{
+					{
+						ID:       identifiers.New(),
+						StartsAt: eventStart,
+						EndsAt:   eventEnd,
+						MealName: mealplanning.DinnerMealName,
+						Options:  chickenOptions,
+					},
+					{
+						ID:       identifiers.New(),
+						StartsAt: cloneTime(eventStart).Add(24 * time.Hour),
+						EndsAt:   cloneTime(eventEnd).Add(24 * time.Hour),
+						MealName: mealplanning.SupperMealName,
+						Options:  otherOptions,
+					},
+				}
+
+				// Create meal plan
+				mealPlanInput := &mealplanning.MealPlanDatabaseCreationInput{
+					ID:               identifiers.New(),
+					Notes:            "Example 	Meal Plan",
+					VotingDeadline:   votingDeadline,
+					ElectionMethod:   mealplanning.MealPlanElectionMethodSchulze,
+					BelongsToAccount: adminAccountID,
+					CreatedByUser:    adminUserID,
+					Events:           events,
+				}
+
+				createdMealPlan, mealPlanErr := repo.CreateMealPlan(ctx, mealPlanInput)
+				if mealPlanErr != nil {
+					return fmt.Errorf("failed to create meal plan: %w", mealPlanErr)
+				}
+
+				currentMealPlanID = createdMealPlan.ID
+				logger.Info(fmt.Sprintf("Created meal plan %s with %d events", createdMealPlan.ID, len(events)))
+				return nil
+			}),
+			// Create finalized meal plan with votes and extend current meal plan deadline
+			localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+				if adminUserID == "" || adminAccountID == "" {
+					return fmt.Errorf("admin user ID or account ID not set")
+				}
+
+				if currentMealPlanID == "" {
+					return fmt.Errorf("current meal plan ID not set")
+				}
+
+				if len(memberUserIDs) == 0 {
+					return fmt.Errorf("member user IDs not set")
+				}
+
+				// Get the current meal plan to use its timing
+				currentMealPlan, mealPlanErr := repo.GetMealPlan(ctx, currentMealPlanID, adminAccountID)
+				if mealPlanErr != nil {
+					return fmt.Errorf("failed to get current meal plan: %w", mealPlanErr)
+				}
+
+				logger.Info("Creating finalized meal plan with votes...")
+
+				// Get all meals created by admin user
+				mealsResult, mealsErr := repo.GetMealsCreatedByUser(ctx, adminUserID, nil)
+				if mealsErr != nil {
+					return fmt.Errorf("failed to get meals: %w", mealsErr)
+				}
+
+				// Find the 3 chicken dishes
+				chickenMealNames := []string{
+					"Sous Vide Chicken Breast with Rice",
+					"Roast Chicken with Caesar Broccoli",
+					"Soy Sauce Braised Chicken Thighs with Rice",
+				}
+
+				otherMealNames := []string{
+					"Pan-Seared Steak with Mashed Potatoes",
+					"Classic Burgers with Mixed Green Salad",
+					"Grilled Pork Tenderloin with Brussels Sprouts",
+				}
+
+				var (
+					chickenMeals []*mealplanning.Meal
+					otherMeals   []*mealplanning.Meal
+				)
+				for _, meal := range mealsResult.Data {
+					for _, name := range chickenMealNames {
+						if meal.Name == name {
+							chickenMeals = append(chickenMeals, meal)
+							break
+						}
+					}
+
+					for _, name := range otherMealNames {
+						if meal.Name == name {
+							otherMeals = append(otherMeals, meal)
+						}
 					}
 				}
-			}
 
-			// Use the same timing as the current meal plan
-			finalizedVotingDeadline := currentMealPlan.VotingDeadline
-			finalizedEventStart := cloneTime(finalizedVotingDeadline).Add(24 * time.Hour)
-			finalizedEventEnd := cloneTime(finalizedEventStart).Add(2 * time.Hour)
+				// Use the same timing as the current meal plan
+				finalizedVotingDeadline := currentMealPlan.VotingDeadline
+				finalizedEventStart := cloneTime(finalizedVotingDeadline).Add(24 * time.Hour)
+				finalizedEventEnd := cloneTime(finalizedEventStart).Add(2 * time.Hour)
 
-			// Create options for all three chicken meals
-			var chickenOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
-			for _, chickenMeal := range chickenMeals {
-				chickenOptions = append(chickenOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:        identifiers.New(),
-					MealID:    chickenMeal.ID,
-					MealScale: 1.0,
-				})
-			}
+				// Create options for all three chicken meals
+				var chickenOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
+				for _, chickenMeal := range chickenMeals {
+					chickenOptions = append(chickenOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
+						ID:        identifiers.New(),
+						MealID:    chickenMeal.ID,
+						MealScale: 1.0,
+					})
+				}
 
-			var otherOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
-			for _, otherMeal := range otherMeals {
-				otherOptions = append(otherOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
-					ID:        identifiers.New(),
-					MealID:    otherMeal.ID,
-					MealScale: 1.0,
-				})
-			}
+				var otherOptions []*mealplanning.MealPlanOptionDatabaseCreationInput
+				for _, otherMeal := range otherMeals {
+					otherOptions = append(otherOptions, &mealplanning.MealPlanOptionDatabaseCreationInput{
+						ID:        identifiers.New(),
+						MealID:    otherMeal.ID,
+						MealScale: 1.0,
+					})
+				}
 
-			// Create events for finalized meal plan
-			finalizedEvents := []*mealplanning.MealPlanEventDatabaseCreationInput{
-				{
-					ID:       identifiers.New(),
-					StartsAt: finalizedEventStart,
-					EndsAt:   finalizedEventEnd,
-					MealName: mealplanning.DinnerMealName,
-					Options:  chickenOptions,
-				},
-				{
-					ID:       identifiers.New(),
-					StartsAt: cloneTime(finalizedEventStart).Add(24 * time.Hour),
-					EndsAt:   cloneTime(finalizedEventEnd).Add(24 * time.Hour),
-					MealName: mealplanning.SupperMealName,
-					Options:  otherOptions,
-				},
-			}
+				// Create events for finalized meal plan
+				finalizedEvents := []*mealplanning.MealPlanEventDatabaseCreationInput{
+					{
+						ID:       identifiers.New(),
+						StartsAt: finalizedEventStart,
+						EndsAt:   finalizedEventEnd,
+						MealName: mealplanning.DinnerMealName,
+						Options:  chickenOptions,
+					},
+					{
+						ID:       identifiers.New(),
+						StartsAt: cloneTime(finalizedEventStart).Add(24 * time.Hour),
+						EndsAt:   cloneTime(finalizedEventEnd).Add(24 * time.Hour),
+						MealName: mealplanning.SupperMealName,
+						Options:  otherOptions,
+					},
+				}
 
-			// Create finalized meal plan
-			finalizedMealPlanInput := &mealplanning.MealPlanDatabaseCreationInput{
-				ID:               identifiers.New(),
-				Notes:            "Finalized Example Meal Plan",
-				VotingDeadline:   finalizedVotingDeadline,
-				ElectionMethod:   mealplanning.MealPlanElectionMethodSchulze,
-				BelongsToAccount: adminAccountID,
-				CreatedByUser:    adminUserID,
-				Events:           finalizedEvents,
-			}
+				// Create finalized meal plan
+				finalizedMealPlanInput := &mealplanning.MealPlanDatabaseCreationInput{
+					ID:               identifiers.New(),
+					Notes:            "Finalized Example Meal Plan",
+					VotingDeadline:   finalizedVotingDeadline,
+					ElectionMethod:   mealplanning.MealPlanElectionMethodSchulze,
+					BelongsToAccount: adminAccountID,
+					CreatedByUser:    adminUserID,
+					Events:           finalizedEvents,
+				}
 
-			finalizedMealPlan, finalizedErr := repo.CreateMealPlan(ctx, finalizedMealPlanInput)
-			if finalizedErr != nil {
-				return fmt.Errorf("failed to create finalized meal plan: %w", finalizedErr)
-			}
+				finalizedMealPlan, finalizedErr := repo.CreateMealPlan(ctx, finalizedMealPlanInput)
+				if finalizedErr != nil {
+					return fmt.Errorf("failed to create finalized meal plan: %w", finalizedErr)
+				}
 
-			logger.Info(fmt.Sprintf("Created finalized meal plan %s with %d events", finalizedMealPlan.ID, len(finalizedEvents)))
+				logger.Info(fmt.Sprintf("Created finalized meal plan %s with %d events", finalizedMealPlan.ID, len(finalizedEvents)))
 
-			// Create votes from all members for all options in all events
-			// We need to reload the meal plan to get the created options
-			finalizedMealPlanWithEvents, finalizeErr := repo.GetMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
-			if finalizeErr != nil {
-				return fmt.Errorf("failed to get finalized meal plan with events: %w", finalizeErr)
-			}
+				// Create votes from all members for all options in all events
+				// We need to reload the meal plan to get the created options
+				finalizedMealPlanWithEvents, finalizeErr := repo.GetMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
+				if finalizeErr != nil {
+					return fmt.Errorf("failed to get finalized meal plan with events: %w", finalizeErr)
+				}
 
-			for _, event := range finalizedMealPlanWithEvents.Events {
-				for _, memberUserID := range memberUserIDs {
-					// Create votes for this user for all options in this event
-					var votes []*mealplanning.MealPlanOptionVoteDatabaseCreationInput
-					for rank, option := range event.Options {
-						votes = append(votes, &mealplanning.MealPlanOptionVoteDatabaseCreationInput{
-							ID:                      identifiers.New(),
-							ByUser:                  memberUserID,
-							BelongsToMealPlanOption: option.ID,
-							Rank:                    uint8(rank),
-							Abstain:                 false,
-							Notes:                   "",
-						})
-					}
+				for _, event := range finalizedMealPlanWithEvents.Events {
+					for _, memberUserID := range memberUserIDs {
+						// Create votes for this user for all options in this event
+						var votes []*mealplanning.MealPlanOptionVoteDatabaseCreationInput
+						for rank, option := range event.Options {
+							votes = append(votes, &mealplanning.MealPlanOptionVoteDatabaseCreationInput{
+								ID:                      identifiers.New(),
+								ByUser:                  memberUserID,
+								BelongsToMealPlanOption: option.ID,
+								Rank:                    uint8(rank),
+								Abstain:                 false,
+								Notes:                   "",
+							})
+						}
 
-					// Create votes for this user
-					voteInput := &mealplanning.MealPlanOptionVotesDatabaseCreationInput{
-						Votes: votes,
-					}
-					_, voteErr := repo.CreateMealPlanOptionVote(ctx, voteInput)
-					if voteErr != nil {
-						return fmt.Errorf("failed to create votes for user %s: %w", memberUserID, voteErr)
+						// Create votes for this user
+						voteInput := &mealplanning.MealPlanOptionVotesDatabaseCreationInput{
+							Votes: votes,
+						}
+						_, voteErr := repo.CreateMealPlanOptionVote(ctx, voteInput)
+						if voteErr != nil {
+							return fmt.Errorf("failed to create votes for user %s: %w", memberUserID, voteErr)
+						}
 					}
 				}
-			}
 
-			logger.Info("Created votes from all members for finalized meal plan")
+				logger.Info("Created votes from all members for finalized meal plan")
 
-			// Finalize the meal plan
-			finalized, finalizeErr := repo.AttemptToFinalizeMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
-			if finalizeErr != nil {
-				return fmt.Errorf("failed to finalize meal plan: %w", finalizeErr)
-			}
-			if !finalized {
-				return fmt.Errorf("meal plan was not finalized")
-			}
+				// Finalize the meal plan
+				finalized, finalizeErr := repo.AttemptToFinalizeMealPlan(ctx, finalizedMealPlan.ID, adminAccountID)
+				if finalizeErr != nil {
+					return fmt.Errorf("failed to finalize meal plan: %w", finalizeErr)
+				}
+				if !finalized {
+					return fmt.Errorf("meal plan was not finalized")
+				}
 
-			logger.Info("Finalized meal plan successfully")
+				logger.Info("Finalized meal plan successfully")
 
-			// Extend the current meal plan's voting deadline by one week
-			updatedMealPlan := *currentMealPlan
-			updatedMealPlan.VotingDeadline = cloneTime(currentMealPlan.VotingDeadline).Add(7 * 24 * time.Hour)
-			updateErr := repo.UpdateMealPlan(ctx, &updatedMealPlan)
-			if updateErr != nil {
-				return fmt.Errorf("failed to update current meal plan voting deadline: %w", updateErr)
-			}
+				// Extend the current meal plan's voting deadline by one week
+				updatedMealPlan := *currentMealPlan
+				updatedMealPlan.VotingDeadline = cloneTime(currentMealPlan.VotingDeadline).Add(7 * 24 * time.Hour)
+				updateErr := repo.UpdateMealPlan(ctx, &updatedMealPlan)
+				if updateErr != nil {
+					return fmt.Errorf("failed to update current meal plan voting deadline: %w", updateErr)
+				}
 
-			logger.Info(fmt.Sprintf("Extended current meal plan %s voting deadline by one week", currentMealPlanID))
-			return nil
-		}),
-		// Run grocery list initializer and task creator workers for finalized meal plans
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			logger.Info("Running grocery list initializer and task creator workers...")
+				logger.Info(fmt.Sprintf("Extended current meal plan %s voting deadline by one week", currentMealPlanID))
+				return nil
+			}),
+			// Run grocery list initializer and task creator workers for finalized meal plans
+			localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+				logger.Info("Running grocery list initializer and task creator workers...")
 
-			// Build grocery list initializer worker
-			groceryListConfig := &config.MealPlanGroceryListInitializerConfig{
-				Database:      apiConfig.Database,
-				Observability: apiConfig.Observability,
-				Events:        apiConfig.Events,
-				Queues:        apiConfig.Queues,
-				Analytics:     apiConfig.Analytics,
-			}
-			groceryListWorker, workerErr := mealplangrocerylistinitializerbuild.Build(ctx, groceryListConfig)
-			if workerErr != nil {
-				return fmt.Errorf("failed to build grocery list initializer worker: %w", workerErr)
-			}
+				// Build grocery list initializer worker
+				groceryListConfig := &config.MealPlanGroceryListInitializerConfig{
+					Database:      apiConfig.Database,
+					Observability: apiConfig.Observability,
+					Events:        apiConfig.Events,
+					Queues:        apiConfig.Queues,
+					Analytics:     apiConfig.Analytics,
+				}
+				groceryListWorker, workerErr := mealplangrocerylistinitializerbuild.Build(ctx, groceryListConfig)
+				if workerErr != nil {
+					return fmt.Errorf("failed to build grocery list initializer worker: %w", workerErr)
+				}
 
-			// Run grocery list initializer
-			if err = groceryListWorker.Work(ctx); err != nil {
-				return fmt.Errorf("failed to run grocery list initializer worker: %w", err)
-			}
-			logger.Info("Grocery list initializer worker completed successfully")
+				// Run grocery list initializer
+				if err = groceryListWorker.Work(ctx); err != nil {
+					return fmt.Errorf("failed to run grocery list initializer worker: %w", err)
+				}
+				logger.Info("Grocery list initializer worker completed successfully")
 
-			if err = repo.MarkMealPlanAsGroceryListInitialized(ctx, currentMealPlanID); err != nil {
-				return fmt.Errorf("failed to mark current meal plan as grocery list: %w", err)
-			}
+				if err = repo.MarkMealPlanAsGroceryListInitialized(ctx, currentMealPlanID); err != nil {
+					return fmt.Errorf("failed to mark current meal plan as grocery list: %w", err)
+				}
 
-			// TODO: repo.MarkMealPlanAsGroceryListsGenerated
+				// TODO: repo.MarkMealPlanAsGroceryListsGenerated
 
-			// Build task creator worker
-			taskCreatorConfig := &config.MealPlanTaskCreatorConfig{
-				Database:      apiConfig.Database,
-				Observability: apiConfig.Observability,
-				Events:        apiConfig.Events,
-				Queues:        apiConfig.Queues,
-				Analytics:     apiConfig.Analytics,
-			}
-			taskCreatorWorker, workerErr := mealplantaskcreatorbuild.Build(ctx, taskCreatorConfig)
-			if workerErr != nil {
-				return fmt.Errorf("failed to build task creator worker: %w", workerErr)
-			}
+				// Build task creator worker
+				taskCreatorConfig := &config.MealPlanTaskCreatorConfig{
+					Database:      apiConfig.Database,
+					Observability: apiConfig.Observability,
+					Events:        apiConfig.Events,
+					Queues:        apiConfig.Queues,
+					Analytics:     apiConfig.Analytics,
+				}
+				taskCreatorWorker, workerErr := mealplantaskcreatorbuild.Build(ctx, taskCreatorConfig)
+				if workerErr != nil {
+					return fmt.Errorf("failed to build task creator worker: %w", workerErr)
+				}
 
-			// Run task creator
-			if err = taskCreatorWorker.Work(ctx); err != nil {
-				return fmt.Errorf("failed to run task creator worker: %w", err)
-			}
-			logger.Info("Task creator worker completed successfully")
+				// Run task creator
+				if err = taskCreatorWorker.Work(ctx); err != nil {
+					return fmt.Errorf("failed to run task creator worker: %w", err)
+				}
+				logger.Info("Task creator worker completed successfully")
 
-			return nil
-		}),
-		// Create example service settings
-		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			return createExampleServiceSettings(ctx, repo, logger)
-		}),
+				return nil
+			}),
+			// Create example service	 settings
+			localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+				return createExampleServiceSettings(ctx, repo, logger)
+			}),
+
+		*/
+
 	)
 	if err != nil {
 		log.Fatal(err)
