@@ -42,7 +42,8 @@ func (q *repository) RecipeExists(ctx context.Context, recipeID string) (exists 
 }
 
 // getRecipe fetches a recipe from the database.
-func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
+// visited is an optional set of recipe IDs already visited to prevent infinite recursion in circular dependencies.
+func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...map[string]bool) (*mealplanning.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,6 +51,24 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 		return nil, database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
+	// Check for circular dependency to prevent infinite recursion
+	var seen map[string]bool
+	if len(visited) > 0 && visited[0] != nil {
+		seen = visited[0]
+	} else {
+		seen = make(map[string]bool)
+	}
+
+	if seen[recipeID] {
+		// Return a minimal recipe to break the cycle
+		// This prevents infinite recursion but indicates a circular dependency exists
+		return &mealplanning.Recipe{
+			ID:    recipeID,
+			Steps: []*mealplanning.RecipeStep{},
+		}, nil
+	}
+	seen[recipeID] = true
 
 	var x *mealplanning.Recipe
 	results, err := q.generatedQuerier.GetRecipeByID(ctx, q.db, recipeID)
@@ -232,12 +251,39 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 		}
 	}
 
-	for _, associatedRecipeID := range relatedRecipes {
-		associatedRecipe, associatedRecipeErr := q.getRecipe(ctx, associatedRecipeID)
+	// Track which recipes we've already added to avoid duplicates
+	addedRecipeIDs := make(map[string]bool)
+	addedRecipeIDs[x.ID] = true // Don't add the recipe itself
+
+	// Queue to process associated recipes (including nested ones)
+	recipeQueue := make([]string, 0, len(relatedRecipes))
+	recipeQueue = append(recipeQueue, relatedRecipes...)
+
+	// Process all recipes in the queue (including nested associated recipes)
+	for len(recipeQueue) > 0 {
+		associatedRecipeID := recipeQueue[0]
+		recipeQueue = recipeQueue[1:]
+
+		// Skip if we've already added this recipe
+		if addedRecipeIDs[associatedRecipeID] {
+			continue
+		}
+
+		associatedRecipe, associatedRecipeErr := q.getRecipe(ctx, associatedRecipeID, seen)
 		if associatedRecipeErr != nil {
 			return nil, observability.PrepareError(associatedRecipeErr, span, "fetching associated recipe for recipe step")
 		}
+
+		// Add to root-level AssociatedRecipes
 		x.AssociatedRecipes = append(x.AssociatedRecipes, associatedRecipe)
+		addedRecipeIDs[associatedRecipeID] = true
+
+		// Add nested associated recipes to the queue for processing
+		for _, nestedAssociatedRecipe := range associatedRecipe.AssociatedRecipes {
+			if !addedRecipeIDs[nestedAssociatedRecipe.ID] {
+				recipeQueue = append(recipeQueue, nestedAssociatedRecipe.ID)
+			}
+		}
 	}
 
 	return x, nil
@@ -245,7 +291,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 
 // GetRecipe fetches a recipe from the database.
 func (q *repository) GetRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
-	return q.getRecipe(ctx, recipeID)
+	return q.getRecipe(ctx, recipeID, nil)
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
@@ -798,6 +844,12 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Media:               []*mealplanning.RecipeMedia{},
 	}
 
+	// Validate no circular dependencies before proceeding
+	if err = q.validateNoCircularDependencyForRecipe(ctx, input); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating recipe dependencies")
+	}
+
 	if err = q.findCreatedRecipeStepProductsForIngredients(ctx, input); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "finding recipe step products for ingredients")
@@ -896,7 +948,7 @@ func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Con
 			// Check if this references a product from a different recipe
 			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != recipe.ID {
 				// Look up the referenced recipe
-				referencedRecipe, err := q.getRecipe(ctx, *ingredient.RecipeStepProductRecipeID)
+				referencedRecipe, err := q.getRecipe(ctx, *ingredient.RecipeStepProductRecipeID, nil)
 				if err != nil {
 					return fmt.Errorf("failed to get referenced recipe %s: %w", *ingredient.RecipeStepProductRecipeID, err)
 				}
@@ -1066,6 +1118,129 @@ func (q *repository) MarkRecipeAsIndexed(ctx context.Context, recipeID string) e
 	logger.Info("recipe marked as indexed")
 
 	return nil
+}
+
+// extractCrossRecipeDependencies extracts all cross-recipe dependencies from a recipe.
+// It returns a map of recipe IDs that this recipe depends on (via RecipeStepProductRecipeID).
+func (q *repository) extractCrossRecipeDependencies(ctx context.Context, recipe *mealplanning.RecipeDatabaseCreationInput) (map[string]bool, error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	dependencies := make(map[string]bool)
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil &&
+				*ingredient.RecipeStepProductRecipeID != "" &&
+				*ingredient.RecipeStepProductRecipeID != recipe.ID {
+				dependencies[*ingredient.RecipeStepProductRecipeID] = true
+			}
+		}
+	}
+	return dependencies, nil
+}
+
+// checkForCircularDependency checks if adding the new dependencies to the given recipe creates a circular dependency.
+// It performs a depth-first search to detect cycles in the dependency graph.
+func (q *repository) checkForCircularDependency(ctx context.Context, recipeID string, newDependencies map[string]bool) error {
+	visited := make(map[string]bool)
+	recursionStack := make(map[string]bool)
+
+	var dfs func(string) error
+	dfs = func(currentRecipeID string) error {
+		if recursionStack[currentRecipeID] {
+			return fmt.Errorf("circular dependency detected: recipe %s is part of a dependency cycle", currentRecipeID)
+		}
+		if visited[currentRecipeID] {
+			return nil // Already processed this node
+		}
+
+		visited[currentRecipeID] = true
+		recursionStack[currentRecipeID] = true
+		defer delete(recursionStack, currentRecipeID)
+
+		// Get dependencies for the current recipe
+		var dependenciesToCheck map[string]bool
+		if currentRecipeID == recipeID {
+			// For the recipe being updated, use the new dependencies
+			dependenciesToCheck = newDependencies
+		} else {
+			// For other recipes, fetch their current dependencies
+			recipe, err := q.getRecipe(ctx, currentRecipeID, nil)
+			if err != nil {
+				// If recipe doesn't exist or can't be fetched, skip it
+				// This allows validation to work even if some referenced recipes are missing
+				return nil
+			}
+			dependenciesToCheck = make(map[string]bool)
+			for _, step := range recipe.Steps {
+				for _, ingredient := range step.Ingredients {
+					if ingredient.RecipeStepProductRecipeID != nil &&
+						*ingredient.RecipeStepProductRecipeID != "" &&
+						*ingredient.RecipeStepProductRecipeID != recipe.ID {
+						dependenciesToCheck[*ingredient.RecipeStepProductRecipeID] = true
+					}
+				}
+			}
+		}
+
+		// Recursively check all dependencies
+		for depID := range dependenciesToCheck {
+			if err := dfs(depID); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	// Check if recipe references itself
+	if newDependencies[recipeID] {
+		return fmt.Errorf("recipe cannot reference itself: recipe %s", recipeID)
+	}
+
+	// Start DFS from the recipe being updated
+	return dfs(recipeID)
+}
+
+// validateNoCircularDependencyForRecipe validates that a recipe being created doesn't create a circular dependency.
+func (q *repository) validateNoCircularDependencyForRecipe(ctx context.Context, recipe *mealplanning.RecipeDatabaseCreationInput) error {
+	dependencies, err := q.extractCrossRecipeDependencies(ctx, recipe)
+	if err != nil {
+		return fmt.Errorf("extracting dependencies: %w", err)
+	}
+	if len(dependencies) == 0 {
+		return nil // No cross-recipe dependencies, no cycle possible
+	}
+	return q.checkForCircularDependency(ctx, recipe.ID, dependencies)
+}
+
+// validateNoCircularDependencyForIngredient validates that updating/creating an ingredient with a cross-recipe reference doesn't create a cycle.
+func (q *repository) validateNoCircularDependencyForIngredient(ctx context.Context, recipeID string, ingredientRecipeStepProductRecipeID *string) error {
+	if ingredientRecipeStepProductRecipeID == nil || *ingredientRecipeStepProductRecipeID == "" || *ingredientRecipeStepProductRecipeID == recipeID {
+		return nil // No cross-recipe dependency
+	}
+
+	// Get current recipe to find its existing dependencies
+	currentRecipe, err := q.getRecipe(ctx, recipeID, nil)
+	if err != nil {
+		return fmt.Errorf("fetching current recipe: %w", err)
+	}
+
+	// Build new dependencies map: existing dependencies + the new one
+	newDependencies := make(map[string]bool)
+	for _, step := range currentRecipe.Steps {
+		for _, ing := range step.Ingredients {
+			if ing.RecipeStepProductRecipeID != nil &&
+				*ing.RecipeStepProductRecipeID != "" &&
+				*ing.RecipeStepProductRecipeID != recipeID {
+				newDependencies[*ing.RecipeStepProductRecipeID] = true
+			}
+		}
+	}
+	// Add the new dependency
+	newDependencies[*ingredientRecipeStepProductRecipeID] = true
+
+	return q.checkForCircularDependency(ctx, recipeID, newDependencies)
 }
 
 // ArchiveRecipe archives a recipe from the database by its MealPlanTaskID.

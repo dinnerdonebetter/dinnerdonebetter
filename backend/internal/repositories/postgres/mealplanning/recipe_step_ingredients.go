@@ -496,6 +496,24 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 
 // CreateRecipeStepIngredient creates a recipe step ingredient in the database.
 func (q *repository) CreateRecipeStepIngredient(ctx context.Context, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
+	// Get the recipe ID from the step
+	step, err := q.getRecipeStepByID(ctx, q.db, input.BelongsToRecipeStep)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe step")
+	}
+
+	// Validate no circular dependency if this ingredient has a cross-recipe reference
+	if err = q.validateNoCircularDependencyForIngredient(ctx, step.BelongsToRecipe, input.RecipeStepProductRecipeID); err != nil {
+		return nil, observability.PrepareError(err, span, "validating ingredient dependencies")
+	}
+
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
@@ -510,12 +528,23 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, updated.ID)
 
+	// Get the recipe ID from the step
+	step, err := q.getRecipeStepByID(ctx, q.db, updated.BelongsToRecipeStep)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
+	}
+
+	// Validate no circular dependency if this ingredient has a cross-recipe reference
+	if err = q.validateNoCircularDependencyForIngredient(ctx, step.BelongsToRecipe, updated.RecipeStepProductRecipeID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "validating ingredient dependencies")
+	}
+
 	var ingredientID *string
 	if updated.Ingredient != nil {
 		ingredientID = &updated.Ingredient.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
+	if _, err = q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
 		IngredientID:              database.NullStringFromStringPointer(ingredientID),
 		Name:                      updated.Name,
 		Optional:                  updated.Optional,
