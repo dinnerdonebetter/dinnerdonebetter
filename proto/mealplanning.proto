@@ -1707,6 +1707,7 @@ message Recipe {
   repeated RecipeMedia media = 17;
   string status = 19;
   bool eligible_for_meals = 20;
+  repeated Recipe associated_recipes = 21;
 }
 
 message RecipeCreationRequestInput {
@@ -1980,6 +1981,7 @@ message RecipeStepIngredient {
   uint32 option_index = 16;
   bool optional = 17;
   bool to_taste = 18;
+  uint32 index = 19;
 }
 
 message RecipeStepIngredientCreationRequestInput {
@@ -1997,6 +1999,7 @@ message RecipeStepIngredientCreationRequestInput {
   bool to_taste = 12;
   optional string valid_ingredient_preparation_id = 13;
   optional string valid_ingredient_measurement_unit_id = 14;
+  optional uint32 index = 15;
 }
 
 message RecipeStepIngredientUpdateRequestInput {
@@ -2014,6 +2017,7 @@ message RecipeStepIngredientUpdateRequestInput {
   optional bool to_taste = 12;
   optional float product_percentage_to_use = 13;
   optional string recipe_step_product_recipe_id = 14;
+  optional uint32 index = 15;
 }
 
 message RecipeStepInstrument {
@@ -2030,6 +2034,7 @@ message RecipeStepInstrument {
   uint32 option_index = 11;
   uint32 preference_rank = 12;
   bool optional = 13;
+  uint32 index = 14;
 }
 
 message RecipeStepInstrumentCreationRequestInput {
@@ -2043,6 +2048,7 @@ message RecipeStepInstrumentCreationRequestInput {
   bool optional = 8;
   uint32 preference_rank = 9;
   optional string valid_preparation_instrument_id = 10;
+  optional uint32 index = 11;
 }
 
 message RecipeStepInstrumentUpdateRequestInput {
@@ -2055,6 +2061,7 @@ message RecipeStepInstrumentUpdateRequestInput {
   optional bool optional = 7;
   optional uint32 option_index = 8;
   optional common.Uint32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
+  optional uint32 index = 10;
 }
 
 enum RecipeStepProductType {
@@ -2146,6 +2153,8 @@ message RecipeStepVessel {
   string vessel_preposition = 10;
   string name = 11;
   bool unavailable_after_step = 12;
+  uint32 index = 13;
+  uint32 option_index = 14;
 }
 
 message RecipeStepVesselCreationRequestInput {
@@ -2158,6 +2167,8 @@ message RecipeStepVesselCreationRequestInput {
   string vessel_preposition = 7;
   bool unavailable_after_step = 8;
   optional string valid_preparation_vessel_id = 9;
+  optional uint32 index = 10;
+  uint32 option_index = 11;
 }
 
 message RecipeStepVesselUpdateRequestInput {
@@ -2169,6 +2180,8 @@ message RecipeStepVesselUpdateRequestInput {
   optional common.Uint16RangeWithOptionalMaxUpdateRequestInput quantity = 6;
   optional string vessel_preposition = 7;
   optional bool unavailable_after_step = 8;
+  optional uint32 index = 9;
+  optional uint32 option_index = 10;
 }
 
 message RecipeUpdateRequestInput {

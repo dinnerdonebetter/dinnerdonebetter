@@ -4,35 +4,52 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 )
 
-// AllRecipes returns all bootstrap recipe creation inputs.
+// AllRecipes returns all bootstrap recipe creation inputs that do not have prerequisites.
 // Each recipe is created with the provided userID as the creator.
-func AllRecipes(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
-	var recipes []*mealplanning.RecipeDatabaseCreationInput
+// Note: PanSearedButterBastedSteakRecipe is excluded as it's created separately using RecipeManager.
+func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
+	var recipes []*mealplanning.RecipeCreationRequestInput
 
-	recipes = append(recipes, PanSearedButterBastedSteakRecipe(userID, enums)...)
-	recipes = append(recipes, SousVideChickenBreastRecipe(userID, enums)...)
-	recipes = append(recipes, PerfectRoastChickenRecipe(userID, enums)...)
-	recipes = append(recipes, SousVidePorkChopsRecipe(userID, enums)...)
-	recipes = append(recipes, ClassicSmashBurgersRecipe(userID, enums)...)
-	recipes = append(recipes, SimpleWhiteRiceRecipe(userID, enums)...)
-	recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(userID, enums)...)
-	recipes = append(recipes, CaesarRoastedBroccoliRecipe(userID, enums)...)
-	recipes = append(recipes, HaricotsVertsAmandineRecipe(userID, enums)...)
-	recipes = append(recipes, MixedGreenSaladRecipe(userID, enums)...)
-	recipes = append(recipes, SoySauceBraisedChickenThighsRecipe(userID, enums)...)
-	recipes = append(recipes, GrilledPorkTenderloinRecipe(userID, enums)...)
-	recipes = append(recipes, PanSearedSalmonFilletsRecipe(userID, enums)...)
-	recipes = append(recipes, RoastedBrusselsSproutsRecipe(userID, enums)...)
-	recipes = append(recipes, RefriedBeansRecipe(userID, enums)...)
-	recipes = append(recipes, CarneAsadaRecipe(userID, enums)...)
-	recipes = append(recipes, ButterChickenRecipe(userID, enums)...)
-	recipes = append(recipes, StovetopMacAndCheeseRecipe(userID, enums)...)
-	recipes = append(recipes, CaesarSaladRecipe(userID, enums)...)
-	recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(userID, enums)...)
-	recipes = append(recipes, CornbreadRecipe(userID, enums)...)
-	recipes = append(recipes, GrilledWholeCauliflowerRecipe(userID, enums)...)
-	recipes = append(recipes, StirFriedGreenBeansRecipe(userID, enums)...)
-	recipes = append(recipes, TortillasRecipe(userID, enums)...)
+	// Recipes without prerequisites
+	recipes = append(recipes, PanSearedButterBastedSteakRecipe(enums)...)
+	recipes = append(recipes, SousVideChickenBreastRecipe(enums)...)
+	recipes = append(recipes, PerfectRoastChickenRecipe(enums)...)
+	recipes = append(recipes, SousVidePorkChopsRecipe(enums)...)
+	recipes = append(recipes, ClassicSmashBurgersRecipe(enums)...)
+	recipes = append(recipes, SimpleWhiteRiceRecipe(enums)...)
+	recipes = append(recipes, CaesarBreadcrumbsRecipe(enums)...)
+	recipes = append(recipes, HaricotsVertsAmandineRecipe(enums)...)
+	recipes = append(recipes, MixedGreenSaladRecipe(enums)...)
+	recipes = append(recipes, RoastedBrusselsSproutsRecipe(enums)...)
+	recipes = append(recipes, StovetopMacAndCheeseRecipe(enums)...)
+	recipes = append(recipes, CaesarDressingRecipe(enums)...)
+	recipes = append(recipes, GlazedCarrotsWithBrownButterAndSageRecipe(enums)...)
+	recipes = append(recipes, StirFriedGreenBeansRecipe(enums)...)
+	recipes = append(recipes, TortillasRecipe(enums)...)
+	recipes = append(recipes, SoySauceBraisedChickenThighsRecipe(enums)...)
+	recipes = append(recipes, GrilledPorkTenderloinRecipe(enums)...)
+	recipes = append(recipes, PanSearedSalmonFilletsRecipe(enums)...)
+	recipes = append(recipes, RefriedBeansRecipe(enums)...)
+	recipes = append(recipes, CarneAsadaRecipe(enums)...)
+	recipes = append(recipes, ButterChickenRecipe(enums)...)
+	recipes = append(recipes, CornbreadRecipe(enums)...)
+	recipes = append(recipes, TeriyakiSauceRecipe(enums)...)
+	recipes = append(recipes, UltraFluffyMashedPotatoesRecipe(enums)...)
+
+	return recipes
+}
+
+// AllRecipesWithPrerequisites returns all bootstrap recipe creation inputs that have prerequisites.
+// The createdRecipes map should contain recipes keyed by their slug (e.g., "teriyaki-sauce", "caesar-dressing").
+// Each recipe is created with the provided userID as the creator.
+func AllRecipesWithPrerequisites(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
+	var recipes []*mealplanning.RecipeCreationRequestInput
+
+	// Recipes with prerequisites - these need the lookup map to resolve prerequisite IDs
+	recipes = append(recipes, GarlicParmesanCroutonsRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, GrilledWholeCauliflowerRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, CaesarSaladRecipe(enums, createdRecipes)...)
+	recipes = append(recipes, CaesarRoastedBroccoliRecipe(enums, createdRecipes)...)
 
 	return recipes
 }

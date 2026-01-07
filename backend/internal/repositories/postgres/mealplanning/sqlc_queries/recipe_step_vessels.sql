@@ -12,7 +12,9 @@ INSERT INTO recipe_step_vessels (
 	vessel_predicate,
 	minimum_quantity,
 	maximum_quantity,
-	unavailable_after_step
+	unavailable_after_step,
+	index,
+	option_index
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(name),
@@ -23,7 +25,9 @@ INSERT INTO recipe_step_vessels (
 	sqlc.arg(vessel_predicate),
 	sqlc.arg(minimum_quantity),
 	sqlc.arg(maximum_quantity),
-	sqlc.arg(unavailable_after_step)
+	sqlc.arg(unavailable_after_step),
+	sqlc.arg(index),
+	sqlc.arg(option_index)
 );
 
 -- name: CheckRecipeStepVesselExistence :one
@@ -85,6 +89,8 @@ SELECT
 	recipe_step_vessels.minimum_quantity,
 	recipe_step_vessels.maximum_quantity,
 	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.index,
+	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
 	recipe_step_vessels.archived_at
@@ -142,6 +148,8 @@ SELECT
 	recipe_step_vessels.minimum_quantity,
 	recipe_step_vessels.maximum_quantity,
 	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.index,
+	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
 	recipe_step_vessels.archived_at
@@ -202,6 +210,8 @@ SELECT
 	recipe_step_vessels.minimum_quantity,
 	recipe_step_vessels.maximum_quantity,
 	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.index,
+	recipe_step_vessels.option_index,
 	recipe_step_vessels.created_at,
 	recipe_step_vessels.last_updated_at,
 	recipe_step_vessels.archived_at,
@@ -264,6 +274,8 @@ UPDATE recipe_step_vessels SET
 	minimum_quantity = sqlc.arg(minimum_quantity),
 	maximum_quantity = sqlc.arg(maximum_quantity),
 	unavailable_after_step = sqlc.arg(unavailable_after_step),
+	index = sqlc.arg(index),
+	option_index = sqlc.arg(option_index),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)

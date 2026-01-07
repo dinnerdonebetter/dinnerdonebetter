@@ -3,6 +3,7 @@ package converters
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -18,6 +19,8 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplan
 			Min: &input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
+		Index:                &input.Index,
+		OptionIndex:          &input.OptionIndex,
 		VesselPreposition:    &input.VesselPreposition,
 		UnavailableAfterStep: &input.UnavailableAfterStep,
 	}
@@ -26,7 +29,13 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplan
 }
 
 // ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput creates a RecipeStepVesselDatabaseCreationInput from a RecipeStepVesselCreationRequestInput.
-func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVesselCreationRequestInput) *mealplanning.RecipeStepVesselDatabaseCreationInput {
+// If input.Index is nil, it will be set to the provided arrayIndex.
+func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVesselCreationRequestInput, arrayIndex uint16) *mealplanning.RecipeStepVesselDatabaseCreationInput {
+	index := arrayIndex
+	if input.Index != nil {
+		index = *input.Index
+	}
+
 	x := &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		ValidPreparationVesselID:        input.ValidPreparationVesselID,
@@ -34,6 +43,8 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		Name:                            input.Name,
 		Notes:                           input.Notes,
 		Quantity:                        input.Quantity,
+		Index:                           index,
+		OptionIndex:                     input.OptionIndex,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		VesselPreposition:               input.VesselPreposition,
@@ -45,13 +56,20 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
 // Note: This conversion loses bridge table ID information since RecipeStepVessel doesn't store them.
+// If Index is 0, it will be set to nil so that the converter can use the array index during recipe creation.
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
+	var indexPtr *uint16
+	if input.Index != 0 {
+		indexPtr = pointer.To(input.Index)
+	}
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		Index:                indexPtr,
+		OptionIndex:          input.OptionIndex,
 		Quantity:             input.Quantity,
 	}
 }
@@ -72,6 +90,8 @@ func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *mealp
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		Index:                input.Index,
+		OptionIndex:          input.OptionIndex,
 		Quantity:             input.Quantity,
 	}
 }

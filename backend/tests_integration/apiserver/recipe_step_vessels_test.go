@@ -31,6 +31,8 @@ func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, exp
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d vessel %d Notes", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d MeasurementQuantity", stepIndex, vesselIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d vessel %d Index", stepIndex, vesselIndex)
+	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d vessel %d OptionIndex", stepIndex, vesselIndex)
 	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected step %d vessel %d VesselPreposition", stepIndex, vesselIndex)
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
 	if expected.Vessel != nil {
@@ -64,12 +66,25 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
 		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
+		// Get existing vessels to determine the next available index
+		existingVesselsRes, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		existingVessels := existingVesselsRes.Results
+		nextIndex := uint16(len(existingVessels)) // Start from the next index after existing ones
+
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 		exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 		exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
+		// Set Index to match what we'll use in the creation input - use nextIndex to avoid conflicts
+		exampleRecipeStepVessel.Index = nextIndex
 		exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 		// Set bridge table MealPlanTaskID (required)
 		exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
+		// Set Index (required for individual creation) - use nextIndex to ensure uniqueness
+		exampleRecipeStepVesselInput.Index = pointer.To(nextIndex)
 
 		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 			RecipeId:     createdRecipe.ID,
@@ -96,6 +111,9 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		newRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 		newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 		newRecipeStepVessel.Vessel = newVessel
+		// Preserve the existing Index and OptionIndex to avoid conflicts
+		newRecipeStepVessel.Index = createdRecipeStepVessel.Index
+		newRecipeStepVessel.OptionIndex = createdRecipeStepVessel.OptionIndex
 		updateInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel)
 		createdRecipeStepVessel.Update(updateInput)
 		exampleRecipeStepVessel.Update(updateInput)
@@ -314,31 +332,45 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		createdValidPreparation := &mealplanning.ValidPreparation{ID: createdRecipeStepPreparationID}
 		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
+		// Get existing vessels to determine the next available index
+		existingVesselsRes, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+			RecipeId:     createdRecipe.ID,
+			RecipeStepId: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		existingVessels := existingVesselsRes.Results
+		nextIndex := uint16(len(existingVessels)) // Start from the next index after existing ones
+
 		var expected []*mealplanning.RecipeStepVessel
 		for i := 0; i < 5; i++ {
 			exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
+			// Set Index to match what we'll use in the creation input - start from nextIndex to avoid conflicts
+			vesselIndex := nextIndex + uint16(i)
+			exampleRecipeStepVessel.Index = vesselIndex
 			exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 			// Set bridge table MealPlanTaskID (required)
 			exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
-			createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
+			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
+			exampleRecipeStepVesselInput.Index = pointer.To(vesselIndex)
+			createdRecipeStepVesselRes, createErr := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,
 				Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
 			})
-			require.NoError(t, err)
+			require.NoError(t, createErr)
 
 			createdRecipeStepVessel := converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(createdRecipeStepVesselRes.Created)
 			checkRecipeStepVesselEquality(t, i, i, exampleRecipeStepVessel, createdRecipeStepVessel)
 
-			retrievedRecipeStepVesselRes, err := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+			retrievedRecipeStepVesselRes, getErr := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
 				RecipeId:           createdRecipe.ID,
 				RecipeStepId:       createdRecipeStepID,
 				RecipeStepVesselId: createdRecipeStepVessel.ID,
 			})
 			require.NotNil(t, retrievedRecipeStepVesselRes)
-			require.NoError(t, err)
+			require.NoError(t, getErr)
 
 			createdRecipeStepVessel = converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(retrievedRecipeStepVesselRes.Result)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepVessel.BelongsToRecipeStep)

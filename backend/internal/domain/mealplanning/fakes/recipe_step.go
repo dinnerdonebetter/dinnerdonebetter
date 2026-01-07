@@ -16,6 +16,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepIngredient()
 		ing.BelongsToRecipeStep = recipeStepID
+		// Index will be set from array index during recipe creation (via converter)
+		// OptionIndex is already 0 from the fake builder
 		ingredients = append(ingredients, ing)
 	}
 
@@ -23,6 +25,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepInstrument()
 		ing.BelongsToRecipeStep = recipeStepID
+		// Index will be set from array index during recipe creation (via converter)
+		// OptionIndex is already 0 from the fake builder
 		instruments = append(instruments, ing)
 	}
 
@@ -30,6 +34,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepVessel()
 		ing.BelongsToRecipeStep = recipeStepID
+		// Index will be set from array index during recipe creation (via converter)
+		// OptionIndex is already 0 from the fake builder
 		vessels = append(vessels, ing)
 	}
 

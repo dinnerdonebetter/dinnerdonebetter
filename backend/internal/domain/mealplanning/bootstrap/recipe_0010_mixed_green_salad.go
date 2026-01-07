@@ -2,16 +2,13 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // MixedGreenSaladRecipe creates the Mixed Green Salad (Misticanza alla Romana) recipe.
 // Source: https://www.seriouseats.com/roman-mixed-green-salad-misticanza-recipe
-func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.RecipeDatabaseCreationInput {
-	recipeID := identifiers.New()
-
+func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	// Get preparations
 	inspectPrep := enums.Preparations["inspect"]
 	rinsePrep := enums.Preparations["rinse"]
@@ -158,335 +155,248 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	saltTeaspoonVIMU := enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID]
 
 	// Step 0: Pick over the leafy vegetables, discarding any wilted or damaged leaves
-	step0ID := identifiers.New()
-	step0 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step0ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   inspectPrep.ID,
-		Index:           0,
-		Notes:           "Pick over the leafy vegetables, discarding any wilted or damaged leaves.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step0 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: inspectPrep.ID,
+		Index:         0,
+		Notes:         "Pick over the leafy vegetables, discarding any wilted or damaged leaves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectLettuceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lettuceCupVIMU.ID,
-				IngredientID:                     &lettuce.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectRadicchioVIP.ID,
 				ValidIngredientMeasurementUnitID: &radicchioCupVIMU.ID,
-				IngredientID:                     &radicchio.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectEndiveVIP.ID,
 				ValidIngredientMeasurementUnitID: &endiveCupVIMU.ID,
-				IngredientID:                     &endive.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectFriseeVIP.ID,
 				ValidIngredientMeasurementUnitID: &friseeCupVIMU.ID,
-				IngredientID:                     &frisee.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "frisée",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectKaleVIP.ID,
 				ValidIngredientMeasurementUnitID: &kaleCupVIMU.ID,
-				IngredientID:                     &kale.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "kale",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectDandelionGreensVIP.ID,
 				ValidIngredientMeasurementUnitID: &dandelionGreensCupVIMU.ID,
-				IngredientID:                     &dandelionGreens.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "dandelion greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectPurslaneVIP.ID,
 				ValidIngredientMeasurementUnitID: &purslaneCupVIMU.ID,
-				IngredientID:                     &purslane.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "purslane",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectFennelFrondsVIP.ID,
 				ValidIngredientMeasurementUnitID: &fennelFrondsCupVIMU.ID,
-				IngredientID:                     &fennelFronds.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "fennel fronds",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectParsleyVIP.ID,
 				ValidIngredientMeasurementUnitID: &parsleyCupVIMU.ID,
-				IngredientID:                     &parsley.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "parsley",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectTarragonVIP.ID,
 				ValidIngredientMeasurementUnitID: &tarragonCupVIMU.ID,
-				IngredientID:                     &tarragon.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "tarragon",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectChervilVIP.ID,
 				ValidIngredientMeasurementUnitID: &chervilCupVIMU.ID,
-				IngredientID:                     &chervil.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "chervil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectBasilVIP.ID,
 				ValidIngredientMeasurementUnitID: &basilCupVIMU.ID,
-				IngredientID:                     &basil.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step0ID,
 				ValidIngredientPreparationID:     &inspectMintVIP.ID,
 				ValidIngredientMeasurementUnitID: &mintCupVIMU.ID,
-				IngredientID:                     &mint.ID,
-				MeasurementUnitID:                cupMeasurement.ID,
 				Name:                             "mint",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step0ID,
 				ValidPreparationInstrumentID: &inspectBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step0ID,
 				ValidPreparationVesselID: &inspectCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected lettuce",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected lettuce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected radicchio",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected radicchio",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected endive",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               2,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected endive",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             2,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected frisée",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               3,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected frisée",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             3,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected kale",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               4,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected kale",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             4,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected dandelion greens",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               5,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected dandelion greens",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             5,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected purslane",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               6,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected purslane",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             6,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected fennel fronds",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               7,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected fennel fronds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             7,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected parsley",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               8,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected parsley",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             8,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected tarragon",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               9,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected tarragon",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             9,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected chervil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               10,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected chervil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             10,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected basil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               11,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected basil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             11,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step0ID,
-				Name:                "inspected mint",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               12,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "inspected mint",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             12,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -495,336 +405,252 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 1: Wash everything in several changes of water until no dirt or grit remains
-	step1ID := identifiers.New()
-	step1 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step1ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   rinsePrep.ID,
-		Index:           1,
-		Notes:           "Wash everything in several changes of water until no dirt or grit remains.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step1 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: rinsePrep.ID,
+		Index:         1,
+		Notes:         "Wash everything in several changes of water until no dirt or grit remains.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &rinseLettuceVIP.ID,
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &rinseRadicchioVIP.ID,
-				IngredientID:                    &radicchio.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &rinseEndiveVIP.ID,
-				IngredientID:                    &endive.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &rinseFriseeVIP.ID,
-				IngredientID:                    &frisee.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected frisée",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &rinseKaleVIP.ID,
-				IngredientID:                    &kale.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected kale",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &rinseDandelionGreensVIP.ID,
-				IngredientID:                    &dandelionGreens.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected dandelion greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &rinsePurslaneVIP.ID,
-				IngredientID:                    &purslane.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected purslane",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &rinseFennelFrondsVIP.ID,
-				IngredientID:                    &fennelFronds.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected fennel fronds",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &rinseParsleyVIP.ID,
-				IngredientID:                    &parsley.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected parsley",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &rinseTarragonVIP.ID,
-				IngredientID:                    &tarragon.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected tarragon",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &rinseChervilVIP.ID,
-				IngredientID:                    &chervil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected chervil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &rinseBasilVIP.ID,
-				IngredientID:                    &basil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step1ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &rinseMintVIP.ID,
-				IngredientID:                    &mint.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "inspected mint",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step1ID,
 				ValidPreparationVesselID: &rinseLargeBowlVPV.ID,
-				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed lettuce",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed lettuce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed radicchio",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed radicchio",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed endive",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               2,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed endive",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             2,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed frisée",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               3,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed frisée",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             3,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed kale",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               4,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed kale",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             4,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed dandelion greens",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               5,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed dandelion greens",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             5,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed purslane",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               6,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed purslane",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             6,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed fennel fronds",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               7,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed fennel fronds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             7,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed parsley",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               8,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed parsley",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             8,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed tarragon",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               9,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed tarragon",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             9,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed chervil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               10,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed chervil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             10,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed basil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               11,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed basil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             11,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step1ID,
-				Name:                "washed mint",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               12,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "washed mint",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             12,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -833,336 +659,252 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 2: Dry well in a salad spinner
-	step2ID := identifiers.New()
-	step2 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step2ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   dryPrep.ID,
-		Index:           2,
-		Notes:           "Dry well in a salad spinner.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step2 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: dryPrep.ID,
+		Index:         2,
+		Notes:         "Dry well in a salad spinner.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &dryLettuceVIP.ID,
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &dryRadicchioVIP.ID,
-				IngredientID:                    &radicchio.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &dryEndiveVIP.ID,
-				IngredientID:                    &endive.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &dryFriseeVIP.ID,
-				IngredientID:                    &frisee.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed frisée",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &dryKaleVIP.ID,
-				IngredientID:                    &kale.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed kale",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &dryDandelionGreensVIP.ID,
-				IngredientID:                    &dandelionGreens.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed dandelion greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &dryPurslaneVIP.ID,
-				IngredientID:                    &purslane.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed purslane",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &dryFennelFrondsVIP.ID,
-				IngredientID:                    &fennelFronds.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed fennel fronds",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &dryParsleyVIP.ID,
-				IngredientID:                    &parsley.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed parsley",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &dryTarragonVIP.ID,
-				IngredientID:                    &tarragon.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed tarragon",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &dryChervilVIP.ID,
-				IngredientID:                    &chervil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed chervil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &dryBasilVIP.ID,
-				IngredientID:                    &basil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step2ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &dryMintVIP.ID,
-				IngredientID:                    &mint.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "washed mint",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step2ID,
 				ValidPreparationVesselID: &drySaladSpinnerVPV.ID,
-				VesselID:                 &saladSpinner.ID,
 				Name:                     "salad spinner",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried lettuce",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried lettuce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried radicchio",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried radicchio",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried endive",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               2,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried endive",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             2,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried frisée",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               3,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried frisée",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             3,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried kale",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               4,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried kale",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             4,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried dandelion greens",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               5,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried dandelion greens",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             5,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried purslane",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               6,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried purslane",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             6,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.5),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried fennel fronds",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               7,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried fennel fronds",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             7,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried parsley",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               8,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried parsley",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             8,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried tarragon",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               9,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried tarragon",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             9,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried chervil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               10,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried chervil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             10,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried basil",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               11,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried basil",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             11,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step2ID,
-				Name:                "dried mint",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               12,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "dried mint",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             12,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
@@ -1171,108 +913,81 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 3: Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive
-	step3ID := identifiers.New()
-	step3 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step3ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   slicePrep.ID,
-		Index:           3,
-		Notes:           "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step3 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: slicePrep.ID,
+		Index:         3,
+		Notes:         "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &sliceLettuceVIP.ID,
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &sliceRadicchioVIP.ID,
-				IngredientID:                    &radicchio.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step3ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &sliceEndiveVIP.ID,
-				IngredientID:                    &endive.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step3ID,
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
-				InstrumentID:                 &knife.ID,
 				Name:                         "knife",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step3ID,
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
-				VesselID:                 &cuttingBoard.ID,
 				Name:                     "cutting board",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
-				Name:                "prepared lettuce",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "prepared lettuce",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
-				Name:                "prepared radicchio",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               1,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "prepared radicchio",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             1,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step3ID,
-				Name:                "prepared endive",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               2,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "prepared endive",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             2,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1281,216 +996,153 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 4: Combine all the dried greens into a mixed greens mixture
-	step4ID := identifiers.New()
-	step4 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step4ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   mixPrep.ID,
-		Index:           4,
-		Notes:           "Combine all the dried greens and herbs together in a large bowl.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step4 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: mixPrep.ID,
+		Index:         4,
+		Notes:         "Combine all the dried greens and herbs together in a large bowl.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				ValidIngredientPreparationID:    &mixLettuceVIP.ID,
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "prepared lettuce",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 2,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidIngredientPreparationID:    &mixRadicchioVIP.ID,
-				IngredientID:                    &radicchio.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "prepared radicchio",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](2),
 				ValidIngredientPreparationID:    &mixEndiveVIP.ID,
-				IngredientID:                    &endive.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "prepared endive",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](3),
 				ValidIngredientPreparationID:    &mixFriseeVIP.ID,
-				IngredientID:                    &frisee.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried frisée",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](4),
 				ValidIngredientPreparationID:    &mixKaleVIP.ID,
-				IngredientID:                    &kale.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried kale",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](5),
 				ValidIngredientPreparationID:    &mixDandelionGreensVIP.ID,
-				IngredientID:                    &dandelionGreens.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried dandelion greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](6),
 				ValidIngredientPreparationID:    &mixPurslaneVIP.ID,
-				IngredientID:                    &purslane.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried purslane",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.5,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](7),
 				ValidIngredientPreparationID:    &mixFennelFrondsVIP.ID,
-				IngredientID:                    &fennelFronds.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried fennel fronds",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](8),
 				ValidIngredientPreparationID:    &mixParsleyVIP.ID,
-				IngredientID:                    &parsley.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried parsley",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](9),
 				ValidIngredientPreparationID:    &mixTarragonVIP.ID,
-				IngredientID:                    &tarragon.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried tarragon",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](10),
 				ValidIngredientPreparationID:    &mixChervilVIP.ID,
-				IngredientID:                    &chervil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried chervil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](11),
 				ValidIngredientPreparationID:    &mixBasilVIP.ID,
-				IngredientID:                    &basil.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried basil",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step4ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](12),
 				ValidIngredientPreparationID:    &mixMintVIP.ID,
-				IngredientID:                    &mint.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "dried mint",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.25,
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step4ID,
 				ValidPreparationInstrumentID: &mixBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step4ID,
 				ValidPreparationVesselID: &mixLargeBowlVPV.ID,
-				VesselID:                 &largeBowl.ID,
 				Name:                     "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step4ID,
-				Name:                "mixed greens",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:              "mixed greens",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &cupMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](8),
 				},
@@ -1500,35 +1152,22 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 
 	// Step 5: In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves
 	coatedState := enums.IngredientStates["coated"]
-	step5ID := identifiers.New()
-	step5GreensIngredientID := identifiers.New()
-	step5CompletionConditionID := identifiers.New()
-	step5 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step5ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   tossPrep.ID,
-		Index:           5,
-		Notes:           "In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step5 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: tossPrep.ID,
+		Index:         5,
+		Notes:         "In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              step5GreensIngredientID,
-				BelongsToRecipeStep:             step5ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               cupMeasurement.ID,
 				Name:                            "mixed greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 8,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step5ID,
 				ValidIngredientPreparationID:     &tossOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTablespoonVIMU.ID,
-				IngredientID:                     &oliveOil.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "extra-virgin olive oil",
 				QuantityNotes:                    "just enough to gently coat leaves",
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1537,64 +1176,46 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				},
 			},
 		},
-		Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ID:                           identifiers.New(),
-				BelongsToRecipeStep:          step5ID,
 				ValidPreparationInstrumentID: &tossBareHandsVPI.ID,
-				InstrumentID:                 &bareHands.ID,
 				Name:                         "bare hands",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                       identifiers.New(),
-				BelongsToRecipeStep:      step5ID,
 				ValidPreparationVesselID: &tossServingBowlVPV.ID,
-				VesselID:                 &servingBowl.ID,
 				Name:                     "large serving bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
-				ID:                  step5CompletionConditionID,
-				BelongsToRecipeStep: step5ID,
-				IngredientStateID:   coatedState.ID,
-				Notes:               "Leaves should be evenly coated in olive oil",
-				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
-					{
-						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step5CompletionConditionID,
-						RecipeStepIngredient:                   step5GreensIngredientID,
-					},
-				},
-				Optional: false,
+				IngredientStateID: coatedState.ID,
+				Notes:             "Leaves should be evenly coated in olive oil",
+				Ingredients:       []uint64{0}, // Index of mixed greens ingredient in the step
+				Optional:          false,
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step5ID,
-				Name:                "dressed greens",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "dressed greens",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
 			},
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step5ID,
-				Name:                "serving bowl with salad",
-				Type:                mealplanning.RecipeStepProductVesselType,
-				Index:               1,
+				Name:  "serving bowl with salad",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1603,35 +1224,22 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 	}
 
 	// Step 6: Add splash of lemon juice and salt to taste, tossing to combine. Serve.
-	step6ID := identifiers.New()
-	step6GreensIngredientID := identifiers.New()
-	step6CompletionConditionID := identifiers.New()
-	step6 := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:              step6ID,
-		BelongsToRecipe: recipeID,
-		PreparationID:   seasonPrep.ID,
-		Index:           6,
-		Notes:           "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
-		Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+	step6 := &mealplanning.RecipeStepCreationRequestInput{
+		PreparationID: seasonPrep.ID,
+		Index:         6,
+		Notes:         "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
+		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
-				ID:                              step6GreensIngredientID,
-				BelongsToRecipeStep:             step6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
-				IngredientID:                    &lettuce.ID,
-				MeasurementUnitID:               unitMeasurement.ID,
 				Name:                            "dressed greens",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
 				ValidIngredientPreparationID:     &seasonLemonVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonTablespoonVIMU.ID,
-				IngredientID:                     &lemon.ID,
-				MeasurementUnitID:                tablespoonMeasurement.ID,
 				Name:                             "fresh lemon juice",
 				QuantityNotes:                    "a splash",
 				ToTaste:                          true,
@@ -1641,12 +1249,8 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				},
 			},
 			{
-				ID:                               identifiers.New(),
-				BelongsToRecipeStep:              step6ID,
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
-				IngredientID:                     &salt.ID,
-				MeasurementUnitID:                teaspoonMeasurement.ID,
 				Name:                             "kosher or sea salt",
 				ToTaste:                          true,
 				Quantity: types.Float32RangeWithOptionalMax{
@@ -1655,44 +1259,31 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 				},
 			},
 		},
-		Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
+		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ID:                              identifiers.New(),
-				BelongsToRecipeStep:             step6ID,
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				ValidPreparationVesselID:        &seasonServingBowlVPV.ID,
-				VesselID:                        &servingBowl.ID,
 				Name:                            "serving bowl with salad",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
 		},
-		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{
+		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
 			{
-				ID:                  step6CompletionConditionID,
-				BelongsToRecipeStep: step6ID,
-				IngredientStateID:   coatedState.ID,
-				Notes:               "Leaves should be evenly coated in olive oil",
-				Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
-					{
-						ID:                                     identifiers.New(),
-						BelongsToRecipeStepCompletionCondition: step6CompletionConditionID,
-						RecipeStepIngredient:                   step6GreensIngredientID,
-					},
-				},
-				Optional: false,
+				IngredientStateID: coatedState.ID,
+				Notes:             "Leaves should be evenly coated in olive oil",
+				Ingredients:       []uint64{0}, // Index of dressed greens ingredient in the step
+				Optional:          false,
 			},
 		},
-		Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				ID:                  identifiers.New(),
-				BelongsToRecipeStep: step6ID,
-				Name:                "mixed green salad",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:              "mixed green salad",
+				Type:              mealplanning.RecipeStepProductIngredientType,
+				Index:             0,
+				MeasurementUnitID: &unitMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
@@ -1700,26 +1291,23 @@ func MixedGreenSaladRecipe(userID string, enums *Enumerations) []*mealplanning.R
 		},
 	}
 
-	mixedGreenSaladRecipe := &mealplanning.RecipeDatabaseCreationInput{
-		ID:                  recipeID,
-		CreatedByUser:       userID,
-		Name:                "Mixed Green Salad",
-		Slug:                "mixed-green-salad",
-		Source:              "https://www.seriouseats.com/roman-mixed-green-salad-misticanza-recipe",
-		Description:         "A Roman-inspired mixed green salad (Misticanza alla Romana) made with a variety of fresh leafy greens and tender herbs, dressed simply with extra-virgin olive oil, fresh lemon juice, and salt.",
-		YieldsComponentType: mealplanning.MealComponentTypesSalad,
-		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Min: 4,
+	return []*mealplanning.RecipeCreationRequestInput{
+		{
+			Name:                "Mixed Green Salad",
+			Slug:                "mixed-green-salad",
+			Source:              "https://www.seriouseats.com/roman-mixed-green-salad-misticanza-recipe",
+			Description:         "A Roman-inspired mixed green salad (Misticanza alla Romana) made with a variety of fresh leafy greens and tender herbs, dressed simply with extra-virgin olive oil, fresh lemon juice, and salt.",
+			YieldsComponentType: mealplanning.MealComponentTypesSalad,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			PortionName:       "serving",
+			PluralPortionName: "servings",
+			EligibleForMeals:  true,
+			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6},
+			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			Media:             []*mealplanning.RecipeMediaCreationRequestInput{},
+			AlsoCreateMeal:    false,
 		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
-		Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
-			step0, step1, step2, step3, step4, step5, step6,
-		},
-	}
-
-	return []*mealplanning.RecipeDatabaseCreationInput{
-		mixedGreenSaladRecipe,
 	}
 }

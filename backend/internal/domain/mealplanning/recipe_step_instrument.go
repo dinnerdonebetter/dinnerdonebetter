@@ -36,7 +36,8 @@ func init() {
 type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
-		_                   struct{}                         `json:"-"`
+		_ struct{} `json:"-"`
+
 		CreatedAt           time.Time                        `json:"createdAt"`
 		Quantity            types.Uint32RangeWithOptionalMax `json:"quantity"`
 		Instrument          *ValidInstrument                 `json:"instrument"`
@@ -47,6 +48,7 @@ type (
 		BelongsToRecipeStep string                           `json:"belongsToRecipeStep"`
 		ID                  string                           `json:"id"`
 		Name                string                           `json:"name"`
+		Index               uint16                           `json:"index"`
 		OptionIndex         uint16                           `json:"optionIndex"`
 		PreferenceRank      uint8                            `json:"preferenceRank"`
 		Optional            bool                             `json:"optional"`
@@ -56,11 +58,12 @@ type (
 	RecipeStepInstrumentCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
+		Quantity                        types.Uint32RangeWithOptionalMax `json:"quantity"`
 		ValidPreparationInstrumentID    *string                          `json:"validPreparationInstrumentID"`
 		RecipeStepProductID             *string                          `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"productOfRecipeStepProductIndex"`
-		Quantity                        types.Uint32RangeWithOptionalMax `json:"quantity"`
+		Index                           *uint16                          `json:"index,omitempty"`
 		Notes                           string                           `json:"notes"`
 		Name                            string                           `json:"name"`
 		OptionIndex                     uint16                           `json:"optionIndex"`
@@ -70,7 +73,8 @@ type (
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_                               struct{}                         `json:"-"`
+		_ struct{} `json:"-"`
+
 		Quantity                        types.Uint32RangeWithOptionalMax `json:"-"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"-"`
 		RecipeStepProductID             *string                          `json:"-"`
@@ -81,6 +85,7 @@ type (
 		Name                            string                           `json:"-"`
 		ID                              string                           `json:"-"`
 		Notes                           string                           `json:"-"`
+		Index                           uint16                           `json:"-"`
 		OptionIndex                     uint16                           `json:"-"`
 		Optional                        bool                             `json:"-"`
 		PreferenceRank                  uint8                            `json:"-"`
@@ -97,6 +102,7 @@ type (
 		BelongsToRecipeStep *string                                            `json:"belongsToRecipeStep,omitempty"`
 		Name                *string                                            `json:"name,omitempty"`
 		Optional            *bool                                              `json:"optional,omitempty"`
+		Index               *uint16                                            `json:"index,omitempty"`
 		OptionIndex         *uint16                                            `json:"optionIndex,omitempty"`
 		Quantity            types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
 	}
@@ -153,6 +159,10 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 
 	if input.Quantity.Max != nil && x.Quantity.Max != nil && *input.Quantity.Max != *x.Quantity.Max {
 		x.Quantity.Max = input.Quantity.Max
+	}
+
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
 	}
 
 	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {

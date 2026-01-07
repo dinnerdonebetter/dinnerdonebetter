@@ -25,8 +25,58 @@ func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *mealplanning.RecipeS
 
 // ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput creates a RecipeStepDatabaseCreationInput from a RecipeStepCreationRequestInput.
 func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *mealplanning.RecipeStepCreationRequestInput) *mealplanning.RecipeStepDatabaseCreationInput {
-	x := &mealplanning.RecipeStepDatabaseCreationInput{
-		ID:                      identifiers.New(),
+	stepID := identifiers.New()
+
+	ingredients := []*mealplanning.RecipeStepIngredientDatabaseCreationInput{}
+	for i, ingredient := range input.Ingredients {
+		convertedIngredient := ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient, uint16(i))
+		convertedIngredient.ID = identifiers.New()
+		convertedIngredient.BelongsToRecipeStep = stepID
+		ingredients = append(ingredients, convertedIngredient)
+	}
+
+	instruments := []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{}
+	for i, instrument := range input.Instruments {
+		convertedInstrument := ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument, uint16(i))
+		convertedInstrument.ID = identifiers.New()
+		convertedInstrument.BelongsToRecipeStep = stepID
+		instruments = append(instruments, convertedInstrument)
+	}
+
+	vessels := []*mealplanning.RecipeStepVesselDatabaseCreationInput{}
+	for i, vessel := range input.Vessels {
+		convertedVessel := ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(vessel, uint16(i))
+		convertedVessel.ID = identifiers.New()
+		convertedVessel.BelongsToRecipeStep = stepID
+		vessels = append(vessels, convertedVessel)
+	}
+
+	products := []*mealplanning.RecipeStepProductDatabaseCreationInput{}
+	for _, product := range input.Products {
+		convertedProduct := ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(product)
+		convertedProduct.ID = identifiers.New()
+		convertedProduct.BelongsToRecipeStep = stepID
+		products = append(products, convertedProduct)
+	}
+
+	completionConditions := []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{}
+	// Create a temporary struct with ingredients populated for the completion condition converter
+	tempStepForCompletionConditions := &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:          stepID,
+		Ingredients: ingredients,
+	}
+	for _, completionCondition := range input.CompletionConditions {
+		convertedCompletionCondition := ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(
+			tempStepForCompletionConditions,
+			completionCondition,
+		)
+		convertedCompletionCondition.ID = identifiers.New()
+		convertedCompletionCondition.BelongsToRecipeStep = stepID
+		completionConditions = append(completionConditions, convertedCompletionCondition)
+	}
+
+	return &mealplanning.RecipeStepDatabaseCreationInput{
+		ID:                      stepID,
 		Index:                   input.Index,
 		PreparationID:           input.PreparationID,
 		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,
@@ -36,49 +86,12 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *meal
 		ExplicitInstructions:    input.ExplicitInstructions,
 		ConditionExpression:     input.ConditionExpression,
 		StartTimerAutomatically: input.StartTimerAutomatically,
+		Ingredients:             ingredients,
+		Instruments:             instruments,
+		Vessels:                 vessels,
+		Products:                products,
+		CompletionConditions:    completionConditions,
 	}
-
-	x.Ingredients = []*mealplanning.RecipeStepIngredientDatabaseCreationInput{}
-	for _, ingredient := range input.Ingredients {
-		convertedIngredient := ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient)
-		convertedIngredient.ID = identifiers.New()
-		convertedIngredient.BelongsToRecipeStep = x.ID
-		x.Ingredients = append(x.Ingredients, convertedIngredient)
-	}
-
-	x.Instruments = []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{}
-	for _, instrument := range input.Instruments {
-		convertedInstrument := ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument)
-		convertedInstrument.ID = identifiers.New()
-		convertedInstrument.BelongsToRecipeStep = x.ID
-		x.Instruments = append(x.Instruments, convertedInstrument)
-	}
-
-	x.Vessels = []*mealplanning.RecipeStepVesselDatabaseCreationInput{}
-	for _, vessel := range input.Vessels {
-		convertedVessel := ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(vessel)
-		convertedVessel.ID = identifiers.New()
-		convertedVessel.BelongsToRecipeStep = x.ID
-		x.Vessels = append(x.Vessels, convertedVessel)
-	}
-
-	x.Products = []*mealplanning.RecipeStepProductDatabaseCreationInput{}
-	for _, product := range input.Products {
-		convertedProduct := ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(product)
-		convertedProduct.ID = identifiers.New()
-		convertedProduct.BelongsToRecipeStep = x.ID
-		x.Products = append(x.Products, convertedProduct)
-	}
-
-	x.CompletionConditions = []*mealplanning.RecipeStepCompletionConditionDatabaseCreationInput{}
-	for _, product := range input.CompletionConditions {
-		convertedCompletionCondition := ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(x, product)
-		convertedCompletionCondition.ID = identifiers.New()
-		convertedCompletionCondition.BelongsToRecipeStep = x.ID
-		x.CompletionConditions = append(x.CompletionConditions, convertedCompletionCondition)
-	}
-
-	return x
 }
 
 // ConvertRecipeStepToRecipeStepCreationRequestInput builds a RecipeStepCreationRequestInput from a RecipeStep.

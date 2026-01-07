@@ -28,6 +28,7 @@ var recipeStepInstrumentsColumns = []string{
 	"optional",
 	"minimum_quantity",
 	"maximum_quantity",
+	"index",
 	"option_index",
 	createdAtColumn,
 	lastUpdatedAtColumn,

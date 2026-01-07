@@ -19,6 +19,8 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 		Notes:                buildUniqueString(),
 		CreatedAt:            BuildFakeTime(),
 		BelongsToRecipeStep:  fake.UUID(),
+		Index:                0, // Will be set from array index during recipe creation
+		OptionIndex:          0, // Default to 0 for single-option items
 		Quantity:             BuildFakeUint16RangeWithOptionalMax(),
 		VesselPreposition:    buildUniqueString(),
 		UnavailableAfterStep: fake.Bool(),

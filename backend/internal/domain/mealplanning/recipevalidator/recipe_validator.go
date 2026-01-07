@@ -72,6 +72,11 @@ func (v *RecipeValidator) validateStep(stepIdx int, step *mealplanning.RecipeSte
 		}
 	}
 
+	// Validate option grouping for ingredients, instruments, and vessels
+	if err := v.validateOptionGrouping(stepIdx, step); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -106,7 +111,8 @@ func isRecipeStepProductVessel(vessel *mealplanning.RecipeStepVesselDatabaseCrea
 
 // validateAndPopulateIngredient validates the bridge table IDs for an ingredient and populates derived fields.
 func (v *RecipeValidator) validateAndPopulateIngredient(
-	stepIdx, ingredientIdx int,
+	stepIdx,
+	ingredientIdx int,
 	preparationID string,
 	ingredient *mealplanning.RecipeStepIngredientDatabaseCreationInput,
 ) error {
@@ -118,18 +124,9 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 	isRecipeStepProduct := isRecipeStepProductIngredient(ingredient)
 	isFromAnotherRecipe := ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != ""
 
-	// If it's a recipe step product from the same recipe, skip all validation
-	if isRecipeStepProduct && !isFromAnotherRecipe {
-		return nil
-	}
-
-	// For ingredients from another recipe, skip all bridge table validation
-	// as the product was already validated in its own recipe
-	if isFromAnotherRecipe {
-		return nil
-	}
-
-	// Validate ValidIngredientPreparationID if provided
+	// Validate ValidIngredientPreparationID if provided (do this before early return
+	// so IngredientID is set even for recipe step products, which is needed for
+	// VesselType products that can't set RecipeStepProductID)
 	if ingredient.ValidIngredientPreparationID != nil && *ingredient.ValidIngredientPreparationID != "" {
 		vipID := *ingredient.ValidIngredientPreparationID
 		vip, ok := v.validIngredientPreparations[vipID]
@@ -142,10 +139,15 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 			return fmt.Errorf("step %d ingredient %d: ValidIngredientPreparation %q is for preparation %q, but step uses preparation %q",
 				stepIdx, ingredientIdx, vipID, vip.Preparation.ID, preparationID)
 		}
+		// Ensure Ingredient.ID is not empty
+		if vip.Ingredient.ID == "" {
+			return fmt.Errorf("step %d ingredient %d: ValidIngredientPreparation %q has empty Ingredient.ID", stepIdx, ingredientIdx, vipID)
+		}
 		ingredient.IngredientID = &vip.Ingredient.ID
 	}
 
-	// Validate ValidIngredientMeasurementUnitID if provided
+	// Validate ValidIngredientMeasurementUnitID if provided (do this before early return
+	// so IngredientID and MeasurementUnitID are set even for recipe step products)
 	if ingredient.ValidIngredientMeasurementUnitID != nil && *ingredient.ValidIngredientMeasurementUnitID != "" {
 		vimuID := *ingredient.ValidIngredientMeasurementUnitID
 		vimu, ok := v.validIngredientMeasurementUnits[vimuID]
@@ -165,6 +167,28 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 		}
 
 		ingredient.MeasurementUnitID = vimu.MeasurementUnit.ID
+	}
+
+	// Final check: if we have bridge table IDs but IngredientID is still not set, this is an error
+	// This ensures the database constraint (ingredient_id OR recipe_step_product_id must be set) is satisfied
+	// This check must happen before the early return for recipe step products
+	if (ingredient.ValidIngredientPreparationID != nil && *ingredient.ValidIngredientPreparationID != "") ||
+		(ingredient.ValidIngredientMeasurementUnitID != nil && *ingredient.ValidIngredientMeasurementUnitID != "") {
+		if (ingredient.IngredientID == nil || *ingredient.IngredientID == "") &&
+			(ingredient.RecipeStepProductID == nil || *ingredient.RecipeStepProductID == "") {
+			return fmt.Errorf("step %d ingredient %d: bridge table IDs provided but IngredientID was not populated and RecipeStepProductID is not set", stepIdx, ingredientIdx)
+		}
+	}
+
+	// If it's a recipe step product from the same recipe, skip remaining validation
+	if isRecipeStepProduct && !isFromAnotherRecipe {
+		return nil
+	}
+
+	// For ingredients from another recipe, skip all bridge table validation
+	// as the product was already validated in its own recipe
+	if isFromAnotherRecipe {
+		return nil
 	}
 
 	return nil
@@ -227,6 +251,159 @@ func (v *RecipeValidator) validateAndPopulateVessel(
 
 		// Populate VesselID from the VPV
 		vessel.VesselID = &vpv.Vessel.ID
+	}
+
+	return nil
+}
+
+// validateOptionGrouping validates that options within the same index are properly grouped.
+// It ensures that OptionIndex values are sequential within each Index group (0, 1, 2... not 0, 5, 10).
+func (v *RecipeValidator) validateOptionGrouping(stepIdx int, step *mealplanning.RecipeStepDatabaseCreationInput) error {
+	// Validate ingredient option grouping
+	if err := v.validateIngredientOptionGrouping(stepIdx, step.Ingredients); err != nil {
+		return err
+	}
+
+	// Validate instrument option grouping
+	if err := v.validateInstrumentOptionGrouping(stepIdx, step.Instruments); err != nil {
+		return err
+	}
+
+	// Validate vessel option grouping
+	if err := v.validateVesselOptionGrouping(stepIdx, step.Vessels); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateIngredientOptionGrouping validates that ingredient options within the same index are properly grouped.
+func (v *RecipeValidator) validateIngredientOptionGrouping(stepIdx int, ingredients []*mealplanning.RecipeStepIngredientDatabaseCreationInput) error {
+	// Check for duplicate (index, option_index) combinations
+	indexOptionMap := make(map[uint16]map[uint16]bool)
+	for _, ingredient := range ingredients {
+		if indexOptionMap[ingredient.Index] == nil {
+			indexOptionMap[ingredient.Index] = make(map[uint16]bool)
+		}
+		if indexOptionMap[ingredient.Index][ingredient.OptionIndex] {
+			return fmt.Errorf("step %d ingredients: duplicate (index, option_index) combination: index %d, option_index %d", stepIdx, ingredient.Index, ingredient.OptionIndex)
+		}
+		indexOptionMap[ingredient.Index][ingredient.OptionIndex] = true
+	}
+
+	// Group ingredients by index
+	indexGroups := make(map[uint16][]*mealplanning.RecipeStepIngredientDatabaseCreationInput)
+	for _, ingredient := range ingredients {
+		indexGroups[ingredient.Index] = append(indexGroups[ingredient.Index], ingredient)
+	}
+
+	// Validate each index group
+	for index, group := range indexGroups {
+		if len(group) <= 1 {
+			continue // No grouping needed for single items
+		}
+
+		// Collect option indices for this index group
+		optionIndices := make(map[uint16]bool)
+		for _, ingredient := range group {
+			optionIndices[ingredient.OptionIndex] = true
+		}
+
+		// Check that option indices are sequential starting from 0
+		expectedCount := len(optionIndices)
+		for i := uint16(0); i < uint16(expectedCount); i++ {
+			if !optionIndices[i] {
+				return fmt.Errorf("step %d ingredients: option indices for index %d must be sequential starting from 0, but found gap at option index %d", stepIdx, index, i)
+			}
+		}
+	}
+
+	return nil
+}
+
+// validateInstrumentOptionGrouping validates that instrument options within the same index are properly grouped.
+func (v *RecipeValidator) validateInstrumentOptionGrouping(stepIdx int, instruments []*mealplanning.RecipeStepInstrumentDatabaseCreationInput) error {
+	// Check for duplicate (index, option_index) combinations
+	indexOptionMap := make(map[uint16]map[uint16]bool)
+	for _, instrument := range instruments {
+		if indexOptionMap[instrument.Index] == nil {
+			indexOptionMap[instrument.Index] = make(map[uint16]bool)
+		}
+		if indexOptionMap[instrument.Index][instrument.OptionIndex] {
+			return fmt.Errorf("step %d instruments: duplicate (index, option_index) combination: index %d, option_index %d", stepIdx, instrument.Index, instrument.OptionIndex)
+		}
+		indexOptionMap[instrument.Index][instrument.OptionIndex] = true
+	}
+
+	// Group instruments by index
+	indexGroups := make(map[uint16][]*mealplanning.RecipeStepInstrumentDatabaseCreationInput)
+	for _, instrument := range instruments {
+		indexGroups[instrument.Index] = append(indexGroups[instrument.Index], instrument)
+	}
+
+	// Validate each index group
+	for index, group := range indexGroups {
+		if len(group) <= 1 {
+			continue // No grouping needed for single items
+		}
+
+		// Collect option indices for this index group
+		optionIndices := make(map[uint16]bool)
+		for _, instrument := range group {
+			optionIndices[instrument.OptionIndex] = true
+		}
+
+		// Check that option indices are sequential starting from 0
+		expectedCount := len(optionIndices)
+		for i := uint16(0); i < uint16(expectedCount); i++ {
+			if !optionIndices[i] {
+				return fmt.Errorf("step %d instruments: option indices for index %d must be sequential starting from 0, but found gap at option index %d", stepIdx, index, i)
+			}
+		}
+	}
+
+	return nil
+}
+
+// validateVesselOptionGrouping validates that vessel options within the same index are properly grouped.
+func (v *RecipeValidator) validateVesselOptionGrouping(stepIdx int, vessels []*mealplanning.RecipeStepVesselDatabaseCreationInput) error {
+	// Check for duplicate (index, option_index) combinations
+	indexOptionMap := make(map[uint16]map[uint16]bool)
+	for _, vessel := range vessels {
+		if indexOptionMap[vessel.Index] == nil {
+			indexOptionMap[vessel.Index] = make(map[uint16]bool)
+		}
+		if indexOptionMap[vessel.Index][vessel.OptionIndex] {
+			return fmt.Errorf("step %d vessels: duplicate (index, option_index) combination: index %d, option_index %d", stepIdx, vessel.Index, vessel.OptionIndex)
+		}
+		indexOptionMap[vessel.Index][vessel.OptionIndex] = true
+	}
+
+	// Group vessels by index
+	indexGroups := make(map[uint16][]*mealplanning.RecipeStepVesselDatabaseCreationInput)
+	for _, vessel := range vessels {
+		indexGroups[vessel.Index] = append(indexGroups[vessel.Index], vessel)
+	}
+
+	// Validate each index group
+	for index, group := range indexGroups {
+		if len(group) <= 1 {
+			continue // No grouping needed for single items
+		}
+
+		// Collect option indices for this index group
+		optionIndices := make(map[uint16]bool)
+		for _, vessel := range group {
+			optionIndices[vessel.OptionIndex] = true
+		}
+
+		// Check that option indices are sequential starting from 0
+		expectedCount := len(optionIndices)
+		for i := uint16(0); i < uint16(expectedCount); i++ {
+			if !optionIndices[i] {
+				return fmt.Errorf("step %d vessels: option indices for index %d must be sequential starting from 0, but found gap at option index %d", stepIdx, index, i)
+			}
+		}
 	}
 
 	return nil

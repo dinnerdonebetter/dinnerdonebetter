@@ -475,6 +475,7 @@ CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
     maximum_quantity_value NUMERIC(14,2),
     measurement_unit TEXT REFERENCES valid_measurement_units("id") ON DELETE CASCADE,
     optional BOOLEAN DEFAULT FALSE NOT NULL,
+    index INTEGER DEFAULT 0 NOT NULL,
     option_index INTEGER DEFAULT 0 NOT NULL,
     vessel_index INTEGER,
     to_taste BOOLEAN DEFAULT FALSE NOT NULL,
@@ -498,6 +499,7 @@ CREATE TABLE IF NOT EXISTS recipe_step_instruments (
     optional BOOLEAN DEFAULT FALSE NOT NULL,
     minimum_quantity INTEGER DEFAULT 1 NOT NULL,
     maximum_quantity INTEGER,
+    index INTEGER DEFAULT 0 NOT NULL,
     option_index INTEGER DEFAULT 0 NOT NULL
 );
 
@@ -511,6 +513,8 @@ CREATE TABLE IF NOT EXISTS recipe_step_vessels (
     minimum_quantity INTEGER DEFAULT 0 NOT NULL,
     maximum_quantity INTEGER,
     unavailable_after_step BOOLEAN DEFAULT FALSE NOT NULL,
+    index INTEGER DEFAULT 0 NOT NULL,
+    option_index INTEGER DEFAULT 0 NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
@@ -883,17 +887,23 @@ CREATE INDEX idx_recipe_step_ingredients_measurement_unit ON recipe_step_ingredi
 CREATE INDEX idx_recipe_step_ingredients_product ON recipe_step_ingredients (recipe_step_product_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_ingredients_product_recipe ON recipe_step_ingredients (recipe_step_product_recipe_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_ingredients_optional ON recipe_step_ingredients (belongs_to_recipe_step, optional) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_step_index ON recipe_step_ingredients (belongs_to_recipe_step, index) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_recipe_step_ingredients_step_index_option_index_unique ON recipe_step_ingredients (belongs_to_recipe_step, index, option_index) WHERE archived_at IS NULL;
 
 -- Recipe step instruments indexes
 CREATE INDEX idx_recipe_step_instruments_step ON recipe_step_instruments (belongs_to_recipe_step) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_instruments_instrument ON recipe_step_instruments (instrument_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_instruments_product ON recipe_step_instruments (recipe_step_product_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_instruments_optional ON recipe_step_instruments (belongs_to_recipe_step, optional) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_instruments_step_index ON recipe_step_instruments (belongs_to_recipe_step, index) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_recipe_step_instruments_step_index_option_index_unique ON recipe_step_instruments (belongs_to_recipe_step, index, option_index) WHERE archived_at IS NULL;
 
 -- Recipe step vessels indexes
 CREATE INDEX idx_recipe_step_vessels_step ON recipe_step_vessels (belongs_to_recipe_step) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_vessels_vessel ON recipe_step_vessels (valid_vessel_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_step_vessels_product ON recipe_step_vessels (recipe_step_product_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_vessels_step_index ON recipe_step_vessels (belongs_to_recipe_step, index) WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX idx_recipe_step_vessels_step_index_option_index_unique ON recipe_step_vessels (belongs_to_recipe_step, index, option_index) WHERE archived_at IS NULL;
 
 -- Recipe step completion conditions indexes
 CREATE INDEX idx_recipe_step_conditions_step ON recipe_step_completion_conditions (belongs_to_recipe_step) WHERE archived_at IS NULL;

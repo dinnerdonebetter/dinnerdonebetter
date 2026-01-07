@@ -232,8 +232,10 @@ func TestRecipes_Creating(T *testing.T) {
 					Preparation: *soak, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
-							Name:       "whatever",
-							Instrument: createdValidInstrument,
+							Name:        "whatever",
+							Instrument:  createdValidInstrument,
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
@@ -244,6 +246,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 500,
 							},
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 						{
 							Ingredient:      water,
@@ -252,6 +256,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 5,
 							},
+							Index:       1, // Array index 1
+							OptionIndex: 0,
 						},
 					},
 					Index: 0,
@@ -273,8 +279,10 @@ func TestRecipes_Creating(T *testing.T) {
 					Preparation: *mix, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
-							Name:       "whatever",
-							Instrument: createdValidInstrument,
+							Name:        "whatever",
+							Instrument:  createdValidInstrument,
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 					},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
@@ -284,6 +292,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 1000,
 							},
+							Index:       0, // Array index 0
+							OptionIndex: 0,
 						},
 						{
 							Ingredient:      garlicPaste,
@@ -292,6 +302,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 10,
 							},
+							Index:       1, // Array index 1
+							OptionIndex: 0,
 						},
 					},
 					Index: 1,
@@ -2782,5 +2794,210 @@ func TestRecipes_Archiving(T *testing.T) {
 
 		_, err := testClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 		assert.Error(t, err)
+	})
+}
+
+func TestRecipes_AssociatedRecipes(T *testing.T) {
+	T.Parallel()
+
+	T.Run("recipe with cross-recipe product reference populates AssociatedRecipes", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		// Create valid entities for the first recipe
+		preparation1 := createValidPreparationForTest(t)
+		measurementUnit1 := createValidMeasurementUnitForTest(t)
+		ingredient1 := createValidIngredientForTest(t)
+		instrument1 := createValidInstrumentForTest(t)
+
+		vip1 := createValidIngredientPreparationWithEntitiesForTest(t, ingredient1, preparation1)
+		vimu1 := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient1, measurementUnit1)
+		vpi1 := createValidPreparationInstrumentWithEntitiesForTest(t, preparation1, instrument1)
+
+		// Create first recipe with a product in step 0
+		firstRecipeInput := &mealplanning.RecipeCreationRequestInput{
+			Name:                "Base Sauce Recipe",
+			Slug:                "base-sauce-recipe",
+			YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
+			PortionName:         "cup",
+			PluralPortionName:   "cups",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 1,
+			},
+			EligibleForMeals: false,
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation1.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi1.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "base ingredient",
+							ValidIngredientPreparationID:     &vip1.ID,
+							ValidIngredientMeasurementUnitID: &vimu1.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "base sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit1.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation1.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi1.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit1.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		// Create the first recipe
+		firstRecipeCreated, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(firstRecipeInput),
+		})
+		require.NoError(t, err)
+		firstRecipe := converters.ConvertGRPCRecipeToRecipe(firstRecipeCreated.Created)
+
+		// Create valid entities for the second recipe
+		preparation2 := createValidPreparationForTest(t)
+		measurementUnit2 := createValidMeasurementUnitForTest(t)
+		ingredient2 := createValidIngredientForTest(t)
+		instrument2 := createValidInstrumentForTest(t)
+
+		vip2 := createValidIngredientPreparationWithEntitiesForTest(t, ingredient2, preparation2)
+		vimu2 := createValidIngredientMeasurementUnitWithEntitiesForTest(t, ingredient2, measurementUnit2)
+		vpi2 := createValidPreparationInstrumentWithEntitiesForTest(t, preparation2, instrument2)
+
+		// Create second recipe that references the product from the first recipe
+		secondRecipeInput := &mealplanning.RecipeCreationRequestInput{
+			Name:                "Recipe Using Base Sauce",
+			Slug:                "recipe-using-base-sauce",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			EligibleForMeals: true,
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi2.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                             "other ingredient",
+							ValidIngredientPreparationID:     &vip2.ID,
+							ValidIngredientMeasurementUnitID: &vimu2.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+						},
+						{
+							// Reference the product from the first recipe
+							// The product "base sauce" is from step 0 (index 0), product index 0
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							RecipeStepProductRecipeID:       &firstRecipe.ID,
+							Name:                            "base sauce",
+							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final dish",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit2.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi2.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit2.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		// Create the second recipe
+		secondRecipeCreated, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{
+			Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(secondRecipeInput),
+		})
+		require.NoError(t, err)
+		secondRecipe := converters.ConvertGRPCRecipeToRecipe(secondRecipeCreated.Created)
+
+		// Retrieve the second recipe and validate AssociatedRecipes
+		retrievedSecond, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
+			RecipeId: secondRecipe.ID,
+		})
+		require.NoError(t, err)
+		retrievedSecondRecipe := converters.ConvertGRPCRecipeToRecipe(retrievedSecond.Result)
+
+		// Validate that the first recipe is in the second's AssociatedRecipes
+		require.Len(t, retrievedSecondRecipe.AssociatedRecipes, 1, "second recipe should have one associated recipe")
+		assert.Equal(t, firstRecipe.ID, retrievedSecondRecipe.AssociatedRecipes[0].ID, "associated recipe should be the first recipe")
+		assert.Equal(t, firstRecipe.Name, retrievedSecondRecipe.AssociatedRecipes[0].Name, "associated recipe should have the correct name")
+
+		// Retrieve the first recipe and validate it has empty AssociatedRecipes
+		retrievedFirst, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
+			RecipeId: firstRecipe.ID,
+		})
+		require.NoError(t, err)
+		retrievedFirstRecipe := converters.ConvertGRPCRecipeToRecipe(retrievedFirst.Result)
+
+		assert.Empty(t, retrievedFirstRecipe.AssociatedRecipes, "first recipe should have no associated recipes")
+
+		// Cleanup
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: secondRecipe.ID})
+		assert.NoError(t, err)
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: firstRecipe.ID})
+		assert.NoError(t, err)
 	})
 }

@@ -12,6 +12,7 @@ INSERT INTO recipe_step_instruments (
 	optional,
 	minimum_quantity,
 	maximum_quantity,
+	index,
 	option_index,
 	belongs_to_recipe_step
 ) VALUES (
@@ -24,6 +25,7 @@ INSERT INTO recipe_step_instruments (
 	sqlc.arg(optional),
 	sqlc.arg(minimum_quantity),
 	sqlc.arg(maximum_quantity),
+	sqlc.arg(index),
 	sqlc.arg(option_index),
 	sqlc.arg(belongs_to_recipe_step)
 );
@@ -67,6 +69,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -105,6 +108,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -146,6 +150,7 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.index,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,
@@ -209,6 +214,7 @@ UPDATE recipe_step_instruments SET
 	optional = sqlc.arg(optional),
 	minimum_quantity = sqlc.arg(minimum_quantity),
 	maximum_quantity = sqlc.arg(maximum_quantity),
+	index = sqlc.arg(index),
 	option_index = sqlc.arg(option_index),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

@@ -340,6 +340,7 @@ func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCr
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		Notes:                           input.Notes,
 		Name:                            input.Name,
+		Index:                           grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:                     uint16(input.OptionIndex),
 		Optional:                        input.Optional,
 		PreferenceRank:                  uint8(input.PreferenceRank),
@@ -358,6 +359,7 @@ func ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCr
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		Notes:                           input.Notes,
 		Name:                            input.Name,
+		Index:                           grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:                     uint32(input.OptionIndex),
 		Optional:                        input.Optional,
 		PreferenceRank:                  uint32(input.PreferenceRank),
@@ -377,6 +379,8 @@ func ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRe
 		Name:                            input.Name,
 		Notes:                           input.Notes,
 		VesselPreposition:               input.VesselPreposition,
+		Index:                           grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
+		OptionIndex:                     uint16(input.OptionIndex),
 		UnavailableAfterStep:            input.UnavailableAfterStep,
 		Quantity: types.Uint16RangeWithOptionalMax{
 			Min: uint16(input.Quantity.Min),
@@ -394,6 +398,8 @@ func ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRe
 		Name:                            input.Name,
 		Notes:                           input.Notes,
 		VesselPreposition:               input.VesselPreposition,
+		Index:                           grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
+		OptionIndex:                     uint32(input.OptionIndex),
 		UnavailableAfterStep:            input.UnavailableAfterStep,
 		Quantity: &grpctypes.Uint16RangeWithOptionalMax{
 			Min: uint32(input.Quantity.Min),
@@ -504,6 +510,7 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 		IngredientNotes:                  input.IngredientNotes,
 		Name:                             input.Name,
 		QuantityNotes:                    input.QuantityNotes,
+		Index:                            grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:                      uint16(input.OptionIndex),
 		Optional:                         input.Optional,
 		ToTaste:                          input.ToTaste,
@@ -526,6 +533,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCr
 		IngredientNotes:                  input.IngredientNotes,
 		Name:                             input.Name,
 		QuantityNotes:                    input.QuantityNotes,
+		Index:                            grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:                      uint32(input.OptionIndex),
 		Optional:                         input.Optional,
 		ToTaste:                          input.ToTaste,
@@ -702,6 +710,11 @@ func ConvertRecipeToGRPCRecipe(input *mealplanning.Recipe) *mealplanningsvc.Reci
 		recipePrepTasks = append(recipePrepTasks, ConvertRecipePrepTaskToGRPCRecipePrepTask(rps))
 	}
 
+	var associatedRecipes []*mealplanningsvc.Recipe
+	for _, r := range input.AssociatedRecipes {
+		associatedRecipes = append(associatedRecipes, ConvertRecipeToGRPCRecipe(r))
+	}
+
 	recipe := &mealplanningsvc.Recipe{
 		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
 			Max: input.EstimatedPortions.Max,
@@ -725,6 +738,7 @@ func ConvertRecipeToGRPCRecipe(input *mealplanning.Recipe) *mealplanningsvc.Reci
 		Media:               recipeMedia,
 		PrepTasks:           recipePrepTasks,
 		InspiredByRecipeId:  input.InspiredByRecipeID,
+		AssociatedRecipes:   associatedRecipes,
 	}
 
 	return recipe
@@ -744,6 +758,11 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 	recipePrepTasks := []*mealplanning.RecipePrepTask{}
 	for _, rps := range input.PrepTasks {
 		recipePrepTasks = append(recipePrepTasks, ConvertGRPCRecipePrepTaskToRecipePrepTask(rps))
+	}
+
+	associatedRecipes := []*mealplanning.Recipe{}
+	for _, r := range input.AssociatedRecipes {
+		associatedRecipes = append(associatedRecipes, ConvertGRPCRecipeToRecipe(r))
 	}
 
 	recipe := &mealplanning.Recipe{
@@ -769,6 +788,7 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 		Media:               recipeMedia,
 		PrepTasks:           recipePrepTasks,
 		InspiredByRecipeID:  input.InspiredByRecipeId,
+		AssociatedRecipes:   associatedRecipes,
 	}
 
 	return recipe
@@ -896,6 +916,7 @@ func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.R
 		Notes:               input.Notes,
 		Id:                  input.ID,
 		RecipeStepProductId: input.RecipeStepProductID,
+		Index:               uint32(input.Index),
 		OptionIndex:         uint32(input.OptionIndex),
 		PreferenceRank:      uint32(input.PreferenceRank),
 		Optional:            input.Optional,
@@ -922,6 +943,7 @@ func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsv
 		Notes:               input.Notes,
 		ID:                  input.Id,
 		RecipeStepProductID: input.RecipeStepProductId,
+		Index:               uint16(input.Index),
 		OptionIndex:         uint16(input.OptionIndex),
 		PreferenceRank:      uint8(input.PreferenceRank),
 		Optional:            input.Optional,
@@ -950,6 +972,8 @@ func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeSte
 		Id:                   input.ID,
 		Name:                 input.Name,
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		Index:                uint32(input.Index),
+		OptionIndex:          uint32(input.OptionIndex),
 	}
 }
 
@@ -975,6 +999,8 @@ func ConvertGRPCRecipeStepVesselToRecipeStepVessel(input *mealplanningsvc.Recipe
 		ID:                   input.Id,
 		Name:                 input.Name,
 		UnavailableAfterStep: input.UnavailableAfterStep,
+		Index:                uint16(input.Index),
+		OptionIndex:          uint16(input.OptionIndex),
 	}
 }
 
@@ -1065,6 +1091,7 @@ func ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(input *mealplanning.R
 		QuantityNotes:             input.QuantityNotes,
 		Id:                        input.ID,
 		Name:                      input.Name,
+		Index:                     uint32(input.Index),
 		OptionIndex:               uint32(input.OptionIndex),
 		Optional:                  input.Optional,
 		ToTaste:                   input.ToTaste,
@@ -1098,6 +1125,7 @@ func ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(input *mealplanningsv
 		QuantityNotes:             input.QuantityNotes,
 		ID:                        input.Id,
 		Name:                      input.Name,
+		Index:                     uint16(input.Index),
 		OptionIndex:               uint16(input.OptionIndex),
 		Optional:                  input.Optional,
 		ToTaste:                   input.ToTaste,
@@ -1574,6 +1602,7 @@ func ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpda
 		QuantityNotes:             input.QuantityNotes,
 		IngredientNotes:           input.IngredientNotes,
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
+		Index:                     grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:               grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 		VesselIndex:               grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
 		ToTaste:                   input.ToTaste,
@@ -1596,6 +1625,7 @@ func ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpda
 		QuantityNotes:             input.QuantityNotes,
 		IngredientNotes:           input.IngredientNotes,
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
+		Index:                     grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:               grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
 		VesselIndex:               grpcconverters.ConvertUint16PointerToUint32Pointer(input.VesselIndex),
 		ToTaste:                   input.ToTaste,
@@ -1617,6 +1647,7 @@ func ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpda
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Name:                input.Name,
 		Optional:            input.Optional,
+		Index:               grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 		Quantity: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
 			Min: input.Quantity.Min,
@@ -1634,6 +1665,7 @@ func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpda
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Name:                input.Name,
 		Optional:            input.Optional,
+		Index:               grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:         grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
 		Quantity: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
 			Min: input.Quantity.Min,
@@ -1723,6 +1755,8 @@ func ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateReques
 		Notes:                input.Notes,
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		VesselID:             input.VesselId,
+		Index:                grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
+		OptionIndex:          grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Quantity: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
@@ -1739,6 +1773,8 @@ func ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateReques
 		Notes:                input.Notes,
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		VesselId:             input.VesselID,
+		Index:                grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
+		OptionIndex:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Quantity: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{

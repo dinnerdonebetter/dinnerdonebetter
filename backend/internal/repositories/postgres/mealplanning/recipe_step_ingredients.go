@@ -121,6 +121,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 			Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 			Min: database.Float32FromString(result.MinimumQuantityValue),
 		},
+		Index:       uint16(result.Index),
 		OptionIndex: uint16(result.OptionIndex),
 		Optional:    result.Optional,
 		ToTaste:     result.ToTaste,
@@ -225,6 +226,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 				Min: database.Float32FromString(result.MinimumQuantityValue),
 			},
+			Index:       uint16(result.Index),
 			OptionIndex: uint16(result.OptionIndex),
 			Optional:    result.Optional,
 			ToTaste:     result.ToTaste,
@@ -357,6 +359,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
 				Min: database.Float32FromString(result.MinimumQuantityValue),
 			},
+			Index:       uint16(result.Index),
 			OptionIndex: uint16(result.OptionIndex),
 			Optional:    result.Optional,
 			ToTaste:     result.ToTaste,
@@ -434,6 +437,10 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	// create the recipe step ingredient.
+	var measurementUnit sql.NullString
+	if input.MeasurementUnitID != "" {
+		measurementUnit = database.NullStringFromString(input.MeasurementUnitID)
+	}
 	if err := q.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
 		QuantityNotes:             input.QuantityNotes,
 		Name:                      input.Name,
@@ -443,11 +450,12 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		MinimumQuantityValue:      database.StringFromFloat32(input.Quantity.Min),
 		RecipeStepProductID:       database.NullStringFromStringPointer(input.RecipeStepProductID),
 		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(input.Quantity.Max),
-		MeasurementUnit:           database.NullStringFromString(input.MeasurementUnitID),
+		MeasurementUnit:           measurementUnit,
 		IngredientID:              database.NullStringFromStringPointer(input.IngredientID),
 		ProductPercentageToUse:    database.NullStringFromFloat32Pointer(input.ProductPercentageToUse),
 		RecipeStepProductRecipeID: database.NullStringFromStringPointer(input.RecipeStepProductRecipeID),
 		VesselIndex:               database.NullInt32FromUint16Pointer(input.VesselIndex),
+		Index:                     int32(input.Index),
 		OptionIndex:               int32(input.OptionIndex),
 		ToTaste:                   input.ToTaste,
 		Optional:                  input.Optional,
@@ -468,6 +476,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		IngredientNotes:           input.IngredientNotes,
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
 		RecipeStepProductID:       input.RecipeStepProductID,
+		Index:                     input.Index,
 		OptionIndex:               input.OptionIndex,
 		ToTaste:                   input.ToTaste,
 		ProductPercentageToUse:    input.ProductPercentageToUse,
@@ -487,6 +496,24 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 
 // CreateRecipeStepIngredient creates a recipe step ingredient in the database.
 func (q *repository) CreateRecipeStepIngredient(ctx context.Context, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, database.ErrNilInputProvided
+	}
+
+	// Get the recipe ID from the step
+	step, err := q.getRecipeStepByID(ctx, q.db, input.BelongsToRecipeStep)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe step")
+	}
+
+	// Validate no circular dependency if this ingredient has a cross-recipe reference
+	if err = q.validateNoCircularDependencyForIngredient(ctx, step.BelongsToRecipe, input.RecipeStepProductRecipeID); err != nil {
+		return nil, observability.PrepareError(err, span, "validating ingredient dependencies")
+	}
+
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
@@ -501,12 +528,23 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, updated.ID)
 
+	// Get the recipe ID from the step
+	step, err := q.getRecipeStepByID(ctx, q.db, updated.BelongsToRecipeStep)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
+	}
+
+	// Validate no circular dependency if this ingredient has a cross-recipe reference
+	if err = q.validateNoCircularDependencyForIngredient(ctx, step.BelongsToRecipe, updated.RecipeStepProductRecipeID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "validating ingredient dependencies")
+	}
+
 	var ingredientID *string
 	if updated.Ingredient != nil {
 		ingredientID = &updated.Ingredient.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
+	if _, err = q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
 		IngredientID:              database.NullStringFromStringPointer(ingredientID),
 		Name:                      updated.Name,
 		Optional:                  updated.Optional,
@@ -516,6 +554,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 		QuantityNotes:             updated.QuantityNotes,
 		RecipeStepProductID:       database.NullStringFromStringPointer(updated.RecipeStepProductID),
 		IngredientNotes:           updated.IngredientNotes,
+		Index:                     int32(updated.Index),
 		OptionIndex:               int32(updated.OptionIndex),
 		ToTaste:                   updated.ToTaste,
 		ProductPercentageToUse:    database.NullStringFromFloat32Pointer(updated.ProductPercentageToUse),

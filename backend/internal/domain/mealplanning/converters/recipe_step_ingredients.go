@@ -3,11 +3,18 @@ package converters
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
-func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
+// If input.Index is nil, it will be set to the provided arrayIndex.
+func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredientCreationRequestInput, arrayIndex uint16) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
+	index := arrayIndex
+	if input.Index != nil {
+		index = *input.Index
+	}
+
 	x := &mealplanning.RecipeStepIngredientDatabaseCreationInput{
 		ID:                               identifiers.New(),
 		ValidIngredientPreparationID:     input.ValidIngredientPreparationID,
@@ -20,9 +27,11 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		QuantityNotes:                   input.QuantityNotes,
 		IngredientNotes:                 input.IngredientNotes,
 		Optional:                        input.Optional,
+		Index:                           index,
 		OptionIndex:                     input.OptionIndex,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		RecipeStepProductRecipeID:       input.RecipeStepProductRecipeID,
 		VesselIndex:                     input.VesselIndex,
 		ToTaste:                         input.ToTaste,
 		ProductPercentageToUse:          input.ProductPercentageToUse,
@@ -46,6 +55,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 			Min: &input.Quantity.Min,
 		},
 		Optional:               &input.Optional,
+		Index:                  &input.Index,
 		OptionIndex:            &input.OptionIndex,
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                &input.ToTaste,
@@ -57,7 +67,12 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
 // Note: This conversion loses bridge table ID information since RecipeStepIngredient doesn't store them.
+// If Index is 0, it will be set to nil so that the converter can use the array index during recipe creation.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientCreationRequestInput {
+	var indexPtr *uint16
+	if input.Index != 0 {
+		indexPtr = pointer.To(input.Index)
+	}
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		Name:     input.Name,
 		Optional: input.Optional,
@@ -67,6 +82,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 		},
 		QuantityNotes:          input.QuantityNotes,
 		IngredientNotes:        input.IngredientNotes,
+		Index:                  indexPtr,
 		OptionIndex:            input.OptionIndex,
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                input.ToTaste,
@@ -89,6 +105,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(inpu
 		QuantityNotes:          input.QuantityNotes,
 		IngredientNotes:        input.IngredientNotes,
 		BelongsToRecipeStep:    input.BelongsToRecipeStep,
+		Index:                  input.Index,
 		OptionIndex:            input.OptionIndex,
 		VesselIndex:            input.VesselIndex,
 		ToTaste:                input.ToTaste,

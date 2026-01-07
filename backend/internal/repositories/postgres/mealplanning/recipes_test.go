@@ -337,6 +337,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:          identifiers.New(),
 			Name:        "sopa de frijol",
 			Description: "",
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
@@ -397,7 +398,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 			},
 		}
 
-		findCreatedRecipeStepProductsForIngredients(exampleRecipeInput)
+		ctx := t.Context()
+		c := buildInertClientForTest(t)
+		err := c.findCreatedRecipeStepProductsForIngredients(ctx, exampleRecipeInput)
+		require.NoError(t, err)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
@@ -413,6 +417,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:          identifiers.New(),
 			Name:        "sopa de frijol",
 			Description: "",
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
@@ -526,7 +531,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 			},
 		}
 
-		findCreatedRecipeStepProductsForIngredients(exampleRecipeInput)
+		ctx := t.Context()
+		c := buildInertClientForTest(t)
+		err := c.findCreatedRecipeStepProductsForIngredients(ctx, exampleRecipeInput)
+		require.NoError(t, err)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
@@ -674,5 +682,503 @@ func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
 		CleanupItem: func(ctx context.Context, recipe *mealplanning.Recipe) error {
 			return dbc.ArchiveRecipe(ctx, recipe.ID, user.ID)
 		},
+	})
+}
+
+func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
+	T.Parallel()
+	if !pgtesting.RunContainerTests {
+		T.SkipNow()
+	}
+
+	T.Run("recipe with cross-recipe reference populates AssociatedRecipes", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		dbc, container := buildDatabaseClientForTest(t)
+		defer func() {
+			assert.NoError(t, container.Terminate(ctx))
+		}()
+
+		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+
+		// Create first recipe (base recipe with a product)
+		preparation1 := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnit1 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredient1 := createValidIngredientForTest(t, ctx, nil, dbc)
+		instrument1 := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vip1Input := fakes.BuildFakeValidIngredientPreparation()
+		vip1Input.Ingredient = *ingredient1
+		vip1Input.Preparation = *preparation1
+		vip1 := createValidIngredientPreparationForTest(t, ctx, vip1Input, dbc)
+
+		vimu1Input := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimu1Input.Ingredient = *ingredient1
+		vimu1Input.MeasurementUnit = *measurementUnit1
+		vimu1 := createValidIngredientMeasurementUnitForTest(t, ctx, vimu1Input, dbc)
+
+		vpi1Input := fakes.BuildFakeValidPreparationInstrument()
+		vpi1Input.Preparation = *preparation1
+		vpi1Input.Instrument = *instrument1
+		vpi1 := createValidPreparationInstrumentForTest(t, ctx, vpi1Input, dbc)
+
+		firstRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Base Sauce Recipe",
+			Slug:                "base-sauce-recipe",
+			Description:         "A base sauce recipe",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
+			PortionName:         "cup",
+			PluralPortionName:   "cups",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 1,
+			},
+			EligibleForMeals: false,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation1.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi1.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "base ingredient",
+							ValidIngredientPreparationID:     &vip1.ID,
+							ValidIngredientMeasurementUnitID: &vimu1.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "base sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit1.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation1.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi1.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final sauce",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit1.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		firstRecipe, err := dbc.CreateRecipe(ctx, firstRecipeInput)
+		require.NoError(t, err)
+		require.NotNil(t, firstRecipe)
+
+		// Create second recipe that references the first recipe's product
+		preparation2 := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnit2 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredient2a := createValidIngredientForTest(t, ctx, nil, dbc) // Different ingredient for first ingredient in step
+		instrument2 := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vip2Input := fakes.BuildFakeValidIngredientPreparation()
+		vip2Input.Ingredient = *ingredient2a
+		vip2Input.Preparation = *preparation2
+		vip2 := createValidIngredientPreparationForTest(t, ctx, vip2Input, dbc)
+
+		vimu2Input := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimu2Input.Ingredient = *ingredient2a
+		vimu2Input.MeasurementUnit = *measurementUnit2
+		vimu2 := createValidIngredientMeasurementUnitForTest(t, ctx, vimu2Input, dbc)
+
+		vpi2Input := fakes.BuildFakeValidPreparationInstrument()
+		vpi2Input.Preparation = *preparation2
+		vpi2Input.Instrument = *instrument2
+		vpi2 := createValidPreparationInstrumentForTest(t, ctx, vpi2Input, dbc)
+
+		secondRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe Using Base Sauce",
+			Slug:                "recipe-using-base-sauce",
+			Description:         "A recipe that uses the base sauce",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			EligibleForMeals: true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi2.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "other ingredient",
+							IngredientID:                     &ingredient2a.ID,
+							ValidIngredientPreparationID:     &vip2.ID,
+							ValidIngredientMeasurementUnitID: &vimu2.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+						{
+							ID: identifiers.New(),
+							// Reference the product from the first recipe
+							// The product "base sauce" is from step 0 (index 0), product index 0
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							RecipeStepProductRecipeID:       &firstRecipe.ID,
+							Name:                            "base sauce",
+							IngredientID:                    nil,                 // No ingredient ID when referencing a product from another recipe
+							MeasurementUnitID:               measurementUnit2.ID, // Use MeasurementUnitID directly, not ValidIngredientMeasurementUnitID
+							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
+							Index:                           1,
+							OptionIndex:                     0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final dish",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit2.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation2.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi2.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit2.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		secondRecipe, err := dbc.CreateRecipe(ctx, secondRecipeInput)
+		require.NoError(t, err)
+		require.NotNil(t, secondRecipe)
+
+		// Retrieve the second recipe and validate AssociatedRecipes
+		retrievedSecond, err := dbc.GetRecipe(ctx, secondRecipe.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedSecond)
+
+		// Validate that the first recipe is in the second's AssociatedRecipes
+		require.Len(t, retrievedSecond.AssociatedRecipes, 1, "second recipe should have one associated recipe")
+		assert.Equal(t, firstRecipe.ID, retrievedSecond.AssociatedRecipes[0].ID, "associated recipe should be the first recipe")
+		assert.Equal(t, firstRecipe.Name, retrievedSecond.AssociatedRecipes[0].Name, "associated recipe should have the correct name")
+
+		// Retrieve the first recipe and validate it has empty AssociatedRecipes
+		retrievedFirst, err := dbc.GetRecipe(ctx, firstRecipe.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedFirst)
+
+		assert.Empty(t, retrievedFirst.AssociatedRecipes, "first recipe should have no associated recipes")
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, secondRecipe.ID, user.ID))
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, firstRecipe.ID, user.ID))
+	})
+
+	T.Run("cyclical recipe relationship terminates without infinite recursion", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		dbc, container := buildDatabaseClientForTest(t)
+		defer func() {
+			assert.NoError(t, container.Terminate(ctx))
+		}()
+
+		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+
+		// Create preparation, measurement unit, ingredient, and instrument for both recipes
+		preparation := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
+		instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vipInput := fakes.BuildFakeValidIngredientPreparation()
+		vipInput.Ingredient = *ingredient
+		vipInput.Preparation = *preparation
+		vip := createValidIngredientPreparationForTest(t, ctx, vipInput, dbc)
+
+		vimuInput := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimuInput.Ingredient = *ingredient
+		vimuInput.MeasurementUnit = *measurementUnit
+		vimu := createValidIngredientMeasurementUnitForTest(t, ctx, vimuInput, dbc)
+
+		vpiInput := fakes.BuildFakeValidPreparationInstrument()
+		vpiInput.Preparation = *preparation
+		vpiInput.Instrument = *instrument
+		vpi := createValidPreparationInstrumentForTest(t, ctx, vpiInput, dbc)
+
+		// Create Recipe A
+		recipeAInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe A",
+			Slug:                "recipe-a",
+			Description:         "Recipe A",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 2,
+			},
+			EligibleForMeals: true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "ingredient",
+							IngredientID:                     &ingredient.ID,
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "product A",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		recipeA, err := dbc.CreateRecipe(ctx, recipeAInput)
+		require.NoError(t, err)
+		require.NotNil(t, recipeA)
+
+		// Create Recipe B that references Recipe A
+		recipeBInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe B",
+			Slug:                "recipe-b",
+			Description:         "Recipe B",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 2,
+			},
+			EligibleForMeals: true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "ingredient",
+							IngredientID:                     &ingredient.ID,
+							ValidIngredientPreparationID:     &vip.ID,
+							ValidIngredientMeasurementUnitID: &vimu.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+						{
+							ID: identifiers.New(),
+							// Reference Recipe A's product
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							RecipeStepProductRecipeID:       &recipeA.ID,
+							Name:                            "product A",
+							IngredientID:                    nil,                // No ingredient ID when referencing a product from another recipe
+							MeasurementUnitID:               measurementUnit.ID, // Use MeasurementUnitID directly, not ValidIngredientMeasurementUnitID
+							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
+							Index:                           1,
+							OptionIndex:                     0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "product B",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpi.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnit.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		recipeB, err := dbc.CreateRecipe(ctx, recipeBInput)
+		require.NoError(t, err)
+		require.NotNil(t, recipeB)
+
+		// Now manually create a cycle by directly updating Recipe A to reference Recipe B
+		// This simulates the edge case where a cycle exists (even though validation should prevent it)
+		// We'll use raw SQL to bypass validation for testing purposes
+		_, err = dbc.db.ExecContext(ctx, `
+			UPDATE recipe_step_ingredients 
+			SET recipe_step_product_recipe_id = $1
+			WHERE belongs_to_recipe_step IN (
+				SELECT id FROM recipe_steps WHERE belongs_to_recipe = $2
+			)
+			AND id = (
+				SELECT id FROM recipe_step_ingredients 
+				WHERE belongs_to_recipe_step IN (
+					SELECT id FROM recipe_steps WHERE belongs_to_recipe = $2
+				)
+				LIMIT 1
+			)
+		`, recipeB.ID, recipeA.ID)
+		require.NoError(t, err)
+
+		// Now try to retrieve Recipe A - this should terminate without infinite recursion
+		// The visited set should prevent infinite loops
+		retrievedA, err := dbc.GetRecipe(ctx, recipeA.ID)
+		require.NoError(t, err, "GetRecipe should terminate even with cyclical dependency")
+		require.NotNil(t, retrievedA)
+
+		// Verify that Recipe A was retrieved (even if AssociatedRecipes might be incomplete due to cycle)
+		assert.Equal(t, recipeA.ID, retrievedA.ID)
+		assert.Equal(t, recipeA.Name, retrievedA.Name)
+
+		// Verify that Recipe B can also be retrieved
+		retrievedB, err := dbc.GetRecipe(ctx, recipeB.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedB)
+		assert.Equal(t, recipeB.ID, retrievedB.ID)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeB.ID, user.ID))
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeA.ID, user.ID))
 	})
 }

@@ -28,6 +28,8 @@ var recipeStepVesselsColumns = []string{
 	"minimum_quantity",
 	"maximum_quantity",
 	"unavailable_after_step",
+	"index",
+	"option_index",
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

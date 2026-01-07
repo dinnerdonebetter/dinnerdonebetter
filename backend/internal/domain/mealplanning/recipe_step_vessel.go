@@ -49,21 +49,24 @@ type (
 		BelongsToRecipeStep  string                           `json:"belongsToRecipeStep"`
 		VesselPreposition    string                           `json:"vesselPreposition"`
 		Name                 string                           `json:"name"`
+		Index                uint16                           `json:"index"`
+		OptionIndex          uint16                           `json:"optionIndex"`
 		UnavailableAfterStep bool                             `json:"unavailableAfterStep"`
 	}
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
+		_                               struct{}                         `json:"-"`
+		Quantity                        types.Uint16RangeWithOptionalMax `json:"quantity"`
 		RecipeStepProductID             *string                          `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64                          `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64                          `json:"productOfRecipeStepProductIndex"`
 		ValidPreparationVesselID        *string                          `json:"validPreparationVesselID"`
-		Quantity                        types.Uint16RangeWithOptionalMax `json:"quantity"`
+		Index                           *uint16                          `json:"index,omitempty"`
 		Name                            string                           `json:"name"`
 		Notes                           string                           `json:"notes"`
 		VesselPreposition               string                           `json:"vesselPreposition"`
+		OptionIndex                     uint16                           `json:"optionIndex"`
 		UnavailableAfterStep            bool                             `json:"unavailableAfterStep"`
 	}
 
@@ -82,6 +85,8 @@ type (
 		BelongsToRecipeStep             string                           `json:"-"`
 		VesselPreposition               string                           `json:"-"`
 		Name                            string                           `json:"-"`
+		Index                           uint16                           `json:"-"`
+		OptionIndex                     uint16                           `json:"-"`
 		UnavailableAfterStep            bool                             `json:"-"`
 	}
 
@@ -95,6 +100,8 @@ type (
 		BelongsToRecipeStep  *string                                            `json:"belongsToRecipeStep,omitempty"`
 		VesselID             *string                                            `json:"vesselID,omitempty"`
 		Quantity             types.Uint16RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
+		Index                *uint16                                            `json:"index,omitempty"`
+		OptionIndex          *uint16                                            `json:"optionIndex,omitempty"`
 		VesselPreposition    *string                                            `json:"vesselPreposition,omitempty"`
 		UnavailableAfterStep *bool                                              `json:"unavailableAfterStep,omitempty"`
 	}
@@ -139,6 +146,14 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 
 	if input.Quantity.Max != nil && x.Quantity.Max != nil && *input.Quantity.Max != *x.Quantity.Max {
 		x.Quantity.Max = input.Quantity.Max
+	}
+
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
+	}
+
+	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {
+		x.OptionIndex = *input.OptionIndex
 	}
 
 	if input.VesselPreposition != nil && *input.VesselPreposition != x.VesselPreposition {

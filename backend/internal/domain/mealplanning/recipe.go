@@ -39,23 +39,24 @@ type (
 	Recipe struct {
 		_                   struct{}                          `json:"-"`
 		CreatedAt           time.Time                         `json:"createdAt"`
+		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
 		InspiredByRecipeID  *string                           `json:"inspiredByRecipeID"`
 		LastUpdatedAt       *time.Time                        `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time                        `json:"archivedAt"`
 		ID                  string                            `json:"id"`
-		Source              string                            `json:"source"`
-		Description         string                            `json:"description"`
+		Slug                string                            `json:"slug"`
 		Name                string                            `json:"name"`
 		PortionName         string                            `json:"portionName"`
-		EstimatedPortions   types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
+		Source              string                            `json:"source"`
 		CreatedByUser       string                            `json:"createdByUser"`
 		PluralPortionName   string                            `json:"pluralPortionName"`
-		Slug                string                            `json:"slug"`
+		Description         string                            `json:"description"`
 		YieldsComponentType string                            `json:"yieldsComponentType"`
 		Status              string                            `json:"status"`
 		Steps               []*RecipeStep                     `json:"steps"`
 		Media               []*RecipeMedia                    `json:"media"`
 		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
+		AssociatedRecipes   []*Recipe                         `json:"associatedRecipes"`
 		SealOfApproval      bool                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                              `json:"eligibleForMeals"`
 	}

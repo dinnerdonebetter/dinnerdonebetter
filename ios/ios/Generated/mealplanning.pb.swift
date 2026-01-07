@@ -8877,6 +8877,11 @@ public struct Mealplanning_Recipe: @unchecked Sendable {
     set {_uniqueStorage()._eligibleForMeals = newValue}
   }
 
+  public var associatedRecipes: [Mealplanning_Recipe] {
+    get {return _storage._associatedRecipes}
+    set {_uniqueStorage()._associatedRecipes = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10214,6 +10219,11 @@ public struct Mealplanning_RecipeStepIngredient: @unchecked Sendable {
     set {_uniqueStorage()._toTaste = newValue}
   }
 
+  public var index: UInt32 {
+    get {return _storage._index}
+    set {_uniqueStorage()._index = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10310,6 +10320,15 @@ public struct Mealplanning_RecipeStepIngredientCreationRequestInput: Sendable {
   /// Clears the value of `validIngredientMeasurementUnitID`. Subsequent reads from it will return its default value.
   public mutating func clearValidIngredientMeasurementUnitID() {self._validIngredientMeasurementUnitID = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10322,6 +10341,7 @@ public struct Mealplanning_RecipeStepIngredientCreationRequestInput: Sendable {
   fileprivate var _quantity: Common_Float32RangeWithOptionalMax? = nil
   fileprivate var _validIngredientPreparationID: String? = nil
   fileprivate var _validIngredientMeasurementUnitID: String? = nil
+  fileprivate var _index: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeStepIngredientUpdateRequestInput: Sendable {
@@ -10455,6 +10475,15 @@ public struct Mealplanning_RecipeStepIngredientUpdateRequestInput: Sendable {
   /// Clears the value of `recipeStepProductRecipeID`. Subsequent reads from it will return its default value.
   public mutating func clearRecipeStepProductRecipeID() {self._recipeStepProductRecipeID = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10473,6 +10502,7 @@ public struct Mealplanning_RecipeStepIngredientUpdateRequestInput: Sendable {
   fileprivate var _toTaste: Bool? = nil
   fileprivate var _productPercentageToUse: Float? = nil
   fileprivate var _recipeStepProductRecipeID: String? = nil
+  fileprivate var _index: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeStepInstrument: @unchecked Sendable {
@@ -10569,6 +10599,11 @@ public struct Mealplanning_RecipeStepInstrument: @unchecked Sendable {
     set {_uniqueStorage()._optional = newValue}
   }
 
+  public var index: UInt32 {
+    get {return _storage._index}
+    set {_uniqueStorage()._index = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10636,6 +10671,15 @@ public struct Mealplanning_RecipeStepInstrumentCreationRequestInput: Sendable {
   /// Clears the value of `validPreparationInstrumentID`. Subsequent reads from it will return its default value.
   public mutating func clearValidPreparationInstrumentID() {self._validPreparationInstrumentID = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10645,6 +10689,7 @@ public struct Mealplanning_RecipeStepInstrumentCreationRequestInput: Sendable {
   fileprivate var _productOfRecipeStepProductIndex: UInt64? = nil
   fileprivate var _quantity: Common_Uint32RangeWithOptionalMax? = nil
   fileprivate var _validPreparationInstrumentID: String? = nil
+  fileprivate var _index: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeStepInstrumentUpdateRequestInput: Sendable {
@@ -10733,6 +10778,15 @@ public struct Mealplanning_RecipeStepInstrumentUpdateRequestInput: Sendable {
   /// Clears the value of `quantity`. Subsequent reads from it will return its default value.
   public mutating func clearQuantity() {self._quantity = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -10746,6 +10800,7 @@ public struct Mealplanning_RecipeStepInstrumentUpdateRequestInput: Sendable {
   fileprivate var _optional: Bool? = nil
   fileprivate var _optionIndex: UInt32? = nil
   fileprivate var _quantity: Common_Uint32RangeWithOptionalMaxUpdateRequestInput? = nil
+  fileprivate var _index: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeStepProduct: @unchecked Sendable {
@@ -11255,87 +11310,110 @@ public struct Mealplanning_RecipeStepUpdateRequestInput: Sendable {
   fileprivate var _belongsToRecipe: String? = nil
 }
 
-public struct Mealplanning_RecipeStepVessel: Sendable {
+public struct Mealplanning_RecipeStepVessel: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
-    set {_createdAt = newValue}
+    get {return _storage._createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._createdAt = newValue}
   }
   /// Returns true if `createdAt` has been explicitly set.
-  public var hasCreatedAt: Bool {return self._createdAt != nil}
+  public var hasCreatedAt: Bool {return _storage._createdAt != nil}
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
-  public mutating func clearCreatedAt() {self._createdAt = nil}
+  public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
   public var quantity: Common_Uint16RangeWithOptionalMax {
-    get {return _quantity ?? Common_Uint16RangeWithOptionalMax()}
-    set {_quantity = newValue}
+    get {return _storage._quantity ?? Common_Uint16RangeWithOptionalMax()}
+    set {_uniqueStorage()._quantity = newValue}
   }
   /// Returns true if `quantity` has been explicitly set.
-  public var hasQuantity: Bool {return self._quantity != nil}
+  public var hasQuantity: Bool {return _storage._quantity != nil}
   /// Clears the value of `quantity`. Subsequent reads from it will return its default value.
-  public mutating func clearQuantity() {self._quantity = nil}
+  public mutating func clearQuantity() {_uniqueStorage()._quantity = nil}
 
   public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
-    set {_lastUpdatedAt = newValue}
+    get {return _storage._lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._lastUpdatedAt = newValue}
   }
   /// Returns true if `lastUpdatedAt` has been explicitly set.
-  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  public var hasLastUpdatedAt: Bool {return _storage._lastUpdatedAt != nil}
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
-  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+  public mutating func clearLastUpdatedAt() {_uniqueStorage()._lastUpdatedAt = nil}
 
   public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
-    set {_archivedAt = newValue}
+    get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_uniqueStorage()._archivedAt = newValue}
   }
   /// Returns true if `archivedAt` has been explicitly set.
-  public var hasArchivedAt: Bool {return self._archivedAt != nil}
+  public var hasArchivedAt: Bool {return _storage._archivedAt != nil}
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
-  public mutating func clearArchivedAt() {self._archivedAt = nil}
+  public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
 
   public var recipeStepProductID: String {
-    get {return _recipeStepProductID ?? String()}
-    set {_recipeStepProductID = newValue}
+    get {return _storage._recipeStepProductID ?? String()}
+    set {_uniqueStorage()._recipeStepProductID = newValue}
   }
   /// Returns true if `recipeStepProductID` has been explicitly set.
-  public var hasRecipeStepProductID: Bool {return self._recipeStepProductID != nil}
+  public var hasRecipeStepProductID: Bool {return _storage._recipeStepProductID != nil}
   /// Clears the value of `recipeStepProductID`. Subsequent reads from it will return its default value.
-  public mutating func clearRecipeStepProductID() {self._recipeStepProductID = nil}
+  public mutating func clearRecipeStepProductID() {_uniqueStorage()._recipeStepProductID = nil}
 
   public var vessel: Mealplanning_ValidVessel {
-    get {return _vessel ?? Mealplanning_ValidVessel()}
-    set {_vessel = newValue}
+    get {return _storage._vessel ?? Mealplanning_ValidVessel()}
+    set {_uniqueStorage()._vessel = newValue}
   }
   /// Returns true if `vessel` has been explicitly set.
-  public var hasVessel: Bool {return self._vessel != nil}
+  public var hasVessel: Bool {return _storage._vessel != nil}
   /// Clears the value of `vessel`. Subsequent reads from it will return its default value.
-  public mutating func clearVessel() {self._vessel = nil}
+  public mutating func clearVessel() {_uniqueStorage()._vessel = nil}
 
-  public var id: String = String()
+  public var id: String {
+    get {return _storage._id}
+    set {_uniqueStorage()._id = newValue}
+  }
 
-  public var notes: String = String()
+  public var notes: String {
+    get {return _storage._notes}
+    set {_uniqueStorage()._notes = newValue}
+  }
 
-  public var belongsToRecipeStep: String = String()
+  public var belongsToRecipeStep: String {
+    get {return _storage._belongsToRecipeStep}
+    set {_uniqueStorage()._belongsToRecipeStep = newValue}
+  }
 
-  public var vesselPreposition: String = String()
+  public var vesselPreposition: String {
+    get {return _storage._vesselPreposition}
+    set {_uniqueStorage()._vesselPreposition = newValue}
+  }
 
-  public var name: String = String()
+  public var name: String {
+    get {return _storage._name}
+    set {_uniqueStorage()._name = newValue}
+  }
 
-  public var unavailableAfterStep: Bool = false
+  public var unavailableAfterStep: Bool {
+    get {return _storage._unavailableAfterStep}
+    set {_uniqueStorage()._unavailableAfterStep = newValue}
+  }
+
+  public var index: UInt32 {
+    get {return _storage._index}
+    set {_uniqueStorage()._index = newValue}
+  }
+
+  public var optionIndex: UInt32 {
+    get {return _storage._optionIndex}
+    set {_uniqueStorage()._optionIndex = newValue}
+  }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-  fileprivate var _quantity: Common_Uint16RangeWithOptionalMax? = nil
-  fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-  fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-  fileprivate var _recipeStepProductID: String? = nil
-  fileprivate var _vessel: Mealplanning_ValidVessel? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct Mealplanning_RecipeStepVesselCreationRequestInput: Sendable {
@@ -11396,6 +11474,17 @@ public struct Mealplanning_RecipeStepVesselCreationRequestInput: Sendable {
   /// Clears the value of `validPreparationVesselID`. Subsequent reads from it will return its default value.
   public mutating func clearValidPreparationVesselID() {self._validPreparationVesselID = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
+  public var optionIndex: UInt32 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -11405,6 +11494,7 @@ public struct Mealplanning_RecipeStepVesselCreationRequestInput: Sendable {
   fileprivate var _productOfRecipeStepProductIndex: UInt64? = nil
   fileprivate var _quantity: Common_Uint16RangeWithOptionalMax? = nil
   fileprivate var _validPreparationVesselID: String? = nil
+  fileprivate var _index: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeStepVesselUpdateRequestInput: Sendable {
@@ -11484,6 +11574,24 @@ public struct Mealplanning_RecipeStepVesselUpdateRequestInput: Sendable {
   /// Clears the value of `unavailableAfterStep`. Subsequent reads from it will return its default value.
   public mutating func clearUnavailableAfterStep() {self._unavailableAfterStep = nil}
 
+  public var index: UInt32 {
+    get {return _index ?? 0}
+    set {_index = newValue}
+  }
+  /// Returns true if `index` has been explicitly set.
+  public var hasIndex: Bool {return self._index != nil}
+  /// Clears the value of `index`. Subsequent reads from it will return its default value.
+  public mutating func clearIndex() {self._index = nil}
+
+  public var optionIndex: UInt32 {
+    get {return _optionIndex ?? 0}
+    set {_optionIndex = newValue}
+  }
+  /// Returns true if `optionIndex` has been explicitly set.
+  public var hasOptionIndex: Bool {return self._optionIndex != nil}
+  /// Clears the value of `optionIndex`. Subsequent reads from it will return its default value.
+  public mutating func clearOptionIndex() {self._optionIndex = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -11496,6 +11604,8 @@ public struct Mealplanning_RecipeStepVesselUpdateRequestInput: Sendable {
   fileprivate var _quantity: Common_Uint16RangeWithOptionalMaxUpdateRequestInput? = nil
   fileprivate var _vesselPreposition: String? = nil
   fileprivate var _unavailableAfterStep: Bool? = nil
+  fileprivate var _index: UInt32? = nil
+  fileprivate var _optionIndex: UInt32? = nil
 }
 
 public struct Mealplanning_RecipeUpdateRequestInput: Sendable {
@@ -12465,34 +12575,35 @@ public struct Mealplanning_CreateRecipeStepVesselRequest: Sendable {
   fileprivate var _input: Mealplanning_RecipeStepVesselCreationRequestInput? = nil
 }
 
-public struct Mealplanning_CreateRecipeStepVesselResponse: @unchecked Sendable {
+public struct Mealplanning_CreateRecipeStepVesselResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var responseDetails: Common_ResponseDetails {
-    get {return _storage._responseDetails ?? Common_ResponseDetails()}
-    set {_uniqueStorage()._responseDetails = newValue}
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  public var hasResponseDetails: Bool {return _storage._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  public mutating func clearResponseDetails() {_uniqueStorage()._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
   public var created: Mealplanning_RecipeStepVessel {
-    get {return _storage._created ?? Mealplanning_RecipeStepVessel()}
-    set {_uniqueStorage()._created = newValue}
+    get {return _created ?? Mealplanning_RecipeStepVessel()}
+    set {_created = newValue}
   }
   /// Returns true if `created` has been explicitly set.
-  public var hasCreated: Bool {return _storage._created != nil}
+  public var hasCreated: Bool {return self._created != nil}
   /// Clears the value of `created`. Subsequent reads from it will return its default value.
-  public mutating func clearCreated() {_uniqueStorage()._created = nil}
+  public mutating func clearCreated() {self._created = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _storage = _StorageClass.defaultInstance
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _created: Mealplanning_RecipeStepVessel? = nil
 }
 
 /// GetMermaidDiagramForRecipe
@@ -13307,34 +13418,35 @@ public struct Mealplanning_GetRecipeStepVesselRequest: Sendable {
   public init() {}
 }
 
-public struct Mealplanning_GetRecipeStepVesselResponse: @unchecked Sendable {
+public struct Mealplanning_GetRecipeStepVesselResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var responseDetails: Common_ResponseDetails {
-    get {return _storage._responseDetails ?? Common_ResponseDetails()}
-    set {_uniqueStorage()._responseDetails = newValue}
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  public var hasResponseDetails: Bool {return _storage._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  public mutating func clearResponseDetails() {_uniqueStorage()._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
   public var result: Mealplanning_RecipeStepVessel {
-    get {return _storage._result ?? Mealplanning_RecipeStepVessel()}
-    set {_uniqueStorage()._result = newValue}
+    get {return _result ?? Mealplanning_RecipeStepVessel()}
+    set {_result = newValue}
   }
   /// Returns true if `result` has been explicitly set.
-  public var hasResult: Bool {return _storage._result != nil}
+  public var hasResult: Bool {return self._result != nil}
   /// Clears the value of `result`. Subsequent reads from it will return its default value.
-  public mutating func clearResult() {_uniqueStorage()._result = nil}
+  public mutating func clearResult() {self._result = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _storage = _StorageClass.defaultInstance
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _result: Mealplanning_RecipeStepVessel? = nil
 }
 
 /// GetRecipeStepVessels
@@ -14170,34 +14282,35 @@ public struct Mealplanning_UpdateRecipeStepVesselRequest: Sendable {
   fileprivate var _input: Mealplanning_RecipeStepVesselUpdateRequestInput? = nil
 }
 
-public struct Mealplanning_UpdateRecipeStepVesselResponse: @unchecked Sendable {
+public struct Mealplanning_UpdateRecipeStepVesselResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var responseDetails: Common_ResponseDetails {
-    get {return _storage._responseDetails ?? Common_ResponseDetails()}
-    set {_uniqueStorage()._responseDetails = newValue}
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
   }
   /// Returns true if `responseDetails` has been explicitly set.
-  public var hasResponseDetails: Bool {return _storage._responseDetails != nil}
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
   /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
-  public mutating func clearResponseDetails() {_uniqueStorage()._responseDetails = nil}
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
 
   public var updated: Mealplanning_RecipeStepVessel {
-    get {return _storage._updated ?? Mealplanning_RecipeStepVessel()}
-    set {_uniqueStorage()._updated = newValue}
+    get {return _updated ?? Mealplanning_RecipeStepVessel()}
+    set {_updated = newValue}
   }
   /// Returns true if `updated` has been explicitly set.
-  public var hasUpdated: Bool {return _storage._updated != nil}
+  public var hasUpdated: Bool {return self._updated != nil}
   /// Clears the value of `updated`. Subsequent reads from it will return its default value.
-  public mutating func clearUpdated() {_uniqueStorage()._updated = nil}
+  public mutating func clearUpdated() {self._updated = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _storage = _StorageClass.defaultInstance
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _updated: Mealplanning_RecipeStepVessel? = nil
 }
 
 public struct Mealplanning_InitializeMealPlanGroceryListRequest: Sendable {
@@ -31285,7 +31398,7 @@ extension Mealplanning_UpdateUserIngredientPreferenceResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipe"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -31307,6 +31420,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _media: [Mealplanning_RecipeMedia] = []
     var _status: String = String()
     var _eligibleForMeals: Bool = false
+    var _associatedRecipes: [Mealplanning_Recipe] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -31336,6 +31450,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       _media = source._media
       _status = source._status
       _eligibleForMeals = source._eligibleForMeals
+      _associatedRecipes = source._associatedRecipes
     }
   }
 
@@ -31373,6 +31488,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._eligibleForMeals) }()
+        case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._associatedRecipes) }()
         default: break
         }
       }
@@ -31442,6 +31558,9 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if _storage._eligibleForMeals != false {
         try visitor.visitSingularBoolField(value: _storage._eligibleForMeals, fieldNumber: 20)
       }
+      if !_storage._associatedRecipes.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._associatedRecipes, fieldNumber: 21)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -31470,6 +31589,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         if _storage._media != rhs_storage._media {return false}
         if _storage._status != rhs_storage._status {return false}
         if _storage._eligibleForMeals != rhs_storage._eligibleForMeals {return false}
+        if _storage._associatedRecipes != rhs_storage._associatedRecipes {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -33219,7 +33339,7 @@ extension Mealplanning_RecipeStepCreationRequestInput: SwiftProtobuf.Message, Sw
 
 extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{1}index\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -33240,6 +33360,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
     var _optionIndex: UInt32 = 0
     var _optional: Bool = false
     var _toTaste: Bool = false
+    var _index: UInt32 = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -33268,6 +33389,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       _optionIndex = source._optionIndex
       _optional = source._optional
       _toTaste = source._toTaste
+      _index = source._index
     }
   }
 
@@ -33304,6 +33426,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         case 16: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         case 17: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._toTaste) }()
+        case 19: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         default: break
         }
       }
@@ -33370,6 +33493,9 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       if _storage._toTaste != false {
         try visitor.visitSingularBoolField(value: _storage._toTaste, fieldNumber: 18)
       }
+      if _storage._index != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._index, fieldNumber: 19)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -33397,6 +33523,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         if _storage._optionIndex != rhs_storage._optionIndex {return false}
         if _storage._optional != rhs_storage._optional {return false}
         if _storage._toTaste != rhs_storage._toTaste {return false}
+        if _storage._index != rhs_storage._index {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -33408,7 +33535,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredientCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0\u{3}ingredient_notes\0\u{1}name\0\u{3}quantity_notes\0\u{1}quantity\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{3}valid_ingredient_preparation_id\0\u{3}valid_ingredient_measurement_unit_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0\u{3}ingredient_notes\0\u{1}name\0\u{3}quantity_notes\0\u{1}quantity\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{3}valid_ingredient_preparation_id\0\u{3}valid_ingredient_measurement_unit_id\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33430,6 +33557,7 @@ extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.M
       case 12: try { try decoder.decodeSingularBoolField(value: &self.toTaste) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._validIngredientPreparationID) }()
       case 14: try { try decoder.decodeSingularStringField(value: &self._validIngredientMeasurementUnitID) }()
+      case 15: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
       default: break
       }
     }
@@ -33482,6 +33610,9 @@ extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.M
     try { if let v = self._validIngredientMeasurementUnitID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 14)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 15)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -33500,6 +33631,7 @@ extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.M
     if lhs.toTaste != rhs.toTaste {return false}
     if lhs._validIngredientPreparationID != rhs._validIngredientPreparationID {return false}
     if lhs._validIngredientMeasurementUnitID != rhs._validIngredientMeasurementUnitID {return false}
+    if lhs._index != rhs._index {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -33507,7 +33639,7 @@ extension Mealplanning_RecipeStepIngredientCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredientUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_id\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}optional\0\u{3}measurement_unit_id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{3}belongs_to_recipe_step\0\u{1}quantity\0\u{3}option_index\0\u{3}vessel_index\0\u{3}to_taste\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ingredient_id\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}optional\0\u{3}measurement_unit_id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{3}belongs_to_recipe_step\0\u{1}quantity\0\u{3}option_index\0\u{3}vessel_index\0\u{3}to_taste\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_recipe_id\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33529,6 +33661,7 @@ extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Mes
       case 12: try { try decoder.decodeSingularBoolField(value: &self._toTaste) }()
       case 13: try { try decoder.decodeSingularFloatField(value: &self._productPercentageToUse) }()
       case 14: try { try decoder.decodeSingularStringField(value: &self._recipeStepProductRecipeID) }()
+      case 15: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
       default: break
       }
     }
@@ -33581,6 +33714,9 @@ extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Mes
     try { if let v = self._recipeStepProductRecipeID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 14)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 15)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -33599,6 +33735,7 @@ extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Mes
     if lhs._toTaste != rhs._toTaste {return false}
     if lhs._productPercentageToUse != rhs._productPercentageToUse {return false}
     if lhs._recipeStepProductRecipeID != rhs._recipeStepProductRecipeID {return false}
+    if lhs._index != rhs._index {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -33606,7 +33743,7 @@ extension Mealplanning_RecipeStepIngredientUpdateRequestInput: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0\u{1}index\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -33622,6 +33759,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
     var _optionIndex: UInt32 = 0
     var _preferenceRank: UInt32 = 0
     var _optional: Bool = false
+    var _index: UInt32 = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -33645,6 +33783,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       _optionIndex = source._optionIndex
       _preferenceRank = source._preferenceRank
       _optional = source._optional
+      _index = source._index
     }
   }
 
@@ -33676,6 +33815,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         case 11: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         case 12: try { try decoder.decodeSingularUInt32Field(value: &_storage._preferenceRank) }()
         case 13: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
+        case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         default: break
         }
       }
@@ -33727,6 +33867,9 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       if _storage._optional != false {
         try visitor.visitSingularBoolField(value: _storage._optional, fieldNumber: 13)
       }
+      if _storage._index != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._index, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -33749,6 +33892,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         if _storage._optionIndex != rhs_storage._optionIndex {return false}
         if _storage._preferenceRank != rhs_storage._preferenceRank {return false}
         if _storage._optional != rhs_storage._optional {return false}
+        if _storage._index != rhs_storage._index {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -33760,7 +33904,7 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrumentCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{1}quantity\0\u{1}notes\0\u{1}name\0\u{3}option_index\0\u{1}optional\0\u{3}preference_rank\0\u{3}valid_preparation_instrument_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{1}quantity\0\u{1}notes\0\u{1}name\0\u{3}option_index\0\u{1}optional\0\u{3}preference_rank\0\u{3}valid_preparation_instrument_id\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33778,6 +33922,7 @@ extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.M
       case 8: try { try decoder.decodeSingularBoolField(value: &self.optional) }()
       case 9: try { try decoder.decodeSingularUInt32Field(value: &self.preferenceRank) }()
       case 10: try { try decoder.decodeSingularStringField(value: &self._validPreparationInstrumentID) }()
+      case 11: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
       default: break
       }
     }
@@ -33818,6 +33963,9 @@ extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.M
     try { if let v = self._validPreparationInstrumentID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 10)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 11)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -33832,6 +33980,7 @@ extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.M
     if lhs.optional != rhs.optional {return false}
     if lhs.preferenceRank != rhs.preferenceRank {return false}
     if lhs._validPreparationInstrumentID != rhs._validPreparationInstrumentID {return false}
+    if lhs._index != rhs._index {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -33839,7 +33988,7 @@ extension Mealplanning_RecipeStepInstrumentCreationRequestInput: SwiftProtobuf.M
 
 extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrumentUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_id\0\u{3}recipe_step_product_id\0\u{1}notes\0\u{3}preference_rank\0\u{3}belongs_to_recipe_step\0\u{1}name\0\u{1}optional\0\u{3}option_index\0\u{1}quantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}instrument_id\0\u{3}recipe_step_product_id\0\u{1}notes\0\u{3}preference_rank\0\u{3}belongs_to_recipe_step\0\u{1}name\0\u{1}optional\0\u{3}option_index\0\u{1}quantity\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -33856,6 +34005,7 @@ extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Mes
       case 7: try { try decoder.decodeSingularBoolField(value: &self._optional) }()
       case 8: try { try decoder.decodeSingularUInt32Field(value: &self._optionIndex) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._quantity) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
       default: break
       }
     }
@@ -33893,6 +34043,9 @@ extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Mes
     try { if let v = self._quantity {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -33906,6 +34059,7 @@ extension Mealplanning_RecipeStepInstrumentUpdateRequestInput: SwiftProtobuf.Mes
     if lhs._optional != rhs._optional {return false}
     if lhs._optionIndex != rhs._optionIndex {return false}
     if lhs._quantity != rhs._quantity {return false}
+    if lhs._index != rhs._index {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -34517,88 +34671,160 @@ extension Mealplanning_RecipeStepUpdateRequestInput: SwiftProtobuf.Message, Swif
 
 extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0")
+
+  fileprivate class _StorageClass {
+    var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _quantity: Common_Uint16RangeWithOptionalMax? = nil
+    var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+    var _recipeStepProductID: String? = nil
+    var _vessel: Mealplanning_ValidVessel? = nil
+    var _id: String = String()
+    var _notes: String = String()
+    var _belongsToRecipeStep: String = String()
+    var _vesselPreposition: String = String()
+    var _name: String = String()
+    var _unavailableAfterStep: Bool = false
+    var _index: UInt32 = 0
+    var _optionIndex: UInt32 = 0
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _createdAt = source._createdAt
+      _quantity = source._quantity
+      _lastUpdatedAt = source._lastUpdatedAt
+      _archivedAt = source._archivedAt
+      _recipeStepProductID = source._recipeStepProductID
+      _vessel = source._vessel
+      _id = source._id
+      _notes = source._notes
+      _belongsToRecipeStep = source._belongsToRecipeStep
+      _vesselPreposition = source._vesselPreposition
+      _name = source._name
+      _unavailableAfterStep = source._unavailableAfterStep
+      _index = source._index
+      _optionIndex = source._optionIndex
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._quantity) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._recipeStepProductID) }()
-      case 6: try { try decoder.decodeSingularMessageField(value: &self._vessel) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.id) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.notes) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self.belongsToRecipeStep) }()
-      case 10: try { try decoder.decodeSingularStringField(value: &self.vesselPreposition) }()
-      case 11: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 12: try { try decoder.decodeSingularBoolField(value: &self.unavailableAfterStep) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._quantity) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._recipeStepProductID) }()
+        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._vessel) }()
+        case 7: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
+        case 8: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
+        case 9: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
+        case 10: try { try decoder.decodeSingularStringField(value: &_storage._vesselPreposition) }()
+        case 11: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
+        case 12: try { try decoder.decodeSingularBoolField(value: &_storage._unavailableAfterStep) }()
+        case 13: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
+        case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
+        default: break
+        }
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._createdAt {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._quantity {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._lastUpdatedAt {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._archivedAt {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._recipeStepProductID {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._vessel {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    } }()
-    if !self.id.isEmpty {
-      try visitor.visitSingularStringField(value: self.id, fieldNumber: 7)
-    }
-    if !self.notes.isEmpty {
-      try visitor.visitSingularStringField(value: self.notes, fieldNumber: 8)
-    }
-    if !self.belongsToRecipeStep.isEmpty {
-      try visitor.visitSingularStringField(value: self.belongsToRecipeStep, fieldNumber: 9)
-    }
-    if !self.vesselPreposition.isEmpty {
-      try visitor.visitSingularStringField(value: self.vesselPreposition, fieldNumber: 10)
-    }
-    if !self.name.isEmpty {
-      try visitor.visitSingularStringField(value: self.name, fieldNumber: 11)
-    }
-    if self.unavailableAfterStep != false {
-      try visitor.visitSingularBoolField(value: self.unavailableAfterStep, fieldNumber: 12)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._createdAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._quantity {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._lastUpdatedAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._archivedAt {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._recipeStepProductID {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._vessel {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      } }()
+      if !_storage._id.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 7)
+      }
+      if !_storage._notes.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._notes, fieldNumber: 8)
+      }
+      if !_storage._belongsToRecipeStep.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._belongsToRecipeStep, fieldNumber: 9)
+      }
+      if !_storage._vesselPreposition.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._vesselPreposition, fieldNumber: 10)
+      }
+      if !_storage._name.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._name, fieldNumber: 11)
+      }
+      if _storage._unavailableAfterStep != false {
+        try visitor.visitSingularBoolField(value: _storage._unavailableAfterStep, fieldNumber: 12)
+      }
+      if _storage._index != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._index, fieldNumber: 13)
+      }
+      if _storage._optionIndex != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._optionIndex, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_RecipeStepVessel, rhs: Mealplanning_RecipeStepVessel) -> Bool {
-    if lhs._createdAt != rhs._createdAt {return false}
-    if lhs._quantity != rhs._quantity {return false}
-    if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
-    if lhs._archivedAt != rhs._archivedAt {return false}
-    if lhs._recipeStepProductID != rhs._recipeStepProductID {return false}
-    if lhs._vessel != rhs._vessel {return false}
-    if lhs.id != rhs.id {return false}
-    if lhs.notes != rhs.notes {return false}
-    if lhs.belongsToRecipeStep != rhs.belongsToRecipeStep {return false}
-    if lhs.vesselPreposition != rhs.vesselPreposition {return false}
-    if lhs.name != rhs.name {return false}
-    if lhs.unavailableAfterStep != rhs.unavailableAfterStep {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._createdAt != rhs_storage._createdAt {return false}
+        if _storage._quantity != rhs_storage._quantity {return false}
+        if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
+        if _storage._archivedAt != rhs_storage._archivedAt {return false}
+        if _storage._recipeStepProductID != rhs_storage._recipeStepProductID {return false}
+        if _storage._vessel != rhs_storage._vessel {return false}
+        if _storage._id != rhs_storage._id {return false}
+        if _storage._notes != rhs_storage._notes {return false}
+        if _storage._belongsToRecipeStep != rhs_storage._belongsToRecipeStep {return false}
+        if _storage._vesselPreposition != rhs_storage._vesselPreposition {return false}
+        if _storage._name != rhs_storage._name {return false}
+        if _storage._unavailableAfterStep != rhs_storage._unavailableAfterStep {return false}
+        if _storage._index != rhs_storage._index {return false}
+        if _storage._optionIndex != rhs_storage._optionIndex {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -34606,7 +34832,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVesselCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{1}quantity\0\u{1}name\0\u{1}notes\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0\u{3}valid_preparation_vessel_id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{3}product_of_recipe_step_index\0\u{3}product_of_recipe_step_product_index\0\u{1}quantity\0\u{1}name\0\u{1}notes\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0\u{3}valid_preparation_vessel_id\0\u{1}index\0\u{3}option_index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34623,6 +34849,8 @@ extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Messa
       case 7: try { try decoder.decodeSingularStringField(value: &self.vesselPreposition) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.unavailableAfterStep) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._validPreparationVesselID) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
+      case 11: try { try decoder.decodeSingularUInt32Field(value: &self.optionIndex) }()
       default: break
       }
     }
@@ -34660,6 +34888,12 @@ extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Messa
     try { if let v = self._validPreparationVesselID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
+    } }()
+    if self.optionIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.optionIndex, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -34673,6 +34907,8 @@ extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Messa
     if lhs.vesselPreposition != rhs.vesselPreposition {return false}
     if lhs.unavailableAfterStep != rhs.unavailableAfterStep {return false}
     if lhs._validPreparationVesselID != rhs._validPreparationVesselID {return false}
+    if lhs._index != rhs._index {return false}
+    if lhs.optionIndex != rhs.optionIndex {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -34680,7 +34916,7 @@ extension Mealplanning_RecipeStepVesselCreationRequestInput: SwiftProtobuf.Messa
 
 extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVesselUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_id\0\u{1}quantity\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_step_product_id\0\u{1}name\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_id\0\u{1}quantity\0\u{3}vessel_preposition\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -34696,6 +34932,8 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
       case 6: try { try decoder.decodeSingularMessageField(value: &self._quantity) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._vesselPreposition) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self._unavailableAfterStep) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self._optionIndex) }()
       default: break
       }
     }
@@ -34730,6 +34968,12 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
     try { if let v = self._unavailableAfterStep {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
     } }()
+    try { if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._optionIndex {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -34742,6 +34986,8 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
     if lhs._quantity != rhs._quantity {return false}
     if lhs._vesselPreposition != rhs._vesselPreposition {return false}
     if lhs._unavailableAfterStep != rhs._unavailableAfterStep {return false}
+    if lhs._index != rhs._index {return false}
+    if lhs._optionIndex != rhs._optionIndex {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -36339,74 +36585,36 @@ extension Mealplanning_CreateRecipeStepVesselResponse: SwiftProtobuf.Message, Sw
   public static let protoMessageName: String = _protobuf_package + ".CreateRecipeStepVesselResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}created\0")
 
-  fileprivate class _StorageClass {
-    var _responseDetails: Common_ResponseDetails? = nil
-    var _created: Mealplanning_RecipeStepVessel? = nil
-
-      // This property is used as the initial default value for new instances of the type.
-      // The type itself is protecting the reference to its storage via CoW semantics.
-      // This will force a copy to be made of this reference when the first mutation occurs;
-      // hence, it is safe to mark this as `nonisolated(unsafe)`.
-      static nonisolated(unsafe) let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _responseDetails = source._responseDetails
-      _created = source._created
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        // The use of inline closures is to circumvent an issue where the compiler
-        // allocates stack space for every case branch when no optimizations are
-        // enabled. https://github.com/apple/swift-protobuf/issues/1034
-        switch fieldNumber {
-        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._responseDetails) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._created) }()
-        default: break
-        }
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._created) }()
+      default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every if/case branch local when no optimizations
-      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-      // https://github.com/apple/swift-protobuf/issues/1182
-      try { if let v = _storage._responseDetails {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      } }()
-      try { if let v = _storage._created {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      } }()
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._created {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_CreateRecipeStepVesselResponse, rhs: Mealplanning_CreateRecipeStepVesselResponse) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._responseDetails != rhs_storage._responseDetails {return false}
-        if _storage._created != rhs_storage._created {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._created != rhs._created {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -37757,74 +37965,36 @@ extension Mealplanning_GetRecipeStepVesselResponse: SwiftProtobuf.Message, Swift
   public static let protoMessageName: String = _protobuf_package + ".GetRecipeStepVesselResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}result\0")
 
-  fileprivate class _StorageClass {
-    var _responseDetails: Common_ResponseDetails? = nil
-    var _result: Mealplanning_RecipeStepVessel? = nil
-
-      // This property is used as the initial default value for new instances of the type.
-      // The type itself is protecting the reference to its storage via CoW semantics.
-      // This will force a copy to be made of this reference when the first mutation occurs;
-      // hence, it is safe to mark this as `nonisolated(unsafe)`.
-      static nonisolated(unsafe) let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _responseDetails = source._responseDetails
-      _result = source._result
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        // The use of inline closures is to circumvent an issue where the compiler
-        // allocates stack space for every case branch when no optimizations are
-        // enabled. https://github.com/apple/swift-protobuf/issues/1034
-        switch fieldNumber {
-        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._responseDetails) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._result) }()
-        default: break
-        }
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._result) }()
+      default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every if/case branch local when no optimizations
-      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-      // https://github.com/apple/swift-protobuf/issues/1182
-      try { if let v = _storage._responseDetails {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      } }()
-      try { if let v = _storage._result {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      } }()
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._result {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_GetRecipeStepVesselResponse, rhs: Mealplanning_GetRecipeStepVesselResponse) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._responseDetails != rhs_storage._responseDetails {return false}
-        if _storage._result != rhs_storage._result {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._result != rhs._result {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -39141,74 +39311,36 @@ extension Mealplanning_UpdateRecipeStepVesselResponse: SwiftProtobuf.Message, Sw
   public static let protoMessageName: String = _protobuf_package + ".UpdateRecipeStepVesselResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}updated\0")
 
-  fileprivate class _StorageClass {
-    var _responseDetails: Common_ResponseDetails? = nil
-    var _updated: Mealplanning_RecipeStepVessel? = nil
-
-      // This property is used as the initial default value for new instances of the type.
-      // The type itself is protecting the reference to its storage via CoW semantics.
-      // This will force a copy to be made of this reference when the first mutation occurs;
-      // hence, it is safe to mark this as `nonisolated(unsafe)`.
-      static nonisolated(unsafe) let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _responseDetails = source._responseDetails
-      _updated = source._updated
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        // The use of inline closures is to circumvent an issue where the compiler
-        // allocates stack space for every case branch when no optimizations are
-        // enabled. https://github.com/apple/swift-protobuf/issues/1034
-        switch fieldNumber {
-        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._responseDetails) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._updated) }()
-        default: break
-        }
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._updated) }()
+      default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every if/case branch local when no optimizations
-      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-      // https://github.com/apple/swift-protobuf/issues/1182
-      try { if let v = _storage._responseDetails {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      } }()
-      try { if let v = _storage._updated {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      } }()
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._updated {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Mealplanning_UpdateRecipeStepVesselResponse, rhs: Mealplanning_UpdateRecipeStepVesselResponse) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._responseDetails != rhs_storage._responseDetails {return false}
-        if _storage._updated != rhs_storage._updated {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._updated != rhs._updated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

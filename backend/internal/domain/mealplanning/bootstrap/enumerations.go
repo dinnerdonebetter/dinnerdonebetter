@@ -5806,6 +5806,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	caThermometer := enums.Instruments["instant-read thermometer"]
 	caCarvingKnife := enums.Instruments["carving knife"]
 	caMolcajeteInstrument := enums.Instruments["molcajete"]
+	caBareHands := enums.Instruments["bare hands"]
 
 	// === TOAST PREPARATION for seeds ===
 	if err = createVIP(caToastPrep, caCuminSeeds); err != nil {
@@ -6167,6 +6168,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// === PLUCK PREPARATION for cilantro ===
 	if err = createVIP(caPluckPrep, caCilantro); err != nil {
+		return err
+	}
+	if err = createVPI(caPluckPrep, caBareHands); err != nil {
 		return err
 	}
 
