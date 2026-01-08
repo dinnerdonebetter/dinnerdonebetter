@@ -242,5 +242,4 @@ server, err := localdev.AllInOne(
 )
 ```
 
-4. **Access multiple repositories**: If you need multiple repositories in one function, use nested helpers or use the base `DatabaseInitFunc` and instantiate repositories yourself.
-
+1. **Access multiple repositories**: If you need multiple repositories in one function, use nested helpers or use the base `DatabaseInitFunc` and instantiate repositories yourself.

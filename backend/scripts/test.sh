@@ -2,10 +2,7 @@
 set -euo pipefail
 
 # Run tests
-# Usage: test.sh <go_test_command> <testable_package_list>
+# Usage: test.sh
 
-TESTABLE_PACKAGE_LIST="${1}"
-
-# shellcheck disable=SC2086
-CGO_ENABLED=1 go test -shuffle=on -race -vet=all -failfast ${TESTABLE_PACKAGE_LIST}
-
+# shellcheck disable=SC2086,SC2046
+CGO_ENABLED=1 go test -shuffle=on -race -vet=all -failfast $(go list github.com/dinnerdonebetter/backend/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)')

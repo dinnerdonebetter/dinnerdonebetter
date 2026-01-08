@@ -30,12 +30,30 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		salt := fakes.BuildFakeValidIngredient()
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
+		// Set up IDs for options, recipes, and steps
+		option1ID := fakes.BuildFakeID()
+		option2ID := fakes.BuildFakeID()
+		option3ID := fakes.BuildFakeID()
+		option4ID := fakes.BuildFakeID()
+		option5ID := fakes.BuildFakeID()
+		recipe1ID := fakes.BuildFakeID()
+		recipe2ID := fakes.BuildFakeID()
+		recipe3ID := fakes.BuildFakeID()
+		recipe4ID := fakes.BuildFakeID()
+		recipe5ID := fakes.BuildFakeID()
+		step1ID := fakes.BuildFakeID()
+		step2ID := fakes.BuildFakeID()
+		step3ID := fakes.BuildFakeID()
+		step4ID := fakes.BuildFakeID()
+		step5ID := fakes.BuildFakeID()
+
 		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),
 			Events: []*mealplanning.MealPlanEvent{
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option1ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -43,8 +61,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe1ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step1ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
@@ -53,6 +73,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -67,6 +89,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option2ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -74,8 +97,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe2ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step2ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
@@ -84,6 +109,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -98,6 +125,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option3ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -105,8 +133,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe3ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step3ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
@@ -115,6 +145,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -129,6 +161,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option4ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -136,8 +169,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe4ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step4ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: salt,
@@ -146,6 +181,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -160,6 +197,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option5ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -167,8 +205,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe5ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step5ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
@@ -177,6 +217,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -195,40 +237,52 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		expectedMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      onion.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       onion.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option1ID, // First occurrence
+				RecipeID:                &recipe1ID,
+				RecipeStepID:            &step1ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(200)),
 					Min: 200,
 				},
 			},
 			carrot.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      carrot.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       carrot.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option2ID,
+				RecipeID:                &recipe2ID,
+				RecipeStepID:            &step2ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(100)),
 					Min: 100,
 				},
 			},
 			celery.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      celery.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       celery.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option3ID,
+				RecipeID:                &recipe3ID,
+				RecipeStepID:            &step3ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(100)),
 					Min: 100,
 				},
 			},
 			salt.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      salt.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       salt.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option4ID,
+				RecipeID:                &recipe4ID,
+				RecipeStepID:            &step4ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(100)),
 					Min: 100,
@@ -261,12 +315,24 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		celery := fakes.BuildFakeValidIngredient()
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
+		// Set up IDs for options, recipes, and steps
+		option1ID := fakes.BuildFakeID()
+		option2ID := fakes.BuildFakeID()
+		option3ID := fakes.BuildFakeID()
+		recipe1ID := fakes.BuildFakeID()
+		recipe2ID := fakes.BuildFakeID()
+		recipe3ID := fakes.BuildFakeID()
+		step1ID := fakes.BuildFakeID()
+		step2ID := fakes.BuildFakeID()
+		step3ID := fakes.BuildFakeID()
+
 		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),
 			Events: []*mealplanning.MealPlanEvent{
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option1ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -274,8 +340,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 1.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe1ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step1ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
@@ -284,6 +352,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -298,6 +368,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option2ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -305,8 +376,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 2.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe2ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step2ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
@@ -315,6 +388,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -329,6 +404,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*mealplanning.MealPlanOption{
 						{
+							ID:        option3ID,
 							Chosen:    true,
 							MealScale: 1.0,
 							Meal: mealplanning.Meal{
@@ -336,8 +412,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 									{
 										RecipeScale: 3.0,
 										Recipe: mealplanning.Recipe{
+											ID: recipe3ID,
 											Steps: []*mealplanning.RecipeStep{
 												{
+													ID: step3ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
@@ -346,6 +424,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
 														},
 													},
 												},
@@ -364,30 +444,39 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		expectedMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      onion.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       onion.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option1ID,
+				RecipeID:                &recipe1ID,
+				RecipeStepID:            &step1ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(100)),
 					Min: 100,
 				},
 			},
 			carrot.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      carrot.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       carrot.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option2ID,
+				RecipeID:                &recipe2ID,
+				RecipeStepID:            &step2ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(200)),
 					Min: 200,
 				},
 			},
 			celery.ID: {
-				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-				ValidMeasurementUnitID: grams.ID,
-				ValidIngredientID:      celery.ID,
-				BelongsToMealPlan:      expectedMealPlan.ID,
+				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+				ValidMeasurementUnitID:  grams.ID,
+				ValidIngredientID:       celery.ID,
+				BelongsToMealPlan:       expectedMealPlan.ID,
+				BelongsToMealPlanOption: &option3ID,
+				RecipeID:                &recipe3ID,
+				RecipeStepID:            &step3ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
 					Max: pointer.To(float32(300)),
 					Min: 300,
@@ -405,5 +494,421 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		}
 
 		assert.Equal(t, expectedMap, actualMap)
+	})
+
+	T.Run("with option groups", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		spaghetti := fakes.BuildFakeValidIngredient()
+		angelHair := fakes.BuildFakeValidIngredient()
+		onion := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		stepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: stepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														// Option group: same index (0), different option_index
+														{
+															Ingredient: spaghetti,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(100)),
+																Min: 100,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+														{
+															Ingredient: angelHair,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(100)),
+																Min: 100,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     1,
+														},
+														// Non-option ingredient at different index
+														{
+															Ingredient: onion,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(50)),
+																Min: 50,
+															},
+															MeasurementUnit: *grams,
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: spaghetti (default optionIndex=0) and onion (non-option)
+		// angelHair (optionIndex=1) is NOT included because no selection was made, so we default to optionIndex=0
+		assert.Len(t, actual, 2)
+
+		// Find items by ingredient ID
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify spaghetti (option group item - default selection)
+		spaghettiItem, ok := actualMap[spaghetti.ID]
+		assert.True(t, ok, "spaghetti item should exist (default optionIndex=0)")
+		assert.NotNil(t, spaghettiItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *spaghettiItem.BelongsToMealPlanOption)
+		assert.NotNil(t, spaghettiItem.RecipeID)
+		assert.Equal(t, recipeID, *spaghettiItem.RecipeID)
+		assert.NotNil(t, spaghettiItem.RecipeStepID)
+		assert.Equal(t, stepID, *spaghettiItem.RecipeStepID)
+		assert.NotNil(t, spaghettiItem.IngredientIndex)
+		assert.Equal(t, uint16(0), *spaghettiItem.IngredientIndex)
+		assert.NotNil(t, spaghettiItem.OptionIndex)
+		assert.Equal(t, uint16(0), *spaghettiItem.OptionIndex)
+		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
+
+		// Verify angelHair is NOT present (was not selected, and optionIndex=1 is not the default)
+		_, ok = actualMap[angelHair.ID]
+		assert.False(t, ok, "angelHair item should NOT exist (optionIndex=1 is not selected)")
+
+		// Verify onion (non-option item, should still have recipe context)
+		onionItem, ok := actualMap[onion.ID]
+		assert.True(t, ok, "onion item should exist")
+		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *onionItem.BelongsToMealPlanOption)
+		assert.NotNil(t, onionItem.RecipeID)
+		assert.Equal(t, recipeID, *onionItem.RecipeID)
+		assert.NotNil(t, onionItem.RecipeStepID)
+		assert.Equal(t, stepID, *onionItem.RecipeStepID)
+		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
+	})
+
+	T.Run("with option groups and aggregation", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		spaghetti := fakes.BuildFakeValidIngredient()
+		angelHair := fakes.BuildFakeValidIngredient()
+		onion := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		option1ID := fakes.BuildFakeID()
+		option2ID := fakes.BuildFakeID()
+		recipe1ID := fakes.BuildFakeID()
+		recipe2ID := fakes.BuildFakeID()
+		step1ID := fakes.BuildFakeID()
+		step2ID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        option1ID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipe1ID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: step1ID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														// Option group
+														{
+															Ingredient: spaghetti,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(100)),
+																Min: 100,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+														{
+															Ingredient: angelHair,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(100)),
+																Min: 100,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     1,
+														},
+														// Non-option ingredient
+														{
+															Ingredient: onion,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(50)),
+																Min: 50,
+															},
+															MeasurementUnit: *grams,
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        option2ID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipe2ID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: step2ID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														// Same onion ingredient, should aggregate
+														{
+															Ingredient: onion,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(50)),
+																Min: 50,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: spaghetti (default optionIndex=0) and onion (aggregated)
+		// angelHair (optionIndex=1) is NOT included because no selection was made
+		assert.Len(t, actual, 2)
+
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify spaghetti (option group item - default selection)
+		spaghettiItem, ok := actualMap[spaghetti.ID]
+		assert.True(t, ok, "spaghetti item should exist (default optionIndex=0)")
+		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
+		assert.NotNil(t, spaghettiItem.BelongsToMealPlanOption)
+		assert.Equal(t, option1ID, *spaghettiItem.BelongsToMealPlanOption)
+
+		// Verify angelHair is NOT present (was not selected)
+		_, ok = actualMap[angelHair.ID]
+		assert.False(t, ok, "angelHair item should NOT exist (optionIndex=1 is not selected)")
+
+		// Verify onion (non-option item, should be aggregated)
+		onionItem, ok := actualMap[onion.ID]
+		assert.True(t, ok)
+		assert.Equal(t, float32(100), onionItem.QuantityNeeded.Min, "onion should be aggregated (50 + 50)")
+		// Should have context from first occurrence
+		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
+		assert.Equal(t, option1ID, *onionItem.BelongsToMealPlanOption)
+	})
+
+	T.Run("with option groups and user selection", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		spaghetti := fakes.BuildFakeValidIngredient()
+		angelHair := fakes.BuildFakeValidIngredient()
+		onion := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		stepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			// User has selected optionIndex=1 (angelHair) instead of the default (spaghetti)
+			Selections: []*mealplanning.MealPlanRecipeOptionSelection{
+				{
+					RecipeStepID:        stepID,
+					IngredientIndex:     0,
+					SelectedOptionIndex: 1, // User selected angelHair (optionIndex=1)
+					SelectionType:       mealplanning.MealPlanRecipeOptionSelectionTypeIngredient,
+				},
+			},
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: stepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														// Alternative A: spaghetti (index=0, optionIndex=0)
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      spaghetti,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Index:           0,
+															OptionIndex:     0,
+														},
+														// Alternative B: angelHair (index=0, optionIndex=1)
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      angelHair,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Index:           0,
+															OptionIndex:     1,
+														},
+														// Non-option ingredient at different index
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      onion,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 50},
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: angelHair (selected optionIndex=1) and onion (non-option)
+		// spaghetti (optionIndex=0) is NOT included because user selected optionIndex=1
+		assert.Len(t, actual, 2)
+
+		// Find items by ingredient ID
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify spaghetti is NOT present (user selected optionIndex=1, not 0)
+		_, ok := actualMap[spaghetti.ID]
+		assert.False(t, ok, "spaghetti item should NOT exist (user selected optionIndex=1)")
+
+		// Verify angelHair IS present (user's selection)
+		angelHairItem, ok := actualMap[angelHair.ID]
+		assert.True(t, ok, "angelHair item should exist (user selected optionIndex=1)")
+		assert.NotNil(t, angelHairItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *angelHairItem.BelongsToMealPlanOption)
+		assert.NotNil(t, angelHairItem.RecipeID)
+		assert.Equal(t, recipeID, *angelHairItem.RecipeID)
+		assert.NotNil(t, angelHairItem.RecipeStepID)
+		assert.Equal(t, stepID, *angelHairItem.RecipeStepID)
+		assert.NotNil(t, angelHairItem.IngredientIndex)
+		assert.Equal(t, uint16(0), *angelHairItem.IngredientIndex)
+		assert.NotNil(t, angelHairItem.OptionIndex)
+		assert.Equal(t, uint16(1), *angelHairItem.OptionIndex)
+		assert.Equal(t, float32(100), angelHairItem.QuantityNeeded.Min)
+
+		// Verify onion (non-option item)
+		onionItem, ok := actualMap[onion.ID]
+		assert.True(t, ok, "onion item should exist")
+		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *onionItem.BelongsToMealPlanOption)
+		assert.NotNil(t, onionItem.RecipeID)
+		assert.Equal(t, recipeID, *onionItem.RecipeID)
+		assert.NotNil(t, onionItem.RecipeStepID)
+		assert.Equal(t, stepID, *onionItem.RecipeStepID)
+		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
 	})
 }

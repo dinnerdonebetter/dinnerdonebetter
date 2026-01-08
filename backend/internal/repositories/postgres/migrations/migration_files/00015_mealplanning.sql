@@ -645,23 +645,6 @@ CREATE TABLE IF NOT EXISTS meal_plans (
     created_by_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS meal_plan_grocery_list_items (
-    id TEXT NOT NULL PRIMARY KEY,
-    valid_ingredient TEXT NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE,
-    valid_measurement_unit TEXT NOT NULL REFERENCES valid_measurement_units("id") ON DELETE CASCADE,
-    minimum_quantity_needed NUMERIC(14,2) NOT NULL,
-    maximum_quantity_needed NUMERIC(14,2),
-    quantity_purchased NUMERIC(14,2),
-    purchased_measurement_unit TEXT REFERENCES valid_measurement_units("id") ON DELETE CASCADE,
-    purchased_upc TEXT,
-    purchase_price NUMERIC(14,2),
-    status_explanation TEXT DEFAULT ''::TEXT NOT NULL,
-    status grocery_list_item_status DEFAULT 'unknown'::grocery_list_item_status NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    last_updated_at TIMESTAMP WITH TIME ZONE,
-    archived_at TIMESTAMP WITH TIME ZONE,
-    belongs_to_meal_plan TEXT NOT NULL REFERENCES meal_plans("id") ON DELETE CASCADE
-);
 
 CREATE TABLE IF NOT EXISTS meal_plan_events (
     id TEXT NOT NULL PRIMARY KEY,
@@ -690,6 +673,29 @@ CREATE TABLE IF NOT EXISTS meal_plan_options (
     meal_scale NUMERIC(14,2) DEFAULT 1.0 NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS meal_plan_grocery_list_items (
+    id TEXT NOT NULL PRIMARY KEY,
+    valid_ingredient TEXT NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE,
+    valid_measurement_unit TEXT NOT NULL REFERENCES valid_measurement_units("id") ON DELETE CASCADE,
+    minimum_quantity_needed NUMERIC(14,2) NOT NULL,
+    maximum_quantity_needed NUMERIC(14,2),
+    quantity_purchased NUMERIC(14,2),
+    purchased_measurement_unit TEXT REFERENCES valid_measurement_units("id") ON DELETE CASCADE,
+    purchased_upc TEXT,
+    purchase_price NUMERIC(14,2),
+    status_explanation TEXT DEFAULT ''::TEXT NOT NULL,
+    status grocery_list_item_status DEFAULT 'unknown'::grocery_list_item_status NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    last_updated_at TIMESTAMP WITH TIME ZONE,
+    archived_at TIMESTAMP WITH TIME ZONE,
+    belongs_to_meal_plan TEXT NOT NULL REFERENCES meal_plans("id") ON DELETE CASCADE,
+    belongs_to_meal_plan_option TEXT REFERENCES meal_plan_options("id") ON DELETE CASCADE,
+    recipe_id TEXT REFERENCES recipes("id") ON DELETE CASCADE,
+    recipe_step_id TEXT REFERENCES recipe_steps("id") ON DELETE CASCADE,
+    ingredient_index INTEGER,
+    option_index INTEGER
+);
+
 CREATE TABLE IF NOT EXISTS meal_plan_option_votes (
     id TEXT NOT NULL PRIMARY KEY,
     rank INTEGER NOT NULL,
@@ -701,6 +707,20 @@ CREATE TABLE IF NOT EXISTS meal_plan_option_votes (
     archived_at TIMESTAMP WITH TIME ZONE,
     belongs_to_meal_plan_option TEXT NOT NULL REFERENCES meal_plan_options("id") ON DELETE CASCADE,
     UNIQUE(by_user, belongs_to_meal_plan_option)
+);
+
+CREATE TABLE IF NOT EXISTS meal_plan_recipe_option_selections (
+    id TEXT PRIMARY KEY,
+    belongs_to_meal_plan_option TEXT NOT NULL REFERENCES meal_plan_options("id") ON DELETE CASCADE,
+    recipe_id TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE,
+    recipe_step_id TEXT NOT NULL REFERENCES recipe_steps("id") ON DELETE CASCADE,
+    ingredient_index INTEGER NOT NULL,
+    selected_option_index INTEGER NOT NULL,
+    selection_type TEXT NOT NULL CHECK (selection_type IN ('ingredient', 'instrument', 'vessel')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    last_updated_at TIMESTAMP WITH TIME ZONE,
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(belongs_to_meal_plan_option, recipe_step_id, ingredient_index, selection_type)
 );
 
 CREATE TABLE IF NOT EXISTS meal_plan_tasks (
@@ -986,6 +1006,7 @@ CREATE INDEX idx_grocery_list_items_measurement_unit ON meal_plan_grocery_list_i
 CREATE INDEX idx_grocery_list_items_purchased_unit ON meal_plan_grocery_list_items (purchased_measurement_unit) WHERE archived_at IS NULL;
 CREATE INDEX idx_grocery_list_items_status ON meal_plan_grocery_list_items (status) WHERE archived_at IS NULL;
 CREATE INDEX idx_grocery_list_items_plan_status ON meal_plan_grocery_list_items (belongs_to_meal_plan, status) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_choice_group ON meal_plan_grocery_list_items (belongs_to_meal_plan_option, recipe_step_id, ingredient_index) WHERE belongs_to_meal_plan_option IS NOT NULL;
 
 -- Meal plan tasks indexes
 CREATE INDEX idx_meal_plan_tasks_option ON meal_plan_tasks (belongs_to_meal_plan_option);
@@ -993,6 +1014,10 @@ CREATE INDEX idx_meal_plan_tasks_prep_task ON meal_plan_tasks (belongs_to_recipe
 CREATE INDEX idx_meal_plan_tasks_assigned_user ON meal_plan_tasks (assigned_to_user);
 CREATE INDEX idx_meal_plan_tasks_status ON meal_plan_tasks (status);
 CREATE INDEX idx_meal_plan_tasks_user_status ON meal_plan_tasks (assigned_to_user, status);
+
+-- Meal plan recipe option selections indexes
+CREATE INDEX idx_option_selections_meal_plan_option ON meal_plan_recipe_option_selections (belongs_to_meal_plan_option);
+CREATE INDEX idx_option_selections_recipe_step ON meal_plan_recipe_option_selections (recipe_step_id, ingredient_index, selection_type);
 
 -- Valid prep task configs indexes
 CREATE INDEX idx_valid_prep_task_configs_ingredient ON valid_prep_task_configs (valid_ingredient_id) WHERE archived_at IS NULL;

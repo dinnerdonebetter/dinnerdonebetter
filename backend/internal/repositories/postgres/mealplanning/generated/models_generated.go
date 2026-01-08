@@ -775,6 +775,19 @@ type MealPlanOptionVotes struct {
 	Abstain                 bool
 }
 
+type MealPlanRecipeOptionSelections struct {
+	CreatedAt               time.Time
+	LastUpdatedAt           sql.NullTime
+	ArchivedAt              sql.NullTime
+	ID                      string
+	BelongsToMealPlanOption string
+	RecipeID                string
+	RecipeStepID            string
+	SelectionType           string
+	IngredientIndex         int32
+	SelectedOptionIndex     int32
+}
+
 type RecipeRatings struct {
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime

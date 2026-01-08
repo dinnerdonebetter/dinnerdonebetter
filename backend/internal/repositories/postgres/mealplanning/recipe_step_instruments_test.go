@@ -80,6 +80,9 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 	exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 	exampleRecipeStepInstrument.Instrument = validInstrument
 	exampleRecipeStepInstrument.BelongsToRecipeStep = exampleRecipeStep.ID
+	// Set unique index - first instrument from recipe creation has index 0, so start at 1
+	exampleRecipeStepInstrument.Index = 1
+	exampleRecipeStepInstrument.OptionIndex = 0
 	createdRecipeStepInstruments := []*types.RecipeStepInstrument{
 		exampleRecipeStep.Instruments[0],
 	}
@@ -93,6 +96,9 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 		input := fakes.BuildFakeRecipeStepInstrument()
 		input.Instrument = validInstrument
 		input.BelongsToRecipeStep = exampleRecipeStep.ID
+		// Set unique index - start from 2 since 0 and 1 are already taken
+		input.Index = uint16(i + 2)
+		input.OptionIndex = 0
 		createdRecipeStepInstruments = append(createdRecipeStepInstruments, createRecipeStepInstrumentForTest(t, ctx, exampleRecipe.ID, input, dbc))
 	}
 
@@ -336,6 +342,9 @@ func TestQuerier_Integration_RecipeStepInstruments_CursorBasedPagination(t *test
 			recipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			recipeStepInstrument.BelongsToRecipeStep = recipeStep.ID
 			recipeStepInstrument.Instrument = instrument
+			// Set unique index for each instrument to avoid constraint violations
+			recipeStepInstrument.Index = uint16(i)
+			recipeStepInstrument.OptionIndex = 0
 			return createRecipeStepInstrumentForTest(t, ctx, recipe.ID, recipeStepInstrument, dbc)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepInstrument], error) {

@@ -19,6 +19,7 @@ type Querier interface {
 	ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error)
 	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error)
+	ArchiveMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *ArchiveMealPlanRecipeOptionSelectionParams) (int64, error)
 	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error)
 	ArchiveRecipeList(ctx context.Context, db DBTX, arg *ArchiveRecipeListParams) (int64, error)
 	ArchiveRecipeListItem(ctx context.Context, db DBTX, arg *ArchiveRecipeListItemParams) (int64, error)
@@ -92,6 +93,7 @@ type Querier interface {
 	CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error
 	CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error
 	CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error
+	CreateMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *CreateMealPlanRecipeOptionSelectionParams) error
 	CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error
 	CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error
 	CreateRecipeList(ctx context.Context, db DBTX, arg *CreateRecipeListParams) error
@@ -150,6 +152,9 @@ type Querier interface {
 	GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error)
 	GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)
+	GetMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionParams) (*MealPlanRecipeOptionSelections, error)
+	GetMealPlanRecipeOptionSelectionsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanRow, error)
+	GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanOptionParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanOptionRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
 	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
@@ -283,6 +288,7 @@ type Querier interface {
 	UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) (int64, error)
 	UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) (int64, error)
 	UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) (int64, error)
+	UpdateMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *UpdateMealPlanRecipeOptionSelectionParams) (int64, error)
 	UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) (int64, error)
 	UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
 	UpdateRecipeList(ctx context.Context, db DBTX, arg *UpdateRecipeListParams) (int64, error)

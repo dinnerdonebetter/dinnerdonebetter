@@ -1,4 +1,4 @@
-# Writing Go 
+# Writing Go
 
 ## Testing Conventions
 
@@ -7,6 +7,7 @@
 **Always use subtests, even for single test cases.** This provides a consistent structure that makes it easy to add additional test scenarios later.
 
 #### Parameter Naming Convention
+
 - **Main test function**: Use capital `T` for the `*testing.T` parameter
 - **Subtest functions**: Use lowercase `t` for the `*testing.T` parameter
 
@@ -27,7 +28,9 @@ func TestMyFunction(T *testing.T) {
 ```
 
 #### Happy Path First
+
 Structure your subtests with the happy path (successful operation) as the first subtest. This pattern makes it easy to add derivative tests that simulate failure conditions:
+
 - Database connection failures
 - Queue timeouts
 - Invalid input validation
@@ -40,6 +43,7 @@ Structure your subtests with the happy path (successful operation) as the first 
 ### Parallel Execution
 
 **Always use parallel test execution** where possible:
+
 - Add `T.Parallel()` to main test functions
 - Add `t.Parallel()` to subtests
 - This significantly improves test suite performance
@@ -76,6 +80,7 @@ func TestMyService(T *testing.T) {
 ### Error Handling
 
 This codebase follows strict error handling practices:
+
 - Always check errors (enforced by linter configuration)
 - Wrap external package errors for context
 - Use meaningful error messages
@@ -83,7 +88,8 @@ This codebase follows strict error handling practices:
 ### Code Organization
 
 #### Directory Structure
-```
+
+```text
 internal/
 ├── domain/          # Business logic and types
 ├── platform/        # Infrastructure and utilities
@@ -92,6 +98,7 @@ internal/
 ```
 
 #### Package Dependencies
+
 - Domain packages should not import platform packages
 - Keep dependencies flowing downward in the architecture
 - Use dependency injection (wire.go files)
@@ -99,6 +106,7 @@ internal/
 ### Linting and Code Quality
 
 The project uses `golangci-lint` with custom configuration:
+
 - **Strict error checking**: No ignored errors
 - **Import organization**: Use `gci` for import sorting
 - **Test-specific rules**: Relaxed linting for test files where appropriate
@@ -114,6 +122,7 @@ The project uses `golangci-lint` with custom configuration:
 ## Naming Conventions
 
 ### Interfaces
+
 - Use descriptive suffixes that indicate purpose:
   - `Logger` - for logging abstractions
   - `Manager` or `<Domain>Manager` - for business logic coordinators (e.g., `MealPlanningManager`, `RecipeManager`)
@@ -122,15 +131,18 @@ The project uses `golangci-lint` with custom configuration:
   - `Handler` - for request handlers
 
 ### Structs
+
 - **Configuration structs**: End with `Config` (e.g., `APIServiceConfig`, `DatabaseConfig`)
 - **Domain entities**: Use clear business terms (e.g., `MealPlan`, `Recipe`, `ValidIngredient`)
 
 ### Constants and Variables
+
 - Use fully descriptive names: `ConfigurationFilePathEnvVarKey`
 - Group related constants in `const` blocks
 - Use `var` blocks for package-level variables with initialization
 
 ### Functions and Methods
+
 - **Constructors**: Use `New` prefix (e.g., `NewService`, `NewGenerator`)
 - **Wire providers**: Many use `Provide` prefix but not universally enforced
 - **Converters**: Use `Convert` prefix describing the transformation
@@ -138,6 +150,7 @@ The project uses `golangci-lint` with custom configuration:
 ## Struct Design Patterns
 
 ### Privacy and Safety
+
 Always include an unexported struct field to prevent accidental struct construction and comparison:
 
 ```go
@@ -150,6 +163,7 @@ type MyStruct struct {
 ```
 
 ### Type Definitions
+
 Group related types in type blocks with clear documentation:
 
 ```go
@@ -165,6 +179,7 @@ type (
 ## Dependency Injection with Wire
 
 ### Wire File Structure
+
 Each package that participates in dependency injection should have a `wire.go` file:
 
 ```go
@@ -183,6 +198,7 @@ var (
 ```
 
 ### Provider Functions
+
 Wire provider functions should be clearly named and documented:
 
 ```go
@@ -193,6 +209,7 @@ func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Con
 ```
 
 ### Wire Sets Organization
+
 - **Package-level providers**: Group all providers a package offers
 - **Descriptive variable names**: Use `Providers`, `ConfigProviders`, `ServiceProviders` etc.
 - **Logical grouping**: Group related provider functions together
@@ -202,6 +219,7 @@ func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Con
 ### Service Initialization
 
 Services typically follow this pattern:
+
 ```go
 type Service struct {
     _ struct{} `json:"-"`
@@ -223,6 +241,7 @@ func NewService(
 ```
 
 ### Interface Design
+
 Keep interfaces focused and purposeful:
 
 ```go
@@ -249,9 +268,10 @@ type Logger interface {
 ## Project Structure Patterns
 
 ### Directory Organization
+
 The codebase follows a clean architecture approach with a framework-like platform layer:
 
-```
+```text
 ├── artifacts/           # Gitignored folder for temporary files and coverage output
 ├── cmd/                 # All compiled binaries
 │   ├── functions/       # Cloud function implementations
@@ -367,11 +387,14 @@ The architecture treats `internal/platform` as an internal framework:
 - **cmd/ binaries**: Import whatever they need to compile and run
 
 **Current State vs. Intended:**
+
 - Some auth concepts currently exist in platform but will be moved to domain
 - The goal is complete separation where platform could support any business domain
 
 ### Generated Code
+
 Several directories contain generated code:
+
 - `internal/grpc/generated/` - gRPC service definitions
 - Database query files (via sqlc)
 - Configuration structs (via custom codegen)
@@ -385,11 +408,12 @@ Never edit generated files directly; modify the generators in `cmd/tools/` inste
 
 1. **Run the full test suite**: `make test`
 2. **Check linting**: `make lint`
-4. **Run integration tests**: `make integration_tests`
+3. **Run integration tests**: `make integration_tests`
 
 ### Code Generation
 
 This project uses extensive code generation via tools in `cmd/tools/`:
+
 - **Database queries**: `make querier` (using sqlc)
 - **Configuration structs**: `make configs`
 
@@ -398,6 +422,7 @@ Always regenerate code after schema changes.
 ### Binary Compilation
 
 Everything in `cmd/` compiles to a binary:
+
 - `cmd/services/api/` - Main API server
 - `cmd/tools/codegen/` - Code generation utilities  
 - `cmd/workers/` - Background job processors
@@ -432,4 +457,3 @@ These conventions represent years of learned experience maintaining a Go codebas
 When in doubt, follow the existing patterns you see in similar code. The goal is to write code that the next developer (including future you) can easily understand, test, and modify.
 
 Remember: Code is read far more often than it's written. These conventions optimize for the reading experience.
-

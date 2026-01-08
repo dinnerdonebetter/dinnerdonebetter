@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )
+
+var _ mealplanningmgr.MealPlanningManager = (*MockMealPlanningManager)(nil)
 
 type MockMealPlanningManager struct {
 	mock.Mock
@@ -330,6 +333,47 @@ func (m *MockMealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Cont
 // ArchiveMealPlanGroceryListItem is a mock method.
 func (m *MockMealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanGroceryListItemID)
+
+	return returnValues.Error(0)
+}
+
+// GetMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) GetMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// GetMealPlanRecipeOptionSelectionsForMealPlanOption is a mock method.
+func (m *MockMealPlanningManager) GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection], error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, filter)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection]), returnValues.Error(1)
+}
+
+// CreateMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID string, input *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, input)
+
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// UpdateMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) UpdateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string, input *mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput) error {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType, input)
+
+	return returnValues.Error(0)
+}
+
+// ArchiveMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType)
 
 	return returnValues.Error(0)
 }

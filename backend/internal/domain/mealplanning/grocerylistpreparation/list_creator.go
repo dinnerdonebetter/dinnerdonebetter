@@ -35,9 +35,51 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	inputs := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
+	// Map to track option groups: key is (recipeStepID, ingredientIndex), value is count of options
+	optionGroups := make(map[string]int)
+	// Map for aggregated items (non-option items): key is ingredientID
+	aggregatedInputs := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+	// Slice for option items (items with alternatives): these are not aggregated
+	optionInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
+
 	logger := g.logger.Clone().WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
+	// Build a lookup map for user selections: key is (recipeStepID, ingredientIndex, selectionType), value is selectedOptionIndex
+	selectionLookup := make(map[string]uint16)
+	for _, selection := range mealPlan.Selections {
+		if selection.SelectionType == mealplanning.MealPlanRecipeOptionSelectionTypeIngredient {
+			selectionKey := fmt.Sprintf("%s:%d:%s", selection.RecipeStepID, selection.IngredientIndex, selection.SelectionType)
+			selectionLookup[selectionKey] = selection.SelectedOptionIndex
+		}
+	}
+
+	// First pass: identify option groups (ingredients with multiple options at the same index)
+	for _, event := range mealPlan.Events {
+		for _, option := range event.Options {
+			if option.Chosen {
+				for _, component := range option.Meal.Components {
+					for _, step := range component.Recipe.Steps {
+						// Track how many options exist for each (stepID, index) combination
+						indexCounts := make(map[uint16]int)
+						for _, ingredient := range step.Ingredients {
+							if ingredient.Ingredient != nil {
+								indexCounts[ingredient.Index]++
+							}
+						}
+						// Mark groups with multiple options
+						for index, count := range indexCounts {
+							if count > 1 {
+								optionGroupKey := fmt.Sprintf("%s:%d", step.ID, index)
+								optionGroups[optionGroupKey] = count
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Second pass: process ingredients
 	for _, event := range mealPlan.Events {
 		logger = logger.WithValue(keys.MealPlanEventIDKey, event.ID)
 		for _, option := range event.Options {
@@ -50,40 +92,88 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 					for _, step := range component.Recipe.Steps {
 						logger = logger.WithValue(keys.RecipeStepIDKey, step.ID)
 						for _, ingredient := range step.Ingredients {
-							if ingredient.Ingredient != nil {
-								logger = logger.WithValue(keys.RecipeStepIngredientIDKey, ingredient.ID)
-								if _, ok := inputs[ingredient.Ingredient.ID]; !ok {
-									minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
-									var maxQty *float32
-									if ingredient.Quantity.Max != nil {
-										maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
-										maxQty = &maximum
-									}
+							if ingredient.Ingredient == nil {
+								continue
+							}
 
-									inputs[ingredient.Ingredient.ID] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
-										Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
-										ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
-										ValidIngredientID:      ingredient.Ingredient.ID,
-										BelongsToMealPlan:      mealPlan.ID,
-										ID:                     identifiers.New(),
+							logger = logger.WithValue(keys.RecipeStepIngredientIDKey, ingredient.ID)
+
+							minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
+							var maxQty *float32
+							if ingredient.Quantity.Max != nil {
+								maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
+								maxQty = &maximum
+							}
+
+							optionGroupKey := fmt.Sprintf("%s:%d", step.ID, ingredient.Index)
+							isOptionGroup := optionGroups[optionGroupKey] > 1
+
+							if isOptionGroup {
+								// This ingredient is part of an option group
+								// Check if user made a selection for this option group
+								selectionKey := fmt.Sprintf("%s:%d:%s", step.ID, ingredient.Index, mealplanning.MealPlanRecipeOptionSelectionTypeIngredient)
+								selectedOptionIndex, hasSelection := selectionLookup[selectionKey]
+
+								// Determine which option index to use:
+								// - If user made a selection, use it
+								// - If no selection, default to optionIndex=0 (the first/default option)
+								targetOptionIndex := uint16(0)
+								if hasSelection {
+									targetOptionIndex = selectedOptionIndex
+								}
+
+								// Only add this ingredient if it matches the target option index
+								if ingredient.OptionIndex != targetOptionIndex {
+									continue
+								}
+
+								// Create grocery list item for the selected option with recipe context
+								ingredientIndex := ingredient.Index
+								optionIndex := ingredient.OptionIndex
+								optionInputs = append(optionInputs, &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
+									Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+									ValidMeasurementUnitID:  ingredient.MeasurementUnit.ID,
+									ValidIngredientID:       ingredient.Ingredient.ID,
+									BelongsToMealPlan:       mealPlan.ID,
+									BelongsToMealPlanOption: &option.ID,
+									RecipeID:                &component.Recipe.ID,
+									RecipeStepID:            &step.ID,
+									IngredientIndex:         &ingredientIndex,
+									OptionIndex:             &optionIndex,
+									ID:                      identifiers.New(),
+									QuantityNeeded: types.Float32RangeWithOptionalMax{
+										Max: maxQty,
+										Min: minQty,
+									},
+								})
+							} else {
+								// This ingredient is not part of an option group - aggregate as before
+								if existing, ok := aggregatedInputs[ingredient.Ingredient.ID]; !ok {
+									aggregatedInputs[ingredient.Ingredient.ID] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
+										BelongsToMealPlanOption: &option.ID,
+										RecipeID:                &component.Recipe.ID,
+										RecipeStepID:            &step.ID,
+										Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
+										ValidMeasurementUnitID:  ingredient.MeasurementUnit.ID,
+										ValidIngredientID:       ingredient.Ingredient.ID,
+										BelongsToMealPlan:       mealPlan.ID,
+										ID:                      identifiers.New(),
 										QuantityNeeded: types.Float32RangeWithOptionalMax{
 											Max: maxQty,
 											Min: minQty,
 										},
 									}
 								} else {
-									if inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
-										inputs[ingredient.Ingredient.ID].QuantityNeeded.Min += ingredient.Quantity.Min
+									if existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
+										existing.QuantityNeeded.Min += minQty
 
-										if inputs[ingredient.Ingredient.ID].QuantityNeeded.Max != nil {
-											if ingredient.Quantity.Max != nil {
-												*inputs[ingredient.Ingredient.ID].QuantityNeeded.Max += *ingredient.Quantity.Max
-											}
-										} else if ingredient.Quantity.Max != nil {
-											inputs[ingredient.Ingredient.ID].QuantityNeeded.Max = ingredient.Quantity.Max
+										if existing.QuantityNeeded.Max != nil && maxQty != nil {
+											*existing.QuantityNeeded.Max += *maxQty
+										} else if maxQty != nil {
+											existing.QuantityNeeded.Max = maxQty
 										}
 									} else {
-										logger.Error("creating grocery list", fmt.Errorf("mismatched measurement units: %s and %s", inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID, ingredient.MeasurementUnit.ID))
+										logger.Error("creating grocery list", fmt.Errorf("mismatched measurement units: %s and %s", existing.ValidMeasurementUnitID, ingredient.MeasurementUnit.ID))
 									}
 								}
 							}
@@ -94,10 +184,12 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		}
 	}
 
-	dbInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
-	for _, i := range inputs {
+	// Combine aggregated items and option items
+	dbInputs := make([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput, 0, len(aggregatedInputs)+len(optionInputs))
+	for _, i := range aggregatedInputs {
 		dbInputs = append(dbInputs, i)
 	}
+	dbInputs = append(dbInputs, optionInputs...)
 
 	return dbInputs, nil
 }

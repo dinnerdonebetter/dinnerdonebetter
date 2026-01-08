@@ -14,4 +14,3 @@ air \
   -proxy.proxy_port "9999" \
   -proxy.enabled "true" \
   --build.log "./${ARTIFACTS_DIR}/mcp-build-errors.log"
-

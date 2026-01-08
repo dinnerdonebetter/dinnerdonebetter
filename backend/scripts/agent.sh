@@ -13,4 +13,3 @@ if [ $# -eq 0 ]; then
 fi
 
 go run "${PACKAGE_PREFIX}/cmd/tools/aiagent" "$@"
-

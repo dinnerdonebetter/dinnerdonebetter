@@ -601,34 +601,6 @@ func TestServiceImpl_CreateMealPlanEvent(T *testing.T) {
 	})
 }
 
-func TestServiceImpl_CreateMealPlanGroceryListItem(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		s := buildServiceImplForMealPlanningTest(t)
-
-		exampleMealPlanID := mealplanningfakes.BuildFakeID()
-		exampleCreatedMealPlanGroceryListItem := mealplanningfakes.BuildFakeMealPlanGroceryListItem()
-
-		mmpm := &mockmanagers.MockMealPlanningManager{}
-		mmpm.On(reflection.GetMethodName(mmpm.CreateMealPlanGroceryListItem), testutils.ContextMatcher, testutils.MatchType[*mealplanning.MealPlanGroceryListItemCreationRequestInput]()).Return(exampleCreatedMealPlanGroceryListItem, nil)
-		s.mealPlanningManager = mmpm
-
-		exampleInput := fake.BuildFakeForTest[mealplanninggrpc.CreateMealPlanGroceryListItemRequest](t)
-		exampleInput.MealPlanId = exampleMealPlanID
-
-		actual, err := s.CreateMealPlanGroceryListItem(ctx, exampleInput)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCreatedMealPlanGroceryListItem.ID, actual.Created.Id)
-
-		mock.AssertExpectationsForObjects(t, mmpm)
-	})
-}
-
 func TestServiceImpl_CreateMealPlanOption(T *testing.T) {
 	T.Parallel()
 

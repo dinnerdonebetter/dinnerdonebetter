@@ -9,19 +9,8 @@ type (
 		MealPlanOptionVoteDataManager
 		MealPlanTaskDataManager
 		MealPlanGroceryListItemDataManager
+		MealPlanRecipeOptionSelectionDataManager
 		UserIngredientPreferenceDataManager
 		AccountInstrumentOwnershipDataManager
-	}
-
-	MealPlanningDataService interface {
-		MealDataService
-		MealPlanDataService
-		MealPlanEventDataService
-		MealPlanOptionDataService
-		MealPlanOptionVoteDataService
-		MealPlanTaskDataService
-		MealPlanGroceryListItemDataService
-		UserIngredientPreferenceDataService
-		AccountInstrumentOwnershipDataService
 	}
 )

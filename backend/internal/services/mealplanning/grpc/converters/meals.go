@@ -229,6 +229,11 @@ func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplan
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		PurchasePrice:            input.PurchasePrice,
 		QuantityPurchased:        input.QuantityPurchased,
+		BelongsToMealPlanOption:  input.BelongsToMealPlanOption,
+		RecipeId:                 input.RecipeID,
+		RecipeStepId:             input.RecipeStepID,
+		IngredientIndex:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.IngredientIndex),
+		OptionIndex:              grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
 	}
 }
 
@@ -256,6 +261,11 @@ func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplan
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		PurchasePrice:            input.PurchasePrice,
 		QuantityPurchased:        input.QuantityPurchased,
+		BelongsToMealPlanOption:  input.BelongsToMealPlanOption,
+		RecipeID:                 input.RecipeId,
+		RecipeStepID:             input.RecipeStepId,
+		IngredientIndex:          grpcconverters.ConvertUint32PointerToUint16Pointer(input.IngredientIndex),
+		OptionIndex:              grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 	}
 }
 
@@ -608,11 +618,17 @@ func ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(input
 		events = append(events, ConvertMealPlanEventCreationRequestInputToGRPCMealPlanEventCreationRequestInput(event))
 	}
 
+	var selections []*mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput
+	for _, selection := range input.Selections {
+		selections = append(selections, ConvertMealPlanRecipeOptionSelectionCreationRequestInputToGRPCMealPlanRecipeOptionSelectionCreationRequestInput(selection))
+	}
+
 	return &mealplanningsvc.MealPlanCreationRequestInput{
 		VotingDeadline: grpcconverters.ConvertTimeToPBTimestamp(input.VotingDeadline),
 		Notes:          input.Notes,
 		ElectionMethod: ConvertStringToMealPlanElectionMethod(input.ElectionMethod),
 		Events:         events,
+		Selections:     selections,
 	}
 }
 
@@ -647,11 +663,18 @@ func ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(input
 		events = append(events, ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(event))
 	}
 
+	var selections []*mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput
+	for _, selection := range input.Selections {
+		converted := ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(selection)
+		selections = append(selections, converted)
+	}
+
 	return &mealplanning.MealPlanCreationRequestInput{
 		VotingDeadline: grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
 		Notes:          input.Notes,
 		ElectionMethod: ConvertMealPlanElectionMethodToString(input.ElectionMethod),
 		Events:         events,
+		Selections:     selections,
 	}
 }
 
@@ -671,12 +694,18 @@ func ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestI
 }
 
 func ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(input *mealplanningsvc.MealPlanOptionCreationRequestInput) *mealplanning.MealPlanOptionCreationRequestInput {
+	selections := []*mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput{}
+	for _, selection := range input.Selections {
+		selections = append(selections, ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(selection))
+	}
+
 	return &mealplanning.MealPlanOptionCreationRequestInput{
 		AssignedCook:       input.AssignedCook,
 		AssignedDishwasher: input.AssignedDishwasher,
 		MealID:             input.MealId,
 		Notes:              input.Notes,
 		MealScale:          input.MealScale,
+		Selections:         selections,
 	}
 }
 
@@ -1092,5 +1121,92 @@ func ConvertGRPCMealListItemUpdateRequestInputToMealListItemUpdateRequestInput(i
 
 	return &mealplanning.MealListItemUpdateRequestInput{
 		Notes: notes,
+	}
+}
+
+func ConvertStringToMealPlanRecipeOptionSelectionType(s string) mealplanningsvc.MealPlanRecipeOptionSelectionType {
+	switch s {
+	case mealplanning.MealPlanRecipeOptionSelectionTypeIngredient:
+		return mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT
+	case mealplanning.MealPlanRecipeOptionSelectionTypeInstrument:
+		return mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INSTRUMENT
+	case mealplanning.MealPlanRecipeOptionSelectionTypeVessel:
+		return mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_VESSEL
+	default:
+		return mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_UNSPECIFIED
+	}
+}
+
+func ConvertMealPlanRecipeOptionSelectionTypeToString(s mealplanningsvc.MealPlanRecipeOptionSelectionType) string {
+	switch s {
+	case mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT:
+		return mealplanning.MealPlanRecipeOptionSelectionTypeIngredient
+	case mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INSTRUMENT:
+		return mealplanning.MealPlanRecipeOptionSelectionTypeInstrument
+	case mealplanningsvc.MealPlanRecipeOptionSelectionType_MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_VESSEL:
+		return mealplanning.MealPlanRecipeOptionSelectionTypeVessel
+	default:
+		return ""
+	}
+}
+
+func ConvertMealPlanRecipeOptionSelectionToGRPCMealPlanRecipeOptionSelection(input *mealplanning.MealPlanRecipeOptionSelection) *mealplanningsvc.MealPlanRecipeOptionSelection {
+	return &mealplanningsvc.MealPlanRecipeOptionSelection{
+		CreatedAt:               grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		Id:                      input.ID,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		RecipeId:                input.RecipeID,
+		RecipeStepId:            input.RecipeStepID,
+		IngredientIndex:         uint32(input.IngredientIndex),
+		SelectedOptionIndex:     uint32(input.SelectedOptionIndex),
+		SelectionType:           ConvertStringToMealPlanRecipeOptionSelectionType(input.SelectionType),
+		ArchivedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+	}
+}
+
+func ConvertGRPCMealPlanRecipeOptionSelectionToMealPlanRecipeOptionSelection(input *mealplanningsvc.MealPlanRecipeOptionSelection) *mealplanning.MealPlanRecipeOptionSelection {
+	return &mealplanning.MealPlanRecipeOptionSelection{
+		CreatedAt:               grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ID:                      input.Id,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		RecipeID:                input.RecipeId,
+		RecipeStepID:            input.RecipeStepId,
+		IngredientIndex:         uint16(input.IngredientIndex),
+		SelectedOptionIndex:     uint16(input.SelectedOptionIndex),
+		SelectionType:           ConvertMealPlanRecipeOptionSelectionTypeToString(input.SelectionType),
+		ArchivedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+	}
+}
+
+func ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(input *mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput) *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput {
+	return &mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput{
+		RecipeID:            input.RecipeId,
+		RecipeStepID:        input.RecipeStepId,
+		IngredientIndex:     uint16(input.IngredientIndex),
+		SelectedOptionIndex: uint16(input.SelectedOptionIndex),
+		SelectionType:       ConvertMealPlanRecipeOptionSelectionTypeToString(input.SelectionType),
+	}
+}
+
+func ConvertMealPlanRecipeOptionSelectionCreationRequestInputToGRPCMealPlanRecipeOptionSelectionCreationRequestInput(input *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput) *mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput {
+	return &mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput{
+		RecipeId:            input.RecipeID,
+		RecipeStepId:        input.RecipeStepID,
+		IngredientIndex:     uint32(input.IngredientIndex),
+		SelectedOptionIndex: uint32(input.SelectedOptionIndex),
+		SelectionType:       ConvertStringToMealPlanRecipeOptionSelectionType(input.SelectionType),
+	}
+}
+
+func ConvertGRPCMealPlanRecipeOptionSelectionUpdateRequestInputToMealPlanRecipeOptionSelectionUpdateRequestInput(input *mealplanningsvc.MealPlanRecipeOptionSelectionUpdateRequestInput) *mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	selectedOptionIndex := uint16(input.SelectedOptionIndex)
+	return &mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput{
+		SelectedOptionIndex: &selectedOptionIndex,
 	}
 }

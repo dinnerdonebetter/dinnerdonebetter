@@ -9,4 +9,3 @@ PROFILE="${2:-dev}"
 BUILD_CONCURRENCY="${3:-3}"
 
 skaffold run --filename="${SKAFFOLD_FILE}" --build-concurrency "${BUILD_CONCURRENCY}" --profile "${PROFILE}"
-

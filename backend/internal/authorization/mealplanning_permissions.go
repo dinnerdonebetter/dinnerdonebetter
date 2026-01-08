@@ -303,6 +303,15 @@ const (
 	// ArchiveMealPlanOptionVotesPermission is a permission.
 	ArchiveMealPlanOptionVotesPermission Permission = "archive.meal_plan_option_votes"
 
+	// CreateMealPlanRecipeOptionSelectionsPermission is a permission.
+	CreateMealPlanRecipeOptionSelectionsPermission Permission = "create.meal_plan_recipe_option_selections"
+	// ReadMealPlanRecipeOptionSelectionsPermission is a permission.
+	ReadMealPlanRecipeOptionSelectionsPermission Permission = "read.meal_plan_recipe_option_selections"
+	// UpdateMealPlanRecipeOptionSelectionsPermission is a permission.
+	UpdateMealPlanRecipeOptionSelectionsPermission Permission = "update.meal_plan_recipe_option_selections"
+	// ArchiveMealPlanRecipeOptionSelectionsPermission is a permission.
+	ArchiveMealPlanRecipeOptionSelectionsPermission Permission = "archive.meal_plan_recipe_option_selections"
+
 	// ReadMealPlanTasksPermission is a permission.
 	ReadMealPlanTasksPermission Permission = "read.meal_plan_tasks"
 	// CreateMealPlanTasksPermission is a permission.
@@ -492,6 +501,10 @@ var (
 		SearchMealPlanOptionVotesPermission,
 		UpdateMealPlanOptionVotesPermission,
 		ArchiveMealPlanOptionVotesPermission,
+		CreateMealPlanRecipeOptionSelectionsPermission,
+		ReadMealPlanRecipeOptionSelectionsPermission,
+		UpdateMealPlanRecipeOptionSelectionsPermission,
+		ArchiveMealPlanRecipeOptionSelectionsPermission,
 		ReadMealPlanTasksPermission,
 		CreateMealPlanTasksPermission,
 		UpdateMealPlanTasksPermission,

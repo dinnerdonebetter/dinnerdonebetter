@@ -11,4 +11,3 @@ SQL_GENERATOR="${3}"
 "${CONTAINER_RUNNER}" pull --quiet "${SQL_GENERATOR_IMAGE}"
 ${SQL_GENERATOR} compile --no-remote
 ${SQL_GENERATOR} vet --no-remote
-

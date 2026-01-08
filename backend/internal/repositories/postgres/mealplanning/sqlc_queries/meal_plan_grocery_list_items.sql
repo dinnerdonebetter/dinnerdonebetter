@@ -14,7 +14,12 @@ INSERT INTO meal_plan_grocery_list_items (
 	purchased_upc,
 	purchase_price,
 	status_explanation,
-	status
+	status,
+	belongs_to_meal_plan_option,
+	recipe_id,
+	recipe_step_id,
+	ingredient_index,
+	option_index
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(belongs_to_meal_plan),
@@ -27,7 +32,12 @@ INSERT INTO meal_plan_grocery_list_items (
 	sqlc.arg(purchased_upc),
 	sqlc.arg(purchase_price),
 	sqlc.arg(status_explanation),
-	sqlc.arg(status)
+	sqlc.arg(status),
+	sqlc.arg(belongs_to_meal_plan_option),
+	sqlc.arg(recipe_id),
+	sqlc.arg(recipe_step_id),
+	sqlc.arg(ingredient_index),
+	sqlc.arg(option_index)
 );
 
 -- name: CheckMealPlanGroceryListItemExistence :one
@@ -106,6 +116,11 @@ SELECT
 	meal_plan_grocery_list_items.created_at,
 	meal_plan_grocery_list_items.last_updated_at,
 	meal_plan_grocery_list_items.archived_at,
+	meal_plan_grocery_list_items.belongs_to_meal_plan_option,
+	meal_plan_grocery_list_items.recipe_id,
+	meal_plan_grocery_list_items.recipe_step_id,
+	meal_plan_grocery_list_items.ingredient_index,
+	meal_plan_grocery_list_items.option_index,
 	(
 		SELECT COUNT(meal_plan_grocery_list_items.id)
 		FROM meal_plan_grocery_list_items
@@ -236,7 +251,12 @@ SELECT
 	meal_plan_grocery_list_items.status,
 	meal_plan_grocery_list_items.created_at,
 	meal_plan_grocery_list_items.last_updated_at,
-	meal_plan_grocery_list_items.archived_at
+	meal_plan_grocery_list_items.archived_at,
+	meal_plan_grocery_list_items.belongs_to_meal_plan_option,
+	meal_plan_grocery_list_items.recipe_id,
+	meal_plan_grocery_list_items.recipe_step_id,
+	meal_plan_grocery_list_items.ingredient_index,
+	meal_plan_grocery_list_items.option_index
 FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
 	JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
@@ -260,6 +280,11 @@ UPDATE meal_plan_grocery_list_items SET
 	purchase_price = sqlc.arg(purchase_price),
 	status_explanation = sqlc.arg(status_explanation),
 	status = sqlc.arg(status),
+	belongs_to_meal_plan_option = sqlc.arg(belongs_to_meal_plan_option),
+	recipe_id = sqlc.arg(recipe_id),
+	recipe_step_id = sqlc.arg(recipe_step_id),
+	ingredient_index = sqlc.arg(ingredient_index),
+	option_index = sqlc.arg(option_index),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);

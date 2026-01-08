@@ -450,6 +450,48 @@ public enum Mealplanning_MealPlanTaskStatus: SwiftProtobuf.Enum, Swift.CaseItera
 
 }
 
+public enum Mealplanning_MealPlanRecipeOptionSelectionType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case ingredient // = 1
+  case instrument // = 2
+  case vessel // = 3
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .ingredient
+    case 2: self = .instrument
+    case 3: self = .vessel
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .ingredient: return 1
+    case .instrument: return 2
+    case .vessel: return 3
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Mealplanning_MealPlanRecipeOptionSelectionType] = [
+    .unspecified,
+    .ingredient,
+    .instrument,
+    .vessel,
+  ]
+
+}
+
 public struct Mealplanning_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3096,6 +3138,11 @@ public struct Mealplanning_MealPlan: @unchecked Sendable {
     set {_uniqueStorage()._tasksCreated = newValue}
   }
 
+  public var selections: [Mealplanning_MealPlanRecipeOptionSelection] {
+    get {return _storage._selections}
+    set {_uniqueStorage()._selections = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -3289,6 +3336,52 @@ public struct Mealplanning_MealPlanGroceryListItem: @unchecked Sendable {
   /// Clears the value of `ingredient`. Subsequent reads from it will return its default value.
   public mutating func clearIngredient() {_uniqueStorage()._ingredient = nil}
 
+  /// Recipe context (optional - only set when item is part of a choice group)
+  public var belongsToMealPlanOption: String {
+    get {return _storage._belongsToMealPlanOption ?? String()}
+    set {_uniqueStorage()._belongsToMealPlanOption = newValue}
+  }
+  /// Returns true if `belongsToMealPlanOption` has been explicitly set.
+  public var hasBelongsToMealPlanOption: Bool {return _storage._belongsToMealPlanOption != nil}
+  /// Clears the value of `belongsToMealPlanOption`. Subsequent reads from it will return its default value.
+  public mutating func clearBelongsToMealPlanOption() {_uniqueStorage()._belongsToMealPlanOption = nil}
+
+  public var recipeID: String {
+    get {return _storage._recipeID ?? String()}
+    set {_uniqueStorage()._recipeID = newValue}
+  }
+  /// Returns true if `recipeID` has been explicitly set.
+  public var hasRecipeID: Bool {return _storage._recipeID != nil}
+  /// Clears the value of `recipeID`. Subsequent reads from it will return its default value.
+  public mutating func clearRecipeID() {_uniqueStorage()._recipeID = nil}
+
+  public var recipeStepID: String {
+    get {return _storage._recipeStepID ?? String()}
+    set {_uniqueStorage()._recipeStepID = newValue}
+  }
+  /// Returns true if `recipeStepID` has been explicitly set.
+  public var hasRecipeStepID: Bool {return _storage._recipeStepID != nil}
+  /// Clears the value of `recipeStepID`. Subsequent reads from it will return its default value.
+  public mutating func clearRecipeStepID() {_uniqueStorage()._recipeStepID = nil}
+
+  public var ingredientIndex: UInt32 {
+    get {return _storage._ingredientIndex ?? 0}
+    set {_uniqueStorage()._ingredientIndex = newValue}
+  }
+  /// Returns true if `ingredientIndex` has been explicitly set.
+  public var hasIngredientIndex: Bool {return _storage._ingredientIndex != nil}
+  /// Clears the value of `ingredientIndex`. Subsequent reads from it will return its default value.
+  public mutating func clearIngredientIndex() {_uniqueStorage()._ingredientIndex = nil}
+
+  public var optionIndex: UInt32 {
+    get {return _storage._optionIndex ?? 0}
+    set {_uniqueStorage()._optionIndex = newValue}
+  }
+  /// Returns true if `optionIndex` has been explicitly set.
+  public var hasOptionIndex: Bool {return _storage._optionIndex != nil}
+  /// Clears the value of `optionIndex`. Subsequent reads from it will return its default value.
+  public mutating func clearOptionIndex() {_uniqueStorage()._optionIndex = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -3470,6 +3563,61 @@ public struct Mealplanning_MealPlanOptionVoteCreationInput: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+}
+
+public struct Mealplanning_MealPlanRecipeOptionSelection: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_createdAt = newValue}
+  }
+  /// Returns true if `createdAt` has been explicitly set.
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
+  /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
+  public mutating func clearCreatedAt() {self._createdAt = nil}
+
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_lastUpdatedAt = newValue}
+  }
+  /// Returns true if `lastUpdatedAt` has been explicitly set.
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+
+  public var id: String = String()
+
+  public var belongsToMealPlanOption: String = String()
+
+  public var recipeID: String = String()
+
+  public var recipeStepID: String = String()
+
+  public var ingredientIndex: UInt32 = 0
+
+  public var selectedOptionIndex: UInt32 = 0
+
+  public var selectionType: Mealplanning_MealPlanRecipeOptionSelectionType = .unspecified
+
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_archivedAt = newValue}
+  }
+  /// Returns true if `archivedAt` has been explicitly set.
+  public var hasArchivedAt: Bool {return self._archivedAt != nil}
+  /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearArchivedAt() {self._archivedAt = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
 public struct Mealplanning_MissingVote: Sendable {
@@ -3902,6 +4050,10 @@ extension Mealplanning_MealPlanGroceryListItemStatus: SwiftProtobuf._ProtoNamePr
 
 extension Mealplanning_MealPlanTaskStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_TASK_STATUS_UNFINISHED\0\u{1}MEAL_PLAN_TASK_STATUS_POSTPONED\0\u{1}MEAL_PLAN_TASK_STATUS_IGNORED\0\u{1}MEAL_PLAN_TASK_STATUS_CANCELED\0\u{1}MEAL_PLAN_TASK_STATUS_FINISHED\0")
+}
+
+extension Mealplanning_MealPlanRecipeOptionSelectionType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_UNSPECIFIED\0\u{1}MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT\0\u{1}MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INSTRUMENT\0\u{1}MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_VESSEL\0")
 }
 
 extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -7666,7 +7818,7 @@ extension Mealplanning_MealComponent: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlan"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}voting_deadline\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}status\0\u{1}notes\0\u{3}election_method\0\u{3}belongs_to_account\0\u{3}created_by_user\0\u{1}events\0\u{3}grocery_list_initialized\0\u{3}tasks_created\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}voting_deadline\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{1}status\0\u{1}notes\0\u{3}election_method\0\u{3}belongs_to_account\0\u{3}created_by_user\0\u{1}events\0\u{3}grocery_list_initialized\0\u{3}tasks_created\0\u{1}selections\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7682,6 +7834,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _events: [Mealplanning_MealPlanEvent] = []
     var _groceryListInitialized: Bool = false
     var _tasksCreated: Bool = false
+    var _selections: [Mealplanning_MealPlanRecipeOptionSelection] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7705,6 +7858,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       _events = source._events
       _groceryListInitialized = source._groceryListInitialized
       _tasksCreated = source._tasksCreated
+      _selections = source._selections
     }
   }
 
@@ -7736,6 +7890,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 11: try { try decoder.decodeRepeatedMessageField(value: &_storage._events) }()
         case 12: try { try decoder.decodeSingularBoolField(value: &_storage._groceryListInitialized) }()
         case 13: try { try decoder.decodeSingularBoolField(value: &_storage._tasksCreated) }()
+        case 14: try { try decoder.decodeRepeatedMessageField(value: &_storage._selections) }()
         default: break
         }
       }
@@ -7787,6 +7942,9 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if _storage._tasksCreated != false {
         try visitor.visitSingularBoolField(value: _storage._tasksCreated, fieldNumber: 13)
       }
+      if !_storage._selections.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._selections, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7809,6 +7967,7 @@ extension Mealplanning_MealPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         if _storage._events != rhs_storage._events {return false}
         if _storage._groceryListInitialized != rhs_storage._groceryListInitialized {return false}
         if _storage._tasksCreated != rhs_storage._tasksCreated {return false}
+        if _storage._selections != rhs_storage._selections {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7899,7 +8058,7 @@ extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanGroceryListItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}quantity_purchased\0\u{3}purchase_price\0\u{3}purchased_upc\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}purchased_measurement_unit\0\u{3}belongs_to_meal_plan\0\u{1}status\0\u{3}status_explanation\0\u{1}id\0\u{3}quantity_needed\0\u{3}measurement_unit\0\u{1}ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}quantity_purchased\0\u{3}purchase_price\0\u{3}purchased_upc\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}purchased_measurement_unit\0\u{3}belongs_to_meal_plan\0\u{1}status\0\u{3}status_explanation\0\u{1}id\0\u{3}quantity_needed\0\u{3}measurement_unit\0\u{1}ingredient\0\u{3}belongs_to_meal_plan_option\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}ingredient_index\0\u{3}option_index\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7916,6 +8075,11 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
     var _quantityNeeded: Common_Float32RangeWithOptionalMax? = nil
     var _measurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _ingredient: Mealplanning_ValidIngredient? = nil
+    var _belongsToMealPlanOption: String? = nil
+    var _recipeID: String? = nil
+    var _recipeStepID: String? = nil
+    var _ingredientIndex: UInt32? = nil
+    var _optionIndex: UInt32? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7940,6 +8104,11 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       _quantityNeeded = source._quantityNeeded
       _measurementUnit = source._measurementUnit
       _ingredient = source._ingredient
+      _belongsToMealPlanOption = source._belongsToMealPlanOption
+      _recipeID = source._recipeID
+      _recipeStepID = source._recipeStepID
+      _ingredientIndex = source._ingredientIndex
+      _optionIndex = source._optionIndex
     }
   }
 
@@ -7972,6 +8141,11 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._quantityNeeded) }()
         case 13: try { try decoder.decodeSingularMessageField(value: &_storage._measurementUnit) }()
         case 14: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
+        case 15: try { try decoder.decodeSingularStringField(value: &_storage._belongsToMealPlanOption) }()
+        case 16: try { try decoder.decodeSingularStringField(value: &_storage._recipeID) }()
+        case 17: try { try decoder.decodeSingularStringField(value: &_storage._recipeStepID) }()
+        case 18: try { try decoder.decodeSingularUInt32Field(value: &_storage._ingredientIndex) }()
+        case 19: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         default: break
         }
       }
@@ -8026,6 +8200,21 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       try { if let v = _storage._ingredient {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
       } }()
+      try { if let v = _storage._belongsToMealPlanOption {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._recipeID {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 16)
+      } }()
+      try { if let v = _storage._recipeStepID {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 17)
+      } }()
+      try { if let v = _storage._ingredientIndex {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 18)
+      } }()
+      try { if let v = _storage._optionIndex {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 19)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -8049,6 +8238,11 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         if _storage._quantityNeeded != rhs_storage._quantityNeeded {return false}
         if _storage._measurementUnit != rhs_storage._measurementUnit {return false}
         if _storage._ingredient != rhs_storage._ingredient {return false}
+        if _storage._belongsToMealPlanOption != rhs_storage._belongsToMealPlanOption {return false}
+        if _storage._recipeID != rhs_storage._recipeID {return false}
+        if _storage._recipeStepID != rhs_storage._recipeStepID {return false}
+        if _storage._ingredientIndex != rhs_storage._ingredientIndex {return false}
+        if _storage._optionIndex != rhs_storage._optionIndex {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8336,6 +8530,85 @@ extension Mealplanning_MealPlanOptionVoteCreationInput: SwiftProtobuf.Message, S
     if lhs.belongsToMealPlanOption != rhs.belongsToMealPlanOption {return false}
     if lhs.rank != rhs.rank {return false}
     if lhs.abstain != rhs.abstain {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Mealplanning_MealPlanRecipeOptionSelection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".MealPlanRecipeOptionSelection"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}belongs_to_meal_plan_option\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}ingredient_index\0\u{3}selected_option_index\0\u{3}selection_type\0\u{3}archived_at\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.belongsToMealPlanOption) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.recipeID) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.recipeStepID) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.ingredientIndex) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.selectedOptionIndex) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.selectionType) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._createdAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._lastUpdatedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 3)
+    }
+    if !self.belongsToMealPlanOption.isEmpty {
+      try visitor.visitSingularStringField(value: self.belongsToMealPlanOption, fieldNumber: 4)
+    }
+    if !self.recipeID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeID, fieldNumber: 5)
+    }
+    if !self.recipeStepID.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipeStepID, fieldNumber: 6)
+    }
+    if self.ingredientIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.ingredientIndex, fieldNumber: 7)
+    }
+    if self.selectedOptionIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.selectedOptionIndex, fieldNumber: 8)
+    }
+    if self.selectionType != .unspecified {
+      try visitor.visitSingularEnumField(value: self.selectionType, fieldNumber: 9)
+    }
+    try { if let v = self._archivedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Mealplanning_MealPlanRecipeOptionSelection, rhs: Mealplanning_MealPlanRecipeOptionSelection) -> Bool {
+    if lhs._createdAt != rhs._createdAt {return false}
+    if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
+    if lhs.id != rhs.id {return false}
+    if lhs.belongsToMealPlanOption != rhs.belongsToMealPlanOption {return false}
+    if lhs.recipeID != rhs.recipeID {return false}
+    if lhs.recipeStepID != rhs.recipeStepID {return false}
+    if lhs.ingredientIndex != rhs.ingredientIndex {return false}
+    if lhs.selectedOptionIndex != rhs.selectedOptionIndex {return false}
+    if lhs.selectionType != rhs.selectionType {return false}
+    if lhs._archivedAt != rhs._archivedAt {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

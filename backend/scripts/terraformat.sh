@@ -10,4 +10,3 @@ TERRAFORM_DIR="${1:-deploy/environments/dev/terraform}"
   cd "${TERRAFORM_DIR}" || exit 1
   terraform fmt
 )
-

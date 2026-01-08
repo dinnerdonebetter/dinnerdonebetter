@@ -1,6 +1,7 @@
 # Tracing
 
 There are two main folders in this directory:
+
 - `cloudtrace`
 - `otel`
 

@@ -83,6 +83,9 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 	exampleRecipeStepIngredient.Ingredient = validIngredient
 	exampleRecipeStepIngredient.MeasurementUnit = *validMeasurementUnit
 	exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
+	// Set unique index - first ingredient from recipe creation has index 0, so start at 1
+	exampleRecipeStepIngredient.Index = 1
+	exampleRecipeStepIngredient.OptionIndex = 0
 	createdRecipeStepIngredients := []*types.RecipeStepIngredient{
 		exampleRecipeStep.Ingredients[0],
 	}
@@ -98,6 +101,9 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 		input.Ingredient = validIngredient
 		input.MeasurementUnit = *validMeasurementUnit
 		input.BelongsToRecipeStep = exampleRecipeStep.ID
+		// Set unique index - start from 2 since 0 and 1 are already taken
+		input.Index = uint16(i + 2)
+		input.OptionIndex = 0
 		createdRecipeStepIngredients = append(createdRecipeStepIngredients, createRecipeStepIngredientForTest(t, ctx, exampleRecipe.ID, input, dbc))
 	}
 
@@ -373,6 +379,9 @@ func TestQuerier_Integration_RecipeStepIngredients_CursorBasedPagination(t *test
 			recipeStepIngredient.BelongsToRecipeStep = recipeStep.ID
 			recipeStepIngredient.Ingredient = ingredient
 			recipeStepIngredient.MeasurementUnit = *measurementUnit
+			// Set unique index for each ingredient to avoid constraint violations
+			recipeStepIngredient.Index = uint16(i)
+			recipeStepIngredient.OptionIndex = 0
 			return createRecipeStepIngredientForTest(t, ctx, recipe.ID, recipeStepIngredient, dbc)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepIngredient], error) {

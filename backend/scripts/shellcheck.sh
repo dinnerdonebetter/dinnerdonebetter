@@ -38,4 +38,3 @@ for script in "${shell_scripts[@]}"; do
 done
 
 echo "All shell scripts passed shellcheck!"
-

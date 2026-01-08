@@ -5,4 +5,3 @@ set -euo pipefail
 # Usage: clean_vendor.sh
 
 rm -rf vendor go.sum
-

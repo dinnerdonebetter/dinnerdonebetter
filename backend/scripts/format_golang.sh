@@ -12,4 +12,3 @@ while IFS= read -r -d '' file; do
   # shellcheck disable=SC2086
   eval "${GO_FORMAT} \"${file}\""
 done < <(find "${PROJECT_ROOT}" -type f -not -path '*/vendor/*' -name "*.go" -print0)
-

@@ -48,6 +48,10 @@ ifeq (, $(shell which protoc-gen-grpc-swift-2))
 	$(shell brew install protoc-gen-grpc-swift)
 endif
 
+.PHONY: lint_markdown
+lint_markdown:
+	./scripts/lint_markdown.sh
+
 .PHONY: setup
 setup: ensure_yamlfmt_installed
 	(cd backend && $(MAKE) setup)

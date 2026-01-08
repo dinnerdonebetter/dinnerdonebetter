@@ -1,6 +1,6 @@
 # How users email addresses get verified
 
-### Basic process
+## Basic process
 
 ```mermaid
 flowchart TD

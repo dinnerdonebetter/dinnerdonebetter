@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -101,6 +102,13 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 	if events != nil {
 		mealPlan.Events = events
 	}
+
+	// Populate selections for the meal plan
+	selections, err := q.GetSelectionsForMealPlan(ctx, mealPlanID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching selections for meal plan")
+	}
+	mealPlan.Selections = selections
 
 	return mealPlan, nil
 }
@@ -237,6 +245,8 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}
 
 	logger.WithValue("quantity", len(input.Events)).Info("creating events for meal plan")
+	// Map to track option ID -> meal ID for matching selections
+	optionToMealID := make(map[string]string)
 	for _, event := range input.Events {
 		event.BelongsToMealPlan = x.ID
 		opt, createErr := q.createMealPlanEvent(ctx, tx, event)
@@ -245,6 +255,83 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 			return nil, observability.PrepareError(createErr, span, "creating meal plan event for meal plan")
 		}
 		x.Events = append(x.Events, opt)
+
+		// Track option IDs and their meal IDs for selection matching
+		for _, option := range opt.Options {
+			optionToMealID[option.ID] = option.Meal.ID
+		}
+	}
+
+	// Create selections if provided
+	if len(input.Selections) > 0 {
+		logger.WithValue("quantity", len(input.Selections)).Info("creating selections for meal plan")
+
+		// Load all meals to check their components (deduplicate meal IDs)
+		mealIDSet := make(map[string]bool)
+		for _, mealID := range optionToMealID {
+			mealIDSet[mealID] = true
+		}
+		mealIDs := make([]string, 0, len(mealIDSet))
+		for mealID := range mealIDSet {
+			mealIDs = append(mealIDs, mealID)
+		}
+
+		meals, loadErr := q.GetMealsWithIDs(ctx, mealIDs)
+		if loadErr != nil {
+			q.RollbackTransaction(ctx, tx)
+			return nil, observability.PrepareAndLogError(loadErr, logger, span, "loading meals for selection matching")
+		}
+
+		// Create a map of meal ID -> meal for quick lookup
+		mealsByID := make(map[string]*types.Meal)
+		for _, meal := range meals {
+			mealsByID[meal.ID] = meal
+		}
+
+		// Match and create selections
+		for _, selection := range input.Selections {
+			// Find the option that contains the matching recipe
+			var matchedOptionID string
+			for optionID, mealID := range optionToMealID {
+				meal, exists := mealsByID[mealID]
+				if !exists {
+					continue
+				}
+
+				// Check if this meal has a component with the matching recipe ID
+				for _, component := range meal.Components {
+					if component.Recipe.ID == selection.RecipeID {
+						matchedOptionID = optionID
+						break
+					}
+				}
+				if matchedOptionID != "" {
+					break
+				}
+			}
+
+			if matchedOptionID == "" {
+				logger.WithValue("recipe_id", selection.RecipeID).
+					WithValue("recipe_step_id", selection.RecipeStepID).
+					Info("could not find matching option for selection, skipping")
+				continue
+			}
+
+			// Create the selection
+			selectionID := identifiers.New()
+			if createErr := q.generatedQuerier.CreateMealPlanRecipeOptionSelection(ctx, tx, &generated.CreateMealPlanRecipeOptionSelectionParams{
+				ID:                      selectionID,
+				BelongsToMealPlanOption: matchedOptionID,
+				RecipeID:                selection.RecipeID,
+				RecipeStepID:            selection.RecipeStepID,
+				IngredientIndex:         int32(selection.IngredientIndex),
+				SelectedOptionIndex:     int32(selection.SelectedOptionIndex),
+				SelectionType:           selection.SelectionType,
+			}); createErr != nil {
+				q.RollbackTransaction(ctx, tx)
+				return nil, observability.PrepareAndLogError(createErr, logger, span, "creating meal plan recipe option selection")
+			}
+		}
 	}
 
 	if err = tx.Commit(); err != nil {

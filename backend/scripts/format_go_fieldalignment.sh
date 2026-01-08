@@ -7,4 +7,3 @@ set -euo pipefail
 until fieldalignment -fix ./...; do
   true
 done > /dev/null
-

@@ -126,6 +126,11 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 			Max: database.Float32PointerFromNullString(result.MaximumQuantityNeeded),
 			Min: database.Float32FromString(result.MinimumQuantityNeeded),
 		},
+		BelongsToMealPlanOption: database.StringPointerFromNullString(result.BelongsToMealPlanOption),
+		RecipeID:                database.StringPointerFromNullString(result.RecipeID),
+		RecipeStepID:            database.StringPointerFromNullString(result.RecipeStepID),
+		IngredientIndex:         database.Uint16PointerFromNullInt32(result.IngredientIndex),
+		OptionIndex:             database.Uint16PointerFromNullInt32(result.OptionIndex),
 		MeasurementUnit: mealplanning.ValidMeasurementUnit{
 			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -255,6 +260,11 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 				Max: database.Float32PointerFromNullString(result.MaximumQuantityNeeded),
 				Min: database.Float32FromString(result.MinimumQuantityNeeded),
 			},
+			BelongsToMealPlanOption: database.StringPointerFromNullString(result.BelongsToMealPlanOption),
+			RecipeID:                database.StringPointerFromNullString(result.RecipeID),
+			RecipeStepID:            database.StringPointerFromNullString(result.RecipeStepID),
+			IngredientIndex:         database.Uint16PointerFromNullInt32(result.IngredientIndex),
+			OptionIndex:             database.Uint16PointerFromNullInt32(result.OptionIndex),
 			MeasurementUnit: mealplanning.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -370,6 +380,11 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 		PurchasedMeasurementUnit: database.NullStringFromStringPointer(input.PurchasedMeasurementUnitID),
 		PurchasedUpc:             database.NullStringFromStringPointer(input.PurchasedUPC),
 		PurchasePrice:            database.NullStringFromFloat32Pointer(input.PurchasePrice),
+		BelongsToMealPlanOption:  database.NullStringFromStringPointer(input.BelongsToMealPlanOption),
+		RecipeID:                 database.NullStringFromStringPointer(input.RecipeID),
+		RecipeStepID:             database.NullStringFromStringPointer(input.RecipeStepID),
+		IngredientIndex:          database.NullInt32FromUint16Pointer(input.IngredientIndex),
+		OptionIndex:              database.NullInt32FromUint16Pointer(input.OptionIndex),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list creation query")
 	}
@@ -383,12 +398,17 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
-		QuantityPurchased: input.QuantityPurchased,
-		PurchasedUPC:      input.PurchasedUPC,
-		PurchasePrice:     input.PurchasePrice,
-		StatusExplanation: input.StatusExplanation,
-		Status:            input.Status,
-		CreatedAt:         q.CurrentTime(),
+		QuantityPurchased:       input.QuantityPurchased,
+		PurchasedUPC:            input.PurchasedUPC,
+		PurchasePrice:           input.PurchasePrice,
+		StatusExplanation:       input.StatusExplanation,
+		Status:                  input.Status,
+		CreatedAt:               q.CurrentTime(),
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		RecipeID:                input.RecipeID,
+		RecipeStepID:            input.RecipeStepID,
+		IngredientIndex:         input.IngredientIndex,
+		OptionIndex:             input.OptionIndex,
 	}
 
 	if input.PurchasedMeasurementUnitID != nil {
@@ -423,6 +443,11 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 	}
 
 	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
+		BelongsToMealPlanOption:  database.NullStringFromStringPointer(updated.BelongsToMealPlanOption),
+		RecipeID:                 database.NullStringFromStringPointer(updated.RecipeID),
+		RecipeStepID:             database.NullStringFromStringPointer(updated.RecipeStepID),
+		IngredientIndex:          database.NullInt32FromUint16Pointer(updated.IngredientIndex),
+		OptionIndex:              database.NullInt32FromUint16Pointer(updated.OptionIndex),
 		BelongsToMealPlan:        updated.BelongsToMealPlan,
 		ValidIngredient:          updated.Ingredient.ID,
 		ValidMeasurementUnit:     updated.MeasurementUnit.ID,

@@ -13,4 +13,3 @@ TERRAFORM_DIR="${1:-deploy/environments/dev/terraform}"
   terraform fmt
   terraform fmt -check
 )
-
