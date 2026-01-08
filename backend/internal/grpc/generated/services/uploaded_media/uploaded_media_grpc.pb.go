@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.33.1
-// source: uploaded_media.proto
+// source: uploaded_media/uploaded_media.proto
 
 package uploaded_media
 
@@ -340,5 +340,5 @@ var UploadedMediaService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "uploaded_media.proto",
+	Metadata: "uploaded_media/uploaded_media.proto",
 }
