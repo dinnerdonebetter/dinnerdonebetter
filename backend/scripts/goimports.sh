@@ -5,4 +5,3 @@ set -euo pipefail
 # Usage: goimports.sh
 
 goimports -w .
-

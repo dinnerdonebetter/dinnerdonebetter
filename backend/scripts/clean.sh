@@ -7,4 +7,3 @@ set -euo pipefail
 ARTIFACTS_DIR="${1:-artifacts}"
 
 rm -rf "${ARTIFACTS_DIR}"
-

@@ -511,6 +511,12 @@ message MealPlanGroceryListItem {
   common.Float32RangeWithOptionalMax quantity_needed = 12;
   ValidMeasurementUnit measurement_unit = 13;
   ValidIngredient ingredient = 14;
+  // Recipe context (optional - only set when item is part of a choice group)
+  optional string belongs_to_meal_plan_option = 15;
+  optional string recipe_id = 16;
+  optional string recipe_step_id = 17;
+  optional uint32 ingredient_index = 18;
+  optional uint32 option_index = 19;
 }
 
 message MealPlanOption {
@@ -548,6 +554,19 @@ message MealPlanOptionVoteCreationInput {
   string belongs_to_meal_plan_option = 4;
   uint32 rank = 5;
   bool abstain = 6;
+}
+
+message MealPlanRecipeOptionSelection {
+  google.protobuf.Timestamp created_at = 1;
+  optional google.protobuf.Timestamp last_updated_at = 2;
+  string id = 3;
+  string belongs_to_meal_plan_option = 4;
+  string recipe_id = 5;
+  string recipe_step_id = 6;
+  uint32 ingredient_index = 7;
+  uint32 selected_option_index = 8;
+  MealPlanRecipeOptionSelectionType selection_type = 9;
+  optional google.protobuf.Timestamp archived_at = 10;
 }
 
 message MissingVote {
@@ -698,4 +717,11 @@ enum MealPlanTaskStatus {
   MEAL_PLAN_TASK_STATUS_IGNORED = 2;
   MEAL_PLAN_TASK_STATUS_CANCELED = 3;
   MEAL_PLAN_TASK_STATUS_FINISHED = 4;
+}
+
+enum MealPlanRecipeOptionSelectionType {
+  MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_UNSPECIFIED = 0;
+  MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INGREDIENT = 1;
+  MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_INSTRUMENT = 2;
+  MEAL_PLAN_RECIPE_OPTION_SELECTION_TYPE_VESSEL = 3;
 }

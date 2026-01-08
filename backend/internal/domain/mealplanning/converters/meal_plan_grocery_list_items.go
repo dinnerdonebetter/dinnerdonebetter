@@ -17,11 +17,16 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInpu
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
-		QuantityPurchased: input.QuantityPurchased,
-		PurchasedUPC:      input.PurchasedUPC,
-		PurchasePrice:     input.PurchasePrice,
-		StatusExplanation: input.StatusExplanation,
-		Status:            input.Status,
+		QuantityPurchased:       input.QuantityPurchased,
+		PurchasedUPC:            input.PurchasedUPC,
+		PurchasePrice:           input.PurchasePrice,
+		StatusExplanation:       input.StatusExplanation,
+		Status:                  input.Status,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		RecipeID:                input.RecipeID,
+		RecipeStepID:            input.RecipeStepID,
+		IngredientIndex:         input.IngredientIndex,
+		OptionIndex:             input.OptionIndex,
 	}
 
 	if input.PurchasedMeasurementUnit != nil {
@@ -71,6 +76,8 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 			Max: input.QuantityNeeded.Max,
 			Min: input.QuantityNeeded.Min,
 		},
+		// Recipe context fields are not included in creation request input
+		// They are set separately when creating items with alternatives
 	}
 }
 

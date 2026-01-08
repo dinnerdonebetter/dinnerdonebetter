@@ -80,6 +80,9 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 	exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 	exampleRecipeStepVessel.Vessel = validVessel
 	exampleRecipeStepVessel.BelongsToRecipeStep = exampleRecipeStep.ID
+	// Set unique index - first vessel from recipe creation has index 0, so start at 1
+	exampleRecipeStepVessel.Index = 1
+	exampleRecipeStepVessel.OptionIndex = 0
 	createdRecipeStepVessels := []*types.RecipeStepVessel{
 		exampleRecipeStep.Vessels[0],
 	}
@@ -93,6 +96,9 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 		input := fakes.BuildFakeRecipeStepVessel()
 		input.Vessel = validVessel
 		input.BelongsToRecipeStep = exampleRecipeStep.ID
+		// Set unique index - start from 2 since 0 and 1 are already taken
+		input.Index = uint16(i + 2)
+		input.OptionIndex = 0
 		createdRecipeStepVessels = append(createdRecipeStepVessels, createRecipeStepVesselForTest(t, ctx, exampleRecipe.ID, input, dbc))
 	}
 
@@ -336,6 +342,9 @@ func TestQuerier_Integration_RecipeStepVessels_CursorBasedPagination(t *testing.
 			recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			recipeStepVessel.BelongsToRecipeStep = recipeStep.ID
 			recipeStepVessel.Vessel = vessel
+			// Set unique index for each vessel to avoid constraint violations
+			recipeStepVessel.Index = uint16(i)
+			recipeStepVessel.OptionIndex = 0
 			return createRecipeStepVesselForTest(t, ctx, recipe.ID, recipeStepVessel, dbc)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepVessel], error) {

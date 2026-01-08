@@ -13,6 +13,7 @@ service MealPlanningService {
   rpc ArchiveMealPlanGroceryListItem(ArchiveMealPlanGroceryListItemRequest) returns (ArchiveMealPlanGroceryListItemResponse);
   rpc ArchiveMealPlanOption(ArchiveMealPlanOptionRequest) returns (ArchiveMealPlanOptionResponse);
   rpc ArchiveMealPlanOptionVote(ArchiveMealPlanOptionVoteRequest) returns (ArchiveMealPlanOptionVoteResponse);
+  rpc ArchiveMealPlanRecipeOptionSelection(ArchiveMealPlanRecipeOptionSelectionRequest) returns (ArchiveMealPlanRecipeOptionSelectionResponse);
   rpc ArchiveMealList(ArchiveMealListRequest) returns (ArchiveMealListResponse);
   rpc ArchiveMealListItem(ArchiveMealListItemRequest) returns (ArchiveMealListItemResponse);
   rpc ArchiveRecipe(ArchiveRecipeRequest) returns (ArchiveRecipeResponse);
@@ -44,9 +45,9 @@ service MealPlanningService {
   rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse);
   rpc CreateMealPlan(CreateMealPlanRequest) returns (CreateMealPlanResponse);
   rpc CreateMealPlanEvent(CreateMealPlanEventRequest) returns (CreateMealPlanEventResponse);
-  rpc CreateMealPlanGroceryListItem(CreateMealPlanGroceryListItemRequest) returns (CreateMealPlanGroceryListItemResponse);
   rpc CreateMealPlanOption(CreateMealPlanOptionRequest) returns (CreateMealPlanOptionResponse);
   rpc CreateMealPlanOptionVote(CreateMealPlanOptionVoteRequest) returns (CreateMealPlanOptionVoteResponse);
+  rpc CreateMealPlanRecipeOptionSelection(CreateMealPlanRecipeOptionSelectionRequest) returns (CreateMealPlanRecipeOptionSelectionResponse);
   rpc CreateMealPlanTask(CreateMealPlanTaskRequest) returns (CreateMealPlanTaskResponse);
   rpc CreateMealList(CreateMealListRequest) returns (CreateMealListResponse);
   rpc CreateMealListItem(CreateMealListItemRequest) returns (CreateMealListItemResponse);
@@ -86,6 +87,8 @@ service MealPlanningService {
   rpc GetMealPlanOptionVote(GetMealPlanOptionVoteRequest) returns (GetMealPlanOptionVoteResponse);
   rpc GetMealPlanOptionVotes(GetMealPlanOptionVotesRequest) returns (GetMealPlanOptionVotesResponse);
   rpc GetMealPlanOptions(GetMealPlanOptionsRequest) returns (GetMealPlanOptionsResponse);
+  rpc GetMealPlanRecipeOptionSelection(GetMealPlanRecipeOptionSelectionRequest) returns (GetMealPlanRecipeOptionSelectionResponse);
+  rpc GetMealPlanRecipeOptionSelectionsForMealPlanOption(GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest) returns (GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse);
   rpc GetMealPlanTask(GetMealPlanTaskRequest) returns (GetMealPlanTaskResponse);
   rpc GetMealPlanTasks(GetMealPlanTasksRequest) returns (GetMealPlanTasksResponse);
   rpc GetMealPlansForAccount(GetMealPlansForAccountRequest) returns (GetMealPlansForAccountResponse);
@@ -177,6 +180,7 @@ service MealPlanningService {
   rpc UpdateMealPlanGroceryListItem(UpdateMealPlanGroceryListItemRequest) returns (UpdateMealPlanGroceryListItemResponse);
   rpc UpdateMealPlanOption(UpdateMealPlanOptionRequest) returns (UpdateMealPlanOptionResponse);
   rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);
+  rpc UpdateMealPlanRecipeOptionSelection(UpdateMealPlanRecipeOptionSelectionRequest) returns (UpdateMealPlanRecipeOptionSelectionResponse);
   rpc UpdateMealPlanTaskStatus(UpdateMealPlanTaskStatusRequest) returns (UpdateMealPlanTaskStatusResponse);
   rpc UpdateMealList(UpdateMealListRequest) returns (UpdateMealListResponse);
   rpc UpdateMealListItem(UpdateMealListItemRequest) returns (UpdateMealListItemResponse);

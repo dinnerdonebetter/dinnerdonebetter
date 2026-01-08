@@ -9,4 +9,3 @@ GENERATED_DIR="${2:-internal/database/postgres/generated}"
 
 rm -rf "${GENERATED_DIR}"/*.go
 ${SQL_GENERATOR} generate --no-remote
-

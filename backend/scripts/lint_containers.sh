@@ -23,4 +23,3 @@ if [ ${#dockerfiles[@]} -gt 0 ]; then
   # shellcheck disable=SC2086
   eval "${RUN_CONTAINER_AS_USER} \"${LINTER_IMAGE}\" test --policy containers.rego ${dockerfiles[*]}"
 fi
-

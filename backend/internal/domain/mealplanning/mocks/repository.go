@@ -1680,3 +1680,34 @@ func (m *Repository) UpdateMealListItem(ctx context.Context, updated *mealplanni
 func (m *Repository) ArchiveMealListItem(ctx context.Context, mealListItemID, mealListID string) error {
 	return m.Called(ctx, mealListItemID, mealListID).Error(0)
 }
+
+// GetSelection is a mock function.
+func (m *Repository) GetMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// GetSelectionsForMealPlanOption is a mock function.
+func (m *Repository) GetSelectionsForMealPlanOption(ctx context.Context, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection], error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection]), returnValues.Error(1)
+}
+
+// CreateSelection is a mock function.
+func (m *Repository) CreateMealPlanRecipeOptionSelection(ctx context.Context, input *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// UpdateSelection is a mock function.
+func (m *Repository) UpdateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string, input *mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput) error {
+	return m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType, input).Error(0)
+}
+
+// ArchiveSelection is a mock function.
+func (m *Repository) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error {
+	return m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType).Error(0)
+}

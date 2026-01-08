@@ -33,6 +33,11 @@ var mealPlanGroceryListItemsColumns = []string{
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
+	belongsToMealPlanOptionColumn,
+	recipeIDColumn,
+	recipeStepIDColumn,
+	"ingredient_index",
+	"option_index",
 }
 
 func buildMealPlanGroceryListItemsQueries(database string) []*Query {

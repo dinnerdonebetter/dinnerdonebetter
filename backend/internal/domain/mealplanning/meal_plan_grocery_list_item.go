@@ -41,27 +41,32 @@ func init() {
 type (
 	// MealPlanGroceryListItem represents a meal plan grocery list item.
 	MealPlanGroceryListItem struct {
-		_ struct{} `json:"-"`
-
+		_                        struct{}                          `json:"-"`
 		CreatedAt                time.Time                         `json:"createdAt"`
-		QuantityPurchased        *float32                          `json:"quantityPurchased"`
-		PurchasePrice            *float32                          `json:"purchasePrice"`
-		PurchasedUPC             *string                           `json:"purchasedUPC"`
+		QuantityNeeded           types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
+		BelongsToMealPlanOption  *string                           `json:"belongsToMealPlanOption,omitempty"`
+		RecipeID                 *string                           `json:"recipeID,omitempty"`
 		ArchivedAt               *time.Time                        `json:"archivedAt"`
 		LastUpdatedAt            *time.Time                        `json:"lastUpdatedAt"`
 		PurchasedMeasurementUnit *ValidMeasurementUnit             `json:"purchasedMeasurementUnit"`
-		BelongsToMealPlan        string                            `json:"belongsToMealPlan"`
-		Status                   string                            `json:"status"`
-		StatusExplanation        string                            `json:"statusExplanation"`
+		OptionIndex              *uint16                           `json:"optionIndex,omitempty"`
+		IngredientIndex          *uint16                           `json:"ingredientIndex,omitempty"`
+		RecipeStepID             *string                           `json:"recipeStepID,omitempty"`
+		PurchasedUPC             *string                           `json:"purchasedUPC"`
+		PurchasePrice            *float32                          `json:"purchasePrice"`
+		QuantityPurchased        *float32                          `json:"quantityPurchased"`
 		ID                       string                            `json:"id"`
-		QuantityNeeded           types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
+		StatusExplanation        string                            `json:"statusExplanation"`
+		Status                   string                            `json:"status"`
+		BelongsToMealPlan        string                            `json:"belongsToMealPlan"`
 		MeasurementUnit          ValidMeasurementUnit              `json:"measurementUnit"`
 		Ingredient               ValidIngredient                   `json:"ingredient"`
 	}
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemCreationRequestInput struct {
-		_                          struct{}                          `json:"-"`
+		_ struct{} `json:"-"`
+
 		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
 		PurchasedMeasurementUnitID *string                           `json:"purchasedMeasurementUnitID"`
 		PurchasedUPC               *string                           `json:"purchasedUPC"`
@@ -78,16 +83,21 @@ type (
 	MealPlanGroceryListItemDatabaseCreationInput struct {
 		_                          struct{}                          `json:"-"`
 		QuantityNeeded             types.Float32RangeWithOptionalMax `json:"-"`
+		BelongsToMealPlanOption    *string                           `json:"-"`
 		PurchasePrice              *float32                          `json:"-"`
-		PurchasedUPC               *string                           `json:"-"`
 		PurchasedMeasurementUnitID *string                           `json:"-"`
 		QuantityPurchased          *float32                          `json:"-"`
+		PurchasedUPC               *string                           `json:"-"`
+		OptionIndex                *uint16                           `json:"-"`
+		IngredientIndex            *uint16                           `json:"-"`
+		RecipeStepID               *string                           `json:"-"`
+		RecipeID                   *string                           `json:"-"`
 		Status                     string                            `json:"-"`
-		ValidMeasurementUnitID     string                            `json:"-"`
-		ValidIngredientID          string                            `json:"-"`
-		BelongsToMealPlan          string                            `json:"-"`
-		ID                         string                            `json:"-"`
 		StatusExplanation          string                            `json:"-"`
+		ID                         string                            `json:"-"`
+		BelongsToMealPlan          string                            `json:"-"`
+		ValidIngredientID          string                            `json:"-"`
+		ValidMeasurementUnitID     string                            `json:"-"`
 	}
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.

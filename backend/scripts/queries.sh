@@ -7,4 +7,3 @@ set -euo pipefail
 PACKAGE_PREFIX="${1:-github.com/dinnerdonebetter/backend}"
 
 go run "${PACKAGE_PREFIX}/cmd/tools/codegen/queries"
-

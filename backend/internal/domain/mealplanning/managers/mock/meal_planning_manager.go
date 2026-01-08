@@ -334,6 +334,47 @@ func (m *MockMealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Con
 	return returnValues.Error(0)
 }
 
+// GetMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) GetMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// GetMealPlanRecipeOptionSelectionsForMealPlanOption is a mock method.
+func (m *MockMealPlanningManager) GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection], error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, filter)
+
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanRecipeOptionSelection]), returnValues.Error(1)
+}
+
+// CreateMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, input *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, input)
+
+	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
+}
+
+// UpdateMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) UpdateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string, input *mealplanning.MealPlanRecipeOptionSelectionUpdateRequestInput) error {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType, input)
+
+	return returnValues.Error(0)
+}
+
+// ArchiveMealPlanRecipeOptionSelection is a mock method.
+func (m *MockMealPlanningManager) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error {
+	returnValues := m.Called(ctx, mealPlanOptionID, recipeStepID, ingredientIndex, selectionType)
+
+	return returnValues.Error(0)
+}
+
 // ListUserIngredientPreferences is a mock method.
 func (m *MockMealPlanningManager) ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.UserIngredientPreference], error) {
 	returnValues := m.Called(ctx, ownerID, filter)

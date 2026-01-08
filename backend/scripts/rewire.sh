@@ -12,4 +12,3 @@ for target in "${TARGETS[@]}"; do
   rm -f "${PACKAGE_PREFIX}/${target}/wire_gen.go"
   wire gen "${PACKAGE_PREFIX}/${target}"
 done
-

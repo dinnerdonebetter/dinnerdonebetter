@@ -6,6 +6,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -479,31 +480,6 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.CreateMealPlanGroceryListItemRequest) (*mealplanningsvc.CreateMealPlanGroceryListItemResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := observability.ObserveValues(map[string]any{
-		keys.MealPlanIDKey: request.MealPlanId,
-	}, span, s.logger)
-
-	input := converters.ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemCreationRequestInput(request.Input)
-
-	created, err := s.mealPlanningManager.CreateMealPlanGroceryListItem(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan grocery list item")
-	}
-
-	x := &mealplanningsvc.CreateMealPlanGroceryListItemResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceId: span.SpanContext().TraceID().String(),
-		},
-		Created: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(created),
-	}
-
-	return x, nil
-}
-
 func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealplanningsvc.CreateMealPlanOptionRequest) (*mealplanningsvc.CreateMealPlanOptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -831,6 +807,149 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 
 	for _, mealPlanGroceryListItem := range mealPlanGroceryListItems.Data {
 		x.Results = append(x.Results, converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(mealPlanGroceryListItem))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetMealPlanRecipeOptionSelection(ctx context.Context, request *mealplanningsvc.GetMealPlanRecipeOptionSelectionRequest) (*mealplanningsvc.GetMealPlanRecipeOptionSelectionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":         request.RecipeStepId,
+		"ingredient_index":       request.IngredientIndex,
+		"selection_type":         request.SelectionType,
+	}, span, s.logger)
+
+	selection, err := s.mealPlanningManager.GetMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, request.RecipeStepId, uint16(request.IngredientIndex), converters.ConvertMealPlanRecipeOptionSelectionTypeToString(request.SelectionType))
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan recipe option selection")
+	}
+
+	x := &mealplanningsvc.GetMealPlanRecipeOptionSelectionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	if selection != nil {
+		x.Result = converters.ConvertMealPlanRecipeOptionSelectionToGRPCMealPlanRecipeOptionSelection(selection)
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, request *mealplanningsvc.GetMealPlanRecipeOptionSelectionsForMealPlanOptionRequest) (*mealplanningsvc.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+	}, span, s.logger)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	selections, err := s.mealPlanningManager.GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx, request.MealPlanOptionId, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan recipe option selections")
+	}
+
+	x := &mealplanningsvc.GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Pagination: grpcconverters.ConvertPaginationToGRPCPagination(selections.Pagination, filter),
+	}
+
+	for _, selection := range selections.Data {
+		x.Results = append(x.Results, converters.ConvertMealPlanRecipeOptionSelectionToGRPCMealPlanRecipeOptionSelection(selection))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateMealPlanRecipeOptionSelection(ctx context.Context, request *mealplanningsvc.CreateMealPlanRecipeOptionSelectionRequest) (*mealplanningsvc.CreateMealPlanRecipeOptionSelectionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealPlanOptionIDKey: request.Input.BelongsToMealPlanOption,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(request.Input)
+	input.BelongsToMealPlanOption = request.Input.BelongsToMealPlanOption
+	input.ID = identifiers.New()
+
+	created, err := s.mealPlanningManager.CreateMealPlanRecipeOptionSelection(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan recipe option selection")
+	}
+
+	x := &mealplanningsvc.CreateMealPlanRecipeOptionSelectionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanRecipeOptionSelectionToGRPCMealPlanRecipeOptionSelection(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateMealPlanRecipeOptionSelection(ctx context.Context, request *mealplanningsvc.UpdateMealPlanRecipeOptionSelectionRequest) (*mealplanningsvc.UpdateMealPlanRecipeOptionSelectionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":         request.RecipeStepId,
+		"ingredient_index":       request.IngredientIndex,
+		"selection_type":         request.SelectionType,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCMealPlanRecipeOptionSelectionUpdateRequestInputToMealPlanRecipeOptionSelectionUpdateRequestInput(request.Input)
+
+	selectionTypeStr := converters.ConvertMealPlanRecipeOptionSelectionTypeToString(request.SelectionType)
+	if err := s.mealPlanningManager.UpdateMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, request.RecipeStepId, uint16(request.IngredientIndex), selectionTypeStr, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan recipe option selection")
+	}
+
+	updated, err := s.mealPlanningManager.GetMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, request.RecipeStepId, uint16(request.IngredientIndex), selectionTypeStr)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan recipe option selection")
+	}
+
+	x := &mealplanningsvc.UpdateMealPlanRecipeOptionSelectionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanRecipeOptionSelectionToGRPCMealPlanRecipeOptionSelection(updated),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanRecipeOptionSelectionRequest) (*mealplanningsvc.ArchiveMealPlanRecipeOptionSelectionResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.MealPlanOptionIDKey: request.MealPlanOptionId,
+		"recipe_step_id":         request.RecipeStepId,
+		"ingredient_index":       request.IngredientIndex,
+		"selection_type":         request.SelectionType,
+	}, span, s.logger)
+
+	selectionTypeStr := converters.ConvertMealPlanRecipeOptionSelectionTypeToString(request.SelectionType)
+	if err := s.mealPlanningManager.ArchiveMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, request.RecipeStepId, uint16(request.IngredientIndex), selectionTypeStr); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan recipe option selection")
+	}
+
+	x := &mealplanningsvc.ArchiveMealPlanRecipeOptionSelectionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
 	}
 
 	return x, nil

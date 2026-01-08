@@ -8,4 +8,3 @@ PACKAGE_LIST="${1}"
 
 # shellcheck disable=SC2086
 go build ${PACKAGE_LIST}
-

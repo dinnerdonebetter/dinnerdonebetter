@@ -22,4 +22,3 @@ if [ ${#go_files[@]} -gt 0 ]; then
     --custom-order \
     "${go_files[@]}"
 fi
-

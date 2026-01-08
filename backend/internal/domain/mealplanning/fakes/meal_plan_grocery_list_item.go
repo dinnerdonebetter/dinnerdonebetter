@@ -20,6 +20,12 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		StatusExplanation:        buildUniqueString(),
 		Status:                   types.MealPlanGroceryListItemStatusUnknown,
 		CreatedAt:                BuildFakeTime(),
+		// Recipe context fields (optional - only set when item is part of a choice group)
+		BelongsToMealPlanOption: nil,
+		RecipeID:                nil,
+		RecipeStepID:            nil,
+		IngredientIndex:         nil,
+		OptionIndex:             nil,
 	}
 }
 

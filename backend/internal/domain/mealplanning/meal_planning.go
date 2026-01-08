@@ -9,6 +9,7 @@ type (
 		MealPlanOptionVoteDataManager
 		MealPlanTaskDataManager
 		MealPlanGroceryListItemDataManager
+		MealPlanRecipeOptionSelectionDataManager
 		UserIngredientPreferenceDataManager
 		AccountInstrumentOwnershipDataManager
 	}
@@ -21,6 +22,7 @@ type (
 		MealPlanOptionVoteDataService
 		MealPlanTaskDataService
 		MealPlanGroceryListItemDataService
+		MealPlanRecipeOptionSelectionDataService
 		UserIngredientPreferenceDataService
 		AccountInstrumentOwnershipDataService
 	}

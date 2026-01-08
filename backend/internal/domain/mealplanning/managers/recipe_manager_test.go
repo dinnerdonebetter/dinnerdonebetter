@@ -974,6 +974,7 @@ func TestRecipeManager_CreateRecipeStepInstrument(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepInstrument()
 		fakeInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
+		fakeInput.Index = pointer.To(uint16(0))
 
 		// Create a fake ValidPreparationInstrument for the bridge table lookup
 		fakeValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
@@ -1138,6 +1139,7 @@ func TestRecipeManager_CreateRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepIngredient()
 		fakeInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInput()
+		fakeInput.Index = pointer.To(uint16(0))
 
 		// Create fake bridge table entries for the lookups
 		fakeValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
@@ -1616,6 +1618,7 @@ func TestRecipeManager_CreateRecipeStepVessel(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepVessel()
 		fakeInput := fakes.BuildFakeRecipeStepVesselCreationRequestInput()
+		fakeInput.Index = pointer.To(uint16(0))
 
 		// Create a fake ValidPreparationVessel for the bridge table lookup
 		fakeValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()

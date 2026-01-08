@@ -195,7 +195,6 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_UpdateMealPlanTaskStatus_FullMethodName: {authorization.UpdateMealPlanTasksPermission},
 
 		// MealPlanGroceryListItems
-		mealplanningsvc.MealPlanningService_CreateMealPlanGroceryListItem_FullMethodName:          {authorization.CreateMealPlanGroceryListItemsPermission},
 		mealplanningsvc.MealPlanningService_GetMealPlanGroceryListItem_FullMethodName:             {authorization.ReadMealPlanGroceryListItemsPermission},
 		mealplanningsvc.MealPlanningService_GetMealPlanGroceryListItemsForMealPlan_FullMethodName: {authorization.ReadMealPlanGroceryListItemsPermission},
 		mealplanningsvc.MealPlanningService_UpdateMealPlanGroceryListItem_FullMethodName:          {authorization.UpdateMealPlanGroceryListItemsPermission},
@@ -281,6 +280,13 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_GetMealPlanOptionVote_FullMethodName:     {authorization.ReadMealPlanOptionVotesPermission},
 		mealplanningsvc.MealPlanningService_GetMealPlanOptionVotes_FullMethodName:    {authorization.ReadMealPlanOptionVotesPermission},
 		mealplanningsvc.MealPlanningService_ArchiveMealPlanOptionVote_FullMethodName: {authorization.ArchiveMealPlanOptionVotesPermission},
+
+		// MealPlanRecipeOptionSelections
+		mealplanningsvc.MealPlanningService_CreateMealPlanRecipeOptionSelection_FullMethodName:                {authorization.CreateMealPlanRecipeOptionSelectionsPermission},
+		mealplanningsvc.MealPlanningService_GetMealPlanRecipeOptionSelection_FullMethodName:                   {authorization.ReadMealPlanRecipeOptionSelectionsPermission},
+		mealplanningsvc.MealPlanningService_GetMealPlanRecipeOptionSelectionsForMealPlanOption_FullMethodName: {authorization.ReadMealPlanRecipeOptionSelectionsPermission},
+		mealplanningsvc.MealPlanningService_UpdateMealPlanRecipeOptionSelection_FullMethodName:                {authorization.UpdateMealPlanRecipeOptionSelectionsPermission},
+		mealplanningsvc.MealPlanningService_ArchiveMealPlanRecipeOptionSelection_FullMethodName:               {authorization.ArchiveMealPlanRecipeOptionSelectionsPermission},
 
 		// Workers
 		mealplanningsvc.MealPlanningService_RunFinalizeMealPlanWorker_FullMethodName:               {authorization.UpdateMealPlansPermission},

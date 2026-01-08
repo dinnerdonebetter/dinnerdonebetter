@@ -7,4 +7,3 @@ set -euo pipefail
 until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do
   true
 done > /dev/null
-

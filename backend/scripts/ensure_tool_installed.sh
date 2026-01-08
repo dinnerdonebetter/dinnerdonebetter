@@ -11,4 +11,3 @@ if ! command -v "${TOOL_NAME}" &> /dev/null; then
   # shellcheck disable=SC2086
   ${INSTALL_COMMAND}
 fi
-

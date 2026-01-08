@@ -7,4 +7,3 @@ set -euo pipefail
 CONFIG_FILE="${1:-mcp-server-config.json}"
 
 npx @modelcontextprotocol/inspector --config "${CONFIG_FILE}"
-

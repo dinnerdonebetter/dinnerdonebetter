@@ -10,4 +10,3 @@ LINTER="${3}"
 
 "${CONTAINER_RUNNER}" pull --quiet "${LINTER_IMAGE}"
 ${LINTER} run --config=.golangci.yml --timeout 30m ./...
-
