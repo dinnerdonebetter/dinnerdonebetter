@@ -115,6 +115,48 @@ WHERE %s = sqlc.arg(%s)
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetMealPlanRecipeOptionSelectionsForMealPlan",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+%s;`,
+					strings.Join(applyToEach(mealPlanRecipeOptionSelectionsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", mealPlanRecipeOptionSelectionsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(mealPlanRecipeOptionSelectionsTableName, true, false,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlanOptionsTableName, mealPlanRecipeOptionSelectionsTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s = sqlc.arg(%s) AND %s.%s IS NULL AND %s.%s IS NULL", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn, mealPlanOptionsTableName, archivedAtColumn, mealPlanEventsTableName, archivedAtColumn)),
+					buildTotalCountSelect(mealPlanRecipeOptionSelectionsTableName, false,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlanOptionsTableName, mealPlanRecipeOptionSelectionsTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s = sqlc.arg(%s) AND %s.%s IS NULL AND %s.%s IS NULL", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn, mealPlanOptionsTableName, archivedAtColumn, mealPlanEventsTableName, archivedAtColumn)),
+					mealPlanRecipeOptionSelectionsTableName,
+					mealPlanOptionsTableName, mealPlanRecipeOptionSelectionsTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
+					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
+					mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
+					mealPlanOptionsTableName, archivedAtColumn,
+					mealPlanEventsTableName, archivedAtColumn,
+					mealPlanRecipeOptionSelectionsTableName, archivedAtColumn,
+					buildCursorLimitClause(mealPlanRecipeOptionSelectionsTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "UpdateMealPlanRecipeOptionSelection",
 					Type: ExecRowsType,
 				},

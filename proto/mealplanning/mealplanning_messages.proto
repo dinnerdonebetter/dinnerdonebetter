@@ -481,6 +481,7 @@ message MealPlan {
   repeated MealPlanEvent events = 11;
   bool grocery_list_initialized = 12;
   bool tasks_created = 13;
+  repeated MealPlanRecipeOptionSelection selections = 14;
 }
 
 message MealPlanEvent {

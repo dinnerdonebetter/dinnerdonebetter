@@ -136,6 +136,62 @@ func (q *repository) GetSelectionsForMealPlanOption(ctx context.Context, mealPla
 	return y, nil
 }
 
+// GetSelectionsForMealPlan fetches all meal plan recipe option selections for a meal plan from the database.
+func (q *repository) GetSelectionsForMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanRecipeOptionSelection, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	if mealPlanID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
+
+	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlan(ctx, q.db, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanParams{
+		MealPlanID:    mealPlanID,
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		ResultLimit:   nil, // fetch everything always
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan recipe option selections for meal plan retrieval query")
+	}
+
+	if len(results) == 0 {
+		return nil, nil
+	}
+
+	x := make([]*types.MealPlanRecipeOptionSelection, 0, len(results))
+	for _, result := range results {
+		selection := &types.MealPlanRecipeOptionSelection{
+			ID:                      result.ID,
+			BelongsToMealPlanOption: result.BelongsToMealPlanOption,
+			RecipeID:                result.RecipeID,
+			RecipeStepID:            result.RecipeStepID,
+			IngredientIndex:         uint16(result.IngredientIndex),
+			SelectedOptionIndex:     uint16(result.SelectedOptionIndex),
+			SelectionType:           result.SelectionType,
+			CreatedAt:               result.CreatedAt,
+			LastUpdatedAt:           database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:              database.TimePointerFromNullTime(result.ArchivedAt),
+		}
+
+		x = append(x, selection)
+	}
+
+	return x, nil
+}
+
 // CreateSelection creates a meal plan recipe option selection in the database.
 func (q *repository) CreateMealPlanRecipeOptionSelection(ctx context.Context, input *types.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*types.MealPlanRecipeOptionSelection, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

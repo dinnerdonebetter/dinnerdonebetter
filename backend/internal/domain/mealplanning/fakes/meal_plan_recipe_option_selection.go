@@ -54,3 +54,13 @@ func BuildFakeMealPlanRecipeOptionSelectionUpdateRequestInput() *types.MealPlanR
 		SelectedOptionIndex: &selectedOptionIndex,
 	}
 }
+
+func BuildFakeMealPlanRecipeOptionSelectionCreationRequestInput() *types.MealPlanRecipeOptionSelectionCreationRequestInput {
+	return &types.MealPlanRecipeOptionSelectionCreationRequestInput{
+		RecipeID:            BuildFakeID(),
+		RecipeStepID:        BuildFakeID(),
+		SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+		IngredientIndex:     0,
+		SelectedOptionIndex: 0,
+	}
+}

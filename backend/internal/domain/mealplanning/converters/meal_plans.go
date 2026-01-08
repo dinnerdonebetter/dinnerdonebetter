@@ -60,6 +60,11 @@ func ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan *types.MealPlan) *t
 		events = append(events, ConvertMealPlanEventToMealPlanEventDatabaseCreationInput(event))
 	}
 
+	selections := []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{}
+	for _, selection := range mealPlan.Selections {
+		selections = append(selections, ConvertMealPlanRecipeOptionSelectionToMealPlanRecipeOptionSelectionDatabaseCreationInput(selection))
+	}
+
 	return &types.MealPlanDatabaseCreationInput{
 		ID:               mealPlan.ID,
 		Notes:            mealPlan.Notes,
@@ -68,5 +73,6 @@ func ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan *types.MealPlan) *t
 		ElectionMethod:   mealPlan.ElectionMethod,
 		BelongsToAccount: mealPlan.BelongsToAccount,
 		CreatedByUser:    mealPlan.CreatedByUser,
+		Selections:       selections,
 	}
 }

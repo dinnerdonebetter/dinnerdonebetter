@@ -2196,6 +2196,7 @@ message MealPlanCreationRequestInput {
   string notes = 2;
   MealPlanElectionMethod election_method = 3;
   repeated MealPlanEventCreationRequestInput events = 4;
+  repeated MealPlanRecipeOptionSelectionCreationRequestInput selections = 5;
 }
 
 message MealPlanEventCreationRequestInput {
@@ -2259,6 +2260,7 @@ message MealPlanOptionCreationRequestInput {
   string meal_id = 3;
   string notes = 4;
   float meal_scale = 5;
+  repeated MealPlanRecipeOptionSelectionCreationRequestInput selections = 6;
 }
 
 message MealPlanOptionUpdateRequestInput {
@@ -2895,7 +2897,8 @@ message GetMealPlanRecipeOptionSelectionsForMealPlanOptionResponse {
 }
 
 message CreateMealPlanRecipeOptionSelectionRequest {
-  MealPlanRecipeOptionSelectionCreationRequestInput input = 1;
+  string meal_plan_option_id = 1;
+  MealPlanRecipeOptionSelectionCreationRequestInput input = 2;
 }
 
 message CreateMealPlanRecipeOptionSelectionResponse {

@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
 )
+
+var _ mealplanningmgr.MealPlanningManager = (*MockMealPlanningManager)(nil)
 
 type MockMealPlanningManager struct {
 	mock.Mock
@@ -355,8 +358,8 @@ func (m *MockMealPlanningManager) GetMealPlanRecipeOptionSelectionsForMealPlanOp
 }
 
 // CreateMealPlanRecipeOptionSelection is a mock method.
-func (m *MockMealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, input *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*mealplanning.MealPlanRecipeOptionSelection, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID string, input *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput) (*mealplanning.MealPlanRecipeOptionSelection, error) {
+	returnValues := m.Called(ctx, mealPlanOptionID, input)
 
 	return returnValues.Get(0).(*mealplanning.MealPlanRecipeOptionSelection), returnValues.Error(1)
 }

@@ -411,3 +411,316 @@ func TestQuerier_Integration_MealPlans_CursorBasedPagination(t *testing.T) {
 		},
 	})
 }
+
+func TestQuerier_Integration_MealPlans_WithSelections(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	accountID := account.ID
+
+	// Create recipe with a step that has ingredients
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	require.NotEmpty(t, recipe.Steps)
+	recipeStep := recipe.Steps[0]
+
+	// Create meal with the recipe as a component
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+
+	t.Run("creates meal plan with matching selections", func(t *testing.T) {
+		// Build meal plan with selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+
+		// Add a selection that should match the recipe in the meal
+		dbInput.Selections = []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+		}
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+		require.NotEmpty(t, created.Events)
+		require.NotEmpty(t, created.Events[0].Options)
+
+		// Verify the selection was created by querying for it
+		optionID := created.Events[0].Options[0].ID
+		selections, selectionErr := dbc.GetSelectionsForMealPlanOption(ctx, optionID, nil)
+		assert.NoError(t, selectionErr)
+		require.NotEmpty(t, selections.Data)
+		assert.Equal(t, recipe.ID, selections.Data[0].RecipeID)
+		assert.Equal(t, recipeStep.ID, selections.Data[0].RecipeStepID)
+		assert.Equal(t, uint16(0), selections.Data[0].IngredientIndex)
+		assert.Equal(t, uint16(0), selections.Data[0].SelectedOptionIndex)
+		assert.Equal(t, types.MealPlanRecipeOptionSelectionTypeIngredient, selections.Data[0].SelectionType)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("creates meal plan with multiple selections", func(t *testing.T) {
+		// Build meal plan with selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+
+		// Add multiple selections for the same recipe
+		dbInput.Selections = []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     1,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeInstrument,
+			},
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     2,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeVessel,
+			},
+		}
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+		require.NotEmpty(t, created.Events)
+		require.NotEmpty(t, created.Events[0].Options)
+
+		// Verify all selections were created
+		optionID := created.Events[0].Options[0].ID
+		selections, selectionErr := dbc.GetSelectionsForMealPlanOption(ctx, optionID, nil)
+		assert.NoError(t, selectionErr)
+		assert.Len(t, selections.Data, 3)
+
+		// Verify selection types
+		selectionTypes := make(map[string]bool)
+		for _, sel := range selections.Data {
+			selectionTypes[sel.SelectionType] = true
+		}
+		assert.True(t, selectionTypes[types.MealPlanRecipeOptionSelectionTypeIngredient])
+		assert.True(t, selectionTypes[types.MealPlanRecipeOptionSelectionTypeInstrument])
+		assert.True(t, selectionTypes[types.MealPlanRecipeOptionSelectionTypeVessel])
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("creates meal plan and skips non-matching selections", func(t *testing.T) {
+		// Build meal plan with selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+
+		// Add a selection with a non-existent recipe ID - should be skipped
+		dbInput.Selections = []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            fakes.BuildFakeID(), // Non-existent recipe
+				RecipeStepID:        fakes.BuildFakeID(),
+				IngredientIndex:     0,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+		}
+
+		// Should succeed even though selection doesn't match
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+		require.NotEmpty(t, created.Events)
+		require.NotEmpty(t, created.Events[0].Options)
+
+		// Verify no selections were created (since recipe didn't match)
+		optionID := created.Events[0].Options[0].ID
+		selections, selectionErr := dbc.GetSelectionsForMealPlanOption(ctx, optionID, nil)
+		assert.NoError(t, selectionErr)
+		assert.Empty(t, selections.Data)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("creates meal plan with mixed matching and non-matching selections", func(t *testing.T) {
+		// Build meal plan with selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+
+		// Add one matching and one non-matching selection
+		dbInput.Selections = []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID, // Matching recipe
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            fakes.BuildFakeID(), // Non-matching recipe
+				RecipeStepID:        fakes.BuildFakeID(),
+				IngredientIndex:     1,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+		}
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+		require.NotEmpty(t, created.Events)
+		require.NotEmpty(t, created.Events[0].Options)
+
+		// Verify only the matching selection was created
+		optionID := created.Events[0].Options[0].ID
+		selections, selectionErr := dbc.GetSelectionsForMealPlanOption(ctx, optionID, nil)
+		assert.NoError(t, selectionErr)
+		assert.Len(t, selections.Data, 1)
+		assert.Equal(t, recipe.ID, selections.Data[0].RecipeID)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("creates meal plan without selections", func(t *testing.T) {
+		// Build meal plan without selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+		// Ensure no selections
+		dbInput.Selections = nil
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+		require.NotEmpty(t, created.Events)
+		require.NotEmpty(t, created.Events[0].Options)
+
+		// Verify no selections were created
+		optionID := created.Events[0].Options[0].ID
+		selections, selectionErr := dbc.GetSelectionsForMealPlanOption(ctx, optionID, nil)
+		assert.NoError(t, selectionErr)
+		assert.Empty(t, selections.Data)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("GetMealPlan returns selections in Selections field", func(t *testing.T) {
+		// Build meal plan with selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+
+		// Add multiple selections
+		dbInput.Selections = []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     0,
+				SelectedOptionIndex: 1,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeIngredient,
+			},
+			{
+				ID:                  fakes.BuildFakeID(),
+				RecipeID:            recipe.ID,
+				RecipeStepID:        recipeStep.ID,
+				IngredientIndex:     1,
+				SelectedOptionIndex: 0,
+				SelectionType:       types.MealPlanRecipeOptionSelectionTypeInstrument,
+			},
+		}
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+
+		// Now fetch the meal plan via GetMealPlan
+		fetched, fetchErr := dbc.GetMealPlan(ctx, created.ID, accountID)
+		assert.NoError(t, fetchErr)
+		require.NotNil(t, fetched)
+
+		// Verify the Selections field is populated
+		require.NotNil(t, fetched.Selections)
+		assert.Len(t, fetched.Selections, 2)
+
+		// Verify selection contents
+		selectionTypes := make(map[string]bool)
+		for _, sel := range fetched.Selections {
+			assert.Equal(t, recipe.ID, sel.RecipeID)
+			assert.Equal(t, recipeStep.ID, sel.RecipeStepID)
+			selectionTypes[sel.SelectionType] = true
+		}
+		assert.True(t, selectionTypes[types.MealPlanRecipeOptionSelectionTypeIngredient])
+		assert.True(t, selectionTypes[types.MealPlanRecipeOptionSelectionTypeInstrument])
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+
+	t.Run("GetMealPlan returns nil Selections when none exist", func(t *testing.T) {
+		// Build meal plan without selections
+		exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
+		exampleMealPlan.BelongsToAccount = accountID
+
+		dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
+		dbInput.Selections = nil
+
+		created, createErr := dbc.CreateMealPlan(ctx, dbInput)
+		assert.NoError(t, createErr)
+		require.NotNil(t, created)
+
+		// Now fetch the meal plan via GetMealPlan
+		fetched, fetchErr := dbc.GetMealPlan(ctx, created.ID, accountID)
+		assert.NoError(t, fetchErr)
+		require.NotNil(t, fetched)
+
+		// Verify the Selections field is nil (not an empty slice)
+		assert.Nil(t, fetched.Selections)
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, created.ID, accountID))
+	})
+}

@@ -134,6 +134,122 @@ func (q *Queries) GetMealPlanRecipeOptionSelection(ctx context.Context, db DBTX,
 	return &i, err
 }
 
+const getMealPlanRecipeOptionSelectionsForMealPlan = `-- name: GetMealPlanRecipeOptionSelectionsForMealPlan :many
+SELECT
+	meal_plan_recipe_option_selections.id,
+	meal_plan_recipe_option_selections.belongs_to_meal_plan_option,
+	meal_plan_recipe_option_selections.recipe_id,
+	meal_plan_recipe_option_selections.recipe_step_id,
+	meal_plan_recipe_option_selections.ingredient_index,
+	meal_plan_recipe_option_selections.selected_option_index,
+	meal_plan_recipe_option_selections.selection_type,
+	meal_plan_recipe_option_selections.created_at,
+	meal_plan_recipe_option_selections.last_updated_at,
+	meal_plan_recipe_option_selections.archived_at,
+	(
+		SELECT COUNT(meal_plan_recipe_option_selections.id)
+		FROM meal_plan_recipe_option_selections
+		JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+		WHERE
+			meal_plan_recipe_option_selections.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_recipe_option_selections.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_recipe_option_selections.last_updated_at IS NULL
+				OR meal_plan_recipe_option_selections.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_recipe_option_selections.last_updated_at IS NULL
+				OR meal_plan_recipe_option_selections.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND meal_plan_events.belongs_to_meal_plan = $5 AND meal_plan_options.archived_at IS NULL AND meal_plan_events.archived_at IS NULL
+	) AS filtered_count,
+	(
+		SELECT COUNT(meal_plan_recipe_option_selections.id)
+		FROM meal_plan_recipe_option_selections
+		JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+		WHERE
+			meal_plan_events.belongs_to_meal_plan = $5 AND meal_plan_options.archived_at IS NULL AND meal_plan_events.archived_at IS NULL
+	) AS total_count
+FROM meal_plan_recipe_option_selections
+	JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+WHERE meal_plan_events.belongs_to_meal_plan = $5
+	AND meal_plan_options.archived_at IS NULL
+	AND meal_plan_events.archived_at IS NULL
+	AND meal_plan_recipe_option_selections.archived_at IS NULL
+ORDER BY meal_plan_recipe_option_selections.id ASC
+LIMIT COALESCE($6, 50)
+`
+
+type GetMealPlanRecipeOptionSelectionsForMealPlanParams struct {
+	ResultLimit   interface{}
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	MealPlanID    string
+}
+
+type GetMealPlanRecipeOptionSelectionsForMealPlanRow struct {
+	CreatedAt               time.Time
+	LastUpdatedAt           sql.NullTime
+	ArchivedAt              sql.NullTime
+	ID                      string
+	BelongsToMealPlanOption string
+	RecipeID                string
+	RecipeStepID            string
+	SelectionType           string
+	FilteredCount           int64
+	TotalCount              int64
+	IngredientIndex         int32
+	SelectedOptionIndex     int32
+}
+
+func (q *Queries) GetMealPlanRecipeOptionSelectionsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlanRecipeOptionSelectionsForMealPlan,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.MealPlanID,
+		arg.ResultLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealPlanRecipeOptionSelectionsForMealPlanRow{}
+	for rows.Next() {
+		var i GetMealPlanRecipeOptionSelectionsForMealPlanRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.BelongsToMealPlanOption,
+			&i.RecipeID,
+			&i.RecipeStepID,
+			&i.IngredientIndex,
+			&i.SelectedOptionIndex,
+			&i.SelectionType,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMealPlanRecipeOptionSelectionsForMealPlanOption = `-- name: GetMealPlanRecipeOptionSelectionsForMealPlanOption :many
 SELECT
 	meal_plan_recipe_option_selections.id,

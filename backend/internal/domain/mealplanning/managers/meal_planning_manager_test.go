@@ -1422,8 +1422,9 @@ func TestMealPlanningManager_CreateMealPlanRecipeOptionSelection(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
+		mealPlanOptionID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeMealPlanRecipeOptionSelection()
-		fakeInput := fakes.BuildFakeMealPlanRecipeOptionSelectionDatabaseCreationInput()
+		fakeInput := fakes.BuildFakeMealPlanRecipeOptionSelectionCreationRequestInput()
 
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
@@ -1435,7 +1436,7 @@ func TestMealPlanningManager_CreateMealPlanRecipeOptionSelection(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateMealPlanRecipeOptionSelection(ctx, fakeInput)
+		actual, err := mpm.CreateMealPlanRecipeOptionSelection(ctx, mealPlanOptionID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 

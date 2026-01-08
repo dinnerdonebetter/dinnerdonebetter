@@ -88,6 +88,54 @@ WHERE belongs_to_meal_plan_option = sqlc.arg(meal_plan_option_id)
 ORDER BY meal_plan_recipe_option_selections.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
+-- name: GetMealPlanRecipeOptionSelectionsForMealPlan :many
+SELECT
+	meal_plan_recipe_option_selections.id,
+	meal_plan_recipe_option_selections.belongs_to_meal_plan_option,
+	meal_plan_recipe_option_selections.recipe_id,
+	meal_plan_recipe_option_selections.recipe_step_id,
+	meal_plan_recipe_option_selections.ingredient_index,
+	meal_plan_recipe_option_selections.selected_option_index,
+	meal_plan_recipe_option_selections.selection_type,
+	meal_plan_recipe_option_selections.created_at,
+	meal_plan_recipe_option_selections.last_updated_at,
+	meal_plan_recipe_option_selections.archived_at,
+	(
+		SELECT COUNT(meal_plan_recipe_option_selections.id)
+		FROM meal_plan_recipe_option_selections
+		JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+		WHERE
+			meal_plan_recipe_option_selections.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_recipe_option_selections.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_recipe_option_selections.last_updated_at IS NULL
+				OR meal_plan_recipe_option_selections.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_recipe_option_selections.last_updated_at IS NULL
+				OR meal_plan_recipe_option_selections.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id) AND meal_plan_options.archived_at IS NULL AND meal_plan_events.archived_at IS NULL
+	) AS filtered_count,
+	(
+		SELECT COUNT(meal_plan_recipe_option_selections.id)
+		FROM meal_plan_recipe_option_selections
+		JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+		WHERE
+			meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id) AND meal_plan_options.archived_at IS NULL AND meal_plan_events.archived_at IS NULL
+	) AS total_count
+FROM meal_plan_recipe_option_selections
+	JOIN meal_plan_options ON meal_plan_recipe_option_selections.belongs_to_meal_plan_option = meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+WHERE meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
+	AND meal_plan_options.archived_at IS NULL
+	AND meal_plan_events.archived_at IS NULL
+	AND meal_plan_recipe_option_selections.archived_at IS NULL
+ORDER BY meal_plan_recipe_option_selections.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
+
 -- name: UpdateMealPlanRecipeOptionSelection :execrows
 UPDATE meal_plan_recipe_option_selections SET
 	recipe_id = sqlc.arg(recipe_id),

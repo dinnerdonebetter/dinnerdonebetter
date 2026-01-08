@@ -19,10 +19,10 @@ func ConvertMealPlanRecipeOptionSelectionToMealPlanRecipeOptionSelectionDatabase
 }
 
 // ConvertMealPlanRecipeOptionSelectionDatabaseCreationInputToMealPlanRecipeOptionSelectionDatabaseCreationInput creates a new DatabaseCreationInput with a new ID.
-func ConvertMealPlanRecipeOptionSelectionDatabaseCreationInputToMealPlanRecipeOptionSelectionDatabaseCreationInput(input *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput) *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput {
+func ConvertMealPlanRecipeOptionSelectionDatabaseCreationInputToMealPlanRecipeOptionSelectionDatabaseCreationInput(input *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput, mealPlanOptionID string) *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput {
 	return &mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput{
 		ID:                      identifiers.New(),
-		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		BelongsToMealPlanOption: mealPlanOptionID,
 		RecipeID:                input.RecipeID,
 		RecipeStepID:            input.RecipeStepID,
 		IngredientIndex:         input.IngredientIndex,

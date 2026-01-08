@@ -153,6 +153,7 @@ type Querier interface {
 	GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)
 	GetMealPlanRecipeOptionSelection(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionParams) (*MealPlanRecipeOptionSelections, error)
+	GetMealPlanRecipeOptionSelectionsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanRow, error)
 	GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanRecipeOptionSelectionsForMealPlanOptionParams) ([]*GetMealPlanRecipeOptionSelectionsForMealPlanOptionRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
 	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)

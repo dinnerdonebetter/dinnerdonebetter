@@ -50,44 +50,46 @@ type (
 
 	// MealPlan represents a meal plan.
 	MealPlan struct {
-		_ struct{} `json:"-"`
-
-		CreatedAt              time.Time        `json:"createdAt"`
-		VotingDeadline         time.Time        `json:"votingDeadline"`
-		ArchivedAt             *time.Time       `json:"archivedAt"`
-		LastUpdatedAt          *time.Time       `json:"lastUpdatedAt"`
-		ID                     string           `json:"id"`
-		Status                 string           `json:"status"`
-		Notes                  string           `json:"notes"`
-		ElectionMethod         string           `json:"electionMethod"`
-		BelongsToAccount       string           `json:"belongsToAccount"`
-		CreatedByUser          string           `json:"createdBy"`
-		Events                 []*MealPlanEvent `json:"events"`
-		GroceryListInitialized bool             `json:"groceryListInitialized"`
-		TasksCreated           bool             `json:"tasksCreated"`
+		_                      struct{}                         `json:"-"`
+		CreatedAt              time.Time                        `json:"createdAt"`
+		VotingDeadline         time.Time                        `json:"votingDeadline"`
+		ArchivedAt             *time.Time                       `json:"archivedAt"`
+		LastUpdatedAt          *time.Time                       `json:"lastUpdatedAt"`
+		Status                 string                           `json:"status"`
+		ID                     string                           `json:"id"`
+		Notes                  string                           `json:"notes"`
+		ElectionMethod         string                           `json:"electionMethod"`
+		BelongsToAccount       string                           `json:"belongsToAccount"`
+		CreatedByUser          string                           `json:"createdBy"`
+		Events                 []*MealPlanEvent                 `json:"events"`
+		Selections             []*MealPlanRecipeOptionSelection `json:"selections"`
+		GroceryListInitialized bool                             `json:"groceryListInitialized"`
+		TasksCreated           bool                             `json:"tasksCreated"`
 	}
 
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		VotingDeadline time.Time                            `json:"votingDeadline"`
-		Notes          string                               `json:"notes"`
-		ElectionMethod string                               `json:"electionMethod"`
-		Events         []*MealPlanEventCreationRequestInput `json:"events"`
+		VotingDeadline time.Time                                            `json:"votingDeadline"`
+		Notes          string                                               `json:"notes"`
+		ElectionMethod string                                               `json:"electionMethod"`
+		Events         []*MealPlanEventCreationRequestInput                 `json:"events"`
+		Selections     []*MealPlanRecipeOptionSelectionCreationRequestInput `json:"selections,omitempty"`
 	}
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		VotingDeadline   time.Time                             `json:"-"`
-		BelongsToAccount string                                `json:"-"`
-		Notes            string                                `json:"-"`
-		ID               string                                `json:"-"`
-		ElectionMethod   string                                `json:"-"`
-		CreatedByUser    string                                `json:"-"`
-		Events           []*MealPlanEventDatabaseCreationInput `json:"-"`
+		VotingDeadline   time.Time                                             `json:"-"`
+		BelongsToAccount string                                                `json:"-"`
+		Notes            string                                                `json:"-"`
+		ID               string                                                `json:"-"`
+		ElectionMethod   string                                                `json:"-"`
+		CreatedByUser    string                                                `json:"-"`
+		Events           []*MealPlanEventDatabaseCreationInput                 `json:"-"`
+		Selections       []*MealPlanRecipeOptionSelectionDatabaseCreationInput `json:"-"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.

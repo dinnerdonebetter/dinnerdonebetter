@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -30,13 +29,15 @@ const (
 func init() {
 	gob.Register(new(MealPlanRecipeOptionSelection))
 	gob.Register(new(MealPlanRecipeOptionSelectionDatabaseCreationInput))
+	gob.Register(new(MealPlanRecipeOptionSelectionCreationRequestInput))
 	gob.Register(new(MealPlanRecipeOptionSelectionUpdateRequestInput))
 }
 
 type (
 	// MealPlanRecipeOptionSelection represents a user's selection for a recipe option group.
 	MealPlanRecipeOptionSelection struct {
-		_                       struct{}   `json:"-"`
+		_ struct{} `json:"-"`
+
 		CreatedAt               time.Time  `json:"createdAt"`
 		LastUpdatedAt           *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt              *time.Time `json:"archivedAt"`
@@ -51,14 +52,26 @@ type (
 
 	// MealPlanRecipeOptionSelectionDatabaseCreationInput represents what a user could set as input for creating meal plan recipe option selections.
 	MealPlanRecipeOptionSelectionDatabaseCreationInput struct {
-		_                       struct{} `json:"-"`
-		ID                      string   `json:"-"`
-		BelongsToMealPlanOption string   `json:"-"`
-		RecipeID                string   `json:"-"`
-		RecipeStepID            string   `json:"-"`
-		SelectionType           string   `json:"-"`
-		IngredientIndex         uint16   `json:"-"`
-		SelectedOptionIndex     uint16   `json:"-"`
+		_ struct{} `json:"-"`
+
+		ID                      string `json:"-"`
+		BelongsToMealPlanOption string `json:"-"`
+		RecipeID                string `json:"-"`
+		RecipeStepID            string `json:"-"`
+		SelectionType           string `json:"-"`
+		IngredientIndex         uint16 `json:"-"`
+		SelectedOptionIndex     uint16 `json:"-"`
+	}
+
+	// MealPlanRecipeOptionSelectionCreationRequestInput represents what a user could set as input for creating meal plan recipe option selections.
+	MealPlanRecipeOptionSelectionCreationRequestInput struct {
+		_ struct{} `json:"-"`
+
+		RecipeID            string `json:"recipeID"`
+		RecipeStepID        string `json:"recipeStepID"`
+		SelectionType       string `json:"selectionType"`
+		IngredientIndex     uint16 `json:"ingredientIndex"`
+		SelectedOptionIndex uint16 `json:"selectedOptionIndex"`
 	}
 
 	// MealPlanRecipeOptionSelectionUpdateRequestInput represents what a user could set as input for updating meal plan recipe option selections.
@@ -76,15 +89,6 @@ type (
 		UpdateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string, input *MealPlanRecipeOptionSelectionUpdateRequestInput) error
 		ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error
 	}
-
-	// MealPlanRecipeOptionSelectionDataService describes a structure capable of serving traffic related to meal plan recipe option selections.
-	MealPlanRecipeOptionSelectionDataService interface {
-		GetMealPlanRecipeOptionSelectionHandler(http.ResponseWriter, *http.Request)
-		ListMealPlanRecipeOptionSelectionsByMealPlanOptionHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanRecipeOptionSelectionHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanRecipeOptionSelectionHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanRecipeOptionSelectionHandler(http.ResponseWriter, *http.Request)
-	}
 )
 
 // Update updates a MealPlanRecipeOptionSelection with the provided input.
@@ -92,6 +96,23 @@ func (x *MealPlanRecipeOptionSelection) Update(input *MealPlanRecipeOptionSelect
 	if input.SelectedOptionIndex != nil {
 		x.SelectedOptionIndex = *input.SelectedOptionIndex
 	}
+}
+
+var _ validation.ValidatableWithContext = (*MealPlanRecipeOptionSelectionCreationRequestInput)(nil)
+
+// ValidateWithContext validates a MealPlanRecipeOptionSelectionCreationRequestInput.
+func (x *MealPlanRecipeOptionSelectionCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.SelectionType, validation.Required, validation.In(
+			MealPlanRecipeOptionSelectionTypeIngredient,
+			MealPlanRecipeOptionSelectionTypeInstrument,
+			MealPlanRecipeOptionSelectionTypeVessel,
+		)),
+	)
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanRecipeOptionSelectionDatabaseCreationInput)(nil)

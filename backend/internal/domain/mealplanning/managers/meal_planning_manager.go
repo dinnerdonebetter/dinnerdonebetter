@@ -73,7 +73,7 @@ type (
 
 		GetMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) (*types.MealPlanRecipeOptionSelection, error)
 		GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx context.Context, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanRecipeOptionSelection], error)
-		CreateMealPlanRecipeOptionSelection(ctx context.Context, input *types.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*types.MealPlanRecipeOptionSelection, error)
+		CreateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID string, input *types.MealPlanRecipeOptionSelectionCreationRequestInput) (*types.MealPlanRecipeOptionSelection, error)
 		UpdateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string, input *types.MealPlanRecipeOptionSelectionUpdateRequestInput) error
 		ArchiveMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID, recipeStepID string, ingredientIndex uint16, selectionType string) error
 
@@ -1283,7 +1283,7 @@ func (m *mealPlanningManager) GetMealPlanRecipeOptionSelectionsForMealPlanOption
 	return results, nil
 }
 
-func (m *mealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, input *types.MealPlanRecipeOptionSelectionDatabaseCreationInput) (*types.MealPlanRecipeOptionSelection, error) {
+func (m *mealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Context, mealPlanOptionID string, input *types.MealPlanRecipeOptionSelectionCreationRequestInput) (*types.MealPlanRecipeOptionSelection, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1295,10 +1295,12 @@ func (m *mealPlanningManager) CreateMealPlanRecipeOptionSelection(ctx context.Co
 		return nil, observability.PrepareAndLogError(err, m.logger.WithSpan(span), span, "validating meal plan recipe option selection creation input")
 	}
 
-	logger := m.logger.WithSpan(span).WithValue("meal_plan_recipe_option_selection_id", input.ID)
-	tracing.AttachToSpan(span, "meal_plan_recipe_option_selection_id", input.ID)
+	converted := converters.ConvertMealPlanRecipeOptionSelectionDatabaseCreationInputToMealPlanRecipeOptionSelectionDatabaseCreationInput(input, mealPlanOptionID)
 
-	created, err := m.db.CreateMealPlanRecipeOptionSelection(ctx, input)
+	logger := m.logger.WithSpan(span).WithValue("meal_plan_recipe_option_selection_id", converted.ID)
+	tracing.AttachToSpan(span, "meal_plan_recipe_option_selection_id", converted.ID)
+
+	created, err := m.db.CreateMealPlanRecipeOptionSelection(ctx, converted)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan recipe option selection")
 	}

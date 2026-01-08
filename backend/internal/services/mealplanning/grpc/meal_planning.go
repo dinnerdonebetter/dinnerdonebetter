@@ -6,7 +6,6 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -879,10 +878,8 @@ func (s *serviceImpl) CreateMealPlanRecipeOptionSelection(ctx context.Context, r
 	}, span, s.logger)
 
 	input := converters.ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(request.Input)
-	input.BelongsToMealPlanOption = request.Input.BelongsToMealPlanOption
-	input.ID = identifiers.New()
 
-	created, err := s.mealPlanningManager.CreateMealPlanRecipeOptionSelection(ctx, input)
+	created, err := s.mealPlanningManager.CreateMealPlanRecipeOptionSelection(ctx, request.MealPlanOptionId, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan recipe option selection")
 	}

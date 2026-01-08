@@ -7,7 +7,6 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -658,11 +657,18 @@ func ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(input
 		events = append(events, ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(event))
 	}
 
+	var selections []*mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput
+	for _, selection := range input.Selections {
+		converted := ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(selection)
+		selections = append(selections, converted)
+	}
+
 	return &mealplanning.MealPlanCreationRequestInput{
 		VotingDeadline: grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
 		Notes:          input.Notes,
 		ElectionMethod: ConvertMealPlanElectionMethodToString(input.ElectionMethod),
 		Events:         events,
+		Selections:     selections,
 	}
 }
 
@@ -682,12 +688,18 @@ func ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestI
 }
 
 func ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(input *mealplanningsvc.MealPlanOptionCreationRequestInput) *mealplanning.MealPlanOptionCreationRequestInput {
+	selections := []*mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput{}
+	for _, selection := range input.Selections {
+		selections = append(selections, ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(selection))
+	}
+
 	return &mealplanning.MealPlanOptionCreationRequestInput{
 		AssignedCook:       input.AssignedCook,
 		AssignedDishwasher: input.AssignedDishwasher,
 		MealID:             input.MealId,
 		Notes:              input.Notes,
 		MealScale:          input.MealScale,
+		Selections:         selections,
 	}
 }
 
@@ -1162,15 +1174,13 @@ func ConvertGRPCMealPlanRecipeOptionSelectionToMealPlanRecipeOptionSelection(inp
 	}
 }
 
-func ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(input *mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput) *mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput {
-	return &mealplanning.MealPlanRecipeOptionSelectionDatabaseCreationInput{
-		ID:                      identifiers.New(),
-		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
-		RecipeID:                input.RecipeId,
-		RecipeStepID:            input.RecipeStepId,
-		IngredientIndex:         uint16(input.IngredientIndex),
-		SelectedOptionIndex:     uint16(input.SelectedOptionIndex),
-		SelectionType:           ConvertMealPlanRecipeOptionSelectionTypeToString(input.SelectionType),
+func ConvertGRPCMealPlanRecipeOptionSelectionCreationRequestInputToMealPlanRecipeOptionSelectionCreationRequestInput(input *mealplanningsvc.MealPlanRecipeOptionSelectionCreationRequestInput) *mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput {
+	return &mealplanning.MealPlanRecipeOptionSelectionCreationRequestInput{
+		RecipeID:            input.RecipeId,
+		RecipeStepID:        input.RecipeStepId,
+		IngredientIndex:     uint16(input.IngredientIndex),
+		SelectedOptionIndex: uint16(input.SelectedOptionIndex),
+		SelectionType:       ConvertMealPlanRecipeOptionSelectionTypeToString(input.SelectionType),
 	}
 }
 
