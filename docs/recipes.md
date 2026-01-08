@@ -15,6 +15,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## URL and Routing Fields
 
 ### `Slug` (string)
+
 - **Purpose**: URL-friendly version of the recipe name
 - **Usage**: Intended for SEO-friendly routing and frontend interfaces
 - **Example**: "chocolate-chip-cookies", "beef-stir-fry"
@@ -23,38 +24,45 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## Metadata Fields
 
 ### `Description` (string)
+
 - **Purpose**: Detailed description of the recipe
 - **Usage**: Provides context about the dish, its origins, or special characteristics
 - **Example**: "A classic American cookie recipe with crispy edges and chewy centers"
 
 ### `Source` (string)
+
 - **Purpose**: Attribution or origin of the recipe
 - **Usage**: Credits the original creator, cookbook, or website
 - **Example**: "Grandma's Cookbook", "Food Network", "AllRecipes.com"
 
 ### `CreatedByUser` (string)
+
 - **Purpose**: ID of the user who created this recipe
 - **Usage**: Used for ownership tracking and user-specific recipe management
 
 ## Timing and Lifecycle Fields
 
 ### `CreatedAt` (time.Time)
+
 - **Purpose**: Timestamp when the recipe was first created
 - **Usage**: Audit trail, sorting, and display purposes
 
 ### `LastUpdatedAt` (*time.Time)
+
 - **Purpose**: Timestamp of the most recent modification
 - **Usage**: Tracks when recipe was last edited, can be null if never updated
 
 ### `ArchivedAt` (*time.Time)
+
 - **Purpose**: Timestamp when the recipe was archived/deleted
 - **Usage**: Soft delete functionality, can be null if recipe is active
 
 ## Portion and Yield Fields
 
 ### `EstimatedPortions` ([Float32RangeWithOptionalMax](../../internal/platform/types/main.go))
+
 - **Purpose**: Range of how many portions/servings the recipe yields
-- **Structure**: 
+- **Structure**:
   - `Min` (float32): Minimum number of portions (required)
   - `Max` (*float32): Maximum number of portions (optional)
 - **Usage**: Helps users understand recipe scale and plan for different group sizes
@@ -62,11 +70,13 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 - **Example**: Min: 4, Max: 6 (serves 4-6 people) or Min: 4, Max: null (serves exactly 4 people)
 
 ### `PortionName` (string)
+
 - **Purpose**: Singular name for what the recipe yields
 - **Usage**: Used in UI to describe individual servings
 - **Example**: "serving", "cookie", "slice", "bowl"
 
 ### `PluralPortionName` (string)
+
 - **Purpose**: Plural name for what the recipe yields
 - **Usage**: Used in UI when referring to multiple servings
 - **Example**: "servings", "cookies", "slices", "bowls"
@@ -74,6 +84,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## Recipe Classification Fields
 
 ### `YieldsComponentType` (string)
+
 - **Purpose**: Categorizes what type of meal component this recipe produces
 - **Valid Values**:
   - `"unspecified"` - No specific category
@@ -89,6 +100,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 - **Note**: These values are defined as constants in [meal.go](../internal/domain/mealplanning/meal.go) and are used throughout the meal planning system
 
 ### `EligibleForMeals` (bool)
+
 - **Purpose**: Whether this recipe can be included in new meals
 - **Use Case**: Intended as a soft deletion mechanism for recipes currently in use. Allows admins to prevent new usage of a recipe while keeping existing meals functional, giving time to replace the recipe in existing meal plans
 - **Note**: Recipes for individual ingredients should be marked as ineligible for meals. **This functionality is largely unimplemented** - the system doesn't currently enforce this flag when creating new meals
@@ -96,6 +108,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## Quality and Approval Fields
 
 ### `SealOfApproval` (bool)
+
 - **Purpose**: Indicates if the recipe has been reviewed and approved by service operators
 - **Usage**: Intended for highlighting "winner" recipes to new users
 - **Note**: Currently unused - this field was added prematurely for future functionality
@@ -103,6 +116,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## Recipe Inspiration
 
 ### `InspiredByRecipeID` (*string)
+
 - **Purpose**: References another recipe that inspired this one
 - **Usage**: Enables easy recipe cloning and modification while maintaining provenance
 - **Note**: If null or blank, the recipe is considered "original". Used when users want to make minor adjustments to existing recipes (e.g., reducing garlic in a soup recipe)
@@ -110,6 +124,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 ## Content Fields
 
 ### `Steps` ([]*[RecipeStep](../internal/domain/mealplanning/recipe_step.go))
+
 - **Purpose**: Ordered list of cooking steps for the recipe
 - **Usage**: Contains the actual cooking instructions and process
 - **Note**: Must have at least 2 steps to prevent overly granular "recipes" (like "diced onion") while allowing proper prepared ingredient recipes (like "caramelized onions")
@@ -119,11 +134,13 @@ The `Recipe` object is the central entity in the meal planning system. It repres
   - **Special Cases**: Some steps may only have instruments (cleaning a knife) or only vessels (preheating a pan)
 
 ### `PrepTasks` ([]*[RecipePrepTask](../internal/domain/mealplanning/recipe_prep_tasks.go))
+
 - **Purpose**: Preparation tasks that can be done ahead of time
 - **Usage**: Helps with meal planning by identifying advance preparation opportunities
 - **Note**: These are separate from the main cooking steps
 
 ### `Media` ([]*[RecipeMedia](../internal/domain/mealplanning/recipe_media.go))
+
 - **Purpose**: Images, videos, or other media associated with the recipe
 - **Usage**: Can be attached to both the recipe level and individual steps
 - **Note**: Currently a nascent concept. Planned to abstract to a general `UploadedMedia` type supporting images and videos. Recipe-level media might include finished product photos or full video tutorials, while step-level media provides preparation guidance
@@ -137,11 +154,13 @@ Recipe steps produce **products** - the outputs of each step that can be used in
 Discrete products represent countable items where the count should scale independently from the per-item measurement.
 
 **Fields:**
+
 - `ItemQuantity` (OptionalFloat32Range): The count of discrete items (e.g., 4 patties, 12 cookies, 8 slices)
 - `MeasurementQuantity` (OptionalFloat32Range): The weight/volume measurement **per item** (e.g., 4 ounces per patty)
 - `MeasurementUnit` (ValidMeasurementUnit): The unit for the per-item measurement (e.g. ounce)
 
 **Example - Discrete Product:**
+
 ```json
 {
   "name": "beef patties",
@@ -151,9 +170,11 @@ Discrete products represent countable items where the count should scale indepen
   "measurementUnitId": "ounce"
 }
 ```
+
 This represents "4 patties, each 4 ounces" (16 ounces total).
 
 **When to Use:**
+
 - Items that should scale by count (patties, cookies, slices, pieces)
 - When the per-item size should remain constant when scaling
 - Example: A recipe that divides 16 ounces of meat into 4 patties of 4 ounces each
@@ -163,11 +184,13 @@ This represents "4 patties, each 4 ounces" (16 ounces total).
 Continuous products represent bulk quantities where the total amount scales proportionally.
 
 **Fields:**
+
 - `ItemQuantity` (OptionalFloat32Range): Not set (both `Min` and `Max` are null) - indicates continuous product
 - `MeasurementQuantity` (OptionalFloat32Range): The **total** weight/volume quantity (e.g., 16 ounces of sauce)
 - `MeasurementUnit` (ValidMeasurementUnit): The unit for the total measurement
 
 **Example - Continuous Product:**
+
 ```json
 {
   "name": "sauce",
@@ -177,9 +200,11 @@ Continuous products represent bulk quantities where the total amount scales prop
   "measurementUnitId": "ounce"
 }
 ```
+
 This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is an empty object (both `min` and `max` are null/omitted).
 
 **When to Use:**
+
 - Bulk quantities (sauces, liquids, powders, mixtures)
 - When the total quantity should scale proportionally
 - Example: A recipe that produces 2 cups of sauce
@@ -203,7 +228,7 @@ Option groups are defined using two key fields on recipe step ingredients, instr
 
 Consider a recipe step that allows either butter or margarine:
 
-```
+```text
 Step 1: Mix ingredients
   Ingredients:
     - Butter     (Index: 0, OptionIndex: 0)  ─┐
@@ -213,6 +238,7 @@ Step 1: Mix ingredients
 ```
 
 In this example:
+
 - **Butter and Margarine** share `Index: 0`, making them alternatives for the same ingredient slot
 - **Butter** has `OptionIndex: 0`, making it the default choice
 - **Margarine** has `OptionIndex: 1`, making it the first alternative
@@ -264,6 +290,7 @@ When creating a recipe, define option groups by setting the same `Index` for alt
 The same pattern applies to instruments and vessels:
 
 **Instrument Option Group Example:**
+
 ```json
 {
   "instruments": [
@@ -284,6 +311,7 @@ The same pattern applies to instruments and vessels:
 ```
 
 **Vessel Option Group Example:**
+
 ```json
 {
   "vessels": [
@@ -310,6 +338,7 @@ Each combination of `(recipe_step_id, index, option_index)` must be unique. This
 ### Integration with Meal Planning
 
 When recipes with option groups are included in meal plans, users can specify which alternative they prefer using **selections**. See [Meal Planning - Recipe Option Selections](meal_planning.md#recipe-option-selections) for details on:
+
 - How selections are specified during meal plan creation
 - How selections affect grocery list generation
 - Default behavior when no selection is made (uses `OptionIndex: 0`)
@@ -326,6 +355,7 @@ When recipes with option groups are included in meal plans, users can specify wh
 Option groups are intended for **simple substitutions that don't change how you prepare the recipe**. The cooking process should remain essentially the same regardless of which option is selected.
 
 **Good candidates for option groups:**
+
 - Sugar or honey (both sweeteners, same technique)
 - Fish sauce or soy sauce (both umami sources, same usage)
 - Butter or margarine (same role in the recipe)
@@ -333,6 +363,7 @@ Option groups are intended for **simple substitutions that don't change how you 
 - Dutch oven or slow cooker (for recipes where either works identically)
 
 **Not appropriate for option groups:**
+
 - Deep fried or baked (completely different techniques and steps)
 - Fresh pasta or dried pasta (different cooking times and possibly different steps)
 - Bone-in or boneless chicken (may require different cooking times or techniques)
@@ -349,16 +380,19 @@ The system supports dynamic recipe scaling through the frontend interface. Users
 ### Scaling Behavior
 
 **Ingredients:**
+
 - Ingredient quantities are multiplied by the scale factor
 - Example: 1 clove of garlic at 2x scale = 2 cloves of garlic
 
 **Products - Discrete:**
+
 - `ItemQuantity` (count) is multiplied by the scale factor
 - `MeasurementQuantity` (per-item measurement) **remains constant**
 - Example: 4 patties (4 oz each) at 2x scale = 8 patties (still 4 oz each)
 - This ensures that when scaling a recipe, you get more items of the same size, not larger items
 
 **Products - Continuous:**
+
 - `MeasurementQuantity` (total quantity) is multiplied by the scale factor
 - Example: 16 ounces of sauce at 2x scale = 32 ounces of sauce
 - This is the traditional scaling behavior for bulk quantities
@@ -366,14 +400,16 @@ The system supports dynamic recipe scaling through the frontend interface. Users
 ### Scaling Examples
 
 **Discrete Product Scaling:**
-```
+
+```text
 Original: 4 patties, each 4 ounces (16 oz total)
 Scale 2x:  8 patties, each 4 ounces (32 oz total)
            ↑ count doubles    ↑ per-item stays same
 ```
 
 **Continuous Product Scaling:**
-```
+
+```text
 Original: 16 ounces of sauce
 Scale 2x:  32 ounces of sauce
            ↑ total quantity doubles
@@ -407,13 +443,16 @@ Recipe search is currently implemented through a `RecipeSearchSubset` type that 
 When creating recipe steps, you must use **bridge table IDs** to specify ingredients, instruments, and vessels. These bridge tables define which combinations of entities are valid together.
 
 **For Recipe Step Ingredients:**
+
 - `ValidIngredientPreparationID` (required) - References a `ValidIngredientPreparation` that defines which ingredient can be used with which preparation method
 - `ValidIngredientMeasurementUnitID` (required) - References a `ValidIngredientMeasurementUnit` that defines which measurement unit can be used with which ingredient
 
 **For Recipe Step Instruments:**
+
 - `ValidPreparationInstrumentID` (required) - References a `ValidPreparationInstrument` that defines which instrument can be used with which preparation method
 
 **For Recipe Step Vessels:**
+
 - `ValidPreparationVesselID` (required) - References a `ValidPreparationVessel` that defines which vessel can be used with which preparation method
 
 **Exception - Recipe Step Products:**
@@ -495,6 +534,7 @@ When an ingredient, instrument, or vessel is the **output of a previous recipe s
 ```
 
 Note in the example above:
+
 - Step 0's ingredient uses `validIngredientPreparationId` and `validIngredientMeasurementUnitId`
 - Step 1's ingredient uses `productOfRecipeStepIndex` and `productOfRecipeStepProductIndex` (referencing step 0's product)
 
@@ -539,16 +579,19 @@ This example shows how to create a discrete product where the count scales indep
 ```
 
 This creates 4 patties, each 4 ounces (16 ounces total). When the recipe is scaled 2x:
+
 - `itemQuantity` becomes 8 (8 patties)
 - `measurementQuantity` stays 4 (still 4 oz per patty)
 - Total meat needed: 32 ounces (for 8 patties of 4 oz each)
 
 **Key Points:**
+
 - `itemQuantity` specifies the count of discrete items (4 patties)
 - `measurementQuantity` specifies the per-item measurement (4 ounces per patty)
 - When scaling, the count multiplies but the per-item size stays constant
 
 ### Recipe Cloning Workflow
+
 1. User finds a recipe they like
 2. System creates a copy with `InspiredByRecipeID` pointing to original
 3. `CreatedByUser` field is changed to the new user
@@ -558,6 +601,7 @@ This creates 4 patties, each 4 ounces (16 ounces total). When the recipe is scal
 7. Original recipe remains unchanged
 
 ### Validation Rules
+
 - **Minimum Steps**: Recipes must have at least 2 steps
 - **Required Fields**: Name, slug, estimated portions, portion names, and yields component type are required
 - **Step Requirements**: Each step must have at least one instrument OR vessel (not necessarily both), and a preparation method
@@ -569,19 +613,22 @@ This creates 4 patties, each 4 ounces (16 ounces total). When the recipe is scal
 The system validates bridge table IDs during recipe creation to ensure data integrity:
 
 **Validation Checks:**
+
 1. **Existence**: The bridge table entry must exist
 2. **Preparation Matching**: The bridge table entry's preparation must match the step's preparation
 3. **Ingredient Matching**: For `ValidIngredientMeasurementUnit`, the ingredient must match the one from `ValidIngredientPreparation`
 
 **Error Messages:**
 Validation errors follow this format:
-```
+
+```text
 step {stepIndex} ingredient {ingredientIndex}: {specific error}
 step {stepIndex} instrument {instrumentIndex}: {specific error}
 step {stepIndex} vessel {vesselIndex}: {specific error}
 ```
 
 **Example Errors:**
+
 - `step 0 ingredient 0: ValidIngredientPreparation "abc123" not found`
 - `step 0 ingredient 0: ValidIngredientPreparation "abc123" is for preparation "chop", but step uses preparation "soak"`
 - `step 0 ingredient 0: ValidIngredientMeasurementUnit "xyz789" is for ingredient "flour", but ingredient "sugar" was specified`
@@ -591,6 +638,7 @@ step {stepIndex} vessel {vesselIndex}: {specific error}
 Ingredients, instruments, or vessels that come from previous recipe steps (identified by `ProductOfRecipeStepIndex` or `RecipeStepProductID`) skip bridge table validation. Their validity was established when the original product was created.
 
 ### Data Flow
+
 - Recipes are created through the API using [`RecipeCreationRequestInput`](../internal/domain/mealplanning/recipe.go)
 - Database operations use [`RecipeDatabaseCreationInput`](../internal/domain/mealplanning/recipe.go)
 - Updates use [`RecipeUpdateRequestInput`](../internal/domain/mealplanning/recipe.go)
@@ -599,11 +647,13 @@ Ingredients, instruments, or vessels that come from previous recipe steps (ident
 ## Common Gotchas and Edge Cases
 
 ### Recipe vs. Ingredient Confusion
+
 - **Problem**: New developers might try to create single-step "recipes" for basic ingredients
 - **Solution**: The 2-step minimum prevents this. Use the ingredient system for raw materials
 - **Example**: Don't create a recipe for "1 cup flour" - that's an ingredient. But "caramelized onions" is a valid recipe
 
 ### Slug Implementation Status
+
 - **Problem**: Slug field exists but isn't functional
 - **Solution**: Don't rely on slug-based routing until it's implemented
 - **Workaround**: Use recipe ID for all routing needs

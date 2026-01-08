@@ -8,13 +8,13 @@ To connect to dev, you'll need to run `make proxy_dev_db`, and then run code tha
 
 Since all Go files in this folder aren't saved, here's a handy template for what the database connection string needs to look like:
 
-```
+```go
 const dbString = `user=<user> password=<password> database=<database> host=127.0.0.1 port=5434 sslmode=disable`
 ```
 
 Do not save real credentials to this file or anything that would end up in source control.
 
-### Examples:
+### Examples
 
 ## using the API client
 
@@ -22,43 +22,43 @@ Do not save real credentials to this file or anything that would end up in sourc
 package main
 
 import (
-	"context"
-	"net/url"
-	"time"
+ "context"
+ "net/url"
+ "time"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+ "github.com/dinnerdonebetter/backend/internal/observability/tracing"
+ "github.com/dinnerdonebetter/backend/pkg/apiclient"
+ "github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/pquerna/otp/totp"
+ "github.com/pquerna/otp/totp"
 )
 
 func main() {
-	u, err := url.Parse("https://api.dinnerdonebetter.dev")
-	if err != nil {
-		panic(err)
-	}
+ u, err := url.Parse("https://api.dinnerdonebetter.dev")
+ if err != nil {
+  panic(err)
+ }
 
-	client, err := apiclient.NewClient(u, tracing.NewNoopTracerProvider())
-	if err != nil {
-		panic(err)
-	}
+ client, err := apiclient.NewClient(u, tracing.NewNoopTracerProvider())
+ if err != nil {
+  panic(err)
+ }
 
-	code, err := totp.GenerateCode("REPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEYUSS", time.Now())
-	if err != nil {
-		panic(err)
-	}
+ code, err := totp.GenerateCode("REPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEREPLACEMEYUSS", time.Now())
+ if err != nil {
+  panic(err)
+ }
 
-	jwtResponse, err := client.LoginForToken(context.Background(), &types.UserLoginInput{
-		Username:  "username",
-		Password:  "password",
-		TOTPToken: code,
-	})
-	if err != nil {
-		panic(err)
-	}
+ jwtResponse, err := client.LoginForToken(context.Background(), &types.UserLoginInput{
+  Username:  "username",
+  Password:  "password",
+  TOTPToken: code,
+ })
+ if err != nil {
+  panic(err)
+ }
 
-	println(jwtResponse)
+ println(jwtResponse)
 }
 ```
 
@@ -68,51 +68,51 @@ func main() {
 package main
 
 import (
-	"context"
-	"fmt"
-	"os"
-	"log"
-	"time"
-	
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/routingcfg"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+ "context"
+ "fmt"
+ "os"
+ "log"
+ "time"
+ 
+ databasecfg "github.com/dinnerdonebetter/backend/internal/database/routingcfg"
+ "github.com/dinnerdonebetter/backend/internal/database/postgres"
+ "github.com/dinnerdonebetter/backend/internal/observability/logging"
+ "github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 const dbString = `user=%s password=%s database=%s host=127.0.0.1 port=5434 sslmode=disable`
 
 func main() {
-	ctx := context.Background()
-	logger := logging.NewNoopLogger()
-	tracerProvider := tracing.NewNoopTracerProvider()
+ ctx := context.Background()
+ logger := logging.NewNoopLogger()
+ tracerProvider := tracing.NewNoopTracerProvider()
 
-	dbUser := os.Getenv("DEV_DATABASE_USER")
-	dbPassword := os.Getenv("DEV_DATABASE_PASSWORD")
-	dbName := os.Getenv("DEV_DATABASE_DB")
+ dbUser := os.Getenv("DEV_DATABASE_USER")
+ dbPassword := os.Getenv("DEV_DATABASE_PASSWORD")
+ dbName := os.Getenv("DEV_DATABASE_DB")
 
-	databaseConfig := &databasecfg.Config{
-		OAuth2TokenEncryptionKey: os.Getenv("DEV_DATABASE_OAUTH2_ENCRYPTION_KEY"),
-		ConnectionDetails:        fmt.Sprintf(dbString, dbUser, dbPassword, dbName),
-		RunMigrations:            false,
-		MaxPingAttempts:          10,
-		PingWaitPeriod:           time.Second,
-	}
+ databaseConfig := &databasecfg.Config{
+  OAuth2TokenEncryptionKey: os.Getenv("DEV_DATABASE_OAUTH2_ENCRYPTION_KEY"),
+  ConnectionDetails:        fmt.Sprintf(dbString, dbUser, dbPassword, dbName),
+  RunMigrations:            false,
+  MaxPingAttempts:          10,
+  PingWaitPeriod:           time.Second,
+ }
 
-	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, databaseConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
+ dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+ dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, databaseConfig)
+ if err != nil {
+  log.Fatal(err)
+ }
 
-	cancel()
-	defer dataManager.Close()
+ cancel()
+ defer dataManager.Close()
 
-	collection, err := dataManager.AggregateUserData(ctx, "cepmmrq23akg00b01aqg")
-	if err != nil {
-		log.Fatal(err)
-	}
+ collection, err := dataManager.AggregateUserData(ctx, "cepmmrq23akg00b01aqg")
+ if err != nil {
+  log.Fatal(err)
+ }
 
-	log.Println(collection)
+ log.Println(collection)
 }
 ```

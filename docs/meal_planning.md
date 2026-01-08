@@ -15,16 +15,19 @@ The meal planning system is designed to help groups collaboratively decide what 
 The meal planning system consists of several key components:
 
 ### 1. Core Domain Models
+
 - **Meal Planning Manager**: Handles CRUD operations for meals, meal plans, and related entities
 - **Recipe Manager**: Manages recipe creation, updates, and retrieval
 - **Valid Enumerations Manager**: Manages system-defined valid values (ingredients, measurement units, etc.)
 
 ### 2. Voting and Decision Making
+
 - **Schulze Voting Method**: Used for ranking meal plan options within each event
 - **Vote Management**: Users can rank options and change votes until the deadline
 - **Election Processing**: Background workers tally votes and determine winners
 
 ### 3. Background Workers
+
 - **Meal Plan Finalizer**: Processes finalized meal plans and creates grocery lists
 - **Grocery List Initializer**: Generates shopping lists from finalized meal plans
 - **Task Creator**: Creates prep tasks and cooking assignments
@@ -33,12 +36,14 @@ The meal planning system consists of several key components:
 ## Meal Planning Flow
 
 ### 1. Meal Plan Creation
+
 1. User creates a meal plan with a name and time period (ad-hoc, at will)
 2. Events are added to the meal plan (e.g., "Dinner on Tuesday")
 3. For each event, multiple meal options are proposed
 4. Each option references a meal (collection of recipes) - creating users can search for existing meals to add
 
 ### 2. Voting Phase
+
 1. Users rank their preferences for each event's options
 2. Users can change their votes until the deadline
 3. Users can abstain from voting on some options while voting on others
@@ -46,6 +51,7 @@ The meal planning system consists of several key components:
 5. If no one votes on any options, all options are considered tied and one is chosen and marked as tiebroken
 
 ### 3. Finalization
+
 1. When the voting deadline passes, the system automatically finalizes the meal plan
 2. The Schulze voting method determines the winning option for each event
 3. Background workers process the finalized meal plan:
@@ -54,6 +60,7 @@ The meal planning system consists of several key components:
    - Assign cooking responsibilities
 
 ### 4. Execution
+
 1. Users can view their assigned tasks and grocery lists
 2. Grocery lists can be modified by any account member (mark items as acquired, edit quantities, etc.)
 3. Prep tasks can be completed ahead of time
@@ -62,12 +69,15 @@ The meal planning system consists of several key components:
 ## Key Design Decisions
 
 ### Why Schulze Voting?
+
 The Schulze method was chosen after research comparing various election tallying schemes. While no voting system can be perfectly fair in all circumstances, Schulze was found to be the closest to ideal. It handles complex preference rankings well and produces consistent, defensible results.
 
 **TODO**: Implement instant runoff voting as a fallback for very small groups (2-3 people) where Schulze doesn't work as effectively.
 
 ### Why Background Workers?
+
 The system uses background workers to handle computationally intensive tasks like:
+
 - Vote tallying and election processing
 - Grocery list generation and ingredient consolidation
 - Task creation and assignment
@@ -78,18 +88,23 @@ This keeps the API responsive while ensuring complex operations complete reliabl
 ## Data Models
 
 ### Meal Plan Events
+
 Events represent specific eating times within a meal plan. They include:
+
 - **Meal Name**: Enum values like "breakfast", "lunch", "dinner", "snack"
 - **Start/End Times**: Flexible timing to accommodate busy family schedules
 - **Notes**: Additional context (e.g., "Sarah has volleyball, so dinner is at 7:30")
 
 ### Meal Plan Options
+
 Options are proposed meals for specific events:
+
 - **Meal Reference**: Points to a [meal](meals.md) (collection of recipes)
 - **Assigned Cook/Dishwasher**: Optional role assignments
 - **Notes**: Additional context (e.g. "this was a hit last time")
 
 ### Voting System
+
 - **Ranking**: Users rank options in order of preference
 - **Abstention**: Users can abstain from voting on some options
 - **Vote Changes**: Votes can be modified until the deadline
@@ -145,6 +160,7 @@ This example selects the second alternative (`optionIndex: 1`, e.g., margarine) 
 ### Managing Selections
 
 Selections can be:
+
 - **Created**: When initially specifying preferences
 - **Updated**: To change the selected option index
 - **Archived**: To remove a selection (reverts to default behavior)
@@ -161,14 +177,18 @@ The selection system was designed with these principles:
 ## Integration Points
 
 ### User Ingredient Preferences
+
 Users can set preferences for ingredients they prefer or prefer not to eat. This data is currently not used by the system but is intended for future features like:
+
 - Warning users about recipes containing disliked ingredients
 - Highlighting recipes featuring preferred ingredients
 
 **TODO**: Implement recipe filtering based on user ingredient preferences.
 
 ### Recipe Analysis
+
 The system analyzes [recipes](recipes.md) to:
+
 - Identify prep tasks that can be done ahead of time
 - Determine cooking dependencies and timing
 - Generate appropriate task assignments
@@ -185,6 +205,7 @@ The system analyzes [recipes](recipes.md) to:
 ## Future Improvements
 
 ### Known Edge Cases
+
 - **Recipe Deletion**: If a [recipe](recipes.md) is deleted after a meal plan is created but before finalization, it could permanently break the meal plan
 - **Account Membership Changes**: If a user leaves an account after voting but before finalization, their vote is still counted
 - **Overlapping Events**: The system doesn't prevent overlapping meal times
@@ -194,6 +215,7 @@ The system analyzes [recipes](recipes.md) to:
 **TODO**: Add integration tests for account membership changes during voting.
 
 ### Planned Improvements
+
 1. **Queue-Based Architecture**: Move from cron jobs to queue-based processing for better scalability
 2. **Enhanced Validation**: Add comprehensive checks for recipe/meal/account interactions
 3. **Grocery List Consolidation**: Build interfaces for combining similar ingredients
@@ -205,6 +227,7 @@ The system analyzes [recipes](recipes.md) to:
 ## Testing
 
 The system includes comprehensive integration tests covering:
+
 - Complete meal plan lifecycle (creation, voting, finalization)
 - [Recipe](recipes.md) management and validation
 - User ingredient preferences

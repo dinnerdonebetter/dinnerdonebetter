@@ -1,4 +1,4 @@
-## Recipe Review
+# Recipe Review
 
 - [x] `recipe_0001_pan_seared_butter_basted_steak.go`
 - [x] `recipe_0002_sous_vide_chicken_breast.go`

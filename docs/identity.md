@@ -5,7 +5,9 @@ This document describes the identity and authentication system used in this appl
 ## Core Concepts
 
 ### Users
+
 Users represent individual people in the system. Each user has:
+
 - A unique identifier (`ID`)
 - Authentication credentials (username, email, password)
 - Personal information (first name, last name, birthday)
@@ -15,7 +17,9 @@ Users represent individual people in the system. Each user has:
 **Domain Definition**: [`internal/domain/identity/user.go`](internal/domain/identity/user.go)
 
 ### Accounts
+
 Accounts represent organizations or groups that users can belong to. Most data in the system is associated with accounts rather than individual users. Each account has:
+
 - A unique identifier (`ID`)
 - A name and contact information
 - A billing status
@@ -25,7 +29,9 @@ Accounts represent organizations or groups that users can belong to. Most data i
 **Domain Definition**: [`internal/domain/identity/account.go`](internal/domain/identity/account.go)
 
 ### Account Memberships
+
 Account memberships define the relationship between users and accounts. Each membership has:
+
 - A unique identifier (`ID`)
 - A user ID (`BelongsToUser`)
 - An account ID (`BelongsToAccount`)
@@ -39,6 +45,7 @@ Account memberships define the relationship between users and accounts. Each mem
 The system uses a clear data ownership model where most data is associated with accounts rather than individual users. This is indicated by the presence of `BelongsToUser` or `BelongsToAccount` fields in data structures.
 
 **Examples**:
+
 - User profile data: `BelongsToUser`
 - Account settings: `BelongsToAccount`
 - Meal plans: `BelongsToAccount`
@@ -47,9 +54,11 @@ The system uses a clear data ownership model where most data is associated with 
 ## Authentication and Session Management
 
 ### Token-Based Authentication
+
 The system uses token-based authentication with JWT and PASETO support (PASETO is currently configured). Sessions are not stored server-side but are persisted through tokens.
 
 ### Authentication Flow
+
 1. User provides credentials (username/email + password + TOTP if 2FA is enabled)
 2. System validates credentials and retrieves user information
 3. System issues a token (JWT/PASETO) containing user ID and account information
@@ -57,7 +66,9 @@ The system uses token-based authentication with JWT and PASETO support (PASETO i
 5. All subsequent requests use OAuth2 credentials for authentication
 
 ### OAuth2 Integration
+
 The system implements OAuth2 for service authentication:
+
 - **Authorization Endpoint**: `/oauth2/authorize`
 - **Token Endpoint**: `/oauth2/token`
 - Clients authenticate via `Authorization` header in gRPC requests
@@ -66,7 +77,9 @@ The system implements OAuth2 for service authentication:
 **OAuth2 Implementation**: [`pkg/client/client.go:WithOAuth2Credentials`](pkg/client/client.go)
 
 ### Session Context
+
 The session context contains:
+
 - User information (ID, username, email, account status)
 - Active account ID (initially the default account)
 - Account permissions map (role for each account the user belongs to)
@@ -75,12 +88,14 @@ The session context contains:
 **Domain Definition**: [`internal/authentication/sessions/session_context.go`](internal/authentication/sessions/session_context.go)
 
 ### Two-Factor Authentication (2FA)
+
 - All users are issued a TOTP secret during registration
 - Users must verify their TOTP secret by submitting a valid TOTP code with their current password
 - Once verified, TOTP is required for all login attempts
 - Passwords are hashed using scrypt before storage
 
 ### Admin-Only Login
+
 The system supports a special admin-only login mode that has stricter requirements:
 
 1. **Service Role Restriction**: Only users with `service_role = 'service_admin'` can use admin login
@@ -89,6 +104,7 @@ The system supports a special admin-only login mode that has stricter requiremen
 4. **Database Query**: Uses `GetAdminUserByUsername` instead of `GetUserByUsername` which includes additional filters
 
 **Key Differences from Regular Login**:
+
 - Regular users can have unverified 2FA secrets and login without TOTP
 - Admin login **always** requires TOTP validation
 - Admin login only works for users with service admin privileges
@@ -97,6 +113,7 @@ The system supports a special admin-only login mode that has stricter requiremen
 **Implementation**: [`internal/authentication/manager.go:ProcessLogin`](internal/authentication/manager.go) and [`internal/services/auth/handlers/authentication/authentication_http_routes.go:BuildLoginHandler`](internal/services/auth/handlers/authentication/authentication_http_routes.go)
 
 ### Logout
+
 There is currently no server-side logout mechanism. Tokens expire naturally, and logout is handled client-side by discarding stored OAuth2 credentials.
 
 ## Account Roles and Permissions
@@ -104,10 +121,12 @@ There is currently no server-side logout mechanism. Tokens expire naturally, and
 The system has two account-level roles and two service-level roles:
 
 ### Account-Level Roles
+
 - **Account Member**: Basic access to account data, can perform standard operations within the account
 - **Account Admin**: All member permissions plus ability to modify account settings, invite/remove members, transfer account ownership, and manage account-level resources
 
 ### Service-Level Roles
+
 - **Service User**: Can create webhooks and read information about accounts they're part of
 - **Service Admin**: Can run workers arbitrarily and publish arbitrary messages to queues
 
@@ -116,6 +135,7 @@ The system has two account-level roles and two service-level roles:
 **Permission System**: [`internal/authorization/account_role.go`](internal/authorization/account_role.go)
 
 The permission system uses a hierarchical model where admins inherit all member permissions:
+
 ```go
 // From internal/authorization/rbac.go
 must(rbac.SetParent(AccountAdminRoleName, AccountMemberRoleName))
@@ -124,14 +144,18 @@ must(rbac.SetParent(AccountAdminRoleName, AccountMemberRoleName))
 ## Account Creation and User Registration
 
 ### Standard Registration
+
 When a user registers without an invitation:
+
 1. User account is created
 2. A default account is automatically created for the user
 3. User is made an admin of their default account
 4. This account becomes their default account
 
 ### Registration with Invitation
+
 When a user registers with an invitation token:
+
 1. User account is created
 2. User is added to the invited account as a member
 3. The invitation is marked as accepted
@@ -141,10 +165,12 @@ When a user registers with an invitation token:
 ## Account Invitations
 
 ### Invitation Types
+
 1. **Email-based invitations**: Sent to a specific email address
 2. **Token-based invitations**: Created with a token that can be used during registration
 
 ### Invitation Process
+
 1. Account admin creates an invitation
 2. Invitation can be sent via email or shared as a token
 3. When a user registers with the invitation token, they're automatically added to the account
@@ -155,6 +181,7 @@ When a user registers with an invitation token:
 ## Account Switching
 
 Users can switch between accounts they're members of:
+
 1. User requests to switch to a different account via the `SetDefaultAccount` gRPC method
 2. System validates the user is a member of that account
 3. The account is permanently set as the user's default account
@@ -165,7 +192,9 @@ Users can switch between accounts they're members of:
 ## Account Membership Management
 
 ### Removing Users from Accounts
+
 Users can be removed from accounts by account admins. When a user is removed:
+
 1. Their membership is archived
 2. If they have no remaining accounts, a new default account is created
 3. If they have remaining accounts, one is set as their new default
@@ -222,6 +251,7 @@ sequenceDiagram
 ```
 
 ⚠️ **Important Clarifications**:
+
 - When a user registers with an invitation, they're added as a **member** (not admin) of the invited account
 - The invited account becomes their default account, but they still get their own personal account created
 - Account switching **permanently** changes the user's default account (not just the active session account)
@@ -241,13 +271,16 @@ sequenceDiagram
 ## Known Issues and TODOs
 
 ### Critical Issues
+
 - **TODO**: If a user's default account is deleted, the system likely breaks. Need to implement proper handling for this scenario.
 
 ### Future Improvements
+
 - **TODO**: Switch from string-based roles to bitmask-based roles for better performance and flexibility
 - **TODO**: Implement session-based account switching that doesn't permanently change the user's default account
 
 ### gRPC Services
+
 - **Auth Service**: [`internal/services/auth/grpc/`](internal/services/auth/grpc/) - Authentication and authorization
 - **Identity Service**: [`internal/services/identity/grpc/`](internal/services/identity/grpc/) - User and account management
 
