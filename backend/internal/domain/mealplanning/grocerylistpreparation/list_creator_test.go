@@ -583,8 +583,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
 		assert.NoError(t, err)
 
-		// Should have 3 items: spaghetti, angelHair (both from option group), and onion (non-option)
-		assert.Len(t, actual, 3)
+		// Should have 2 items: spaghetti (default optionIndex=0) and onion (non-option)
+		// angelHair (optionIndex=1) is NOT included because no selection was made, so we default to optionIndex=0
+		assert.Len(t, actual, 2)
 
 		// Find items by ingredient ID
 		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
@@ -592,9 +593,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 			actualMap[actual[i].ValidIngredientID] = actual[i]
 		}
 
-		// Verify spaghetti (option group item)
+		// Verify spaghetti (option group item - default selection)
 		spaghettiItem, ok := actualMap[spaghetti.ID]
-		assert.True(t, ok, "spaghetti item should exist")
+		assert.True(t, ok, "spaghetti item should exist (default optionIndex=0)")
 		assert.NotNil(t, spaghettiItem.BelongsToMealPlanOption)
 		assert.Equal(t, optionID, *spaghettiItem.BelongsToMealPlanOption)
 		assert.NotNil(t, spaghettiItem.RecipeID)
@@ -607,20 +608,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, uint16(0), *spaghettiItem.OptionIndex)
 		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
 
-		// Verify angelHair (option group item)
-		angelHairItem, ok := actualMap[angelHair.ID]
-		assert.True(t, ok, "angelHair item should exist")
-		assert.NotNil(t, angelHairItem.BelongsToMealPlanOption)
-		assert.Equal(t, optionID, *angelHairItem.BelongsToMealPlanOption)
-		assert.NotNil(t, angelHairItem.RecipeID)
-		assert.Equal(t, recipeID, *angelHairItem.RecipeID)
-		assert.NotNil(t, angelHairItem.RecipeStepID)
-		assert.Equal(t, stepID, *angelHairItem.RecipeStepID)
-		assert.NotNil(t, angelHairItem.IngredientIndex)
-		assert.Equal(t, uint16(0), *angelHairItem.IngredientIndex)
-		assert.NotNil(t, angelHairItem.OptionIndex)
-		assert.Equal(t, uint16(1), *angelHairItem.OptionIndex)
-		assert.Equal(t, float32(100), angelHairItem.QuantityNeeded.Min)
+		// Verify angelHair is NOT present (was not selected, and optionIndex=1 is not the default)
+		_, ok = actualMap[angelHair.ID]
+		assert.False(t, ok, "angelHair item should NOT exist (optionIndex=1 is not selected)")
 
 		// Verify onion (non-option item, should still have recipe context)
 		onionItem, ok := actualMap[onion.ID]
@@ -761,27 +751,25 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
 		assert.NoError(t, err)
 
-		// Should have 3 items: spaghetti, angelHair (option group, not aggregated), and onion (aggregated)
-		assert.Len(t, actual, 3)
+		// Should have 2 items: spaghetti (default optionIndex=0) and onion (aggregated)
+		// angelHair (optionIndex=1) is NOT included because no selection was made
+		assert.Len(t, actual, 2)
 
 		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
 		for i := range actual {
 			actualMap[actual[i].ValidIngredientID] = actual[i]
 		}
 
-		// Verify spaghetti (option group item, not aggregated)
+		// Verify spaghetti (option group item - default selection)
 		spaghettiItem, ok := actualMap[spaghetti.ID]
-		assert.True(t, ok)
+		assert.True(t, ok, "spaghetti item should exist (default optionIndex=0)")
 		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
 		assert.NotNil(t, spaghettiItem.BelongsToMealPlanOption)
 		assert.Equal(t, option1ID, *spaghettiItem.BelongsToMealPlanOption)
 
-		// Verify angelHair (option group item, not aggregated)
-		angelHairItem, ok := actualMap[angelHair.ID]
-		assert.True(t, ok)
-		assert.Equal(t, float32(100), angelHairItem.QuantityNeeded.Min)
-		assert.NotNil(t, angelHairItem.BelongsToMealPlanOption)
-		assert.Equal(t, option1ID, *angelHairItem.BelongsToMealPlanOption)
+		// Verify angelHair is NOT present (was not selected)
+		_, ok = actualMap[angelHair.ID]
+		assert.False(t, ok, "angelHair item should NOT exist (optionIndex=1 is not selected)")
 
 		// Verify onion (non-option item, should be aggregated)
 		onionItem, ok := actualMap[onion.ID]
@@ -790,5 +778,137 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// Should have context from first occurrence
 		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
 		assert.Equal(t, option1ID, *onionItem.BelongsToMealPlanOption)
+	})
+
+	T.Run("with option groups and user selection", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		spaghetti := fakes.BuildFakeValidIngredient()
+		angelHair := fakes.BuildFakeValidIngredient()
+		onion := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		recipeID := fakes.BuildFakeID()
+		stepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			// User has selected optionIndex=1 (angelHair) instead of the default (spaghetti)
+			Selections: []*mealplanning.MealPlanRecipeOptionSelection{
+				{
+					RecipeStepID:        stepID,
+					IngredientIndex:     0,
+					SelectedOptionIndex: 1, // User selected angelHair (optionIndex=1)
+					SelectionType:       mealplanning.MealPlanRecipeOptionSelectionTypeIngredient,
+				},
+			},
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: recipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: stepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														// Alternative A: spaghetti (index=0, optionIndex=0)
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      spaghetti,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Index:           0,
+															OptionIndex:     0,
+														},
+														// Alternative B: angelHair (index=0, optionIndex=1)
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      angelHair,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 100},
+															Index:           0,
+															OptionIndex:     1,
+														},
+														// Non-option ingredient at different index
+														{
+															ID:              fakes.BuildFakeID(),
+															Ingredient:      onion,
+															MeasurementUnit: *grams,
+															Quantity:        types.Float32RangeWithOptionalMax{Min: 50},
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: angelHair (selected optionIndex=1) and onion (non-option)
+		// spaghetti (optionIndex=0) is NOT included because user selected optionIndex=1
+		assert.Len(t, actual, 2)
+
+		// Find items by ingredient ID
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify spaghetti is NOT present (user selected optionIndex=1, not 0)
+		_, ok := actualMap[spaghetti.ID]
+		assert.False(t, ok, "spaghetti item should NOT exist (user selected optionIndex=1)")
+
+		// Verify angelHair IS present (user's selection)
+		angelHairItem, ok := actualMap[angelHair.ID]
+		assert.True(t, ok, "angelHair item should exist (user selected optionIndex=1)")
+		assert.NotNil(t, angelHairItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *angelHairItem.BelongsToMealPlanOption)
+		assert.NotNil(t, angelHairItem.RecipeID)
+		assert.Equal(t, recipeID, *angelHairItem.RecipeID)
+		assert.NotNil(t, angelHairItem.RecipeStepID)
+		assert.Equal(t, stepID, *angelHairItem.RecipeStepID)
+		assert.NotNil(t, angelHairItem.IngredientIndex)
+		assert.Equal(t, uint16(0), *angelHairItem.IngredientIndex)
+		assert.NotNil(t, angelHairItem.OptionIndex)
+		assert.Equal(t, uint16(1), *angelHairItem.OptionIndex)
+		assert.Equal(t, float32(100), angelHairItem.QuantityNeeded.Min)
+
+		// Verify onion (non-option item)
+		onionItem, ok := actualMap[onion.ID]
+		assert.True(t, ok, "onion item should exist")
+		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
+		assert.Equal(t, optionID, *onionItem.BelongsToMealPlanOption)
+		assert.NotNil(t, onionItem.RecipeID)
+		assert.Equal(t, recipeID, *onionItem.RecipeID)
+		assert.NotNil(t, onionItem.RecipeStepID)
+		assert.Equal(t, stepID, *onionItem.RecipeStepID)
+		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
 	})
 }

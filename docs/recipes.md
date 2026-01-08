@@ -188,6 +188,160 @@ This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is a
 
 A product is **discrete** if `ItemQuantity.Min` or `ItemQuantity.Max` is set (not null). A product is **continuous** if both `ItemQuantity.Min` and `ItemQuantity.Max` are null/omitted.
 
+## Option Groups (Alternative Ingredients, Instruments, and Vessels)
+
+Recipe steps can include **option groups** - sets of alternative items where any one can be used. This is useful when a recipe allows substitutions, such as using butter or margarine, or using either a stand mixer or hand mixer.
+
+### How Option Groups Work
+
+Option groups are defined using two key fields on recipe step ingredients, instruments, and vessels:
+
+- **`Index`** (uint16): Identifies the position of this item within the step. Items with the same `Index` belong to the same option group.
+- **`OptionIndex`** (uint16): The position within the option group. `OptionIndex: 0` is the primary/default option, `OptionIndex: 1` is the first alternative, etc.
+
+### Option Group Structure
+
+Consider a recipe step that allows either butter or margarine:
+
+```
+Step 1: Mix ingredients
+  Ingredients:
+    - Butter     (Index: 0, OptionIndex: 0)  ─┐
+    - Margarine  (Index: 0, OptionIndex: 1)  ─┴── Option Group at Index 0
+    - Flour      (Index: 1, OptionIndex: 0)  ─── Regular ingredient (no alternatives)
+    - Sugar      (Index: 2, OptionIndex: 0)  ─── Regular ingredient (no alternatives)
+```
+
+In this example:
+- **Butter and Margarine** share `Index: 0`, making them alternatives for the same ingredient slot
+- **Butter** has `OptionIndex: 0`, making it the default choice
+- **Margarine** has `OptionIndex: 1`, making it the first alternative
+- **Flour and Sugar** are regular ingredients with no alternatives (each has a unique `Index`)
+
+### Creating Option Groups
+
+When creating a recipe, define option groups by setting the same `Index` for alternative items:
+
+```json
+{
+  "steps": [
+    {
+      "preparationId": "prep-mix-id",
+      "index": 0,
+      "ingredients": [
+        {
+          "name": "butter",
+          "index": 0,
+          "optionIndex": 0,
+          "validIngredientPreparationId": "vip-butter-id",
+          "validIngredientMeasurementUnitId": "vimu-butter-tbsp-id",
+          "quantity": { "min": 4 }
+        },
+        {
+          "name": "margarine",
+          "index": 0,
+          "optionIndex": 1,
+          "validIngredientPreparationId": "vip-margarine-id",
+          "validIngredientMeasurementUnitId": "vimu-margarine-tbsp-id",
+          "quantity": { "min": 4 }
+        },
+        {
+          "name": "flour",
+          "index": 1,
+          "optionIndex": 0,
+          "validIngredientPreparationId": "vip-flour-id",
+          "validIngredientMeasurementUnitId": "vimu-flour-cup-id",
+          "quantity": { "min": 2 }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Option Groups for Instruments and Vessels
+
+The same pattern applies to instruments and vessels:
+
+**Instrument Option Group Example:**
+```json
+{
+  "instruments": [
+    {
+      "name": "stand mixer",
+      "index": 0,
+      "optionIndex": 0,
+      "validPreparationInstrumentId": "vpi-standmixer-id"
+    },
+    {
+      "name": "hand mixer",
+      "index": 0,
+      "optionIndex": 1,
+      "validPreparationInstrumentId": "vpi-handmixer-id"
+    }
+  ]
+}
+```
+
+**Vessel Option Group Example:**
+```json
+{
+  "vessels": [
+    {
+      "name": "Dutch oven",
+      "index": 0,
+      "optionIndex": 0,
+      "validPreparationVesselId": "vpv-dutchoven-id"
+    },
+    {
+      "name": "slow cooker",
+      "index": 0,
+      "optionIndex": 1,
+      "validPreparationVesselId": "vpv-slowcooker-id"
+    }
+  ]
+}
+```
+
+### Unique Constraint
+
+Each combination of `(recipe_step_id, index, option_index)` must be unique. This constraint is enforced at the database level for ingredients, instruments, and vessels.
+
+### Integration with Meal Planning
+
+When recipes with option groups are included in meal plans, users can specify which alternative they prefer using **selections**. See [Meal Planning - Recipe Option Selections](meal_planning.md#recipe-option-selections) for details on:
+- How selections are specified during meal plan creation
+- How selections affect grocery list generation
+- Default behavior when no selection is made (uses `OptionIndex: 0`)
+
+### Best Practices
+
+1. **Primary Option First**: Always set the most common/recommended option as `OptionIndex: 0`
+2. **Similar Quantities**: Alternatives in the same option group should typically require similar quantities
+3. **Appropriate Substitutions**: Only group items that are true substitutes (e.g., don't group "butter" with "olive oil" unless the recipe works equally well with both)
+4. **Document Differences**: Use the `Notes` field on ingredients to explain when one alternative might be preferred over another
+
+### When to Use Option Groups vs. Clone the Recipe
+
+Option groups are intended for **simple substitutions that don't change how you prepare the recipe**. The cooking process should remain essentially the same regardless of which option is selected.
+
+**Good candidates for option groups:**
+- Sugar or honey (both sweeteners, same technique)
+- Fish sauce or soy sauce (both umami sources, same usage)
+- Butter or margarine (same role in the recipe)
+- Stand mixer or hand mixer (same mixing action)
+- Dutch oven or slow cooker (for recipes where either works identically)
+
+**Not appropriate for option groups:**
+- Deep fried or baked (completely different techniques and steps)
+- Fresh pasta or dried pasta (different cooking times and possibly different steps)
+- Bone-in or boneless chicken (may require different cooking times or techniques)
+- Any substitution that would add, remove, or significantly modify recipe steps
+
+**Rule of thumb**: If selecting a different option would require you to add a step, skip a step, or significantly change the instructions for a step, that's not an option group - that's a different recipe. Use the [recipe cloning workflow](#recipe-cloning-workflow) to create a variant instead.
+
+For example, if a recipe says "you can use canned beans (skip step 1) or dried beans (soak overnight in step 1)", these should be two separate recipes, not options within the same recipe. The preparation process is fundamentally different.
+
 ## Recipe Scaling
 
 The system supports dynamic recipe scaling through the frontend interface. Users can adjust the scale of a recipe (e.g., 2x, 0.5x) which automatically multiplies ingredient quantities in all steps. For example, if a step calls for 1 clove of garlic and the recipe is scaled to 2x, it will display 2 cloves of garlic.

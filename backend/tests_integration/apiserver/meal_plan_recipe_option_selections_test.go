@@ -234,27 +234,8 @@ func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {
 		require.NotNil(t, groceryListRes)
 		require.NotEmpty(t, groceryListRes.Results, "expected grocery list to have items")
 
-		// Verify the grocery list has items
-		// The grocery list should contain the alternative ingredients from the recipe
-		t.Logf("Grocery list has %d items", len(groceryListRes.Results))
-		for _, item := range groceryListRes.Results {
-			t.Logf("  - Ingredient: %s, Quantity: %.2f-%v %s",
-				item.Ingredient.Name,
-				item.QuantityNeeded.Min,
-				item.QuantityNeeded.Max,
-				item.MeasurementUnit.Name)
-			if item.BelongsToMealPlanOption != nil {
-				t.Logf("    (belongs to option: %s, recipe: %v, step: %v, ingredientIndex: %v, optionIndex: %v)",
-					*item.BelongsToMealPlanOption,
-					item.RecipeId,
-					item.RecipeStepId,
-					item.IngredientIndex,
-					item.OptionIndex)
-			}
-		}
-
-		// Verify that we have option items (items with OptionIndex set)
-		// These should be the alternative ingredients from recipe1
+		// Verify that we have the selected option item (items with OptionIndex set)
+		// Since we selected optionIndex=1, only Alternative B should be in the grocery list
 		optionItemCount := 0
 		for _, item := range groceryListRes.Results {
 			if item.OptionIndex == nil {
@@ -267,9 +248,16 @@ func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {
 			assert.NotNil(t, item.RecipeId, "option items should have RecipeID")
 			assert.NotNil(t, item.RecipeStepId, "option items should have RecipeStepID")
 			assert.NotNil(t, item.IngredientIndex, "option items should have IngredientIndex")
+
+			// Verify the selected optionIndex is correct
+			// We selected optionIndex=1 for ingredientIndex=0 in the selection
+			if item.IngredientIndex != nil && *item.IngredientIndex == 0 {
+				assert.Equal(t, uint32(1), *item.OptionIndex, "expected the selected option (optionIndex=1) for ingredientIndex=0")
+			}
 		}
-		// We expect 2 option items (Alternative A and Alternative B from step 1)
-		assert.Equal(t, 2, optionItemCount, "expected exactly 2 option items (the alternative ingredients)")
+		// We expect 1 option item (only Alternative B since we selected optionIndex=1)
+		// Alternative A (optionIndex=0) should NOT be included
+		assert.Equal(t, 1, optionItemCount, "expected exactly 1 option item (only the selected alternative ingredient)")
 
 		// Cleanup - use accountAdminUserClient for meal plan (owned by account)
 		_, err = accountAdminUserClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{

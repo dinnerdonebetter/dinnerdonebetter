@@ -97,6 +97,67 @@ Options are proposed meals for specific events:
 
 **TODO**: Add validation to prevent vote changes after meal plan finalization to avoid user confusion.
 
+## Recipe Option Selections
+
+Recipes can include [option groups](recipes.md#option-groups-alternative-ingredients-instruments-and-vessels) - alternative ingredients, instruments, or vessels where any one can be used. The meal planning system allows users to specify their preferences for these alternatives through **selections**.
+
+### Selection Fields
+
+When creating a meal plan, users can include selections that specify which alternative to use:
+
+- **Selection Type**: Can be `ingredient`, `instrument`, or `vessel`
+- **Recipe ID**: The recipe containing the option group
+- **Recipe Step ID**: The step within the recipe containing the option group
+- **Ingredient Index**: Which option group in the step (maps to the `Index` field in the recipe)
+- **Selected Option Index**: The user's chosen alternative (maps to the `OptionIndex` field in the recipe)
+
+### Grocery List Generation Behavior
+
+When generating grocery lists from finalized meal plans, the system handles selections as follows:
+
+1. **With User Selection**: If the user specified a selection for an option group, only the selected alternative appears in the grocery list
+2. **Without Selection (Default)**: If no selection was made, the system defaults to `optionIndex: 0` (the first alternative in the group)
+
+This ensures grocery lists are practical and actionable - users won't see both "butter" and "margarine" for the same recipe step.
+
+### Creating Selections at Meal Plan Creation
+
+Selections can be provided when creating a meal plan:
+
+```json
+{
+  "votingDeadline": "2024-01-15T18:00:00Z",
+  "events": [...],
+  "selections": [
+    {
+      "recipeId": "abc123",
+      "recipeStepId": "step456",
+      "ingredientIndex": 0,
+      "selectedOptionIndex": 1,
+      "selectionType": "ingredient"
+    }
+  ]
+}
+```
+
+This example selects the second alternative (`optionIndex: 1`, e.g., margarine) for the first option group (`ingredientIndex: 0`) in the specified recipe step.
+
+### Managing Selections
+
+Selections can be:
+- **Created**: When initially specifying preferences
+- **Updated**: To change the selected option index
+- **Archived**: To remove a selection (reverts to default behavior)
+
+### Design Rationale
+
+The selection system was designed with these principles:
+
+1. **Sensible Defaults**: Without explicit selections, the first option (`optionIndex: 0`) is used - typically the "primary" or most common ingredient
+2. **User Control**: Users who care about specific alternatives can override defaults
+3. **Clean Grocery Lists**: Only selected alternatives appear, avoiding confusion
+4. **Flexibility**: Supports ingredients, instruments, and vessels to cover all recipe variation scenarios
+
 ## Integration Points
 
 ### User Ingredient Preferences

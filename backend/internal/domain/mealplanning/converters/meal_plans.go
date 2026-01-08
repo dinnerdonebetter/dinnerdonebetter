@@ -26,6 +26,20 @@ func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *t
 		events = append(events, eventInput)
 	}
 
+	// Convert selections from creation request input to database creation input
+	selections := []*types.MealPlanRecipeOptionSelectionDatabaseCreationInput{}
+	for _, s := range input.Selections {
+		selections = append(selections, &types.MealPlanRecipeOptionSelectionDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			RecipeID:            s.RecipeID,
+			RecipeStepID:        s.RecipeStepID,
+			IngredientIndex:     s.IngredientIndex,
+			SelectedOptionIndex: s.SelectedOptionIndex,
+			SelectionType:       s.SelectionType,
+			// BelongsToMealPlanOption will be set later when matching with options
+		})
+	}
+
 	x := &types.MealPlanDatabaseCreationInput{
 		ID:             mealPlanID,
 		Notes:          input.Notes,
@@ -33,6 +47,7 @@ func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *t
 		VotingDeadline: input.VotingDeadline,
 		Events:         events,
 		ElectionMethod: input.ElectionMethod,
+		Selections:     selections,
 	}
 
 	return x

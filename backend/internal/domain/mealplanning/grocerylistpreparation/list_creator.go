@@ -44,6 +44,15 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 
 	logger := g.logger.Clone().WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
+	// Build a lookup map for user selections: key is (recipeStepID, ingredientIndex, selectionType), value is selectedOptionIndex
+	selectionLookup := make(map[string]uint16)
+	for _, selection := range mealPlan.Selections {
+		if selection.SelectionType == mealplanning.MealPlanRecipeOptionSelectionTypeIngredient {
+			selectionKey := fmt.Sprintf("%s:%d:%s", selection.RecipeStepID, selection.IngredientIndex, selection.SelectionType)
+			selectionLookup[selectionKey] = selection.SelectedOptionIndex
+		}
+	}
+
 	// First pass: identify option groups (ingredients with multiple options at the same index)
 	for _, event := range mealPlan.Events {
 		for _, option := range event.Options {
@@ -100,7 +109,25 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 							isOptionGroup := optionGroups[optionGroupKey] > 1
 
 							if isOptionGroup {
-								// This ingredient is part of an option group - create separate item with recipe context
+								// This ingredient is part of an option group
+								// Check if user made a selection for this option group
+								selectionKey := fmt.Sprintf("%s:%d:%s", step.ID, ingredient.Index, mealplanning.MealPlanRecipeOptionSelectionTypeIngredient)
+								selectedOptionIndex, hasSelection := selectionLookup[selectionKey]
+
+								// Determine which option index to use:
+								// - If user made a selection, use it
+								// - If no selection, default to optionIndex=0 (the first/default option)
+								targetOptionIndex := uint16(0)
+								if hasSelection {
+									targetOptionIndex = selectedOptionIndex
+								}
+
+								// Only add this ingredient if it matches the target option index
+								if ingredient.OptionIndex != targetOptionIndex {
+									continue
+								}
+
+								// Create grocery list item for the selected option with recipe context
 								ingredientIndex := ingredient.Index
 								optionIndex := ingredient.OptionIndex
 								optionInputs = append(optionInputs, &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
