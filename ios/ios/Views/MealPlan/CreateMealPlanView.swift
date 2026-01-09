@@ -68,10 +68,10 @@ struct CreateMealPlanView: View {
             isPresented: $showOptionSelectionModal,
             recipes: recipesForOptionSelection,
             onSave: { ingredientSelections in
-              viewModel?.setOptionSelections(ingredientSelections: ingredientSelections)
+              self.viewModel?.setOptionSelections(ingredientSelections: ingredientSelections)
               // Continue with meal plan creation
               Task {
-                if let viewModel = viewModel {
+                if let viewModel = self.viewModel {
                   let success = await viewModel.createMealPlan()
                   if success {
                     NotificationCenter.default.post(name: .mealPlanCreated, object: nil)

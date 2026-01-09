@@ -257,10 +257,11 @@ struct StepDetailsView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      if ingredient.hasIngredientIndex {
-        let index = ingredient.ingredientIndex
+      // Index 0 typically means not in an option group
+      if ingredient.index != 0 {
+        let index = ingredient.index
         let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.hasIngredientIndex && other.ingredientIndex == index
+          other.id != ingredient.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -279,14 +280,14 @@ struct StepDetailsView: View {
     var optionGroups: [OptionGroupAggregate] = []
     for (index, groupIngredients) in optionGroupsByIndex {
       let sorted = groupIngredients.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [IngredientOption] = []
       for ingredient in sorted {
-        let optionIndex = ingredient.hasOptionIndex ? ingredient.optionIndex : 0
+        let optionIndex = ingredient.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedIngredient(
@@ -343,10 +344,11 @@ struct StepDetailsView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepInstrument]] = [:]
 
     for instrument in instruments {
-      if instrument.hasIndex {
+      // Index 0 typically means not in an option group
+      if instrument.index != 0 {
         let index = instrument.index
         let hasOptions = instruments.contains { other in
-          other.id != instrument.id && other.hasIndex && other.index == index
+          other.id != instrument.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -365,14 +367,14 @@ struct StepDetailsView: View {
     var optionGroups: [InstrumentOptionGroupAggregate] = []
     for (index, groupInstruments) in optionGroupsByIndex {
       let sorted = groupInstruments.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [InstrumentOption] = []
       for instrument in sorted {
-        let optionIndex = instrument.hasOptionIndex ? instrument.optionIndex : 0
+        let optionIndex = instrument.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedInstrumentVessel(
@@ -428,10 +430,11 @@ struct StepDetailsView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepVessel]] = [:]
 
     for vessel in vessels {
-      if vessel.hasIndex {
+      // Index 0 typically means not in an option group
+      if vessel.index != 0 {
         let index = vessel.index
         let hasOptions = vessels.contains { other in
-          other.id != vessel.id && other.hasIndex && other.index == index
+          other.id != vessel.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -450,14 +453,14 @@ struct StepDetailsView: View {
     var optionGroups: [VesselOptionGroupAggregate] = []
     for (index, groupVessels) in optionGroupsByIndex {
       let sorted = groupVessels.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [VesselOption] = []
       for vessel in sorted {
-        let optionIndex = vessel.hasOptionIndex ? vessel.optionIndex : 0
+        let optionIndex = vessel.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedInstrumentVessel(
@@ -520,10 +523,17 @@ struct StepDetailsView: View {
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return OptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }
@@ -549,10 +559,17 @@ struct StepDetailsView: View {
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return InstrumentOptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }
@@ -577,10 +594,17 @@ struct StepDetailsView: View {
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return VesselOptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }

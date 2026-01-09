@@ -100,11 +100,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   // MARK: - Instruments & Vessels Section
 
   private func instrumentsVesselsSection(recipe: Mealplanning_Recipe) -> some View {
-    let (regularItems, instrumentOptionGroups, vesselOptionGroups) =
+    let (regularItems, _, _) =
       getAggregatedInstrumentsAndVessels(from: recipe)
-
-    let filteredInstrumentGroups = filterInstrumentOptionGroups(instrumentOptionGroups)
-    let filteredVesselGroups = filterVesselOptionGroups(vesselOptionGroups)
 
     return VStack(alignment: .leading, spacing: 0) {
       Button(
@@ -228,10 +225,17 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return InstrumentOptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }
@@ -258,10 +262,17 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return VesselOptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }
@@ -421,10 +432,17 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
           $0.optionIndex == selection.selectedOptionIndex
         }
         if !selectedOptions.isEmpty {
-          var filteredGroup = group
-          filteredGroup.options = selectedOptions
-          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
-          return filteredGroup
+          return OptionGroupAggregate(
+            id: group.id,
+            recipeID: group.recipeID,
+            stepID: group.stepID,
+            stepIndex: group.stepIndex,
+            index: group.index,
+            options: selectedOptions,
+            selectedOptionIndex: selection.selectedOptionIndex,
+            sourceRecipeID: group.sourceRecipeID,
+            sourceRecipeName: group.sourceRecipeName
+          )
         }
         return nil
       }

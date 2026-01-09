@@ -42,7 +42,7 @@ struct RecipeOptionSelectionView: View {
         ToolbarItem(placement: .cancellationAction) {
           Button("Skip") {
             // Use defaults (optionIndex: 0)
-            onSave([:], [:], [:])
+            onSave([:])
             isPresented = false
           }
         }
@@ -167,10 +167,11 @@ struct RecipeOptionSelectionView: View {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
     for ingredient in ingredients {
-      if ingredient.hasIngredientIndex {
-        let index = ingredient.ingredientIndex
+      // Index 0 typically means not in an option group
+      if ingredient.index != 0 {
+        let index = ingredient.index
         let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.hasIngredientIndex && other.ingredientIndex == index
+          other.id != ingredient.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -189,14 +190,14 @@ struct RecipeOptionSelectionView: View {
     var optionGroups: [OptionGroupAggregate] = []
     for (index, groupIngredients) in optionGroupsByIndex {
       let sorted = groupIngredients.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [IngredientOption] = []
       for ingredient in sorted {
-        let optionIndex = ingredient.hasOptionIndex ? ingredient.optionIndex : 0
+        let optionIndex = ingredient.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedIngredient(

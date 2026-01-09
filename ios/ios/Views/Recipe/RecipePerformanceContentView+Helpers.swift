@@ -598,11 +598,12 @@ extension RecipePerformanceContentView {
 
     for ingredient in ingredients {
       // Check if this ingredient is part of an option group
-      if ingredient.hasIngredientIndex {
-        let index = ingredient.ingredientIndex
+      // Index 0 typically means not in an option group
+      if ingredient.index != 0 {
+        let index = ingredient.index
         // Check if there are other ingredients with the same index
         let hasOptions = ingredients.contains { other in
-          other.id != ingredient.id && other.hasIngredientIndex && other.ingredientIndex == index
+          other.id != ingredient.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -616,7 +617,7 @@ extension RecipePerformanceContentView {
           regular.append(ingredient)
         }
       } else {
-        // No index means it's a regular ingredient
+        // Index 0 means it's a regular ingredient
         regular.append(ingredient)
       }
     }
@@ -626,15 +627,15 @@ extension RecipePerformanceContentView {
     for (index, groupIngredients) in optionGroupsByIndex {
       // Sort by optionIndex
       let sorted = groupIngredients.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       // Create aggregated ingredients for each option
       var options: [IngredientOption] = []
       for ingredient in sorted {
-        let optionIndex = ingredient.hasOptionIndex ? ingredient.optionIndex : 0
+        let optionIndex = ingredient.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         // Create aggregated ingredient for this option
@@ -695,10 +696,11 @@ extension RecipePerformanceContentView {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepInstrument]] = [:]
 
     for instrument in instruments {
-      if instrument.hasIndex {
+      // Index 0 typically means not in an option group
+      if instrument.index != 0 {
         let index = instrument.index
         let hasOptions = instruments.contains { other in
-          other.id != instrument.id && other.hasIndex && other.index == index
+          other.id != instrument.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -717,14 +719,14 @@ extension RecipePerformanceContentView {
     var optionGroups: [InstrumentOptionGroupAggregate] = []
     for (index, groupInstruments) in optionGroupsByIndex {
       let sorted = groupInstruments.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [InstrumentOption] = []
       for instrument in sorted {
-        let optionIndex = instrument.hasOptionIndex ? instrument.optionIndex : 0
+        let optionIndex = instrument.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedInstrumentVessel(
@@ -782,10 +784,11 @@ extension RecipePerformanceContentView {
     var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepVessel]] = [:]
 
     for vessel in vessels {
-      if vessel.hasIndex {
+      // Index 0 typically means not in an option group
+      if vessel.index != 0 {
         let index = vessel.index
         let hasOptions = vessels.contains { other in
-          other.id != vessel.id && other.hasIndex && other.index == index
+          other.id != vessel.id && other.index != 0 && other.index == index
         }
 
         if hasOptions {
@@ -804,14 +807,14 @@ extension RecipePerformanceContentView {
     var optionGroups: [VesselOptionGroupAggregate] = []
     for (index, groupVessels) in optionGroupsByIndex {
       let sorted = groupVessels.sorted { lhs, rhs in
-        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
-        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        let lhsIndex = lhs.optionIndex
+        let rhsIndex = rhs.optionIndex
         return lhsIndex < rhsIndex
       }
 
       var options: [VesselOption] = []
       for vessel in sorted {
-        let optionIndex = vessel.hasOptionIndex ? vessel.optionIndex : 0
+        let optionIndex = vessel.optionIndex
         let optionID = "\(stepID)-\(index)-\(optionIndex)"
 
         var aggregated = AggregatedInstrumentVessel(

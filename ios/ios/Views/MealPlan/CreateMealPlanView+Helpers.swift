@@ -162,9 +162,10 @@ extension CreateMealPlanView {
         let hasOptions = allRecipes.contains { recipe in
           recipe.steps.contains { step in
             // Check for ingredient option groups (only ingredients have selectable options)
-            let ingredientIndices = step.ingredients.compactMap {
-              $0.hasIngredientIndex ? $0.ingredientIndex : nil
-            }
+            // Filter out index 0 (which typically means not in an option group)
+            let ingredientIndices = step.ingredients
+              .filter { $0.index != 0 }
+              .map { $0.index }
             let hasIngredientOptions = ingredientIndices.count != Set(ingredientIndices).count
 
             return hasIngredientOptions
