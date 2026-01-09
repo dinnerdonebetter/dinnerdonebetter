@@ -1181,4 +1181,385 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeB.ID, user.ID))
 		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeA.ID, user.ID))
 	})
+
+	T.Run("nested associated recipes are flattened", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		dbc, container := buildDatabaseClientForTest(t)
+		defer func() {
+			assert.NoError(t, container.Terminate(ctx))
+		}()
+
+		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+
+		// Create Recipe C (base recipe, no dependencies)
+		preparationC := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnitC := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredientC := createValidIngredientForTest(t, ctx, nil, dbc)
+		instrumentC := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vipCInput := fakes.BuildFakeValidIngredientPreparation()
+		vipCInput.Ingredient = *ingredientC
+		vipCInput.Preparation = *preparationC
+		vipC := createValidIngredientPreparationForTest(t, ctx, vipCInput, dbc)
+
+		vimuCInput := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimuCInput.Ingredient = *ingredientC
+		vimuCInput.MeasurementUnit = *measurementUnitC
+		vimuC := createValidIngredientMeasurementUnitForTest(t, ctx, vimuCInput, dbc)
+
+		vpiCInput := fakes.BuildFakeValidPreparationInstrument()
+		vpiCInput.Preparation = *preparationC
+		vpiCInput.Instrument = *instrumentC
+		vpiC := createValidPreparationInstrumentForTest(t, ctx, vpiCInput, dbc)
+
+		recipeCInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe C",
+			Slug:                "recipe-c",
+			Description:         "Base recipe with no dependencies",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
+			PortionName:         "cup",
+			PluralPortionName:   "cups",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 1,
+			},
+			EligibleForMeals: false,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationC.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiC.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "ingredient C",
+							ValidIngredientPreparationID:     &vipC.ID,
+							ValidIngredientMeasurementUnitID: &vimuC.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "product C",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitC.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationC.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiC.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final product C",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitC.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		recipeC, err := dbc.CreateRecipe(ctx, recipeCInput)
+		require.NoError(t, err)
+		require.NotNil(t, recipeC)
+
+		// Create Recipe B (references Recipe C)
+		preparationB := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnitB := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredientB := createValidIngredientForTest(t, ctx, nil, dbc)
+		instrumentB := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vipBInput := fakes.BuildFakeValidIngredientPreparation()
+		vipBInput.Ingredient = *ingredientB
+		vipBInput.Preparation = *preparationB
+		vipB := createValidIngredientPreparationForTest(t, ctx, vipBInput, dbc)
+
+		vimuBInput := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimuBInput.Ingredient = *ingredientB
+		vimuBInput.MeasurementUnit = *measurementUnitB
+		vimuB := createValidIngredientMeasurementUnitForTest(t, ctx, vimuBInput, dbc)
+
+		vpiBInput := fakes.BuildFakeValidPreparationInstrument()
+		vpiBInput.Preparation = *preparationB
+		vpiBInput.Instrument = *instrumentB
+		vpiB := createValidPreparationInstrumentForTest(t, ctx, vpiBInput, dbc)
+
+		recipeBInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe B",
+			Slug:                "recipe-b",
+			Description:         "Recipe that uses Recipe C",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
+			PortionName:         "cup",
+			PluralPortionName:   "cups",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 1,
+			},
+			EligibleForMeals: false,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationB.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiB.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "ingredient B",
+							ValidIngredientPreparationID:     &vipB.ID,
+							ValidIngredientMeasurementUnitID: &vimuB.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+						{
+							ID: identifiers.New(),
+							// Reference the product from Recipe C
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							RecipeStepProductRecipeID:       &recipeC.ID,
+							Name:                            "product C",
+							IngredientID:                    nil,
+							MeasurementUnitID:               measurementUnitB.ID,
+							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
+							Index:                           1,
+							OptionIndex:                     0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "product B",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitB.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationB.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiB.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final product B",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitB.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		recipeB, err := dbc.CreateRecipe(ctx, recipeBInput)
+		require.NoError(t, err)
+		require.NotNil(t, recipeB)
+
+		// Create Recipe A (references Recipe B)
+		preparationA := createValidPreparationForTest(t, ctx, nil, dbc)
+		measurementUnitA := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		ingredientA := createValidIngredientForTest(t, ctx, nil, dbc)
+		instrumentA := createValidInstrumentForTest(t, ctx, nil, dbc)
+
+		vipAInput := fakes.BuildFakeValidIngredientPreparation()
+		vipAInput.Ingredient = *ingredientA
+		vipAInput.Preparation = *preparationA
+		vipA := createValidIngredientPreparationForTest(t, ctx, vipAInput, dbc)
+
+		vimuAInput := fakes.BuildFakeValidIngredientMeasurementUnit()
+		vimuAInput.Ingredient = *ingredientA
+		vimuAInput.MeasurementUnit = *measurementUnitA
+		vimuA := createValidIngredientMeasurementUnitForTest(t, ctx, vimuAInput, dbc)
+
+		vpiAInput := fakes.BuildFakeValidPreparationInstrument()
+		vpiAInput.Preparation = *preparationA
+		vpiAInput.Instrument = *instrumentA
+		vpiA := createValidPreparationInstrumentForTest(t, ctx, vpiAInput, dbc)
+
+		recipeAInput := &mealplanning.RecipeDatabaseCreationInput{
+			ID:                  identifiers.New(),
+			Name:                "Recipe A",
+			Slug:                "recipe-a",
+			Description:         "Recipe that uses Recipe B (which uses Recipe C)",
+			CreatedByUser:       user.ID,
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         "serving",
+			PluralPortionName:   "servings",
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: 4,
+			},
+			EligibleForMeals: true,
+			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationA.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiA.ID,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
+						{
+							ID:                               identifiers.New(),
+							Name:                             "ingredient A",
+							ValidIngredientPreparationID:     &vipA.ID,
+							ValidIngredientMeasurementUnitID: &vimuA.ID,
+							Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
+							Index:                            0,
+							OptionIndex:                      0,
+						},
+						{
+							ID: identifiers.New(),
+							// Reference the product from Recipe B
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							RecipeStepProductRecipeID:       &recipeB.ID,
+							Name:                            "product B",
+							IngredientID:                    nil,
+							MeasurementUnitID:               measurementUnitA.ID,
+							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
+							Index:                           1,
+							OptionIndex:                     0,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final dish",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitA.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					ID:            identifiers.New(),
+					PreparationID: preparationA.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
+						{
+							ID:                           identifiers.New(),
+							Name:                         "spoon",
+							ValidPreparationInstrumentID: &vpiA.ID,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
+						{
+							ID:                identifiers.New(),
+							Name:              "final output",
+							Type:              mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID: &measurementUnitA.ID,
+							MeasurementQuantity: types.OptionalFloat32Range{
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		recipeA, err := dbc.CreateRecipe(ctx, recipeAInput)
+		require.NoError(t, err)
+		require.NotNil(t, recipeA)
+
+		// Retrieve Recipe A and validate flattened AssociatedRecipes
+		retrievedA, err := dbc.GetRecipe(ctx, recipeA.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedA)
+
+		// Recipe A should have both B and C in its AssociatedRecipes (flattened)
+		require.Len(t, retrievedA.AssociatedRecipes, 2, "Recipe A should have both B and C in its AssociatedRecipes")
+
+		// Find B and C in the AssociatedRecipes
+		var foundB, foundC bool
+		for _, associated := range retrievedA.AssociatedRecipes {
+			if associated.ID == recipeB.ID {
+				foundB = true
+				assert.Equal(t, recipeB.Name, associated.Name, "Recipe B should have correct name")
+				// Recipe B should have empty AssociatedRecipes (C should be flattened out)
+				assert.Empty(t, associated.AssociatedRecipes, "Recipe B should have empty AssociatedRecipes after flattening")
+			}
+			if associated.ID == recipeC.ID {
+				foundC = true
+				assert.Equal(t, recipeC.Name, associated.Name, "Recipe C should have correct name")
+				// Recipe C should have empty AssociatedRecipes
+				assert.Empty(t, associated.AssociatedRecipes, "Recipe C should have empty AssociatedRecipes")
+			}
+		}
+		assert.True(t, foundB, "Recipe B should be in Recipe A's AssociatedRecipes")
+		assert.True(t, foundC, "Recipe C should be in Recipe A's AssociatedRecipes (flattened)")
+
+		// Retrieve Recipe B directly and validate it has C in its AssociatedRecipes
+		// (when fetched directly, it should not be flattened)
+		retrievedB, err := dbc.GetRecipe(ctx, recipeB.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedB)
+		require.Len(t, retrievedB.AssociatedRecipes, 1, "Recipe B should have C in its AssociatedRecipes when fetched directly")
+		assert.Equal(t, recipeC.ID, retrievedB.AssociatedRecipes[0].ID, "Recipe B should reference Recipe C when fetched directly")
+
+		// Retrieve Recipe C directly and validate it has empty AssociatedRecipes
+		retrievedC, err := dbc.GetRecipe(ctx, recipeC.ID)
+		require.NoError(t, err)
+		require.NotNil(t, retrievedC)
+		assert.Empty(t, retrievedC.AssociatedRecipes, "Recipe C should have no associated recipes")
+
+		// Cleanup
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeA.ID, user.ID))
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeB.ID, user.ID))
+		assert.NoError(t, dbc.ArchiveRecipe(ctx, recipeC.ID, user.ID))
+	})
 }

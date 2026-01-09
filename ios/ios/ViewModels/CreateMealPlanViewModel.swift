@@ -28,6 +28,7 @@ struct MealPlanEvent: Identifiable {
 
 @Observable
 @MainActor
+// swiftlint:disable:next type_body_length
 class CreateMealPlanViewModel {
   // Events - always at least one
   var events: [MealPlanEvent] = []
@@ -38,6 +39,10 @@ class CreateMealPlanViewModel {
   var isCreating: Bool = false
   var creationError: String?
   var createdMealPlanID: String?
+
+  // Option selections: recipeID -> (stepID -> (ingredientIndex -> selectedOptionIndex))
+  // Note: Only ingredients have selectable options; instruments and vessels are concrete
+  var recipeOptionSelections: [String: [String: [UInt32: UInt32]]] = [:]
 
   private let authManager: AuthenticationManager
 
@@ -410,6 +415,27 @@ class CreateMealPlanViewModel {
           optionInput.mealID = meal.id
           optionInput.mealScale = event.mealScales[meal.id] ?? 1.0
           optionInput.notes = ""
+
+          // Add option selections for this meal's recipes
+          for component in meal.components {
+            let recipeID = component.recipe.id
+            // Add ingredient option selections (only ingredients have selectable options)
+            if let stepSelections = recipeOptionSelections[recipeID] {
+              for (stepID, indexSelections) in stepSelections {
+                for (ingredientIndex, selectedOptionIndex) in indexSelections {
+                  var selectionInput =
+                    Mealplanning_MealPlanRecipeOptionSelectionCreationRequestInput()
+                  selectionInput.recipeID = recipeID
+                  selectionInput.recipeStepID = stepID
+                  selectionInput.ingredientIndex = ingredientIndex
+                  selectionInput.selectedOptionIndex = selectedOptionIndex
+                  selectionInput.selectionType = .ingredient
+                  optionInput.selections.append(selectionInput)
+                }
+              }
+            }
+          }
+
           eventInput.options.append(optionInput)
         }
 
@@ -435,6 +461,14 @@ class CreateMealPlanViewModel {
       isCreating = false
       return false
     }
+  }
+
+  // MARK: - Option Selection Helpers
+
+  func setOptionSelections(
+    ingredientSelections: [String: [String: [UInt32: UInt32]]]
+  ) {
+    recipeOptionSelections = ingredientSelections
   }
 
   // MARK: - Helper Functions

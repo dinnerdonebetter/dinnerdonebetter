@@ -5,6 +5,8 @@
 //  Created by Auto on 12/8/25.
 //
 
+// swiftlint:disable file_length
+
 import SwiftProtobuf
 import SwiftUI
 
@@ -32,15 +34,23 @@ struct AggregatedInstrumentVessel: Identifiable {
   let itemID: String
   let name: String
   let type: InstrumentVesselItem.ItemType
+  let sourceRecipeID: String?
+  let sourceRecipeName: String?
 
   private var totalMin: UInt32 = 0
   private var totalMax: UInt32?
   private var hasAnyQuantity: Bool = false
 
-  init(itemID: String, name: String, type: InstrumentVesselItem.ItemType) {
+  init(
+    itemID: String, name: String, type: InstrumentVesselItem.ItemType,
+    sourceRecipeID: String? = nil,
+    sourceRecipeName: String? = nil
+  ) {
     self.itemID = itemID
     self.name = name
     self.type = type
+    self.sourceRecipeID = sourceRecipeID
+    self.sourceRecipeName = sourceRecipeName
   }
 
   mutating func addQuantity(_ quantity: Common_Uint32RangeWithOptionalMax) {
@@ -99,6 +109,8 @@ struct AggregatedIngredient: Identifiable {
   let name: String
   let quantityNotes: String
   let measurementUnit: Mealplanning_ValidMeasurementUnit?
+  let sourceRecipeID: String?
+  let sourceRecipeName: String?
 
   private var totalMin: Float = 0
   private var totalMax: Float?
@@ -106,12 +118,16 @@ struct AggregatedIngredient: Identifiable {
 
   init(
     ingredientID: String, name: String, quantityNotes: String,
-    measurementUnit: Mealplanning_ValidMeasurementUnit?
+    measurementUnit: Mealplanning_ValidMeasurementUnit?,
+    sourceRecipeID: String? = nil,
+    sourceRecipeName: String? = nil
   ) {
     self.ingredientID = ingredientID
     self.name = name
     self.quantityNotes = quantityNotes
     self.measurementUnit = measurementUnit
+    self.sourceRecipeID = sourceRecipeID
+    self.sourceRecipeName = sourceRecipeName
   }
 
   mutating func addQuantity(_ quantity: Common_Float32RangeWithOptionalMax) {
@@ -158,82 +174,287 @@ struct AggregatedIngredient: Identifiable {
   }
 }
 
+// MARK: - Option Group Types
+
+struct IngredientOption: Identifiable {
+  let id: String  // Combination of stepID, index, and optionIndex
+  let ingredient: Mealplanning_RecipeStepIngredient
+  let optionIndex: UInt32
+  let aggregated: AggregatedIngredient
+}
+
+struct InstrumentOption: Identifiable {
+  let id: String  // Combination of stepID, index, and optionIndex
+  let instrument: Mealplanning_RecipeStepInstrument
+  let optionIndex: UInt32
+  let aggregated: AggregatedInstrumentVessel
+}
+
+struct VesselOption: Identifiable {
+  let id: String  // Combination of stepID, index, and optionIndex
+  let vessel: Mealplanning_RecipeStepVessel
+  let optionIndex: UInt32
+  let aggregated: AggregatedInstrumentVessel
+}
+
+struct OptionGroupAggregate: Identifiable {
+  let id: String  // Combination of recipeID, stepID, and index
+  let recipeID: String
+  let stepID: String
+  let stepIndex: Int
+  let index: UInt32  // The option group index
+  let options: [IngredientOption]
+  var selectedOptionIndex: UInt32?  // User's selection (nil = not selected, uses default)
+  let sourceRecipeID: String?
+  let sourceRecipeName: String?
+}
+
+struct InstrumentOptionGroupAggregate: Identifiable {
+  let id: String
+  let recipeID: String
+  let stepID: String
+  let stepIndex: Int
+  let index: UInt32
+  let options: [InstrumentOption]
+  var selectedOptionIndex: UInt32?
+  let sourceRecipeID: String?
+  let sourceRecipeName: String?
+}
+
+struct VesselOptionGroupAggregate: Identifiable {
+  let id: String
+  let recipeID: String
+  let stepID: String
+  let stepIndex: Int
+  let index: UInt32
+  let options: [VesselOption]
+  var selectedOptionIndex: UInt32?
+  let sourceRecipeID: String?
+  let sourceRecipeName: String?
+}
+
 // MARK: - Helper Functions
 
 extension RecipePerformanceContentView {
-  func getAggregatedInstrumentsAndVessels(from recipe: Mealplanning_Recipe)
-    -> [AggregatedInstrumentVessel]
-  {
-    var aggregated: [String: AggregatedInstrumentVessel] = [:]
+  // swiftlint:disable:next cyclomatic_complexity
+  func getAggregatedInstrumentsAndVessels(
+    from recipe: Mealplanning_Recipe
+      // swiftlint:disable:next large_tuple
+  ) -> (
+    regular: [AggregatedInstrumentVessel],
+    instrumentOptionGroups: [InstrumentOptionGroupAggregate],
+    vesselOptionGroups: [VesselOptionGroupAggregate]
+  ) {
+    var regularAggregated: [String: AggregatedInstrumentVessel] = [:]
+    var instrumentOptionGroups: [InstrumentOptionGroupAggregate] = []
+    var vesselOptionGroups: [VesselOptionGroupAggregate] = []
 
-    for step in recipe.steps {
-      // Collect instruments (only if it has a ValidInstrument and displayInSummaryLists is true)
-      for instrument in step.instruments where instrument.hasInstrument {
+    // Process main recipe
+    for (stepIndex, step) in recipe.steps.enumerated() {
+      // Process instruments
+      let (regularInstruments, instrumentGroups) = groupInstrumentsByOptions(
+        Array(step.instruments),
+        stepID: step.id,
+        stepIndex: stepIndex,
+        recipeID: recipe.id
+      )
+
+      for instrument in regularInstruments where instrument.hasInstrument {
         let validInstrument = instrument.instrument
         if validInstrument.displayInSummaryLists {
           let itemID = validInstrument.id
           if !itemID.isEmpty {
-            // Initialize or update aggregated item
-            if aggregated[itemID] == nil {
-              aggregated[itemID] = AggregatedInstrumentVessel(
+            if regularAggregated[itemID] == nil {
+              regularAggregated[itemID] = AggregatedInstrumentVessel(
                 itemID: itemID,
                 name: instrument.name,
                 type: .instrument
               )
             }
 
-            // Aggregate quantities
-            if instrument.hasQuantity, var current = aggregated[itemID] {
-              let quantity = instrument.quantity
-              current.addQuantity(quantity)
-              aggregated[itemID] = current
+            if instrument.hasQuantity, var current = regularAggregated[itemID] {
+              current.addQuantity(instrument.quantity)
+              regularAggregated[itemID] = current
             }
           }
         }
       }
 
-      // Collect vessels (only if it has a ValidVessel and displayInSummaryLists is true)
-      for vessel in step.vessels where vessel.hasVessel {
+      // Filter instrument option groups to only include those with displayInSummaryLists
+      let filteredInstrumentGroups = instrumentGroups.filter { group in
+        group.options.contains { option in
+          option.instrument.hasInstrument && option.instrument.instrument.displayInSummaryLists
+        }
+      }
+      instrumentOptionGroups.append(contentsOf: filteredInstrumentGroups)
+
+      // Process vessels
+      let (regularVessels, vesselGroups) = groupVesselsByOptions(
+        Array(step.vessels),
+        stepID: step.id,
+        stepIndex: stepIndex,
+        recipeID: recipe.id
+      )
+
+      for vessel in regularVessels where vessel.hasVessel {
         let validVessel = vessel.vessel
         if validVessel.displayInSummaryLists {
           let itemID = validVessel.id
           if !itemID.isEmpty {
-            // Initialize or update aggregated item
-            if aggregated[itemID] == nil {
-              aggregated[itemID] = AggregatedInstrumentVessel(
+            if regularAggregated[itemID] == nil {
+              regularAggregated[itemID] = AggregatedInstrumentVessel(
                 itemID: itemID,
                 name: vessel.name,
                 type: .vessel
               )
             }
 
-            // Aggregate quantities
-            if vessel.hasQuantity, var current = aggregated[itemID] {
-              let quantity = vessel.quantity
-              current.addQuantity(quantity)
-              aggregated[itemID] = current
+            if vessel.hasQuantity, var current = regularAggregated[itemID] {
+              current.addQuantity(vessel.quantity)
+              regularAggregated[itemID] = current
             }
           }
         }
       }
+
+      // Filter vessel option groups to only include those with displayInSummaryLists
+      let filteredVesselGroups = vesselGroups.filter { group in
+        group.options.contains { option in
+          option.vessel.hasVessel && option.vessel.vessel.displayInSummaryLists
+        }
+      }
+      vesselOptionGroups.append(contentsOf: filteredVesselGroups)
     }
 
-    return Array(aggregated.values).sorted { $0.name < $1.name }
+    // Process associated recipes
+    for associatedRecipe in recipe.associatedRecipes {
+      for (stepIndex, step) in associatedRecipe.steps.enumerated() {
+        let (regularInstruments, instrumentGroups) = groupInstrumentsByOptions(
+          Array(step.instruments),
+          stepID: step.id,
+          stepIndex: stepIndex,
+          recipeID: associatedRecipe.id
+        )
+
+        for instrument in regularInstruments where instrument.hasInstrument {
+          let validInstrument = instrument.instrument
+          if validInstrument.displayInSummaryLists {
+            let itemID = validInstrument.id
+            if !itemID.isEmpty {
+              if regularAggregated[itemID] == nil {
+                regularAggregated[itemID] = AggregatedInstrumentVessel(
+                  itemID: itemID,
+                  name: instrument.name,
+                  type: .instrument,
+                  sourceRecipeID: associatedRecipe.id,
+                  sourceRecipeName: associatedRecipe.name
+                )
+              }
+
+              if instrument.hasQuantity, var current = regularAggregated[itemID] {
+                current.addQuantity(instrument.quantity)
+                regularAggregated[itemID] = current
+              }
+            }
+          }
+        }
+
+        var instrumentGroupsWithSource = instrumentGroups
+        for index in 0..<instrumentGroupsWithSource.count {
+          instrumentGroupsWithSource[index] = InstrumentOptionGroupAggregate(
+            id: instrumentGroupsWithSource[index].id,
+            recipeID: instrumentGroupsWithSource[index].recipeID,
+            stepID: instrumentGroupsWithSource[index].stepID,
+            stepIndex: instrumentGroupsWithSource[index].stepIndex,
+            index: instrumentGroupsWithSource[index].index,
+            options: instrumentGroupsWithSource[index].options,
+            selectedOptionIndex: instrumentGroupsWithSource[index].selectedOptionIndex,
+            sourceRecipeID: associatedRecipe.id,
+            sourceRecipeName: associatedRecipe.name
+          )
+        }
+        instrumentOptionGroups.append(contentsOf: instrumentGroupsWithSource)
+
+        let (regularVessels, vesselGroups) = groupVesselsByOptions(
+          Array(step.vessels),
+          stepID: step.id,
+          stepIndex: stepIndex,
+          recipeID: associatedRecipe.id
+        )
+
+        for vessel in regularVessels where vessel.hasVessel {
+          let validVessel = vessel.vessel
+          if validVessel.displayInSummaryLists {
+            let itemID = validVessel.id
+            if !itemID.isEmpty {
+              if regularAggregated[itemID] == nil {
+                regularAggregated[itemID] = AggregatedInstrumentVessel(
+                  itemID: itemID,
+                  name: vessel.name,
+                  type: .vessel,
+                  sourceRecipeID: associatedRecipe.id,
+                  sourceRecipeName: associatedRecipe.name
+                )
+              }
+
+              if vessel.hasQuantity, var current = regularAggregated[itemID] {
+                current.addQuantity(vessel.quantity)
+                regularAggregated[itemID] = current
+              }
+            }
+          }
+        }
+
+        var vesselGroupsWithSource = vesselGroups
+        for index in 0..<vesselGroupsWithSource.count {
+          vesselGroupsWithSource[index] = VesselOptionGroupAggregate(
+            id: vesselGroupsWithSource[index].id,
+            recipeID: vesselGroupsWithSource[index].recipeID,
+            stepID: vesselGroupsWithSource[index].stepID,
+            stepIndex: vesselGroupsWithSource[index].stepIndex,
+            index: vesselGroupsWithSource[index].index,
+            options: vesselGroupsWithSource[index].options,
+            selectedOptionIndex: vesselGroupsWithSource[index].selectedOptionIndex,
+            sourceRecipeID: associatedRecipe.id,
+            sourceRecipeName: associatedRecipe.name
+          )
+        }
+        vesselOptionGroups.append(contentsOf: vesselGroupsWithSource)
+      }
+    }
+
+    return (
+      regular: Array(regularAggregated.values).sorted { $0.name < $1.name },
+      instrumentOptionGroups: instrumentOptionGroups,
+      vesselOptionGroups: vesselOptionGroups
+    )
   }
 
-  func getAggregatedIngredients(from recipe: Mealplanning_Recipe) -> [AggregatedIngredient] {
-    var aggregated: [String: AggregatedIngredient] = [:]
+  func getAggregatedIngredients(
+    from recipe: Mealplanning_Recipe
+  ) -> (
+    regular: [AggregatedIngredient],
+    optionGroups: [OptionGroupAggregate]
+  ) {
+    var regularAggregated: [String: AggregatedIngredient] = [:]
+    var optionGroups: [OptionGroupAggregate] = []
 
-    for step in recipe.steps {
-      for ingredient in step.ingredients where ingredient.hasIngredient {
-        // Only include if it has a ValidIngredient (not a recipe step product)
+    // Process main recipe
+    for (stepIndex, step) in recipe.steps.enumerated() {
+      let (regular, groups) = groupIngredientsByOptions(
+        Array(step.ingredients),
+        stepID: step.id,
+        stepIndex: stepIndex,
+        recipeID: recipe.id
+      )
+
+      // Process regular ingredients
+      for ingredient in regular where ingredient.hasIngredient {
         let validIngredient = ingredient.ingredient
-        // Use ValidIngredient ID as key to ensure uniqueness
         let key = validIngredient.id
         if !key.isEmpty {
-          // Initialize or update aggregated ingredient
-          if aggregated[key] == nil {
-            aggregated[key] = AggregatedIngredient(
+          if regularAggregated[key] == nil {
+            regularAggregated[key] = AggregatedIngredient(
               ingredientID: key,
               name: ingredient.name,
               quantityNotes: ingredient.quantityNotes,
@@ -241,17 +462,73 @@ extension RecipePerformanceContentView {
             )
           }
 
-          // Aggregate quantities
-          if ingredient.hasQuantity, var current = aggregated[key] {
-            let quantity = ingredient.quantity
-            current.addQuantity(quantity)
-            aggregated[key] = current
+          if ingredient.hasQuantity, var current = regularAggregated[key] {
+            current.addQuantity(ingredient.quantity)
+            regularAggregated[key] = current
           }
         }
       }
+
+      // Add option groups
+      optionGroups.append(contentsOf: groups)
     }
 
-    return Array(aggregated.values).sorted { $0.name < $1.name }
+    // Process associated recipes
+    for associatedRecipe in recipe.associatedRecipes {
+      for (stepIndex, step) in associatedRecipe.steps.enumerated() {
+        let (regular, groups) = groupIngredientsByOptions(
+          Array(step.ingredients),
+          stepID: step.id,
+          stepIndex: stepIndex,
+          recipeID: associatedRecipe.id
+        )
+
+        // Process regular ingredients from associated recipe
+        for ingredient in regular where ingredient.hasIngredient {
+          let validIngredient = ingredient.ingredient
+          let key = validIngredient.id
+          if !key.isEmpty {
+            if regularAggregated[key] == nil {
+              regularAggregated[key] = AggregatedIngredient(
+                ingredientID: key,
+                name: ingredient.name,
+                quantityNotes: ingredient.quantityNotes,
+                measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil,
+                sourceRecipeID: associatedRecipe.id,
+                sourceRecipeName: associatedRecipe.name
+              )
+            }
+
+            if ingredient.hasQuantity, var current = regularAggregated[key] {
+              current.addQuantity(ingredient.quantity)
+              regularAggregated[key] = current
+            }
+          }
+        }
+
+        // Add option groups from associated recipe with source info
+        var groupsWithSource = groups
+        for index in 0..<groupsWithSource.count {
+          groupsWithSource[index] = OptionGroupAggregate(
+            id: groupsWithSource[index].id,
+            recipeID: groupsWithSource[index].recipeID,
+            stepID: groupsWithSource[index].stepID,
+            stepIndex: groupsWithSource[index].stepIndex,
+            index: groupsWithSource[index].index,
+            options: groupsWithSource[index].options,
+            selectedOptionIndex: groupsWithSource[index].selectedOptionIndex,
+            sourceRecipeID: associatedRecipe.id,
+            sourceRecipeName: associatedRecipe.name
+          )
+        }
+        optionGroups.append(contentsOf: groupsWithSource)
+      }
+    }
+
+    return (
+      regular: Array(regularAggregated.values).sorted { $0.name < $1.name },
+      optionGroups: optionGroups
+    )
   }
 
   func formatStepTitle(step: Mealplanning_RecipeStep, viewModel: PerformRecipeViewModel) -> String {
@@ -302,5 +579,279 @@ extension RecipePerformanceContentView {
       }
       return allButLast
     }
+  }
+
+  // MARK: - Option Grouping Functions
+
+  /// Groups ingredients by option groups. Returns regular ingredients and option groups separately.
+  func groupIngredientsByOptions(
+    _ ingredients: [Mealplanning_RecipeStepIngredient],
+    stepID: String,
+    stepIndex: Int,
+    recipeID: String
+  ) -> (
+    regular: [Mealplanning_RecipeStepIngredient],
+    optionGroups: [OptionGroupAggregate]
+  ) {
+    var regular: [Mealplanning_RecipeStepIngredient] = []
+    var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
+
+    for ingredient in ingredients {
+      // Check if this ingredient is part of an option group
+      if ingredient.hasIngredientIndex {
+        let index = ingredient.ingredientIndex
+        // Check if there are other ingredients with the same index
+        let hasOptions = ingredients.contains { other in
+          other.id != ingredient.id && other.hasIngredientIndex && other.ingredientIndex == index
+        }
+
+        if hasOptions {
+          // This is part of an option group
+          if optionGroupsByIndex[index] == nil {
+            optionGroupsByIndex[index] = []
+          }
+          optionGroupsByIndex[index]?.append(ingredient)
+        } else {
+          // Single ingredient with an index but no alternatives - treat as regular
+          regular.append(ingredient)
+        }
+      } else {
+        // No index means it's a regular ingredient
+        regular.append(ingredient)
+      }
+    }
+
+    // Convert option groups to OptionGroupAggregate
+    var optionGroups: [OptionGroupAggregate] = []
+    for (index, groupIngredients) in optionGroupsByIndex {
+      // Sort by optionIndex
+      let sorted = groupIngredients.sorted { lhs, rhs in
+        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
+        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        return lhsIndex < rhsIndex
+      }
+
+      // Create aggregated ingredients for each option
+      var options: [IngredientOption] = []
+      for ingredient in sorted {
+        let optionIndex = ingredient.hasOptionIndex ? ingredient.optionIndex : 0
+        let optionID = "\(stepID)-\(index)-\(optionIndex)"
+
+        // Create aggregated ingredient for this option
+        var aggregated = AggregatedIngredient(
+          ingredientID: ingredient.hasIngredient ? ingredient.ingredient.id : ingredient.id,
+          name: ingredient.name,
+          quantityNotes: ingredient.quantityNotes,
+          measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
+        )
+
+        if ingredient.hasQuantity {
+          aggregated.addQuantity(ingredient.quantity)
+        }
+
+        options.append(
+          IngredientOption(
+            id: optionID,
+            ingredient: ingredient,
+            optionIndex: optionIndex,
+            aggregated: aggregated
+          )
+        )
+      }
+
+      let groupID = "\(recipeID)-\(stepID)-\(index)"
+      optionGroups.append(
+        OptionGroupAggregate(
+          id: groupID,
+          recipeID: recipeID,
+          stepID: stepID,
+          stepIndex: stepIndex,
+          index: index,
+          options: options,
+          selectedOptionIndex: nil,  // Will be set by view state
+          sourceRecipeID: nil,
+          sourceRecipeName: nil
+        )
+      )
+    }
+
+    // Sort option groups by index
+    optionGroups.sort { $0.index < $1.index }
+
+    return (regular: regular, optionGroups: optionGroups)
+  }
+
+  /// Groups instruments by option groups
+  func groupInstrumentsByOptions(
+    _ instruments: [Mealplanning_RecipeStepInstrument],
+    stepID: String,
+    stepIndex: Int,
+    recipeID: String
+  ) -> (
+    regular: [Mealplanning_RecipeStepInstrument],
+    optionGroups: [InstrumentOptionGroupAggregate]
+  ) {
+    var regular: [Mealplanning_RecipeStepInstrument] = []
+    var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepInstrument]] = [:]
+
+    for instrument in instruments {
+      if instrument.hasIndex {
+        let index = instrument.index
+        let hasOptions = instruments.contains { other in
+          other.id != instrument.id && other.hasIndex && other.index == index
+        }
+
+        if hasOptions {
+          if optionGroupsByIndex[index] == nil {
+            optionGroupsByIndex[index] = []
+          }
+          optionGroupsByIndex[index]?.append(instrument)
+        } else {
+          regular.append(instrument)
+        }
+      } else {
+        regular.append(instrument)
+      }
+    }
+
+    var optionGroups: [InstrumentOptionGroupAggregate] = []
+    for (index, groupInstruments) in optionGroupsByIndex {
+      let sorted = groupInstruments.sorted { lhs, rhs in
+        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
+        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        return lhsIndex < rhsIndex
+      }
+
+      var options: [InstrumentOption] = []
+      for instrument in sorted {
+        let optionIndex = instrument.hasOptionIndex ? instrument.optionIndex : 0
+        let optionID = "\(stepID)-\(index)-\(optionIndex)"
+
+        var aggregated = AggregatedInstrumentVessel(
+          itemID: instrument.hasInstrument ? instrument.instrument.id : instrument.id,
+          name: instrument.name,
+          type: .instrument
+        )
+
+        if instrument.hasQuantity {
+          aggregated.addQuantity(instrument.quantity)
+        }
+
+        options.append(
+          InstrumentOption(
+            id: optionID,
+            instrument: instrument,
+            optionIndex: optionIndex,
+            aggregated: aggregated
+          )
+        )
+      }
+
+      let groupID = "\(recipeID)-\(stepID)-\(index)"
+      optionGroups.append(
+        InstrumentOptionGroupAggregate(
+          id: groupID,
+          recipeID: recipeID,
+          stepID: stepID,
+          stepIndex: stepIndex,
+          index: index,
+          options: options,
+          selectedOptionIndex: nil,
+          sourceRecipeID: nil,
+          sourceRecipeName: nil
+        )
+      )
+    }
+
+    optionGroups.sort { $0.index < $1.index }
+
+    return (regular: regular, optionGroups: optionGroups)
+  }
+
+  /// Groups vessels by option groups
+  func groupVesselsByOptions(
+    _ vessels: [Mealplanning_RecipeStepVessel],
+    stepID: String,
+    stepIndex: Int,
+    recipeID: String
+  ) -> (
+    regular: [Mealplanning_RecipeStepVessel],
+    optionGroups: [VesselOptionGroupAggregate]
+  ) {
+    var regular: [Mealplanning_RecipeStepVessel] = []
+    var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepVessel]] = [:]
+
+    for vessel in vessels {
+      if vessel.hasIndex {
+        let index = vessel.index
+        let hasOptions = vessels.contains { other in
+          other.id != vessel.id && other.hasIndex && other.index == index
+        }
+
+        if hasOptions {
+          if optionGroupsByIndex[index] == nil {
+            optionGroupsByIndex[index] = []
+          }
+          optionGroupsByIndex[index]?.append(vessel)
+        } else {
+          regular.append(vessel)
+        }
+      } else {
+        regular.append(vessel)
+      }
+    }
+
+    var optionGroups: [VesselOptionGroupAggregate] = []
+    for (index, groupVessels) in optionGroupsByIndex {
+      let sorted = groupVessels.sorted { lhs, rhs in
+        let lhsIndex = lhs.hasOptionIndex ? lhs.optionIndex : 0
+        let rhsIndex = rhs.hasOptionIndex ? rhs.optionIndex : 0
+        return lhsIndex < rhsIndex
+      }
+
+      var options: [VesselOption] = []
+      for vessel in sorted {
+        let optionIndex = vessel.hasOptionIndex ? vessel.optionIndex : 0
+        let optionID = "\(stepID)-\(index)-\(optionIndex)"
+
+        var aggregated = AggregatedInstrumentVessel(
+          itemID: vessel.hasVessel ? vessel.vessel.id : vessel.id,
+          name: vessel.name,
+          type: .vessel
+        )
+
+        if vessel.hasQuantity {
+          aggregated.addQuantity(vessel.quantity)
+        }
+
+        options.append(
+          VesselOption(
+            id: optionID,
+            vessel: vessel,
+            optionIndex: optionIndex,
+            aggregated: aggregated
+          )
+        )
+      }
+
+      let groupID = "\(recipeID)-\(stepID)-\(index)"
+      optionGroups.append(
+        VesselOptionGroupAggregate(
+          id: groupID,
+          recipeID: recipeID,
+          stepID: stepID,
+          stepIndex: stepIndex,
+          index: index,
+          options: options,
+          selectedOptionIndex: nil,
+          sourceRecipeID: nil,
+          sourceRecipeName: nil
+        )
+      )
+    }
+
+    optionGroups.sort { $0.index < $1.index }
+
+    return (regular: regular, optionGroups: optionGroups)
   }
 }

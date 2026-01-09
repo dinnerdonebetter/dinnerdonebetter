@@ -241,49 +241,112 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 		x.Steps[i].Media = recipeMedia
 	}
 
-	// Check for cross-recipe product references and print steps that have them
-	var relatedRecipes []string
+	// Check for cross-recipe product references and collect all related recipe IDs
+	// We'll flatten the associated recipes so the root recipe contains all of them directly
+	var relatedRecipeIDs []string
 	for _, step := range x.Steps {
 		for _, ingredient := range step.Ingredients {
 			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" && *ingredient.RecipeStepProductRecipeID != x.ID {
-				relatedRecipes = append(relatedRecipes, pointer.Dereference(ingredient.RecipeStepProductRecipeID))
+				relatedRecipeIDs = append(relatedRecipeIDs, pointer.Dereference(ingredient.RecipeStepProductRecipeID))
 			}
 		}
 	}
 
-	// Track which recipes we've already added to avoid duplicates
-	addedRecipeIDs := make(map[string]bool)
-	addedRecipeIDs[x.ID] = true // Don't add the recipe itself
+	// Map to store fetched recipes by ID (before flattening)
+	fetchedRecipes := make(map[string]*mealplanning.Recipe)
 
-	// Queue to process associated recipes (including nested ones)
-	recipeQueue := make([]string, 0, len(relatedRecipes))
-	recipeQueue = append(recipeQueue, relatedRecipes...)
+	// Track which recipes we've queued to prevent adding the same recipe multiple times
+	queuedRecipeIDs := make(map[string]bool)
+	for _, id := range relatedRecipeIDs {
+		queuedRecipeIDs[id] = true
+	}
 
-	// Process all recipes in the queue (including nested associated recipes)
-	for len(recipeQueue) > 0 {
-		associatedRecipeID := recipeQueue[0]
+	// Queue to process recipes and discover nested dependencies
+	recipeQueue := make([]string, 0, len(relatedRecipeIDs))
+	recipeQueue = append(recipeQueue, relatedRecipeIDs...)
+
+	// Fetch recipes and discover nested dependencies
+	// Each recipe fetch uses its own seen map to handle cycles independently
+	// Limit iterations to prevent infinite loops
+	maxIterations := 1000
+	iteration := 0
+	for len(recipeQueue) > 0 && iteration < maxIterations {
+		iteration++
+		rID := recipeQueue[0]
 		recipeQueue = recipeQueue[1:]
 
-		// Skip if we've already added this recipe
-		if addedRecipeIDs[associatedRecipeID] {
+		// Skip if already fetched
+		if fetchedRecipes[rID] != nil {
 			continue
 		}
 
-		associatedRecipe, associatedRecipeErr := q.getRecipe(ctx, associatedRecipeID, seen)
-		if associatedRecipeErr != nil {
-			return nil, observability.PrepareError(associatedRecipeErr, span, "fetching associated recipe for recipe step")
+		// Fetch the recipe with a fresh seen map (only include root to prevent fetching root again)
+		// This allows each recipe to fetch its associated recipes independently
+		freshSeen := make(map[string]bool)
+		freshSeen[x.ID] = true // Don't fetch the root recipe again
+		recipe, getErr := q.getRecipe(ctx, rID, freshSeen)
+		if getErr != nil {
+			return nil, observability.PrepareError(getErr, span, "fetching associated recipe")
 		}
 
-		// Add to root-level AssociatedRecipes
-		x.AssociatedRecipes = append(x.AssociatedRecipes, associatedRecipe)
-		addedRecipeIDs[associatedRecipeID] = true
+		// Store the fetched recipe
+		fetchedRecipes[rID] = recipe
 
-		// Add nested associated recipes to the queue for processing
-		for _, nestedAssociatedRecipe := range associatedRecipe.AssociatedRecipes {
-			if !addedRecipeIDs[nestedAssociatedRecipe.ID] {
-				recipeQueue = append(recipeQueue, nestedAssociatedRecipe.ID)
+		// Discover nested dependencies by looking at the recipe's ingredients
+		// (not its AssociatedRecipes, since we want to flatten those)
+		// We discover from ingredients to ensure we find all recipes in the dependency graph
+		for _, step := range recipe.Steps {
+			for _, ingredient := range step.Ingredients {
+				if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" && *ingredient.RecipeStepProductRecipeID != x.ID {
+					nestedRecipeID := pointer.Dereference(ingredient.RecipeStepProductRecipeID)
+					// Only add to queue if not already fetched and not already queued
+					if fetchedRecipes[nestedRecipeID] == nil && !queuedRecipeIDs[nestedRecipeID] {
+						queuedRecipeIDs[nestedRecipeID] = true
+						recipeQueue = append(recipeQueue, nestedRecipeID)
+					}
+				}
 			}
 		}
+	}
+
+	// Extract any recipes that were recursively fetched as part of other recipes' AssociatedRecipes
+	// This ensures we capture all nested recipes even if they were fetched recursively
+	// We need to do this iteratively until no new recipes are found
+	// Limit iterations to prevent infinite loops in case of cycles
+	maxExtractionIterations := 100
+	extractionIteration := 0
+	extracted := true
+	for extracted && extractionIteration < maxExtractionIterations {
+		extractionIteration++
+		extracted = false
+		// Collect all recipes to add in this iteration
+		toAdd := make(map[string]*mealplanning.Recipe)
+		for _, recipe := range fetchedRecipes {
+			// Skip minimal recipes (those with empty Steps) as they were returned due to cycle detection
+			// and shouldn't have valid AssociatedRecipes to extract from
+			if len(recipe.Steps) == 0 {
+				continue
+			}
+			for _, nestedAssociated := range recipe.AssociatedRecipes {
+				if fetchedRecipes[nestedAssociated.ID] == nil && toAdd[nestedAssociated.ID] == nil {
+					toAdd[nestedAssociated.ID] = nestedAssociated
+					extracted = true
+				}
+			}
+		}
+		// Add all collected recipes at once
+		for id, recipe := range toAdd {
+			fetchedRecipes[id] = recipe
+		}
+	}
+
+	// Second pass: flatten by clearing AssociatedRecipes from all fetched recipes
+	// and adding all of them to the root recipe's AssociatedRecipes
+	for _, fetchedRecipe := range fetchedRecipes {
+		// Clear the AssociatedRecipes to flatten the structure
+		fetchedRecipe.AssociatedRecipes = nil
+		// Add to root-level AssociatedRecipes
+		x.AssociatedRecipes = append(x.AssociatedRecipes, fetchedRecipe)
 	}
 
 	return x, nil

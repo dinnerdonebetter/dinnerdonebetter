@@ -10,7 +10,7 @@ import SwiftUI
 
 /// A reusable view for displaying recipe performance content (ingredients, instruments, vessels, and steps)
 /// This can be embedded in PerformRecipeView, Meal views, or any other context where recipe performance is needed
-struct RecipePerformanceContentView: View {
+struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body_length
   @Binding var checkedIngredients: Set<String>
   @Binding var checkedInstrumentsVessels: Set<String>
   @Binding var isInstrumentsVesselsExpanded: Bool
@@ -19,12 +19,22 @@ struct RecipePerformanceContentView: View {
   let recipe: Mealplanning_Recipe
   let viewModel: PerformRecipeViewModel
   var hideIngredientsAndInstruments: Bool = false
+  var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
+
+  // State for option selections (for interactive selection outside meal plan context)
+  // Note: Only ingredients have selectable options; instruments and vessels are concrete
+  @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
 
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 16) {
         // Recipe header
         recipeHeader(recipe: recipe, viewModel: viewModel)
+
+        // Associated recipes section
+        if !recipe.associatedRecipes.isEmpty {
+          associatedRecipesSection(recipe: recipe)
+        }
 
         // Instruments & Vessels section (hidden when embedded in meal view)
         if !hideIngredientsAndInstruments {
@@ -40,6 +50,20 @@ struct RecipePerformanceContentView: View {
         stepsList(recipe: recipe, viewModel: viewModel)
       }
       .padding()
+    }
+  }
+
+  // MARK: - Associated Recipes Section
+
+  private func associatedRecipesSection(recipe: Mealplanning_Recipe) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Prerequisite Recipes")
+        .font(.headline)
+        .padding(.horizontal, 4)
+
+      ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
+        AssociatedRecipeCard(recipe: associatedRecipe)
+      }
     }
   }
 
@@ -76,7 +100,11 @@ struct RecipePerformanceContentView: View {
   // MARK: - Instruments & Vessels Section
 
   private func instrumentsVesselsSection(recipe: Mealplanning_Recipe) -> some View {
-    let aggregatedItems = getAggregatedInstrumentsAndVessels(from: recipe)
+    let (regularItems, instrumentOptionGroups, vesselOptionGroups) =
+      getAggregatedInstrumentsAndVessels(from: recipe)
+
+    let filteredInstrumentGroups = filterInstrumentOptionGroups(instrumentOptionGroups)
+    let filteredVesselGroups = filterVesselOptionGroups(vesselOptionGroups)
 
     return VStack(alignment: .leading, spacing: 0) {
       Button(
@@ -101,61 +129,18 @@ struct RecipePerformanceContentView: View {
       )
       .buttonStyle(.plain)
 
-      if isInstrumentsVesselsExpanded && !aggregatedItems.isEmpty {
+      if isInstrumentsVesselsExpanded {
         VStack(alignment: .leading, spacing: 8) {
-          ForEach(aggregatedItems, id: \.itemID) { item in
-            HStack(spacing: 12) {
-              // Checkbox
-              Button(
-                action: {
-                  if checkedInstrumentsVessels.contains(item.itemID) {
-                    checkedInstrumentsVessels.remove(item.itemID)
-                  } else {
-                    checkedInstrumentsVessels.insert(item.itemID)
-                  }
-                },
-                label: {
-                  Image(
-                    systemName: checkedInstrumentsVessels.contains(item.itemID)
-                      ? "checkmark.circle.fill" : "circle"
-                  )
-                  .font(.title3)
-                  .foregroundColor(checkedInstrumentsVessels.contains(item.itemID) ? .green : .gray)
-                }
-              )
-              .buttonStyle(.plain)
-
-              HStack(spacing: 8) {
-                Image(
-                  systemName: item.type == .instrument
-                    ? "wrench.and.screwdriver" : "square.stack.3d.up"
-                )
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .frame(width: 20)
-
-                HStack {
-                  Text(item.name)
-                    .font(.subheadline)
-                    .foregroundColor(
-                      checkedInstrumentsVessels.contains(item.itemID) ? .secondary : .primary
-                    )
-                    .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
-
-                  if let quantityText = item.quantityText {
-                    Text(quantityText)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                      .foregroundColor(.secondary)
-                  }
-                }
-              }
-
-              Spacer()
+          // Regular items
+          if !regularItems.isEmpty {
+            ForEach(regularItems, id: \.itemID) { item in
+              instrumentVesselRow(item: item)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 4)
           }
+
+          // Note: Instruments and vessels option groups are displayed in step details
+          // but are not selectable (they're concrete, unchanging things)
+          // Option groups for instruments/vessels will appear in the step details view
         }
         .padding(.vertical, 8)
         .background(Color(.systemBackground))
@@ -165,10 +150,133 @@ struct RecipePerformanceContentView: View {
     .cornerRadius(12)
   }
 
+  private func instrumentVesselRow(item: AggregatedInstrumentVessel) -> some View {
+    HStack(spacing: 12) {
+      // Checkbox
+      Button(
+        action: {
+          if checkedInstrumentsVessels.contains(item.itemID) {
+            checkedInstrumentsVessels.remove(item.itemID)
+          } else {
+            checkedInstrumentsVessels.insert(item.itemID)
+          }
+        },
+        label: {
+          Image(
+            systemName: checkedInstrumentsVessels.contains(item.itemID)
+              ? "checkmark.circle.fill" : "circle"
+          )
+          .font(.title3)
+          .foregroundColor(checkedInstrumentsVessels.contains(item.itemID) ? .green : .gray)
+        }
+      )
+      .buttonStyle(.plain)
+
+      HStack(spacing: 8) {
+        Image(
+          systemName: item.type == .instrument
+            ? "wrench.and.screwdriver" : "square.stack.3d.up"
+        )
+        .font(.caption)
+        .foregroundColor(.secondary)
+        .frame(width: 20)
+
+        HStack {
+          Text(item.name)
+            .font(.subheadline)
+            .foregroundColor(
+              checkedInstrumentsVessels.contains(item.itemID) ? .secondary : .primary
+            )
+            .strikethrough(checkedInstrumentsVessels.contains(item.itemID))
+
+          if let quantityText = item.quantityText {
+            Text(quantityText)
+              .font(.subheadline)
+              .fontWeight(.medium)
+              .foregroundColor(.secondary)
+          }
+
+          if let sourceRecipeName = item.sourceRecipeName {
+            Text("(from \(sourceRecipeName))")
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+        }
+      }
+
+      Spacer()
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 4)
+  }
+
+  private func filterInstrumentOptionGroups(
+    _ groups: [InstrumentOptionGroupAggregate]
+  ) -> [InstrumentOptionGroupAggregate] {
+    guard let selections = mealPlanSelections else {
+      return groups
+    }
+
+    return groups.compactMap { group in
+      let selection = selections.first { sel in
+        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+          && sel.selectionType == .instrument
+      }
+
+      if let selection = selection {
+        let selectedOptions = group.options.filter {
+          $0.optionIndex == selection.selectedOptionIndex
+        }
+        if !selectedOptions.isEmpty {
+          var filteredGroup = group
+          filteredGroup.options = selectedOptions
+          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
+          return filteredGroup
+        }
+        return nil
+      }
+
+      return group
+    }
+  }
+
+  private func filterVesselOptionGroups(
+    _ groups: [VesselOptionGroupAggregate]
+  ) -> [VesselOptionGroupAggregate] {
+    guard let selections = mealPlanSelections else {
+      return groups
+    }
+
+    return groups.compactMap { group in
+      let selection = selections.first { sel in
+        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+          && sel.selectionType == .vessel
+      }
+
+      if let selection = selection {
+        let selectedOptions = group.options.filter {
+          $0.optionIndex == selection.selectedOptionIndex
+        }
+        if !selectedOptions.isEmpty {
+          var filteredGroup = group
+          filteredGroup.options = selectedOptions
+          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
+          return filteredGroup
+        }
+        return nil
+      }
+
+      return group
+    }
+  }
+
   // MARK: - Ingredients Section
 
   private func ingredientsSection(recipe: Mealplanning_Recipe) -> some View {
-    let aggregatedIngredients = getAggregatedIngredients(from: recipe)
+    let (regularIngredients, optionGroups) = getAggregatedIngredients(from: recipe)
+
+    // Filter option groups based on meal plan selections or user selections
+    let filteredOptionGroups = filterIngredientOptionGroups(optionGroups)
 
     return VStack(alignment: .leading, spacing: 0) {
       Button(
@@ -193,60 +301,35 @@ struct RecipePerformanceContentView: View {
       )
       .buttonStyle(.plain)
 
-      if isIngredientsExpanded && !aggregatedIngredients.isEmpty {
+      if isIngredientsExpanded {
         VStack(alignment: .leading, spacing: 8) {
-          ForEach(aggregatedIngredients, id: \.ingredientID) { aggregated in
-            HStack(spacing: 12) {
-              // Checkbox
-              Button(
-                action: {
-                  if checkedIngredients.contains(aggregated.ingredientID) {
-                    checkedIngredients.remove(aggregated.ingredientID)
-                  } else {
-                    checkedIngredients.insert(aggregated.ingredientID)
-                  }
-                },
-                label: {
-                  Image(
-                    systemName: checkedIngredients.contains(aggregated.ingredientID)
-                      ? "checkmark.circle.fill" : "circle"
-                  )
-                  .font(.title3)
-                  .foregroundColor(
-                    checkedIngredients.contains(aggregated.ingredientID) ? .green : .gray
-                  )
-                }
-              )
-              .buttonStyle(.plain)
-
-              VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                  Text(aggregated.name)
-                    .font(.subheadline)
-                    .foregroundColor(
-                      checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
-                    )
-                    .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
-
-                  if let quantityText = aggregated.quantityText {
-                    Text(quantityText)
-                      .font(.subheadline)
-                      .fontWeight(.medium)
-                      .foregroundColor(.secondary)
-                  }
-                }
-
-                if !aggregated.quantityNotes.isEmpty {
-                  Text(aggregated.quantityNotes)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                }
-              }
-
-              Spacer()
+          // Regular ingredients
+          if !regularIngredients.isEmpty {
+            ForEach(regularIngredients, id: \.ingredientID) { aggregated in
+              ingredientRow(aggregated: aggregated)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 4)
+          }
+
+          // Options section (only ingredients have selectable options)
+          if !filteredOptionGroups.isEmpty {
+            Text("Options")
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.secondary)
+              .padding(.top, 8)
+              .padding(.horizontal)
+
+            ForEach(filteredOptionGroups) { group in
+              InteractiveIngredientOptionGroupView(
+                group: group,
+                selectedOptionIndex: Binding(
+                  get: {
+                    selectedIngredientOptions[group.id] ?? (group.options.first?.optionIndex ?? 0)
+                  },
+                  set: { selectedIngredientOptions[group.id] = $0 }
+                )
+              )
+            }
           }
         }
         .padding(.vertical, 8)
@@ -255,6 +338,100 @@ struct RecipePerformanceContentView: View {
     }
     .background(Color(.systemGray6))
     .cornerRadius(12)
+  }
+
+  private func ingredientRow(aggregated: AggregatedIngredient) -> some View {
+    HStack(spacing: 12) {
+      // Checkbox
+      Button(
+        action: {
+          if checkedIngredients.contains(aggregated.ingredientID) {
+            checkedIngredients.remove(aggregated.ingredientID)
+          } else {
+            checkedIngredients.insert(aggregated.ingredientID)
+          }
+        },
+        label: {
+          Image(
+            systemName: checkedIngredients.contains(aggregated.ingredientID)
+              ? "checkmark.circle.fill" : "circle"
+          )
+          .font(.title3)
+          .foregroundColor(
+            checkedIngredients.contains(aggregated.ingredientID) ? .green : .gray
+          )
+        }
+      )
+      .buttonStyle(.plain)
+
+      VStack(alignment: .leading, spacing: 2) {
+        HStack {
+          Text(aggregated.name)
+            .font(.subheadline)
+            .foregroundColor(
+              checkedIngredients.contains(aggregated.ingredientID) ? .secondary : .primary
+            )
+            .strikethrough(checkedIngredients.contains(aggregated.ingredientID))
+
+          if let quantityText = aggregated.quantityText {
+            Text(quantityText)
+              .font(.subheadline)
+              .fontWeight(.medium)
+              .foregroundColor(.secondary)
+          }
+
+          if let sourceRecipeName = aggregated.sourceRecipeName {
+            Text("(from \(sourceRecipeName))")
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+        }
+
+        if !aggregated.quantityNotes.isEmpty {
+          Text(aggregated.quantityNotes)
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+
+      Spacer()
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 4)
+  }
+
+  private func filterIngredientOptionGroups(
+    _ groups: [OptionGroupAggregate]
+  ) -> [OptionGroupAggregate] {
+    guard let selections = mealPlanSelections else {
+      // No meal plan selections - return all groups for interactive selection
+      return groups
+    }
+
+    // Filter based on meal plan selections
+    return groups.compactMap { group in
+      let selection = selections.first { sel in
+        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+          && sel.ingredientIndex == group.index && sel.selectionType == .ingredient
+      }
+
+      if let selection = selection {
+        // Only show the selected option
+        let selectedOptions = group.options.filter {
+          $0.optionIndex == selection.selectedOptionIndex
+        }
+        if !selectedOptions.isEmpty {
+          var filteredGroup = group
+          filteredGroup.options = selectedOptions
+          filteredGroup.selectedOptionIndex = selection.selectedOptionIndex
+          return filteredGroup
+        }
+        return nil
+      }
+
+      // No selection - show all options
+      return group
+    }
   }
 
   // MARK: - Steps List
@@ -276,7 +453,9 @@ struct RecipePerformanceContentView: View {
           step: step,
           index: index,
           viewModel: viewModel,
-          formatStepTitle: formatStepTitle
+          formatStepTitle: formatStepTitle,
+          recipeID: recipe.id,
+          mealPlanSelections: mealPlanSelections
         )
       }
     }

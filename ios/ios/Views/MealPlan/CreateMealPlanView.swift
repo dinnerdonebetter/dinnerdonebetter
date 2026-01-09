@@ -12,12 +12,15 @@ extension Notification.Name {
   static let mealPlanCreated = Notification.Name("mealPlanCreated")
 }
 
+// swiftlint:disable:next type_body_length
 struct CreateMealPlanView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) var dismiss
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewModel: CreateMealPlanViewModel?
   @FocusState var focusedField: Field?
+  @State private var showOptionSelectionModal = false
+  @State private var recipesForOptionSelection: [Mealplanning_Recipe] = []
 
   enum Field: Hashable {
     case mealPlanName
@@ -49,13 +52,36 @@ struct CreateMealPlanView: View {
             }
 
             // Create Button
-            createButton(viewModel: viewModel)
+            createButton(
+              viewModel: viewModel,
+              showOptionSelectionModal: $showOptionSelectionModal,
+              recipesForOptionSelection: $recipesForOptionSelection
+            )
           }
           .padding()
           .frame(maxWidth: isRegularWidth ? 800 : .infinity)
           .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
+        .sheet(isPresented: $showOptionSelectionModal) {
+          RecipeOptionSelectionView(
+            isPresented: $showOptionSelectionModal,
+            recipes: recipesForOptionSelection,
+            onSave: { ingredientSelections in
+              viewModel?.setOptionSelections(ingredientSelections: ingredientSelections)
+              // Continue with meal plan creation
+              Task {
+                if let viewModel = viewModel {
+                  let success = await viewModel.createMealPlan()
+                  if success {
+                    NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+                    dismiss()
+                  }
+                }
+              }
+            }
+          )
+        }
       } else {
         ProgressView("Initializing...")
           .frame(maxWidth: .infinity, maxHeight: .infinity)

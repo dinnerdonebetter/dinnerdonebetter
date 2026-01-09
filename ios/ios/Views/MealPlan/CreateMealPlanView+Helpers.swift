@@ -136,18 +136,56 @@ extension CreateMealPlanView {
 
   // MARK: - Create Button
 
-  func createButton(viewModel: CreateMealPlanViewModel) -> some View {
+  func createButton(
+    viewModel: CreateMealPlanViewModel,
+    showOptionSelectionModal: Binding<Bool>,
+    recipesForOptionSelection: Binding<[Mealplanning_Recipe]>
+  ) -> some View {
     _ = Bindable(viewModel)
     let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
 
     return Button(
       action: {
-        Task {
-          let success = await viewModel.createMealPlan()
-          if success {
-            // Post notification to refresh home view
-            NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-            dismiss()
+        // Collect all recipes from selected meals
+        var allRecipes: [Mealplanning_Recipe] = []
+        for event in viewModel.events {
+          for meal in event.selectedMeals {
+            for component in meal.components {
+              allRecipes.append(component.recipe)
+              // Also include associated recipes
+              allRecipes.append(contentsOf: component.recipe.associatedRecipes)
+            }
+          }
+        }
+
+        // Check if any recipes have option groups
+        let hasOptions = allRecipes.contains { recipe in
+          recipe.steps.contains { step in
+            // Check for ingredient option groups (only ingredients have selectable options)
+            let ingredientIndices = step.ingredients.compactMap {
+              $0.hasIngredientIndex ? $0.ingredientIndex : nil
+            }
+            let hasIngredientOptions = ingredientIndices.count != Set(ingredientIndices).count
+
+            return hasIngredientOptions
+          }
+        }
+
+        if hasOptions {
+          // Show option selection modal
+          recipesForOptionSelection.wrappedValue = Array(Set(allRecipes.map { $0.id })).compactMap {
+            recipeID in
+            allRecipes.first { $0.id == recipeID }
+          }
+          showOptionSelectionModal.wrappedValue = true
+        } else {
+          // No options, proceed directly
+          Task {
+            let success = await viewModel.createMealPlan()
+            if success {
+              NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+              dismiss()
+            }
           }
         }
       },

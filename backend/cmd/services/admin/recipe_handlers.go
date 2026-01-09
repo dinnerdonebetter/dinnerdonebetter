@@ -244,7 +244,7 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 				ghtml.Class("flex items-center gap-2"),
 				ghtml.Span(
 					ghtml.Class("text-xs font-semibold text-purple-600 uppercase tracking-wide"),
-					g.Text("Sub-Recipe:"),
+					g.Text("Prerequisite:"),
 				),
 				ghtml.A(
 					ghtml.Href(fmt.Sprintf("/recipes/%s", subRecipe.Id)),
@@ -680,7 +680,6 @@ func (s *AdminFrontendServer) renderStepTimeAndTemperature(step *mealplanningsvc
 	)
 }
 
-
 func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplanningsvc.RecipeStepIngredient, allSteps []*mealplanningsvc.RecipeStep) []g.Node {
 	// Group ingredients by Index
 	indexGroups := make(map[uint32][]*mealplanningsvc.RecipeStepIngredient)
@@ -761,7 +760,7 @@ func (s *AdminFrontendServer) renderSingleIngredient(ing *mealplanningsvc.Recipe
 				),
 				ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
+					g.Text(fmt.Sprintf("← Product ID: %s", *ing.RecipeStepProductId)),
 				),
 			)
 		}
@@ -964,7 +963,7 @@ func (s *AdminFrontendServer) renderSingleInstrument(inst *mealplanningsvc.Recip
 		} else {
 			details = append(details, ghtml.Span(
 				ghtml.Class("text-blue-600 ml-2"),
-				g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *inst.RecipeStepProductId)),
+				g.Text(fmt.Sprintf("← Product ID: %s", *inst.RecipeStepProductId)),
 			))
 		}
 	}
@@ -1093,7 +1092,7 @@ func (s *AdminFrontendServer) renderSingleVessel(vessel *mealplanningsvc.RecipeS
 				),
 				ghtml.Span(
 					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *vessel.RecipeStepProductId)),
+					g.Text(fmt.Sprintf("← Product ID: %s", *vessel.RecipeStepProductId)),
 				),
 			)
 		}
