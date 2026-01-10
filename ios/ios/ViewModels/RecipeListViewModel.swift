@@ -43,8 +43,9 @@ class RecipeListViewModel {
 
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
-      // Create request - empty filter to get all recipes
-      let request = Mealplanning_GetRecipesRequest()
+      // Create request - use "submitted" status to match webapp behavior
+      var request = Mealplanning_GetRecipesRequest()
+      request.status = "submitted"
 
       // Execute request
       let response = try await clientManager.client.mealPlanning.getRecipes(

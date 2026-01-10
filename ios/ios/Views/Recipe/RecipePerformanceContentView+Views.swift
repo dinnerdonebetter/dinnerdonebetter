@@ -19,27 +19,49 @@ struct StepCardView: View {
   let formatStepTitle: (Mealplanning_RecipeStep, PerformRecipeViewModel) -> String
   let recipeID: String
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
+  var isAssociatedRecipeStep: Bool = false
+  var associatedRecipeName: String?
 
   var body: some View {
-    let isCompleted = viewModel.isStepCompleted(index)
-    let canCheck = viewModel.canCheckStep(index)
-    let prerequisites = viewModel.getPrerequisiteStepIndices(index)
+    // Use new API for associated recipe steps, old API for main recipe steps
+    let isCompleted: Bool
+    let canCheck: Bool
+    let prerequisites: [Int]
+
+    if isAssociatedRecipeStep {
+      isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
+      canCheck = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
+      // For associated recipe steps, get prerequisite keys and convert to indices if needed
+      let prerequisiteKeys = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
+      prerequisites = []  // We'll handle prerequisites differently for associated steps
+    } else {
+      isCompleted = viewModel.isStepCompleted(index)
+      canCheck = viewModel.canCheckStep(index)
+      prerequisites = viewModel.getPrerequisiteStepIndices(index)
+    }
+
     let hasPrerequisites = !prerequisites.isEmpty
     let allPrerequisitesCompleted = prerequisites.allSatisfy { viewModel.isStepCompleted($0) }
 
     return VStack(alignment: .leading, spacing: 12) {
       // Step header with checkbox
       HStack(alignment: .top, spacing: 12) {
-        // Checkbox
+        // Checkbox (works for both main and associated recipe steps)
         Button(
           action: {
-            viewModel.toggleStep(index)
+            if isAssociatedRecipeStep {
+              viewModel.toggleStep(recipeID: recipeID, stepID: step.id)
+            } else {
+              viewModel.toggleStep(index)
+            }
           },
           label: {
             Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
               .font(.title2)
               .foregroundColor(
-                canCheck ? (isCompleted ? .green : .blue) : .gray
+                canCheck
+                  ? (isCompleted ? .green : (isAssociatedRecipeStep ? .purple : .blue))
+                  : .gray
               )
           }
         )
@@ -112,13 +134,17 @@ struct StepCardView: View {
     }
     .padding()
     .background(
-      isCompleted ? Color(.systemGray6) : Color(.systemBackground)
+      isAssociatedRecipeStep
+        ? Color.purple.opacity(0.05)
+        : (isCompleted ? Color(.systemGray6) : Color(.systemBackground))
     )
     .cornerRadius(12)
     .overlay(
       RoundedRectangle(cornerRadius: 12)
         .stroke(
-          isCompleted ? Color.green.opacity(0.3) : Color.clear,
+          isAssociatedRecipeStep
+            ? Color.purple.opacity(0.2)
+            : (isCompleted ? Color.green.opacity(0.3) : Color.clear),
           lineWidth: 2
         )
     )

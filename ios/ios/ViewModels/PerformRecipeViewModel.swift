@@ -17,14 +17,14 @@ class PerformRecipeViewModel {
   var isLoading = false
   var errorMessage: String?
 
-  // Track which steps are completed (by step index)
-  var completedSteps: Set<Int> = []
+  // Track which steps are completed (by step ID: "recipeID:stepID")
+  var completedSteps: Set<String> = []
 
   // Special step: wash hands (index -1)
   var washHandsCompleted: Bool = false
 
-  // Map from product ID to the step index that produces it
-  var productIDToStepIndex: [String: Int] = [:]
+  // Map from product ID to the step that produces it (recipeID:stepID)
+  var productIDToStepKey: [String: String] = [:]
 
   // Special index for wash hands step
   static let washHandsStepIndex = -1
@@ -78,39 +78,76 @@ class PerformRecipeViewModel {
     isLoading = false
   }
 
-  // Build a mapping from recipe step product IDs to the step index that produces them
+  // Build a mapping from recipe step product IDs to the step that produces them
   private func buildProductIDToStepIndexMapping() {
     guard let recipe = recipe else { return }
-    for (stepIndex, step) in recipe.steps.enumerated() {
+
+    // Map products from main recipe
+    for step in recipe.steps {
+      let stepKey = "\(recipe.id):\(step.id)"
       for product in step.products {
-        productIDToStepIndex[product.id] = stepIndex
+        productIDToStepKey[product.id] = stepKey
+      }
+    }
+
+    // Map products from associated recipes
+    for associatedRecipe in recipe.associatedRecipes {
+      for step in associatedRecipe.steps {
+        let stepKey = "\(associatedRecipe.id):\(step.id)"
+        for product in step.products {
+          productIDToStepKey[product.id] = stepKey
+        }
       }
     }
   }
 
+  // Helper to create a step key from recipeID and stepID
+  private func stepKey(recipeID: String, stepID: String) -> String {
+    return "\(recipeID):\(stepID)"
+  }
+
   // Check if a step can be checked off (all prerequisites are completed)
+  // Supports both old API (stepIndex for main recipe) and new API (recipeID + stepID)
   func canCheckStep(_ stepIndex: Int) -> Bool {
     // Wash hands step can always be checked
     if stepIndex == Self.washHandsStepIndex {
       return true
     }
 
-    // All other steps require wash hands to be completed first
+    guard let recipe = recipe, stepIndex >= 0, stepIndex < recipe.steps.count else {
+      return false
+    }
+    let step = recipe.steps[stepIndex]
+    return canCheckStep(recipeID: recipe.id, stepID: step.id)
+  }
+
+  func canCheckStep(recipeID: String, stepID: String) -> Bool {
+    // All steps require wash hands to be completed first
     if !washHandsCompleted {
       return false
     }
 
-    guard let recipe = recipe, stepIndex < recipe.steps.count else {
+    guard let recipe = recipe else {
       return false
     }
 
-    let step = recipe.steps[stepIndex]
+    // Find the step (could be in main recipe or associated recipe)
+    let step: Mealplanning_RecipeStep?
+    if recipeID == recipe.id {
+      step = recipe.steps.first { $0.id == stepID }
+    } else {
+      step = recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
+    }
+
+    guard let step = step else {
+      return false
+    }
 
     // Check all ingredients
     for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
       let productID = ingredient.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        if !completedSteps.contains(prerequisiteStepIndex) {
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        if !completedSteps.contains(prerequisiteStepKey) {
           return false
         }
       }
@@ -119,8 +156,8 @@ class PerformRecipeViewModel {
     // Check all instruments
     for instrument in step.instruments where instrument.hasRecipeStepProductID {
       let productID = instrument.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        if !completedSteps.contains(prerequisiteStepIndex) {
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        if !completedSteps.contains(prerequisiteStepKey) {
           return false
         }
       }
@@ -129,8 +166,8 @@ class PerformRecipeViewModel {
     // Check all vessels
     for vessel in step.vessels where vessel.hasRecipeStepProductID {
       let productID = vessel.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        if !completedSteps.contains(prerequisiteStepIndex) {
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        if !completedSteps.contains(prerequisiteStepKey) {
           return false
         }
       }
@@ -140,11 +177,8 @@ class PerformRecipeViewModel {
   }
 
   // Toggle step completion
+  // Supports both old API (stepIndex for main recipe) and new API (recipeID + stepID)
   func toggleStep(_ stepIndex: Int) {
-    guard canCheckStep(stepIndex) else {
-      return
-    }
-
     // Handle wash hands step
     if stepIndex == Self.washHandsStepIndex {
       washHandsCompleted.toggle()
@@ -155,61 +189,117 @@ class PerformRecipeViewModel {
       return
     }
 
-    if completedSteps.contains(stepIndex) {
+    guard let recipe = recipe, stepIndex >= 0, stepIndex < recipe.steps.count else {
+      return
+    }
+    let step = recipe.steps[stepIndex]
+    toggleStep(recipeID: recipe.id, stepID: step.id)
+  }
+
+  func toggleStep(recipeID: String, stepID: String) {
+    let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
+
+    guard canCheckStep(recipeID: recipeID, stepID: stepID) else {
+      return
+    }
+
+    if completedSteps.contains(currentStepKey) {
       // When unchecking, also uncheck all dependent steps
-      uncheckStepAndDependents(stepIndex)
+      uncheckStepAndDependents(stepKey: currentStepKey)
     } else {
-      completedSteps.insert(stepIndex)
+      completedSteps.insert(currentStepKey)
     }
   }
 
   // Recursively uncheck a step and all steps that depend on it
-  private func uncheckStepAndDependents(_ stepIndex: Int) {
+  private func uncheckStepAndDependents(stepKey: String) {
     guard let recipe = recipe else { return }
-    completedSteps.remove(stepIndex)
+    completedSteps.remove(stepKey)
 
-    // Find all steps that depend on this step's products
-    let step = recipe.steps[stepIndex]
+    // Parse recipeID and stepID from stepKey
+    let components = stepKey.split(separator: ":", maxSplits: 1)
+    guard components.count == 2,
+      let stepID = String(components[1]) as String?
+    else {
+      return
+    }
+    let recipeID = String(components[0])
+
+    // Find the step to get its products
+    let step: Mealplanning_RecipeStep?
+    if recipeID == recipe.id {
+      step = recipe.steps.first { $0.id == stepID }
+    } else {
+      step = recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
+    }
+
+    guard let step = step else { return }
+
+    // Find all steps (in main recipe and associated recipes) that depend on this step's products
     for product in step.products {
-      // Find all steps that use this product
-      for (dependentStepIndex, dependentStep) in recipe.steps.enumerated() {
-        if dependentStepIndex <= stepIndex {
-          continue  // Only check later steps
-        }
+      // Check main recipe steps
+      processDependentSteps(
+        steps: recipe.steps,
+        recipeID: recipe.id,
+        productID: product.id,
+        excludeStepKey: stepKey
+      )
 
-        var dependsOnProduct = false
+      // Check associated recipe steps
+      for associatedRecipe in recipe.associatedRecipes {
+        processDependentSteps(
+          steps: associatedRecipe.steps,
+          recipeID: associatedRecipe.id,
+          productID: product.id,
+          excludeStepKey: stepKey
+        )
+      }
+    }
+  }
 
-        // Check if any ingredient uses this product
-        for ingredient in dependentStep.ingredients {
-          if ingredient.hasRecipeStepProductID && ingredient.recipeStepProductID == product.id {
-            dependsOnProduct = true
-            break
-          }
-        }
+  // Helper function to check if a step depends on a product
+  private func stepDependsOnProduct(_ step: Mealplanning_RecipeStep, productID: String) -> Bool {
+    // Check ingredients
+    for ingredient in step.ingredients {
+      if ingredient.hasRecipeStepProductID && ingredient.recipeStepProductID == productID {
+        return true
+      }
+    }
 
-        // Check if any instrument uses this product
-        if !dependsOnProduct {
-          for instrument in dependentStep.instruments {
-            if instrument.hasRecipeStepProductID && instrument.recipeStepProductID == product.id {
-              dependsOnProduct = true
-              break
-            }
-          }
-        }
+    // Check instruments
+    for instrument in step.instruments {
+      if instrument.hasRecipeStepProductID && instrument.recipeStepProductID == productID {
+        return true
+      }
+    }
 
-        // Check if any vessel uses this product
-        if !dependsOnProduct {
-          for vessel in dependentStep.vessels {
-            if vessel.hasRecipeStepProductID && vessel.recipeStepProductID == product.id {
-              dependsOnProduct = true
-              break
-            }
-          }
-        }
+    // Check vessels
+    for vessel in step.vessels {
+      if vessel.hasRecipeStepProductID && vessel.recipeStepProductID == productID {
+        return true
+      }
+    }
 
-        if dependsOnProduct && completedSteps.contains(dependentStepIndex) {
-          uncheckStepAndDependents(dependentStepIndex)
-        }
+    return false
+  }
+
+  // Helper function to process dependent steps for a given recipe
+  private func processDependentSteps(
+    steps: [Mealplanning_RecipeStep],
+    recipeID: String,
+    productID: String,
+    excludeStepKey: String
+  ) {
+    for dependentStep in steps {
+      let dependentStepKey = self.stepKey(recipeID: recipeID, stepID: dependentStep.id)
+      if dependentStepKey == excludeStepKey {
+        continue  // Skip self
+      }
+
+      if stepDependsOnProduct(dependentStep, productID: productID)
+        && completedSteps.contains(dependentStepKey)
+      {
+        uncheckStepAndDependents(stepKey: dependentStepKey)
       }
     }
   }
@@ -223,51 +313,113 @@ class PerformRecipeViewModel {
   }
 
   // Check if a step is completed
+  // Supports both old API (stepIndex for main recipe) and new API (recipeID + stepID)
   func isStepCompleted(_ stepIndex: Int) -> Bool {
     if stepIndex == Self.washHandsStepIndex {
       return washHandsCompleted
     }
-    return completedSteps.contains(stepIndex)
+    guard let recipe = recipe, stepIndex >= 0, stepIndex < recipe.steps.count else {
+      return false
+    }
+    let step = recipe.steps[stepIndex]
+    return isStepCompleted(recipeID: recipe.id, stepID: step.id)
   }
 
-  // Get all prerequisite step indices for a given step
+  func isStepCompleted(recipeID: String, stepID: String) -> Bool {
+    let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
+    return completedSteps.contains(currentStepKey)
+  }
+
+  // Get all prerequisite step indices for a given step (old API for main recipe)
   func getPrerequisiteStepIndices(_ stepIndex: Int) -> [Int] {
-    guard let recipe = recipe, stepIndex < recipe.steps.count else {
+    guard let recipe = recipe, stepIndex >= 0, stepIndex < recipe.steps.count else {
       return []
     }
-
-    var prerequisites: Set<Int> = []
     let step = recipe.steps[stepIndex]
+    let stepKeys = getPrerequisiteStepKeys(recipeID: recipe.id, stepID: step.id)
+
+    // Convert step keys back to indices for main recipe steps only
+    var prerequisites: Set<Int> = []
+    for stepKey in stepKeys {
+      let components = stepKey.split(separator: ":", maxSplits: 1)
+      if components.count == 2, String(components[0]) == recipe.id {
+        if let stepID = String(components[1]) as String?,
+          let index = recipe.steps.firstIndex(where: { $0.id == stepID })
+        {
+          prerequisites.insert(index)
+        }
+      }
+    }
+    return Array(prerequisites).sorted()
+  }
+
+  // Get all prerequisite step keys for a given step
+  func getPrerequisiteStepKeys(recipeID: String, stepID: String) -> [String] {
+    guard let recipe = recipe else { return [] }
+
+    // Find the step
+    let step: Mealplanning_RecipeStep?
+    if recipeID == recipe.id {
+      step = recipe.steps.first { $0.id == stepID }
+    } else {
+      step = recipe.associatedRecipes.first { $0.id == recipeID }?.steps.first { $0.id == stepID }
+    }
+
+    guard let step = step else { return [] }
+
+    var prerequisites: Set<String> = []
 
     // Check all ingredients
     for ingredient in step.ingredients where ingredient.hasRecipeStepProductID {
       let productID = ingredient.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        prerequisites.insert(prerequisiteStepIndex)
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        prerequisites.insert(prerequisiteStepKey)
       }
     }
 
     // Check all instruments
     for instrument in step.instruments where instrument.hasRecipeStepProductID {
       let productID = instrument.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        prerequisites.insert(prerequisiteStepIndex)
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        prerequisites.insert(prerequisiteStepKey)
       }
     }
 
     // Check all vessels
     for vessel in step.vessels where vessel.hasRecipeStepProductID {
       let productID = vessel.recipeStepProductID
-      if let prerequisiteStepIndex = productIDToStepIndex[productID] {
-        prerequisites.insert(prerequisiteStepIndex)
+      if let prerequisiteStepKey = productIDToStepKey[productID] {
+        prerequisites.insert(prerequisiteStepKey)
       }
     }
 
     return Array(prerequisites).sorted()
   }
 
-  // Get the step index that produces a given product ID
+  // Get the step key that produces a given product ID
+  func getStepKeyForProductID(_ productID: String) -> String? {
+    return productIDToStepKey[productID]
+  }
+
+  // Get the step index for a product ID (for main recipe only, for display purposes)
+  // Returns nil if the product is from an associated recipe
   func getStepIndexForProductID(_ productID: String) -> Int? {
-    return productIDToStepIndex[productID]
+    guard let recipe = recipe,
+      let stepKey = productIDToStepKey[productID]
+    else {
+      return nil
+    }
+
+    // Parse step key
+    let components = stepKey.split(separator: ":", maxSplits: 1)
+    guard components.count == 2,
+      String(components[0]) == recipe.id,
+      let stepID = String(components[1]) as String?
+    else {
+      return nil  // Product is from associated recipe
+    }
+
+    // Find the step index in main recipe
+    return recipe.steps.firstIndex(where: { $0.id == stepID })
   }
 }

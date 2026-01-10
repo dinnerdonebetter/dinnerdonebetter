@@ -25,6 +25,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   // Note: Only ingredients have selectable options; instruments and vessels are concrete
   @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
 
+  @Environment(AuthenticationManager.self) private var authManager
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 16) {
@@ -462,21 +464,129 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         .font(.headline)
         .padding(.horizontal, 4)
 
-      // Wash hands step (always first)
-      washHandsStepCard(viewModel: viewModel)
+      // Associated recipe steps (prerequisites) - render first
+      if !recipe.associatedRecipes.isEmpty {
+        ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
+          if !associatedRecipe.steps.isEmpty {
+            // Header for associated recipe
+            associatedRecipeStepsHeader(recipe: associatedRecipe)
 
-      // Regular recipe steps
-      ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
-        StepCardView(
-          step: step,
-          index: index,
-          viewModel: viewModel,
-          formatStepTitle: formatStepTitle,
-          recipeID: recipe.id,
-          mealPlanSelections: mealPlanSelections
-        )
+            // Wash hands step before first step of this associated recipe
+            washHandsStepCard(viewModel: viewModel)
+
+            // Steps from this associated recipe
+            ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) {
+              index, step in
+              StepCardView(
+                step: step,
+                index: index,
+                viewModel: viewModel,
+                formatStepTitle: formatStepTitle,
+                recipeID: associatedRecipe.id,
+                mealPlanSelections: mealPlanSelections,
+                isAssociatedRecipeStep: true,
+                associatedRecipeName: associatedRecipe.name
+              )
+            }
+
+            // Separator after associated recipe steps
+            if associatedRecipe.id != recipe.associatedRecipes.last?.id
+              || !recipe.steps.isEmpty
+            {
+              Divider()
+                .padding(.vertical, 8)
+            }
+          }
+        }
+
+        // Header for main recipe steps (if both exist)
+        if !recipe.steps.isEmpty {
+          mainRecipeStepsHeader()
+        }
+      }
+
+      // Main recipe steps
+      if !recipe.steps.isEmpty {
+        // Wash hands step before first step of main recipe
+        washHandsStepCard(viewModel: viewModel)
+
+        ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
+          StepCardView(
+            step: step,
+            index: index,
+            viewModel: viewModel,
+            formatStepTitle: formatStepTitle,
+            recipeID: recipe.id,
+            mealPlanSelections: mealPlanSelections
+          )
+        }
       }
     }
+  }
+
+  // MARK: - Associated Recipe Steps Header
+
+  private func associatedRecipeStepsHeader(recipe: Mealplanning_Recipe) -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      HStack(spacing: 8) {
+        Text("PREREQUISITE:")
+          .font(.caption2)
+          .fontWeight(.semibold)
+          .foregroundColor(.purple)
+          .textCase(.uppercase)
+          .tracking(0.5)
+
+        NavigationLink(
+          destination: {
+            PerformRecipeView(recipeID: recipe.id)
+              .environment(authManager)
+          },
+          label: {
+            Text(recipe.name)
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.purple)
+          }
+        )
+      }
+
+      if !recipe.description_p.isEmpty {
+        Text(recipe.description_p)
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+    }
+    .padding()
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color.purple.opacity(0.1))
+    .cornerRadius(8)
+    .overlay(
+      RoundedRectangle(cornerRadius: 8)
+        .stroke(Color.purple.opacity(0.3), lineWidth: 2)
+    )
+    .padding(.vertical, 4)
+  }
+
+  // MARK: - Main Recipe Steps Header
+
+  private func mainRecipeStepsHeader() -> some View {
+    HStack {
+      Text("MAIN RECIPE STEPS")
+        .font(.caption2)
+        .fontWeight(.semibold)
+        .foregroundColor(.blue)
+        .textCase(.uppercase)
+        .tracking(0.5)
+    }
+    .padding()
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color.blue.opacity(0.1))
+    .cornerRadius(8)
+    .overlay(
+      RoundedRectangle(cornerRadius: 8)
+        .stroke(Color.blue.opacity(0.3), lineWidth: 2)
+    )
+    .padding(.vertical, 4)
   }
 
   // MARK: - Wash Hands Step Card
