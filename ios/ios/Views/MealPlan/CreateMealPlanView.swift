@@ -68,15 +68,27 @@ struct CreateMealPlanView: View {
             isPresented: $showOptionSelectionModal,
             recipes: recipesForOptionSelection,
             onSave: { ingredientSelections in
-              self.viewModel?.setOptionSelections(ingredientSelections: ingredientSelections)
+              guard let viewModel = self.viewModel else { return }
+
+              // If selections are empty (user skipped), compute defaults
+              var finalSelections = ingredientSelections
+              if finalSelections.isEmpty {
+                // Compute default selections for all recipes
+                for recipe in recipesForOptionSelection {
+                  let defaults = viewModel.getDefaultOptionSelections(for: recipe)
+                  if !defaults.isEmpty {
+                    finalSelections[recipe.id] = defaults
+                  }
+                }
+              }
+
+              viewModel.setOptionSelections(ingredientSelections: finalSelections)
               // Continue with meal plan creation
               Task {
-                if let viewModel = self.viewModel {
-                  let success = await viewModel.createMealPlan()
-                  if success {
-                    NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-                    dismiss()
-                  }
+                let success = await viewModel.createMealPlan()
+                if success {
+                  NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+                  dismiss()
                 }
               }
             }

@@ -471,6 +471,112 @@ class CreateMealPlanViewModel {
     recipeOptionSelections = ingredientSelections
   }
 
+  /// Collects all unique recipes (including associated recipes) from selected meals that have option groups
+  /// - Parameter meals: Array of meals to check
+  /// - Returns: Set of recipe IDs that have option groups
+  func collectRecipesWithOptions(from meals: [Mealplanning_Meal]) -> Set<String> {
+    var recipeIDsWithOptions: Set<String> = []
+
+    // Collect all recipes from selected meals
+    var allRecipes: [Mealplanning_Recipe] = []
+    for meal in meals {
+      for component in meal.components {
+        allRecipes.append(component.recipe)
+        // Also include associated recipes
+        allRecipes.append(contentsOf: component.recipe.associatedRecipes)
+      }
+    }
+
+    // Check if any recipes have option groups
+    for recipe in allRecipes {
+      let hasOptions = recipe.steps.contains { step in
+        // Check for ingredient option groups (only ingredients have selectable options)
+        // Filter out index 0 (which typically means not in an option group)
+        let ingredientIndices = step.ingredients
+          .filter { $0.index != 0 }
+          .map { $0.index }
+        // If there are duplicate indices, it means there are multiple options for the same index
+        let hasIngredientOptions = ingredientIndices.count != Set(ingredientIndices).count
+        return hasIngredientOptions
+      }
+
+      if hasOptions {
+        recipeIDsWithOptions.insert(recipe.id)
+      }
+    }
+
+    return recipeIDsWithOptions
+  }
+
+  /// Gets all unique recipes (including associated recipes) from selected meals
+  /// - Parameter meals: Array of meals to extract recipes from
+  /// - Returns: Array of unique recipes
+  func getAllRecipes(from meals: [Mealplanning_Meal]) -> [Mealplanning_Recipe] {
+    var allRecipes: [Mealplanning_Recipe] = []
+    for meal in meals {
+      for component in meal.components {
+        allRecipes.append(component.recipe)
+        // Also include associated recipes
+        allRecipes.append(contentsOf: component.recipe.associatedRecipes)
+      }
+    }
+
+    // Return unique recipes (by ID)
+    var seenIDs: Set<String> = []
+    return allRecipes.filter { recipe in
+      guard !seenIDs.contains(recipe.id) else {
+        return false
+      }
+      seenIDs.insert(recipe.id)
+      return true
+    }
+  }
+
+  /// Checks if a recipe has unselected options
+  /// - Parameter recipeID: The recipe ID to check
+  /// - Returns: True if the recipe has option groups that haven't been selected
+  func hasUnselectedOptions(for recipeID: String) -> Bool {
+    // If recipe has no selections at all, it might have unselected options
+    // This is a simple check - in practice, you'd want to compare against
+    // the actual option groups in the recipe
+    return false  // For now, we assume all options are selected or use defaults
+  }
+
+  /// Gets default option selections for a recipe (optionIndex: 0 for all option groups)
+  /// - Parameter recipe: The recipe to get defaults for
+  /// - Returns: A dictionary mapping stepID -> (ingredientIndex -> selectedOptionIndex)
+  func getDefaultOptionSelections(for recipe: Mealplanning_Recipe) -> [String: [UInt32: UInt32]] {
+    var defaults: [String: [UInt32: UInt32]] = [:]
+
+    // Check all steps for ingredient option groups
+    for step in recipe.steps {
+      // Group ingredients by index to find option groups
+      var optionGroupsByIndex: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
+
+      for ingredient in step.ingredients where ingredient.index != 0 {
+        // Index 0 typically means not in an option group
+        if optionGroupsByIndex[ingredient.index] == nil {
+          optionGroupsByIndex[ingredient.index] = []
+        }
+        optionGroupsByIndex[ingredient.index]?.append(ingredient)
+      }
+
+      // For each option group, set default to optionIndex 0 (first option)
+      for (index, groupIngredients) in optionGroupsByIndex where groupIngredients.count > 1 {
+        // Only create a default if there are multiple options (more than one ingredient with same index)
+        // Find the ingredient with optionIndex 0 (default)
+        if let defaultIngredient = groupIngredients.first(where: { $0.optionIndex == 0 }) {
+          if defaults[step.id] == nil {
+            defaults[step.id] = [:]
+          }
+          defaults[step.id]?[index] = 0  // Default to optionIndex 0
+        }
+      }
+    }
+
+    return defaults
+  }
+
   // MARK: - Helper Functions
 
   private func dateToTimestamp(_ date: Date) -> SwiftProtobuf.Google_Protobuf_Timestamp {

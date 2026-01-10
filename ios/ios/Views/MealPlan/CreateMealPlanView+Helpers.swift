@@ -146,37 +146,21 @@ extension CreateMealPlanView {
 
     return Button(
       action: {
-        // Collect all recipes from selected meals
-        var allRecipes: [Mealplanning_Recipe] = []
+        // Collect all selected meals from all events
+        var allSelectedMeals: [Mealplanning_Meal] = []
         for event in viewModel.events {
-          for meal in event.selectedMeals {
-            for component in meal.components {
-              allRecipes.append(component.recipe)
-              // Also include associated recipes
-              allRecipes.append(contentsOf: component.recipe.associatedRecipes)
-            }
-          }
+          allSelectedMeals.append(contentsOf: event.selectedMeals)
         }
 
-        // Check if any recipes have option groups
-        let hasOptions = allRecipes.contains { recipe in
-          recipe.steps.contains { step in
-            // Check for ingredient option groups (only ingredients have selectable options)
-            // Filter out index 0 (which typically means not in an option group)
-            let ingredientIndices = step.ingredients
-              .filter { $0.index != 0 }
-              .map { $0.index }
-            let hasIngredientOptions = ingredientIndices.count != Set(ingredientIndices).count
+        // Use ViewModel method to check for recipes with options
+        let recipesWithOptions = viewModel.collectRecipesWithOptions(from: allSelectedMeals)
 
-            return hasIngredientOptions
-          }
-        }
-
-        if hasOptions {
-          // Show option selection modal
-          recipesForOptionSelection.wrappedValue = Array(Set(allRecipes.map { $0.id })).compactMap {
-            recipeID in
-            allRecipes.first { $0.id == recipeID }
+        if !recipesWithOptions.isEmpty {
+          // Get all unique recipes for the modal
+          let allRecipes = viewModel.getAllRecipes(from: allSelectedMeals)
+          // Filter to only recipes with options
+          recipesForOptionSelection.wrappedValue = allRecipes.filter {
+            recipesWithOptions.contains($0.id)
           }
           showOptionSelectionModal.wrappedValue = true
         } else {
