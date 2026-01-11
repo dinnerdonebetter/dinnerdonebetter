@@ -911,4 +911,372 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, stepID, *onionItem.RecipeStepID)
 		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
 	})
+
+	T.Run("with associated recipes", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		// Ingredients for main recipe
+		chicken := fakes.BuildFakeValidIngredient()
+		// Ingredients for associated recipe (dressing)
+		oliveOil := fakes.BuildFakeValidIngredient()
+		lemon := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		mainRecipeID := fakes.BuildFakeID()
+		associatedRecipeID := fakes.BuildFakeID()
+		mainStepID := fakes.BuildFakeID()
+		associatedStepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: mainRecipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: mainStepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														{
+															Ingredient: chicken,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(500)),
+																Min: 500,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+											// Associated recipe (e.g., Caesar Dressing)
+											AssociatedRecipes: []*mealplanning.Recipe{
+												{
+													ID: associatedRecipeID,
+													Steps: []*mealplanning.RecipeStep{
+														{
+															ID: associatedStepID,
+															Ingredients: []*mealplanning.RecipeStepIngredient{
+																{
+																	Ingredient: oliveOil,
+																	Quantity: types.Float32RangeWithOptionalMax{
+																		Max: pointer.To(float32(100)),
+																		Min: 100,
+																	},
+																	MeasurementUnit: *grams,
+																	Index:           0,
+																	OptionIndex:     0,
+																},
+																{
+																	Ingredient: lemon,
+																	Quantity: types.Float32RangeWithOptionalMax{
+																		Max: pointer.To(float32(50)),
+																		Min: 50,
+																	},
+																	MeasurementUnit: *grams,
+																	Index:           1,
+																	OptionIndex:     0,
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 3 items: chicken (from main recipe), oliveOil and lemon (from associated recipe)
+		assert.Len(t, actual, 3)
+
+		// Build a map for easier lookup
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify chicken (from main recipe)
+		chickenItem, ok := actualMap[chicken.ID]
+		assert.True(t, ok, "chicken item should exist")
+		assert.NotNil(t, chickenItem.RecipeID)
+		assert.Equal(t, mainRecipeID, *chickenItem.RecipeID)
+		assert.NotNil(t, chickenItem.RecipeStepID)
+		assert.Equal(t, mainStepID, *chickenItem.RecipeStepID)
+		assert.Equal(t, float32(500), chickenItem.QuantityNeeded.Min)
+
+		// Verify oliveOil (from associated recipe)
+		oliveOilItem, ok := actualMap[oliveOil.ID]
+		assert.True(t, ok, "oliveOil item should exist from associated recipe")
+		assert.NotNil(t, oliveOilItem.RecipeID)
+		assert.Equal(t, associatedRecipeID, *oliveOilItem.RecipeID)
+		assert.NotNil(t, oliveOilItem.RecipeStepID)
+		assert.Equal(t, associatedStepID, *oliveOilItem.RecipeStepID)
+		assert.Equal(t, float32(100), oliveOilItem.QuantityNeeded.Min)
+
+		// Verify lemon (from associated recipe)
+		lemonItem, ok := actualMap[lemon.ID]
+		assert.True(t, ok, "lemon item should exist from associated recipe")
+		assert.NotNil(t, lemonItem.RecipeID)
+		assert.Equal(t, associatedRecipeID, *lemonItem.RecipeID)
+		assert.NotNil(t, lemonItem.RecipeStepID)
+		assert.Equal(t, associatedStepID, *lemonItem.RecipeStepID)
+		assert.Equal(t, float32(50), lemonItem.QuantityNeeded.Min)
+	})
+
+	T.Run("with associated recipes and scaling", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		// Ingredients for main recipe
+		chicken := fakes.BuildFakeValidIngredient()
+		// Ingredients for associated recipe
+		oliveOil := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		mainRecipeID := fakes.BuildFakeID()
+		associatedRecipeID := fakes.BuildFakeID()
+		mainStepID := fakes.BuildFakeID()
+		associatedStepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 2.0, // Meal scaled 2x
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.5, // Recipe scaled 1.5x
+										Recipe: mealplanning.Recipe{
+											ID: mainRecipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: mainStepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														{
+															Ingredient: chicken,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(500)),
+																Min: 500,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+											AssociatedRecipes: []*mealplanning.Recipe{
+												{
+													ID: associatedRecipeID,
+													Steps: []*mealplanning.RecipeStep{
+														{
+															ID: associatedStepID,
+															Ingredients: []*mealplanning.RecipeStepIngredient{
+																{
+																	Ingredient: oliveOil,
+																	Quantity: types.Float32RangeWithOptionalMax{
+																		Max: pointer.To(float32(100)),
+																		Min: 100,
+																	},
+																	MeasurementUnit: *grams,
+																	Index:           0,
+																	OptionIndex:     0,
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: chicken and oliveOil
+		assert.Len(t, actual, 2)
+
+		// Build a map for easier lookup
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify chicken (from main recipe) - should be scaled: 500 * 1.5 * 2.0 = 1500
+		chickenItem, ok := actualMap[chicken.ID]
+		assert.True(t, ok, "chicken item should exist")
+		assert.Equal(t, float32(1500), chickenItem.QuantityNeeded.Min)
+
+		// Verify oliveOil (from associated recipe) - should also be scaled: 100 * 1.5 * 2.0 = 300
+		oliveOilItem, ok := actualMap[oliveOil.ID]
+		assert.True(t, ok, "oliveOil item should exist from associated recipe")
+		assert.Equal(t, float32(300), oliveOilItem.QuantityNeeded.Min)
+	})
+
+	T.Run("with associated recipes and aggregation", func(t *testing.T) {
+		t.Parallel()
+
+		listGenerator := &groceryListCreator{
+			logger: logging.NewNoopLogger(),
+			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
+		}
+
+		// Ingredient that appears in both main recipe and associated recipe
+		salt := fakes.BuildFakeValidIngredient()
+		chicken := fakes.BuildFakeValidIngredient()
+		grams := fakes.BuildFakeValidMeasurementUnit()
+
+		// Set up IDs
+		optionID := fakes.BuildFakeID()
+		mainRecipeID := fakes.BuildFakeID()
+		associatedRecipeID := fakes.BuildFakeID()
+		mainStepID := fakes.BuildFakeID()
+		associatedStepID := fakes.BuildFakeID()
+
+		expectedMealPlan := &mealplanning.MealPlan{
+			ID: fakes.BuildFakeID(),
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					Options: []*mealplanning.MealPlanOption{
+						{
+							ID:        optionID,
+							Chosen:    true,
+							MealScale: 1.0,
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
+									{
+										RecipeScale: 1.0,
+										Recipe: mealplanning.Recipe{
+											ID: mainRecipeID,
+											Steps: []*mealplanning.RecipeStep{
+												{
+													ID: mainStepID,
+													Ingredients: []*mealplanning.RecipeStepIngredient{
+														{
+															Ingredient: chicken,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(500)),
+																Min: 500,
+															},
+															MeasurementUnit: *grams,
+															Index:           0,
+															OptionIndex:     0,
+														},
+														{
+															Ingredient: salt,
+															Quantity: types.Float32RangeWithOptionalMax{
+																Max: pointer.To(float32(10)),
+																Min: 10,
+															},
+															MeasurementUnit: *grams,
+															Index:           1,
+															OptionIndex:     0,
+														},
+													},
+												},
+											},
+											AssociatedRecipes: []*mealplanning.Recipe{
+												{
+													ID: associatedRecipeID,
+													Steps: []*mealplanning.RecipeStep{
+														{
+															ID: associatedStepID,
+															Ingredients: []*mealplanning.RecipeStepIngredient{
+																{
+																	Ingredient: salt, // Same salt ingredient
+																	Quantity: types.Float32RangeWithOptionalMax{
+																		Max: pointer.To(float32(5)),
+																		Min: 5,
+																	},
+																	MeasurementUnit: *grams,
+																	Index:           0,
+																	OptionIndex:     0,
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		ctx := t.Context()
+
+		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
+		assert.NoError(t, err)
+
+		// Should have 2 items: chicken and salt (aggregated from main + associated)
+		assert.Len(t, actual, 2)
+
+		// Build a map for easier lookup
+		actualMap := make(map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput)
+		for i := range actual {
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+		}
+
+		// Verify chicken
+		chickenItem, ok := actualMap[chicken.ID]
+		assert.True(t, ok, "chicken item should exist")
+		assert.Equal(t, float32(500), chickenItem.QuantityNeeded.Min)
+
+		// Verify salt (should be aggregated: 10 + 5 = 15)
+		saltItem, ok := actualMap[salt.ID]
+		assert.True(t, ok, "salt item should exist and be aggregated")
+		assert.Equal(t, float32(15), saltItem.QuantityNeeded.Min, "salt should be aggregated from main recipe (10) and associated recipe (5)")
+	})
 }

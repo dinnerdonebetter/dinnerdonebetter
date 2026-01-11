@@ -67,6 +67,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{ID: identifiers.New(), Name: "olive oil", Description: "Extra virgin olive oil", PluralName: "olive oil", StorageInstructions: "Store in a cool, dark place away from light", Slug: "olive-oil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "salt", Description: "Fine sea salt", PluralName: "salt", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "salt", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "black pepper", Description: "Ground black pepper", PluralName: "black pepper", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "black-pepper", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
+		{ID: identifiers.New(), Name: "whole black peppercorns", Description: "Whole dried black peppercorns for grinding", PluralName: "whole black peppercorns", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "whole-black-peppercorns", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "basil", Description: "Fresh basil leaves", PluralName: "basil", StorageInstructions: "Store in the refrigerator, stems in water", Slug: "basil", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "oregano", Description: "Dried oregano", PluralName: "oregano", StorageInstructions: "Store in a cool, dry place in an airtight container", Slug: "oregano", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
 		{ID: identifiers.New(), Name: "thyme", Description: "Fresh thyme sprigs", PluralName: "thyme", StorageInstructions: "Store in the refrigerator, wrapped in damp paper towel", Slug: "thyme", ContainsShellfish: false, ContainsDairy: false, ContainsPeanut: false, ContainsTreeNut: false, ContainsEgg: false, ContainsWheat: false, ContainsSoy: false, AnimalDerived: false, RestrictToPreparations: false},
@@ -274,6 +275,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"brush", "A brush for applying oil or sauces", "brushes", "brush", "brush"},
 		{"sous vide cooker", "An immersion circulator for precision temperature cooking", "sous vide cookers", "sous-vide-cooker", "sous vide cooker"},
 		{"spatula", "A flexible metal spatula for pressing food in pan", "spatulas", "spatula", "spatula"},
+		{"stovetop", "A cooking surface with gas or electric burners for heating pans and pots", "stovetops", "stovetop", "stovetop"},
 		// Additional instruments for roast chicken recipe
 		{"butcher's twine", "Kitchen string for trussing meat and poultry", "butcher's twine", "butchers-twine", "butcher's twine"},
 		{"bare hands", "Using clean bare hands to handle or apply ingredients", "bare hands", "bare-hands", "bare hands"},
@@ -2106,6 +2108,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 
 	// Ingredient-MeasurementUnit links (already created for vegetableOil)
 
+	// Preparation-Instrument links
+	stovetop := enums.Instruments["stovetop"]
+	if err = createVPI(heatPrep, stovetop); err != nil {
+		return err
+	}
+
 	// Preparation-Vessel links
 	if err = createVPV(heatPrep, castIronSkillet); err != nil {
 		return err
@@ -2479,6 +2487,31 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// === REMOVE PREPARATION (for removing chicken from bag) ===
+	sousVideRemovePrep := enums.Preparations["remove"]
+	if err = createVIP(sousVideRemovePrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVPI(sousVideRemovePrep, tongs); err != nil {
+		return err
+	}
+
+	// === DRY PREPARATION (for drying chicken) ===
+	sousVideDryPrep := enums.Preparations["dry"]
+	if err = createVIP(sousVideDryPrep, chickenBreast); err != nil {
+		return err
+	}
+	if err = createVIP(sousVideDryPrep, paperTowelsIngredient); err != nil {
+		return err
+	}
+	if err = createVPI(sousVideDryPrep, bareHands); err != nil {
+		return err
+	}
+
+	// === HEAT PREPARATION (for heating oil in skillet for chicken finishing) ===
+	// Oil bridges already exist from steak recipe, but need to ensure stovetop for this context
+	// (stovetop and cast iron skillet bridges already created in steak section)
+
 	// === ROAST CHICKEN RECIPE BRIDGE ENTRIES ===
 	// Get preparations for roast chicken recipe (using fresh variable names to avoid scope issues)
 	roastChickenMixPrep, err := getPreparation("mix")
@@ -2521,6 +2554,10 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	if err != nil {
 		return err
 	}
+	roastChickenGrindPrep, err := getPreparation("grind")
+	if err != nil {
+		return err
+	}
 
 	// Get ingredients for roast chicken recipe
 	roastChickenWholeChicken := enums.Ingredients["whole chicken"]
@@ -2528,6 +2565,7 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	roastChickenVegetableOil := enums.Ingredients["vegetable oil"]
 	roastChickenSalt := enums.Ingredients["salt"]
 	roastChickenBlackPepper := enums.Ingredients["black pepper"]
+	roastChickenWholePeppercorns := enums.Ingredients["whole black peppercorns"]
 
 	// Get instruments for roast chicken recipe
 	butchersTwine := enums.Instruments["butcher's twine"]
@@ -2544,6 +2582,28 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	tablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
 	teaspoonMeasurement := enums.MeasurementUnits["teaspoon"]
 	gramMeasurement = enums.MeasurementUnits["gram"]
+
+	// === GRIND PREPARATION (for grinding whole peppercorns) ===
+	// Ingredient-Preparation links
+	if err = createVIP(roastChickenGrindPrep, roastChickenWholePeppercorns); err != nil {
+		return err
+	}
+	// Ingredient-MeasurementUnit links
+	if err = createVIMU(roastChickenWholePeppercorns, gramMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(roastChickenWholePeppercorns, teaspoonMeasurement); err != nil {
+		return err
+	}
+	// Preparation-Instrument links (use mortar and pestle or spice grinder)
+	roastChickenMortarAndPestle := enums.Instruments["mortar and pestle"]
+	if err = createVPI(roastChickenGrindPrep, roastChickenMortarAndPestle); err != nil {
+		return err
+	}
+	roastChickenSpiceGrinder := enums.Instruments["spice grinder"]
+	if err = createVPI(roastChickenGrindPrep, roastChickenSpiceGrinder); err != nil {
+		return err
+	}
 
 	// === MIX PREPARATION ===
 	// Ingredient-Preparation links

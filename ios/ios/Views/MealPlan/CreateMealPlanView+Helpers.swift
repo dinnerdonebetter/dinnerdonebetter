@@ -136,18 +136,41 @@ extension CreateMealPlanView {
 
   // MARK: - Create Button
 
-  func createButton(viewModel: CreateMealPlanViewModel) -> some View {
+  func createButton(
+    viewModel: CreateMealPlanViewModel,
+    showOptionSelectionModal: Binding<Bool>,
+    recipesForOptionSelection: Binding<[Mealplanning_Recipe]>
+  ) -> some View {
     _ = Bindable(viewModel)
     let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
 
     return Button(
       action: {
-        Task {
-          let success = await viewModel.createMealPlan()
-          if success {
-            // Post notification to refresh home view
-            NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-            dismiss()
+        // Collect all selected meals from all events
+        var allSelectedMeals: [Mealplanning_Meal] = []
+        for event in viewModel.events {
+          allSelectedMeals.append(contentsOf: event.selectedMeals)
+        }
+
+        // Use ViewModel method to check for recipes with options
+        let recipesWithOptions = viewModel.collectRecipesWithOptions(from: allSelectedMeals)
+
+        if !recipesWithOptions.isEmpty {
+          // Get all unique recipes for the modal
+          let allRecipes = viewModel.getAllRecipes(from: allSelectedMeals)
+          // Filter to only recipes with options
+          recipesForOptionSelection.wrappedValue = allRecipes.filter {
+            recipesWithOptions.contains($0.id)
+          }
+          showOptionSelectionModal.wrappedValue = true
+        } else {
+          // No options, proceed directly
+          Task {
+            let success = await viewModel.createMealPlan()
+            if success {
+              NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+              dismiss()
+            }
           }
         }
       },

@@ -160,12 +160,12 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 		return page("Recipes", s.renderRecipesError(fmt.Sprintf("Error creating form: %v", err))), nil
 	}
 
-	// Create steps section
+	// Create steps section (includes sub-recipe steps inline)
 	stepsSection := components.CardWithHeader(
 		"Recipe Steps",
 		&design.StandardPalette,
 		nil,
-		s.renderRecipeSteps(recipe.Steps),
+		s.renderRecipeSteps(recipe.Steps, recipe.AssociatedRecipes),
 	)
 
 	// Combine form and steps section
@@ -178,8 +178,39 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 	), nil
 }
 
-func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeStep) g.Node {
-	if len(steps) == 0 {
+// buildProductUsageMap builds a map of product ID -> list of step indices (1-based) that use the product.
+func (s *AdminFrontendServer) buildProductUsageMap(steps []*mealplanningsvc.RecipeStep) map[string][]uint32 {
+	usageMap := make(map[string][]uint32)
+
+	for _, step := range steps {
+		// Check ingredients for product references
+		for _, ing := range step.Ingredients {
+			if ing.RecipeStepProductId != nil && *ing.RecipeStepProductId != "" {
+				productID := *ing.RecipeStepProductId
+				usageMap[productID] = append(usageMap[productID], step.Index+1)
+			}
+		}
+		// Check instruments for product references
+		for _, inst := range step.Instruments {
+			if inst.RecipeStepProductId != nil && *inst.RecipeStepProductId != "" {
+				productID := *inst.RecipeStepProductId
+				usageMap[productID] = append(usageMap[productID], step.Index+1)
+			}
+		}
+		// Check vessels for product references
+		for _, vessel := range step.Vessels {
+			if vessel.RecipeStepProductId != nil && *vessel.RecipeStepProductId != "" {
+				productID := *vessel.RecipeStepProductId
+				usageMap[productID] = append(usageMap[productID], step.Index+1)
+			}
+		}
+	}
+
+	return usageMap
+}
+
+func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) g.Node {
+	if len(steps) == 0 && len(associatedRecipes) == 0 {
 		return ghtml.Div(
 			ghtml.Class("text-center py-8"),
 			ghtml.P(
@@ -189,548 +220,958 @@ func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeS
 		)
 	}
 
-	var stepNodes []g.Node
-	for i, step := range steps {
-		stepNodes = append(stepNodes,
-			ghtml.Div(
-				ghtml.Class("border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 bg-white"),
-				ghtml.Div(
-					ghtml.Class("space-y-4"),
-					// Step header
-					ghtml.Div(
-						ghtml.Class("flex items-start gap-4"),
-						// Step number
-						ghtml.Div(
-							ghtml.Class("flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-semibold text-sm"),
-							g.Text(fmt.Sprintf("%d", i+1)),
-						),
-						// Step header content
-						ghtml.Div(
-							ghtml.Class("flex-1"),
-							ghtml.Div(
-								ghtml.Class("flex items-center gap-2 mb-2"),
-								g.If(step.Optional,
-									ghtml.Span(
-										ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded"),
-										g.Text("Optional"),
-									),
-								),
-								g.If(step.StartTimerAutomatically,
-									ghtml.Span(
-										ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"),
-										g.Text("Auto Timer"),
-									),
-								),
-							),
-							// Preparation
-							g.If(step.Preparation != nil,
-								ghtml.Div(
-									ghtml.Class("font-semibold text-lg text-gray-900 mb-1"),
-									g.Text(step.Preparation.Name),
-								),
-							),
-							// Generated step description
-							ghtml.Div(
-								ghtml.Class("text-sm text-gray-700 mb-1"),
-								g.Text(generateStepDescription(step)),
-							),
-							// Explicit instructions
-							g.If(step.ExplicitInstructions != "",
-								ghtml.Div(
-									ghtml.Class("text-sm text-gray-600 italic mb-1"),
-									g.Text(step.ExplicitInstructions),
-								),
-							),
-							// Condition expression
-							g.If(step.ConditionExpression != "",
-								ghtml.Div(
-									ghtml.Class("text-xs text-purple-600 font-mono bg-purple-50 p-2 rounded mb-1"),
-									ghtml.Span(
-										ghtml.Class("font-semibold"),
-										g.Text("Condition: "),
-									),
-									g.Text(step.ConditionExpression),
-								),
-							),
-							// Time and temperature (only show if there's meaningful data)
-							g.If(
-								(step.EstimatedTimeInSeconds != nil && step.EstimatedTimeInSeconds.Min != nil && *step.EstimatedTimeInSeconds.Min > 0) ||
-									(step.TemperatureInCelsius != nil && step.TemperatureInCelsius.Min != nil && *step.TemperatureInCelsius.Min > 0),
-								ghtml.Div(
-									ghtml.Class("flex gap-4 text-xs text-gray-600 mb-2"),
-									g.If(
-										step.EstimatedTimeInSeconds != nil && step.EstimatedTimeInSeconds.Min != nil && *step.EstimatedTimeInSeconds.Min > 0,
-										ghtml.Div(
-											g.Text(func() string {
-												if step.EstimatedTimeInSeconds == nil || step.EstimatedTimeInSeconds.Min == nil {
-													return ""
-												}
-												minimum := *step.EstimatedTimeInSeconds.Min
-												if step.EstimatedTimeInSeconds.Max != nil && *step.EstimatedTimeInSeconds.Max > 0 {
-													maximum := *step.EstimatedTimeInSeconds.Max
-													if maximum > minimum {
-														return fmt.Sprintf("Time: %s - %s", formatDuration(minimum), formatDuration(maximum))
-													} else if maximum == minimum {
-														return fmt.Sprintf("Time: %s", formatDuration(minimum))
-													}
-												}
-												return fmt.Sprintf("Time: %s", formatDuration(minimum))
-											}()),
-										),
-									),
-									g.If(
-										step.TemperatureInCelsius != nil && step.TemperatureInCelsius.Min != nil && *step.TemperatureInCelsius.Min > 0,
-										ghtml.Div(
-											g.Text(func() string {
-												if step.TemperatureInCelsius == nil || step.TemperatureInCelsius.Min == nil {
-													return ""
-												}
-												minC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Min)
-												minF := roundTemperatureToNearest5((minC * 9.0 / 5.0) + 32.0)
+	// Build a map of product ID -> list of steps that use it (for showing "used in step X")
+	// Include products from both main recipe and sub-recipes
+	productUsageMap := s.buildProductUsageMap(steps)
 
-												if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > *step.TemperatureInCelsius.Min {
-													maxC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Max)
-													maxF := roundTemperatureToNearest5((maxC * 9.0 / 5.0) + 32.0)
-													return fmt.Sprintf("Temperature: %.0f-%.0f°F (%.0f-%.0f°C)", minF, maxF, minC, maxC)
-												}
-												return fmt.Sprintf("Temperature: %.0f°F (%.0f°C)", minF, minC)
-											}()),
-										),
-									),
-								),
-							),
-						),
-					),
-					// 2x2 Grid: Instruments | Vessels, Ingredients | Products
+	var allStepNodes []g.Node
+
+	// First, render all sub-recipe steps (grouped by sub-recipe)
+	for _, subRecipe := range associatedRecipes {
+		if len(subRecipe.Steps) == 0 {
+			continue
+		}
+
+		// Build product usage map for this sub-recipe's steps
+		subRecipeProductUsageMap := s.buildProductUsageMap(subRecipe.Steps)
+		// Also include usage from main recipe steps that reference sub-recipe products
+		s.addMainRecipeProductUsage(subRecipeProductUsageMap, subRecipe.Id, steps)
+
+		// Add a header for this sub-recipe
+		allStepNodes = append(allStepNodes, ghtml.Div(
+			ghtml.Class("border-l-4 border-purple-400 pl-4 py-2 mb-4 bg-purple-50/50 rounded-r"),
+			ghtml.Div(
+				ghtml.Class("flex items-center gap-2"),
+				ghtml.Span(
+					ghtml.Class("text-xs font-semibold text-purple-600 uppercase tracking-wide"),
+					g.Text("Prerequisite:"),
+				),
+				ghtml.A(
+					ghtml.Href(fmt.Sprintf("/recipes/%s", subRecipe.Id)),
+					ghtml.Class("font-semibold text-purple-700 hover:text-purple-900 hover:underline"),
+					g.Text(subRecipe.Name),
+				),
+			),
+			g.If(subRecipe.Description != "",
+				ghtml.P(
+					ghtml.Class("text-xs text-gray-600 mt-1"),
+					g.Text(subRecipe.Description),
+				),
+			),
+		))
+
+		// Render each step from this sub-recipe
+		for i, step := range subRecipe.Steps {
+			allStepNodes = append(allStepNodes, s.renderSubRecipeStep(step, i, subRecipe, subRecipeProductUsageMap))
+		}
+
+		// Add a visual separator before the main recipe steps
+		allStepNodes = append(allStepNodes, ghtml.Div(
+			ghtml.Class("my-6"),
+		))
+	}
+
+	// If there are sub-recipes and main steps, add a header for the main recipe
+	if len(associatedRecipes) > 0 && len(steps) > 0 {
+		allStepNodes = append(allStepNodes, ghtml.Div(
+			ghtml.Class("border-l-4 border-blue-400 pl-4 py-2 mb-4 bg-blue-50/50 rounded-r"),
+			ghtml.Div(
+				ghtml.Class("flex items-center gap-2"),
+				ghtml.Span(
+					ghtml.Class("text-xs font-semibold text-blue-600 uppercase tracking-wide"),
+					g.Text("Main Recipe Steps"),
+				),
+			),
+		))
+	}
+
+	// Render the main recipe steps
+	for i, step := range steps {
+		allStepNodes = append(allStepNodes, s.renderSingleRecipeStep(step, i, steps, productUsageMap))
+	}
+
+	return ghtml.Div(
+		ghtml.Class("space-y-4"),
+		g.Group(allStepNodes),
+	)
+}
+
+// addMainRecipeProductUsage adds usage information for sub-recipe products that are used in main recipe steps.
+func (s *AdminFrontendServer) addMainRecipeProductUsage(usageMap map[string][]uint32, subRecipeID string, mainSteps []*mealplanningsvc.RecipeStep) {
+	for _, step := range mainSteps {
+		for _, ing := range step.Ingredients {
+			if ing.RecipeStepProductRecipeId != nil && *ing.RecipeStepProductRecipeId == subRecipeID {
+				if ing.RecipeStepProductId != nil && *ing.RecipeStepProductId != "" {
+					productID := *ing.RecipeStepProductId
+					// Add a special marker for main recipe usage (use step index + 1000 to distinguish)
+					usageMap[productID] = append(usageMap[productID], step.Index+1)
+				}
+			}
+		}
+	}
+}
+
+// renderSubRecipeStep renders a single step from a sub-recipe with distinct styling.
+func (s *AdminFrontendServer) renderSubRecipeStep(step *mealplanningsvc.RecipeStep, stepIndex int, subRecipe *mealplanningsvc.Recipe, productUsageMap map[string][]uint32) g.Node {
+	return ghtml.Div(
+		ghtml.Class("border border-purple-200 rounded-lg p-4 mb-4 last:mb-0 bg-white"),
+		ghtml.Div(
+			ghtml.Class("space-y-4"),
+			// Step header
+			ghtml.Div(
+				ghtml.Class("flex items-start gap-4"),
+				// Step number (with sub-recipe indicator)
+				ghtml.Div(
+					ghtml.Class("flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center font-semibold text-sm"),
+					g.Text(fmt.Sprintf("%d", stepIndex+1)),
+				),
+				// Step header content
+				ghtml.Div(
+					ghtml.Class("flex-1"),
 					ghtml.Div(
-						ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+						ghtml.Class("flex items-center gap-2 mb-2"),
+						g.If(step.Optional,
+							ghtml.Span(
+								ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded"),
+								g.Text("Optional"),
+							),
+						),
+						g.If(step.StartTimerAutomatically,
+							ghtml.Span(
+								ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"),
+								g.Text("Auto Timer"),
+							),
+						),
+					),
+					// Preparation
+					g.If(step.Preparation != nil,
 						ghtml.Div(
-							ghtml.Class("grid grid-cols-2 gap-4"),
-							// Top row: Instruments
+							ghtml.Class("font-semibold text-lg text-gray-900 mb-1"),
+							g.Text(step.Preparation.Name),
+						),
+					),
+					// Generated step description
+					ghtml.Div(
+						ghtml.Class("text-sm text-gray-700 mb-1"),
+						g.Text(generateStepDescription(step)),
+					),
+					// Explicit instructions
+					g.If(step.ExplicitInstructions != "",
+						ghtml.Div(
+							ghtml.Class("text-sm text-gray-600 italic mb-1"),
+							g.Text(step.ExplicitInstructions),
+						),
+					),
+					// Condition expression
+					g.If(step.ConditionExpression != "",
+						ghtml.Div(
+							ghtml.Class("text-xs text-purple-600 font-mono bg-purple-50 p-2 rounded mb-1"),
+							ghtml.Span(
+								ghtml.Class("font-semibold"),
+								g.Text("Condition: "),
+							),
+							g.Text(step.ConditionExpression),
+						),
+					),
+					// Time and temperature
+					s.renderStepTimeAndTemperature(step),
+				),
+			),
+			// 2x2 Grid: Instruments | Vessels, Ingredients | Products
+			ghtml.Div(
+				ghtml.Class("border-t border-purple-200 pt-3 mt-3"),
+				ghtml.Div(
+					ghtml.Class("grid grid-cols-2 gap-4"),
+					// Top row: Instruments
+					ghtml.Div(
+						ghtml.Div(
+							ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+							g.Text("Instruments:"),
+						),
+						ghtml.Div(
+							ghtml.Class("space-y-2"),
+							func() g.Node {
+								if len(step.Instruments) > 0 {
+									return g.Group(s.renderStepInstruments(step.Instruments, subRecipe.Steps))
+								}
+								return ghtml.Div(
+									ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+									g.Text("none"),
+								)
+							}(),
+						),
+					),
+					// Top row: Vessels
+					ghtml.Div(
+						ghtml.Div(
+							ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+							g.Text("Vessels:"),
+						),
+						ghtml.Div(
+							ghtml.Class("space-y-2"),
+							func() g.Node {
+								if len(step.Vessels) > 0 {
+									return g.Group(s.renderStepVessels(step.Vessels, subRecipe.Steps))
+								}
+								return ghtml.Div(
+									ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+									g.Text("none"),
+								)
+							}(),
+						),
+					),
+					// Bottom row: Ingredients
+					ghtml.Div(
+						g.If(len(step.Ingredients) > 0,
 							ghtml.Div(
 								ghtml.Div(
 									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-									g.Text("Instruments:"),
+									g.Text("Ingredients:"),
 								),
 								ghtml.Div(
 									ghtml.Class("space-y-2"),
-									func() g.Node {
-										if len(step.Instruments) > 0 {
-											return g.Group(s.renderStepInstruments(step.Instruments, steps))
-										}
-										return ghtml.Div(
-											ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
-											g.Text("none"),
-										)
-									}(),
-								),
-							),
-							// Top row: Vessels
-							ghtml.Div(
-								ghtml.Div(
-									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-									g.Text("Vessels:"),
-								),
-								ghtml.Div(
-									ghtml.Class("space-y-2"),
-									func() g.Node {
-										if len(step.Vessels) > 0 {
-											return g.Group(s.renderStepVessels(step.Vessels, steps))
-										}
-										return ghtml.Div(
-											ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
-											g.Text("none"),
-										)
-									}(),
-								),
-							),
-							// Bottom row: Ingredients
-							ghtml.Div(
-								g.If(len(step.Ingredients) > 0,
-									ghtml.Div(
-										ghtml.Div(
-											ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-											g.Text("Ingredients:"),
-										),
-										ghtml.Div(
-											ghtml.Class("space-y-2"),
-											g.Group(s.renderStepIngredients(step.Ingredients, steps)),
-										),
-									),
-								),
-							),
-							// Bottom row: Products
-							ghtml.Div(
-								g.If(len(step.Products) > 0,
-									ghtml.Div(
-										ghtml.Div(
-											ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-											g.Text("Products:"),
-										),
-										ghtml.Div(
-											ghtml.Class("space-y-2"),
-											g.Group(s.renderStepProducts(step.Products)),
-										),
-									),
+									g.Group(s.renderStepIngredients(step.Ingredients, subRecipe.Steps)),
 								),
 							),
 						),
 					),
-					// Completion conditions section
-					g.If(len(step.CompletionConditions) > 0,
-						ghtml.Div(
-							ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+					// Bottom row: Products
+					ghtml.Div(
+						g.If(len(step.Products) > 0,
 							ghtml.Div(
-								ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
-								g.Text("Completion Conditions:"),
-							),
-							ghtml.Div(
-								ghtml.Class("space-y-2"),
-								g.Group(s.renderStepCompletionConditions(step.CompletionConditions)),
+								ghtml.Div(
+									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+									g.Text("Products:"),
+								),
+								ghtml.Div(
+									ghtml.Class("space-y-2"),
+									g.Group(s.renderStepProducts(step.Products, productUsageMap)),
+								),
 							),
 						),
 					),
 				),
 			),
-		)
+			// Completion conditions section
+			g.If(len(step.CompletionConditions) > 0,
+				ghtml.Div(
+					ghtml.Class("border-t border-purple-200 pt-3 mt-3"),
+					ghtml.Div(
+						ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+						g.Text("Completion Conditions:"),
+					),
+					ghtml.Div(
+						ghtml.Class("space-y-2"),
+						g.Group(s.renderStepCompletionConditions(step.CompletionConditions)),
+					),
+				),
+			),
+		),
+	)
+}
+
+// renderSingleRecipeStep renders a single recipe step with all its components.
+func (s *AdminFrontendServer) renderSingleRecipeStep(step *mealplanningsvc.RecipeStep, stepIndex int, allSteps []*mealplanningsvc.RecipeStep, productUsageMap map[string][]uint32) g.Node {
+	return ghtml.Div(
+		ghtml.Class("border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 bg-white"),
+		ghtml.Div(
+			ghtml.Class("space-y-4"),
+			// Step header
+			ghtml.Div(
+				ghtml.Class("flex items-start gap-4"),
+				// Step number
+				ghtml.Div(
+					ghtml.Class("flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-semibold text-sm"),
+					g.Text(fmt.Sprintf("%d", stepIndex+1)),
+				),
+				// Step header content
+				ghtml.Div(
+					ghtml.Class("flex-1"),
+					ghtml.Div(
+						ghtml.Class("flex items-center gap-2 mb-2"),
+						g.If(step.Optional,
+							ghtml.Span(
+								ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded"),
+								g.Text("Optional"),
+							),
+						),
+						g.If(step.StartTimerAutomatically,
+							ghtml.Span(
+								ghtml.Class("inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"),
+								g.Text("Auto Timer"),
+							),
+						),
+					),
+					// Preparation
+					g.If(step.Preparation != nil,
+						ghtml.Div(
+							ghtml.Class("font-semibold text-lg text-gray-900 mb-1"),
+							g.Text(step.Preparation.Name),
+						),
+					),
+					// Generated step description
+					ghtml.Div(
+						ghtml.Class("text-sm text-gray-700 mb-1"),
+						g.Text(generateStepDescription(step)),
+					),
+					// Explicit instructions
+					g.If(step.ExplicitInstructions != "",
+						ghtml.Div(
+							ghtml.Class("text-sm text-gray-600 italic mb-1"),
+							g.Text(step.ExplicitInstructions),
+						),
+					),
+					// Condition expression
+					g.If(step.ConditionExpression != "",
+						ghtml.Div(
+							ghtml.Class("text-xs text-purple-600 font-mono bg-purple-50 p-2 rounded mb-1"),
+							ghtml.Span(
+								ghtml.Class("font-semibold"),
+								g.Text("Condition: "),
+							),
+							g.Text(step.ConditionExpression),
+						),
+					),
+					// Time and temperature (only show if there's meaningful data)
+					s.renderStepTimeAndTemperature(step),
+				),
+			),
+			// 2x2 Grid: Instruments | Vessels, Ingredients | Products
+			ghtml.Div(
+				ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+				ghtml.Div(
+					ghtml.Class("grid grid-cols-2 gap-4"),
+					// Top row: Instruments
+					ghtml.Div(
+						ghtml.Div(
+							ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+							g.Text("Instruments:"),
+						),
+						ghtml.Div(
+							ghtml.Class("space-y-2"),
+							func() g.Node {
+								if len(step.Instruments) > 0 {
+									return g.Group(s.renderStepInstruments(step.Instruments, allSteps))
+								}
+								return ghtml.Div(
+									ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+									g.Text("none"),
+								)
+							}(),
+						),
+					),
+					// Top row: Vessels
+					ghtml.Div(
+						ghtml.Div(
+							ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+							g.Text("Vessels:"),
+						),
+						ghtml.Div(
+							ghtml.Class("space-y-2"),
+							func() g.Node {
+								if len(step.Vessels) > 0 {
+									return g.Group(s.renderStepVessels(step.Vessels, allSteps))
+								}
+								return ghtml.Div(
+									ghtml.Class("text-sm pl-4 border-l-2 border-gray-200 text-gray-500"),
+									g.Text("none"),
+								)
+							}(),
+						),
+					),
+					// Bottom row: Ingredients
+					ghtml.Div(
+						g.If(len(step.Ingredients) > 0,
+							ghtml.Div(
+								ghtml.Div(
+									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+									g.Text("Ingredients:"),
+								),
+								ghtml.Div(
+									ghtml.Class("space-y-2"),
+									g.Group(s.renderStepIngredients(step.Ingredients, allSteps)),
+								),
+							),
+						),
+					),
+					// Bottom row: Products
+					ghtml.Div(
+						g.If(len(step.Products) > 0,
+							ghtml.Div(
+								ghtml.Div(
+									ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+									g.Text("Products:"),
+								),
+								ghtml.Div(
+									ghtml.Class("space-y-2"),
+									g.Group(s.renderStepProducts(step.Products, productUsageMap)),
+								),
+							),
+						),
+					),
+				),
+			),
+			// Completion conditions section
+			g.If(len(step.CompletionConditions) > 0,
+				ghtml.Div(
+					ghtml.Class("border-t border-gray-200 pt-3 mt-3"),
+					ghtml.Div(
+						ghtml.Class("text-sm font-semibold text-gray-700 mb-2"),
+						g.Text("Completion Conditions:"),
+					),
+					ghtml.Div(
+						ghtml.Class("space-y-2"),
+						g.Group(s.renderStepCompletionConditions(step.CompletionConditions)),
+					),
+				),
+			),
+		),
+	)
+}
+
+// renderStepTimeAndTemperature renders the time and temperature for a step.
+func (s *AdminFrontendServer) renderStepTimeAndTemperature(step *mealplanningsvc.RecipeStep) g.Node {
+	hasTime := step.EstimatedTimeInSeconds != nil && step.EstimatedTimeInSeconds.Min != nil && *step.EstimatedTimeInSeconds.Min > 0
+	hasTemp := step.TemperatureInCelsius != nil && step.TemperatureInCelsius.Min != nil && *step.TemperatureInCelsius.Min > 0
+
+	if !hasTime && !hasTemp {
+		return nil
 	}
 
 	return ghtml.Div(
-		ghtml.Class("space-y-4"),
-		g.Group(stepNodes),
+		ghtml.Class("flex gap-4 text-xs text-gray-600 mb-2"),
+		g.If(hasTime,
+			ghtml.Div(
+				g.Text(func() string {
+					if step.EstimatedTimeInSeconds == nil || step.EstimatedTimeInSeconds.Min == nil {
+						return ""
+					}
+					minimum := *step.EstimatedTimeInSeconds.Min
+					if step.EstimatedTimeInSeconds.Max != nil && *step.EstimatedTimeInSeconds.Max > 0 {
+						maximum := *step.EstimatedTimeInSeconds.Max
+						if maximum > minimum {
+							return fmt.Sprintf("Time: %s - %s", formatDuration(minimum), formatDuration(maximum))
+						} else if maximum == minimum {
+							return fmt.Sprintf("Time: %s", formatDuration(minimum))
+						}
+					}
+					return fmt.Sprintf("Time: %s", formatDuration(minimum))
+				}()),
+			),
+		),
+		g.If(hasTemp,
+			ghtml.Div(
+				g.Text(func() string {
+					if step.TemperatureInCelsius == nil || step.TemperatureInCelsius.Min == nil {
+						return ""
+					}
+					minC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Min)
+					minF := roundTemperatureToNearest5((minC * 9.0 / 5.0) + 32.0)
+
+					if step.TemperatureInCelsius.Max != nil && *step.TemperatureInCelsius.Max > *step.TemperatureInCelsius.Min {
+						maxC := roundTemperatureToNearest5(*step.TemperatureInCelsius.Max)
+						maxF := roundTemperatureToNearest5((maxC * 9.0 / 5.0) + 32.0)
+						return fmt.Sprintf("Temperature: %.0f-%.0f°F (%.0f-%.0f°C)", minF, maxF, minC, maxC)
+					}
+					return fmt.Sprintf("Temperature: %.0f°F (%.0f°C)", minF, minC)
+				}()),
+			),
+		),
 	)
 }
 
 func (s *AdminFrontendServer) renderStepIngredients(ingredients []*mealplanningsvc.RecipeStepIngredient, allSteps []*mealplanningsvc.RecipeStep) []g.Node {
-	var nodes []g.Node
+	// Group ingredients by Index
+	indexGroups := make(map[uint32][]*mealplanningsvc.RecipeStepIngredient)
+	var indexOrder []uint32
 	for _, ing := range ingredients {
-		var details []g.Node
-
-		// Get ingredient name - prioritize recipe step ingredient name over base ingredient name
-		ingredientName := ""
-		if ing.Name != "" {
-			ingredientName = ing.Name
-		} else if ing.Ingredient != nil {
-			ingredientName = ing.Ingredient.Name
+		if _, exists := indexGroups[ing.Index]; !exists {
+			indexOrder = append(indexOrder, ing.Index)
 		}
+		indexGroups[ing.Index] = append(indexGroups[ing.Index], ing)
+	}
 
-		// Check if this ingredient comes from a previous step
-		isProductFromPriorStep := ing.RecipeStepProductId != nil
-		if isProductFromPriorStep {
-			productStep := s.findStepWithProduct(*ing.RecipeStepProductId, allSteps)
-			if productStep != nil {
-				// Format as "ingredient name from step X" without quantity
-				details = append(details, ghtml.Span(
-					ghtml.Class("font-medium"),
-					g.Text(fmt.Sprintf("%s from step %d", ingredientName, productStep.Index+1)),
-				))
-			} else {
-				// Fallback if step not found
-				details = append(details,
-					ghtml.Span(
-						ghtml.Class("font-medium"),
-						g.Text(ingredientName),
-					),
-					ghtml.Span(
-						ghtml.Class("text-blue-600 ml-2"),
-						g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *ing.RecipeStepProductId)),
-					),
-				)
-			}
+	var nodes []g.Node
+	for _, idx := range indexOrder {
+		group := indexGroups[idx]
+
+		if len(group) == 1 {
+			// Single ingredient - render normally
+			nodes = append(nodes, s.renderSingleIngredient(group[0], allSteps, false))
 		} else {
-			// Regular ingredient - show name and quantity
+			// Multiple options - render as option group with "OR"
+			nodes = append(nodes, s.renderIngredientOptionGroup(group, allSteps))
+		}
+	}
+	return nodes
+}
+
+// renderIngredientOptionGroup renders a group of ingredient options with "OR" between them.
+func (s *AdminFrontendServer) renderIngredientOptionGroup(options []*mealplanningsvc.RecipeStepIngredient, allSteps []*mealplanningsvc.RecipeStep) g.Node {
+	var optionNodes []g.Node
+
+	for i, ing := range options {
+		optionNodes = append(optionNodes, s.renderSingleIngredient(ing, allSteps, true))
+
+		// Add "OR" separator between options (but not after the last one)
+		if i < len(options)-1 {
+			optionNodes = append(optionNodes, ghtml.Div(
+				ghtml.Class("text-xs font-semibold text-gray-500 uppercase tracking-wide py-1 pl-6"),
+				g.Text("— or —"),
+			))
+		}
+	}
+
+	// Wrap in an indented container to show grouping
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-amber-300 bg-amber-50/30 rounded-r py-1"),
+		g.Group(optionNodes),
+	)
+}
+
+// renderSingleIngredient renders a single ingredient item.
+func (s *AdminFrontendServer) renderSingleIngredient(ing *mealplanningsvc.RecipeStepIngredient, allSteps []*mealplanningsvc.RecipeStep, isInOptionGroup bool) g.Node {
+	var details []g.Node
+
+	// Get ingredient name - prioritize recipe step ingredient name over base ingredient name
+	ingredientName := ""
+	if ing.Name != "" {
+		ingredientName = ing.Name
+	} else if ing.Ingredient != nil {
+		ingredientName = ing.Ingredient.Name
+	}
+
+	// Check if this ingredient comes from a previous step
+	isProductFromPriorStep := ing.RecipeStepProductId != nil
+	if isProductFromPriorStep {
+		productStep := s.findStepWithProduct(*ing.RecipeStepProductId, allSteps)
+		if productStep != nil {
+			// Format as "ingredient name from step X" without quantity
 			details = append(details, ghtml.Span(
 				ghtml.Class("font-medium"),
-				g.Text(ingredientName),
+				g.Text(fmt.Sprintf("%s from step %d", ingredientName, productStep.Index+1)),
 			))
+		} else {
+			// Fallback if step not found
+			details = append(details,
+				ghtml.Span(
+					ghtml.Class("font-medium"),
+					g.Text(ingredientName),
+				),
+				ghtml.Span(
+					ghtml.Class("text-blue-600 ml-2"),
+					g.Text(fmt.Sprintf("← Product ID: %s", *ing.RecipeStepProductId)),
+				),
+			)
+		}
+	} else {
+		// Regular ingredient - show name and quantity
+		details = append(details, ghtml.Span(
+			ghtml.Class("font-medium"),
+			g.Text(ingredientName),
+		))
 
-			// MeasurementQuantity and unit
-			if ing.Quantity != nil {
-				qtyStr := ""
-				if ing.Quantity.Min != 0 {
-					qtyStr = formatQuantity(ing.Quantity.Min)
-					if ing.Quantity.Max != nil {
-						qtyStr += "-" + formatQuantity(*ing.Quantity.Max)
-					}
-				}
-				if qtyStr != "" {
-					unitName := formatMeasurementUnitName(ing.MeasurementUnit)
-					details = append(details, ghtml.Span(
-						ghtml.Class("text-gray-600"),
-						g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
-					))
+		// MeasurementQuantity and unit
+		if ing.Quantity != nil {
+			qtyStr := ""
+			if ing.Quantity.Min != 0 {
+				qtyStr = formatQuantity(ing.Quantity.Min)
+				if ing.Quantity.Max != nil {
+					qtyStr += "-" + formatQuantity(*ing.Quantity.Max)
 				}
 			}
+			if qtyStr != "" {
+				unitName := formatMeasurementUnitName(ing.MeasurementUnit)
+				details = append(details, ghtml.Span(
+					ghtml.Class("text-gray-600"),
+					g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
+				))
+			}
 		}
+	}
 
-		// Recipe product reference
-		if ing.RecipeStepProductRecipeId != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("text-purple-600 ml-2"),
-				g.Text(fmt.Sprintf("← Recipe Product: %s", *ing.RecipeStepProductRecipeId)),
-			))
-		}
+	// Recipe product reference
+	if ing.RecipeStepProductRecipeId != nil {
+		details = append(details, ghtml.Span(
+			ghtml.Class("text-purple-600 ml-2"),
+			g.Text(fmt.Sprintf("← Recipe Product: %s", *ing.RecipeStepProductRecipeId)),
+		))
+	}
 
-		// Vessel index
-		if ing.VesselIndex != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("text-gray-500 ml-2"),
-				g.Text(fmt.Sprintf("(Vessel %d)", *ing.VesselIndex)),
-			))
-		}
+	// Vessel index
+	if ing.VesselIndex != nil {
+		details = append(details, ghtml.Span(
+			ghtml.Class("text-gray-500 ml-2"),
+			g.Text(fmt.Sprintf("(Vessel %d)", *ing.VesselIndex)),
+		))
+	}
 
-		// Product percentage
-		if ing.ProductPercentageToUse != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("text-gray-500 ml-2"),
-				g.Text(fmt.Sprintf("(%d%% of product)", int(*ing.ProductPercentageToUse*100))),
-			))
-		}
+	// Product percentage
+	if ing.ProductPercentageToUse != nil {
+		details = append(details, ghtml.Span(
+			ghtml.Class("text-gray-500 ml-2"),
+			g.Text(fmt.Sprintf("(%d%% of product)", int(*ing.ProductPercentageToUse*100))),
+		))
+	}
 
-		// Flags
-		var flags []g.Node
-		if ing.Optional {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded ml-2"),
-				g.Text("Optional"),
-			))
-		}
-		if ing.ToTaste {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-orange-100 text-orange-800 rounded ml-2"),
-				g.Text("To Taste"),
-			))
-		}
-		if ing.OptionIndex > 0 {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-gray-100 text-gray-800 rounded ml-2"),
-				g.Text(fmt.Sprintf("Option %d", ing.OptionIndex)),
-			))
-		}
+	// Flags
+	var flags []g.Node
+	if ing.Optional {
+		flags = append(flags, ghtml.Span(
+			ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded ml-2"),
+			g.Text("Optional"),
+		))
+	}
+	if ing.ToTaste {
+		flags = append(flags, ghtml.Span(
+			ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-orange-100 text-orange-800 rounded ml-2"),
+			g.Text("To Taste"),
+		))
+	}
 
-		// Notes
-		if ing.IngredientNotes != "" {
-			details = append(details, ghtml.Div(
-				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("Ingredient notes: %s", ing.IngredientNotes)),
-			))
-		}
-		// Only show quantity notes if this is not a product from a prior step
-		if !isProductFromPriorStep && ing.QuantityNotes != "" {
-			details = append(details, ghtml.Div(
-				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", ing.QuantityNotes)),
-			))
-		}
+	// Notes
+	if ing.IngredientNotes != "" {
+		details = append(details, ghtml.Div(
+			ghtml.Class("text-xs text-gray-500 mt-1"),
+			g.Text(fmt.Sprintf("Ingredient notes: %s", ing.IngredientNotes)),
+		))
+	}
+	// Only show quantity notes if this is not a product from a prior step
+	if !isProductFromPriorStep && ing.QuantityNotes != "" {
+		details = append(details, ghtml.Div(
+			ghtml.Class("text-xs text-gray-500 mt-1"),
+			g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", ing.QuantityNotes)),
+		))
+	}
 
-		nodes = append(nodes, ghtml.Div(
-			ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+	// Use different styling if inside an option group vs standalone
+	if isInOptionGroup {
+		return ghtml.Div(
+			ghtml.Class("py-1 pl-2"),
 			ghtml.Div(
 				ghtml.Class("flex flex-wrap items-center gap-1"),
 				g.Group(details),
 				g.Group(flags),
 			),
-		))
+		)
 	}
-	return nodes
+
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+		ghtml.Div(
+			ghtml.Class("flex flex-wrap items-center gap-1"),
+			g.Group(details),
+			g.Group(flags),
+		),
+	)
 }
 
 func (s *AdminFrontendServer) renderStepInstruments(instruments []*mealplanningsvc.RecipeStepInstrument, allSteps []*mealplanningsvc.RecipeStep) []g.Node {
-	var nodes []g.Node
+	// Group instruments by Index
+	indexGroups := make(map[uint32][]*mealplanningsvc.RecipeStepInstrument)
+	var indexOrder []uint32
 	for _, inst := range instruments {
-		var details []g.Node
+		if _, exists := indexGroups[inst.Index]; !exists {
+			indexOrder = append(indexOrder, inst.Index)
+		}
+		indexGroups[inst.Index] = append(indexGroups[inst.Index], inst)
+	}
 
-		// Instrument name
-		if inst.Instrument != nil {
-			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(inst.Instrument.Name),
-			))
-		} else if inst.Name != "" {
-			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(inst.Name),
+	var nodes []g.Node
+	for _, idx := range indexOrder {
+		group := indexGroups[idx]
+
+		if len(group) == 1 {
+			// Single instrument - render normally
+			nodes = append(nodes, s.renderSingleInstrument(group[0], allSteps, false))
+		} else {
+			// Multiple options - render as option group with "OR"
+			nodes = append(nodes, s.renderInstrumentOptionGroup(group, allSteps))
+		}
+	}
+	return nodes
+}
+
+// renderInstrumentOptionGroup renders a group of instrument options with "OR" between them.
+func (s *AdminFrontendServer) renderInstrumentOptionGroup(options []*mealplanningsvc.RecipeStepInstrument, allSteps []*mealplanningsvc.RecipeStep) g.Node {
+	var optionNodes []g.Node
+
+	for i, inst := range options {
+		optionNodes = append(optionNodes, s.renderSingleInstrument(inst, allSteps, true))
+
+		// Add "OR" separator between options (but not after the last one)
+		if i < len(options)-1 {
+			optionNodes = append(optionNodes, ghtml.Div(
+				ghtml.Class("text-xs font-semibold text-gray-500 uppercase tracking-wide py-1 pl-6"),
+				g.Text("— or —"),
 			))
 		}
+	}
 
-		// MeasurementQuantity (only show if not 1)
-		if inst.Quantity != nil {
-			qtyStr := ""
-			if inst.Quantity.Min != 0 {
-				// Only show quantity if it's not 1, or if there's a range
-				if inst.Quantity.Min != 1 || (inst.Quantity.Max != nil && *inst.Quantity.Max != 1) {
-					qtyStr = fmt.Sprintf("%d", inst.Quantity.Min)
-					if inst.Quantity.Max != nil {
-						qtyStr += fmt.Sprintf("-%d", *inst.Quantity.Max)
-					}
+	// Wrap in an indented container to show grouping
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-amber-300 bg-amber-50/30 rounded-r py-1"),
+		g.Group(optionNodes),
+	)
+}
+
+// renderSingleInstrument renders a single instrument item.
+func (s *AdminFrontendServer) renderSingleInstrument(inst *mealplanningsvc.RecipeStepInstrument, allSteps []*mealplanningsvc.RecipeStep, isInOptionGroup bool) g.Node {
+	var details []g.Node
+
+	// Instrument name
+	if inst.Instrument != nil {
+		details = append(details, ghtml.Span(
+			ghtml.Class("font-medium"),
+			g.Text(inst.Instrument.Name),
+		))
+	} else if inst.Name != "" {
+		details = append(details, ghtml.Span(
+			ghtml.Class("font-medium"),
+			g.Text(inst.Name),
+		))
+	}
+
+	// MeasurementQuantity (only show if not 1)
+	if inst.Quantity != nil {
+		qtyStr := ""
+		if inst.Quantity.Min != 0 {
+			// Only show quantity if it's not 1, or if there's a range
+			if inst.Quantity.Min != 1 || (inst.Quantity.Max != nil && *inst.Quantity.Max != 1) {
+				qtyStr = fmt.Sprintf("%d", inst.Quantity.Min)
+				if inst.Quantity.Max != nil {
+					qtyStr += fmt.Sprintf("-%d", *inst.Quantity.Max)
 				}
 			}
-			if qtyStr != "" {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-gray-600"),
-					g.Text(fmt.Sprintf(" (%s)", qtyStr)),
-				))
-			}
 		}
-
-		// Product reference
-		if inst.RecipeStepProductId != nil {
-			productStep := s.findStepWithProduct(*inst.RecipeStepProductId, allSteps)
-			if productStep != nil {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 font-semibold ml-2"),
-					g.Text(fmt.Sprintf("← Product from Step %d", productStep.Index+1)),
-				))
-			} else {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *inst.RecipeStepProductId)),
-				))
-			}
-		}
-
-		// Flags
-		var flags []g.Node
-		if inst.Optional {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded ml-2"),
-				g.Text("Optional"),
+		if qtyStr != "" {
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-gray-600"),
+				g.Text(fmt.Sprintf(" (%s)", qtyStr)),
 			))
 		}
-		if inst.OptionIndex > 0 {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-gray-100 text-gray-800 rounded ml-2"),
-				g.Text(fmt.Sprintf("Option %d", inst.OptionIndex)),
-			))
-		}
-		if inst.PreferenceRank > 0 {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-indigo-100 text-indigo-800 rounded ml-2"),
-				g.Text(fmt.Sprintf("Rank %d", inst.PreferenceRank)),
-			))
-		}
+	}
 
-		// Notes
-		if inst.Notes != "" {
-			details = append(details, ghtml.Div(
-				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("Notes: %s", inst.Notes)),
+	// Product reference
+	if inst.RecipeStepProductId != nil {
+		productStep := s.findStepWithProduct(*inst.RecipeStepProductId, allSteps)
+		if productStep != nil {
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-blue-600 font-semibold ml-2"),
+				g.Text(fmt.Sprintf("← Product from Step %d", productStep.Index+1)),
+			))
+		} else {
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-blue-600 ml-2"),
+				g.Text(fmt.Sprintf("← Product ID: %s", *inst.RecipeStepProductId)),
 			))
 		}
+	}
 
-		nodes = append(nodes, ghtml.Div(
-			ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+	// Flags
+	var flags []g.Node
+	if inst.Optional {
+		flags = append(flags, ghtml.Span(
+			ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded ml-2"),
+			g.Text("Optional"),
+		))
+	}
+	if inst.PreferenceRank > 0 {
+		flags = append(flags, ghtml.Span(
+			ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-indigo-100 text-indigo-800 rounded ml-2"),
+			g.Text(fmt.Sprintf("Rank %d", inst.PreferenceRank)),
+		))
+	}
+
+	// Notes
+	if inst.Notes != "" {
+		details = append(details, ghtml.Div(
+			ghtml.Class("text-xs text-gray-500 mt-1"),
+			g.Text(fmt.Sprintf("Notes: %s", inst.Notes)),
+		))
+	}
+
+	// Use different styling if inside an option group vs standalone
+	if isInOptionGroup {
+		return ghtml.Div(
+			ghtml.Class("py-1 pl-2"),
 			ghtml.Div(
 				ghtml.Class("flex flex-wrap items-center gap-1"),
 				g.Group(details),
 				g.Group(flags),
 			),
-		))
+		)
 	}
-	return nodes
+
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+		ghtml.Div(
+			ghtml.Class("flex flex-wrap items-center gap-1"),
+			g.Group(details),
+			g.Group(flags),
+		),
+	)
 }
 
 func (s *AdminFrontendServer) renderStepVessels(vessels []*mealplanningsvc.RecipeStepVessel, allSteps []*mealplanningsvc.RecipeStep) []g.Node {
-	var nodes []g.Node
+	// Group vessels by Index
+	indexGroups := make(map[uint32][]*mealplanningsvc.RecipeStepVessel)
+	var indexOrder []uint32
 	for _, vessel := range vessels {
-		var details []g.Node
-
-		// Get vessel name
-		vesselName := ""
-		if vessel.Vessel != nil {
-			vesselName = vessel.Vessel.Name
-		} else if vessel.Name != "" {
-			vesselName = vessel.Name
+		if _, exists := indexGroups[vessel.Index]; !exists {
+			indexOrder = append(indexOrder, vessel.Index)
 		}
+		indexGroups[vessel.Index] = append(indexGroups[vessel.Index], vessel)
+	}
 
-		// Check if this vessel comes from a previous step
-		if vessel.RecipeStepProductId != nil {
-			productStep := s.findStepWithProduct(*vessel.RecipeStepProductId, allSteps)
-			if productStep != nil {
-				// Format as "vessel name from step X" without quantity
-				details = append(details, ghtml.Span(
-					ghtml.Class("font-medium"),
-					g.Text(fmt.Sprintf("%s from step %d", vesselName, productStep.Index+1)),
-				))
-			} else {
-				// Fallback if step not found
-				details = append(details,
-					ghtml.Span(
-						ghtml.Class("font-medium"),
-						g.Text(vesselName),
-					),
-					ghtml.Span(
-						ghtml.Class("text-blue-600 ml-2"),
-						g.Text(fmt.Sprintf("← Product MealPlanTaskID: %s", *vessel.RecipeStepProductId)),
-					),
-				)
-			}
+	var nodes []g.Node
+	for _, idx := range indexOrder {
+		group := indexGroups[idx]
+
+		if len(group) == 1 {
+			// Single vessel - render normally
+			nodes = append(nodes, s.renderSingleVessel(group[0], allSteps, false))
 		} else {
-			// Regular vessel - show name
+			// Multiple options - render as option group with "OR"
+			nodes = append(nodes, s.renderVesselOptionGroup(group, allSteps))
+		}
+	}
+	return nodes
+}
+
+// renderVesselOptionGroup renders a group of vessel options with "OR" between them.
+func (s *AdminFrontendServer) renderVesselOptionGroup(options []*mealplanningsvc.RecipeStepVessel, allSteps []*mealplanningsvc.RecipeStep) g.Node {
+	var optionNodes []g.Node
+
+	for i, vessel := range options {
+		optionNodes = append(optionNodes, s.renderSingleVessel(vessel, allSteps, true))
+
+		// Add "OR" separator between options (but not after the last one)
+		if i < len(options)-1 {
+			optionNodes = append(optionNodes, ghtml.Div(
+				ghtml.Class("text-xs font-semibold text-gray-500 uppercase tracking-wide py-1 pl-6"),
+				g.Text("— or —"),
+			))
+		}
+	}
+
+	// Wrap in an indented container to show grouping
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-amber-300 bg-amber-50/30 rounded-r py-1"),
+		g.Group(optionNodes),
+	)
+}
+
+// renderSingleVessel renders a single vessel item.
+func (s *AdminFrontendServer) renderSingleVessel(vessel *mealplanningsvc.RecipeStepVessel, allSteps []*mealplanningsvc.RecipeStep, isInOptionGroup bool) g.Node {
+	var details []g.Node
+
+	// Get vessel name
+	vesselName := ""
+	if vessel.Vessel != nil {
+		vesselName = vessel.Vessel.Name
+	} else if vessel.Name != "" {
+		vesselName = vessel.Name
+	}
+
+	// Check if this vessel comes from a previous step
+	if vessel.RecipeStepProductId != nil {
+		productStep := s.findStepWithProduct(*vessel.RecipeStepProductId, allSteps)
+		if productStep != nil {
+			// Format as "vessel name from step X" without quantity
 			details = append(details, ghtml.Span(
 				ghtml.Class("font-medium"),
-				g.Text(vesselName),
+				g.Text(fmt.Sprintf("%s from step %d", vesselName, productStep.Index+1)),
 			))
+		} else {
+			// Fallback if step not found
+			details = append(details,
+				ghtml.Span(
+					ghtml.Class("font-medium"),
+					g.Text(vesselName),
+				),
+				ghtml.Span(
+					ghtml.Class("text-blue-600 ml-2"),
+					g.Text(fmt.Sprintf("← Product ID: %s", *vessel.RecipeStepProductId)),
+				),
+			)
 		}
+	} else {
+		// Regular vessel - show name
+		details = append(details, ghtml.Span(
+			ghtml.Class("font-medium"),
+			g.Text(vesselName),
+		))
+	}
 
-		// MeasurementQuantity (only show if not 1)
-		if vessel.Quantity != nil {
-			qtyStr := ""
-			if vessel.Quantity.Min != 0 {
-				// Only show quantity if it's not 1, or if there's a range
-				if vessel.Quantity.Min != 1 || (vessel.Quantity.Max != nil && *vessel.Quantity.Max != 1) {
-					qtyStr = fmt.Sprintf("%d", vessel.Quantity.Min)
-					if vessel.Quantity.Max != nil {
-						qtyStr += fmt.Sprintf("-%d", *vessel.Quantity.Max)
-					}
+	// MeasurementQuantity (only show if not 1)
+	if vessel.Quantity != nil {
+		qtyStr := ""
+		if vessel.Quantity.Min != 0 {
+			// Only show quantity if it's not 1, or if there's a range
+			if vessel.Quantity.Min != 1 || (vessel.Quantity.Max != nil && *vessel.Quantity.Max != 1) {
+				qtyStr = fmt.Sprintf("%d", vessel.Quantity.Min)
+				if vessel.Quantity.Max != nil {
+					qtyStr += fmt.Sprintf("-%d", *vessel.Quantity.Max)
 				}
 			}
-			if qtyStr != "" {
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-gray-600"),
-					g.Text(fmt.Sprintf(" (%s)", qtyStr)),
-				))
-			}
 		}
-
-		// Preposition
-		if vessel.VesselPreposition != "" {
+		if qtyStr != "" {
 			details = append(details, ghtml.Span(
-				ghtml.Class("text-gray-500"),
-				g.Text(fmt.Sprintf(" (%s)", vessel.VesselPreposition)),
+				ghtml.Class("text-gray-600"),
+				g.Text(fmt.Sprintf(" (%s)", qtyStr)),
 			))
 		}
+	}
 
-		// Flags
-		var flags []g.Node
-		if vessel.UnavailableAfterStep {
-			flags = append(flags, ghtml.Span(
-				ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-red-100 text-red-800 rounded ml-2"),
-				g.Text("Unavailable After Step"),
-			))
-		}
+	// Preposition
+	if vessel.VesselPreposition != "" {
+		details = append(details, ghtml.Span(
+			ghtml.Class("text-gray-500"),
+			g.Text(fmt.Sprintf(" (%s)", vessel.VesselPreposition)),
+		))
+	}
 
-		// Notes
-		if vessel.Notes != "" {
-			details = append(details, ghtml.Div(
-				ghtml.Class("text-xs text-gray-500 mt-1"),
-				g.Text(fmt.Sprintf("Notes: %s", vessel.Notes)),
-			))
-		}
+	// Flags
+	var flags []g.Node
+	if vessel.UnavailableAfterStep {
+		flags = append(flags, ghtml.Span(
+			ghtml.Class("inline-block px-1.5 py-0.5 text-xs bg-red-100 text-red-800 rounded ml-2"),
+			g.Text("Unavailable After Step"),
+		))
+	}
 
-		nodes = append(nodes, ghtml.Div(
-			ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+	// Notes
+	if vessel.Notes != "" {
+		details = append(details, ghtml.Div(
+			ghtml.Class("text-xs text-gray-500 mt-1"),
+			g.Text(fmt.Sprintf("Notes: %s", vessel.Notes)),
+		))
+	}
+
+	// Use different styling if inside an option group vs standalone
+	if isInOptionGroup {
+		return ghtml.Div(
+			ghtml.Class("py-1 pl-2"),
 			ghtml.Div(
 				ghtml.Class("flex flex-wrap items-center gap-1"),
 				g.Group(details),
 				g.Group(flags),
 			),
-		))
+		)
 	}
-	return nodes
+
+	return ghtml.Div(
+		ghtml.Class("text-sm pl-4 border-l-2 border-gray-200"),
+		ghtml.Div(
+			ghtml.Class("flex flex-wrap items-center gap-1"),
+			g.Group(details),
+			g.Group(flags),
+		),
+	)
 }
 
-func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.RecipeStepProduct) []g.Node {
+func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.RecipeStepProduct, usageMap map[string][]uint32) []g.Node {
 	var nodes []g.Node
 	for _, product := range products {
 		var details []g.Node
@@ -745,6 +1186,18 @@ func (s *AdminFrontendServer) renderStepProducts(products []*mealplanningsvc.Rec
 			ghtml.Class("text-gray-500 text-xs ml-2"),
 			g.Text(fmt.Sprintf("(%s)", productTypeStr)),
 		))
+
+		// Show which later steps use this product
+		if usedInSteps, ok := usageMap[product.Id]; ok && len(usedInSteps) > 0 {
+			stepList := make([]string, len(usedInSteps))
+			for i, stepNum := range usedInSteps {
+				stepList[i] = fmt.Sprintf("%d", stepNum)
+			}
+			details = append(details, ghtml.Span(
+				ghtml.Class("inline-block px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded ml-2"),
+				g.Text(fmt.Sprintf("→ used in step %s", strings.Join(stepList, ", "))),
+			))
+		}
 
 		// Quantity display: discrete vs continuous products
 		isDiscrete := product.ItemQuantity != nil && (product.ItemQuantity.Min != nil || product.ItemQuantity.Max != nil)

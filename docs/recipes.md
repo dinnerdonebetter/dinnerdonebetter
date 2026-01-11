@@ -121,6 +121,25 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 - **Usage**: Enables easy recipe cloning and modification while maintaining provenance
 - **Note**: If null or blank, the recipe is considered "original". Used when users want to make minor adjustments to existing recipes (e.g., reducing garlic in a soup recipe)
 
+## Recipe Relationships
+
+### `AssociatedRecipes` ([]*[Recipe](../internal/domain/mealplanning/recipe.go))
+
+- **Purpose**: Contains recipes that are referenced as components within this recipe's steps
+- **Usage**: Automatically populated when fetching a recipe from the database. Provides complete recipe information for recipes that use other recipes as ingredients
+- **How It Works**: 
+  - When a recipe step ingredient references a product from another recipe via `RecipeStepProductRecipeID`, that other recipe is considered an "associated recipe"
+  - The system recursively loads nested associated recipes (if recipe A uses recipe B, and recipe B uses recipe C, then recipe A will have both B and C in its `AssociatedRecipes`)
+  - **Flattening**: All associated recipes are returned in a **flat list** at the root level. If you have a recipe chain (e.g., Salad uses Croutons, which uses Infused Olive Oil), fetching the Salad recipe will return both Croutons and Infused Olive Oil in a single flat list
+  - **Empty AssociatedRecipes**: Each recipe in the `AssociatedRecipes` array will have an **empty `AssociatedRecipes` array** - the flattening process clears nested associations to prevent deep nesting
+  - Duplicates are automatically filtered out
+  - The recipe itself is never included in its own `AssociatedRecipes`
+- **Example Use Cases**:
+  - A "Caesar Salad" recipe might use "Caesar Dressing" as an ingredient, so "Caesar Dressing" would appear in the salad's `AssociatedRecipes`
+  - A "Chicken Parmesan" recipe might use "Marinara Sauce" as an ingredient, so "Marinara Sauce" would appear in the chicken's `AssociatedRecipes`
+  - A "Salad" recipe uses "Croutons", which uses "Infused Olive Oil". Fetching the Salad recipe returns both Croutons and Infused Olive Oil in a flat list, and both will have empty `AssociatedRecipes` arrays
+- **Note**: This field is read-only and automatically populated by the repository layer. It cannot be set directly when creating or updating recipes. The relationship is established by setting `RecipeStepProductRecipeID` on recipe step ingredients
+
 ## Content Fields
 
 ### `Steps` ([]*[RecipeStep](../internal/domain/mealplanning/recipe_step.go))

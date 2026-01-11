@@ -60,14 +60,16 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 		seen = make(map[string]bool)
 	}
 
+	// Track if this is the initial call (recipeID not yet in seen) vs a recursive discovery
+	// If recipeID is already in seen, it means we've encountered it in the call chain (cycle detected)
+	// Return a minimal recipe to break the cycle
 	if seen[recipeID] {
-		// Return a minimal recipe to break the cycle
-		// This prevents infinite recursion but indicates a circular dependency exists
 		return &mealplanning.Recipe{
 			ID:    recipeID,
 			Steps: []*mealplanning.RecipeStep{},
 		}, nil
 	}
+	// Mark as seen before processing to detect cycles during processing
 	seen[recipeID] = true
 
 	var x *mealplanning.Recipe
@@ -241,49 +243,156 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 		x.Steps[i].Media = recipeMedia
 	}
 
-	// Check for cross-recipe product references and print steps that have them
-	var relatedRecipes []string
+	// Check for cross-recipe product references and collect all related recipe IDs
+	// We'll flatten the associated recipes so the root recipe contains all of them directly
+	var relatedRecipeIDs []string
 	for _, step := range x.Steps {
 		for _, ingredient := range step.Ingredients {
 			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" && *ingredient.RecipeStepProductRecipeID != x.ID {
-				relatedRecipes = append(relatedRecipes, pointer.Dereference(ingredient.RecipeStepProductRecipeID))
+				relatedRecipeIDs = append(relatedRecipeIDs, pointer.Dereference(ingredient.RecipeStepProductRecipeID))
 			}
 		}
 	}
 
-	// Track which recipes we've already added to avoid duplicates
-	addedRecipeIDs := make(map[string]bool)
-	addedRecipeIDs[x.ID] = true // Don't add the recipe itself
+	// Map to store fetched recipes by ID (before flattening)
+	fetchedRecipes := make(map[string]*mealplanning.Recipe)
 
-	// Queue to process associated recipes (including nested ones)
-	recipeQueue := make([]string, 0, len(relatedRecipes))
-	recipeQueue = append(recipeQueue, relatedRecipes...)
+	// Track which recipes we've queued to prevent adding the same recipe multiple times
+	queuedRecipeIDs := make(map[string]bool)
+	for _, id := range relatedRecipeIDs {
+		queuedRecipeIDs[id] = true
+	}
 
-	// Process all recipes in the queue (including nested associated recipes)
-	for len(recipeQueue) > 0 {
-		associatedRecipeID := recipeQueue[0]
+	// Queue to process recipes and discover nested dependencies
+	recipeQueue := make([]string, 0, len(relatedRecipeIDs))
+	recipeQueue = append(recipeQueue, relatedRecipeIDs...)
+
+	// Fetch recipes and discover nested dependencies
+	// Use the seen map passed to this function (or create a new one if none was provided)
+	// This ensures cycle detection works across nested getRecipe calls
+	// Limit iterations to prevent infinite loops
+	maxIterations := 1000
+	iteration := 0
+	// Use the seen map from the parent call, or create a new one
+	// This ensures that if a nested recipe discovers a recipe that's already in the call chain,
+	// it will be caught and return minimal
+	// Always ensure the current recipe (x.ID) is in loopSeen to prevent cycles
+	// IMPORTANT: We use seen directly (not a copy) so that nested getRecipe calls can
+	// detect cycles with recipes in the outer call chain
+	loopSeen := seen
+	if loopSeen == nil {
+		loopSeen = make(map[string]bool)
+	}
+	loopSeen[x.ID] = true // Always include the current recipe to prevent cycles
+	for len(recipeQueue) > 0 && iteration < maxIterations {
+		iteration++
+		rID := recipeQueue[0]
 		recipeQueue = recipeQueue[1:]
 
-		// Skip if we've already added this recipe
-		if addedRecipeIDs[associatedRecipeID] {
+		// Skip if already fetched
+		if fetchedRecipes[rID] != nil {
 			continue
 		}
 
-		associatedRecipe, associatedRecipeErr := q.getRecipe(ctx, associatedRecipeID, seen)
-		if associatedRecipeErr != nil {
-			return nil, observability.PrepareError(associatedRecipeErr, span, "fetching associated recipe for recipe step")
+		// Fetch the recipe using loopSeen to detect cycles
+		// Create a copy of loopSeen without rID so rID can be fetched initially.
+		// getRecipe will add rID to its local seen map, so if rID is discovered again during
+		// processing, it will be in seen and return minimal, breaking the cycle.
+		// IMPORTANT: We pass loopSeen by reference to nested getRecipe calls, so nested calls
+		// can detect cycles with recipes in the outer call chain. However, for the initial
+		// fetch of rID, we need to exclude rID from the seen map so it can be fetched.
+		// The solution: create a copy of loopSeen without rID, but getRecipe will use this
+		// copy as its seen map, and then use it as loopSeen for nested calls. This means
+		// nested calls won't be able to detect rID in cycles. To fix this, we need to ensure
+		// that nested calls use the full loopSeen, not the copy.
+		// Actually, getRecipe uses the seen map it receives as loopSeen for nested calls.
+		// So if we pass a copy without rID, nested calls won't be able to detect rID.
+		// The real solution: pass loopSeen directly, but modify getRecipe to allow fetching
+		// the target recipe even if it's in seen when seen was provided by the caller.
+		// But that's complex. For now, let's try: if rID is already in loopSeen, skip it
+		// (it will be extracted from nested AssociatedRecipes later).
+		if loopSeen[rID] {
+			// rID is already in loopSeen, which means it was discovered in a nested call
+			// or is part of a cycle. Skip fetching it here - it will be extracted from
+			// nested AssociatedRecipes later if needed.
+			continue
 		}
 
-		// Add to root-level AssociatedRecipes
-		x.AssociatedRecipes = append(x.AssociatedRecipes, associatedRecipe)
-		addedRecipeIDs[associatedRecipeID] = true
-
-		// Add nested associated recipes to the queue for processing
-		for _, nestedAssociatedRecipe := range associatedRecipe.AssociatedRecipes {
-			if !addedRecipeIDs[nestedAssociatedRecipe.ID] {
-				recipeQueue = append(recipeQueue, nestedAssociatedRecipe.ID)
+		// Create a copy of loopSeen without rID so rID can be fetched initially
+		seenForFetch := make(map[string]bool)
+		for id := range loopSeen {
+			if id != rID {
+				seenForFetch[id] = true
 			}
 		}
+		recipe, getErr := q.getRecipe(ctx, rID, seenForFetch)
+		if getErr != nil {
+			return nil, observability.PrepareError(getErr, span, "fetching associated recipe")
+		}
+
+		// Mark as seen after fetching to prevent cycles in future iterations
+		loopSeen[rID] = true
+
+		// Store the fetched recipe
+		fetchedRecipes[rID] = recipe
+
+		// Discover nested dependencies by looking at the recipe's ingredients
+		// (not its AssociatedRecipes, since we want to flatten those)
+		// We discover from ingredients to ensure we find all recipes in the dependency graph
+		for _, step := range recipe.Steps {
+			for _, ingredient := range step.Ingredients {
+				if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" && *ingredient.RecipeStepProductRecipeID != x.ID {
+					nestedRecipeID := pointer.Dereference(ingredient.RecipeStepProductRecipeID)
+					// Only add to queue if not already fetched and not already queued
+					// Note: we check fetchedRecipes, not loopSeen, because loopSeen may contain
+					// recipes that were fetched in nested getRecipe calls but aren't in our fetchedRecipes yet
+					if fetchedRecipes[nestedRecipeID] == nil && !queuedRecipeIDs[nestedRecipeID] {
+						queuedRecipeIDs[nestedRecipeID] = true
+						recipeQueue = append(recipeQueue, nestedRecipeID)
+					}
+				}
+			}
+		}
+	}
+
+	// Extract any recipes that were recursively fetched as part of other recipes' AssociatedRecipes
+	// This ensures we capture all nested recipes even if they were fetched recursively
+	// We need to do this iteratively until no new recipes are found
+	// Limit iterations to prevent infinite loops in case of cycles
+	maxExtractionIterations := 100
+	extractionIteration := 0
+	extracted := true
+	for extracted && extractionIteration < maxExtractionIterations {
+		extractionIteration++
+		extracted = false
+		// Collect all recipes to add in this iteration
+		toAdd := make(map[string]*mealplanning.Recipe)
+		for _, recipe := range fetchedRecipes {
+			// Skip minimal recipes (those with empty Steps) as they were returned due to cycle detection
+			// and shouldn't have valid AssociatedRecipes to extract from
+			if len(recipe.Steps) == 0 {
+				continue
+			}
+			for _, nestedAssociated := range recipe.AssociatedRecipes {
+				if fetchedRecipes[nestedAssociated.ID] == nil && toAdd[nestedAssociated.ID] == nil {
+					toAdd[nestedAssociated.ID] = nestedAssociated
+					extracted = true
+				}
+			}
+		}
+		// Add all collected recipes at once
+		for id, recipe := range toAdd {
+			fetchedRecipes[id] = recipe
+		}
+	}
+
+	// Second pass: flatten by clearing AssociatedRecipes from all fetched recipes
+	// and adding all of them to the root recipe's AssociatedRecipes
+	for _, fetchedRecipe := range fetchedRecipes {
+		// Clear the AssociatedRecipes to flatten the structure
+		fetchedRecipe.AssociatedRecipes = nil
+		// Add to root-level AssociatedRecipes
+		x.AssociatedRecipes = append(x.AssociatedRecipes, fetchedRecipe)
 	}
 
 	return x, nil

@@ -39,6 +39,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	tongs := enums.Instruments["tongs"]
 	spoon := enums.Instruments["spoon"]
 	thermometer := enums.Instruments["instant-read thermometer"]
+	stovetop := enums.Instruments["stovetop"]
 
 	// Get vessels
 	sheetPan := enums.Vessels["sheet pan"]
@@ -68,7 +69,6 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	// Slice preparation bridges
 	sliceShallotVIP := enums.IngredientPreparations[slicePrep.ID][shallot.ID]
 	sliceKnifeVPI := enums.PreparationInstruments[slicePrep.ID][knife.ID]
-	sliceBareHandsVPI := enums.PreparationInstruments[slicePrep.ID][bareHands.ID]
 	sliceCuttingBoardVPV := enums.PreparationVessels[slicePrep.ID][cuttingBoard.ID]
 
 	// Rest preparation bridges (for optional rest step)
@@ -78,6 +78,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	heatOilVIP := enums.IngredientPreparations[heatPrep.ID][vegetableOil.ID]
 	oilMilliliterVIMU := enums.IngredientMeasurementUnits[vegetableOil.ID][milliliterMeasurement.ID]
 	heatSkilletVPV := enums.PreparationVessels[heatPrep.ID][castIronSkillet.ID]
+	heatStovetopVPI := enums.PreparationInstruments[heatPrep.ID][stovetop.ID]
 
 	// Pan-sear preparation bridges
 	panSearTongsVPI := enums.PreparationInstruments[panSearPrep.ID][tongs.ID]
@@ -278,15 +279,6 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 					Min: 1,
 				},
 			},
-			{
-				ValidPreparationInstrumentID: &sliceBareHandsVPI.ID,
-				Name:                         "bare hands",
-				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-				Index:       pointer.To[uint16](1),
-				OptionIndex: 0,
-			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -328,6 +320,15 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				},
 			},
 		},
+		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+			{
+				ValidPreparationInstrumentID: &heatStovetopVPI.ID,
+				Name:                         "stovetop",
+				Quantity: types.Uint32RangeWithOptionalMax{
+					Min: 1,
+				},
+			},
+		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
@@ -345,6 +346,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				MeasurementUnitID: &milliliterMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](60),
+				},
+			},
+			{
+				Name:  "cast iron skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -398,8 +407,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &panSearSkilletVPV.ID,
-				Name:                     "cast iron skillet",
+				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
+				Name:                            "cast iron skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -414,6 +425,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](700),
 					Max: pointer.To[float32](900),
+				},
+			},
+			{
+				Name:  "cast iron skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
 				},
 			},
 		},
@@ -515,8 +534,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &basteSkilletVPV.ID,
-				Name:                     "cast iron skillet",
+				ValidPreparationVesselID:        &basteSkilletVPV.ID,
+				Name:                            "cast iron skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
