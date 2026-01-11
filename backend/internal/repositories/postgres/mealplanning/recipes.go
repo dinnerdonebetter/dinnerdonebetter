@@ -317,7 +317,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 			// nested AssociatedRecipes later if needed.
 			continue
 		}
-		
+
 		// Create a copy of loopSeen without rID so rID can be fetched initially
 		seenForFetch := make(map[string]bool)
 		for id := range loopSeen {
