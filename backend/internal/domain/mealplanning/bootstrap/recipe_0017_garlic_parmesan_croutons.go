@@ -96,7 +96,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 0: Preheat oven to 375°F
 	crStep0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: preheatPrep.ID,
+		PreparationID:        preheatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 375°F (190°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -122,7 +122,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 1: Cut bread into 3/4-inch cubes
 	crStep1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: cubePrep.ID,
+		PreparationID:        cubePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Cut the hearty bread into 3/4-inch cubes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -168,7 +168,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 2: Add bread cubes to garlic-infused olive oil and toss to coat
 	crStep2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
+		PreparationID:        addPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Add the bread cubes to the garlic-infused olive oil from the dressing recipe and toss to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -223,7 +223,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 3: Grate parmesan cheese
 	crStep3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       gratePrep.ID,
+		PreparationID:        gratePrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Finely grate 4 tablespoons parmesan cheese.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -269,7 +269,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 4: Add parmesan, toss, and season
 	crStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: tossPrep.ID,
+		PreparationID:        tossPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Add 2 tablespoons grated parmesan cheese, toss again, and season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -323,7 +323,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 5: Season bread cubes with salt and pepper
 	crStep5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       seasonPrep.ID,
+		PreparationID:        seasonPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -386,7 +386,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 6: Transfer to rimmed baking sheet
 	crStep6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: transferPrep.ID,
+		PreparationID:        transferPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "Transfer to a rimmed baking sheet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -429,7 +429,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 7: Bake until pale golden brown and crisp
 	crStep7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bakePrep.ID,
+		PreparationID:        bakePrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Bake until the croutons are pale golden brown and crisp, about 15 minutes.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -496,7 +496,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 8: Toss with more parmesan
 	crStep8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: tossPrep.ID,
+		PreparationID:        tossPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Remove from the oven and toss with 2 more tablespoons grated parmesan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -545,7 +545,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 9: Allow to cool
 	crStep9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coolPrep.ID,
+		PreparationID:        coolPrep.ID,
 		Index:                9,
 		ExplicitInstructions: "Allow the croutons to cool.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{

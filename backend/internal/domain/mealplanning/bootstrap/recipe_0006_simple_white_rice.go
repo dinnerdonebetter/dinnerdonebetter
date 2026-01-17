@@ -69,8 +69,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 0: Rinse rice until water runs clear
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: rinsePrep.ID,
-		Index:         0,
+		PreparationID:        rinsePrep.ID,
+		Index:                0,
 		ExplicitInstructions: "Rinse the rice in a bowl with cold water, swishing it around with your hand. Drain and repeat until the water runs clear.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -114,8 +114,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 1: Combine all ingredients in saucepan and bring to a simmer
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: simmerPrep.ID,
-		Index:         1,
+		PreparationID:        simmerPrep.ID,
+		Index:                1,
 		ExplicitInstructions: "Combine all ingredients in a 2-quart saucepan and bring to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -182,8 +182,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 2: Stir everything when it reaches a lively simmer
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID,
-		Index:         2,
+		PreparationID:        stirPrep.ID,
+		Index:                2,
 		ExplicitInstructions: "As soon as the water reaches a lively simmer, give everything a good stir.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -236,8 +236,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 3: Cover the pot and lower heat
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coverPrep.ID,
-		Index:         3,
+		PreparationID:        coverPrep.ID,
+		Index:                3,
 		ExplicitInstructions: "Cover the pot and lower the heat as much as possible. Cook for 15 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](900), // 15 minutes
@@ -282,8 +282,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 4: Remove from heat
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: removeFromHeatPrep.ID,
-		Index:         4,
+		PreparationID:        removeFromHeatPrep.ID,
+		Index:                4,
 		ExplicitInstructions: "Turn off the burner and remove the pot from the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -325,8 +325,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 5: Rest
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
-		Index:         5,
+		PreparationID:        restPrep.ID,
+		Index:                5,
 		ExplicitInstructions: "Let the pot sit for at least 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -373,8 +373,8 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 6: Fluff with fork and serve
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: fluffPrep.ID,
-		Index:         6,
+		PreparationID:        fluffPrep.ID,
+		Index:                6,
 		ExplicitInstructions: "Fluff with a fork and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{

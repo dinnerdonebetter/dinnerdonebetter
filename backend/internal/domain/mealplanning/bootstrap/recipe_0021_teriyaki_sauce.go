@@ -136,8 +136,8 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// === TERIYAKI SAUCE STEPS ===
 	ts0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         0,
+		PreparationID:        addPrep.ID,
+		Index:                0,
 		ExplicitInstructions: "In a medium saucepan, add shoyu, sake, mirin, sugar, and powdered dashi.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ValidIngredientPreparationID: vipID(addSoySauceVIP), ValidIngredientMeasurementUnitID: vimuID(soySauceCupVIMU), Name: "soy sauce", QuantityNotes: "about 120ml", Quantity: types.Float32RangeWithOptionalMax{Min: 0.5}},
@@ -154,11 +154,11 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	}
 
 	ts1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       combinePrep.ID,
+		PreparationID:        combinePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Combine until mixed.",
-		Ingredients:   []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "sauce ingredients in saucepan", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
-		Vessels:       []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "medium saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
+		Ingredients:          []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "sauce ingredients in saucepan", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
+		Vessels:              []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "medium saucepan", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{Name: "combined sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}},
 			{Name: "medium saucepan", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
@@ -178,7 +178,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	ts3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:          reducePrep.ID,
 		Index:                  3,
-		ExplicitInstructions: "Cook over medium heat, swirling the pan occasionally, until the temperature reaches 225°F (107℃) and the sauce thickens and is reduced to a scant 1 cup, 12 to 16 minutes.",
+		ExplicitInstructions:   "Cook over medium heat, swirling the pan occasionally, until the temperature reaches 225°F (107℃) and the sauce thickens and is reduced to a scant 1 cup, 12 to 16 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](720), Max: pointer.To[uint32](960)},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{

@@ -151,8 +151,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 0: Halve the onion
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: halvePrep.ID,
-		Index:         0,
+		PreparationID:        halvePrep.ID,
+		Index:                0,
 		ExplicitInstructions: "Halve the medium white onion.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -197,8 +197,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 1: In a large pot, cover the beans with cold water by at least 2 inches
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coverPrep.ID,
-		Index:         1,
+		PreparationID:        coverPrep.ID,
+		Index:                1,
 		ExplicitInstructions: "In a large pot, cover the beans with cold water by at least 2 inches.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -247,7 +247,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 2: Peel garlic cloves
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       peelPrep.ID,
+		PreparationID:        peelPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Peel 2 medium cloves of garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -288,8 +288,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 3: Add herb sprigs, the whole onion half, and peeled garlic cloves
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         3,
+		PreparationID:        addPrep.ID,
+		Index:                3,
 		ExplicitInstructions: "Add the herb sprigs, the whole onion half, and the peeled garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -350,10 +350,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 4: Bring to a boil over high heat
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       boilPrep.ID,
+		PreparationID:        boilPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Bring to a boil over high heat.",
-		Ingredients:   []*mealplanning.RecipeStepIngredientCreationRequestInput{},
+		Ingredients:          []*mealplanning.RecipeStepIngredientCreationRequestInput{},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 
@@ -381,8 +381,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 5: Reduce heat to simmer
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: reducePrep.ID,
-		Index:         5,
+		PreparationID:        reducePrep.ID,
+		Index:                5,
 		ExplicitInstructions: "Reduce the heat to a simmer.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -421,7 +421,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 6: Simmer until beans are very tender, about 1 to 2 hours
 	tenderState := enums.IngredientStates["tender"]
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       simmerPrep.ID,
+		PreparationID:        simmerPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "Simmer until the beans are very tender, about 1 to 2 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -484,8 +484,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 7: Season with salt
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         7,
+		PreparationID:        seasonPrep.ID,
+		Index:                7,
 		ExplicitInstructions: "Season with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -536,7 +536,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 8: Drain beans, reserving bean-cooking liquid
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       drainPrep.ID,
+		PreparationID:        drainPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Drain the beans, reserving the bean-cooking liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -597,10 +597,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 9: Measure out 3 cups of beans (if you have more, reserve the rest for another use)
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: measurePrep.ID,
-		Index:         9,
+		PreparationID:        measurePrep.ID,
+		Index:                9,
 		ExplicitInstructions: "You should have about 3 cups of cooked beans; if you have more, measure out 3 cups of beans and reserve the rest for another use.",
-		Optional:      true,
+		Optional:             true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 
@@ -639,7 +639,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 10: Discard herb sprigs, onion, and garlic
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       discardPrep.ID,
+		PreparationID:        discardPrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Discard the herb sprigs, onion, and garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -697,8 +697,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 11: Mince one half of the onion
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mincePrep.ID,
-		Index:         11,
+		PreparationID:        mincePrep.ID,
+		Index:                11,
 		ExplicitInstructions: "Mince one half of the halved onion.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -749,7 +749,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 12: In a large skillet, heat lard until shimmering over medium-high heat
 	shimmeringState := enums.IngredientStates["shimmering"]
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                12,
 		ExplicitInstructions: "In a large skillet, heat the lard until shimmering over medium-high heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -797,8 +797,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 13: Add minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes
 	translucentState := enums.IngredientStates["translucent"]
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: sautPrep.ID,
-		Index:         13,
+		PreparationID:        sautPrep.ID,
+		Index:                13,
 		ExplicitInstructions: "Add the minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](420), // 7 minutes
@@ -850,7 +850,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 14: Stir in beans and cook for 2 minutes
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       stirPrep.ID,
+		PreparationID:        stirPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Stir in the beans and cook for 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -906,8 +906,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 15: Add 1/4 cup of reserved bean-cooking liquid
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         15,
+		PreparationID:        addPrep.ID,
+		Index:                15,
 		ExplicitInstructions: "Add 1/4 cup of the reserved bean-cooking liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -948,8 +948,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 16: Using bean masher, potato masher, or back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée
 	step16 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: smashPrep.ID,
-		Index:         16,
+		PreparationID:        smashPrep.ID,
+		Index:                16,
 		ExplicitInstructions: "Using a bean masher, potato masher, or the back of a wooden spoon, smash the beans to form a chunky purée; alternatively, use a stick blender to make a smoother purée.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -1002,7 +1002,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 17: Thin with more bean cooking water until desired consistency is reached. If refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       dilutePrep.ID,
+		PreparationID:        dilutePrep.ID,
 		Index:                17,
 		ExplicitInstructions: "Thin with more bean cooking water until the desired consistency is reached. If the refried beans become too wet, simmer, stirring, until thickened; if they become too dry, add more bean-cooking liquid, 1 tablespoon at a time, as needed.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -1062,8 +1062,8 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 18: Season with salt and serve
 	step18 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         18,
+		PreparationID:        seasonPrep.ID,
+		Index:                18,
 		ExplicitInstructions: "Season with salt and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{

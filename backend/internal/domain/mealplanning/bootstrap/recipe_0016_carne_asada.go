@@ -228,10 +228,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 0: Toast cumin and coriander seeds until fragrant (optional prep step - can be done ahead)
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: toastPrep.ID,
+		PreparationID:        toastPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Toast the cumin and coriander seeds until fragrant. This step is optional and can be done ahead of time.",
-		Optional:      true,
+		Optional:             true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &toastCuminSeedsVIP.ID,
@@ -273,10 +273,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 0b: Grind toasted cumin and coriander seeds (optional prep step - can be done ahead)
 	step0b := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: grindPrep.ID,
+		PreparationID:        grindPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Grind the toasted cumin and coriander seeds. This step is optional and can be done ahead of time.",
-		Optional:      true,
+		Optional:             true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -320,8 +320,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 1: Microwave dried ancho and guajillo chiles on a microwave-safe plate until pliable and toasty-smelling, 10 to 20 seconds
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: microwavePrep.ID,
-		Index:         2,
+		PreparationID:        microwavePrep.ID,
+		Index:                2,
 		ExplicitInstructions: "Place the dried ancho and guajillo chiles on a microwave-safe plate and microwave until pliable and toasty-smelling, 10 to 20 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](10),
@@ -377,8 +377,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 1b: Pluck cilantro leaves and tender stems
 	step1b := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: pluckPrep.ID,
-		Index:         3,
+		PreparationID:        pluckPrep.ID,
+		Index:                3,
 		ExplicitInstructions: "Pluck the cilantro leaves and tender stems from the stems.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -413,8 +413,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 2: Transfer chiles to blender jar, add all marinade ingredients, and blend until a smooth sauce has formed, about 1 minute
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: blendPrep.ID,
-		Index:         4,
+		PreparationID:        blendPrep.ID,
+		Index:                4,
 		ExplicitInstructions: "Transfer the chiles to a blender jar, add chipotle peppers, orange juice, lime juice, olive oil, soy sauce, fish sauce, brown sugar, cilantro, garlic, cumin seed, and coriander seed, then blend until a smooth sauce has formed, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
@@ -565,8 +565,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 3: Season to taste with salt
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         5,
+		PreparationID:        seasonPrep.ID,
+		Index:                5,
 		ExplicitInstructions: "Season to taste with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -603,8 +603,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 4: Divide the marinade - transfer half to a large bowl and the other half to a sealed container
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: dividePrep.ID,
-		Index:         6,
+		PreparationID:        dividePrep.ID,
+		Index:                6,
 		ExplicitInstructions: "Transfer half of the marinade to a large bowl and the other half to a sealed container.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -664,8 +664,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 5: Set aside the sealed container in the refrigerator
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: refrigeratePrep.ID,
-		Index:         7,
+		PreparationID:        refrigeratePrep.ID,
+		Index:                7,
 		ExplicitInstructions: "Set aside the sealed container in the refrigerator.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -699,7 +699,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 6: Season the marinade in the bowl with an extra 2 teaspoons of salt
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       seasonPrep.ID,
+		PreparationID:        seasonPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Add an extra 2 teaspoons of salt to the marinade in the bowl. It should taste slightly saltier than is comfortable to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -737,8 +737,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 6b: Trim skirt steak and cut with the grain into 5- to 6-inch lengths
 	step6b := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: trimPrep.ID,
-		Index:         9,
+		PreparationID:        trimPrep.ID,
+		Index:                9,
 		ExplicitInstructions: "Trim the skirt steak and cut with the grain into 5- to 6-inch lengths.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -783,8 +783,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 7: Marinate steak pieces one at a time in the bowl, turning to coat, then transfer to a gallon-sized zipper-lock bag
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: marinatePrep.ID,
-		Index:         10,
+		PreparationID:        marinatePrep.ID,
+		Index:                10,
 		ExplicitInstructions: "Add 1 piece of steak to the bowl and turn to coat. Repeat with the remaining steaks, adding them all to the same zipper-lock bag with the top folded over to prevent excess sauce and meat juices from contaminating the seal.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -829,7 +829,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 8: Pour any excess marinade over the steaks
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       pourPrep.ID,
+		PreparationID:        pourPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Pour any excess marinade over the steaks.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -867,8 +867,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 9: Squeeze all air out of the bag and seal
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: removeAirPrep.ID,
-		Index:         12,
+		PreparationID:        removeAirPrep.ID,
+		Index:                12,
 		ExplicitInstructions: "Squeeze all air out of the bag and seal.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -895,7 +895,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 10: Refrigerate for at least 3 hours or up to 12 hours
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       refrigeratePrep.ID,
+		PreparationID:        refrigeratePrep.ID,
 		Index:                13,
 		ExplicitInstructions: "Refrigerate for at least 3 hours or up to 12 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -946,8 +946,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 11: When ready to cook, remove the extra marinade from the fridge to allow it to warm up a little
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: unrefrigeratePrep.ID,
-		Index:         14,
+		PreparationID:        unrefrigeratePrep.ID,
+		Index:                14,
 		ExplicitInstructions: "When ready to cook, remove the extra marinade from the fridge to allow it to warm up a little.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -983,8 +983,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 12: Light one chimney full of charcoal
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: lightPrep.ID,
-		Index:         15,
+		PreparationID:        lightPrep.ID,
+		Index:                15,
 		ExplicitInstructions: "Light one chimney full of charcoal. When all the charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the charcoal grate.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -1018,8 +1018,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 13: Pour out and arrange coals on one side of the charcoal grate
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: pourPrep.ID,
-		Index:         16,
+		PreparationID:        pourPrep.ID,
+		Index:                16,
 		ExplicitInstructions: "Pour out and arrange the coals on one side of the charcoal grate.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -1053,8 +1053,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 14: Set cooking grate in place
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: setPrep.ID,
-		Index:         17,
+		PreparationID:        setPrep.ID,
+		Index:                17,
 		ExplicitInstructions: "Set the cooking grate in place. Alternatively, set half the burners on a gas grill to the highest heat setting.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -1086,7 +1086,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 15: Cover grill and preheat for 5 minutes. Alternatively, for gas grill, preheat for 10 minutes.
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       preheatPrep.ID,
+		PreparationID:        preheatPrep.ID,
 		Index:                18,
 		ExplicitInstructions: "Cover the grill and preheat for 5 minutes. Alternatively, for a gas grill, preheat for 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -1127,8 +1127,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 16: Clean and oil the grilling grate
 	step16 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: cleanPrep.ID,
-		Index:         19,
+		PreparationID:        cleanPrep.ID,
+		Index:                19,
 		ExplicitInstructions: "Clean and oil the grilling grate.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
@@ -1164,7 +1164,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 17: Oil the grilling grate
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       oilPrep.ID,
+		PreparationID:        oilPrep.ID,
 		Index:                20,
 		ExplicitInstructions: "Oil the grilling grate.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -1202,8 +1202,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 18: Remove steaks from marinade and wipe off excess
 	step18 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: removePrep.ID,
-		Index:         21,
+		PreparationID:        removePrep.ID,
+		Index:                21,
 		ExplicitInstructions: "Remove the steaks from the marinade and wipe off excess.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -1242,8 +1242,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 19: Place steaks directly over the hot side of the grill and cook, turning occasionally, until well charred and center registers 110°F (43°C), 5 to 10 minutes total
 	step19 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: grillPrep.ID,
-		Index:         22,
+		PreparationID:        grillPrep.ID,
+		Index:                22,
 		ExplicitInstructions: "Place the steaks directly over the hot side of the grill. If using a gas grill, cover; if using a charcoal grill, leave exposed. Cook, turning occasionally, until the steaks are well charred on the outside and the center registers 110°F (43°C) on an instant-read thermometer, 5 to 10 minutes total.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -1325,8 +1325,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 20: Transfer to a cutting board and allow to rest for 5 minutes
 	step20 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: transferPrep.ID,
-		Index:         23,
+		PreparationID:        transferPrep.ID,
+		Index:                23,
 		ExplicitInstructions: "Transfer to a cutting board.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -1362,8 +1362,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 21: Allow to rest for 5 minutes
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
-		Index:         24,
+		PreparationID:        restPrep.ID,
+		Index:                24,
 		ExplicitInstructions: "Allow to rest for 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
@@ -1405,8 +1405,8 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 22: Slice thinly against the grain and serve immediately
 	step22 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: slicePrep.ID,
-		Index:         25,
+		PreparationID:        slicePrep.ID,
+		Index:                25,
 		ExplicitInstructions: "Slice thinly against the grain and serve immediately, passing extra salsa, lime wedges, avocado, onions, cilantro, and tortillas on the side.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{

@@ -89,7 +89,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 0: Add oil to skillet and preheat
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Add oil to a 12-inch cast iron skillet and wipe around with a paper towel. Set the skillet over medium heat and allow to preheat for about 5 minutes, then increase the heat to high until smoking.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -133,7 +133,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 1: Divide, form, and season beef into patties
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       formPrep.ID,
+		PreparationID:        formPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Divide the ground beef into four 4-ounce portions. Gently form each portion into a cylindrical puck about 2 inches tall, pressing together just until the meat holds its shape without falling apart. Season generously on all sides with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -187,7 +187,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 2: Toast buns
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       toastPrep.ID,
+		PreparationID:        toastPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Lightly toast the burger buns.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -226,7 +226,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 3: Add pucks to skillet and smash
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       smashPrep.ID,
+		PreparationID:        smashPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Add 2 beef pucks to the hot skillet and, using a firm, stiff metal spatula, press down on each one until they're roughly 4 to 4 1/2 inches in diameter and 1/2-inch thick. It helps to use a second spatula to apply downward pressure to the first if you are having trouble smashing them hard enough.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -276,7 +276,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 4: Sear first side until golden brown
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       panSearPrep.ID,
+		PreparationID:        panSearPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Cook without moving until a golden brown crust develops, about 1 1/2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -335,7 +335,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 5: Flip patties
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       flipPrep.ID,
+		PreparationID:        flipPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Use the edge of the spatula to carefully scrape up and flip the patties one at a time, making sure to get all browned bits removed from the skillet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -383,7 +383,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 6: Top with cheese (optional)
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       topPrep.ID,
+		PreparationID:        topPrep.ID,
 		Index:                6,
 		Optional:             true,
 		ExplicitInstructions: "If using cheese, add a slice to each patty now.",
@@ -432,7 +432,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 7: Finish cooking second side
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       panSearPrep.ID,
+		PreparationID:        panSearPrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Continue to cook until the patties are cooked to desired doneness—about 30 seconds longer for medium-rare.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -474,7 +474,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 8: Assemble burgers
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       assemblePrep.ID,
+		PreparationID:        assemblePrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Transfer the patties to the toasted buns, topping buns and/or patties as desired, close the burgers, and serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{

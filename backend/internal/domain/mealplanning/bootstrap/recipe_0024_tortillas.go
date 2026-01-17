@@ -177,7 +177,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 0: Whisk together the flour, baking powder, and salt
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "In a medium-sized bowl, whisk together the flour, baking powder, and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -233,7 +233,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 1: Add the lard (fat) to the dry ingredients
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       addPrep.ID,
+		PreparationID:        addPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Add the lard (or butter, shortening, or vegetable oil).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -278,7 +278,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2: Work the fat into the flour
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Use your fingers or a pastry blender to work the fat into the flour until it disappears. Coating most of the flour with fat inhibits gluten formation, making the tortillas easier to roll out.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -324,7 +324,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2a: Heat water to 110°F to 120°F
 	step2a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Heat the water in a small saucepan to 110°F to 120°F (43°C to 49°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -360,7 +360,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 3: Add hot water and stir to bring the dough together
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
+		PreparationID:        addPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Pour in the lesser amount of hot water (110°F to 120°F).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -404,7 +404,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 4: Stir briskly to bring the dough together
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       stirPrep.ID,
+		PreparationID:        stirPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Stir briskly with a fork or whisk to bring the dough together into a shaggy mass. Stir in additional water as needed to bring the dough together.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -444,7 +444,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 5: Turn the dough out onto a lightly floured counter and knead briefly
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       kneadPrep.ID,
+		PreparationID:        kneadPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Turn the dough out onto a lightly floured counter and knead briefly, just until the dough forms a ball. If the dough is very sticky, gradually add a bit more flour.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -488,7 +488,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 6: Divide the dough into 8 pieces
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       dividePrep.ID,
+		PreparationID:        dividePrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Divide the dough into 8 pieces.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -534,7 +534,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 7: Round the pieces into balls and flatten slightly
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       formPrep.ID,
+		PreparationID:        formPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Round the pieces into balls and flatten slightly. If you wish, coat each ball lightly in oil before covering; this ensures the dough doesn't dry out.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -580,7 +580,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 8: Cover the dough balls
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       coverPrep.ID,
+		PreparationID:        coverPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Cover the dough balls with a clean kitchen towel.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -622,7 +622,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 9: Allow the dough balls to rest for about 30 minutes
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       restPrep.ID,
+		PreparationID:        restPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Allow them to rest, covered, for about 30 minutes. The resting period improves the texture of the dough by giving the flour time to absorb the water. The tortillas will roll out more easily if you include the rest.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -672,7 +672,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 10: Preheat an ungreased cast iron griddle or skillet
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       preheatPrep.ID,
+		PreparationID:        preheatPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "While the dough rests, preheat an ungreased cast iron griddle or skillet over medium high heat, about 400°F.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -696,7 +696,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 11: Roll one piece of dough into a round about 8" in diameter
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       rollPrep.ID,
+		PreparationID:        rollPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Working with one piece of dough at a time, roll into a round about 8\" in diameter. Keep the remaining dough covered while you work.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -737,7 +737,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 12: Cook the tortilla in the ungreased pan
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       cookPrep.ID,
+		PreparationID:        cookPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Cook the tortilla in the ungreased pan for about 30 seconds on each side. Repeat with the remaining dough balls.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -778,7 +778,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 13: Wrap the tortilla in a clean cloth
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: transferPrep.ID,
+		PreparationID:        transferPrep.ID,
 		Index:                14,
 		ExplicitInstructions: "Wrap the tortilla in a clean cloth when it comes off the griddle, to keep it pliable.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{

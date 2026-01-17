@@ -121,7 +121,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 0: Preheat the oven to 375°F
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: preheatPrep.ID,
+		PreparationID:        preheatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Preheat the oven to 375°F.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -147,7 +147,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 1: Lightly grease a 9" square or round pan
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: greasePrep.ID,
+		PreparationID:        greasePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Lightly grease a 9\" square or round pan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -180,7 +180,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2a: Melt butter
 	step2a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       meltPrep.ID,
+		PreparationID:        meltPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Melt 4 tablespoons butter in a small saucepan over low heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -217,7 +217,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2b: Cool butter
 	step2b := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
+		PreparationID:        restPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Transfer the melted butter to a small bowl and allow to cool to room temperature.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -255,7 +255,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2c: Heat milk to lukewarm
 	step2c := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Heat the milk in a small saucepan over low heat until lukewarm (about 100°F or 38°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -296,7 +296,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2: Whisk together the dry ingredients in a medium bowl
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "In a medium bowl, mix together the flour, cornmeal, sugar, baking powder, baking soda, and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -390,7 +390,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 3: Whisk together the wet ingredients in another bowl
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "In another bowl or large measuring cup, mix together the lukewarm milk, melted and cooled butter, vegetable oil, and egg.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -468,7 +468,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 4: Combine the liquid mixture with the flour mixture
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: combinePrep.ID,
+		PreparationID:        combinePrep.ID,
 		Index:                7,
 		ExplicitInstructions: "Pour the liquid all at once into the flour mixture.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -520,7 +520,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 5: Mix until just combined
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Mix quickly and gently until just combined. Don't over mix: stir the batter just enough to bring it together and evenly moisten the ingredients.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -576,7 +576,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 6: Spread the batter into the prepared pan
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: pourPrep.ID,
+		PreparationID:        pourPrep.ID,
 		Index:                9,
 		ExplicitInstructions: "Spread the batter into the prepared pan.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -620,7 +620,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 7: Bake for 20 to 25 minutes
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bakePrep.ID,
+		PreparationID:        bakePrep.ID,
 		Index:                10,
 		ExplicitInstructions: "Bake the bread for 20 to 25 minutes, until the edges just begin to pull away from the pan and a cake tester or paring knife inserted in the center comes out clean.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -688,7 +688,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 8: Cool on a rack for 5 minutes
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coolPrep.ID,
+		PreparationID:        coolPrep.ID,
 		Index:                11,
 		ExplicitInstructions: "Remove the bread from the oven and cool it on a rack for 5 minutes before cutting; serve warm.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{

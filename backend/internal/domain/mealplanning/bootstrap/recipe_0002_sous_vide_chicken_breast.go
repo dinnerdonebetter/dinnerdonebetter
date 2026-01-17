@@ -99,7 +99,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 0: Preheat water bath
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Preheat a water bath to 150°F (66°C) using a sous vide cooker. This temperature produces tender and juicy chicken, ideal for chicken salad when served cold.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -135,7 +135,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 1: Season chicken
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       seasonPrep.ID,
+		PreparationID:        seasonPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Season the chicken generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -190,7 +190,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 2: Bag chicken
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bagPrep.ID,
+		PreparationID:        bagPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Place the chicken in zipper-lock bags or vacuum bags and add thyme or rosemary sprigs, if using. If using zipper-lock bags: Remove air by closing the bags, leaving the last inch of the top unsealed. Slowly lower into the preheated water bath, sealing the bag completely just before it fully submerges. If using vacuum bags: Seal according to the manufacturer's instructions.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -252,7 +252,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 3: Cook sous vide
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       sousVidePrep.ID,
+		PreparationID:        sousVidePrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Add the bagged chicken to the preheated water bath and cook at 150°F (66°C) for 1 to 4 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -315,7 +315,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 4: Remove chicken from water bath and bag
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       removePrep.ID,
+		PreparationID:        removePrep.ID,
 		Index:                4,
 		Optional:             true,
 		ExplicitInstructions: "Turn on your vents and open your windows. Remove the chicken from the water bath and bag. Discard herbs, if using.",
@@ -354,7 +354,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 5: Dry chicken with paper towels
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       dryPrep.ID,
+		PreparationID:        dryPrep.ID,
 		Index:                5,
 		Optional:             true,
 		ExplicitInstructions: "Carefully pat the chicken dry with paper towels.",
@@ -403,7 +403,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 6: Heat oil in cast iron skillet
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                6,
 		Optional:             true,
 		ExplicitInstructions: "Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering.",
@@ -469,7 +469,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 7: Pan-sear the chicken
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       panSearPrep.ID,
+		PreparationID:        panSearPrep.ID,
 		Index:                7,
 		Optional:             true,
 		ExplicitInstructions: "Gently lay the chicken in the skillet using your fingers or a set of tongs. Hold the chicken down flat in the pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes.",
@@ -556,7 +556,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 8: Rest and serve
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       restPrep.ID,
+		PreparationID:        restPrep.ID,
 		Index:                8,
 		ExplicitInstructions: "Remove from the pan and let rest until cool enough to handle, about 2 minutes. Slice the chicken and serve immediately.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{

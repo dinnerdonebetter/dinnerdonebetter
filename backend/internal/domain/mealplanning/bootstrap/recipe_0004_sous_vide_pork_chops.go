@@ -120,7 +120,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 0: Preheat water bath
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Place an immersion circulator in a water bath and set the circulator to the desired final temperature. For medium-rare, set to 140°F (60°C). Allow the water bath to come to temperature.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
@@ -168,7 +168,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 1: Season pork chops
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       seasonPrep.ID,
+		PreparationID:        seasonPrep.ID,
 		Index:                1,
 		ExplicitInstructions: "Season the pork chops generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -223,7 +223,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 2: Bag pork chops
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bagPrep.ID,
+		PreparationID:        bagPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Place the pork chops in vacuum-seal or zipper-lock bags.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -265,7 +265,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 3: Seal bags
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       sealPrep.ID,
+		PreparationID:        sealPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Seal the bags. If using zipper-lock bags, use the displacement method: seal the bag almost entirely closed, slowly lower into the water to press out air, then seal completely just above the waterline.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -304,7 +304,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 4: Cook sous vide
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       sousVidePrep.ID,
+		PreparationID:        sousVidePrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Place the sealed bagged pork chops in the preheated water bath and cook for the recommended time. For 1 1/2 inch thick chops at 140°F (60°C), cook for 1 to 4 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
@@ -377,7 +377,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 5: Pat dry pork chops
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       dryPrep.ID,
+		PreparationID:        dryPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Remove the pork chops from the water bath and bag. Carefully pat dry with paper towels.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -416,7 +416,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 6: Heat oil in skillet (Optional - Pan Finish)
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       heatPrep.ID,
+		PreparationID:        heatPrep.ID,
 		Index:                6,
 		Optional:             true,
 		ExplicitInstructions: "To finish in a pan: Turn on your vents and open your windows. Add 2 tablespoons canola oil to a heavy cast iron or stainless steel skillet, place it over the hottest burner you have, and preheat the skillet until the oil starts to smoke.",
@@ -476,7 +476,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 7: Pan-sear first side (Optional - Pan Finish)
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       panSearPrep.ID,
+		PreparationID:        panSearPrep.ID,
 		Index:                7,
 		Optional:             true,
 		ExplicitInstructions: "Using your fingers or a set of tongs, gently lay two pork chops in the skillet. If desired, add 1 tablespoon butter; for a cleaner-tasting sear, omit butter at this stage. Carefully lift and peek under the pork as it cooks to gauge how quickly it is browning. Let it continue to cook until the crust is deep brown and very crisp, about 45 seconds.",
@@ -539,7 +539,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 8: Flip and baste (Optional - Pan Finish)
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bastePrep.ID,
+		PreparationID:        bastePrep.ID,
 		Index:                8,
 		Optional:             true,
 		ExplicitInstructions: "Flip the pork chops. If desired, add 1 more tablespoon butter, along with half of the thyme, rosemary, garlic, and/or shallots. Spoon the butter over the pork chops as they cook, if using. Continue cooking until the second side is browned, about 45 seconds longer. When the pork is browned, pick it up with a pair of tongs, rotate it sideways, and make sure to brown the edges as well. Transfer the cooked pork chops to a wire rack set over a rimmed baking sheet. Discard aromatics. Repeat with the remaining pork chops, butter, and aromatics, adding additional oil to the skillet if necessary.",
@@ -663,7 +663,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 9: Rest on wire rack (Optional - Pan Finish)
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       restPrep.ID,
+		PreparationID:        restPrep.ID,
 		Index:                9,
 		Optional:             true,
 		ExplicitInstructions: "Transfer the cooked pork chops to a wire rack set over a rimmed baking sheet. Let the chops rest for 3 to 5 minutes.",
@@ -723,7 +723,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 10: Reheat drippings and pour over (Optional - Pan Finish)
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       bastePrep.ID,
+		PreparationID:        bastePrep.ID,
 		Index:                10,
 		Optional:             true,
 		ExplicitInstructions: "Just before serving, reheat the drippings in the pan until sizzling-hot, then pour them over the pork chops in order to re-crisp their exteriors. Serve immediately.",

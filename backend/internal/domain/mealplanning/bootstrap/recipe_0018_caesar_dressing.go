@@ -109,7 +109,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 0: Mince garlic
 	drStep0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mincePrep.ID,
+		PreparationID:        mincePrep.ID,
 		Index:                0,
 		ExplicitInstructions: "Mince the garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -156,7 +156,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 1: Combine olive oil with minced garlic and whisk
 	drStep1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: combinePrep.ID,
+		PreparationID:        combinePrep.ID,
 		Index:                1,
 		ExplicitInstructions: "In a small bowl, combine 3 tablespoons olive oil with the minced garlic and whisk for 30 seconds.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -211,7 +211,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 2: Press garlic through fine-mesh strainer to get pressed garlic
 	drStep2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       pressPrep.ID,
+		PreparationID:        pressPrep.ID,
 		Index:                2,
 		ExplicitInstructions: "Transfer the garlic oil mixture to a fine-mesh strainer set over a large bowl and press with the back of a spoon to extract as much oil as possible, leaving the garlic behind. Reserve the pressed garlic for the dressing.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -274,7 +274,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 3: Combine dressing ingredients in immersion blender cup
 	drStep3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: blendPrep.ID,
+		PreparationID:        blendPrep.ID,
 		Index:                3,
 		ExplicitInstructions: "Combine the egg yolk, lemon juice, anchovies, Worcestershire sauce, reserved pressed garlic, and 1/4 cup parmesan cheese in the bottom of a cup that just fits the head of an immersion blender. With the blender running, slowly drizzle in canola oil until a smooth emulsion forms.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -380,7 +380,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 4: Transfer mixture to medium bowl
 	drStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:       transferPrep.ID,
+		PreparationID:        transferPrep.ID,
 		Index:                4,
 		ExplicitInstructions: "Transfer the mixture to a medium bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -422,7 +422,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 5: Whisk in remaining olive oil
 	drStep5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
+		PreparationID:        mixPrep.ID,
 		Index:                5,
 		ExplicitInstructions: "Whisking constantly, slowly drizzle in the remaining 1/4 cup extra-virgin olive oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -483,7 +483,7 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 6: Season to taste
 	drStep6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
+		PreparationID:        seasonPrep.ID,
 		Index:                6,
 		ExplicitInstructions: "Season to taste generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
