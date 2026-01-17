@@ -164,7 +164,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: combinePrep.ID,
 		Index:         0,
-		Notes:         "In a small bowl, whisk together salt, MSG, 1/2 teaspoon five spice powder, 3 tablespoons dark brown sugar, and ground white pepper to combine. Set aside.",
+		ExplicitInstructions: "In a small bowl, whisk together salt, MSG, 1/2 teaspoon five spice powder, 3 tablespoons dark brown sugar, and ground white pepper to combine. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &combineSaltVIP.ID,
@@ -242,7 +242,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         1,
-		Notes:         "Transfer chicken thighs to a wire rack set in a rimmed 13- by 18-inch baking sheet.",
+		ExplicitInstructions: "Transfer the chicken thighs to a wire rack set in a rimmed 13- by 18-inch baking sheet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &transferChickenVIP.ID,
@@ -303,7 +303,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: dryPrep.ID,
 		Index:         2,
-		Notes:         "Using paper towels, pat chicken dry.",
+		ExplicitInstructions: "Using paper towels, pat the chicken dry.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -348,7 +348,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
 		Index:         3,
-		Notes:         "Season chicken generously on all sides with salt mixture.",
+		ExplicitInstructions: "Season the chicken generously on all sides with the salt mixture.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
@@ -392,7 +392,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID,
 		Index:         4,
-		Notes:         "When ready to cook, adjust oven rack to middle position and preheat to 300°F (150°C).",
+		ExplicitInstructions: "When ready to cook, adjust the oven rack to the middle position and preheat to 300°F (150°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](150), // 300°F
 		},
@@ -421,7 +421,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cutPrep.ID,
 		Index:         5,
-		Notes:         "Cut scallions, green and white parts, into 2-inch segments.",
+		ExplicitInstructions: "Cut the scallions, green and white parts, into 2-inch segments.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &cutScallionsVIP.ID,
@@ -468,7 +468,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
 		Index:         6,
-		Notes:         "Peel ginger.",
+		ExplicitInstructions: "Peel the ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelGingerVIP.ID,
@@ -515,7 +515,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: slicePrep.ID,
 		Index:         7,
-		Notes:         "Thinly slice the peeled ginger.",
+		ExplicitInstructions: "Thinly slice the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -561,7 +561,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
 		Index:         8,
-		Notes:         "Peel 5 medium cloves of garlic.",
+		ExplicitInstructions: "Peel 5 medium cloves of garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelGarlicVIP.ID,
@@ -609,7 +609,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: heatPrep.ID,
 		Index:         9,
-		Notes:         "In a large cast iron or carbon steel skillet set over medium heat, heat vegetable oil until shimmering.",
+		ExplicitInstructions: "In a large cast iron or carbon steel skillet set over medium heat, heat the vegetable oil until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
@@ -653,7 +653,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: panSearPrep.ID,
 		Index:         10,
-		Notes:         "Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
+		ExplicitInstructions: "Working in batches if necessary, add the chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240), // 4 minutes
 			Max: pointer.To[uint32](360), // 6 minutes
@@ -715,7 +715,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: flipPrep.ID,
 		Index:         11,
-		Notes:         "Flip chicken and cook lightly on second side, about 2 minutes.",
+		ExplicitInstructions: "Flip the chicken and cook lightly on the second side, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
 		},
@@ -774,7 +774,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         12,
-		Notes:         "Transfer chicken to a large plate and set aside.",
+		ExplicitInstructions: "Transfer the chicken to a large plate and set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
@@ -819,7 +819,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: sautPrep.ID,
 		Index:         13,
-		Notes:         "Reduce heat to medium-low. Add scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes.",
+		ExplicitInstructions: "Reduce the heat to medium-low. Add the scallions, ginger, garlic, 1 teaspoon five spice powder, and 3 tablespoons dark brown sugar and cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180), // 3 minutes
 			Max: pointer.To[uint32](300), // 5 minutes
@@ -911,7 +911,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: simmerPrep.ID,
 		Index:         14,
-		Notes:         "Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat.",
+		ExplicitInstructions: "Add star anise, cinnamon stick, soy sauce, Shaoxing wine, and water, and bring to a simmer over medium heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
@@ -999,7 +999,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         15,
-		Notes:         "Return chicken to pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
+		ExplicitInstructions: "Return the chicken to the pan skin-side-up, leaving the skin above the liquid but submerging most of the meat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](12),
@@ -1058,7 +1058,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step16 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: braisePrep.ID,
 		Index:         16,
-		Notes:         "Transfer skillet to oven and cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
+		ExplicitInstructions: "Transfer the skillet to the oven and cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1800), // 30 minutes
 		},
@@ -1134,7 +1134,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         17,
-		Notes:         "Remove pan from oven.",
+		ExplicitInstructions: "Remove the pan from the oven.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),

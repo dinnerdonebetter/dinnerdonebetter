@@ -107,9 +107,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	// Step 0: Grind whole black peppercorns (optional)
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grindPrep.ID,
-		Index:         0,
-		Optional:      true,
-		Notes:         "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
+		Index:                0,
+		Optional:             true,
+		ExplicitInstructions: "Using a mortar and pestle or spice grinder, coarsely grind the whole black peppercorns.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
@@ -155,9 +155,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 1: Mix the seasoning
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
-		Index:         1,
-		Notes:         "In a small bowl, thoroughly mix the salt with black pepper and baking powder (if using).",
+		PreparationID:       mixPrep.ID,
+		Index:                1,
+		ExplicitInstructions: "In a small bowl, thoroughly mix the salt with black pepper and baking powder (if using).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
@@ -224,9 +224,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 2: Season the chicken
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         2,
-		Notes:         "Season chicken all over, inside and out, with salt mixture (or just plain salt if not using pepper and baking powder).",
+		PreparationID:       seasonPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Season the chicken all over, inside and out, with the salt mixture (or just plain salt if not using pepper and baking powder).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
@@ -269,9 +269,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 3: Truss the chicken
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: trussPrep.ID,
-		Index:         3,
-		Notes:         "Set chicken, breast side up, on work surface and tuck wings behind back. Using butcher's twine, run the center of the twine under the tip of the tail end and truss chicken by tying drumsticks together at their bony ends, securing the legs and the tip of the tail together in a bundle. Criss-cross the twine and pass along the crevasse where the legs meet the breast; pass twine over wings to hold them into place, then tie securely around the stump of the neck.",
+		PreparationID:       trussPrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Set the chicken, breast side up, on a work surface and tuck the wings behind the back. Using butcher's twine, run the center of the twine under the tip of the tail end and truss the chicken by tying the drumsticks together at their bony ends, securing the legs and the tip of the tail together in a bundle. Criss-cross the twine and pass along the crevasse where the legs meet the breast; pass the twine over the wings to hold them into place, then tie securely around the stump of the neck.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -306,9 +306,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 4: Dry-brine (refrigerate)
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: dryBrinePrep.ID,
-		Index:         4,
-		Notes:         "Place chicken, back side down, on a wire rack set in a rimmed baking sheet and refrigerate, uncovered, at least 1 hour and up to 2 days.",
+		PreparationID:       dryBrinePrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Place the chicken, back side down, on a wire rack set in a rimmed baking sheet and refrigerate, uncovered, for at least 1 hour and up to 2 days.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](3600),   // 1 hour minimum
 			Max: pointer.To[uint32](172800), // 2 days maximum
@@ -354,9 +354,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 5: Preheat the oven
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: preheatPrep.ID,
-		Index:         5,
-		Notes:         "Adjust oven rack to middle position and preheat oven to 425°F (220°C).",
+		PreparationID:       preheatPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 425°F (220°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](220), // 425°F
 		},
@@ -380,9 +380,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 6: Heat oil in skillet
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: heatPrep.ID,
-		Index:         6,
-		Notes:         "In a 10- or 12-inch stainless steel skillet, heat oil over medium-high heat until shimmering.",
+		PreparationID:       heatPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "In a 10- or 12-inch stainless steel skillet, heat the oil over medium-high heat until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
@@ -426,9 +426,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 7: Rub chicken with oil
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: rubPrep.ID,
-		Index:         7,
-		Notes:         "Rub chicken lightly with oil.",
+		PreparationID:       rubPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Rub the chicken lightly with oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -471,9 +471,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 8: Brown chicken legs
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: panSearPrep.ID,
-		Index:         8,
-		Notes:         "Set chicken on its side in the skillet so that the full thigh and drumstick are in contact with the pan; the wing will also be touching, but the breast should have little to no contact with the skillet. Cook until leg is well browned, 8 to 10 minutes, then flip bird so other leg is touching pan and repeat; lower heat at any point if chicken skin begins to burn.",
+		PreparationID:       panSearPrep.ID,
+		Index:                8,
+		ExplicitInstructions: "Set the chicken on its side in the skillet so that the full thigh and drumstick are in contact with the pan; the wing will also be touching, but the breast should have little to no contact with the skillet. Cook until the leg is well browned, 8 to 10 minutes, then flip the bird so the other leg is touching the pan and repeat; lower the heat at any point if the chicken skin begins to burn.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](960),  // 16 minutes minimum (8 min per side)
 			Max: pointer.To[uint32](1200), // 20 minutes maximum (10 min per side)
@@ -544,9 +544,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 9: Roast the chicken
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: roastPrep.ID,
-		Index:         9,
-		Notes:         "Using hands and spatula if needed, rotate chicken so it is breast side up in the skillet and transfer to oven. Roast until breast registers 150°F (65°C) in the center of its thickest part and thighs register 165°F (75°C) near (but not touching) the bone, about 40 minutes.",
+		PreparationID:       roastPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Using your hands and a spatula if needed, rotate the chicken so it is breast side up in the skillet and transfer to the oven. Roast until the breast registers 150°F (65°C) in the center of its thickest part and the thighs register 165°F (75°C) near (but not touching) the bone, about 40 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](2400), // 40 minutes
 		},
@@ -615,9 +615,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 10: Rest the chicken
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
-		Index:         10,
-		Notes:         "Remove from oven and transfer chicken to a carving board. Let rest 10 to 20 minutes, then carve and serve.",
+		PreparationID:       restPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes, then carve and serve.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600),  // 10 minutes
 			Max: pointer.To[uint32](1200), // 20 minutes

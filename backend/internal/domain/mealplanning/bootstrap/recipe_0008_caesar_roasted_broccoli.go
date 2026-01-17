@@ -85,8 +85,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Step 0: Line baking sheet with aluminum foil
 	brStep0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: linePrep.ID,
-		Index:         0,
-		Notes:         "Line a rimmed baking sheet with aluminum foil.",
+		Index:                0,
+		ExplicitInstructions: "Line a rimmed baking sheet with aluminum foil.",
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &lineFoilVPI.ID,
@@ -120,8 +120,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 1: Preheat oven to 500°F
 	brStep1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID,
-		Index:         1,
-		Notes:         "Adjust oven rack to upper position and preheat oven to 500°F (260°C).",
+		Index:                1,
+		ExplicitInstructions: "Adjust the oven rack to the upper position and preheat the oven to 500°F (260°C).",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](260),
 		},
@@ -149,8 +149,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 2: Place baking sheet in oven to preheat
 	brStep2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID,
-		Index:         2,
-		Notes:         "Place the foil-lined baking sheet on oven rack to preheat.",
+		Index:                2,
+		ExplicitInstructions: "Place the foil-lined baking sheet on the oven rack to preheat.",
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Min: pointer.To[float32](260),
 		},
@@ -180,8 +180,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 3: Toss broccoli with olive oil, salt, and pepper
 	brStep3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: tossPrep.ID,
-		Index:         3,
-		Notes:         "In a large bowl, toss broccoli florets with olive oil, salt, and pepper.",
+		Index:                3,
+		ExplicitInstructions: "In a large bowl, toss the broccoli florets with olive oil, salt, and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &tossBroccoliVIP.ID,
@@ -242,8 +242,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 4: Add broccoli to preheated baking sheet
 	brStep4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
-		Index:         4,
-		Notes:         "Carefully add broccoli to preheated baking sheet in a single layer.",
+		Index:                4,
+		ExplicitInstructions: "Carefully add the broccoli to the preheated baking sheet in a single layer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
@@ -283,8 +283,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 5: Roast broccoli
 	brStep5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: roastPrep.ID,
-		Index:         5,
-		Notes:         "Roast until broccoli is tender and deeply browned in spots, about 20 minutes.",
+		Index:                5,
+		ExplicitInstructions: "Roast until the broccoli is tender and deeply browned in spots, about 20 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](1200), // 20 minutes
 		},
@@ -328,8 +328,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 6: Toss roasted broccoli with lemon zest
 	brStep6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: tossPrep.ID,
-		Index:         6,
-		Notes:         "In the now empty bowl, toss broccoli with 1 teaspoon lemon zest.",
+		Index:                6,
+		ExplicitInstructions: "In the now empty bowl, toss the broccoli with 1 teaspoon lemon zest.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
@@ -373,8 +373,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// Broccoli Step 7: Transfer broccoli to serving platter
 	brStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
-		Index:         7,
-		Notes:         "Transfer broccoli to a serving platter.",
+		Index:                7,
+		ExplicitInstructions: "Transfer the broccoli to a serving platter.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -413,8 +413,8 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 	// as it references the breadcrumbs recipe that will be created first
 	brStep8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: topPrep.ID,
-		Index:         8,
-		Notes:         "Sprinkle with breadcrumbs and Parmigiano-Reggiano and serve.",
+		Index:                8,
+		ExplicitInstructions: "Sprinkle with breadcrumbs and Parmigiano-Reggiano and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](7),

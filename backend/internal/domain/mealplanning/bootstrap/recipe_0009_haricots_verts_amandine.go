@@ -145,7 +145,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: boilPrep.ID,
 		Index:         0,
-		Notes:         "Bring a large pot of salted water to a boil.",
+		ExplicitInstructions: "Bring a large pot of salted water to a boil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &boilWaterVIP.ID,
@@ -200,7 +200,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: stirPrep.ID,
 		Index:         1,
-		Notes:         "Prepare an ice bath by filling a large bowl with ice and cold water.",
+		ExplicitInstructions: "Prepare an ice bath by filling a large bowl with ice and cold water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &stirWaterVIP.ID,
@@ -247,7 +247,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		PreparationID: trimPrep.ID,
 		Index:         2,
 		Optional:      true,
-		Notes:         "Trim the ends off the green beans. This step is optional if using pre-trimmed green beans.",
+		ExplicitInstructions: "Trim the ends off the green beans. This step is optional if using pre-trimmed green beans.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &trimGreenBeansVIP.ID,
@@ -293,7 +293,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: blanchPrep.ID,
 		Index:         3,
-		Notes:         "Add green beans to boiling water and cook until tender-crisp, about 3 minutes.",
+		ExplicitInstructions: "Add the green beans to the boiling water and cook until tender-crisp, about 3 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180), // 3 minutes
 		},
@@ -354,7 +354,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: shockPrep.ID,
 		Index:         4,
-		Notes:         "Transfer to ice bath using a wire mesh spider or tongs. Allow to chill completely.",
+		ExplicitInstructions: "Transfer to the ice bath using a wire mesh spider or tongs. Allow to chill completely.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](3),
@@ -404,7 +404,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: drainPrep.ID,
 		Index:         5,
-		Notes:         "Drain the green beans thoroughly.",
+		ExplicitInstructions: "Drain the green beans thoroughly.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](4),
@@ -443,7 +443,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: dryPrep.ID,
 		Index:         6,
-		Notes:         "Dry thoroughly with kitchen towels or paper towels.",
+		ExplicitInstructions: "Dry thoroughly with kitchen towels or paper towels.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
@@ -490,7 +490,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: heatPrep.ID,
 		Index:         7,
-		Notes:         "In a medium skillet, heat butter and almonds over medium-low heat and cook, stirring frequently, until almonds are deeply browned and nutty, about 5 minutes.",
+		ExplicitInstructions: "In a medium skillet, heat the butter and almonds over medium-low heat and cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
 		},
@@ -569,7 +569,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cookPrep.ID,
 		Index:         8,
-		Notes:         "Add garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
+		ExplicitInstructions: "Add the garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120), // 2 minutes
 		},
@@ -646,7 +646,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: stirPrep.ID,
 		Index:         9,
-		Notes:         "Add lemon juice, along with a tablespoon or two of water.",
+		ExplicitInstructions: "Add lemon juice, along with a tablespoon or two of water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
@@ -712,7 +712,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: emulsifyPrep.ID,
 		Index:         10,
-		Notes:         "Increase heat to high and stir and shake pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
+		ExplicitInstructions: "Increase the heat to high and stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30), // 30 seconds
 		},
@@ -770,7 +770,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
 		Index:         11,
-		Notes:         "When sauce is ready, remove from heat and season to taste with salt and pepper.",
+		ExplicitInstructions: "When the sauce is ready, remove from heat and season to taste with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
@@ -835,7 +835,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: tossPrep.ID,
 		Index:         12,
-		Notes:         "Add beans to pan with sauce and toss to coat and combine.",
+		ExplicitInstructions: "Add the beans to the pan with the sauce and toss to coat and combine.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
@@ -892,7 +892,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cookPrep.ID,
 		Index:         13,
-		Notes:         "Return to medium heat and cook, tossing, until heated through, about 1 minute.",
+		ExplicitInstructions: "Return to medium heat and cook, tossing, until heated through, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60), // 1 minute
 		},
@@ -934,7 +934,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         14,
-		Notes:         "Serve immediately.",
+		ExplicitInstructions: "Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](13),

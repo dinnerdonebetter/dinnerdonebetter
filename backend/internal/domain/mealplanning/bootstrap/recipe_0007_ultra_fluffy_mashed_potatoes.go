@@ -114,8 +114,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 0: Peel potatoes
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
-		Index:         0,
-		Notes:         "Peel the russet potatoes.",
+		Index:                0,
+		ExplicitInstructions: "Peel the russet potatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelPotatoVIP.ID,
@@ -160,8 +160,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 1: Cut potatoes into 1-2 inch cubes
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cubePrep.ID,
-		Index:         1,
-		Notes:         "Cut the peeled potatoes into 1- or 2-inch cubes.",
+		Index:                1,
+		ExplicitInstructions: "Cut the peeled potatoes into 1- or 2-inch cubes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
@@ -208,8 +208,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 2: Rinse potatoes in pot of cold water
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: rinsePrep.ID,
-		Index:         2,
-		Notes:         "Transfer potatoes to a pot of cold water and rinse, changing the water 2 or 3 times until it runs clear.",
+		Index:                2,
+		ExplicitInstructions: "Transfer the potatoes to a pot of cold water and rinse, changing the water 2 or 3 times until it runs clear.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
@@ -252,8 +252,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 3: Cover potatoes with fresh cold water
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: submergePrep.ID,
-		Index:         3,
-		Notes:         "Cover potatoes with fresh cold water.",
+		Index:                3,
+		ExplicitInstructions: "Cover the potatoes with fresh cold water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
@@ -306,8 +306,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 4: Season the water generously with salt
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
-		Index:         4,
-		Notes:         "Season the water generously with salt.",
+		Index:                4,
+		ExplicitInstructions: "Season the water generously with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
@@ -357,8 +357,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 5: Boil and simmer until tender
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: boilPrep.ID,
-		Index:         5,
-		Notes:         "Set over medium-high heat and bring to a boil, then reduce heat to maintain a gentle simmer. Cook until potatoes are completely tender, about 15 minutes after reaching a simmer.",
+		Index:                5,
+		ExplicitInstructions: "Set over medium-high heat and bring to a boil, then reduce the heat to maintain a gentle simmer. Cook until the potatoes are completely tender, about 15 minutes after reaching a simmer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](900), // 15 minutes
 		},
@@ -405,8 +405,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 6: Drain potatoes in a colander
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: drainPrep.ID,
-		Index:         6,
-		Notes:         "Drain potatoes in a colander.",
+		Index:                6,
+		ExplicitInstructions: "Drain the potatoes in a colander.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
@@ -444,8 +444,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 7: Rinse under hot running water
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: rinsePrep.ID,
-		Index:         7,
-		Notes:         "Rinse potatoes under hot running water for 30 seconds to wash away excess starch.",
+		Index:                7,
+		ExplicitInstructions: "Rinse the potatoes under hot running water for 30 seconds to wash away excess starch.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30),
 		},
@@ -486,8 +486,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 8: Allow potatoes to steam/rest
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: restPrep.ID,
-		Index:         8,
-		Notes:         "Allow potatoes to steam for 1 minute to remove excess moisture.",
+		Index:                8,
+		ExplicitInstructions: "Allow the potatoes to steam for 1 minute to remove excess moisture.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60), // 1 minute
 		},
@@ -528,8 +528,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 9: Pass potatoes through ricer
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: ricePrep.ID,
-		Index:         9,
-		Notes:         "Set a ricer or food mill over the now-empty pot and pass potatoes through.",
+		Index:                9,
+		ExplicitInstructions: "Set a ricer or food mill over the now-empty pot and pass the potatoes through.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](8),
@@ -582,8 +582,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 10: Cut butter into 1/2-inch pats
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: slicePrep.ID,
-		Index:         10,
-		Notes:         "Cut room temperature unsalted butter into 1/2-inch pats.",
+		Index:                10,
+		ExplicitInstructions: "Cut room temperature unsalted butter into 1/2-inch pats.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &sliceButterVIP.ID,
@@ -628,8 +628,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 11: Fold in butter
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: foldPrep.ID,
-		Index:         11,
-		Notes:         "Add butter pats and gently fold into potatoes.",
+		Index:                11,
+		ExplicitInstructions: "Add the butter pats and gently fold into the potatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
@@ -688,8 +688,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 12: Simmer milk
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: simmerPrep.ID,
-		Index:         12,
-		Notes:         "Mound potatoes into the center of the pot and pour milk all around. Set over medium heat and bring milk to a simmer.",
+		Index:                12,
+		ExplicitInstructions: "Mound the potatoes into the center of the pot and pour milk all around. Set over medium heat and bring the milk to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
@@ -739,8 +739,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 13: Fold simmered milk into potatoes
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: foldPrep.ID,
-		Index:         13,
-		Notes:         "Gently fold the simmered milk into the potatoes. If looser potatoes are desired, add additional milk in a similar fashion around the mashed potato mass and bring it to a simmer before folding into potatoes.",
+		Index:                13,
+		ExplicitInstructions: "Gently fold the simmered milk into the potatoes. If looser potatoes are desired, add additional milk in a similar fashion around the mashed potato mass and bring it to a simmer before folding into the potatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
@@ -792,8 +792,8 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Step 14: Season with salt and pepper
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
-		Index:         14,
-		Notes:         "Season with salt and freshly ground black pepper, then serve.",
+		Index:                14,
+		ExplicitInstructions: "Season with salt and freshly ground black pepper, then serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),

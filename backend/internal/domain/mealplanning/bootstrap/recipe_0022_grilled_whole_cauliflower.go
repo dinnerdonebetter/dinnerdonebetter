@@ -148,8 +148,8 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 0: Remove leaves from cauliflower
 	gc0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: trimPrep.ID,
-		Index:         0,
-		Notes:         "Remove leaves from bottom of each cauliflower head.",
+		Index:                0,
+		ExplicitInstructions: "Remove the leaves from the bottom of each cauliflower head.",
 		Ingredients:   []*mealplanning.RecipeStepIngredientCreationRequestInput{{ValidIngredientPreparationID: vipID(trimCauliflowerVIP), ValidIngredientMeasurementUnitID: vimuID(cauliflowerPoundVIMU), Name: "large heads cauliflower", QuantityNotes: "about 2 pounds each; 900g each", Quantity: types.Float32RangeWithOptionalMax{Min: 4}}},
 		Instruments:   []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(trimKnifeVPI), Name: "knife", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Products:      []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "trimmed cauliflower heads", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &poundMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)}}},
@@ -157,9 +157,9 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 1: Slice stem off each head
 	gc1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: slicePrep.ID,
-		Index:         1,
-		Notes:         "Using a sharp knife, slice stem off of each head so that cauliflower sits evenly on flat surface. Do not cut out the core.",
+		PreparationID:       slicePrep.ID,
+		Index:                1,
+		ExplicitInstructions: "Using a sharp knife, slice the stem off of each head so that the cauliflower sits evenly on a flat surface. Do not cut out the core.",
 		Ingredients:   []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](0), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(sliceCauliflowerVIP), Name: "trimmed cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}}},
 		Instruments:   []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(sliceKnifeVPI), Name: "sharp knife", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Products:      []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "prepared cauliflower heads", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &poundMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](4)}}},
@@ -168,8 +168,8 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 2: Add water and salt to container
 	gc2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: addPrep.ID,
-		Index:         2,
-		Notes:         "In a large container (8-quart) or large stock pot, add water and salt.",
+		Index:                2,
+		ExplicitInstructions: "In a large container (8-quart) or large stock pot, add water and salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ValidIngredientPreparationID: vipID(addWaterVIP), ValidIngredientMeasurementUnitID: vimuID(waterLiterVIMU), Name: "water", QuantityNotes: "3 quarts (2.84L)", Quantity: types.Float32RangeWithOptionalMax{Min: 2.84}},
 			{ValidIngredientPreparationID: vipID(addSaltVIP), ValidIngredientMeasurementUnitID: vimuID(saltCupVIMU), Name: "kosher salt", QuantityNotes: "3/4 cup plus 2 tablespoons (126g)", Quantity: types.Float32RangeWithOptionalMax{Min: 0.875}},
@@ -183,7 +183,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 3: Dissolve salt in water
 	gc3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: dissolvePrep.ID, Index: 3, Notes: "Dissolve salt in water.",
+		PreparationID: dissolvePrep.ID, Index: 3, ExplicitInstructions: "Dissolve the salt in the water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](2), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "water and salt in container", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](2), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "8-quart pot", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -197,7 +197,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 4: Submerge cauliflower in brine
 	gc4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: submergePrep.ID, Index: 4, Notes: "Place cauliflower in saltwater brine, core side up, making sure that cauliflower is submerged.",
+		PreparationID: submergePrep.ID, Index: 4, ExplicitInstructions: "Place the cauliflower in the saltwater brine, core side up, making sure that the cauliflower is submerged.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](1), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(submergeCauliflowerVIP), Name: "prepared cauliflower heads", Quantity: types.Float32RangeWithOptionalMax{Min: 4}},
 			{ProductOfRecipeStepIndex: pointer.To[uint64](3), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "saltwater brine", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
@@ -213,7 +213,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	gc5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:          brinePrep.ID,
 		Index:                  5,
-		Notes:                  "Cover and let sit at room temperature for at least 3 hours and up to 6 hours.",
+		ExplicitInstructions: "Cover and let sit at room temperature for at least 3 hours and up to 6 hours.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](10800), Max: pointer.To[uint32](21600)}, // 3-6 hours
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](4), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brineCauliflowerVIP), Name: "cauliflower submerged in brine", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
@@ -225,7 +225,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 6: Light charcoal in chimney starter
 	gc6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: lightPrep.ID, Index: 6,
-		Notes:       "For a charcoal grill: Open bottom vent completely. Light large chimney starter filled with charcoal briquettes (6 quarts). When top coals are partially covered with ash, pour evenly over half of grill.",
+		ExplicitInstructions: "For a charcoal grill: Open the bottom vent completely. Light a large chimney starter filled with charcoal briquettes (6 quarts). When the top coals are partially covered with ash, pour evenly over half of the grill.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ValidIngredientPreparationID: vipID(lightCharcoalVIP), Name: "charcoal briquettes", QuantityNotes: "6 quarts", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(lightChimneyStarterVPI), Name: "chimney starter", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(lightChimneyStarterVPV), Name: "chimney starter", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
@@ -235,7 +235,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 7: Preheat grill
 	gc7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID, Index: 7,
-		Notes:                  "Set cooking grate in place, cover, and open lid vent completely. Heat grill until hot, about 5 minutes.",
+		ExplicitInstructions: "Set the cooking grate in place, cover, and open the lid vent completely. Heat the grill until hot, about 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](300)},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](6), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "lit charcoal on grill", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
@@ -249,7 +249,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 8: Remove cauliflower from brine and drain
 	gc8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: drainPrep.ID, Index: 8, Notes: "Remove cauliflower from brine, letting excess liquid drain back into container.",
+		PreparationID: drainPrep.ID, Index: 8, ExplicitInstructions: "Remove the cauliflower from the brine, letting excess liquid drain back into the container.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](5), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(drainCauliflowerVIP), Name: "brined cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(drainTongsVPI), Name: "tongs", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "drained brined cauliflower", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
@@ -257,7 +257,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 9: Place cauliflower on cooler side of grill
 	gc9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: placePrep.ID, Index: 9, Notes: "Place both cauliflower heads, stem side down onto cooler side of grill, approximately 2 inches from edge of hot coals or primary burner.",
+		PreparationID: placePrep.ID, Index: 9, ExplicitInstructions: "Place both cauliflower heads, stem side down onto the cooler side of the grill, approximately 2 inches from the edge of hot coals or the primary burner.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](8), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(placeCauliflowerVIP), Name: "drained brined cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](7), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidPreparationVesselID: vpvID(placeGrillingGrateVPV), Name: "grill grate (cool side)", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}},
@@ -269,7 +269,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	gc10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:          grillPrep.ID,
 		Index:                  10,
-		Notes:                  "Cover and cook for 20 minutes.",
+		ExplicitInstructions: "Cover and cook for 20 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](1200)},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](9), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(grillCauliflowerVIP), Name: "cauliflower on grill", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
@@ -287,8 +287,8 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 11: Brush first layer of sauce
 	gc11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: brushPrep.ID,
-		Index:         11,
-		Notes:         "Uncover grill, and using a heatproof brush, brush one layer of reserved sauce over cauliflower heads.",
+		Index:                11,
+		ExplicitInstructions: "Uncover the grill, and using a heatproof brush, brush one layer of the reserved sauce over the cauliflower heads.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
@@ -315,7 +315,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	gc12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID:          grillPrep.ID,
 		Index:                  12,
-		Notes:                  "Cover and continue cooking until thermometer registers 175°F at the thickest part of the core, and cauliflower is tan, but not well browned yet, rotating cauliflower occasionally, 20 to 30 minutes longer.",
+		ExplicitInstructions: "Cover and continue cooking until the thermometer registers 175°F at the thickest part of the core, and the cauliflower is tan, but not well browned yet, rotating the cauliflower occasionally, 20 to 30 minutes longer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](1200), Max: pointer.To[uint32](1800)},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -341,7 +341,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 13: Brush second layer of sauce
 	gc13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: brushPrep.ID, Index: 13, Notes: "Uncover grill and brush cauliflower with a second layer of sauce.",
+		PreparationID: brushPrep.ID, Index: 13, ExplicitInstructions: "Uncover the grill and brush the cauliflower with a second layer of sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
@@ -366,7 +366,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 14: Flip and place floret-side down over hot side
 	gc14 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: flipPrep.ID, Index: 14, Notes: "Using tongs, flip cauliflower and place floret-side down directly over the hottest part of grill (over the coals).",
+		PreparationID: flipPrep.ID, Index: 14, ExplicitInstructions: "Using tongs, flip the cauliflower and place floret-side down directly over the hottest part of the grill (over the coals).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](13), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(flipCauliflowerVIP), Name: "sauced cauliflower (second coat)", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(flipTongsVPI), Name: "tongs", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](12), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "charcoal grill", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
@@ -379,7 +379,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 15: Cover and cook until lightly browned
 	gc15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grillPrep.ID, Index: 15,
-		Notes:                  "Cover and cook until lightly browned, 3 to 5 minutes.",
+		ExplicitInstructions: "Cover and cook until lightly browned, 3 to 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](180), Max: pointer.To[uint32](300)},
 		Ingredients:            []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](14), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(grillCauliflowerVIP), Name: "flipped cauliflower on hot side", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Vessels:                []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](14), ProductOfRecipeStepProductIndex: pointer.To[uint64](1), Name: "charcoal grill", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
@@ -394,7 +394,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 16: Flip, brush with final layer of sauce
 	gc16 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: brushPrep.ID, Index: 16, Notes: "Uncover grill, flip cauliflower heads stem side down, and brush florets all over with a final layer of sauce.",
+		PreparationID: brushPrep.ID, Index: 16, ExplicitInstructions: "Uncover the grill, flip the cauliflower heads stem side down, and brush the florets all over with a final layer of sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](15), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(brushCauliflowerVIP), Name: "lightly browned cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 			{
@@ -416,7 +416,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 	// Step 17: Flip and grill until charred
 	gc17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grillPrep.ID, Index: 17,
-		Notes:                  "Flip cauliflower and place floret side down, cover, and cook until well browned and lightly charred, 3 to 5 minutes longer.",
+		ExplicitInstructions: "Flip the cauliflower and place floret side down, cover, and cook until well browned and lightly charred, 3 to 5 minutes longer.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{Min: pointer.To[uint32](180), Max: pointer.To[uint32](300)},
 		Ingredients:            []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](16), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(grillCauliflowerVIP), Name: "sauced cauliflower (final coat)", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Instruments:            []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(grillTongsVPI), Name: "tongs", Quantity: types.Uint32RangeWithOptionalMax{Min: 1}}},
@@ -429,7 +429,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 18: Transfer to plate
 	gc18 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: transferPrep.ID, Index: 18, Notes: "Transfer cauliflower to a plate.",
+		PreparationID: transferPrep.ID, Index: 18, ExplicitInstructions: "Transfer the cauliflower to a plate.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: pointer.To[uint64](17), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), ValidIngredientPreparationID: vipID(transferCauliflowerVIP), Name: "charred cauliflower", Quantity: types.Float32RangeWithOptionalMax{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(transferServingPlatterVPV), Name: "serving plate", Quantity: types.Uint16RangeWithOptionalMax{Min: 1}}},
 		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "cauliflower on plate", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To[float32](1)}}},
@@ -437,7 +437,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 
 	// Step 19: Season with togarashi and serve
 	gc19 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID, Index: 19, Notes: "Season with togarashi. Serve with lemon wedges and remaining sauce.",
+		PreparationID: seasonPrep.ID, Index: 19, ExplicitInstructions: "Season with togarashi. Serve with lemon wedges and the remaining sauce.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{ProductOfRecipeStepIndex: pointer.To[uint64](18), ProductOfRecipeStepProductIndex: pointer.To[uint64](0), Name: "cauliflower on plate", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
 			{ValidIngredientPreparationID: vipID(seasonTogarashiVIP), ValidIngredientMeasurementUnitID: vimuID(togarashiTeaspoonVIMU), Name: "shichimi togarashi", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},

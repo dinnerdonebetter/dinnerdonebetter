@@ -102,7 +102,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: trimPrep.ID,
 		Index:         0,
-		Notes:         "Trim silverskin from pork tenderloins. This step is optional and can be done ahead of time.",
+		ExplicitInstructions: "Trim silverskin from the pork tenderloins. This step is optional and can be done ahead of time.",
 		Optional:      true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
@@ -140,7 +140,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
 		Index:         1,
-		Notes:         "Sprinkle pork tenderloins all over with salt.",
+		ExplicitInstructions: "Sprinkle the pork tenderloins all over with salt.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -186,7 +186,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         2,
-		Notes:         "Place on a wire rack set over a rimmed baking sheet.",
+		ExplicitInstructions: "Place on a wire rack set over a rimmed baking sheet.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -239,7 +239,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID,
 		Index:         3,
-		Notes:         "When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange coals on one side of coal grate and set grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover grill and allow to preheat for 5 minutes.",
+		ExplicitInstructions: "When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the coal grate and set the grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover the grill and allow to preheat for 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
 		},
@@ -268,7 +268,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cleanPrep.ID,
 		Index:         4,
-		Notes:         "Clean grilling grate.",
+		ExplicitInstructions: "Clean the grilling grate.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &cleanGrillingGrateVPV.ID,
@@ -303,7 +303,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: oilPrep.ID,
 		Index:         5,
-		Notes:         "Oil grilling grate.",
+		ExplicitInstructions: "Oil the grilling grate.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &oilVegetableOilVIP.ID,
@@ -350,7 +350,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: seasonPrep.ID,
 		Index:         6,
-		Notes:         "Season tenderloins all over with pepper.",
+		ExplicitInstructions: "Season the tenderloins all over with pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -397,7 +397,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grillPrep.ID,
 		Index:         7,
-		Notes:         "Set over hot side of grill and cook, turning often, until well browned on all sides, about 15 minutes.",
+		ExplicitInstructions: "Set over the hot side of the grill and cook, turning often, until well browned on all sides, about 15 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](900), // 15 minutes
 		},
@@ -467,7 +467,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grillPrep.ID,
 		Index:         8,
-		Notes:         "Move tenderloins to cooler side of grill and continue to cook, turning often, until an instant-read thermometer inserted in the center registers 120 to 130°F (49 to 54°C) for medium-rare or 130 to 140°F (54 to 60°C) for medium.",
+		ExplicitInstructions: "Move the tenderloins to the cooler side of the grill and continue to cook, turning often, until an instant-read thermometer inserted in the center registers 120 to 130°F (49 to 54°C) for medium-rare or 130 to 140°F (54 to 60°C) for medium.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
@@ -531,7 +531,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         9,
-		Notes:         "Transfer pork to a carving board.",
+		ExplicitInstructions: "Transfer the pork to a carving board.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
@@ -577,7 +577,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: restPrep.ID,
 		Index:         10,
-		Notes:         "Let rest for 10 minutes.",
+		ExplicitInstructions: "Let rest for 10 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](600), // 10 minutes
 		},
@@ -620,7 +620,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: carvePrep.ID,
 		Index:         11,
-		Notes:         "Carve pork tenderloins and serve as desired.",
+		ExplicitInstructions: "Carve the pork tenderloins and serve as desired.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),

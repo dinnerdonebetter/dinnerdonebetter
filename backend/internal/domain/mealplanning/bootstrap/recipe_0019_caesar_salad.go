@@ -84,8 +84,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 0: Select inner romaine leaves
 	slStep0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: inspectPrep.ID,
-		Index:         0,
-		Notes:         "Select the inner romaine leaves, discarding the outer leaves.",
+		Index:                0,
+		ExplicitInstructions: "Select the inner romaine leaves, discarding the outer leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &inspectRomaineVIP.ID,
@@ -131,8 +131,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 1: Wash romaine leaves
 	slStep1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: rinsePrep.ID,
-		Index:         1,
-		Notes:         "Wash the inner romaine leaves in several changes of water until no dirt or grit remains.",
+		Index:                1,
+		ExplicitInstructions: "Wash the inner romaine leaves in several changes of water until no dirt or grit remains.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -173,9 +173,9 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 
 	// Step 2: Dry romaine leaves
 	slStep2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: dryPrep.ID,
-		Index:         2,
-		Notes:         "Carefully dry the washed romaine leaves using a salad spinner or paper towels.",
+		PreparationID:       dryPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Carefully dry the washed romaine leaves using a salad spinner or paper towels.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -212,8 +212,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 3: Toss lettuce with dressing
 	slStep3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: tossPrep.ID,
-		Index:         3,
-		Notes:         "Toss lettuce with a few tablespoons of dressing, adding more if desired. Large leaves should be torn into smaller pieces, smaller leaves left intact.",
+		Index:                3,
+		ExplicitInstructions: "Toss the lettuce with a few tablespoons of dressing, adding more if desired. Large leaves should be torn into smaller pieces, smaller leaves left intact.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -270,9 +270,9 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 
 	// Step 4: Grate parmesan cheese
 	slStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: gratePrep.ID,
-		Index:         4,
-		Notes:         "Finely grate 1 cup parmesan cheese.",
+		PreparationID:       gratePrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Finely grate 1 cup parmesan cheese.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &grateParmesanVIP.ID,
@@ -317,8 +317,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 5: Add cheese and croutons, toss again
 	slStep5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: tossPrep.ID,
-		Index:         5,
-		Notes:         "Once lettuce is coated, add half of remaining cheese and three-quarters of croutons and toss again.",
+		Index:                5,
+		ExplicitInstructions: "Once the lettuce is coated, add half of the remaining cheese and three-quarters of the croutons and toss again.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
@@ -380,8 +380,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 6: Transfer to serving bowl
 	slStep6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
-		Index:         6,
-		Notes:         "Transfer to a salad bowl.",
+		Index:                6,
+		ExplicitInstructions: "Transfer to a salad bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
@@ -417,8 +417,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	// Step 7: Sprinkle with remaining cheese and croutons
 	slStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: sprinklePrep.ID,
-		Index:         7,
-		Notes:         "Sprinkle with remaining cheese and croutons. Serve.",
+		Index:                7,
+		ExplicitInstructions: "Sprinkle with the remaining cheese and croutons. Serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),

@@ -193,7 +193,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: toastPrep.ID,
 		Index:         0,
-		Notes:         "In a small skillet, toast fenugreek leaves (or fenugreek seeds, if using) over medium heat, tossing them constantly, until quite fragrant, about 30 seconds.",
+		ExplicitInstructions: "In a small skillet, toast the fenugreek leaves (or fenugreek seeds, if using) over medium heat, tossing them constantly, until quite fragrant, about 30 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30),
 		},
@@ -233,7 +233,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grindPrep.ID,
 		Index:         1,
-		Notes:         "Transfer toasted leaves to spice grinder or mortar and pestle and grind to fine powder. Set aside.",
+		ExplicitInstructions: "Transfer the toasted leaves to a spice grinder or mortar and pestle and grind to a fine powder. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -271,7 +271,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: linePrep.ID,
 		Index:         2,
-		Notes:         "In the center of a rimmed baking sheet, create a roughly 9- by 13-inch aluminum-foil boat with 1-inch sides, and set aside.",
+		ExplicitInstructions: "In the center of a rimmed baking sheet, create a roughly 9- by 13-inch aluminum-foil boat with 1-inch sides, and set aside.",
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &lineAluminumFoilVPI.ID,
@@ -306,7 +306,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step2a := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
 		Index:         3,
-		Notes:         "Peel the ginger.",
+		ExplicitInstructions: "Peel the ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelGingerVIP.ID,
@@ -353,7 +353,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step2b := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: gratePrep.ID,
 		Index:         4,
-		Notes:         "Finely grate the peeled ginger.",
+		ExplicitInstructions: "Finely grate the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
@@ -401,7 +401,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: combinePrep.ID,
 		Index:         5,
-		Notes:         "In a medium mixing bowl, stir together yogurt, garam masala, salt, black salt, grated ginger, and ground fenugreek leaves.",
+		ExplicitInstructions: "In a medium mixing bowl, stir together the yogurt, garam masala, salt, black salt, grated ginger, and ground fenugreek leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &combineYogurtVIP.ID,
@@ -489,7 +489,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: coatPrep.ID,
 		Index:         6,
-		Notes:         "Add chicken thigh pieces to bowl and, using clean hands, toss with marinade until evenly coated.",
+		ExplicitInstructions: "Add the chicken thigh pieces to the bowl and, using clean hands, toss with the marinade until evenly coated.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &coatChickenVIP.ID,
@@ -535,7 +535,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         7,
-		Notes:         "Transfer chicken to prepared baking sheet, arranging pieces in a single, even layer in the aluminum-foil boat.",
+		ExplicitInstructions: "Transfer the chicken to the prepared baking sheet, arranging pieces in a single, even layer in the aluminum-foil boat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -568,7 +568,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: toastPrep.ID,
 		Index:         8,
-		Notes:         "Add fenugreek leaves (or seeds, if using), chiles de arbol, brown cardamom (or green cardamom, if using), and clove to small skillet and place it over medium heat. Toast, tossing frequently, until spices are quite fragrant, about 1 to 2 minutes.",
+		ExplicitInstructions: "Add the fenugreek leaves (or seeds, if using), chiles de arbol, brown cardamom (or green cardamom, if using), and clove to a small skillet and place it over medium heat. Toast, tossing frequently, until the spices are quite fragrant, about 1 to 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 			Max: pointer.To[uint32](120),
@@ -622,7 +622,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: grindPrep.ID,
 		Index:         9,
-		Notes:         "Transfer spices to spice grinder or mortar and pestle along with garam masala and salt and grind to a fine powder. Set aside.",
+		ExplicitInstructions: "Transfer the spices to a spice grinder or mortar and pestle along with garam masala and salt and grind to a fine powder. Set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
@@ -666,7 +666,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: soakPrep.ID,
 		Index:         10,
-		Notes:         "In a small, microwave-safe bowl, combine cashew nuts and 1/4 cup water.",
+		ExplicitInstructions: "In a small, microwave-safe bowl, combine the cashew nuts and 1/4 cup water.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &soakCashewsVIP.ID,
@@ -710,7 +710,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: microwavePrep.ID,
 		Index:         11,
-		Notes:         "Microwave on high until cashews look plump and have softened slightly, about 1 minute. Set aside.",
+		ExplicitInstructions: "Microwave on high until the cashews look plump and have softened slightly, about 1 minute. Set aside.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 		},
@@ -748,7 +748,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: heatPrep.ID,
 		Index:         12,
-		Notes:         "In a Dutch oven, heat canola oil over medium-high heat until shimmering.",
+		ExplicitInstructions: "In a Dutch oven, heat the canola oil over medium-high heat until shimmering.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
@@ -784,9 +784,9 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 10a: Peel onion
 	step10a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: peelPrep.ID,
-		Index:         13,
-		Notes:         "Peel the onion.",
+		PreparationID:       peelPrep.ID,
+		Index:                13,
+		ExplicitInstructions: "Peel the onion.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelOnionVIP.ID,
@@ -824,7 +824,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step10b := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: dicePrep.ID,
 		Index:         14,
-		Notes:         "Cut the peeled onion into 1/2-inch dice.",
+		ExplicitInstructions: "Cut the peeled onion into 1/2-inch dice.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
@@ -863,7 +863,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cookPrep.ID,
 		Index:         15,
-		Notes:         "Add onions and baking soda and, using a wooden spoon, stir to coat onions in oil and distribute baking soda. Cook, stirring occasionally, until onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
+		ExplicitInstructions: "Add the onions and baking soda and, using a wooden spoon, stir to coat the onions in oil and distribute the baking soda. Cook, stirring occasionally, until the onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](840),
 			Max: pointer.To[uint32](1020),
@@ -920,7 +920,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11a := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
 		Index:         16,
-		Notes:         "Peel the ginger.",
+		ExplicitInstructions: "Peel the ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelGingerVIP.ID,
@@ -959,7 +959,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11b := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: slicePrep.ID,
 		Index:         17,
-		Notes:         "Thinly slice the peeled ginger.",
+		ExplicitInstructions: "Thinly slice the peeled ginger.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](16),
@@ -999,7 +999,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11c := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: peelPrep.ID,
 		Index:         18,
-		Notes:         "Peel the garlic cloves.",
+		ExplicitInstructions: "Peel the garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelGarlicVIP.ID,
@@ -1037,7 +1037,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11d := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: smashPrep.ID,
 		Index:         19,
-		Notes:         "Smash the peeled garlic cloves.",
+		ExplicitInstructions: "Smash the peeled garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](18),
@@ -1076,7 +1076,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step11e := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: chopPrep.ID,
 		Index:         20,
-		Notes:         "Roughly chop the smashed garlic.",
+		ExplicitInstructions: "Roughly chop the smashed garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](19),
@@ -1115,7 +1115,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cookPrep.ID,
 		Index:         21,
-		Notes:         "Reduce heat to medium low. Add ginger and garlic to pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
+		ExplicitInstructions: "Reduce the heat to medium low. Add the ginger and garlic to the pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 		},
@@ -1173,7 +1173,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: addPrep.ID,
 		Index:         22,
-		Notes:         "Using a wooden spoon, push onions into center of pot to form a mound. Add ground spice mixture to the mounded onions to prevent spices from scorching. Cook, stirring constantly, until onions are coated in spices and mixture is very fragrant, about 30 seconds.",
+		ExplicitInstructions: "Using a wooden spoon, push the onions into the center of the pot to form a mound. Add the ground spice mixture to the mounded onions to prevent the spices from scorching. Cook, stirring constantly, until the onions are coated in spices and the mixture is very fragrant, about 30 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](30),
 		},
@@ -1222,7 +1222,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: addPrep.ID,
 		Index:         23,
-		Notes:         "Add cashews and their soaking liquid, scraping up any bits stuck to the bottom of the pot. Add tomatoes and their juices plus 1 cup water and, using the back of wooden spoon, crush tomatoes.",
+		ExplicitInstructions: "Add the cashews and their soaking liquid, scraping up any bits stuck to the bottom of the pot. Add the tomatoes and their juices plus 1 cup water and, using the back of a wooden spoon, crush the tomatoes.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
@@ -1281,7 +1281,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: simmerPrep.ID,
 		Index:         24,
-		Notes:         "Bring to a boil, then reduce heat to maintain gentle simmer. Cook, stirring occasionally, until tomatoes are completely broken down and liquid has reduced, about 40 minutes.",
+		ExplicitInstructions: "Bring to a boil, then reduce the heat to maintain a gentle simmer. Cook, stirring occasionally, until the tomatoes are completely broken down and the liquid has reduced, about 40 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](2400),
 		},
@@ -1324,7 +1324,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step16 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: preheatPrep.ID,
 		Index:         25,
-		Notes:         "Meanwhile, adjust oven rack to about 3 inches below broiler element and preheat broiler on high.",
+		ExplicitInstructions: "Meanwhile, adjust the oven rack to about 3 inches below the broiler element and preheat the broiler on high.",
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
@@ -1346,7 +1346,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: broilPrep.ID,
 		Index:         26,
-		Notes:         "Transfer chicken to broiler. Cook, checking the chicken frequently to ensure it's not burning, until chicken is charred in spots and is fully cooked through, about 14 minutes. Remove chicken from broiler and set aside.",
+		ExplicitInstructions: "Transfer the chicken to the broiler. Cook, checking the chicken frequently to ensure it's not burning, until the chicken is charred in spots and is fully cooked through, about 14 minutes. Remove the chicken from the broiler and set aside.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](840),
 		},
@@ -1388,7 +1388,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step18 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: blendPrep.ID,
 		Index:         27,
-		Notes:         "Using an immersion blender and off the heat, blend contents of Dutch oven until completely smooth, about 2 minutes. Alternatively, transfer contents of pot to blender and blend until completely smooth.",
+		ExplicitInstructions: "Using an immersion blender and off the heat, blend the contents of the Dutch oven until completely smooth, about 2 minutes. Alternatively, transfer the contents of the pot to a blender and blend until completely smooth.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
 		},
@@ -1438,7 +1438,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step18a := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: cutPrep.ID,
 		Index:         28,
-		Notes:         "Cut the butter into 4 pieces.",
+		ExplicitInstructions: "Cut the butter into 4 pieces.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &cutButterVIP.ID,
@@ -1476,7 +1476,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step19 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: blendPrep.ID,
 		Index:         29,
-		Notes:         "Add butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
+		ExplicitInstructions: "Add the butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
 		},
@@ -1537,9 +1537,9 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 20: Add chicken to sauce
 	step20 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         30,
-		Notes:         "Add reserved broiled chicken along with any juices in the sheet pan to sauce and stir until chicken is well incorporated and warmed through.",
+		PreparationID:       addPrep.ID,
+		Index:                30,
+		ExplicitInstructions: "Add the reserved broiled chicken along with any juices in the sheet pan to the sauce and stir until the chicken is well incorporated and warmed through.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](26),
@@ -1586,7 +1586,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
 		Index:         31,
-		Notes:         "Ladle chicken and sauce into serving bowl and drizzle with additional heavy cream. Serve immediately with rice alongside.",
+		ExplicitInstructions: "Ladle the chicken and sauce into a serving bowl and drizzle with additional heavy cream. Serve immediately with rice alongside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](30),

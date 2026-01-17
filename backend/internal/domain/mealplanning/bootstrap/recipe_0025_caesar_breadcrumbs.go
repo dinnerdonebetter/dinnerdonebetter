@@ -70,8 +70,8 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Breadcrumbs Step 0: Melt butter in a small nonstick skillet
 	bcStep0 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: meltPrep.ID,
-		Index:         0,
-		Notes:         "In a small nonstick skillet, melt butter over medium-low heat.",
+		Index:                0,
+		ExplicitInstructions: "In a small nonstick skillet, melt the butter over medium-low heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
@@ -112,8 +112,8 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Breadcrumbs Step 1: Stir in anchovy paste and garlic
 	bcStep1 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: stirPrep.ID,
-		Index:         1,
-		Notes:         "Stir in anchovy paste and garlic.",
+		Index:                1,
+		ExplicitInstructions: "Stir in the anchovy paste and garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -180,9 +180,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Breadcrumbs Step 2: Mix until fragrant
 	bcStep2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
-		Index:         2,
-		Notes:         "Cook until fragrant, about 1 minute.",
+		PreparationID:       mixPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Cook until fragrant, about 1 minute.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),
 		},
@@ -228,8 +228,8 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Breadcrumbs Step 3: Add breadcrumbs and toss to coat
 	bcStep3 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: stirPrep.ID,
-		Index:         3,
-		Notes:         "Add breadcrumbs and, using a flexible spatula, toss to coat.",
+		Index:                3,
+		ExplicitInstructions: "Add the breadcrumbs and, using a flexible spatula, toss to coat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -287,9 +287,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Breadcrumbs Step 4: Coat breadcrumbs until golden brown
 	bcStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coatPrep.ID,
-		Index:         4,
-		Notes:         "Cook, stirring constantly until breadcrumbs are golden brown, about 3 minutes.",
+		PreparationID:       coatPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Cook, stirring constantly until the breadcrumbs are golden brown, about 3 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180),
 		},
@@ -345,8 +345,8 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Breadcrumbs Step 5: Stir in lemon zest (off heat)
 	bcStep5 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: stirPrep.ID,
-		Index:         5,
-		Notes:         "Off heat, stir in 1/2 teaspoon lemon zest.",
+		Index:                5,
+		ExplicitInstructions: "Off heat, stir in 1/2 teaspoon lemon zest.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -404,9 +404,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Breadcrumbs Step 6: Season breadcrumbs with salt
 	bcStep6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         6,
-		Notes:         "Season with salt to taste.",
+		PreparationID:       seasonPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Season with salt to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
@@ -454,8 +454,8 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	// Breadcrumbs Step 7: Transfer breadcrumbs to bowl and let cool
 	bcStep7 := &mealplanning.RecipeStepCreationRequestInput{
 		PreparationID: transferPrep.ID,
-		Index:         7,
-		Notes:         "Transfer to a bowl and let cool completely.",
+		Index:                7,
+		ExplicitInstructions: "Transfer to a bowl and let cool completely.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
