@@ -203,7 +203,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				ValidIngredientPreparationID:     &tossSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
-				Name:                             "Diamond Crystal kosher salt",
+				Name:                             "kosher salt",
 				Quantity: types.Float32RangeWithOptionalMax{
 					Min: 0.75,
 				},
