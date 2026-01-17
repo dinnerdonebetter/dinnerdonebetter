@@ -72,9 +72,6 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	bagPlasticBagVPV := enums.PreparationVessels[bagPrep.ID][plasticBag.ID]
 	bagVacuumBagVPV := enums.PreparationVessels[bagPrep.ID][vacuumBag.ID]
 
-	// Sous vide preparation bridges
-	sousVideCookerVPI := enums.PreparationInstruments[sousVidePrep.ID][sousVideCooker.ID]
-
 	// Remove preparation bridges (for removing chicken from bag)
 	removeChickenVIP := enums.IngredientPreparations[removePrep.ID][chickenBreast.ID]
 	removeTongsVPI := enums.PreparationInstruments[removePrep.ID][tongs.ID]
@@ -278,8 +275,9 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
-				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
-				Name:                         "sous vide cooker",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
+				Name:                            "preheated sous vide cooker",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},

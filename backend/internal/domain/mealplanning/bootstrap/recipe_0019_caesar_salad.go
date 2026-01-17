@@ -46,7 +46,6 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	tossRomaineVIP := enums.IngredientPreparations[tossPrep.ID][romaineLettuce.ID]
 	tossParmesanVIP := enums.IngredientPreparations[tossPrep.ID][parmesanCheese.ID]
 	tossBreadVIP := enums.IngredientPreparations[tossPrep.ID][heartyBread.ID]
-	tossLargeBowlVPV := enums.PreparationVessels[tossPrep.ID][largeBowl.ID]
 
 	// Grate preparation bridges
 	grateParmesanVIP := enums.IngredientPreparations[gratePrep.ID][parmesanCheese.ID]
@@ -164,6 +163,11 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 					Min: pointer.To[float32](2),
 				},
 			},
+			{
+				Name:  "large bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -238,8 +242,9 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				Name:                     "large bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -254,6 +259,11 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -346,8 +356,9 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				Name:                     "large bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

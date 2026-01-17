@@ -68,15 +68,12 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Submerge preparation bridges
 	submergePotatoVIP := enums.IngredientPreparations[submergePrep.ID][potato.ID]
 	submergeWaterVIP := enums.IngredientPreparations[submergePrep.ID][water.ID]
-	submergePotVPV := enums.PreparationVessels[submergePrep.ID][pot.ID]
 
 	// Season preparation bridges for pot (seasoning water)
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonPotVPV := enums.PreparationVessels[seasonPrep.ID][pot.ID]
 
 	// Boil preparation bridges
 	boilPotatoVIP := enums.IngredientPreparations[boilPrep.ID][potato.ID]
-	boilPotVPV := enums.PreparationVessels[boilPrep.ID][pot.ID]
 
 	// Drain preparation bridges
 	drainPotatoVIP := enums.IngredientPreparations[drainPrep.ID][potato.ID]
@@ -89,7 +86,6 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Rice preparation bridges
 	ricePotatoVIP := enums.IngredientPreparations[ricePrep.ID][potato.ID]
 	ricePotatoRicerVPI := enums.PreparationInstruments[ricePrep.ID][potatoRicer.ID]
-	ricePotVPV := enums.PreparationVessels[ricePrep.ID][pot.ID]
 
 	// Slice preparation bridges
 	sliceButterVIP := enums.IngredientPreparations[slicePrep.ID][butter.ID]
@@ -99,16 +95,13 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 	// Fold preparation bridges
 	foldPotatoVIP := enums.IngredientPreparations[foldPrep.ID][potato.ID]
 	foldRubberSpatulaVPI := enums.PreparationInstruments[foldPrep.ID][rubberSpatula.ID]
-	foldPotVPV := enums.PreparationVessels[foldPrep.ID][pot.ID]
 
 	// Season preparation bridges (for final seasoning step)
 	seasonPotatoVIP := enums.IngredientPreparations[seasonPrep.ID][potato.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
-	// seasonPotVPV already defined above for seasoning water
 
 	// Simmer preparation bridges
 	simmerMilkVIP := enums.IngredientPreparations[simmerPrep.ID][milk.ID]
-	simmerPotVPV := enums.PreparationVessels[simmerPrep.ID][pot.ID]
 
 	// Measurement unit bridges
 	potatoPoundVIMU := enums.IngredientMeasurementUnits[potato.ID][poundMeasurement.ID]
@@ -248,6 +241,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 					Min: pointer.To[float32](2),
 				},
 			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -279,8 +277,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &submergePotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -295,6 +294,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -324,8 +328,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -340,6 +345,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -366,8 +376,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &boilPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -382,6 +393,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -537,8 +553,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &ricePotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -553,6 +570,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -637,8 +659,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &foldPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -653,6 +676,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -682,8 +710,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &simmerPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](11),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -698,6 +727,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -729,8 +763,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &foldPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -745,6 +780,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "pot",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -775,8 +815,9 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonPotVPV.ID,
-				Name:                     "pot",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "pot",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

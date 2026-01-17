@@ -86,12 +86,10 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 	whiskOliveOilVIP := enums.IngredientPreparations[mixPrep.ID][oliveOil.ID]
 	whiskCanolaOilVIP := enums.IngredientPreparations[mixPrep.ID][canolaOil.ID]
 	whiskWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
-	whiskMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
-	seasonMediumBowlVPV := enums.PreparationVessels[seasonPrep.ID][mediumBowl.ID]
 
 	// Transfer preparation bridges
 	transferMediumBowlVPV := enums.PreparationVessels[transferPrep.ID][mediumBowl.ID]
@@ -414,6 +412,11 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "medium bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -452,8 +455,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &whiskMediumBowlVPV.ID,
-				Name:                     "medium bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "medium bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -468,6 +472,11 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "medium bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -509,8 +518,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonMediumBowlVPV.ID,
-				Name:                     "medium bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "medium bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

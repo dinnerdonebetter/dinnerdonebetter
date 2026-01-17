@@ -53,22 +53,13 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	// Stir preparation bridges
 	stirRiceVIP := enums.IngredientPreparations[stirPrep.ID][rice.ID]
 	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
-	stirSaucepanVPV := enums.PreparationVessels[stirPrep.ID][saucepan.ID]
-
-	// Cover preparation bridges
-	coverSaucepanVPV := enums.PreparationVessels[coverPrep.ID][saucepan.ID]
-
-	// Remove from heat preparation bridges
-	removeFromHeatSaucepanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][saucepan.ID]
 
 	// Rest preparation bridges
 	restRiceVIP := enums.IngredientPreparations[restPrep.ID][rice.ID]
-	restSaucepanVPV := enums.PreparationVessels[restPrep.ID][saucepan.ID]
 
 	// Fluff preparation bridges
 	fluffRiceVIP := enums.IngredientPreparations[fluffPrep.ID][rice.ID]
 	fluffForkVPI := enums.PreparationInstruments[fluffPrep.ID][fork.ID]
-	fluffSaucepanVPV := enums.PreparationVessels[fluffPrep.ID][saucepan.ID]
 
 	// Measurement unit bridges
 	riceCupVIMU := enums.IngredientMeasurementUnits[rice.ID][cupMeasurement.ID]
@@ -181,6 +172,11 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](2.75),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -212,8 +208,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -228,6 +225,11 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](2.75),
 				},
+			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -252,8 +254,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coverSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -268,6 +271,11 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
+			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -289,8 +297,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &removeFromHeatSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -305,6 +314,11 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
+			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -331,8 +345,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &restSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -347,6 +362,11 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](3),
 				},
+			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -379,8 +399,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &fluffSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

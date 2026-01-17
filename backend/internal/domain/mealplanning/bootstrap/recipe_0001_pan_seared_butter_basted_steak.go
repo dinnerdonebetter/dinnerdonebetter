@@ -208,6 +208,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 					Max: pointer.To[float32](900),
 				},
 			},
+			{
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Name:  "sheet pan",
+				Index: 1,
+				ItemQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+				},
+			},
 		},
 	}
 
@@ -234,8 +242,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &restSheetPanVPV.ID,
-				Name:                     "sheet pan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				ValidPreparationVesselID:        &restSheetPanVPV.ID,
+				Name:                            "sheet pan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

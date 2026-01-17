@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -168,12 +171,61 @@ func (s *AdminFrontendServer) RecipePage(_ http.ResponseWriter, req *http.Reques
 		s.renderRecipeSteps(recipe.Steps, recipe.AssociatedRecipes),
 	)
 
-	// Combine form and steps section
+	// Create aggregated ingredients section
+	aggregatedIngredients := s.getAggregatedIngredients(recipe.Steps, recipe.AssociatedRecipes)
+	ingredientsSection := components.CardWithHeader(
+		"Aggregated Ingredients",
+		&design.StandardPalette,
+		nil,
+		s.renderAggregatedIngredients(aggregatedIngredients),
+	)
+
+	// Create aggregated instruments and vessels sections
+	aggregatedInstrumentsVessels := s.getAggregatedInstrumentsAndVessels(recipe.Steps, recipe.AssociatedRecipes)
+
+	// Separate instruments and vessels
+	var instruments []*AggregatedInstrumentVessel
+	var vessels []*AggregatedInstrumentVessel
+	for _, item := range aggregatedInstrumentsVessels {
+		if item.Type == "instrument" {
+			instruments = append(instruments, item)
+		} else {
+			vessels = append(vessels, item)
+		}
+	}
+
+	var sectionNodes []g.Node
+	sectionNodes = append(sectionNodes, formPageResult.Node, ingredientsSection)
+
+	// Only add instruments section if there are instruments
+	if len(instruments) > 0 {
+		instrumentsSection := components.CardWithHeader(
+			"Aggregated Instruments",
+			&design.StandardPalette,
+			nil,
+			s.renderAggregatedInstrumentsAndVessels(instruments),
+		)
+		sectionNodes = append(sectionNodes, instrumentsSection)
+	}
+
+	// Only add vessels section if there are vessels (referenced more than twice)
+	if len(vessels) > 0 {
+		vesselsSection := components.CardWithHeader(
+			"Aggregated Vessels",
+			&design.StandardPalette,
+			nil,
+			s.renderAggregatedInstrumentsAndVessels(vessels),
+		)
+		sectionNodes = append(sectionNodes, vesselsSection)
+	}
+
+	sectionNodes = append(sectionNodes, stepsSection)
+
+	// Combine form, steps, and aggregated lists
 	return page("Recipes",
 		ghtml.Div(
 			ghtml.Class("space-y-6"),
-			formPageResult.Node,
-			stepsSection,
+			g.Group(sectionNodes),
 		),
 	), nil
 }
@@ -207,6 +259,502 @@ func (s *AdminFrontendServer) buildProductUsageMap(steps []*mealplanningsvc.Reci
 	}
 
 	return usageMap
+}
+
+// AggregatedIngredient represents an aggregated ingredient with total quantities.
+type AggregatedIngredient struct {
+	IngredientID     string
+	Name             string
+	Quantity         *types.Float32RangeWithOptionalMax
+	QuantityNotes    string
+	MeasurementUnit  *mealplanningsvc.ValidMeasurementUnit
+	SourceRecipeID   string
+	SourceRecipeName string
+}
+
+// AggregatedInstrumentVessel represents an aggregated instrument or vessel with total quantities.
+type AggregatedInstrumentVessel struct {
+	QuantityUint32   *types.Uint32RangeWithOptionalMax
+	ItemID           string
+	Name             string
+	Type             string
+	SourceRecipeID   string
+	SourceRecipeName string
+	ReferenceCount   uint32
+}
+
+// getAggregatedIngredients aggregates all ingredients from recipe steps and associated recipes.
+func (s *AdminFrontendServer) getAggregatedIngredients(steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) []*AggregatedIngredient {
+	aggregated := make(map[string]*AggregatedIngredient)
+
+	// Process main recipe steps
+	for _, step := range steps {
+		for _, ing := range step.Ingredients {
+			if ing.Ingredient == nil {
+				continue
+			}
+			ingredientID := ing.Ingredient.Id
+			if ingredientID == "" {
+				continue
+			}
+
+			if aggregated[ingredientID] == nil {
+				aggregated[ingredientID] = &AggregatedIngredient{
+					IngredientID:    ingredientID,
+					Name:            ing.Name,
+					QuantityNotes:   ing.QuantityNotes,
+					MeasurementUnit: ing.MeasurementUnit,
+				}
+			}
+
+			// Add quantity if present
+			if ing.Quantity != nil {
+				if aggregated[ingredientID].Quantity == nil {
+					aggregated[ingredientID].Quantity = &types.Float32RangeWithOptionalMax{
+						Min: ing.Quantity.Min,
+						Max: ing.Quantity.Max,
+					}
+				} else {
+					aggregated[ingredientID].Quantity.Min += ing.Quantity.Min
+					if ing.Quantity.Max != nil {
+						if aggregated[ingredientID].Quantity.Max != nil {
+							*aggregated[ingredientID].Quantity.Max += *ing.Quantity.Max
+						} else {
+							maximum := *ing.Quantity.Max
+							aggregated[ingredientID].Quantity.Max = &maximum
+						}
+					} else {
+						aggregated[ingredientID].Quantity.Max = nil
+					}
+				}
+			}
+		}
+	}
+
+	// Process associated recipes
+	for _, associatedRecipe := range associatedRecipes {
+		for _, step := range associatedRecipe.Steps {
+			for _, ing := range step.Ingredients {
+				if ing.Ingredient == nil {
+					continue
+				}
+				ingredientID := ing.Ingredient.Id
+				if ingredientID == "" {
+					continue
+				}
+
+				if aggregated[ingredientID] == nil {
+					aggregated[ingredientID] = &AggregatedIngredient{
+						IngredientID:     ingredientID,
+						Name:             ing.Name,
+						QuantityNotes:    ing.QuantityNotes,
+						MeasurementUnit:  ing.MeasurementUnit,
+						SourceRecipeID:   associatedRecipe.Id,
+						SourceRecipeName: associatedRecipe.Name,
+					}
+				}
+
+				// Add quantity if present
+				if ing.Quantity != nil {
+					if aggregated[ingredientID].Quantity == nil {
+						aggregated[ingredientID].Quantity = &types.Float32RangeWithOptionalMax{
+							Min: ing.Quantity.Min,
+							Max: ing.Quantity.Max,
+						}
+					} else {
+						aggregated[ingredientID].Quantity.Min += ing.Quantity.Min
+						if ing.Quantity.Max != nil {
+							if aggregated[ingredientID].Quantity.Max != nil {
+								*aggregated[ingredientID].Quantity.Max += *ing.Quantity.Max
+							} else {
+								maximum := *ing.Quantity.Max
+								aggregated[ingredientID].Quantity.Max = &maximum
+							}
+						} else {
+							aggregated[ingredientID].Quantity.Max = nil
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Convert map to slice and sort by name
+	result := slices.Collect(maps.Values(aggregated))
+	slices.SortFunc(result, func(a, b *AggregatedIngredient) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	return result
+}
+
+// getAggregatedInstrumentsAndVessels aggregates all instruments and vessels from recipe steps and associated recipes.
+func (s *AdminFrontendServer) getAggregatedInstrumentsAndVessels(steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) []*AggregatedInstrumentVessel {
+	aggregated := make(map[string]*AggregatedInstrumentVessel)
+
+	// Process main recipe steps
+	for _, step := range steps {
+		// Process instruments
+		for _, inst := range step.Instruments {
+			if inst.Instrument == nil {
+				continue
+			}
+			// Only include instruments that should be displayed in summary lists
+			if !inst.Instrument.DisplayInSummaryLists {
+				continue
+			}
+			itemID := inst.Instrument.Id
+			if itemID == "" {
+				continue
+			}
+
+			if aggregated[itemID] == nil {
+				aggregated[itemID] = &AggregatedInstrumentVessel{
+					ItemID:         itemID,
+					Name:           inst.Name,
+					Type:           "instrument",
+					ReferenceCount: 0,
+				}
+			}
+
+			// Increment reference count
+			aggregated[itemID].ReferenceCount++
+
+			// Add quantity if present
+			if inst.Quantity != nil {
+				if aggregated[itemID].QuantityUint32 == nil {
+					aggregated[itemID].QuantityUint32 = &types.Uint32RangeWithOptionalMax{
+						Min: inst.Quantity.Min,
+						Max: inst.Quantity.Max,
+					}
+				} else {
+					qty := aggregated[itemID].QuantityUint32
+					qty.Min += inst.Quantity.Min
+					if inst.Quantity.Max != nil {
+						if qty.Max != nil {
+							*qty.Max += *inst.Quantity.Max
+						} else {
+							maximum := *inst.Quantity.Max
+							qty.Max = &maximum
+						}
+					} else {
+						qty.Max = nil
+					}
+				}
+			}
+		}
+
+		// Process vessels
+		for _, vessel := range step.Vessels {
+			if vessel.Vessel == nil {
+				continue
+			}
+			// Only include vessels that should be displayed in summary lists
+			if !vessel.Vessel.DisplayInSummaryLists {
+				continue
+			}
+			itemID := vessel.Vessel.Id
+			if itemID == "" {
+				continue
+			}
+
+			if aggregated[itemID] == nil {
+				aggregated[itemID] = &AggregatedInstrumentVessel{
+					ItemID:         itemID,
+					Name:           vessel.Name,
+					Type:           "vessel",
+					ReferenceCount: 0,
+				}
+			}
+
+			// Increment reference count
+			aggregated[itemID].ReferenceCount++
+
+			// Add quantity if present
+			// Note: protobuf Uint16RangeWithOptionalMax actually uses uint32 internally
+			if vessel.Quantity != nil {
+				if aggregated[itemID].QuantityUint32 == nil {
+					aggregated[itemID].QuantityUint32 = &types.Uint32RangeWithOptionalMax{
+						Min: vessel.Quantity.Min,
+						Max: vessel.Quantity.Max,
+					}
+				} else {
+					qty := aggregated[itemID].QuantityUint32
+					qty.Min += vessel.Quantity.Min
+					if vessel.Quantity.Max != nil {
+						if qty.Max != nil {
+							*qty.Max += *vessel.Quantity.Max
+						} else {
+							maximum := *vessel.Quantity.Max
+							qty.Max = &maximum
+						}
+					} else {
+						qty.Max = nil
+					}
+				}
+			}
+		}
+	}
+
+	// Process associated recipes
+	for _, associatedRecipe := range associatedRecipes {
+		for _, step := range associatedRecipe.Steps {
+			// Process instruments
+			for _, inst := range step.Instruments {
+				if inst.Instrument == nil {
+					continue
+				}
+				if !inst.Instrument.DisplayInSummaryLists {
+					continue
+				}
+				itemID := inst.Instrument.Id
+				if itemID == "" {
+					continue
+				}
+
+				if aggregated[itemID] == nil {
+					aggregated[itemID] = &AggregatedInstrumentVessel{
+						ItemID:           itemID,
+						Name:             inst.Name,
+						Type:             "instrument",
+						ReferenceCount:   0,
+						SourceRecipeID:   associatedRecipe.Id,
+						SourceRecipeName: associatedRecipe.Name,
+					}
+				}
+
+				// Increment reference count
+				aggregated[itemID].ReferenceCount++
+
+				// Add quantity if present
+				if inst.Quantity != nil {
+					if aggregated[itemID].QuantityUint32 == nil {
+						aggregated[itemID].QuantityUint32 = &types.Uint32RangeWithOptionalMax{
+							Min: inst.Quantity.Min,
+							Max: inst.Quantity.Max,
+						}
+					} else {
+						qty := aggregated[itemID].QuantityUint32
+						qty.Min += inst.Quantity.Min
+						if inst.Quantity.Max != nil {
+							if qty.Max != nil {
+								*qty.Max += *inst.Quantity.Max
+							} else {
+								maximum := *inst.Quantity.Max
+								qty.Max = &maximum
+							}
+						} else {
+							qty.Max = nil
+						}
+					}
+				}
+			}
+
+			// Process vessels
+			for _, vessel := range step.Vessels {
+				if vessel.Vessel == nil {
+					continue
+				}
+				if !vessel.Vessel.DisplayInSummaryLists {
+					continue
+				}
+				itemID := vessel.Vessel.Id
+				if itemID == "" {
+					continue
+				}
+
+				if aggregated[itemID] == nil {
+					aggregated[itemID] = &AggregatedInstrumentVessel{
+						ItemID:           itemID,
+						Name:             vessel.Name,
+						Type:             "vessel",
+						ReferenceCount:   0,
+						SourceRecipeID:   associatedRecipe.Id,
+						SourceRecipeName: associatedRecipe.Name,
+					}
+				}
+
+				// Increment reference count
+				aggregated[itemID].ReferenceCount++
+
+				// Add quantity if present
+				// Note: protobuf Uint16RangeWithOptionalMax actually uses uint32 internally
+				if vessel.Quantity != nil {
+					if aggregated[itemID].QuantityUint32 == nil {
+						aggregated[itemID].QuantityUint32 = &types.Uint32RangeWithOptionalMax{
+							Min: vessel.Quantity.Min,
+							Max: vessel.Quantity.Max,
+						}
+					} else {
+						qty := aggregated[itemID].QuantityUint32
+						qty.Min += vessel.Quantity.Min
+						if vessel.Quantity.Max != nil {
+							if qty.Max != nil {
+								*qty.Max += *vessel.Quantity.Max
+							} else {
+								maximum := *vessel.Quantity.Max
+								qty.Max = &maximum
+							}
+						} else {
+							qty.Max = nil
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Convert map to slice, filter vessels to only those referenced more than twice, and sort by name
+	result := make([]*AggregatedInstrumentVessel, 0, len(aggregated))
+	for _, item := range aggregated {
+		// For vessels, only include if referenced more than twice
+		// For instruments, include all
+		if item.Type == "vessel" {
+			if item.ReferenceCount > 2 {
+				result = append(result, item)
+			}
+		} else {
+			// Include all instruments
+			result = append(result, item)
+		}
+	}
+	slices.SortFunc(result, func(a, b *AggregatedInstrumentVessel) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	return result
+}
+
+// renderAggregatedIngredients renders the aggregated ingredients list.
+func (s *AdminFrontendServer) renderAggregatedIngredients(ingredients []*AggregatedIngredient) g.Node {
+	if len(ingredients) == 0 {
+		return ghtml.Div(
+			ghtml.Class("text-center py-8"),
+			ghtml.P(
+				ghtml.Class("text-sm text-gray-500"),
+				g.Text("No ingredients found."),
+			),
+		)
+	}
+
+	var items []g.Node
+	for _, ing := range ingredients {
+		var quantityText string
+		if ing.Quantity != nil {
+			if ing.Quantity.Max != nil {
+				quantityText = fmt.Sprintf("%.2f - %.2f", ing.Quantity.Min, *ing.Quantity.Max)
+			} else {
+				quantityText = fmt.Sprintf("%.2f+", ing.Quantity.Min)
+			}
+			if ing.MeasurementUnit != nil {
+				quantityText += " " + ing.MeasurementUnit.Name
+			}
+		}
+
+		var sourceText string
+		if ing.SourceRecipeName != "" {
+			sourceText = fmt.Sprintf(" (from: %s)", ing.SourceRecipeName)
+		}
+
+		itemContent := []g.Node{
+			ghtml.Div(
+				ghtml.Class("font-medium text-gray-900"),
+				g.Text(ing.Name),
+			),
+		}
+
+		if quantityText != "" {
+			itemContent = append(itemContent, ghtml.Div(
+				ghtml.Class("text-sm text-gray-600"),
+				g.Text(quantityText),
+			))
+		}
+
+		if ing.QuantityNotes != "" {
+			itemContent = append(itemContent, ghtml.Div(
+				ghtml.Class("text-xs text-gray-500 italic"),
+				g.Text(ing.QuantityNotes),
+			))
+		}
+
+		if sourceText != "" {
+			itemContent = append(itemContent, ghtml.Div(
+				ghtml.Class("text-xs text-purple-600"),
+				g.Text(sourceText),
+			))
+		}
+
+		items = append(items, ghtml.Div(
+			ghtml.Class("py-2 border-b border-gray-200 last:border-b-0"),
+			g.Group(itemContent),
+		))
+	}
+
+	return ghtml.Div(
+		ghtml.Class("space-y-0"),
+		g.Group(items),
+	)
+}
+
+// renderAggregatedInstrumentsAndVessels renders the aggregated instruments and vessels list.
+func (s *AdminFrontendServer) renderAggregatedInstrumentsAndVessels(items []*AggregatedInstrumentVessel) g.Node {
+	if len(items) == 0 {
+		return ghtml.Div(
+			ghtml.Class("text-center py-8"),
+			ghtml.P(
+				ghtml.Class("text-sm text-gray-500"),
+				g.Text("No instruments or vessels found."),
+			),
+		)
+	}
+
+	var itemNodes []g.Node
+	for _, item := range items {
+		// Show reference count (number of times referenced in steps)
+		referenceText := fmt.Sprintf("referenced %d time", item.ReferenceCount)
+		if item.ReferenceCount != 1 {
+			referenceText += "s"
+		}
+
+		var sourceText string
+		if item.SourceRecipeName != "" {
+			sourceText = fmt.Sprintf(" (from: %s)", item.SourceRecipeName)
+		}
+
+		typeLabel := item.Type
+		if typeLabel == "" {
+			typeLabel = strings.ToUpper(typeLabel[:1]) + typeLabel[1:]
+		}
+		typeLabel += " • " + referenceText
+
+		itemContent := []g.Node{
+			ghtml.Div(
+				ghtml.Class("font-medium text-gray-900"),
+				g.Text(item.Name),
+			),
+			ghtml.Div(
+				ghtml.Class("text-sm text-gray-600"),
+				g.Text(typeLabel),
+			),
+		}
+
+		if sourceText != "" {
+			itemContent = append(itemContent, ghtml.Div(
+				ghtml.Class("text-xs text-purple-600"),
+				g.Text(sourceText),
+			))
+		}
+
+		itemNodes = append(itemNodes, ghtml.Div(
+			ghtml.Class("py-2 border-b border-gray-200 last:border-b-0"),
+			g.Group(itemContent),
+		))
+	}
+
+	return ghtml.Div(
+		ghtml.Class("space-y-0"),
+		g.Group(itemNodes),
+	)
 }
 
 func (s *AdminFrontendServer) renderRecipeSteps(steps []*mealplanningsvc.RecipeStep, associatedRecipes []*mealplanningsvc.Recipe) g.Node {
@@ -350,16 +898,17 @@ func (s *AdminFrontendServer) renderSubRecipeStep(step *mealplanningsvc.RecipeSt
 							g.Text(step.Preparation.Name),
 						),
 					),
-					// Generated step description
-					ghtml.Div(
-						ghtml.Class("text-sm text-gray-700 mb-1"),
-						g.Text(generateStepDescription(step)),
-					),
-					// Explicit instructions
+					// Show explicit instructions if present, otherwise show generated description
 					g.If(step.ExplicitInstructions != "",
 						ghtml.Div(
-							ghtml.Class("text-sm text-gray-600 italic mb-1"),
+							ghtml.Class("text-sm text-gray-700 mb-1"),
 							g.Text(step.ExplicitInstructions),
+						),
+					),
+					g.If(step.ExplicitInstructions == "",
+						ghtml.Div(
+							ghtml.Class("text-sm text-gray-700 mb-1"),
+							g.Text(generateStepDescription(step)),
 						),
 					),
 					// Condition expression
@@ -509,16 +1058,17 @@ func (s *AdminFrontendServer) renderSingleRecipeStep(step *mealplanningsvc.Recip
 							g.Text(step.Preparation.Name),
 						),
 					),
-					// Generated step description
-					ghtml.Div(
-						ghtml.Class("text-sm text-gray-700 mb-1"),
-						g.Text(generateStepDescription(step)),
-					),
-					// Explicit instructions
+					// Show explicit instructions if present, otherwise show generated description
 					g.If(step.ExplicitInstructions != "",
 						ghtml.Div(
-							ghtml.Class("text-sm text-gray-600 italic mb-1"),
+							ghtml.Class("text-sm text-gray-700 mb-1"),
 							g.Text(step.ExplicitInstructions),
+						),
+					),
+					g.If(step.ExplicitInstructions == "",
+						ghtml.Div(
+							ghtml.Class("text-sm text-gray-700 mb-1"),
+							g.Text(generateStepDescription(step)),
 						),
 					),
 					// Condition expression
@@ -741,52 +1291,44 @@ func (s *AdminFrontendServer) renderSingleIngredient(ing *mealplanningsvc.Recipe
 		ingredientName = ing.Ingredient.Name
 	}
 
+	// Regular ingredient - show name and quantity
+	details = append(details, ghtml.Span(
+		ghtml.Class("font-medium"),
+		g.Text(ingredientName),
+	))
+
+	// MeasurementQuantity and unit
+	if ing.Quantity != nil {
+		qtyStr := ""
+		if ing.Quantity.Min != 0 {
+			qtyStr = formatQuantity(ing.Quantity.Min)
+			if ing.Quantity.Max != nil {
+				qtyStr += "-" + formatQuantity(*ing.Quantity.Max)
+			}
+		}
+		if qtyStr != "" {
+			unitName := formatMeasurementUnitName(ing.MeasurementUnit)
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-gray-600"),
+				g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
+			))
+		}
+	}
+
 	// Check if this ingredient comes from a previous step
-	isProductFromPriorStep := ing.RecipeStepProductId != nil
-	if isProductFromPriorStep {
+	if ing.RecipeStepProductId != nil {
 		productStep := s.findStepWithProduct(*ing.RecipeStepProductId, allSteps)
 		if productStep != nil {
-			// Format as "ingredient name from step X" without quantity
 			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(fmt.Sprintf("%s from step %d", ingredientName, productStep.Index+1)),
+				ghtml.Class("inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded ml-2"),
+				g.Text(fmt.Sprintf("← from step %d", productStep.Index+1)),
 			))
 		} else {
 			// Fallback if step not found
-			details = append(details,
-				ghtml.Span(
-					ghtml.Class("font-medium"),
-					g.Text(ingredientName),
-				),
-				ghtml.Span(
-					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product ID: %s", *ing.RecipeStepProductId)),
-				),
-			)
-		}
-	} else {
-		// Regular ingredient - show name and quantity
-		details = append(details, ghtml.Span(
-			ghtml.Class("font-medium"),
-			g.Text(ingredientName),
-		))
-
-		// MeasurementQuantity and unit
-		if ing.Quantity != nil {
-			qtyStr := ""
-			if ing.Quantity.Min != 0 {
-				qtyStr = formatQuantity(ing.Quantity.Min)
-				if ing.Quantity.Max != nil {
-					qtyStr += "-" + formatQuantity(*ing.Quantity.Max)
-				}
-			}
-			if qtyStr != "" {
-				unitName := formatMeasurementUnitName(ing.MeasurementUnit)
-				details = append(details, ghtml.Span(
-					ghtml.Class("text-gray-600"),
-					g.Text(fmt.Sprintf(" (%s %s)", qtyStr, unitName)),
-				))
-			}
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-blue-600 ml-2"),
+				g.Text(fmt.Sprintf("← Product ID: %s", *ing.RecipeStepProductId)),
+			))
 		}
 	}
 
@@ -837,7 +1379,7 @@ func (s *AdminFrontendServer) renderSingleIngredient(ing *mealplanningsvc.Recipe
 		))
 	}
 	// Only show quantity notes if this is not a product from a prior step
-	if !isProductFromPriorStep && ing.QuantityNotes != "" {
+	if ing.RecipeStepProductId == nil && ing.QuantityNotes != "" {
 		details = append(details, ghtml.Div(
 			ghtml.Class("text-xs text-gray-500 mt-1"),
 			g.Text(fmt.Sprintf("MeasurementQuantity notes: %s", ing.QuantityNotes)),
@@ -957,8 +1499,8 @@ func (s *AdminFrontendServer) renderSingleInstrument(inst *mealplanningsvc.Recip
 		productStep := s.findStepWithProduct(*inst.RecipeStepProductId, allSteps)
 		if productStep != nil {
 			details = append(details, ghtml.Span(
-				ghtml.Class("text-blue-600 font-semibold ml-2"),
-				g.Text(fmt.Sprintf("← Product from Step %d", productStep.Index+1)),
+				ghtml.Class("inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded ml-2"),
+				g.Text(fmt.Sprintf("← from step %d", productStep.Index+1)),
 			))
 		} else {
 			details = append(details, ghtml.Span(
@@ -1074,34 +1616,27 @@ func (s *AdminFrontendServer) renderSingleVessel(vessel *mealplanningsvc.RecipeS
 		vesselName = vessel.Name
 	}
 
+	// Regular vessel - show name
+	details = append(details, ghtml.Span(
+		ghtml.Class("font-medium"),
+		g.Text(vesselName),
+	))
+
 	// Check if this vessel comes from a previous step
 	if vessel.RecipeStepProductId != nil {
 		productStep := s.findStepWithProduct(*vessel.RecipeStepProductId, allSteps)
 		if productStep != nil {
-			// Format as "vessel name from step X" without quantity
 			details = append(details, ghtml.Span(
-				ghtml.Class("font-medium"),
-				g.Text(fmt.Sprintf("%s from step %d", vesselName, productStep.Index+1)),
+				ghtml.Class("inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded ml-2"),
+				g.Text(fmt.Sprintf("← from step %d", productStep.Index+1)),
 			))
 		} else {
 			// Fallback if step not found
-			details = append(details,
-				ghtml.Span(
-					ghtml.Class("font-medium"),
-					g.Text(vesselName),
-				),
-				ghtml.Span(
-					ghtml.Class("text-blue-600 ml-2"),
-					g.Text(fmt.Sprintf("← Product ID: %s", *vessel.RecipeStepProductId)),
-				),
-			)
+			details = append(details, ghtml.Span(
+				ghtml.Class("text-blue-600 ml-2"),
+				g.Text(fmt.Sprintf("← Product ID: %s", *vessel.RecipeStepProductId)),
+			))
 		}
-	} else {
-		// Regular vessel - show name
-		details = append(details, ghtml.Span(
-			ghtml.Class("font-medium"),
-			g.Text(vesselName),
-		))
 	}
 
 	// MeasurementQuantity (only show if not 1)

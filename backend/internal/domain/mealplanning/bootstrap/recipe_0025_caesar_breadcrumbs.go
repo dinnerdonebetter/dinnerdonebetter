@@ -46,19 +46,15 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 	stirGarlicVIP := enums.IngredientPreparations[stirPrep.ID][garlic.ID]
 	stirBreadcrumbsVIP := enums.IngredientPreparations[stirPrep.ID][breadcrumbs.ID]
 	stirLemonVIP := enums.IngredientPreparations[stirPrep.ID][lemon.ID]
-	stirSkilletVPV := enums.PreparationVessels[stirPrep.ID][smallNonstickSkillet.ID]
 	stirSpatulaVPI := enums.PreparationInstruments[stirPrep.ID][rubberSpatula.ID]
 
 	mixButterVIP := enums.IngredientPreparations[mixPrep.ID][saltedButter.ID]
-	mixSkilletVPV := enums.PreparationVessels[mixPrep.ID][smallNonstickSkillet.ID]
 
 	coatBreadcrumbsVIP := enums.IngredientPreparations[coatPrep.ID][breadcrumbs.ID]
-	coatSkilletVPV := enums.PreparationVessels[coatPrep.ID][smallNonstickSkillet.ID]
 	coatSpatulaVPI := enums.PreparationInstruments[coatPrep.ID][rubberSpatula.ID]
 
 	seasonBreadcrumbsVIP := enums.IngredientPreparations[seasonPrep.ID][breadcrumbs.ID]
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
-	seasonSkilletVPV := enums.PreparationVessels[seasonPrep.ID][smallNonstickSkillet.ID]
 
 	transferBreadcrumbsVIP := enums.IngredientPreparations[transferPrep.ID][breadcrumbs.ID]
 	transferSmallBowlVPV := enums.PreparationVessels[transferPrep.ID][smallBowl.ID]
@@ -104,6 +100,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -151,8 +152,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -167,6 +169,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -192,8 +199,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &mixSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -208,6 +216,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -246,8 +259,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -262,6 +276,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -297,8 +316,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coatSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -313,6 +333,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -351,8 +376,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -367,6 +393,11 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](0.25),
 				},
+			},
+			{
+				Name:  "small nonstick skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -399,8 +430,9 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonSkilletVPV.ID,
-				Name:                     "small nonstick skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "small nonstick skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

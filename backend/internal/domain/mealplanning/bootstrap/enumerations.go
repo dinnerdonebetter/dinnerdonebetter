@@ -358,6 +358,7 @@ func CreateEnumerations(ctx context.Context, repo mealplanning.Repository, logge
 		{"milliliter", "Metric unit of volume", "milliliters", "milliliter", true, true},
 		{"liter", "Metric unit of volume equal to 1000 milliliters", "liters", "liter", true, true},
 		{"cup", "A volumetric measurement equal to 240 milliliters", "cups", "cup", true, false},
+		{"quart", "Imperial unit of volume equal to 2 pints or approximately 946 milliliters", "quarts", "quart", true, false},
 		{"sprig", "A small stem with leaves, typically herbs", "sprigs", "sprig", false, false},
 		{"tablespoon", "A volumetric measurement equal to 15 milliliters", "tablespoons", "tablespoon", true, false},
 		{"teaspoon", "A volumetric measurement equal to 5 milliliters", "teaspoons", "teaspoon", true, false},
@@ -2760,10 +2761,12 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 	porkGarlic := enums.Ingredients["garlic"]
 	porkVegOil := enums.Ingredients["vegetable oil"]
 	porkButter := enums.Ingredients["butter"]
+	porkWater := enums.Ingredients["water"]
 
 	// Get measurement units for pork chops recipe
 	porkUnitMeasurement := enums.MeasurementUnits["unit"]
 	porkTablespoonMeasurement := enums.MeasurementUnits["tablespoon"]
+	porkQuartMeasurement := enums.MeasurementUnits["quart"]
 
 	// Get instruments for pork chops recipe
 	porkPaperTowels := enums.Instruments["paper towels"]
@@ -2813,6 +2816,11 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 
+	// Water for heat step
+	if err = createVIP(porkHeatPrep, porkWater); err != nil {
+		return err
+	}
+
 	// === PORK CHOP INGREDIENT-MEASUREMENT UNIT LINKS ===
 	if err = createVIMU(porkChop, porkUnitMeasurement); err != nil {
 		return err
@@ -2824,6 +2832,9 @@ func createSteakRecipeBridgeEntries(ctx context.Context, repo mealplanning.Repos
 		return err
 	}
 	if err = createVIMU(porkVegOil, porkTablespoonMeasurement); err != nil {
+		return err
+	}
+	if err = createVIMU(porkWater, porkQuartMeasurement); err != nil {
 		return err
 	}
 

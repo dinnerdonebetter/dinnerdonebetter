@@ -96,11 +96,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Pan-sear preparation bridges
 	panSearTongsVPI := enums.PreparationInstruments[panSearPrep.ID][tongs.ID]
-	panSearSkilletVPV := enums.PreparationVessels[panSearPrep.ID][stainlessSteelSkillet.ID]
 
 	// Roast preparation bridges
 	roastThermometerVPI := enums.PreparationInstruments[roastPrep.ID][thermometer.ID]
-	roastSkilletVPV := enums.PreparationVessels[roastPrep.ID][stainlessSteelSkillet.ID]
 	roastOvenVPV := enums.PreparationVessels[roastPrep.ID][oven.ID]
 
 	// Rest preparation bridges
@@ -406,12 +404,21 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "heated oil in skillet",
+				Name:              "pre-heated oil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](15),
+				},
+			},
+			{
+				Name:  "pre-heated skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+				MeasurementQuantity: types.OptionalFloat32Range{
+					Min: pointer.To[float32](1),
+					Max: pointer.To[float32](1),
 				},
 			},
 		},
@@ -500,10 +507,12 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &panSearSkilletVPV.ID,
-				Name:                     "stainless steel skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "stainless steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
+					Max: pointer.To[uint16](1),
 				},
 			},
 		},
@@ -577,7 +586,6 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &roastSkilletVPV.ID,
 				Name:                            "stainless steel skillet with browned chicken",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,

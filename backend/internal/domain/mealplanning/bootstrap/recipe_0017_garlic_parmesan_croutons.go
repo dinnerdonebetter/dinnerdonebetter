@@ -69,12 +69,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 	// Toss preparation bridges
 	tossBreadVIP := enums.IngredientPreparations[tossPrep.ID][heartyBread.ID]
 	tossParmesanVIP := enums.IngredientPreparations[tossPrep.ID][parmesanCheese.ID]
-	tossLargeBowlVPV := enums.PreparationVessels[tossPrep.ID][largeBowl.ID]
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
-	seasonLargeBowlVPV := enums.PreparationVessels[seasonPrep.ID][largeBowl.ID]
 
 	// Transfer preparation bridges
 	transferBreadVIP := enums.IngredientPreparations[transferPrep.ID][heartyBread.ID]
@@ -82,12 +80,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Bake preparation bridges
 	bakeBreadVIP := enums.IngredientPreparations[bakePrep.ID][heartyBread.ID]
-	bakeBakingSheetVPV := enums.PreparationVessels[bakePrep.ID][bakingSheet.ID]
 	bakeOvenVPV := enums.PreparationVessels[bakePrep.ID][oven.ID]
 
 	// Cool preparation bridges
 	coolBreadVIP := enums.IngredientPreparations[coolPrep.ID][heartyBread.ID]
-	coolBakingSheetVPV := enums.PreparationVessels[coolPrep.ID][bakingSheet.ID]
 
 	// Measurement unit bridges
 	oliveOilTablespoonVIMU := enums.IngredientMeasurementUnits[oliveOil.ID][tablespoonMeasurement.ID]
@@ -217,6 +213,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "large bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -294,8 +295,9 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				Name:                     "large bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -310,6 +312,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -351,8 +358,9 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonLargeBowlVPV.ID,
-				Name:                     "large bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -367,6 +375,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -406,6 +419,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "rimmed baking sheet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -433,8 +451,9 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &bakeBakingSheetVPV.ID,
-				Name:                     "rimmed baking sheet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -467,6 +486,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "rimmed baking sheet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -498,8 +522,9 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
-				Name:                     "baking sheet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -539,8 +564,9 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coolBakingSheetVPV.ID,
-				Name:                     "baking sheet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "rimmed baking sheet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

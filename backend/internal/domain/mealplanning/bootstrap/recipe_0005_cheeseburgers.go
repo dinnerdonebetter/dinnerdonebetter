@@ -244,7 +244,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &smashSpatulaVPI.ID,
-				Name:                         "firm, stiff metal spatula",
+				Name:                         "metal spatula",
 				Quantity: types.Uint32RangeWithOptionalMax{
 					Min: 1,
 				},

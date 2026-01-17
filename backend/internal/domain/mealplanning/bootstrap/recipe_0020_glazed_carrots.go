@@ -77,34 +77,20 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 	addHoneyVIP := enums.IngredientPreparations[addPrep.ID][honey.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addBlackPepperVIP := enums.IngredientPreparations[addPrep.ID][blackPepper.ID]
-	addPanVPV := enums.PreparationVessels[addPrep.ID][pan.ID]
 	addSpoonVPI := enums.PreparationInstruments[addPrep.ID][spoon.ID]
 
 	// Boil preparation bridges
 	boilCarrotVIP := enums.IngredientPreparations[boilPrep.ID][carrot.ID]
-	boilPanVPV := enums.PreparationVessels[boilPrep.ID][pan.ID]
-
-	// Cover preparation bridges
-	coverPanVPV := enums.PreparationVessels[coverPrep.ID][pan.ID]
-
-	// Uncover preparation bridges
-	uncoverPanVPV := enums.PreparationVessels[uncoverPrep.ID][pan.ID]
 
 	// Reduce preparation bridges
-	reducePanVPV := enums.PreparationVessels[reducePrep.ID][pan.ID]
 	reduceSpoonVPI := enums.PreparationInstruments[reducePrep.ID][spoon.ID]
-
-	// Remove from heat preparation bridges
-	removeFromHeatPanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][pan.ID]
 
 	// Discard preparation bridges
 	discardSageVIP := enums.IngredientPreparations[discardPrep.ID][sage.ID]
-	discardPanVPV := enums.PreparationVessels[discardPrep.ID][pan.ID]
 
 	// Season preparation bridges
 	seasonCarrotVIP := enums.IngredientPreparations[seasonPrep.ID][carrot.ID]
 	seasonAppleCiderVinegarVIP := enums.IngredientPreparations[seasonPrep.ID][appleCiderVinegar.ID]
-	seasonPanVPV := enums.PreparationVessels[seasonPrep.ID][pan.ID]
 	seasonSpoonVPI := enums.PreparationInstruments[seasonPrep.ID][spoon.ID]
 
 	// Sprinkle preparation bridges
@@ -247,8 +233,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &addPanVPV.ID,
-				Name:                            "skillet with browning butter",
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -277,6 +262,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -446,8 +436,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &addPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -462,6 +453,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -484,8 +480,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &boilPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -500,6 +497,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -524,8 +526,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coverPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -549,6 +552,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -569,8 +577,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &uncoverPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -585,6 +594,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -619,8 +633,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &reducePanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -644,6 +659,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -664,8 +684,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &removeFromHeatPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -680,6 +701,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -702,8 +728,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &discardPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -718,6 +745,11 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -757,8 +789,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

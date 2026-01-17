@@ -70,14 +70,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	// Boil preparation bridges
 	boilMacaroniVIP := enums.IngredientPreparations[boilPrep.ID][elbowMacaroni.ID]
 	boilWoodenSpoonVPI := enums.PreparationInstruments[boilPrep.ID][woodenSpoon.ID]
-	boilSaucepanVPV := enums.PreparationVessels[boilPrep.ID][saucepan.ID]
-
-	// Cover preparation bridges
-	coverSaucepanVPV := enums.PreparationVessels[coverPrep.ID][saucepan.ID]
 
 	// Rest preparation bridges
 	restMacaroniVIP := enums.IngredientPreparations[restPrep.ID][elbowMacaroni.ID]
-	restSaucepanVPV := enums.PreparationVessels[restPrep.ID][saucepan.ID]
 
 	// Mix preparation bridges
 	mixEvaporatedMilkVIP := enums.IngredientPreparations[mixPrep.ID][evaporatedMilk.ID]
@@ -86,9 +81,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	mixGroundMustardVIP := enums.IngredientPreparations[mixPrep.ID][groundMustard.ID]
 	mixWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
 	mixMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
-
-	// Remove from heat preparation bridges
-	removeFromHeatSaucepanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][saucepan.ID]
 
 	// Toss preparation bridges
 	tossCheddarVIP := enums.IngredientPreparations[tossPrep.ID][cheddarCheese.ID]
@@ -100,25 +92,19 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	drainMacaroniVIP := enums.IngredientPreparations[drainPrep.ID][elbowMacaroni.ID]
 	drainColanderVPV := enums.PreparationVessels[drainPrep.ID][colander.ID]
 
-	// Add preparation bridges
-	addSaucepanVPV := enums.PreparationVessels[addPrep.ID][saucepan.ID]
-
 	// Stir preparation bridges
 	stirMacaroniVIP := enums.IngredientPreparations[stirPrep.ID][elbowMacaroni.ID]
 	stirButterVIP := enums.IngredientPreparations[stirPrep.ID][butter.ID]
-	stirSaucepanVPV := enums.PreparationVessels[stirPrep.ID][saucepan.ID]
 
 	// Cook preparation bridges
 	cookMacaroniVIP := enums.IngredientPreparations[cookPrep.ID][elbowMacaroni.ID]
 	cookCheddarVIP := enums.IngredientPreparations[cookPrep.ID][cheddarCheese.ID]
 	cookEvaporatedMilkVIP := enums.IngredientPreparations[cookPrep.ID][evaporatedMilk.ID]
 	cookWoodenSpoonVPI := enums.PreparationInstruments[cookPrep.ID][woodenSpoon.ID]
-	cookSaucepanVPV := enums.PreparationVessels[cookPrep.ID][saucepan.ID]
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonHotSauceVIP := enums.IngredientPreparations[seasonPrep.ID][hotSauce.ID]
-	seasonSaucepanVPV := enums.PreparationVessels[seasonPrep.ID][saucepan.ID]
 
 	// Cut preparation bridges
 	cutButterVIP := enums.IngredientPreparations[cutPrep.ID][butter.ID]
@@ -129,7 +115,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 	// Grate preparation bridges
 	grateCheddarVIP := enums.IngredientPreparations[gratePrep.ID][cheddarCheese.ID]
 	grateMicroplaneVPI := enums.PreparationInstruments[gratePrep.ID][microplane.ID]
-	grateCuttingBoardVPV := enums.PreparationVessels[gratePrep.ID][cuttingBoard.ID]
 
 	// Measurement unit bridges
 	macaroniPoundVIMU := enums.IngredientMeasurementUnits[elbowMacaroni.ID][poundMeasurement.ID]
@@ -198,6 +183,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
@@ -229,8 +219,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &boilSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -245,6 +236,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -266,8 +262,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coverSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -282,6 +279,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -303,8 +305,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &removeFromHeatSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -319,6 +322,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -345,8 +353,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &restSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -369,6 +378,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -464,15 +478,6 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidPreparationInstrumentID: &grateMicroplaneVPI.ID,
 				Name:                         "microplane",
 				Quantity: types.Uint32RangeWithOptionalMax{
-					Min: 1,
-				},
-			},
-		},
-		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
-			{
-				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
-				Name:                     "cutting board",
-				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
 			},
@@ -647,8 +652,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &addSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -663,6 +669,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -739,8 +750,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -763,6 +775,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -813,8 +830,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &cookSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](12),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -837,6 +855,11 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				MeasurementQuantity: types.OptionalFloat32Range{
 					Min: pointer.To[float32](1),
 				},
+			},
+			{
+				Name:  "large saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
 			},
 		},
 	}
@@ -878,8 +901,9 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](13),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "large saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
