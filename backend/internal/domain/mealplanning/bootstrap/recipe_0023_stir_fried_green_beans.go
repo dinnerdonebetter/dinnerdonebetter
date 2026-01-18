@@ -165,9 +165,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 0: Stem the green beans
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: trimPrep.ID,
-		Index:         0,
-		Notes:         "Stem the green beans, removing the tough stem end from each bean.",
+		PreparationID:        trimPrep.ID,
+		Index:                0,
+		ExplicitInstructions: "Stem the green beans, removing the tough stem end from each bean.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     vipID(trimGreenBeansVIP),
@@ -203,9 +203,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 1: Snap the green beans in half
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: snapPrep.ID,
-		Index:         1,
-		Notes:         "Snap each green bean in half; set aside.",
+		PreparationID:        snapPrep.ID,
+		Index:                1,
+		ExplicitInstructions: "Snap each green bean in half; set aside.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -235,9 +235,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 2: Smash the garlic cloves
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: smashPrep.ID,
-		Index:         2,
-		Notes:         "Smash the garlic cloves with the blunt side of the cleaver until the cloves are flattened.",
+		PreparationID:        smashPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Smash the garlic cloves with the blunt side of the cleaver until the cloves are flattened.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     vipID(smashGarlicVIP),
@@ -273,9 +273,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 3: Preheat the wok until smoking
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: preheatPrep.ID,
-		Index:         3,
-		Notes:         "Place your wok over the highest flame and let heat for 3 to 4 minutes, until the wok is smoking.",
+		PreparationID:        preheatPrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Place your wok over the highest flame and let heat for 3 to 4 minutes, until the wok is smoking.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](180),
 			Max: pointer.To[uint32](240),
@@ -306,9 +306,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 4: Swirl in the oil
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: swirPrep.ID,
-		Index:         4,
-		Notes:         "Quickly swirl in the oil or cooking fat.",
+		PreparationID:        swirPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Quickly swirl in the oil or cooking fat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     vipID(swirlLardVIP),
@@ -344,9 +344,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 5: Add the smashed garlic
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         5,
-		Notes:         "Toss in the smashed garlic.",
+		PreparationID:        addPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Toss in the smashed garlic.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -389,9 +389,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 6: Stir the garlic in the oil
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID,
-		Index:         6,
-		Notes:         "Move the garlic around in the oil for about 5 seconds.",
+		PreparationID:        stirPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Move the garlic around in the oil for about 5 seconds.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](5),
 		},
@@ -438,9 +438,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 7: Toss all the green beans into the wok
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: tossPrep.ID,
-		Index:         7,
-		Notes:         "Toss all the green beans into the wok.",
+		PreparationID:        tossPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Toss all the green beans into the wok.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -483,9 +483,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 8: Stir-fry the vegetables
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID,
-		Index:         8,
-		Notes:         "Rapidly stir the vegetables with a spatula or wooden spoon. Stir-fry for 2 to 4 minutes, until the green beans are still crisp and barely raw in the center. To check the doneness, taste a green bean after 2 minutes into the cooking.",
+		PreparationID:        stirPrep.ID,
+		Index:                8,
+		ExplicitInstructions: "Rapidly stir the vegetables with a spatula or wooden spoon. Stir-fry for 2 to 4 minutes, until the green beans are still crisp and barely raw in the center. To check the doneness, taste a green bean after 2 minutes into the cooking.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](120),
 			Max: pointer.To[uint32](240),
@@ -546,9 +546,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 9: Add salt and stock
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         9,
-		Notes:         "Toss in the salt and the stock.",
+		PreparationID:        addPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Toss in the salt and the stock.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
@@ -596,9 +596,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 10: Stir to coat the green beans
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID,
-		Index:         10,
-		Notes:         "Stir to coat the green beans with the liquid.",
+		PreparationID:        stirPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Stir to coat the green beans with the liquid.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
@@ -642,9 +642,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 11: Cover the wok and turn off the heat
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coverPrep.ID,
-		Index:         11,
-		Notes:         "Place a lid on the wok and turn off the heat.",
+		PreparationID:        coverPrep.ID,
+		Index:                11,
+		ExplicitInstructions: "Place a lid on the wok and turn off the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
@@ -680,9 +680,9 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 12: Let the stock finish cooking the green beans
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
-		Index:         12,
-		Notes:         "Let the stock gently finish cooking the green beans. The green beans will be done when they are still crisp and just cooked through in the center. Serve piping hot.",
+		PreparationID:        restPrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Let the stock gently finish cooking the green beans. The green beans will be done when they are still crisp and just cooked through in the center. Serve piping hot.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),

@@ -156,9 +156,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 0: Pick over the leafy vegetables, discarding any wilted or damaged leaves
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: inspectPrep.ID,
-		Index:         0,
-		Notes:         "Pick over the leafy vegetables, discarding any wilted or damaged leaves.",
+		PreparationID:        inspectPrep.ID,
+		Index:                0,
+		ExplicitInstructions: "Pick over the leafy vegetables, discarding any wilted or damaged leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &inspectLettuceVIP.ID,
@@ -406,9 +406,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 1: Wash everything in several changes of water until no dirt or grit remains
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: rinsePrep.ID,
-		Index:         1,
-		Notes:         "Wash everything in several changes of water until no dirt or grit remains.",
+		PreparationID:        rinsePrep.ID,
+		Index:                1,
+		ExplicitInstructions: "Wash everything in several changes of water until no dirt or grit remains.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
@@ -660,9 +660,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 2: Dry well in a salad spinner
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: dryPrep.ID,
-		Index:         2,
-		Notes:         "Dry well in a salad spinner.",
+		PreparationID:        dryPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Dry well in a salad spinner.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -914,9 +914,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 3: Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: slicePrep.ID,
-		Index:         3,
-		Notes:         "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
+		PreparationID:        slicePrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Cut lettuce leaves free of their cores, pick tender herbs from stems, and quarter, core, and slice tight leafy heads like radicchio and endive.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -997,9 +997,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 4: Combine all the dried greens into a mixed greens mixture
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
-		Index:         4,
-		Notes:         "Combine all the dried greens and herbs together in a large bowl.",
+		PreparationID:        mixPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Combine all the dried greens and herbs together in a large bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -1153,9 +1153,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	// Step 5: In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves
 	coatedState := enums.IngredientStates["coated"]
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: tossPrep.ID,
-		Index:         5,
-		Notes:         "In a large serving bowl, gently toss salad with just enough olive oil to gently coat leaves.",
+		PreparationID:        tossPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "In a large serving bowl, gently toss the salad with just enough olive oil to gently coat the leaves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -1225,9 +1225,9 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 6: Add splash of lemon juice and salt to taste, tossing to combine. Serve.
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         6,
-		Notes:         "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
+		PreparationID:        seasonPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Add a splash of lemon juice and salt to taste, tossing to combine. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),

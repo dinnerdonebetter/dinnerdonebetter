@@ -86,12 +86,10 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 	whiskOliveOilVIP := enums.IngredientPreparations[mixPrep.ID][oliveOil.ID]
 	whiskCanolaOilVIP := enums.IngredientPreparations[mixPrep.ID][canolaOil.ID]
 	whiskWhiskVPI := enums.PreparationInstruments[mixPrep.ID][whisk.ID]
-	whiskMediumBowlVPV := enums.PreparationVessels[mixPrep.ID][mediumBowl.ID]
 
 	// Season preparation bridges
 	seasonSaltVIP := enums.IngredientPreparations[seasonPrep.ID][salt.ID]
 	seasonPepperVIP := enums.IngredientPreparations[seasonPrep.ID][blackPepper.ID]
-	seasonMediumBowlVPV := enums.PreparationVessels[seasonPrep.ID][mediumBowl.ID]
 
 	// Transfer preparation bridges
 	transferMediumBowlVPV := enums.PreparationVessels[transferPrep.ID][mediumBowl.ID]
@@ -111,9 +109,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 0: Mince garlic
 	drStep0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mincePrep.ID,
-		Index:         0,
-		Notes:         "Mince the garlic cloves.",
+		PreparationID:        mincePrep.ID,
+		Index:                0,
+		ExplicitInstructions: "Mince the garlic cloves.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &minceGarlicDressingVIP.ID,
@@ -158,9 +156,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 1: Combine olive oil with minced garlic and whisk
 	drStep1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: combinePrep.ID,
-		Index:         1,
-		Notes:         "In a small bowl, combine 3 tablespoons olive oil with minced garlic and whisk for 30 seconds.",
+		PreparationID:        combinePrep.ID,
+		Index:                1,
+		ExplicitInstructions: "In a small bowl, combine 3 tablespoons olive oil with the minced garlic and whisk for 30 seconds.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &combineOliveOilDressingVIP.ID,
@@ -213,9 +211,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 2: Press garlic through fine-mesh strainer to get pressed garlic
 	drStep2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: pressPrep.ID,
-		Index:         2,
-		Notes:         "Transfer garlic oil mixture to a fine-mesh strainer set over a large bowl and press with the back of a spoon to extract as much oil as possible, leaving garlic behind. Reserve pressed garlic for dressing.",
+		PreparationID:        pressPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Transfer the garlic oil mixture to a fine-mesh strainer set over a large bowl and press with the back of a spoon to extract as much oil as possible, leaving the garlic behind. Reserve the pressed garlic for the dressing.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -276,9 +274,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 3: Combine dressing ingredients in immersion blender cup
 	drStep3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: blendPrep.ID,
-		Index:         3,
-		Notes:         "Combine egg yolk, lemon juice, anchovies, Worcestershire sauce, reserved pressed garlic, and 1/4 cup parmesan cheese in the bottom of a cup that just fits the head of an immersion blender. With blender running, slowly drizzle in canola oil until a smooth emulsion forms.",
+		PreparationID:        blendPrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Combine the egg yolk, lemon juice, anchovies, Worcestershire sauce, reserved pressed garlic, and 1/4 cup parmesan cheese in the bottom of a cup that just fits the head of an immersion blender. With the blender running, slowly drizzle in canola oil until a smooth emulsion forms.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &blendEggYolkVIP.ID,
@@ -382,9 +380,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 
 	// Step 4: Transfer mixture to medium bowl
 	drStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: transferPrep.ID,
-		Index:         4,
-		Notes:         "Transfer mixture to a medium bowl.",
+		PreparationID:        transferPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Transfer the mixture to a medium bowl.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
@@ -414,14 +412,19 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "medium bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 5: Whisk in remaining olive oil
 	drStep5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: mixPrep.ID,
-		Index:         5,
-		Notes:         "Whisking constantly, slowly drizzle in remaining 1/4 cup extra-virgin olive oil.",
+		PreparationID:        mixPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Whisking constantly, slowly drizzle in the remaining 1/4 cup extra-virgin olive oil.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -452,8 +455,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &whiskMediumBowlVPV.ID,
-				Name:                     "medium bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "medium bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -469,14 +473,19 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "medium bowl",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 6: Season to taste
 	drStep6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         6,
-		Notes:         "Season to taste generously with salt and pepper.",
+		PreparationID:        seasonPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Season to taste generously with salt and pepper.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
@@ -509,8 +518,9 @@ func CaesarDressingRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReq
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonMediumBowlVPV.ID,
-				Name:                     "medium bowl",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "medium bowl",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

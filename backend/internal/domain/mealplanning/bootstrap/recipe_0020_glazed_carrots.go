@@ -77,34 +77,20 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 	addHoneyVIP := enums.IngredientPreparations[addPrep.ID][honey.ID]
 	addSaltVIP := enums.IngredientPreparations[addPrep.ID][salt.ID]
 	addBlackPepperVIP := enums.IngredientPreparations[addPrep.ID][blackPepper.ID]
-	addPanVPV := enums.PreparationVessels[addPrep.ID][pan.ID]
 	addSpoonVPI := enums.PreparationInstruments[addPrep.ID][spoon.ID]
 
 	// Boil preparation bridges
 	boilCarrotVIP := enums.IngredientPreparations[boilPrep.ID][carrot.ID]
-	boilPanVPV := enums.PreparationVessels[boilPrep.ID][pan.ID]
-
-	// Cover preparation bridges
-	coverPanVPV := enums.PreparationVessels[coverPrep.ID][pan.ID]
-
-	// Uncover preparation bridges
-	uncoverPanVPV := enums.PreparationVessels[uncoverPrep.ID][pan.ID]
 
 	// Reduce preparation bridges
-	reducePanVPV := enums.PreparationVessels[reducePrep.ID][pan.ID]
 	reduceSpoonVPI := enums.PreparationInstruments[reducePrep.ID][spoon.ID]
-
-	// Remove from heat preparation bridges
-	removeFromHeatPanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][pan.ID]
 
 	// Discard preparation bridges
 	discardSageVIP := enums.IngredientPreparations[discardPrep.ID][sage.ID]
-	discardPanVPV := enums.PreparationVessels[discardPrep.ID][pan.ID]
 
 	// Season preparation bridges
 	seasonCarrotVIP := enums.IngredientPreparations[seasonPrep.ID][carrot.ID]
 	seasonAppleCiderVinegarVIP := enums.IngredientPreparations[seasonPrep.ID][appleCiderVinegar.ID]
-	seasonPanVPV := enums.PreparationVessels[seasonPrep.ID][pan.ID]
 	seasonSpoonVPI := enums.PreparationInstruments[seasonPrep.ID][spoon.ID]
 
 	// Sprinkle preparation bridges
@@ -146,9 +132,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 0: Melt butter in skillet over medium heat and cook until browned
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: meltPrep.ID,
-		Index:         0,
-		Notes:         "In a deep 12-inch stainless-steel skillet, melt butter over medium heat, stirring often, until melted, about 2 minutes. Once melted, continue to cook, stirring constantly, just until milk solids separate and sink to the bottom of the skillet and begin to darken, 2 to 3 minutes. Butter can go from brown to burnt quickly, so keep a close eye on it as you stir it.",
+		PreparationID:        meltPrep.ID,
+		Index:                0,
+		ExplicitInstructions: "In a deep 12-inch stainless-steel skillet, melt the butter over medium heat, stirring often, until melted, about 2 minutes. Once melted, continue to cook, stirring constantly, just until the milk solids separate and sink to the bottom of the skillet and begin to darken, 2 to 3 minutes. Butter can go from brown to burnt quickly, so keep a close eye on it as you stir it.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](240), // 4 minutes total (2 + 2)
 			Max: pointer.To[uint32](300), // 5 minutes total (2 + 3)
@@ -209,9 +195,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 1: Add sage sprigs and cook until crisp
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         1,
-		Notes:         "Add sage sprigs; cook, stirring constantly, until sage leaves darken and crisp and butter foams and browns, 1 to 2 minutes.",
+		PreparationID:        addPrep.ID,
+		Index:                1,
+		ExplicitInstructions: "Add the sage sprigs; cook, stirring constantly, until the sage leaves darken and crisp and the butter foams and browns, 1 to 2 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](60),  // 1 minute
 			Max: pointer.To[uint32](120), // 2 minutes
@@ -247,8 +233,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](0),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
-				ValidPreparationVesselID:        &addPanVPV.ID,
-				Name:                            "skillet with browning butter",
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -278,14 +263,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 2a: Peel carrots
 	step2a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: peelPrep.ID,
-		Index:         2,
-		Notes:         "Peel medium carrots.",
+		PreparationID:        peelPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "Peel the medium carrots.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &peelCarrotVIP.ID,
@@ -330,9 +320,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 2b: Slice carrots
 	step2b := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: slicePrep.ID,
-		Index:         3,
-		Notes:         "Slice peeled carrots on the bias into 1/2 inch–thick discs.",
+		PreparationID:        slicePrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Slice the peeled carrots on the bias into 1/2 inch–thick discs.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
@@ -377,9 +367,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 2: Add carrots and liquids
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: addPrep.ID,
-		Index:         4,
-		Notes:         "Quickly add carrots, apple cider, chicken or vegetable stock, honey, salt, and pepper to brown butter in skillet. Carrots should be almost submerged, if not, add a small amount of stock until they are.",
+		PreparationID:        addPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Quickly add the carrots, apple cider, chicken or vegetable stock, honey, salt, and pepper to the brown butter in the skillet. The carrots should be almost submerged; if not, add a small amount of stock until they are.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
@@ -446,8 +436,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &addPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -463,14 +454,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 3: Bring to a boil over high heat
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: boilPrep.ID,
-		Index:         5,
-		Notes:         "Bring to a boil over high heat.",
+		PreparationID:        boilPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Bring to a boil over high heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
@@ -484,8 +480,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &boilPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -501,14 +498,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 4: Cover and continue to boil
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coverPrep.ID,
-		Index:         6,
-		Notes:         "Cover, reduce heat to medium-high, and continue to boil, vigorously shaking the skillet occasionally, until carrots are crisp/tender and still firm in the center, about 8 minutes.",
+		PreparationID:        coverPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Cover, reduce the heat to medium-high, and continue to boil, vigorously shaking the skillet occasionally, until the carrots are crisp/tender and still firm in the center, about 8 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](480), // 8 minutes
 		},
@@ -524,8 +526,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coverPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -549,14 +552,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 5: Uncover and reduce to glaze
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: uncoverPrep.ID,
-		Index:         7,
-		Notes:         "Reduce heat to medium, uncover (the liquid should look creamy and still almost cover the carrots).",
+		PreparationID:        uncoverPrep.ID,
+		Index:                7,
+		ExplicitInstructions: "Reduce the heat to medium, uncover (the liquid should look creamy and still almost cover the carrots).",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
@@ -569,8 +577,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &uncoverPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](6),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -586,14 +595,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 6: Continue boiling until reduced to glaze
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: reducePrep.ID,
-		Index:         8,
-		Notes:         "Continue to boil, vigorously stirring and shaking skillet often, until the mixture is reduced to a glaze that coats and clings to the carrots, 12 to 14 minutes. If the sauce begins to break and you see oily, butter-colored specks, add a splash of water (about 2 tablespoons) and return to a vigorous simmer, stirring constantly, until the mixture looks creamy and homogenous again.",
+		PreparationID:        reducePrep.ID,
+		Index:                8,
+		ExplicitInstructions: "Continue to boil, vigorously stirring and shaking the skillet often, until the mixture is reduced to a glaze that coats and clings to the carrots, 12 to 14 minutes. If the sauce begins to break and you see oily, butter-colored specks, add a splash of water (about 2 tablespoons) and return to a vigorous simmer, stirring constantly, until the mixture looks creamy and homogenous again.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](720), // 12 minutes
 			Max: pointer.To[uint32](840), // 14 minutes
@@ -619,8 +633,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &reducePanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](7),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -644,14 +659,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 7: Remove from heat
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: removeFromHeatPrep.ID,
-		Index:         9,
-		Notes:         "Remove from heat.",
+		PreparationID:        removeFromHeatPrep.ID,
+		Index:                9,
+		ExplicitInstructions: "Remove from heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
@@ -664,8 +684,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &removeFromHeatPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](8),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -681,14 +702,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 8: Discard sage sprigs
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: discardPrep.ID,
-		Index:         10,
-		Notes:         "Discard sage sprigs.",
+		PreparationID:        discardPrep.ID,
+		Index:                10,
+		ExplicitInstructions: "Discard the sage sprigs.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
@@ -702,8 +728,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &discardPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](9),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -719,14 +746,19 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 					Min: pointer.To[float32](1),
 				},
 			},
+			{
+				Name:  "deep 12-inch stainless-steel skillet",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 9: Stir in vinegar and season to taste
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: seasonPrep.ID,
-		Index:         11,
-		Notes:         "Stir in apple cider vinegar and season with salt to taste.",
+		PreparationID:        seasonPrep.ID,
+		Index:                11,
+		ExplicitInstructions: "Stir in the apple cider vinegar and season with salt to taste.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
@@ -757,8 +789,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &seasonPanVPV.ID,
-				Name:                     "skillet",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](10),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "deep 12-inch stainless-steel skillet",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -779,9 +812,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 9a: Chop herbs
 	step9a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: chopPrep.ID,
-		Index:         12,
-		Notes:         "Chop fresh tender herbs (parsley, chives, and tarragon) into small pieces.",
+		PreparationID:        chopPrep.ID,
+		Index:                12,
+		ExplicitInstructions: "Chop the fresh tender herbs (parsley, chives, and tarragon) into small pieces.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &chopParsleyVIP.ID,
@@ -848,9 +881,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 10: Sprinkle with herbs and serve
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: sprinklePrep.ID,
-		Index:         13,
-		Notes:         "Sprinkle with chopped herbs. Serve immediately.",
+		PreparationID:        sprinklePrep.ID,
+		Index:                13,
+		ExplicitInstructions: "Sprinkle with the chopped herbs. Serve immediately.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](11),

@@ -53,22 +53,13 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 	// Stir preparation bridges
 	stirRiceVIP := enums.IngredientPreparations[stirPrep.ID][rice.ID]
 	stirWoodenSpoonVPI := enums.PreparationInstruments[stirPrep.ID][woodenSpoon.ID]
-	stirSaucepanVPV := enums.PreparationVessels[stirPrep.ID][saucepan.ID]
-
-	// Cover preparation bridges
-	coverSaucepanVPV := enums.PreparationVessels[coverPrep.ID][saucepan.ID]
-
-	// Remove from heat preparation bridges
-	removeFromHeatSaucepanVPV := enums.PreparationVessels[removeFromHeatPrep.ID][saucepan.ID]
 
 	// Rest preparation bridges
 	restRiceVIP := enums.IngredientPreparations[restPrep.ID][rice.ID]
-	restSaucepanVPV := enums.PreparationVessels[restPrep.ID][saucepan.ID]
 
 	// Fluff preparation bridges
 	fluffRiceVIP := enums.IngredientPreparations[fluffPrep.ID][rice.ID]
 	fluffForkVPI := enums.PreparationInstruments[fluffPrep.ID][fork.ID]
-	fluffSaucepanVPV := enums.PreparationVessels[fluffPrep.ID][saucepan.ID]
 
 	// Measurement unit bridges
 	riceCupVIMU := enums.IngredientMeasurementUnits[rice.ID][cupMeasurement.ID]
@@ -78,9 +69,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 0: Rinse rice until water runs clear
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: rinsePrep.ID,
-		Index:         0,
-		Notes:         "Rinse the rice in a bowl with cold water, swishing it around with your hand. Drain and repeat until the water runs clear.",
+		PreparationID:        rinsePrep.ID,
+		Index:                0,
+		ExplicitInstructions: "Rinse the rice in a bowl with cold water, swishing it around with your hand. Drain and repeat until the water runs clear.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &rinseRiceVIP.ID,
@@ -123,9 +114,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 1: Combine all ingredients in saucepan and bring to a simmer
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: simmerPrep.ID,
-		Index:         1,
-		Notes:         "Combine all ingredients in a 2-quart saucepan and bring to a simmer.",
+		PreparationID:        simmerPrep.ID,
+		Index:                1,
+		ExplicitInstructions: "Combine all ingredients in a 2-quart saucepan and bring to a simmer.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](0),
@@ -181,14 +172,19 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](2.75),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 2: Stir everything when it reaches a lively simmer
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: stirPrep.ID,
-		Index:         2,
-		Notes:         "As soon as the water reaches a lively simmer, give everything a good stir.",
+		PreparationID:        stirPrep.ID,
+		Index:                2,
+		ExplicitInstructions: "As soon as the water reaches a lively simmer, give everything a good stir.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](1),
@@ -212,8 +208,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &stirSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](1),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -229,14 +226,19 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](2.75),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 3: Cover the pot and lower heat
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: coverPrep.ID,
-		Index:         3,
-		Notes:         "Cover the pot and lower the heat as much as possible. Cook for 15 minutes.",
+		PreparationID:        coverPrep.ID,
+		Index:                3,
+		ExplicitInstructions: "Cover the pot and lower the heat as much as possible. Cook for 15 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](900), // 15 minutes
 		},
@@ -252,8 +254,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &coverSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](2),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -269,14 +272,19 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 4: Remove from heat
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: removeFromHeatPrep.ID,
-		Index:         4,
-		Notes:         "Turn off the burner and remove the pot from the heat.",
+		PreparationID:        removeFromHeatPrep.ID,
+		Index:                4,
+		ExplicitInstructions: "Turn off the burner and remove the pot from the heat.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
@@ -289,8 +297,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &removeFromHeatSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](3),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -306,14 +315,19 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 5: Rest
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: restPrep.ID,
-		Index:         5,
-		Notes:         "Let the pot sit for at least 5 minutes.",
+		PreparationID:        restPrep.ID,
+		Index:                5,
+		ExplicitInstructions: "Let the pot sit for at least 5 minutes.",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
 			Min: pointer.To[uint32](300), // 5 minutes
 		},
@@ -331,8 +345,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &restSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},
@@ -348,14 +363,19 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 					Min: pointer.To[float32](3),
 				},
 			},
+			{
+				Name:  "2-quart saucepan",
+				Type:  mealplanning.RecipeStepProductVesselType,
+				Index: 1,
+			},
 		},
 	}
 
 	// Step 6: Fluff with fork and serve
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID: fluffPrep.ID,
-		Index:         6,
-		Notes:         "Fluff with a fork and serve.",
+		PreparationID:        fluffPrep.ID,
+		Index:                6,
+		ExplicitInstructions: "Fluff with a fork and serve.",
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         pointer.To[uint64](5),
@@ -379,8 +399,9 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
-				ValidPreparationVesselID: &fluffSaucepanVPV.ID,
-				Name:                     "saucepan",
+				ProductOfRecipeStepIndex:        pointer.To[uint64](5),
+				ProductOfRecipeStepProductIndex: pointer.To[uint64](1),
+				Name:                            "2-quart saucepan",
 				Quantity: types.Uint16RangeWithOptionalMax{
 					Min: 1,
 				},

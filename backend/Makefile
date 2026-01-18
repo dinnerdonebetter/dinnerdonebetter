@@ -206,7 +206,7 @@ build:
 	$(SCRIPTS_DIR)/build.sh $(TOTAL_PACKAGE_LIST)
 
 .PHONY: test
-test: $(ARTIFACTS_DIR) vendor build
+test: $(ARTIFACTS_DIR) vendor
 	$(SCRIPTS_DIR)/test.sh
 
 .PHONY: dev

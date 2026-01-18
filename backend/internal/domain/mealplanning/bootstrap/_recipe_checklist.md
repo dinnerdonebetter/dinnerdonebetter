@@ -8,8 +8,8 @@
 - [x] `recipe_0006_simple_white_rice.go`
 - [x] `recipe_0007_ultra_fluffy_mashed_potatoes.go`
 - [x] `recipe_0008_caesar_roasted_broccoli.go` (breadcrumbs)
-- [ ] `recipe_0008_caesar_roasted_broccoli.go` (broccoli that uses breadcrumbs) (waiting on #1104)
-- [ ] `recipe_0009_haricots_verts_amandine.go` (needs #1105)
+- [x] `recipe_0008_caesar_roasted_broccoli.go` (broccoli that uses breadcrumbs) (waiting on #1104)
+- [x] `recipe_0009_haricots_verts_amandine.go` (needs #1105)
 - [x] `recipe_0010_mixed_green_salad.go`
 - [x] `recipe_0011_soy_sauce_braised_chicken_thighs.go`
 - [x] `recipe_0012_grilled_pork_tenderloin.go`

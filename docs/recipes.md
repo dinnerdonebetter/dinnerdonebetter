@@ -166,7 +166,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 
 ## Recipe Step Products
 
-Recipe steps produce **products** - the outputs of each step that can be used in subsequent steps or as final outputs. Products can be either **discrete** (countable items like patties, cookies, or slices) or **continuous** (bulk quantities like sauce, liquid, or powder).
+Recipe steps produce **products** - the outputs of each step that can be used in subsequent steps or as final outputs. Products can be either **discrete** (countable items like patties, cookies, or slices) or **continuous** (bulk quantities like sauce, liquid, or powder). Products can also be **vessels** or **instruments** that are passed between steps.
 
 ### Discrete Products
 
@@ -231,6 +231,55 @@ This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is a
 ### Determining Product Type
 
 A product is **discrete** if `ItemQuantity.Min` or `ItemQuantity.Max` is set (not null). A product is **continuous** if both `ItemQuantity.Min` and `ItemQuantity.Max` are null/omitted.
+
+### Vessel Product Chaining
+
+When a vessel (like a saucepan, pot, or skillet) is used throughout multiple steps of a recipe, it should be **chained** through the steps rather than having one step's vessel product used in multiple subsequent steps.
+
+**Pattern:**
+1. The first step that uses the vessel should reference it via `ValidPreparationVesselID` and output it as a vessel product
+2. Each subsequent step that uses the same vessel should:
+   - Consume the vessel product from the immediately previous step (using `ProductOfRecipeStepIndex` and `ProductOfRecipeStepProductIndex`)
+   - Output a new vessel product for the next step to use
+
+**Example - Simple White Rice Recipe:**
+```text
+Step 1 (Simmer): 
+  - Uses ValidPreparationVesselID for "2-quart saucepan"
+  - Outputs: "2-quart saucepan" (vessel product, index 1)
+
+Step 2 (Stir):
+  - Uses vessel product from Step 1
+  - Outputs: "2-quart saucepan" (vessel product, index 1)
+
+Step 3 (Cover):
+  - Uses vessel product from Step 2
+  - Outputs: "2-quart saucepan" (vessel product, index 1)
+
+Step 4 (Remove from heat):
+  - Uses vessel product from Step 3
+  - Outputs: "2-quart saucepan" (vessel product, index 1)
+
+Step 5 (Rest):
+  - Uses vessel product from Step 4
+  - Outputs: "2-quart saucepan" (vessel product, index 1)
+
+Step 6 (Fluff):
+  - Uses vessel product from Step 5
+  - (No output needed - final step)
+```
+
+This creates a linear chain where each step's vessel product is used in exactly one subsequent step, making the recipe flow clear and preventing confusion about vessel state.
+
+**When to Use Multiple References:**
+
+A vessel product should **rarely** be used in more than one subsequent step. This pattern would only be appropriate in exceptional cases such as:
+
+- **Parallel Processing**: When a vessel's contents are divided and used in multiple parallel steps (e.g., a pot of stock where some is used for soup and some for sauce in separate steps)
+- **Temporary Storage**: When a vessel serves as temporary storage while other work happens, then is used again later (e.g., a baking sheet that holds prepped ingredients, then is used again for baking)
+- **Shared Container**: When multiple steps need to access the same container simultaneously (e.g., a shared mixing bowl used by multiple people)
+
+In practice, these cases are extremely rare. The vast majority of recipes should use the chaining pattern described above.
 
 ## Option Groups (Alternative Ingredients, Instruments, and Vessels)
 
