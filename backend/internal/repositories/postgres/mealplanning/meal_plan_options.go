@@ -205,6 +205,11 @@ func (q *repository) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mea
 
 	x := []*mealplanning.MealPlanOption{}
 	for _, result := range results {
+		meal, mealErr := q.GetMeal(ctx, result.MealID)
+		if mealErr != nil {
+			return nil, observability.PrepareAndLogError(mealErr, logger, span, "getting meal for meal plan")
+		}
+
 		x = append(x, &mealplanning.MealPlanOption{
 			CreatedAt:              result.CreatedAt,
 			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -215,12 +220,10 @@ func (q *repository) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mea
 			BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 			ID:                     result.ID,
 			Votes:                  nil,
-			Meal: mealplanning.Meal{
-				ID: result.MealID,
-			},
-			MealScale: database.Float32FromString(result.MealScale),
-			Chosen:    result.Chosen,
-			TieBroken: result.Tiebroken,
+			Meal:                   *meal,
+			MealScale:              database.Float32FromString(result.MealScale),
+			Chosen:                 result.Chosen,
+			TieBroken:              result.Tiebroken,
 		})
 	}
 

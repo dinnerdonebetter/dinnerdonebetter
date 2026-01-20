@@ -19,11 +19,11 @@ struct CreateMealPlanView: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewModel: CreateMealPlanViewModel?
   @FocusState var focusedField: Field?
-  @State private var showOptionSelectionModal = false
-  @State private var recipesForOptionSelection: [Mealplanning_Recipe] = []
+  @State private var recipesForOptionSelection: [Mealplanning_Recipe]?
 
   enum Field: Hashable {
     case mealPlanName
+    case eventNotes(UUID)  // Per-event notes
     case searchQuery(UUID)  // Per-event search
   }
 
@@ -54,7 +54,6 @@ struct CreateMealPlanView: View {
             // Create Button
             createButton(
               viewModel: viewModel,
-              showOptionSelectionModal: $showOptionSelectionModal,
               recipesForOptionSelection: $recipesForOptionSelection
             )
           }
@@ -63,36 +62,47 @@ struct CreateMealPlanView: View {
           .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
-        .sheet(isPresented: $showOptionSelectionModal) {
-          RecipeOptionSelectionView(
-            isPresented: $showOptionSelectionModal,
-            recipes: recipesForOptionSelection,
-            onSave: { ingredientSelections in
-              guard let viewModel = self.viewModel else { return }
+        .sheet(isPresented: Binding(
+          get: { recipesForOptionSelection != nil },
+          set: { if !$0 { recipesForOptionSelection = nil } }
+        )) {
+          if let recipes = recipesForOptionSelection {
+            RecipeOptionSelectionView(
+              isPresented: Binding(
+                get: { recipesForOptionSelection != nil },
+                set: { if !$0 { recipesForOptionSelection = nil } }
+              ),
+              recipes: recipes,
+              onSave: { ingredientSelections in
+                guard let viewModel = self.viewModel else { return }
 
-              // If selections are empty (user skipped), compute defaults
-              var finalSelections = ingredientSelections
-              if finalSelections.isEmpty {
-                // Compute default selections for all recipes
-                for recipe in recipesForOptionSelection {
-                  let defaults = viewModel.getDefaultOptionSelections(for: recipe)
-                  if !defaults.isEmpty {
-                    finalSelections[recipe.id] = defaults
+                // If selections are empty (user skipped), compute defaults
+                var finalSelections = ingredientSelections
+                if finalSelections.isEmpty {
+                  // Compute default selections for all recipes
+                  for recipe in recipes {
+                    let defaults = viewModel.getDefaultOptionSelections(for: recipe)
+                    if !defaults.isEmpty {
+                      finalSelections[recipe.id] = defaults
+                    }
+                  }
+                }
+
+                viewModel.setOptionSelections(ingredientSelections: finalSelections)
+                // Continue with meal plan creation
+                Task {
+                  let success = await viewModel.createMealPlan()
+                  if success {
+                    NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
+                    dismiss()
                   }
                 }
               }
-
-              viewModel.setOptionSelections(ingredientSelections: finalSelections)
-              // Continue with meal plan creation
-              Task {
-                let success = await viewModel.createMealPlan()
-                if success {
-                  NotificationCenter.default.post(name: .mealPlanCreated, object: nil)
-                  dismiss()
-                }
-              }
-            }
-          )
+            )
+          } else {
+            Text("No recipes provided")
+              .padding()
+          }
         }
       } else {
         ProgressView("Initializing...")
@@ -161,9 +171,16 @@ struct CreateMealPlanView: View {
 
           // Start Time
           VStack(alignment: .leading, spacing: 8) {
-            Text("Start Time")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
+            HStack {
+              Text("Start Time")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+              if viewModel.getValidationErrors().eventTimelineErrors[event.id] == true {
+                Image(systemName: "exclamationmark.circle.fill")
+                  .foregroundColor(.red)
+                  .font(.caption)
+              }
+            }
             DatePicker(
               "Start Time",
               selection: Binding(
@@ -176,6 +193,11 @@ struct CreateMealPlanView: View {
             )
             .datePickerStyle(.compact)
             .labelsHidden()
+            if viewModel.getValidationErrors().eventTimelineErrors[event.id] == true {
+              Text("Event times must be at least 12 hours from now")
+                .font(.caption)
+                .foregroundColor(.red)
+            }
           }
           .frame(maxWidth: .infinity)
 
@@ -227,9 +249,16 @@ struct CreateMealPlanView: View {
 
         // Date and Time
         VStack(alignment: .leading, spacing: 12) {
-          Text("Start Time")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+          HStack {
+            Text("Start Time")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+            if viewModel.getValidationErrors().eventTimelineErrors[event.id] == true {
+              Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.red)
+                .font(.caption)
+            }
+          }
           DatePicker(
             "Start Time",
             selection: Binding(
@@ -241,6 +270,11 @@ struct CreateMealPlanView: View {
             displayedComponents: [.date, .hourAndMinute]
           )
           .datePickerStyle(.compact)
+          if viewModel.getValidationErrors().eventTimelineErrors[event.id] == true {
+            Text("Event times must be at least 12 hours from now")
+              .font(.caption)
+              .foregroundColor(.red)
+          }
         }
 
         VStack(alignment: .leading, spacing: 12) {
@@ -261,6 +295,9 @@ struct CreateMealPlanView: View {
         }
       }
 
+      // Notes Section
+      notesSection(event: event, viewModel: viewModel)
+
       // Search Section
       searchSection(event: event, viewModel: viewModel)
 
@@ -273,6 +310,11 @@ struct CreateMealPlanView: View {
       let filteredResults = viewModel.filteredSearchResults(for: event)
       if !filteredResults.isEmpty {
         searchResultsSection(event: event, filteredResults: filteredResults, viewModel: viewModel)
+      } else if !event.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        && !event.isSearching && event.searchError == nil && event.searchResults.isEmpty
+      {
+        // Show "no results" message if search was performed but returned no results
+        noSearchResultsSection()
       }
     }
     .padding()
@@ -282,6 +324,28 @@ struct CreateMealPlanView: View {
       RoundedRectangle(cornerRadius: 10)
         .stroke(Color.blue.opacity(0.3), lineWidth: 1)
     )
+  }
+
+  // MARK: - Notes Section (per event)
+
+  func notesSection(event: MealPlanEvent, viewModel: CreateMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Notes (Optional)")
+        .font(.headline)
+      TextField(
+        "Add notes for this event...",
+        text: Binding(
+          get: { event.notes },
+          set: { newValue in
+            viewModel.updateEventNotes(event.id, notes: newValue)
+          }
+        ),
+        axis: .vertical
+      )
+      .textFieldStyle(.roundedBorder)
+      .lineLimit(3...6)
+      .focused($focusedField, equals: .eventNotes(event.id))
+    }
   }
 
   // MARK: - Search Section (per event)
@@ -388,6 +452,27 @@ struct CreateMealPlanView: View {
           }
         )
       }
+    }
+  }
+
+  // MARK: - No Search Results Section
+
+  func noSearchResultsSection() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Search Results")
+        .font(.headline)
+
+      HStack {
+        Image(systemName: "magnifyingglass")
+          .foregroundColor(.secondary)
+        Text("No meals found")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      }
+      .padding()
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color(.systemGray6))
+      .cornerRadius(8)
     }
   }
 

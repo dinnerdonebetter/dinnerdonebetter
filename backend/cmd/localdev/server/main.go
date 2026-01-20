@@ -37,6 +37,12 @@ import (
 
 const (
 	apiConfigurationFilepath = "deploy/environments/testing/config_files/integration-tests-config.json"
+	// createMealPlansAndVotes controls whether meal plans and votes are created during localdev startup.
+	// Set to true via environment variable CREATE_MEAL_PLANS_AND_VOTES=true to enable.
+)
+
+var (
+	createMealPlansAndVotes = os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"
 )
 
 func cloneTime(t time.Time) time.Time {
@@ -316,6 +322,12 @@ func main() {
 		}),
 		// Create meal plan with 3 chicken dishes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping meal plan creation (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -427,6 +439,12 @@ func main() {
 		}),
 		// Create finalized meal plan with votes and extend current meal plan deadline
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping finalized meal plan and vote creation (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -604,6 +622,12 @@ func main() {
 		}),
 		// Run grocery list initializer and task creator workers for finalized meal plans
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping grocery list and task creator workers (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			logger.Info("Running grocery list initializer and task creator workers...")
 
 			// Build grocery list initializer worker

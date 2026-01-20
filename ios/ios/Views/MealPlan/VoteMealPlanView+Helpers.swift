@@ -31,8 +31,7 @@ extension VoteMealPlanView {
           List {
             ForEach(Array(ballot.rankedOptions.enumerated()), id: \.element.id) { index, option in
               rankedOptionCard(option: option, rank: index + 1, event: event)
-                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
-                .listRowBackground(Color(.systemBackground))
+                .listRowSeparator(.visible)
             }
             .onMove { source, destination in
               if !ballot.isLocked {
@@ -42,7 +41,6 @@ extension VoteMealPlanView {
           }
           .listStyle(.plain)
           .frame(minHeight: CGFloat(ballot.rankedOptions.count * 80))
-          .scrollContentBackground(.hidden)
           .environment(\.editMode, ballot.isLocked ? .constant(.inactive) : editMode)
         }
       }
@@ -81,15 +79,8 @@ extension VoteMealPlanView {
       }
 
       Spacer()
-
-      // Drag handle
-      Image(systemName: "line.3.horizontal")
-        .foregroundColor(.secondary)
     }
-    .padding()
-    .background(Color(.systemBackground))
-    .cornerRadius(8)
-    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+    .padding(.vertical, 8)
   }
 
   func rankColor(_ rank: Int) -> Color {
