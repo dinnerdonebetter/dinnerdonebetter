@@ -277,6 +277,34 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "FindMealPlansForDates",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT DISTINCT
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s <= sqlc.arg(end_time)
+	AND %s.%s >= sqlc.arg(start_time)
+ORDER BY %s.%s;`,
+					strings.Join(applyToEach(mealPlansColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", mealPlansTableName, s)
+					}), ",\n\t"),
+					mealPlansTableName,
+					mealPlanEventsTableName, mealPlansTableName, idColumn, mealPlanEventsTableName, belongsToMealPlanColumn,
+					mealPlansTableName, archivedAtColumn,
+					mealPlanEventsTableName, archivedAtColumn,
+					mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn,
+					mealPlanEventsTableName, "starts_at",
+					mealPlanEventsTableName, "ends_at",
+					mealPlansTableName, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "MarkMealPlanAsGroceryListInitialized",
 					Type: ExecType,
 				},

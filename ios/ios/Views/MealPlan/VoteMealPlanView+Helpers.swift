@@ -21,7 +21,19 @@ extension VoteMealPlanView {
         .padding(.horizontal, 4)
 
       if let ballot = viewModel.getBallot(for: event.id) {
-        if ballot.rankedOptions.isEmpty {
+        if ballot.isAbstained {
+          VStack(spacing: 8) {
+            Image(systemName: "hand.raised.fill")
+              .font(.largeTitle)
+              .foregroundColor(.red)
+            Text("You have abstained from voting on this event")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .multilineTextAlignment(.center)
+          }
+          .frame(maxWidth: .infinity)
+          .padding()
+        } else if ballot.rankedOptions.isEmpty {
           Text("No options available")
             .font(.subheadline)
             .foregroundColor(.secondary)

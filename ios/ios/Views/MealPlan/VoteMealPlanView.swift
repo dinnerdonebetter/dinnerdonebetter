@@ -12,7 +12,6 @@ struct VoteMealPlanView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Environment(\.dismiss) private var dismiss
   @State private var viewModel: VoteMealPlanViewModel?
-  @State private var currentEventIndex = 0
   @State private var editMode: EditMode = .active
 
   let mealPlan: Mealplanning_MealPlan
@@ -27,19 +26,27 @@ struct VoteMealPlanView: View {
       Group {
         if let viewModel = viewModel {
           VStack(spacing: 0) {
-            // Event indicator
-            eventIndicator(viewModel: viewModel)
+            // Static header with meal plan details
+            mealPlanHeader(viewModel: viewModel)
 
-            // Swipeable events
-            TabView(selection: $currentEventIndex) {
-              ForEach(Array(viewModel.mealPlan.events.enumerated()), id: \.element.id) {
-                index, event in
-                eventVotingView(event: event, index: index, viewModel: viewModel)
-                  .tag(index)
+            // Side-scrolling events
+            GeometryReader { geometry in
+              ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: true) {
+                  HStack(spacing: 16) {
+                    ForEach(Array(viewModel.mealPlan.events.enumerated()), id: \.element.id) {
+                      index, event in
+                      eventVotingView(
+                        event: event, index: index, viewModel: viewModel, scrollProxy: proxy
+                      )
+                      .frame(width: geometry.size.width - 32)
+                      .id(index)
+                    }
+                  }
+                  .padding(.horizontal, 16)
+                }
               }
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
 
             // Submit button (only shown when all ballots are complete and locked)
             if viewModel.canSubmit {
@@ -47,9 +54,7 @@ struct VoteMealPlanView: View {
                 .padding()
             }
           }
-          .navigationTitle(
-            viewModel.mealPlan.notes.isEmpty ? "Vote on Meal Plan" : viewModel.mealPlan.notes
-          )
+          .navigationTitle("Vote on Meal Plan")
           .navigationBarTitleDisplayMode(.inline)
           .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -78,7 +83,11 @@ struct VoteMealPlanView: View {
               dismiss()
             }
           } message: {
-            Text("Your votes have been submitted successfully!")
+            Text(
+              viewModel.isUpdateMode
+                ? "Your votes have been updated successfully!"
+                : "Your votes have been submitted successfully!"
+            )
           }
         } else {
           ProgressView("Initializing...")
@@ -93,95 +102,110 @@ struct VoteMealPlanView: View {
     }
   }
 
-  // MARK: - Event Indicator
+  // MARK: - Meal Plan Header
 
-  private func eventIndicator(viewModel: VoteMealPlanViewModel) -> some View {
-    let hasMultipleEvents = viewModel.mealPlan.events.count > 1
-    let canGoLeft = currentEventIndex > 0
-    let canGoRight = currentEventIndex < viewModel.mealPlan.events.count - 1
+  private func deadlineDateView(deadline: SwiftProtobuf.Google_Protobuf_Timestamp) -> some View {
+    let deadlineDate = HomeViewModel.timestampToDate(deadline)
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .short
+    
+    return HStack {
+      Image(systemName: "clock")
+        .foregroundColor(.secondary)
+        .font(.caption)
+      Text(formatter.string(from: deadlineDate))
+        .font(.caption)
+        .foregroundColor(.secondary)
+    }
+  }
 
-    return HStack(spacing: 12) {
-      // Left arrow (only show if there are multiple events and we can go left)
-      if hasMultipleEvents && canGoLeft {
-        Button(
-          action: {
-            withAnimation {
-              currentEventIndex = max(0, currentEventIndex - 1)
-            }
-          },
-          label: {
-            Image(systemName: "chevron.left.circle.fill")
-              .font(.title3)
-              .foregroundColor(.blue)
-          })
-      } else if hasMultipleEvents {
-        // Spacer to maintain alignment when arrow is hidden
-        Image(systemName: "chevron.left.circle.fill")
-          .font(.title3)
-          .foregroundColor(.clear)
+  private func mealPlanHeader(viewModel: VoteMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 16) {
+      // Title and time range
+      VStack(alignment: .leading, spacing: 4) {
+        Text(viewModel.mealPlan.notes.isEmpty ? "Meal Plan" : viewModel.mealPlan.notes)
+          .font(.title2)
+          .fontWeight(.bold)
+        
+        Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
+          .font(.subheadline)
+          .foregroundColor(.secondary)
       }
 
-      // Event counter
-      VStack(spacing: 4) {
-        Text("Event \(currentEventIndex + 1) of \(viewModel.mealPlan.events.count)")
-          .font(.headline)
-          .foregroundColor(.primary)
+      Divider()
 
-        if hasMultipleEvents {
-          Text("Swipe to see other events")
-            .font(.caption)
-            .foregroundColor(.secondary)
+      // Countdown timer section
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Voting Deadline")
+          .font(.headline)
+        
+        // Deadline date/time with countdown timer
+        HStack(spacing: 12) {
+          deadlineDateView(deadline: viewModel.mealPlan.votingDeadline)
+          VoteDeadlineCountdown(deadline: viewModel.mealPlan.votingDeadline)
         }
       }
-      .frame(maxWidth: .infinity)
 
-      // Right arrow (only show if there are multiple events and we can go right)
-      if hasMultipleEvents && canGoRight {
-        Button(
-          action: {
-            withAnimation {
-              currentEventIndex = min(viewModel.mealPlan.events.count - 1, currentEventIndex + 1)
-            }
-          },
-          label: {
-            Image(systemName: "chevron.right.circle.fill")
-              .font(.title3)
-              .foregroundColor(.blue)
-          })
-      } else if hasMultipleEvents {
-        // Spacer to maintain alignment when arrow is hidden
-        Image(systemName: "chevron.right.circle.fill")
-          .font(.title3)
-          .foregroundColor(.clear)
+      // Event counter (if multiple events)
+      if viewModel.mealPlan.events.count > 1 {
+        Divider()
+        HStack {
+          Image(systemName: "calendar")
+            .foregroundColor(.secondary)
+            .font(.caption)
+          Text("\(viewModel.mealPlan.events.count) events")
+            .font(.caption)
+            .foregroundColor(.secondary)
+          Spacer()
+          Text("Swipe horizontally to view all")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .italic()
+        }
       }
     }
-    .padding(.horizontal)
-    .padding(.vertical, 12)
+    .padding()
     .background(Color(.systemGray6))
   }
 
   // MARK: - Event Voting View
 
   private func eventVotingView(
-    event: Mealplanning_MealPlanEvent, index: Int, viewModel: VoteMealPlanViewModel
+    event: Mealplanning_MealPlanEvent, index: Int, viewModel: VoteMealPlanViewModel,
+    scrollProxy: ScrollViewProxy
   ) -> some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 16) {
         // Event header
         eventHeader(event: event)
 
+        // Abstain button (only show if not already abstained and not already voted)
+        if let ballot = viewModel.getBallot(for: event.id),
+          !ballot.isAbstained,
+          !viewModel.hasUserVotedOnEvent(eventID: event.id)
+        {
+          abstainButton(
+            event: event, index: index, viewModel: viewModel, scrollProxy: scrollProxy
+          )
+        }
+
         // Lock status
         lockStatusView(event: event, viewModel: viewModel)
 
         // Instructions
-        instructionsView(event: event)
+        instructionsView(event: event, viewModel: viewModel)
 
         // Ranked options list (drag and drop)
         rankedOptionsList(event: event, viewModel: viewModel, editMode: $editMode)
 
-        // Lock button
+        // Lock/Update button
         if let ballot = viewModel.getBallot(for: event.id) {
-          LockButtonView(event: event, ballot: ballot) {
+          LockButtonView(
+            event: event,
+            ballot: ballot,
+            isUpdateMode: viewModel.hasUserVotedOnEvent(eventID: event.id) && viewModel.isDeadlineActive
+          ) {
             viewModel.toggleLock(eventID: event.id)
           }
           .padding(.top, 8)
@@ -189,6 +213,40 @@ struct VoteMealPlanView: View {
       }
       .padding()
     }
+  }
+  
+  private func abstainButton(
+    event: Mealplanning_MealPlanEvent, index: Int, viewModel: VoteMealPlanViewModel,
+    scrollProxy: ScrollViewProxy
+  ) -> some View {
+    Button(
+      action: {
+        Task {
+          let success = await viewModel.abstainFromEvent(eventID: event.id)
+          if success {
+            // Scroll to next event if available
+            let nextIndex = index + 1
+            if nextIndex < viewModel.mealPlan.events.count {
+              withAnimation {
+                scrollProxy.scrollTo(nextIndex, anchor: .leading)
+              }
+            }
+          }
+        }
+      },
+      label: {
+        HStack {
+          Image(systemName: "hand.raised.fill")
+          Text("Abstain from Voting")
+        }
+        .font(.headline)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.red)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
+    )
   }
 
   private func eventHeader(event: Mealplanning_MealPlanEvent) -> some View {
@@ -214,7 +272,11 @@ struct VoteMealPlanView: View {
     if let ballot = viewModel.getBallot(for: event.id) {
       return AnyView(
         HStack {
-          if ballot.isLocked {
+          if ballot.isAbstained {
+            Label("Abstained", systemImage: "hand.raised.fill")
+              .font(.subheadline)
+              .foregroundColor(.red)
+          } else if ballot.isLocked {
             Label("Locked", systemImage: "lock.fill")
               .font(.subheadline)
               .foregroundColor(.green)
@@ -226,7 +288,7 @@ struct VoteMealPlanView: View {
 
           Spacer()
 
-          if !ballot.isComplete(totalOptions: event.options.count) {
+          if !ballot.isAbstained && !ballot.isComplete(totalOptions: event.options.count) {
             Text("\(ballot.rankedOptions.count) of \(event.options.count) options ranked")
               .font(.caption)
               .foregroundColor(.secondary)
@@ -241,13 +303,31 @@ struct VoteMealPlanView: View {
     }
   }
 
-  private func instructionsView(event: Mealplanning_MealPlanEvent) -> some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Text("Rank your preferences")
-        .font(.headline)
-      Text("Drag options to reorder them. Your first choice should be at the top.")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+  private func instructionsView(
+    event: Mealplanning_MealPlanEvent, viewModel: VoteMealPlanViewModel
+  ) -> some View {
+    let ballot = viewModel.getBallot(for: event.id)
+    
+    return VStack(alignment: .leading, spacing: 4) {
+      if ballot?.isAbstained == true {
+        Text("You have abstained from voting")
+          .font(.headline)
+        Text("You chose not to vote on any options for this event.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      } else if viewModel.hasUserVotedOnEvent(eventID: event.id) && viewModel.isDeadlineActive {
+        Text("Update your preferences")
+          .font(.headline)
+        Text("Unlock to reorder your votes. Your first choice should be at the top.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      } else {
+        Text("Rank your preferences")
+          .font(.headline)
+        Text("Drag options to reorder them. Your first choice should be at the top.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      }
     }
     .padding()
     .background(Color(.systemGray6))
@@ -272,7 +352,11 @@ struct VoteMealPlanView: View {
             ProgressView()
               .progressViewStyle(CircularProgressViewStyle(tint: .white))
           }
-          Text(viewModel.isSubmitting ? "Submitting..." : "Submit Votes")
+          Text(
+            viewModel.isSubmitting
+              ? (viewModel.isUpdateMode ? "Updating..." : "Submitting...")
+              : (viewModel.isUpdateMode ? "Update Votes" : "Submit Votes")
+          )
             .fontWeight(.semibold)
         }
         .frame(maxWidth: .infinity)
@@ -291,22 +375,112 @@ struct VoteMealPlanView: View {
 struct LockButtonView: View {
   let event: Mealplanning_MealPlanEvent
   let ballot: EventBallot
+  let isUpdateMode: Bool
   let onToggle: () -> Void
 
   var body: some View {
     Button(action: onToggle) {
       HStack {
-        Image(systemName: ballot.isLocked ? "lock.fill" : "lock.open.fill")
-        Text(ballot.isLocked ? "Unlock Ballot" : "Lock Ballot")
+        if isUpdateMode {
+          Image(systemName: ballot.isLocked ? "arrow.clockwise" : "lock.open.fill")
+          Text(ballot.isLocked ? "Update Vote" : "Unlock to Update")
+        } else {
+          Image(systemName: ballot.isLocked ? "lock.fill" : "lock.open.fill")
+          Text(ballot.isLocked ? "Unlock Ballot" : "Lock Ballot")
+        }
       }
       .font(.headline)
       .frame(maxWidth: .infinity)
       .padding()
-      .background(ballot.isLocked ? Color.orange : Color.blue)
+      .background(buttonColor)
       .foregroundColor(.white)
       .cornerRadius(10)
     }
     .disabled(!ballot.isComplete(totalOptions: event.options.count))
+  }
+
+  private var buttonColor: Color {
+    if isUpdateMode {
+      return ballot.isLocked ? Color.blue : Color.orange
+    } else {
+      return ballot.isLocked ? Color.orange : Color.blue
+    }
+  }
+}
+
+// MARK: - Vote Deadline Countdown
+
+struct VoteDeadlineCountdown: View {
+  let deadline: SwiftProtobuf.Google_Protobuf_Timestamp
+  @State private var timeRemaining: TimeInterval = 0
+  @State private var timer: Timer?
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "clock.fill")
+        .font(.caption)
+      Text(formattedTimeRemaining)
+        .font(.caption)
+        .fontWeight(.semibold)
+        .monospacedDigit()
+    }
+    .foregroundColor(timeRemainingColor)
+    .onAppear {
+      updateTimeRemaining()
+      startTimer()
+    }
+    .onDisappear {
+      stopTimer()
+    }
+  }
+
+  private var formattedTimeRemaining: String {
+    if timeRemaining <= 0 {
+      return "Expired"
+    }
+
+    let days = Int(timeRemaining) / 86400
+    let hours = (Int(timeRemaining) % 86400) / 3600
+    let minutes = (Int(timeRemaining) % 3600) / 60
+    let seconds = Int(timeRemaining) % 60
+
+    if days > 0 {
+      return String(format: "%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+    } else if hours > 0 {
+      return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+      return String(format: "%02d:%02d", minutes, seconds)
+    }
+  }
+
+  private var timeRemainingColor: Color {
+    if timeRemaining <= 0 {
+      return .red
+    } else if timeRemaining < 3600 {  // Less than 1 hour
+      return .red
+    } else if timeRemaining < 86400 {  // Less than 1 day
+      return .orange
+    } else {
+      return .primary
+    }
+  }
+
+  private func updateTimeRemaining() {
+    let deadlineDate = HomeViewModel.timestampToDate(deadline)
+    let now = Date()
+    timeRemaining = max(0, deadlineDate.timeIntervalSince(now))
+  }
+
+  private func startTimer() {
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      updateTimeRemaining()
+    }
+    RunLoop.main.add(timer!, forMode: .common)
+  }
+
+  private func stopTimer() {
+    timer?.invalidate()
+    timer = nil
   }
 }
 
