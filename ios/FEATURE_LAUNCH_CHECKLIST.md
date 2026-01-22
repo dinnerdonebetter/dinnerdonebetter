@@ -57,26 +57,26 @@ This checklist validates that the iOS app implements all features described in t
   - [x] Previous votes are loaded and can be edited
   - [x] Changes are saved when submitted
 
-- [ ] **Abstain from voting**
-  - [ ] User can abstain from voting on some options while voting on others
-  - [ ] Abstention is clearly indicated in UI
-  - [ ] Abstention is properly submitted to backend
+- [x] **Abstain from voting**
+  - [x] User can abstain from voting on some options while voting on others
+  - [x] Abstention is clearly indicated in UI
+  - [x] Abstention is properly submitted to backend
 
-- [ ] **Track voting status**
-  - [ ] System shows who has and hasn't voted
-  - [ ] Voting status is visible to all account members
-  - [ ] Visual indicators show voting completion status
+- [x] **Track voting status**
+  - [x] System shows who has and hasn't voted
+  - [x] Voting status is visible to all account members
+  - [x] Visual indicators show voting completion status
 
-- [ ] **Lock ballots before submission**
-  - [ ] User can lock individual event ballots
-  - [ ] Locked ballots cannot be reordered
-  - [ ] All ballots must be locked before submission
+- [x] **Lock ballots before submission**
+  - [x] User can lock individual event ballots
+  - [x] Locked ballots cannot be reordered
+  - [x] All ballots must be locked before submission
 
-- [ ] **Submit votes**
-  - [ ] Submit button only appears when all ballots are complete and locked
-  - [ ] Votes are submitted with proper rank values (0 = first choice)
-  - [ ] Success/error feedback is provided
-  - [ ] User is redirected after successful submission
+- [x] **Submit votes**
+  - [x] Submit button only appears when all ballots are complete and locked
+  - [x] Votes are submitted with proper rank values (0 = first choice)
+  - [x] Success/error feedback is provided
+  - [x] User is redirected after successful submission
 
 ### 1.3 Finalization & Results
 - [ ] **View finalized meal plans**

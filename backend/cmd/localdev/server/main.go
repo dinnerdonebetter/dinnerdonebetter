@@ -42,7 +42,7 @@ const (
 )
 
 var (
-	createMealPlansAndVotes = os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"
+	createMealPlansAndVotes = true // os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"
 )
 
 func cloneTime(t time.Time) time.Time {

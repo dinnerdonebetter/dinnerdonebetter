@@ -21,6 +21,7 @@ struct StepCardView: View {
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
   var isAssociatedRecipeStep: Bool = false
   var associatedRecipeName: String?
+  var highlightedStepIDs: Set<String>? = nil
 
   var body: some View {
     // Use new API for associated recipe steps, old API for main recipe steps

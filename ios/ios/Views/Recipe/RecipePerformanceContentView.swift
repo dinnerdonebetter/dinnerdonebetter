@@ -20,6 +20,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   let viewModel: PerformRecipeViewModel
   var hideIngredientsAndInstruments: Bool = false
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
+  var highlightedStepIDs: Set<String>? = nil
+  var prepTaskContext: PerformRecipeView.PrepTaskContext? = nil
 
   // State for option selections (for interactive selection outside meal plan context)
   // Note: Only ingredients have selectable options; instruments and vessels are concrete
@@ -71,10 +73,43 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   // MARK: - Recipe Header
 
+  private func formatEventTime(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .short
+    return formatter.string(from: date)
+  }
+
   private func recipeHeader(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel)
     -> some View
   {
     VStack(alignment: .leading, spacing: 8) {
+      // Show prep task context if available
+      if let context = prepTaskContext {
+        VStack(alignment: .leading, spacing: 4) {
+          if let prepTaskName = context.prepTaskName, !prepTaskName.isEmpty {
+            Text(prepTaskName)
+              .font(.headline)
+              .foregroundColor(.blue)
+          }
+          
+          HStack(spacing: 4) {
+            if let recipeName = context.recipeName, !recipeName.isEmpty {
+              Text("for \(recipeName)")
+                .font(.subheadline)     
+                .foregroundColor(.secondary)
+            }
+            
+            if let eventName = context.eventName, let eventTime = context.eventTime {
+              Text("• \(eventName) at \(formatEventTime(eventTime))")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+          }
+        }
+        .padding(.bottom, 8)
+      }
+      
       Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
         .font(.title)
         .fontWeight(.bold)
@@ -456,6 +491,15 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   // MARK: - Steps List
 
+  private func shouldShowStep(stepID: String) -> Bool {
+    // If no highlighted steps specified, show all steps
+    guard let highlightedStepIDs = highlightedStepIDs else {
+      return true
+    }
+    // Only show steps that are in the highlighted set
+    return highlightedStepIDs.contains(stepID)
+  }
+
   private func stepsList(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel)
     -> some View
   {
@@ -475,8 +519,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             washHandsStepCard(viewModel: viewModel)
 
             // Steps from this associated recipe
-            ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) {
-              index, step in
+            ForEach(
+              Array(associatedRecipe.steps.enumerated())
+                .filter { shouldShowStep(stepID: $0.element.id) },
+              id: \.element.id
+            ) { index, step in
               StepCardView(
                 step: step,
                 index: index,
@@ -485,7 +532,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
                 recipeID: associatedRecipe.id,
                 mealPlanSelections: mealPlanSelections,
                 isAssociatedRecipeStep: true,
-                associatedRecipeName: associatedRecipe.name
+                associatedRecipeName: associatedRecipe.name,
+                highlightedStepIDs: highlightedStepIDs
               )
             }
 
@@ -510,14 +558,19 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         // Wash hands step before first step of main recipe
         washHandsStepCard(viewModel: viewModel)
 
-        ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
+        ForEach(
+          Array(recipe.steps.enumerated())
+            .filter { shouldShowStep(stepID: $0.element.id) },
+          id: \.element.id
+        ) { index, step in
           StepCardView(
             step: step,
             index: index,
             viewModel: viewModel,
             formatStepTitle: formatStepTitle,
             recipeID: recipe.id,
-            mealPlanSelections: mealPlanSelections
+            mealPlanSelections: mealPlanSelections,
+            highlightedStepIDs: highlightedStepIDs
           )
         }
       }

@@ -42,6 +42,19 @@ class VoteMealPlanViewModel {
   var submissionError: String?
   var submissionSuccess = false
 
+  // Voting status for account members (only loaded if user is creator)
+  var accountMembers: [Identity_AccountUserMembershipWithUser] = []
+  var votingStatus: [String: VotingStatus] = [:]  // Maps user ID to voting status
+  var isLoadingVotingStatus = false
+
+  /// Represents the voting status for a user
+  struct VotingStatus {
+    let hasVoted: Bool
+    let hasAbstained: Bool
+    let eventsVoted: Set<String>  // Event IDs where user has voted
+    let eventsAbstained: Set<String>  // Event IDs where user has abstained
+  }
+
   init(mealPlan: Mealplanning_MealPlan, authManager: AuthenticationManager) {
     self.mealPlan = mealPlan
     self.authManager = authManager
@@ -193,6 +206,110 @@ class VoteMealPlanViewModel {
   /// Check if user has abstained from a specific event
   func hasUserAbstainedFromEvent(eventID: String) -> Bool {
     return ballots[eventID]?.isAbstained ?? false
+  }
+
+  /// Check if the current user is the creator of the meal plan
+  var isCreator: Bool {
+    return mealPlan.createdByUser == authManager.userID
+  }
+
+  /// Load voting status for all account members (only if user is creator)
+  func loadVotingStatus() async {
+    guard isCreator else { return }
+    
+    isLoadingVotingStatus = true
+    
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "VoteMealPlanViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "VoteMealPlanViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      // Get account details to get members
+      var accountRequest = Identity_GetAccountRequest()
+      accountRequest.accountID = mealPlan.belongsToAccount
+
+      let accountResponse = try await clientManager.client.identity.getAccount(
+        accountRequest,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      guard accountResponse.hasResult else {
+        print("⚠️ Account not found")
+        isLoadingVotingStatus = false
+        return
+      }
+
+      let account = accountResponse.result
+      accountMembers = account.members
+
+      // Determine voting status for each member
+      var statusMap: [String: VotingStatus] = [:]
+      
+      for member in account.members {
+        guard member.hasBelongsToUser else { continue }
+        let userID = member.belongsToUser.id
+        
+        var eventsVoted: Set<String> = []
+        var eventsAbstained: Set<String> = []
+        
+        // Check each event
+        for event in mealPlan.events {
+          var hasVotedInEvent = false
+          var hasAbstainedInEvent = false
+          
+          // Check all options in the event
+          for option in event.options {
+            for vote in option.votes {
+              if vote.byUser == userID {
+                if vote.abstain {
+                  hasAbstainedInEvent = true
+                } else {
+                  hasVotedInEvent = true
+                }
+                break
+              }
+            }
+            // If we found a vote (either regular or abstain), we can stop checking this event
+            if hasVotedInEvent || hasAbstainedInEvent {
+              break
+            }
+          }
+          
+          if hasVotedInEvent {
+            eventsVoted.insert(event.id)
+          } else if hasAbstainedInEvent {
+            eventsAbstained.insert(event.id)
+          }
+        }
+        
+        let hasVoted = !eventsVoted.isEmpty
+        let hasAbstained = !eventsAbstained.isEmpty
+        
+        statusMap[userID] = VotingStatus(
+          hasVoted: hasVoted,
+          hasAbstained: hasAbstained,
+          eventsVoted: eventsVoted,
+          eventsAbstained: eventsAbstained
+        )
+      }
+      
+      votingStatus = statusMap
+    } catch {
+      print("❌ Error loading voting status: \(error)")
+    }
+    
+    isLoadingVotingStatus = false
   }
   
   /// Abstain from voting on a specific event

@@ -48,6 +48,11 @@ struct VoteMealPlanView: View {
               }
             }
 
+            // Voting status section (only shown if user is creator)
+            if viewModel.isCreator {
+              votingStatusSection(viewModel: viewModel)
+            }
+
             // Submit button (only shown when all ballots are complete and locked)
             if viewModel.canSubmit {
               submitButton(viewModel: viewModel)
@@ -97,6 +102,11 @@ struct VoteMealPlanView: View {
       .onAppear {
         if viewModel == nil {
           viewModel = VoteMealPlanViewModel(mealPlan: mealPlan, authManager: authManager)
+        }
+        if let viewModel = viewModel, viewModel.isCreator {
+          Task {
+            await viewModel.loadVotingStatus()
+          }
         }
       }
     }
@@ -332,6 +342,101 @@ struct VoteMealPlanView: View {
     .padding()
     .background(Color(.systemGray6))
     .cornerRadius(8)
+  }
+
+  // MARK: - Voting Status Section
+
+  private func votingStatusSection(viewModel: VoteMealPlanViewModel) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Divider()
+        .padding(.horizontal)
+      
+      Text("Voting Status")
+        .font(.headline)
+        .padding(.horizontal)
+      
+      if viewModel.isLoadingVotingStatus {
+        HStack {
+          Spacer()
+          ProgressView()
+            .padding()
+          Spacer()
+        }
+      } else if viewModel.accountMembers.isEmpty {
+        Text("No account members found")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .padding(.horizontal)
+      } else {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 12) {
+            ForEach(viewModel.accountMembers, id: \.id) { member in
+              if member.hasBelongsToUser {
+                memberVotingStatusCard(
+                  member: member,
+                  status: viewModel.votingStatus[member.belongsToUser.id],
+                  totalEvents: viewModel.mealPlan.events.count
+                )
+              }
+            }
+          }
+          .padding(.horizontal)
+        }
+      }
+    }
+    .padding(.vertical, 8)
+    .background(Color(.systemGray6))
+  }
+
+  private func memberVotingStatusCard(
+    member: Identity_AccountUserMembershipWithUser,
+    status: VoteMealPlanViewModel.VotingStatus?,
+    totalEvents: Int
+  ) -> some View {
+    let userName = member.belongsToUser.username.isEmpty
+      ? "\(member.belongsToUser.firstName) \(member.belongsToUser.lastName)".trimmingCharacters(in: .whitespaces)
+      : member.belongsToUser.username
+    
+    let displayName = userName.isEmpty ? "Unknown User" : userName
+    
+    return VStack(alignment: .leading, spacing: 8) {
+      Text(displayName)
+        .font(.subheadline)
+        .fontWeight(.semibold)
+      
+      if let status = status {
+        if status.hasVoted || status.hasAbstained {
+          VStack(alignment: .leading, spacing: 4) {
+            if status.hasVoted {
+              Label("Voted", systemImage: "checkmark.circle.fill")
+                .font(.caption)
+                .foregroundColor(.green)
+            }
+            if status.hasAbstained {
+              Label("Abstained", systemImage: "hand.raised.fill")
+                .font(.caption)
+                .foregroundColor(.orange)
+            }
+            Text("\(status.eventsVoted.count + status.eventsAbstained.count) of \(totalEvents) events")
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
+        } else {
+          Label("Not voted", systemImage: "circle")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      } else {
+        Label("Not voted", systemImage: "circle")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+    }
+    .padding(12)
+    .frame(minWidth: 120)
+    .background(Color(.systemBackground))
+    .cornerRadius(8)
+    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
   }
 
   // MARK: - Submit Button
