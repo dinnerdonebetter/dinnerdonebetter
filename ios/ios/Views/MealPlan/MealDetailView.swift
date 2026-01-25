@@ -52,6 +52,9 @@ struct MealDetailView: View {
         } else if let meal = viewModel.meal {
           ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+              // Overall Info Section
+              overallInfoSection(meal: meal)
+              
               // Aggregated Ingredients & Instruments/Vessels
               if !loadedRecipes.isEmpty {
                 aggregatedListsSection
@@ -85,6 +88,69 @@ struct MealDetailView: View {
           await viewModel.loadMeal()
         }
       }
+    }
+  }
+
+  // MARK: - Overall Info Section
+  
+  private func overallInfoSection(meal: Mealplanning_Meal) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      // Description
+      if !meal.description_p.isEmpty {
+        Text(meal.description_p)
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      }
+      
+      // Estimated portions
+      if meal.hasEstimatedPortions {
+        HStack(spacing: 8) {
+          Image(systemName: "person.2")
+            .foregroundColor(.secondary)
+          Text("Estimated Portions: \(formatPortions(meal.estimatedPortions))")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+        }
+      }
+    }
+    .padding()
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
+  }
+  
+  private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
+    if range.hasMax {
+      if range.min == range.max {
+        return String(format: "%.1f", range.min)
+      } else {
+        return String(format: "%.1f-%.1f", range.min, range.max)
+      }
+    } else {
+      return String(format: "%.1f+", range.min)
+    }
+  }
+  
+  private func formatComponentType(_ type: Mealplanning_MealComponentType) -> String {
+    switch type {
+    case .amuseBouche:
+      return "Amuse Bouche"
+    case .appetizer:
+      return "Appetizer"
+    case .soup:
+      return "Soup"
+    case .main:
+      return "Main"
+    case .salad:
+      return "Salad"
+    case .beverage:
+      return "Beverage"
+    case .side:
+      return "Side"
+    case .dessert:
+      return "Dessert"
+    default:
+      return ""
     }
   }
 
@@ -417,6 +483,7 @@ struct EmbeddedRecipeView: View {
   @State private var isIngredientsExpanded = false
   @State private var checkedIngredients: Set<String> = []
   @State private var checkedInstrumentsVessels: Set<String> = []
+  @State private var isExpanded = false
 
   let recipeID: String
   let recipeScale: Float
@@ -424,47 +491,91 @@ struct EmbeddedRecipeView: View {
   let onRecipeLoaded: ((Mealplanning_Recipe) -> Void)?
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      // Component header with type and scale
-      componentHeader
-
-      // Recipe content
-      if let viewModel = viewModel {
-        if viewModel.isLoading {
-          ProgressView("Loading recipe...")
-            .frame(maxWidth: .infinity)
-            .padding()
-        } else if let errorMessage = viewModel.errorMessage {
-          VStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle")
-              .foregroundColor(.orange)
-            Text("Error loading recipe: \(errorMessage)")
+    VStack(alignment: .leading, spacing: 0) {
+      // Collapsible header
+      Button(
+        action: {
+          withAnimation {
+            isExpanded.toggle()
+          }
+        },
+        label: {
+          HStack {
+            // Component type badge
+            if componentType != .unspecified {
+              Text(formatComponentType(componentType))
+                .font(.caption)
+                .fontWeight(.semibold)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.blue.opacity(0.2))
+                .foregroundColor(.blue)
+                .cornerRadius(6)
+            }
+            
+            // Recipe name
+            if let recipe = viewModel?.recipe {
+              Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+            } else {
+              Text("Loading...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Chevron
+            Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
               .font(.caption)
               .foregroundColor(.secondary)
           }
-          .frame(maxWidth: .infinity)
           .padding()
-        } else if let recipe = viewModel.recipe {
-          RecipePerformanceContentView(
-            checkedIngredients: $checkedIngredients,
-            checkedInstrumentsVessels: $checkedInstrumentsVessels,
-            isInstrumentsVesselsExpanded: $isInstrumentsVesselsExpanded,
-            isIngredientsExpanded: $isIngredientsExpanded,
-            recipe: recipe,
-            viewModel: viewModel,
-            hideIngredientsAndInstruments: true
-          )
-          .onAppear {
-            onRecipeLoaded?(recipe)
-          }
+          .background(Color(.systemGray6))
         }
-      } else {
-        ProgressView("Initializing...")
-          .frame(maxWidth: .infinity)
-          .padding()
+      )
+      .buttonStyle(.plain)
+
+      // Recipe content (collapsible)
+      if isExpanded {
+        if let viewModel = viewModel {
+          if viewModel.isLoading {
+            ProgressView("Loading recipe...")
+              .frame(maxWidth: .infinity)
+              .padding()
+          } else if let errorMessage = viewModel.errorMessage {
+            VStack(spacing: 8) {
+              Image(systemName: "exclamationmark.triangle")
+                .foregroundColor(.orange)
+              Text("Error loading recipe: \(errorMessage)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+          } else if let recipe = viewModel.recipe {
+            RecipePerformanceContentView(
+              checkedIngredients: $checkedIngredients,
+              checkedInstrumentsVessels: $checkedInstrumentsVessels,
+              isInstrumentsVesselsExpanded: $isInstrumentsVesselsExpanded,
+              isIngredientsExpanded: $isIngredientsExpanded,
+              recipe: recipe,
+              viewModel: viewModel,
+              hideIngredientsAndInstruments: true
+            )
+            .onAppear {
+              onRecipeLoaded?(recipe)
+            }
+          }
+        } else {
+          ProgressView("Initializing...")
+            .frame(maxWidth: .infinity)
+            .padding()
+        }
       }
     }
-    .padding()
     .background(Color(.systemGray6))
     .cornerRadius(10)
     .onAppear {
@@ -474,29 +585,6 @@ struct EmbeddedRecipeView: View {
           await viewModel?.loadRecipe()
         }
       }
-    }
-  }
-
-  private var componentHeader: some View {
-    HStack {
-      if componentType != .unspecified {
-        Text(formatComponentType(componentType))
-          .font(.caption)
-          .fontWeight(.semibold)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .background(Color.blue.opacity(0.2))
-          .foregroundColor(.blue)
-          .cornerRadius(6)
-      }
-
-      if recipeScale != 1.0 {
-        Text("Scale: \(String(format: "%.1f", recipeScale))x")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-
-      Spacer()
     }
   }
 

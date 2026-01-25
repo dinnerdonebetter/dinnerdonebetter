@@ -13,6 +13,7 @@ import SwiftUI
 struct InteractiveIngredientOptionGroupView: View {
   let group: OptionGroupAggregate
   @Binding var selectedOptionIndex: UInt32
+  var scale: Float = 1.0
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
@@ -38,17 +39,17 @@ struct InteractiveIngredientOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex
+                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex ? .green : .gray)
+              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
 
               Text(option.ingredient.name)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-              if let quantityText = option.aggregated.quantityText {
+              if let quantityText = option.aggregated.quantityText(scale: scale) {
                 Text(quantityText)
                   .font(.caption)
                   .foregroundColor(.secondary)
@@ -70,6 +71,7 @@ struct InteractiveIngredientOptionGroupView: View {
 struct InteractiveInstrumentOptionGroupView: View {
   let group: InstrumentOptionGroupAggregate
   @Binding var selectedOptionIndex: UInt32
+  var scale: Float = 1.0
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
@@ -95,17 +97,17 @@ struct InteractiveInstrumentOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex
+                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex ? .green : .gray)
+              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
 
               Text(option.instrument.name)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-              if let quantityText = option.aggregated.quantityText {
+              if let quantityText = option.aggregated.quantityText(scale: scale) {
                 Text(quantityText)
                   .font(.caption)
                   .foregroundColor(.secondary)
@@ -127,6 +129,7 @@ struct InteractiveInstrumentOptionGroupView: View {
 struct InteractiveVesselOptionGroupView: View {
   let group: VesselOptionGroupAggregate
   @Binding var selectedOptionIndex: UInt32
+  var scale: Float = 1.0
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
@@ -152,17 +155,17 @@ struct InteractiveVesselOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex
+                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex ? .green : .gray)
+              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
 
               Text(option.vessel.name)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-              if let quantityText = option.aggregated.quantityText {
+              if let quantityText = option.aggregated.quantityText(scale: scale) {
                 Text(quantityText)
                   .font(.caption)
                   .foregroundColor(.secondary)

@@ -86,16 +86,23 @@ struct AggregatedInstrumentVessel: Identifiable {
   }
 
   var quantityText: String? {
+    quantityText(scale: 1.0)
+  }
+
+  func quantityText(scale: Float) -> String? {
     guard hasAnyQuantity else { return nil }
 
-    if let max = totalMax {
-      if totalMin == max {
-        return "\(totalMin)"
+    let scaledMin = UInt32(Float(totalMin) * scale)
+    let scaledMax = totalMax.map { UInt32(Float($0) * scale) }
+
+    if let max = scaledMax {
+      if scaledMin == max {
+        return "\(scaledMin)"
       } else {
-        return "\(totalMin) - \(max)"
+        return "\(scaledMin) - \(max)"
       }
     } else {
-      return "\(totalMin)+"
+      return "\(scaledMin)+"
     }
   }
 
@@ -147,25 +154,32 @@ struct AggregatedIngredient: Identifiable {
   }
 
   var quantityText: String? {
+    quantityText(scale: 1.0)
+  }
+
+  func quantityText(scale: Float) -> String? {
     guard hasAnyQuantity else { return nil }
+
+    let scaledMin = totalMin * scale
+    let scaledMax = totalMax.map { $0 * scale }
 
     let unitName = measurementUnit?.name ?? ""
     let unit = unitName.isEmpty ? "" : " \(unitName)"
 
     // Format numbers - use fewer decimals for whole numbers
-    let formatMin = totalMin.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
+    let formatMin = scaledMin.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f"
     let formatMax =
-      totalMax.map { $0.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f" } ?? "%.2f"
+      scaledMax.map { $0.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f" } ?? "%.2f"
 
-    if let max = totalMax {
-      if totalMin == max {
-        return String(format: "\(formatMin)%@", totalMin, unit).trimmingCharacters(in: .whitespaces)
+    if let max = scaledMax {
+      if scaledMin == max {
+        return String(format: "\(formatMin)%@", scaledMin, unit).trimmingCharacters(in: .whitespaces)
       } else {
-        return String(format: "\(formatMin) - \(formatMax)%@", totalMin, max, unit)
+        return String(format: "\(formatMin) - \(formatMax)%@", scaledMin, max, unit)
           .trimmingCharacters(in: .whitespaces)
       }
     } else {
-      return String(format: "\(formatMin)+%@", totalMin, unit).trimmingCharacters(in: .whitespaces)
+      return String(format: "\(formatMin)+%@", scaledMin, unit).trimmingCharacters(in: .whitespaces)
     }
   }
 
@@ -238,7 +252,11 @@ struct VesselOptionGroupAggregate: Identifiable {
 extension RecipePerformanceContentView {
   // swiftlint:disable:next cyclomatic_complexity
   func getAggregatedInstrumentsAndVessels(
-    from recipe: Mealplanning_Recipe
+    from recipe: Mealplanning_Recipe,
+    selectedInstrumentOptions: [String: UInt32] = [:],
+    selectedVesselOptions: [String: UInt32] = [:],
+    mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]? = nil,
+    scale: Float = 1.0
       // swiftlint:disable:next large_tuple
   ) -> (
     regular: [AggregatedInstrumentVessel],
@@ -286,6 +304,46 @@ extension RecipePerformanceContentView {
           option.instrument.hasInstrument && option.instrument.instrument.displayInSummaryLists
         }
       }
+      
+      // Add selected options from instrument groups to regular aggregated list
+      for group in filteredInstrumentGroups {
+        // Check meal plan selections first, then user selections
+        // Only add to regular aggregated if a selection has been made
+        let selectedIndex: UInt32?
+        if let selections = mealPlanSelections,
+           let selection = selections.first(where: { sel in
+             sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+               && sel.selectionType == .instrument
+           }) {
+          selectedIndex = selection.selectedOptionIndex
+        } else {
+          // Check user selections - use sentinel value if none
+          let userSelection = selectedInstrumentOptions[group.id]
+          selectedIndex = userSelection == UInt32.max ? nil : userSelection
+        }
+        
+        // Only add to regular aggregated if a selection has been made
+        if let selectedIndex = selectedIndex,
+           let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+           selectedOption.instrument.hasInstrument,
+           selectedOption.instrument.instrument.displayInSummaryLists {
+          let itemID = selectedOption.instrument.instrument.id
+          if !itemID.isEmpty {
+            if regularAggregated[itemID] == nil {
+              regularAggregated[itemID] = AggregatedInstrumentVessel(
+                itemID: itemID,
+                name: selectedOption.instrument.name,
+                type: .instrument
+              )
+            }
+            if selectedOption.instrument.hasQuantity, var current = regularAggregated[itemID] {
+              current.addQuantity(selectedOption.instrument.quantity)
+              regularAggregated[itemID] = current
+            }
+          }
+        }
+      }
+      
       instrumentOptionGroups.append(contentsOf: filteredInstrumentGroups)
 
       // Process vessels
@@ -323,6 +381,46 @@ extension RecipePerformanceContentView {
           option.vessel.hasVessel && option.vessel.vessel.displayInSummaryLists
         }
       }
+      
+      // Add selected options from vessel groups to regular aggregated list
+      for group in filteredVesselGroups {
+        // Check meal plan selections first, then user selections
+        // Only add to regular aggregated if a selection has been made
+        let selectedIndex: UInt32?
+        if let selections = mealPlanSelections,
+           let selection = selections.first(where: { sel in
+             sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+               && sel.selectionType == .vessel
+           }) {
+          selectedIndex = selection.selectedOptionIndex
+        } else {
+          // Check user selections - use sentinel value if none
+          let userSelection = selectedVesselOptions[group.id]
+          selectedIndex = userSelection == UInt32.max ? nil : userSelection
+        }
+        
+        // Only add to regular aggregated if a selection has been made
+        if let selectedIndex = selectedIndex,
+           let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+           selectedOption.vessel.hasVessel,
+           selectedOption.vessel.vessel.displayInSummaryLists {
+          let itemID = selectedOption.vessel.vessel.id
+          if !itemID.isEmpty {
+            if regularAggregated[itemID] == nil {
+              regularAggregated[itemID] = AggregatedInstrumentVessel(
+                itemID: itemID,
+                name: selectedOption.vessel.name,
+                type: .vessel
+              )
+            }
+            if selectedOption.vessel.hasQuantity, var current = regularAggregated[itemID] {
+              current.addQuantity(selectedOption.vessel.quantity)
+              regularAggregated[itemID] = current
+            }
+          }
+        }
+      }
+      
       vesselOptionGroups.append(contentsOf: filteredVesselGroups)
     }
 
@@ -373,6 +471,42 @@ extension RecipePerformanceContentView {
             sourceRecipeName: associatedRecipe.name
           )
         }
+        
+        // Add selected options from instrument groups to regular aggregated list
+        for group in instrumentGroupsWithSource {
+          // Check meal plan selections first, then user selections, then default to optionIndex 0
+          let selectedIndex: UInt32
+          if let selections = mealPlanSelections,
+             let selection = selections.first(where: { sel in
+               sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                 && sel.selectionType == .instrument
+             }) {
+            selectedIndex = selection.selectedOptionIndex
+          } else {
+            selectedIndex = selectedInstrumentOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+          }
+          if let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+             selectedOption.instrument.hasInstrument,
+             selectedOption.instrument.instrument.displayInSummaryLists {
+            let itemID = selectedOption.instrument.instrument.id
+            if !itemID.isEmpty {
+              if regularAggregated[itemID] == nil {
+                regularAggregated[itemID] = AggregatedInstrumentVessel(
+                  itemID: itemID,
+                  name: selectedOption.instrument.name,
+                  type: .instrument,
+                  sourceRecipeID: associatedRecipe.id,
+                  sourceRecipeName: associatedRecipe.name
+                )
+              }
+              if selectedOption.instrument.hasQuantity, var current = regularAggregated[itemID] {
+                current.addQuantity(selectedOption.instrument.quantity)
+                regularAggregated[itemID] = current
+              }
+            }
+          }
+        }
+        
         instrumentOptionGroups.append(contentsOf: instrumentGroupsWithSource)
 
         let (regularVessels, vesselGroups) = groupVesselsByOptions(
@@ -419,6 +553,42 @@ extension RecipePerformanceContentView {
             sourceRecipeName: associatedRecipe.name
           )
         }
+        
+        // Add selected options from vessel groups to regular aggregated list
+        for group in vesselGroupsWithSource {
+          // Check meal plan selections first, then user selections, then default to optionIndex 0
+          let selectedIndex: UInt32
+          if let selections = mealPlanSelections,
+             let selection = selections.first(where: { sel in
+               sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                 && sel.selectionType == .vessel
+             }) {
+            selectedIndex = selection.selectedOptionIndex
+          } else {
+            selectedIndex = selectedVesselOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+          }
+          if let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+             selectedOption.vessel.hasVessel,
+             selectedOption.vessel.vessel.displayInSummaryLists {
+            let itemID = selectedOption.vessel.vessel.id
+            if !itemID.isEmpty {
+              if regularAggregated[itemID] == nil {
+                regularAggregated[itemID] = AggregatedInstrumentVessel(
+                  itemID: itemID,
+                  name: selectedOption.vessel.name,
+                  type: .vessel,
+                  sourceRecipeID: associatedRecipe.id,
+                  sourceRecipeName: associatedRecipe.name
+                )
+              }
+              if selectedOption.vessel.hasQuantity, var current = regularAggregated[itemID] {
+                current.addQuantity(selectedOption.vessel.quantity)
+                regularAggregated[itemID] = current
+              }
+            }
+          }
+        }
+        
         vesselOptionGroups.append(contentsOf: vesselGroupsWithSource)
       }
     }
@@ -431,7 +601,10 @@ extension RecipePerformanceContentView {
   }
 
   func getAggregatedIngredients(
-    from recipe: Mealplanning_Recipe
+    from recipe: Mealplanning_Recipe,
+    selectedIngredientOptions: [String: UInt32] = [:],
+    mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]? = nil,
+    scale: Float = 1.0
   ) -> (
     regular: [AggregatedIngredient],
     optionGroups: [OptionGroupAggregate]
@@ -469,6 +642,39 @@ extension RecipePerformanceContentView {
         }
       }
 
+      // Add selected options from ingredient groups to regular aggregated list
+      for group in groups {
+        // Check meal plan selections first, then user selections, then default to optionIndex 0
+        let selectedIndex: UInt32
+        if let selections = mealPlanSelections,
+           let selection = selections.first(where: { sel in
+             sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+               && sel.ingredientIndex == group.index && sel.selectionType == .ingredient
+           }) {
+          selectedIndex = selection.selectedOptionIndex
+        } else {
+          selectedIndex = selectedIngredientOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+        }
+        if let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+           selectedOption.ingredient.hasIngredient {
+          let key = selectedOption.ingredient.ingredient.id
+          if !key.isEmpty {
+            if regularAggregated[key] == nil {
+              regularAggregated[key] = AggregatedIngredient(
+                ingredientID: key,
+                name: selectedOption.ingredient.name,
+                quantityNotes: selectedOption.ingredient.quantityNotes,
+                measurementUnit: selectedOption.ingredient.hasMeasurementUnit ? selectedOption.ingredient.measurementUnit : nil
+              )
+            }
+            if selectedOption.ingredient.hasQuantity, var current = regularAggregated[key] {
+              current.addQuantity(selectedOption.ingredient.quantity)
+              regularAggregated[key] = current
+            }
+          }
+        }
+      }
+      
       // Add option groups
       optionGroups.append(contentsOf: groups)
     }
@@ -521,6 +727,42 @@ extension RecipePerformanceContentView {
             sourceRecipeName: associatedRecipe.name
           )
         }
+        
+        // Add selected options from ingredient groups to regular aggregated list
+        for group in groupsWithSource {
+          // Check meal plan selections first, then user selections, then default to optionIndex 0
+          let selectedIndex: UInt32
+          if let selections = mealPlanSelections,
+             let selection = selections.first(where: { sel in
+               sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                 && sel.ingredientIndex == group.index && sel.selectionType == .ingredient
+             }) {
+            selectedIndex = selection.selectedOptionIndex
+          } else {
+            selectedIndex = selectedIngredientOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+          }
+          if let selectedOption = group.options.first(where: { $0.optionIndex == selectedIndex }),
+             selectedOption.ingredient.hasIngredient {
+            let key = selectedOption.ingredient.ingredient.id
+            if !key.isEmpty {
+              if regularAggregated[key] == nil {
+                regularAggregated[key] = AggregatedIngredient(
+                  ingredientID: key,
+                  name: selectedOption.ingredient.name,
+                  quantityNotes: selectedOption.ingredient.quantityNotes,
+                  measurementUnit: selectedOption.ingredient.hasMeasurementUnit ? selectedOption.ingredient.measurementUnit : nil,
+                  sourceRecipeID: associatedRecipe.id,
+                  sourceRecipeName: associatedRecipe.name
+                )
+              }
+              if selectedOption.ingredient.hasQuantity, var current = regularAggregated[key] {
+                current.addQuantity(selectedOption.ingredient.quantity)
+                regularAggregated[key] = current
+              }
+            }
+          }
+        }
+        
         optionGroups.append(contentsOf: groupsWithSource)
       }
     }

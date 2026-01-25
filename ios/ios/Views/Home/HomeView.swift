@@ -145,6 +145,19 @@ struct HomeView: View {
         .cornerRadius(10)
       }
 
+      NavigationLink(destination: MealListView()) {
+        HStack {
+          Image(systemName: "fork.knife")
+          Text("View Meals")
+        }
+        .fontWeight(.semibold)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.orange)
+        .foregroundColor(.white)
+        .cornerRadius(10)
+      }
+
       NavigationLink(destination: AccountSettingsView()) {
         HStack {
           Image(systemName: "person.2.fill")

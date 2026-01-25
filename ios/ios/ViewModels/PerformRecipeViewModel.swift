@@ -14,7 +14,9 @@ import SwiftUI
 @MainActor
 class PerformRecipeViewModel {
   var recipe: Mealplanning_Recipe?
+  var prepTasks: [Mealplanning_RecipePrepTask] = []
   var isLoading = false
+  var isLoadingPrepTasks = false
   var errorMessage: String?
 
   // Track which steps are completed (by step ID: "recipeID:stepID")
@@ -70,12 +72,54 @@ class PerformRecipeViewModel {
 
       self.recipe = response.result
       buildProductIDToStepIndexMapping()
+      
+      // Load prep tasks after recipe is loaded
+      await loadPrepTasks()
     } catch {
       errorMessage = "Failed to load recipe: \(error.localizedDescription)"
       print("❌ Error loading recipe: \(error)")
     }
 
     isLoading = false
+  }
+  
+  func loadPrepTasks() async {
+    isLoadingPrepTasks = true
+    
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      // Get OAuth2 token (will refresh if needed)
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      // Create request
+      var request = Mealplanning_GetRecipePrepTasksRequest()
+      request.recipeID = recipeID
+
+      // Execute request
+      let response = try await clientManager.client.mealPlanning.getRecipePrepTasks(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      self.prepTasks = response.results
+    } catch {
+      print("⚠️ Error loading prep tasks: \(error)")
+      // Don't set error message for prep tasks - it's not critical
+    }
+
+    isLoadingPrepTasks = false
   }
 
   // Build a mapping from recipe step product IDs to the step that produces them

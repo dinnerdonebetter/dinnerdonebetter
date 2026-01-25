@@ -1,5 +1,5 @@
 //
-//  RecipeListViewModel.swift
+//  MealListViewModel.swift
 //  ios
 //
 //  Created by Auto on 12/8/25.
@@ -12,9 +12,9 @@ import SwiftUI
 
 @Observable
 @MainActor
-class RecipeListViewModel {
-  var recipes: [Mealplanning_Recipe] = []
-  var searchResults: [Mealplanning_Recipe] = []
+class MealListViewModel {
+  var meals: [Mealplanning_Meal] = []
+  var searchResults: [Mealplanning_Meal] = []
   var isLoading = false
   var isSearching = false
   var errorMessage: String?
@@ -27,56 +27,55 @@ class RecipeListViewModel {
     self.authManager = authManager
   }
 
-  var displayedRecipes: [Mealplanning_Recipe] {
-    // If we have search results, show those; otherwise show all recipes
-    return searchResults.isEmpty ? recipes : searchResults
+  var displayedMeals: [Mealplanning_Meal] {
+    // If we have search results, show those; otherwise show all meals
+    return searchResults.isEmpty ? meals : searchResults
   }
 
   var isInSearchMode: Bool {
     return !searchResults.isEmpty
   }
 
-  func loadRecipes() async {
+  func loadMeals() async {
     isLoading = true
     errorMessage = nil
 
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
-          domain: "RecipeListViewModel", code: 1,
+          domain: "MealListViewModel", code: 1,
           userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
       }
 
       // Get OAuth2 token (will refresh if needed)
       guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
         throw NSError(
-          domain: "RecipeListViewModel", code: 2,
+          domain: "MealListViewModel", code: 2,
           userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
       }
 
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
-      // Create request - use "submitted" status to match webapp behavior
-      var request = Mealplanning_GetRecipesRequest()
-      request.status = "submitted"
+      // Create request
+      var request = Mealplanning_GetMealsRequest()
 
       // Execute request
-      let response = try await clientManager.client.mealPlanning.getRecipes(
+      let response = try await clientManager.client.mealPlanning.getMeals(
         request,
         metadata: metadata,
         options: clientManager.defaultCallOptions
       )
 
-      self.recipes = response.results
+      self.meals = response.results
     } catch {
-      errorMessage = "Failed to load recipes: \(error.localizedDescription)"
-      print("❌ Error loading recipes: \(error)")
+      errorMessage = "Failed to load meals: \(error.localizedDescription)"
+      print("❌ Error loading meals: \(error)")
     }
 
     isLoading = false
   }
 
-  func searchRecipes(query: String) {
+  func searchMeals(query: String) {
     // Cancel any existing search task
     searchTask?.cancel()
 
@@ -108,25 +107,25 @@ class RecipeListViewModel {
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
-          domain: "RecipeListViewModel", code: 1,
+          domain: "MealListViewModel", code: 1,
           userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
       }
 
       guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
         throw NSError(
-          domain: "RecipeListViewModel", code: 2,
+          domain: "MealListViewModel", code: 2,
           userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
       }
 
       let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
 
       // Create search request
-      var request = Mealplanning_SearchForRecipesRequest()
+      var request = Mealplanning_SearchForMealsRequest()
       request.query = query
       request.useSearchService = false  // disabled for local testing
 
       // Execute search
-      let response = try await clientManager.client.mealPlanning.searchForRecipes(
+      let response = try await clientManager.client.mealPlanning.searchForMeals(
         request,
         metadata: metadata,
         options: clientManager.defaultCallOptions
@@ -134,8 +133,8 @@ class RecipeListViewModel {
 
       searchResults = response.results
     } catch {
-      searchError = "Failed to search recipes: \(error.localizedDescription)"
-      print("❌ Error searching for recipes: \(error)")
+      searchError = "Failed to search meals: \(error.localizedDescription)"
+      print("❌ Error searching for meals: \(error)")
       searchResults = []
     }
 

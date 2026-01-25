@@ -1,5 +1,5 @@
 //
-//  RecipeListView.swift
+//  MealListView.swift
 //  ios
 //
 //  Created by Auto on 12/8/25.
@@ -8,9 +8,9 @@
 import SwiftProtobuf
 import SwiftUI
 
-struct RecipeListView: View {
+struct MealListView: View {
   @Environment(AuthenticationManager.self) private var authManager
-  @State private var viewModel: RecipeListViewModel?
+  @State private var viewModel: MealListViewModel?
   @State private var searchQuery: String = ""
 
   var body: some View {
@@ -18,7 +18,7 @@ struct RecipeListView: View {
       Group {
         if let viewModel = viewModel {
           if viewModel.isLoading {
-            ProgressView("Loading recipes...")
+            ProgressView("Loading meals...")
               .frame(maxWidth: .infinity, maxHeight: .infinity)
           } else if let errorMessage = viewModel.errorMessage {
             VStack(spacing: 16) {
@@ -34,21 +34,21 @@ struct RecipeListView: View {
                 .padding(.horizontal)
               Button("Retry") {
                 Task {
-                  await viewModel.loadRecipes()
+                  await viewModel.loadMeals()
                 }
               }
               .buttonStyle(.borderedProminent)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
           } else {
-            let displayedRecipes = viewModel.displayedRecipes
+            let displayedMeals = viewModel.displayedMeals
             let isSearching = viewModel.isSearching
             let hasSearchQuery = !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
             if isSearching {
-              ProgressView("Searching recipes...")
+              ProgressView("Searching meals...")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if displayedRecipes.isEmpty {
+            } else if displayedMeals.isEmpty {
               if hasSearchQuery {
                 VStack(spacing: 16) {
                   Image(systemName: "magnifyingglass")
@@ -56,7 +56,7 @@ struct RecipeListView: View {
                     .foregroundColor(.secondary)
                   Text("No Results")
                     .font(.headline)
-                  Text("No recipes found matching \"\(searchQuery)\"")
+                  Text("No meals found matching \"\(searchQuery)\"")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -72,12 +72,12 @@ struct RecipeListView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
               } else {
                 VStack(spacing: 16) {
-                  Image(systemName: "book.closed")
+                  Image(systemName: "fork.knife")
                     .font(.largeTitle)
                     .foregroundColor(.secondary)
-                  Text("No Recipes")
+                  Text("No Meals")
                     .font(.headline)
-                  Text("No recipes found. Create some recipes to get started.")
+                  Text("No meals found. Create some meals to get started.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -88,9 +88,9 @@ struct RecipeListView: View {
             } else {
               ScrollView {
                 LazyVStack(spacing: 12) {
-                  ForEach(displayedRecipes, id: \.id) { recipe in
-                    NavigationLink(destination: PerformRecipeView(recipeID: recipe.id)) {
-                      RecipeCard(recipe: recipe)
+                  ForEach(displayedMeals, id: \.id) { meal in
+                    NavigationLink(destination: MealDetailView(mealID: meal.id)) {
+                      MealCard(meal: meal)
                     }
                   }
                 }
@@ -103,12 +103,12 @@ struct RecipeListView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
       }
-      .navigationTitle("Recipes")
+      .navigationTitle("Meals")
       .navigationBarTitleDisplayMode(.large)
-      .searchable(text: $searchQuery, prompt: "Search recipes...")
+      .searchable(text: $searchQuery, prompt: "Search meals...")
       .onChange(of: searchQuery) { oldValue, newValue in
         if let viewModel = viewModel {
-          viewModel.searchRecipes(query: newValue)
+          viewModel.searchMeals(query: newValue)
         }
       }
       .refreshable {
@@ -116,16 +116,16 @@ struct RecipeListView: View {
           // Clear search when refreshing
           searchQuery = ""
           viewModel.searchResults = []
-          await viewModel.loadRecipes()
+          await viewModel.loadMeals()
         }
       }
       .onAppear {
         if viewModel == nil {
-          viewModel = RecipeListViewModel(authManager: authManager)
+          viewModel = MealListViewModel(authManager: authManager)
         }
         if let viewModel = viewModel {
           Task {
-            await viewModel.loadRecipes()
+            await viewModel.loadMeals()
           }
         }
       }
@@ -133,39 +133,46 @@ struct RecipeListView: View {
   }
 }
 
-// MARK: - Recipe Card
+// MARK: - Meal Card
 
-struct RecipeCard: View {
-  let recipe: Mealplanning_Recipe
+struct MealCard: View {
+  let meal: Mealplanning_Meal
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
+      Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
         .font(.headline)
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      if !recipe.description_p.isEmpty {
-        Text(recipe.description_p)
+      if !meal.description_p.isEmpty {
+        Text(meal.description_p)
           .font(.subheadline)
           .foregroundColor(.secondary)
           .lineLimit(2)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      // Recipe metadata
+      // Meal metadata
       HStack(spacing: 12) {
-        if !recipe.steps.isEmpty {
-          Label(
-            "\(recipe.steps.count) step\(recipe.steps.count == 1 ? "" : "s")",
-            systemImage: "list.number"
-          )
-          .font(.caption)
-          .foregroundColor(.secondary)
+        // Show recipe names from components
+        if !meal.components.isEmpty {
+          let recipeNames = meal.components.compactMap { component -> String? in
+            component.recipe.name.isEmpty ? nil : component.recipe.name
+          }
+          if !recipeNames.isEmpty {
+            Label(
+              recipeNames.count == 1 ? recipeNames[0] : "\(recipeNames.count) recipes",
+              systemImage: "book.closed"
+            )
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .lineLimit(1)
+          }
         }
 
-        if recipe.hasEstimatedPortions {
-          Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
+        if meal.hasEstimatedPortions {
+          Label("\(formatPortions(meal.estimatedPortions))", systemImage: "person.2")
             .font(.caption)
             .foregroundColor(.secondary)
         }
@@ -204,6 +211,6 @@ struct RecipeCard: View {
   authManager.userID = "user123"
   authManager.accountID = "account123"
 
-  return RecipeListView()
+  return MealListView()
     .environment(authManager)
 }

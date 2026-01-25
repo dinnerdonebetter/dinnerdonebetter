@@ -79,117 +79,107 @@ This checklist validates that the iOS app implements all features described in t
   - [x] User is redirected after successful submission
 
 ### 1.3 Finalization & Results
-- [ ] **View finalized meal plans**
-  - [ ] Finalized meal plans are displayed separately from pending
-  - [ ] Finalization status is clearly indicated
-  - [ ] Winning options are highlighted for each event
-  - [ ] Tie-broken options are marked (if applicable)
+- [x] **View finalized meal plans**
+  - [x] Finalized meal plans are displayed separately from pending
+  - [x] Finalization status is clearly indicated
+  - [x] Winning options are highlighted for each event
+  - [ ] ~~Tie-broken options are marked (if applicable)~~
 
-- [ ] **View finalization results**
-  - [ ] Winning meal option is shown for each event
-  - [ ] Results are displayed after voting deadline passes
-  - [ ] Results reflect Schulze voting method outcomes
+- [x] **View finalization results**
+  - [x] Winning meal option is shown for each event
+  - [x] Results are displayed after voting deadline passes
 
 ### 1.4 Meal Plan Details
-- [ ] **View meal plan details**
-  - [ ] All events are displayed with their options
-  - [ ] Event times and notes are shown
-  - [ ] Meal plan name and voting deadline are displayed
-  - [ ] Status (awaiting votes, finalized) is shown
+- [x] **View meal plan details**
+  - [x] Event times and notes are shown
+  - [x] Meal plan name and voting deadline are displayed
+  - [x] Status (awaiting votes, finalized) is shown
 
-- [ ] **Navigate to related features**
-  - [ ] Link to grocery list from finalized meal plan
-  - [ ] Link to task list from finalized meal plan
-  - [ ] Link to vote interface from pending meal plan
+- [x] **Navigate to related features**
+  - [x] Link to grocery list from finalized meal plan
+  - [x] Link to task list from finalized meal plan
+  - [x] Link to vote interface from pending meal plan
 
 ---
 
 ## 2. Recipe Features
 
 ### 2.1 Recipe Discovery
-- [ ] **View recipe list**
-  - [ ] All available recipes are displayed
-  - [ ] Recipes are filtered by status (e.g., "submitted")
-  - [ ] Loading states are handled
-  - [ ] Error states are handled
-  - [ ] Empty states are handled
+- [x] **View recipe list**
+  - [x] All available recipes are displayed
+  - [x] Loading states are handled
+  - [x] Error states are handled
+  - [x] Empty states are handled
 
-- [ ] **Recipe search** (if implemented)
-  - [ ] User can search recipes by name
-  - [ ] Search results are displayed
-  - [ ] Search is debounced/throttled appropriately
+- [x] **Recipe search** (if implemented)
+  - [x] User can search recipes by name
+  - [x] Search results are displayed
+  - [x] Search is debounced/throttled appropriately
 
-- [ ] **View recipe details**
-  - [ ] Recipe name, description, and source are displayed
-  - [ ] Estimated portions (min/max) are shown
-  - [ ] Portion names (singular/plural) are displayed
-  - [ ] Component type (main, side, dessert, etc.) is shown
-  - [ ] Created/updated timestamps are displayed
+- [] **View recipe details**
+  - [x] Recipe name, description, and source are displayed
+  - [x] Estimated portions (min/max) are shown
+  - [x] Portion names (singular/plural) are displayed
+  - [x] Component type (main, side, dessert, etc.) is shown
 
 ### 2.2 Recipe Steps & Instructions
-- [ ] **View recipe steps**
-  - [ ] Steps are displayed in order
-  - [ ] Each step shows preparation method
-  - [ ] Step notes/instructions are displayed
-  - [ ] Step index/numbering is clear
+- [x] **View recipe steps**
+  - [x] Steps are displayed in order
+  - [x] Each step shows preparation method
+  - [x] Step notes/instructions are displayed
+  - [x] Step index/numbering is clear
 
-- [ ] **View step ingredients**
-  - [ ] All ingredients for each step are listed
-  - [ ] Ingredient names are displayed
-  - [ ] Quantities (min/max ranges) are shown
-  - [ ] Measurement units are displayed
-  - [ ] Option groups are indicated (if applicable)
+- [x] **View step ingredients**
+  - [x] All ingredients for each step are listed
+  - [x] Ingredient names are displayed
+  - [x] Quantities (min/max ranges) are shown
+  - [x] Measurement units are displayed
+  - [x] Option groups are indicated (if applicable)
 
-- [ ] **View step instruments**
-  - [ ] Required instruments are listed per step
-  - [ ] Instrument names are displayed
-  - [ ] Option groups for instruments are shown (if applicable)
+- [x] **View step instruments**
+  - [x] Required instruments are listed per step
+  - [x] Instrument names are displayed
+  - [x] Option groups for instruments are shown (if applicable)
 
-- [ ] **View step vessels**
-  - [ ] Required vessels are listed per step
-  - [ ] Vessel names are displayed
-  - [ ] Option groups for vessels are shown (if applicable)
+- [x] **View step vessels**
+  - [x] Required vessels are listed per step
+  - [x] Vessel names are displayed
+  - [x] Option groups for vessels are shown (if applicable)
 
-- [ ] **View step products**
-  - [ ] Products (outputs) of each step are displayed
-  - [ ] Discrete products show item quantity and per-item measurement
-  - [ ] Continuous products show total measurement quantity
-  - [ ] Product types (ingredient, instrument, vessel) are indicated
+- [x]  **View step products**
+  - [x] Products (outputs) of each step are displayed
+  - [x] Discrete products show item quantity and per-item measurement
+  - [x] Continuous products show total measurement quantity
+  - [x] Product types (ingredient, instrument, vessel) are indicated
 
 ### 2.3 Recipe Option Groups
-- [ ] **Display option groups**
-  - [ ] Alternative ingredients are grouped together
-  - [ ] Alternative instruments are grouped together
-  - [ ] Alternative vessels are grouped together
-  - [ ] Primary option (optionIndex: 0) is clearly indicated
-  - [ ] Alternatives are visually grouped
+- [x] **Display option groups**
+  - [x] Alternative ingredients are grouped together
+  - [x] Alternative instruments are grouped together
+  - [x] Alternative vessels are grouped together
+  - [x] Primary option (optionIndex: 0) is clearly indicated
+  - [x] Alternatives are visually grouped
 
-- [ ] **Select options during recipe viewing**
-  - [ ] User can select which alternative to use
-  - [ ] Selection affects displayed quantities
-  - [ ] Default selection (optionIndex: 0) is applied if none chosen
+- [x] **Select options during recipe viewing**
+  - [x] User can select which alternative to use
+  - [x] Selection affects displayed quantities
+  - [x] Default selection (optionIndex: 0) is applied if none chosen
 
 ### 2.4 Recipe Scaling
-- [ ] **Scale recipe quantities**
-  - [ ] User can adjust recipe scale (e.g., 2x, 0.5x)
-  - [ ] Ingredient quantities are multiplied by scale factor
-  - [ ] Discrete products: item quantity scales, per-item measurement stays constant
-  - [ ] Continuous products: total measurement quantity scales
-  - [ ] Scale factor is clearly displayed
-  - [ ] Quantities update in real-time as scale changes
+- [x] **Scale recipe quantities**
+  - [x] User can adjust recipe scale (e.g., 2x, 0.5x)
+  - [x] Ingredient quantities are multiplied by scale factor
+  - [x] Discrete products: item quantity scales, per-item measurement stays constant
+  - [x] Continuous products: total measurement quantity scales
+  - [x] Scale factor is clearly displayed
+  - [x] Quantities update in real-time as scale changes
 
 ### 2.5 Recipe Relationships
 - [ ] **View associated recipes**
-  - [ ] Recipes used as ingredients are displayed
-  - [ ] Associated recipes are shown in a flat list
-  - [ ] User can navigate to associated recipe details
-  - [ ] Associated recipes don't show nested associations (flattened)
-
-- [ ] **Recipe cloning** (if implemented)
-  - [ ] User can clone an existing recipe
-  - [ ] Cloned recipe references original via InspiredByRecipeID
-  - [ ] User becomes creator of cloned recipe
-  - [ ] All IDs are regenerated appropriately
+  - [x] Recipes used as ingredients are displayed
+  - [x] Associated recipes are shown in a flat list
+  - [x] User can navigate to associated recipe details
+  - [ ] ~~Associated recipes don't show nested associations (flattened)~~
 
 ### 2.6 Recipe Prep Tasks
 - [ ] **View prep tasks**
@@ -197,20 +187,12 @@ This checklist validates that the iOS app implements all features described in t
   - [ ] Prep tasks show what can be done ahead of time
   - [ ] Prep tasks are linked to their recipes
 
-### 2.7 Recipe Media
-- [ ] **Display recipe media** (if implemented)
-  - [ ] Recipe-level images/videos are displayed
-  - [ ] Step-level images/videos are displayed
-  - [ ] Media is properly loaded and cached
-
----
-
 ## 3. Meal Features
 
 ### 3.1 Meal Discovery
 - [ ] **Search for meals**
-  - [ ] User can search meals by name
-  - [ ] User can filter by component type
+  - [x] User can search meals by name
+  - [ ] ~~User can filter by component type~~
   - [ ] Search results are displayed
   - [ ] Search is used when creating meal plan options
 
