@@ -127,6 +127,7 @@ type Querier interface {
 	CreateValidVessel(ctx context.Context, db DBTX, arg *CreateValidVesselParams) error
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
+	FindMealPlansForDates(ctx context.Context, db DBTX, arg *FindMealPlansForDatesParams) ([]*FindMealPlansForDatesRow, error)
 	GetAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipParams) (*GetAccountInstrumentOwnershipRow, error)
 	GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipsParams) ([]*GetAccountInstrumentOwnershipsRow, error)
 	GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error)
