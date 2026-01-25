@@ -23,6 +23,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
   var highlightedStepIDs: Set<String>? = nil
   var prepTaskContext: PerformRecipeView.PrepTaskContext? = nil
+  @Binding var externalScale: Float?  // Optional external scale binding (for meal components)
 
   // State for option selections (for interactive selection outside meal plan context)
   @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
@@ -30,9 +31,49 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   @State private var selectedVesselOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
 
   // State for recipe scaling
-  @State private var recipeScale: Float = 1.0
+  @State private var internalRecipeScale: Float = 1.0
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
+
+  // Helper to get current scale value
+  private var recipeScale: Float {
+    externalScale ?? internalRecipeScale
+  }
+
+  // Helper to set scale value
+  private func setRecipeScale(_ newValue: Float) {
+    if externalScale != nil {
+      externalScale = newValue
+    } else {
+      internalRecipeScale = newValue
+    }
+  }
+
+  init(
+    checkedIngredients: Binding<Set<String>>,
+    checkedInstrumentsVessels: Binding<Set<String>>,
+    isInstrumentsVesselsExpanded: Binding<Bool>,
+    isIngredientsExpanded: Binding<Bool>,
+    recipe: Mealplanning_Recipe,
+    viewModel: PerformRecipeViewModel,
+    hideIngredientsAndInstruments: Bool = false,
+    mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]? = nil,
+    highlightedStepIDs: Set<String>? = nil,
+    prepTaskContext: PerformRecipeView.PrepTaskContext? = nil,
+    externalScale: Binding<Float?> = .constant(nil)
+  ) {
+    self._checkedIngredients = checkedIngredients
+    self._checkedInstrumentsVessels = checkedInstrumentsVessels
+    self._isInstrumentsVesselsExpanded = isInstrumentsVesselsExpanded
+    self._isIngredientsExpanded = isIngredientsExpanded
+    self.recipe = recipe
+    self.viewModel = viewModel
+    self.hideIngredientsAndInstruments = hideIngredientsAndInstruments
+    self.mealPlanSelections = mealPlanSelections
+    self.highlightedStepIDs = highlightedStepIDs
+    self.prepTaskContext = prepTaskContext
+    self._externalScale = externalScale
+  }
 
   @Environment(AuthenticationManager.self) private var authManager
 
@@ -104,14 +145,14 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
               .font(.headline)
               .foregroundColor(.blue)
           }
-          
+
           HStack(spacing: 4) {
             if let recipeName = context.recipeName, !recipeName.isEmpty {
               Text("for \(recipeName)")
-                .font(.subheadline)     
+                .font(.subheadline)
                 .foregroundColor(.secondary)
             }
-            
+
             if let eventName = context.eventName, let eventTime = context.eventTime {
               Text("• \(eventName) at \(formatEventTime(eventTime))")
                 .font(.subheadline)
@@ -121,7 +162,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         }
         .padding(.bottom, 8)
       }
-      
+
       Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
         .font(.title)
         .fontWeight(.bold)
@@ -184,21 +225,21 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
             // Quick scale buttons
             HStack(spacing: 4) {
               Button("0.5x") {
-                recipeScale = 0.5
+                setRecipeScale(0.5)
                 scaleText = String(format: "%.2f", recipeScale)
               }
               .buttonStyle(.bordered)
               .controlSize(.small)
 
               Button("1x") {
-                recipeScale = 1.0
+                setRecipeScale(1.0)
                 scaleText = String(format: "%.2f", recipeScale)
               }
               .buttonStyle(.bordered)
               .controlSize(.small)
 
               Button("2x") {
-                recipeScale = 2.0
+                setRecipeScale(2.0)
                 scaleText = String(format: "%.2f", recipeScale)
               }
               .buttonStyle(.bordered)
@@ -215,8 +256,13 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     .onAppear {
       scaleText = String(format: "%.2f", recipeScale)
     }
-    .onChange(of: recipeScale) { _, newValue in
-      if !isScaleFocused {
+    .onChange(of: externalScale) { _, newValue in
+      if !isScaleFocused, let newValue = newValue {
+        scaleText = String(format: "%.2f", newValue)
+      }
+    }
+    .onChange(of: internalRecipeScale) { _, newValue in
+      if !isScaleFocused, externalScale == nil {
         scaleText = String(format: "%.2f", newValue)
       }
     }
@@ -224,7 +270,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   private func updateScaleFromText() {
     if let scale = Float(scaleText), scale > 0 {
-      recipeScale = scale
+      setRecipeScale(scale)
       scaleText = String(format: "%.2f", recipeScale)
     } else {
       // Reset to current scale if invalid input
@@ -243,7 +289,7 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
         mealPlanSelections: mealPlanSelections,
         scale: recipeScale
       )
-    
+
     // Filter option groups based on meal plan selections or user selections
     let filteredInstrumentGroups = filterInstrumentOptionGroupsForDisplay(instrumentOptionGroups)
     let filteredVesselGroups = filterVesselOptionGroupsForDisplay(vesselOptionGroups)
@@ -296,10 +342,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
                   get: {
                     // Check meal plan selections first
                     if let selections = mealPlanSelections,
-                       let selection = selections.first(where: { sel in
-                         sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-                           && sel.selectionType == .instrument
-                       }) {
+                      let selection = selections.first(where: { sel in
+                        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                          && sel.selectionType == .instrument
+                      })
+                    {
                       return selection.selectedOptionIndex
                     }
                     // Then check user selections, or use sentinel value if none
@@ -343,10 +390,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
                   get: {
                     // Check meal plan selections first
                     if let selections = mealPlanSelections,
-                       let selection = selections.first(where: { sel in
-                         sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-                           && sel.selectionType == .vessel
-                       }) {
+                      let selection = selections.first(where: { sel in
+                        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                          && sel.selectionType == .vessel
+                      })
+                    {
                       return selection.selectedOptionIndex
                     }
                     // Then check user selections, or use sentinel value if none
@@ -568,10 +616,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
                   get: {
                     // Check meal plan selections first
                     if let selections = mealPlanSelections,
-                       let selection = selections.first(where: { sel in
-                         sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-                           && sel.ingredientIndex == group.index && sel.selectionType == .ingredient
-                       }) {
+                      let selection = selections.first(where: { sel in
+                        sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+                          && sel.ingredientIndex == group.index && sel.selectionType == .ingredient
+                      })
+                    {
                       return selection.selectedOptionIndex
                     }
                     // Then check user selections, or use sentinel value if none
@@ -669,11 +718,14 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       }
     }
     // Default to user selection or optionIndex 0
-    return selectedIngredientOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+    return selectedIngredientOptions[group.id]
+      ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?
+        .optionIndex ?? 0)
   }
 
   // Helper to get selected option index for an instrument option group
-  private func getSelectedInstrumentOptionIndex(for group: InstrumentOptionGroupAggregate) -> UInt32 {
+  private func getSelectedInstrumentOptionIndex(for group: InstrumentOptionGroupAggregate) -> UInt32
+  {
     if let selections = mealPlanSelections {
       if let selection = selections.first(where: { sel in
         sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
@@ -683,7 +735,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       }
     }
     // Default to user selection or optionIndex 0
-    return selectedInstrumentOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+    return selectedInstrumentOptions[group.id]
+      ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?
+        .optionIndex ?? 0)
   }
 
   // Helper to get selected option index for a vessel option group
@@ -697,7 +751,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       }
     }
     // Default to user selection or optionIndex 0
-    return selectedVesselOptions[group.id] ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?.optionIndex ?? 0)
+    return selectedVesselOptions[group.id]
+      ?? (group.options.first(where: { $0.optionIndex == 0 })?.optionIndex ?? group.options.first?
+        .optionIndex ?? 0)
   }
 
   private func filterIngredientOptionGroupsForDisplay(
@@ -748,10 +804,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       let selectedIndex: UInt32?
       // Check meal plan selections first
       if let selections = mealPlanSelections,
-         let selection = selections.first(where: { sel in
-           sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-             && sel.selectionType == .instrument
-         }) {
+        let selection = selections.first(where: { sel in
+          sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+            && sel.selectionType == .instrument
+        })
+      {
         selectedIndex = selection.selectedOptionIndex
       } else {
         // Check user selections - use sentinel value if none
@@ -797,10 +854,11 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
       let selectedIndex: UInt32?
       // Check meal plan selections first
       if let selections = mealPlanSelections,
-         let selection = selections.first(where: { sel in
-           sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-             && sel.selectionType == .vessel
-         }) {
+        let selection = selections.first(where: { sel in
+          sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+            && sel.selectionType == .vessel
+        })
+      {
         selectedIndex = selection.selectedOptionIndex
       } else {
         // Check user selections - use sentinel value if none
@@ -841,7 +899,9 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
   // MARK: - Prep Tasks Section
 
-  private func prepTasksSection(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel) -> some View {
+  private func prepTasksSection(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel)
+    -> some View
+  {
     return VStack(alignment: .leading, spacing: 0) {
       Button(
         action: {
@@ -901,72 +961,91 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     viewModel: PerformRecipeViewModel
   ) -> some View {
     // Get step IDs for this prep task
-    let stepIDs = Set(prepTask.taskSteps.compactMap { taskStep in
-      taskStep.belongsToRecipeStep.isEmpty ? nil : taskStep.belongsToRecipeStep
-    })
-    
+    let stepIDs = Set(
+      prepTask.taskSteps.compactMap { taskStep in
+        taskStep.belongsToRecipeStep.isEmpty ? nil : taskStep.belongsToRecipeStep
+      })
+
     let hasSteps = !stepIDs.isEmpty
-    
+    let isCompleted = viewModel.isPrepTaskCompleted(prepTask.id)
+
     return VStack(alignment: .leading, spacing: 8) {
-      if hasSteps {
-        NavigationLink(
-          destination: PerformRecipeView(
-            recipeID: recipe.id,
-            highlightedStepIDs: stepIDs
-          )
-          .environment(authManager)
-        ) {
-          prepTaskContent(prepTask: prepTask, stepIDs: stepIDs)
+      HStack(spacing: 12) {
+        // Checkbox for prep task completion
+        Button {
+          viewModel.togglePrepTask(prepTask)
+        } label: {
+          Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+            .font(.title3)
+            .foregroundColor(isCompleted ? .green : .secondary)
         }
         .buttonStyle(.plain)
-      } else {
-        prepTaskContent(prepTask: prepTask, stepIDs: stepIDs)
+
+        // Prep task content (clickable if it has steps)
+        if hasSteps {
+          NavigationLink(
+            destination: PerformRecipeView(
+              recipeID: recipe.id,
+              highlightedStepIDs: stepIDs
+            )
+            .environment(authManager)
+          ) {
+            prepTaskContent(prepTask: prepTask, stepIDs: stepIDs, isCompleted: isCompleted)
+          }
+          .buttonStyle(.plain)
+        } else {
+          prepTaskContent(prepTask: prepTask, stepIDs: stepIDs, isCompleted: isCompleted)
+        }
       }
     }
     .padding(.horizontal)
     .padding(.vertical, 8)
   }
-  
+
   private func prepTaskContent(
     prepTask: Mealplanning_RecipePrepTask,
-    stepIDs: Set<String>
+    stepIDs: Set<String>,
+    isCompleted: Bool
   ) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       HStack {
         Text(prepTask.name.isEmpty ? "Unnamed Prep Task" : prepTask.name)
           .font(.subheadline)
           .fontWeight(.semibold)
-          .foregroundColor(.primary)
-        
+          .foregroundColor(isCompleted ? .secondary : .primary)
+          .strikethrough(isCompleted)
+
         Spacer()
-        
+
         if !stepIDs.isEmpty {
           Image(systemName: "chevron.right")
             .font(.caption)
             .foregroundColor(.secondary)
         }
       }
-      
+
       if !prepTask.description_p.isEmpty {
         Text(prepTask.description_p)
           .font(.caption)
-          .foregroundColor(.secondary)
+          .foregroundColor(isCompleted ? .secondary : .secondary)
+          .strikethrough(isCompleted)
       }
-      
+
       if !prepTask.notes.isEmpty {
         Text(prepTask.notes)
           .font(.caption2)
           .foregroundColor(.secondary)
           .italic()
+          .strikethrough(isCompleted)
       }
-      
+
       if !stepIDs.isEmpty {
         Text("\(stepIDs.count) step\(stepIDs.count == 1 ? "" : "s")")
           .font(.caption2)
-          .foregroundColor(.blue)
+          .foregroundColor(isCompleted ? .green : .blue)
           .padding(.top, 2)
       }
-      
+
       if prepTask.optional {
         Label("Optional", systemImage: "info.circle")
           .font(.caption2)
@@ -986,86 +1065,169 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
     return highlightedStepIDs.contains(stepID)
   }
 
-  private func stepsList(recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel, scale: Float)
+  // Step info for categorization
+  private struct StepInfo: Identifiable {
+    var id: String {
+      "\(recipeID):\(step.id)"
+    }
+    let step: Mealplanning_RecipeStep
+    let index: Int
+    let recipeID: String
+    let isAssociatedRecipeStep: Bool
+    let associatedRecipeName: String?
+  }
+
+  // Collect all steps from recipe and associated recipes
+  private func collectAllSteps(recipe: Mealplanning_Recipe) -> [StepInfo] {
+    var allSteps: [StepInfo] = []
+
+    // Collect steps from associated recipes
+    for associatedRecipe in recipe.associatedRecipes {
+      for (index, step) in associatedRecipe.steps.enumerated() {
+        if shouldShowStep(stepID: step.id) {
+          allSteps.append(
+            StepInfo(
+              step: step,
+              index: index,
+              recipeID: associatedRecipe.id,
+              isAssociatedRecipeStep: true,
+              associatedRecipeName: associatedRecipe.name
+            ))
+        }
+      }
+    }
+
+    // Collect steps from main recipe
+    for (index, step) in recipe.steps.enumerated() {
+      if shouldShowStep(stepID: step.id) {
+        allSteps.append(
+          StepInfo(
+            step: step,
+            index: index,
+            recipeID: recipe.id,
+            isAssociatedRecipeStep: false,
+            associatedRecipeName: nil
+          ))
+      }
+    }
+
+    return allSteps
+  }
+
+  private func stepsList(
+    recipe: Mealplanning_Recipe, viewModel: PerformRecipeViewModel, scale: Float
+  )
     -> some View
   {
-    VStack(alignment: .leading, spacing: 12) {
+    let allSteps = collectAllSteps(recipe: recipe)
+
+    // Categorize steps
+    let upNextSteps = allSteps.filter { stepInfo in
+      viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .upNext
+    }
+
+    let forLaterSteps = allSteps.filter { stepInfo in
+      viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .forLater
+    }
+
+    let doneSteps = allSteps.filter { stepInfo in
+      viewModel.categorizeStep(recipeID: stepInfo.recipeID, stepID: stepInfo.step.id) == .done
+    }
+
+    return VStack(alignment: .leading, spacing: 16) {
       Text("Steps")
         .font(.headline)
         .padding(.horizontal, 4)
 
-      // Associated recipe steps (prerequisites) - render first
-      if !recipe.associatedRecipes.isEmpty {
-        ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
-          if !associatedRecipe.steps.isEmpty {
-            // Header for associated recipe
-            associatedRecipeStepsHeader(recipe: associatedRecipe)
+      // Up Next section
+      if !upNextSteps.isEmpty {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Up Next")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.orange)
+            .padding(.horizontal, 4)
 
-            // Wash hands step before first step of this associated recipe
+          // Wash hands step (only show once, before first up next step)
+          if upNextSteps.first != nil {
             washHandsStepCard(viewModel: viewModel)
-
-            // Steps from this associated recipe
-            ForEach(
-              Array(associatedRecipe.steps.enumerated())
-                .filter { shouldShowStep(stepID: $0.element.id) },
-              id: \.element.id
-            ) { index, step in
-              StepCardView(
-                step: step,
-                index: index,
-                viewModel: viewModel,
-                formatStepTitle: formatStepTitle,
-                recipeID: associatedRecipe.id,
-                mealPlanSelections: mealPlanSelections,
-                isAssociatedRecipeStep: true,
-                associatedRecipeName: associatedRecipe.name,
-                highlightedStepIDs: highlightedStepIDs,
-                selectedIngredientOptions: selectedIngredientOptions,
-                selectedInstrumentOptions: selectedInstrumentOptions,
-                selectedVesselOptions: selectedVesselOptions,
-                scale: scale
-              )
-            }
-
-            // Separator after associated recipe steps
-            if associatedRecipe.id != recipe.associatedRecipes.last?.id
-              || !recipe.steps.isEmpty
-            {
-              Divider()
-                .padding(.vertical, 8)
-            }
           }
-        }
 
-        // Header for main recipe steps (if both exist)
-        if !recipe.steps.isEmpty {
-          mainRecipeStepsHeader()
+          ForEach(upNextSteps) { stepInfo in
+            StepCardView(
+              step: stepInfo.step,
+              index: stepInfo.index,
+              viewModel: viewModel,
+              formatStepTitle: formatStepTitle,
+              recipeID: stepInfo.recipeID,
+              mealPlanSelections: mealPlanSelections,
+              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+              associatedRecipeName: stepInfo.associatedRecipeName,
+              highlightedStepIDs: highlightedStepIDs,
+              selectedIngredientOptions: selectedIngredientOptions,
+              selectedInstrumentOptions: selectedInstrumentOptions,
+              selectedVesselOptions: selectedVesselOptions,
+              scale: scale
+            )
+          }
         }
       }
 
-      // Main recipe steps
-      if !recipe.steps.isEmpty {
-        // Wash hands step before first step of main recipe
-        washHandsStepCard(viewModel: viewModel)
+      // For Later section
+      if !forLaterSteps.isEmpty {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("For Later")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.blue)
+            .padding(.horizontal, 4)
 
-        ForEach(
-          Array(recipe.steps.enumerated())
-            .filter { shouldShowStep(stepID: $0.element.id) },
-          id: \.element.id
-        ) { index, step in
-          StepCardView(
-            step: step,
-            index: index,
-            viewModel: viewModel,
-            formatStepTitle: formatStepTitle,
-            recipeID: recipe.id,
-            mealPlanSelections: mealPlanSelections,
-            highlightedStepIDs: highlightedStepIDs,
-            selectedIngredientOptions: selectedIngredientOptions,
-            selectedInstrumentOptions: selectedInstrumentOptions,
-            selectedVesselOptions: selectedVesselOptions,
-            scale: scale
-          )
+          ForEach(forLaterSteps) { stepInfo in
+            StepCardView(
+              step: stepInfo.step,
+              index: stepInfo.index,
+              viewModel: viewModel,
+              formatStepTitle: formatStepTitle,
+              recipeID: stepInfo.recipeID,
+              mealPlanSelections: mealPlanSelections,
+              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+              associatedRecipeName: stepInfo.associatedRecipeName,
+              highlightedStepIDs: highlightedStepIDs,
+              selectedIngredientOptions: selectedIngredientOptions,
+              selectedInstrumentOptions: selectedInstrumentOptions,
+              selectedVesselOptions: selectedVesselOptions,
+              scale: scale
+            )
+          }
+        }
+      }
+
+      // Done section
+      if !doneSteps.isEmpty {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Done")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.green)
+            .padding(.horizontal, 4)
+
+          ForEach(doneSteps) { stepInfo in
+            StepCardView(
+              step: stepInfo.step,
+              index: stepInfo.index,
+              viewModel: viewModel,
+              formatStepTitle: formatStepTitle,
+              recipeID: stepInfo.recipeID,
+              mealPlanSelections: mealPlanSelections,
+              isAssociatedRecipeStep: stepInfo.isAssociatedRecipeStep,
+              associatedRecipeName: stepInfo.associatedRecipeName,
+              highlightedStepIDs: highlightedStepIDs,
+              selectedIngredientOptions: selectedIngredientOptions,
+              selectedInstrumentOptions: selectedInstrumentOptions,
+              selectedVesselOptions: selectedVesselOptions,
+              scale: scale
+            )
+          }
         }
       }
     }

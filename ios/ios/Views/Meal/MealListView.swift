@@ -43,7 +43,8 @@ struct MealListView: View {
           } else {
             let displayedMeals = viewModel.displayedMeals
             let isSearching = viewModel.isSearching
-            let hasSearchQuery = !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let hasSearchQuery = !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+              .isEmpty
 
             if isSearching {
               ProgressView("Searching meals...")
@@ -61,7 +62,7 @@ struct MealListView: View {
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
-                  
+
                   if let searchError = viewModel.searchError {
                     Text(searchError)
                       .font(.caption)

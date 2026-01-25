@@ -92,7 +92,7 @@ class RecipeListViewModel {
 
     // Debounce: wait 500ms before executing search
     searchTask = Task {
-      try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
+      try? await Task.sleep(nanoseconds: 500_000_000)  // 500ms
 
       // Check if task was cancelled
       guard !Task.isCancelled else { return }

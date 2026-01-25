@@ -39,11 +39,14 @@ struct InteractiveIngredientOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                systemName: selectedOptionIndex == option.optionIndex
+                  && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
+              .foregroundColor(
+                selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                  ? .green : .gray)
 
               Text(option.ingredient.name)
                 .font(.caption)
@@ -97,11 +100,14 @@ struct InteractiveInstrumentOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                systemName: selectedOptionIndex == option.optionIndex
+                  && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
+              .foregroundColor(
+                selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                  ? .green : .gray)
 
               Text(option.instrument.name)
                 .font(.caption)
@@ -155,11 +161,14 @@ struct InteractiveVesselOptionGroupView: View {
           label: {
             HStack(spacing: 6) {
               Image(
-                systemName: selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                systemName: selectedOptionIndex == option.optionIndex
+                  && selectedOptionIndex != UInt32.max
                   ? "checkmark.circle.fill" : "circle"
               )
               .font(.caption)
-              .foregroundColor(selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max ? .green : .gray)
+              .foregroundColor(
+                selectedOptionIndex == option.optionIndex && selectedOptionIndex != UInt32.max
+                  ? .green : .gray)
 
               Text(option.vessel.name)
                 .font(.caption)

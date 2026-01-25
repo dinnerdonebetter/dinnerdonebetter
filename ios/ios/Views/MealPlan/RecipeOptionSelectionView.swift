@@ -61,7 +61,7 @@ struct RecipeOptionSelectionView: View {
               }
               return hasOptions
             }
-            
+
             if sectionsWithOptions.isEmpty {
               VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: "info.circle")
@@ -118,12 +118,15 @@ struct RecipeOptionSelectionView: View {
             print("    ⚠️ WARNING: Recipe has no steps!")
           }
           for (stepIndex, step) in recipe.steps.enumerated() {
-            print("    Step \(stepIndex + 1) (ID: \(step.id)): \(step.ingredients.count) ingredients")
+            print(
+              "    Step \(stepIndex + 1) (ID: \(step.id)): \(step.ingredients.count) ingredients")
             if step.ingredients.isEmpty {
               print("      ⚠️ Step has no ingredients")
             } else {
               // Show ingredient indices for debugging
-              let indices = step.ingredients.map { "index:\($0.index), optionIndex:\($0.optionIndex)" }
+              let indices = step.ingredients.map {
+                "index:\($0.index), optionIndex:\($0.optionIndex)"
+              }
               print("      Ingredient indices: \(indices.joined(separator: ", "))")
             }
             let (_, groups) = groupIngredientsForSelection(
@@ -155,7 +158,7 @@ struct RecipeOptionSelectionView: View {
         break
       }
     }
-    
+
     // Also check associated recipes
     if !hasAnyOptions {
       for associatedRecipe in recipe.associatedRecipes {
@@ -170,12 +173,12 @@ struct RecipeOptionSelectionView: View {
         if hasAnyOptions { break }
       }
     }
-    
+
     // Only show the section if there are options
     guard hasAnyOptions else {
       return AnyView(EmptyView())
     }
-    
+
     return AnyView(
       VStack(alignment: .leading, spacing: 12) {
         Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
@@ -195,7 +198,8 @@ struct RecipeOptionSelectionView: View {
               .foregroundColor(.secondary)
               .padding(.horizontal)
 
-            ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) { stepIndex, step in
+            ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) {
+              stepIndex, step in
               stepOptionSection(recipe: associatedRecipe, step: step, stepIndex: stepIndex)
             }
           }

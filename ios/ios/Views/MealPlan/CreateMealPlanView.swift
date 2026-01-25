@@ -62,10 +62,12 @@ struct CreateMealPlanView: View {
           .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
-        .sheet(isPresented: Binding(
-          get: { recipesForOptionSelection != nil },
-          set: { if !$0 { recipesForOptionSelection = nil } }
-        )) {
+        .sheet(
+          isPresented: Binding(
+            get: { recipesForOptionSelection != nil },
+            set: { if !$0 { recipesForOptionSelection = nil } }
+          )
+        ) {
           if let recipes = recipesForOptionSelection {
             RecipeOptionSelectionView(
               isPresented: Binding(

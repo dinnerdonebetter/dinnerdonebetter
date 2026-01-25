@@ -201,7 +201,8 @@ struct StepDetailsView: View {
               prerequisiteCompleted: prerequisiteCompleted
             )
           },
-          ingredientOptionGroups: filterOptionGroups(optionGroups, for: .ingredient, selectedOptions: selectedIngredientOptions),
+          ingredientOptionGroups: filterOptionGroups(
+            optionGroups, for: .ingredient, selectedOptions: selectedIngredientOptions),
           scale: scale
         )
       }
@@ -231,7 +232,8 @@ struct StepDetailsView: View {
               prerequisiteCompleted: prerequisiteCompleted
             )
           },
-          instrumentOptionGroups: filterInstrumentOptionGroups(optionGroups, selectedOptions: selectedInstrumentOptions),
+          instrumentOptionGroups: filterInstrumentOptionGroups(
+            optionGroups, selectedOptions: selectedInstrumentOptions),
           scale: scale
         )
       }
@@ -261,7 +263,8 @@ struct StepDetailsView: View {
               prerequisiteCompleted: prerequisiteCompleted
             )
           },
-          vesselOptionGroups: filterVesselOptionGroups(optionGroups, selectedOptions: selectedVesselOptions),
+          vesselOptionGroups: filterVesselOptionGroups(
+            optionGroups, selectedOptions: selectedVesselOptions),
           scale: scale
         )
       }
@@ -555,10 +558,11 @@ struct StepDetailsView: View {
       // Check meal plan selections first, then user selections
       let selectedIndex: UInt32?
       if let selections = mealPlanSelections,
-         let selection = selections.first(where: { sel in
-           sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-             && sel.ingredientIndex == group.index && sel.selectionType == selectionType
-         }) {
+        let selection = selections.first(where: { sel in
+          sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+            && sel.ingredientIndex == group.index && sel.selectionType == selectionType
+        })
+      {
         selectedIndex = selection.selectedOptionIndex
       } else if let userSelection = selectedOptions[group.id] {
         selectedIndex = userSelection
@@ -573,7 +577,7 @@ struct StepDetailsView: View {
       } else {
         filteredOptions = group.options  // Show all options when no selection
       }
-      
+
       return OptionGroupAggregate(
         id: group.id,
         recipeID: group.recipeID,
@@ -596,10 +600,11 @@ struct StepDetailsView: View {
       // Check meal plan selections first, then user selections
       let selectedIndex: UInt32?
       if let selections = mealPlanSelections,
-         let selection = selections.first(where: { sel in
-           sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-             && sel.selectionType == .instrument
-         }) {
+        let selection = selections.first(where: { sel in
+          sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+            && sel.selectionType == .instrument
+        })
+      {
         selectedIndex = selection.selectedOptionIndex
       } else if let userSelection = selectedOptions[group.id] {
         selectedIndex = userSelection
@@ -614,7 +619,7 @@ struct StepDetailsView: View {
       } else {
         filteredOptions = group.options  // Show all options when no selection
       }
-      
+
       return InstrumentOptionGroupAggregate(
         id: group.id,
         recipeID: group.recipeID,
@@ -637,10 +642,11 @@ struct StepDetailsView: View {
       // Check meal plan selections first, then user selections
       let selectedIndex: UInt32?
       if let selections = mealPlanSelections,
-         let selection = selections.first(where: { sel in
-           sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
-             && sel.selectionType == .vessel
-         }) {
+        let selection = selections.first(where: { sel in
+          sel.recipeID == group.recipeID && sel.recipeStepID == group.stepID
+            && sel.selectionType == .vessel
+        })
+      {
         selectedIndex = selection.selectedOptionIndex
       } else if let userSelection = selectedOptions[group.id] {
         selectedIndex = userSelection
@@ -655,7 +661,7 @@ struct StepDetailsView: View {
       } else {
         filteredOptions = group.options  // Show all options when no selection
       }
-      
+
       return VesselOptionGroupAggregate(
         id: group.id,
         recipeID: group.recipeID,
@@ -736,8 +742,9 @@ struct OptionGroupView: View {
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
     if let selectedIndex = group.selectedOptionIndex,
-       group.options.count == 1,
-       let option = group.options.first {
+      group.options.count == 1,
+      let option = group.options.first
+    {
       // Selected option - show like a regular ingredient (no indentation, no "one of:" label)
       HStack(spacing: 6) {
         Text(option.ingredient.name)
@@ -784,8 +791,9 @@ struct InstrumentOptionGroupView: View {
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
     if let selectedIndex = group.selectedOptionIndex,
-       group.options.count == 1,
-       let option = group.options.first {
+      group.options.count == 1,
+      let option = group.options.first
+    {
       // Selected option - show like a regular instrument (no indentation, no "one of:" label)
       HStack(spacing: 6) {
         Text(option.instrument.name)
@@ -832,8 +840,9 @@ struct VesselOptionGroupView: View {
   var body: some View {
     // If a selection has been made (selectedOptionIndex is not nil), show only that option without indentation
     if let selectedIndex = group.selectedOptionIndex,
-       group.options.count == 1,
-       let option = group.options.first {
+      group.options.count == 1,
+      let option = group.options.first
+    {
       // Selected option - show like a regular vessel (no indentation, no "one of:" label)
       HStack(spacing: 6) {
         Text(option.vessel.name)
@@ -896,7 +905,9 @@ struct StepProductsSectionView: View {
     }
   }
 
-  private func formatProductQuantity(_ product: Mealplanning_RecipeStepProduct, scale: Float) -> String {
+  private func formatProductQuantity(_ product: Mealplanning_RecipeStepProduct, scale: Float)
+    -> String
+  {
     // Check if product is discrete (has ItemQuantity set)
     let isDiscrete =
       product.hasItemQuantity && (product.itemQuantity.hasMin || product.itemQuantity.hasMax)

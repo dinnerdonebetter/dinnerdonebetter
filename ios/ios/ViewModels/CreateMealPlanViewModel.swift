@@ -539,15 +539,17 @@ class CreateMealPlanViewModel {
     for recipe in allRecipes {
       // Debug: Check if recipe has steps loaded
       if recipe.steps.isEmpty {
-        print("⚠️ Recipe '\(recipe.name)' (ID: \(recipe.id)) has no steps loaded - may need to fetch full recipe details")
+        print(
+          "⚠️ Recipe '\(recipe.name)' (ID: \(recipe.id)) has no steps loaded - may need to fetch full recipe details"
+        )
         continue
       }
-      
+
       let hasOptions = recipe.steps.contains { step in
         // Check for ingredient option groups (only ingredients have selectable options)
         // Group ingredients by their index to find option groups
         var indexGroups: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
-        
+
         for ingredient in step.ingredients {
           // Index 0 typically means not in an option group
           if ingredient.index != 0 {
@@ -558,11 +560,13 @@ class CreateMealPlanViewModel {
             indexGroups[index]?.append(ingredient)
           }
         }
-        
+
         // Check if any index group has multiple ingredients (i.e., has options)
         let hasIngredientOptions = indexGroups.values.contains { $0.count > 1 }
         if hasIngredientOptions {
-          print("  📝 Step \(step.id) in recipe '\(recipe.name)' has option groups: \(indexGroups.filter { $0.value.count > 1 }.keys.sorted())")
+          print(
+            "  📝 Step \(step.id) in recipe '\(recipe.name)' has option groups: \(indexGroups.filter { $0.value.count > 1 }.keys.sorted())"
+          )
         }
         return hasIngredientOptions
       }
@@ -574,8 +578,10 @@ class CreateMealPlanViewModel {
         print("ℹ️ Recipe '\(recipe.name)' (ID: \(recipe.id)) has no option groups")
       }
     }
-    
-    print("📊 collectRecipesWithOptions: Found \(recipeIDsWithOptions.count) recipe(s) with options out of \(allRecipes.count) total recipe(s)")
+
+    print(
+      "📊 collectRecipesWithOptions: Found \(recipeIDsWithOptions.count) recipe(s) with options out of \(allRecipes.count) total recipe(s)"
+    )
 
     return recipeIDsWithOptions
   }

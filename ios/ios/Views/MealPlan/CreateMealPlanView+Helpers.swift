@@ -211,7 +211,7 @@ extension CreateMealPlanView {
 
         // Use ViewModel method to check for recipes with options
         let recipesWithOptions = viewModel.collectRecipesWithOptions(from: allSelectedMeals)
-        
+
         print("🔍 Create button: Found \(recipesWithOptions.count) recipe(s) with options")
 
         if !recipesWithOptions.isEmpty {
@@ -221,10 +221,11 @@ extension CreateMealPlanView {
           for recipe in allRecipes {
             print("  📝 Recipe: \(recipe.name) (ID: \(recipe.id)), has \(recipe.steps.count) steps")
           }
-          
+
           // Pass all recipes to the modal - it will filter internally to only show recipes with options
           // This is safer than pre-filtering in case there are ID mismatches
-          print("🔍 Create button: Passing \(allRecipes.count) recipe(s) to modal (modal will filter)")
+          print(
+            "🔍 Create button: Passing \(allRecipes.count) recipe(s) to modal (modal will filter)")
           // Set recipes first, then the sheet will appear automatically via the binding
           recipesForOptionSelection.wrappedValue = allRecipes
         } else {

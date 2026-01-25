@@ -119,7 +119,7 @@ struct VoteMealPlanView: View {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
     formatter.timeStyle = .short
-    
+
     return HStack {
       Image(systemName: "clock")
         .foregroundColor(.secondary)
@@ -137,7 +137,7 @@ struct VoteMealPlanView: View {
         Text(viewModel.mealPlan.notes.isEmpty ? "Meal Plan" : viewModel.mealPlan.notes)
           .font(.title2)
           .fontWeight(.bold)
-        
+
         Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
           .font(.subheadline)
           .foregroundColor(.secondary)
@@ -149,7 +149,7 @@ struct VoteMealPlanView: View {
       VStack(alignment: .leading, spacing: 8) {
         Text("Voting Deadline")
           .font(.headline)
-        
+
         // Deadline date/time with countdown timer
         HStack(spacing: 12) {
           deadlineDateView(deadline: viewModel.mealPlan.votingDeadline)
@@ -214,7 +214,8 @@ struct VoteMealPlanView: View {
           LockButtonView(
             event: event,
             ballot: ballot,
-            isUpdateMode: viewModel.hasUserVotedOnEvent(eventID: event.id) && viewModel.isDeadlineActive
+            isUpdateMode: viewModel.hasUserVotedOnEvent(eventID: event.id)
+              && viewModel.isDeadlineActive
           ) {
             viewModel.toggleLock(eventID: event.id)
           }
@@ -224,7 +225,7 @@ struct VoteMealPlanView: View {
       .padding()
     }
   }
-  
+
   private func abstainButton(
     event: Mealplanning_MealPlanEvent, index: Int, viewModel: VoteMealPlanViewModel,
     scrollProxy: ScrollViewProxy
@@ -317,7 +318,7 @@ struct VoteMealPlanView: View {
     event: Mealplanning_MealPlanEvent, viewModel: VoteMealPlanViewModel
   ) -> some View {
     let ballot = viewModel.getBallot(for: event.id)
-    
+
     return VStack(alignment: .leading, spacing: 4) {
       if ballot?.isAbstained == true {
         Text("You have abstained from voting")
@@ -350,11 +351,11 @@ struct VoteMealPlanView: View {
     VStack(alignment: .leading, spacing: 12) {
       Divider()
         .padding(.horizontal)
-      
+
       Text("Voting Status")
         .font(.headline)
         .padding(.horizontal)
-      
+
       if viewModel.isLoadingVotingStatus {
         HStack {
           Spacer()
@@ -393,17 +394,19 @@ struct VoteMealPlanView: View {
     status: VoteMealPlanViewModel.VotingStatus?,
     totalEvents: Int
   ) -> some View {
-    let userName = member.belongsToUser.username.isEmpty
-      ? "\(member.belongsToUser.firstName) \(member.belongsToUser.lastName)".trimmingCharacters(in: .whitespaces)
+    let userName =
+      member.belongsToUser.username.isEmpty
+      ? "\(member.belongsToUser.firstName) \(member.belongsToUser.lastName)".trimmingCharacters(
+        in: .whitespaces)
       : member.belongsToUser.username
-    
+
     let displayName = userName.isEmpty ? "Unknown User" : userName
-    
+
     return VStack(alignment: .leading, spacing: 8) {
       Text(displayName)
         .font(.subheadline)
         .fontWeight(.semibold)
-      
+
       if let status = status {
         if status.hasVoted || status.hasAbstained {
           VStack(alignment: .leading, spacing: 4) {
@@ -417,9 +420,11 @@ struct VoteMealPlanView: View {
                 .font(.caption)
                 .foregroundColor(.orange)
             }
-            Text("\(status.eventsVoted.count + status.eventsAbstained.count) of \(totalEvents) events")
-              .font(.caption2)
-              .foregroundColor(.secondary)
+            Text(
+              "\(status.eventsVoted.count + status.eventsAbstained.count) of \(totalEvents) events"
+            )
+            .font(.caption2)
+            .foregroundColor(.secondary)
           }
         } else {
           Label("Not voted", systemImage: "circle")
@@ -462,7 +467,7 @@ struct VoteMealPlanView: View {
               ? (viewModel.isUpdateMode ? "Updating..." : "Submitting...")
               : (viewModel.isUpdateMode ? "Update Votes" : "Submit Votes")
           )
-            .fontWeight(.semibold)
+          .fontWeight(.semibold)
         }
         .frame(maxWidth: .infinity)
         .padding()

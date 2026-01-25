@@ -70,7 +70,7 @@ class VoteMealPlanViewModel {
           abstainVoteIDs[option.id] = vote.id
         }
       }
-      
+
       if hasAbstained {
         // User has abstained - mark ballot as abstained
         ballots[event.id] = EventBallot(
@@ -82,33 +82,35 @@ class VoteMealPlanViewModel {
         )
         continue
       }
-      
+
       // Check if user has already voted on this event
       var userVotes: [(option: Mealplanning_MealPlanOption, rank: UInt32)] = []
       for option in event.options {
-        if let vote = option.votes.first(where: { $0.byUser == authManager.userID && !$0.abstain }) {
+        if let vote = option.votes.first(where: { $0.byUser == authManager.userID && !$0.abstain })
+        {
           userVotes.append((option: option, rank: vote.rank))
         }
       }
-      
+
       if !userVotes.isEmpty {
         // User has voted - initialize with their existing ranking
         // Sort by rank (lower rank = higher preference)
         userVotes.sort { $0.rank < $1.rank }
         let rankedOptions = userVotes.map { $0.option }
-        
+
         // Build map of option ID to vote ID for updates
         var optionVoteIDs: [String: String] = [:]
         for option in event.options {
-          if let vote = option.votes.first(where: { $0.byUser == authManager.userID && !$0.abstain }) {
+          if let vote = option.votes.first(where: { $0.byUser == authManager.userID && !$0.abstain }
+          ) {
             optionVoteIDs[option.id] = vote.id
           }
         }
-        
+
         // Add any options that weren't voted on (shouldn't happen, but be safe)
         let votedOptionIDs = Set(rankedOptions.map { $0.id })
         let unvotedOptions = event.options.filter { !votedOptionIDs.contains($0.id) }
-        
+
         ballots[event.id] = EventBallot(
           id: event.id,
           rankedOptions: rankedOptions + unvotedOptions,
@@ -165,7 +167,9 @@ class VoteMealPlanViewModel {
     for event in mealPlan.events {
       guard let ballot = ballots[event.id] else { return false }
       // Ballot is valid if it's abstained, or if it's locked and complete
-      if !ballot.isAbstained && (!ballot.isLocked || !ballot.isComplete(totalOptions: event.options.count)) {
+      if !ballot.isAbstained
+        && (!ballot.isLocked || !ballot.isComplete(totalOptions: event.options.count))
+      {
         return false
       }
     }
@@ -202,7 +206,7 @@ class VoteMealPlanViewModel {
       option.votes.contains(where: { $0.byUser == authManager.userID && !$0.abstain })
     }
   }
-  
+
   /// Check if user has abstained from a specific event
   func hasUserAbstainedFromEvent(eventID: String) -> Bool {
     return ballots[eventID]?.isAbstained ?? false
@@ -216,9 +220,9 @@ class VoteMealPlanViewModel {
   /// Load voting status for all account members (only if user is creator)
   func loadVotingStatus() async {
     guard isCreator else { return }
-    
+
     isLoadingVotingStatus = true
-    
+
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
@@ -255,19 +259,19 @@ class VoteMealPlanViewModel {
 
       // Determine voting status for each member
       var statusMap: [String: VotingStatus] = [:]
-      
+
       for member in account.members {
         guard member.hasBelongsToUser else { continue }
         let userID = member.belongsToUser.id
-        
+
         var eventsVoted: Set<String> = []
         var eventsAbstained: Set<String> = []
-        
+
         // Check each event
         for event in mealPlan.events {
           var hasVotedInEvent = false
           var hasAbstainedInEvent = false
-          
+
           // Check all options in the event
           for option in event.options {
             for vote in option.votes {
@@ -285,17 +289,17 @@ class VoteMealPlanViewModel {
               break
             }
           }
-          
+
           if hasVotedInEvent {
             eventsVoted.insert(event.id)
           } else if hasAbstainedInEvent {
             eventsAbstained.insert(event.id)
           }
         }
-        
+
         let hasVoted = !eventsVoted.isEmpty
         let hasAbstained = !eventsAbstained.isEmpty
-        
+
         statusMap[userID] = VotingStatus(
           hasVoted: hasVoted,
           hasAbstained: hasAbstained,
@@ -303,26 +307,26 @@ class VoteMealPlanViewModel {
           eventsAbstained: eventsAbstained
         )
       }
-      
+
       votingStatus = statusMap
     } catch {
       print("❌ Error loading voting status: \(error)")
     }
-    
+
     isLoadingVotingStatus = false
   }
-  
+
   /// Abstain from voting on a specific event
   func abstainFromEvent(eventID: String) async -> Bool {
     guard let event = mealPlan.events.first(where: { $0.id == eventID }) else {
       return false
     }
-    
+
     // Check if already abstained
     if hasUserAbstainedFromEvent(eventID: eventID) {
       return true
     }
-    
+
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
@@ -364,7 +368,7 @@ class VoteMealPlanViewModel {
         metadata: metadata,
         options: clientManager.defaultCallOptions
       )
-      
+
       // Update the ballot to reflect abstention
       // Note: We'd need to extract vote IDs from the response, but for now we'll mark it as abstained
       // The vote IDs will be populated when the meal plan is refreshed
@@ -373,7 +377,7 @@ class VoteMealPlanViewModel {
         ballot.isLocked = true
         ballots[event.id] = ballot
       }
-      
+
       return true
     } catch {
       print("❌ Error abstaining from event: \(error)")

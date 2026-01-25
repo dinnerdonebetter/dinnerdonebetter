@@ -48,9 +48,12 @@ struct SelectedMealCard: View {
         }
 
         if meal.hasEstimatedPortions {
-          Label("\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings", systemImage: "person.2")
-            .font(.caption)
-            .foregroundColor(.secondary)
+          Label(
+            "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
+            systemImage: "person.2"
+          )
+          .font(.caption)
+          .foregroundColor(.secondary)
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -119,9 +122,12 @@ struct SelectedMealCard: View {
           }
 
           if meal.hasEstimatedPortions {
-            Label("\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings", systemImage: "person.2")
-              .font(.caption)
-              .foregroundColor(.secondary)
+            Label(
+              "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
+              systemImage: "person.2"
+            )
+            .font(.caption)
+            .foregroundColor(.secondary)
           }
         }
 
@@ -187,7 +193,9 @@ struct SelectedMealCard: View {
     }
   }
 
-  private func formatScaledPortions(_ range: Common_Float32RangeWithOptionalMax, scale: Float) -> String {
+  private func formatScaledPortions(_ range: Common_Float32RangeWithOptionalMax, scale: Float)
+    -> String
+  {
     let scaledMin = range.min * scale
     if range.hasMax {
       let scaledMax = range.max * scale

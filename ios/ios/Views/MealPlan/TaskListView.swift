@@ -255,20 +255,20 @@ struct TaskRow: View {
     guard task.hasRecipePrepTask else { return nil }
     let prepTask = task.recipePrepTask
     var recipeID = prepTask.belongsToRecipe
-    
+
     if recipeID.isEmpty && !prepTask.id.isEmpty {
       if let loadedPrepTask = loadedPrepTasks[prepTask.id] {
         recipeID = loadedPrepTask.belongsToRecipe
       }
     }
-    
+
     if recipeID.isEmpty && task.hasMealPlanOption {
       recipeID = findRecipeIDFromMealOption(task: task, prepTask: prepTask)
     }
-    
+
     return recipeID.isEmpty ? nil : recipeID
   }
-  
+
   private var highlightedStepIDs: Set<String>? {
     guard task.hasRecipePrepTask else { return nil }
     let prepTask = task.recipePrepTask
@@ -277,33 +277,34 @@ struct TaskRow: View {
       .map { $0.belongsToRecipeStep }
     return stepIDs.isEmpty ? nil : Set(stepIDs)
   }
-  
+
   // Get prep task context information
   private var prepTaskContext: PerformRecipeView.PrepTaskContext? {
     guard task.hasRecipePrepTask else { return nil }
     let prepTask = task.recipePrepTask
-    
+
     // Get event information from meal plan option
     var eventName: String? = nil
     var eventTime: Date? = nil
-    
+
     if task.hasMealPlanOption {
       let eventID = task.mealPlanOption.belongsToMealPlanEvent
-      if !eventID.isEmpty, let event = viewModel.mealPlan.events.first(where: { $0.id == eventID }) {
+      if !eventID.isEmpty, let event = viewModel.mealPlan.events.first(where: { $0.id == eventID })
+      {
         eventName = MealPlanningUtils.formatMealName(event.mealName)
         eventTime = HomeViewModel.timestampToDate(event.startsAt)
       }
     }
-    
+
     // Get recipe name
     var recipeName: String? = nil
     if let recipeID = recipeID, let recipe = loadedRecipes[recipeID] {
       recipeName = recipe.name
     }
-    
+
     // Get prep task name
     let prepTaskName = prepTask.name.isEmpty ? nil : prepTask.name
-    
+
     return PerformRecipeView.PrepTaskContext(
       prepTaskName: prepTaskName,
       recipeName: recipeName,
@@ -381,7 +382,7 @@ struct TaskRow: View {
       let hasNavigation = recipeID != nil && highlightedStepIDs != nil
       let isCompleted = task.status == .finished
       let context = prepTaskContext
-      
+
       Group {
         if hasNavigation {
           NavigationLink(
@@ -398,9 +399,9 @@ struct TaskRow: View {
           taskDescriptionContent(isCompleted: isCompleted)
         }
       }
-      
+
       Spacer()
-      
+
       // Show chevron if this task is clickable (has recipe prep task)
       if hasNavigation {
         Image(systemName: "chevron.right")
@@ -413,13 +414,14 @@ struct TaskRow: View {
     .cornerRadius(8)
     .opacity(task.status == .finished ? 0.7 : 1.0)
   }
-  
+
   // Get event start time for countdown
   private var eventStartTime: Date? {
     guard task.hasMealPlanOption else { return nil }
     let eventID = task.mealPlanOption.belongsToMealPlanEvent
     guard !eventID.isEmpty,
-          let event = viewModel.mealPlan.events.first(where: { $0.id == eventID }) else {
+      let event = viewModel.mealPlan.events.first(where: { $0.id == eventID })
+    else {
       return nil
     }
     return HomeViewModel.timestampToDate(event.startsAt)
@@ -451,7 +453,7 @@ struct TaskRow: View {
           .font(.caption)
           .foregroundColor(.secondary)
       }
-      
+
       // Countdown timer (only show if task is not completed and we have an event time)
       if !isCompleted, let eventTime = eventStartTime {
         TaskCountdownTimer(dueDate: eventTime)

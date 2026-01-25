@@ -28,7 +28,10 @@ struct PerformRecipeView: View {
     let eventTime: Date?
   }
 
-  init(recipeID: String, highlightedStepIDs: Set<String>? = nil, prepTaskContext: PrepTaskContext? = nil) {
+  init(
+    recipeID: String, highlightedStepIDs: Set<String>? = nil,
+    prepTaskContext: PrepTaskContext? = nil
+  ) {
     self.recipeID = recipeID
     self.highlightedStepIDs = highlightedStepIDs
     self.prepTaskContext = prepTaskContext
@@ -70,7 +73,8 @@ struct PerformRecipeView: View {
               recipe: recipe,
               viewModel: viewModel,
               highlightedStepIDs: highlightedStepIDs,
-              prepTaskContext: prepTaskContext
+              prepTaskContext: prepTaskContext,
+              externalScale: .constant(nil)
             )
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -93,31 +97,31 @@ struct PerformRecipeView: View {
       }
     }
   }
-  
+
   private var navigationTitle: String {
     if let context = prepTaskContext {
       var parts: [String] = []
-      
+
       if let prepTaskName = context.prepTaskName, !prepTaskName.isEmpty {
         parts.append(prepTaskName)
       } else {
         parts.append("Prep Task")
       }
-      
+
       if let recipeName = context.recipeName, !recipeName.isEmpty {
         parts.append("for \(recipeName)")
       }
-      
+
       if let eventName = context.eventName, let eventTime = context.eventTime {
         let formatter = DateFormatter()
         formatter.dateStyle = .none
         formatter.timeStyle = .short
         parts.append("at \(formatter.string(from: eventTime))")
       }
-      
+
       return parts.joined(separator: " ")
     }
-    
+
     return "Perform Recipe"
   }
 }
