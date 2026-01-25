@@ -21,8 +21,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   let viewModel: PerformRecipeViewModel
   var hideIngredientsAndInstruments: Bool = false
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
-  var highlightedStepIDs: Set<String>? = nil
-  var prepTaskContext: PerformRecipeView.PrepTaskContext? = nil
+  var highlightedStepIDs: Set<String>?
+  var prepTaskContext: PerformRecipeView.PrepTaskContext?
   @Binding var externalScale: Float?  // Optional external scale binding (for meal components)
 
   // State for option selections (for interactive selection outside meal plan context)
@@ -1083,32 +1083,28 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
     // Collect steps from associated recipes
     for associatedRecipe in recipe.associatedRecipes {
-      for (index, step) in associatedRecipe.steps.enumerated() {
-        if shouldShowStep(stepID: step.id) {
-          allSteps.append(
-            StepInfo(
-              step: step,
-              index: index,
-              recipeID: associatedRecipe.id,
-              isAssociatedRecipeStep: true,
-              associatedRecipeName: associatedRecipe.name
-            ))
-        }
-      }
-    }
-
-    // Collect steps from main recipe
-    for (index, step) in recipe.steps.enumerated() {
-      if shouldShowStep(stepID: step.id) {
+      for (index, step) in associatedRecipe.steps.enumerated() where shouldShowStep(stepID: step.id) {
         allSteps.append(
           StepInfo(
             step: step,
             index: index,
-            recipeID: recipe.id,
-            isAssociatedRecipeStep: false,
-            associatedRecipeName: nil
+            recipeID: associatedRecipe.id,
+            isAssociatedRecipeStep: true,
+            associatedRecipeName: associatedRecipe.name
           ))
       }
+    }
+
+    // Collect steps from main recipe
+    for (index, step) in recipe.steps.enumerated() where shouldShowStep(stepID: step.id) {
+      allSteps.append(
+        StepInfo(
+          step: step,
+          index: index,
+          recipeID: recipe.id,
+          isAssociatedRecipeStep: false,
+          associatedRecipeName: nil
+        ))
     }
 
     return allSteps

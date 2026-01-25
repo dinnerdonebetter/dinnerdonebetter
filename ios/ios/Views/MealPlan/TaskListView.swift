@@ -284,8 +284,8 @@ struct TaskRow: View {
     let prepTask = task.recipePrepTask
 
     // Get event information from meal plan option
-    var eventName: String? = nil
-    var eventTime: Date? = nil
+    var eventName: String?
+    var eventTime: Date?
 
     if task.hasMealPlanOption {
       let eventID = task.mealPlanOption.belongsToMealPlanEvent
@@ -297,7 +297,7 @@ struct TaskRow: View {
     }
 
     // Get recipe name
-    var recipeName: String? = nil
+    var recipeName: String?
     if let recipeID = recipeID, let recipe = loadedRecipes[recipeID] {
       recipeName = recipe.name
     }
@@ -384,10 +384,10 @@ struct TaskRow: View {
       let context = prepTaskContext
 
       Group {
-        if hasNavigation {
+        if hasNavigation, let recipeID = recipeID, let highlightedStepIDs = highlightedStepIDs {
           NavigationLink(
             destination: PerformRecipeView(
-              recipeID: recipeID!,
+              recipeID: recipeID,
               highlightedStepIDs: highlightedStepIDs,
               prepTaskContext: context
             )
@@ -708,7 +708,9 @@ struct TaskCountdownTimer: View {
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
       updateTimeRemaining()
     }
-    RunLoop.main.add(timer!, forMode: .common)
+    if let timer = timer {
+      RunLoop.main.add(timer, forMode: .common)
+    }
   }
 
   private func stopTimer() {

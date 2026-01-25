@@ -107,7 +107,7 @@ struct MealListView: View {
       .navigationTitle("Meals")
       .navigationBarTitleDisplayMode(.large)
       .searchable(text: $searchQuery, prompt: "Search meals...")
-      .onChange(of: searchQuery) { oldValue, newValue in
+      .onChange(of: searchQuery) { _, newValue in
         if let viewModel = viewModel {
           viewModel.searchMeals(query: newValue)
         }

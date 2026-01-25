@@ -251,7 +251,7 @@ struct VesselOptionGroupAggregate: Identifiable {
 // MARK: - Helper Functions
 
 extension RecipePerformanceContentView {
-  // swiftlint:disable:next cyclomatic_complexity
+  // swiftlint:disable:next cyclomatic_complexity function_body_length
   func getAggregatedInstrumentsAndVessels(
     from recipe: Mealplanning_Recipe,
     selectedInstrumentOptions: [String: UInt32] = [:],
@@ -615,6 +615,7 @@ extension RecipePerformanceContentView {
     )
   }
 
+  // swiftlint:disable:next cyclomatic_complexity
   func getAggregatedIngredients(
     from recipe: Mealplanning_Recipe,
     selectedIngredientOptions: [String: UInt32] = [:],

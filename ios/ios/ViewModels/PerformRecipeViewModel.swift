@@ -523,12 +523,10 @@ class PerformRecipeViewModel {
             uncheckStepAndDependents(stepKey: stepKey)
           } else {
             // Check associated recipe steps
-            for associatedRecipe in recipe.associatedRecipes {
-              if associatedRecipe.steps.contains(where: { $0.id == stepID }) {
-                let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
-                uncheckStepAndDependents(stepKey: stepKey)
-                break
-              }
+            for associatedRecipe in recipe.associatedRecipes where associatedRecipe.steps.contains(where: { $0.id == stepID }) {
+              let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
+              uncheckStepAndDependents(stepKey: stepKey)
+              break
             }
           }
         }
@@ -550,13 +548,11 @@ class PerformRecipeViewModel {
             completedSteps.insert(stepKey)
           } else {
             // Check associated recipe steps
-            for associatedRecipe in recipe.associatedRecipes {
-              if associatedRecipe.steps.contains(where: { $0.id == stepID }) {
-                let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
-                // Check the step (don't require prerequisites since prep task is done)
-                completedSteps.insert(stepKey)
-                break
-              }
+            for associatedRecipe in recipe.associatedRecipes where associatedRecipe.steps.contains(where: { $0.id == stepID }) {
+              let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
+              // Check the step (don't require prerequisites since prep task is done)
+              completedSteps.insert(stepKey)
+              break
             }
           }
         }

@@ -550,15 +550,13 @@ class CreateMealPlanViewModel {
         // Group ingredients by their index to find option groups
         var indexGroups: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
 
-        for ingredient in step.ingredients {
+        for ingredient in step.ingredients where ingredient.index != 0 {
           // Index 0 typically means not in an option group
-          if ingredient.index != 0 {
-            let index = ingredient.index
-            if indexGroups[index] == nil {
-              indexGroups[index] = []
-            }
-            indexGroups[index]?.append(ingredient)
+          let index = ingredient.index
+          if indexGroups[index] == nil {
+            indexGroups[index] = []
           }
+          indexGroups[index]?.append(ingredient)
         }
 
         // Check if any index group has multiple ingredients (i.e., has options)

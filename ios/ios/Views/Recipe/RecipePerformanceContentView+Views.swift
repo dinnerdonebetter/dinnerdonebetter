@@ -21,7 +21,7 @@ struct StepCardView: View {
   var mealPlanSelections: [Mealplanning_MealPlanRecipeOptionSelection]?
   var isAssociatedRecipeStep: Bool = false
   var associatedRecipeName: String?
-  var highlightedStepIDs: Set<String>? = nil
+  var highlightedStepIDs: Set<String>?
   var selectedIngredientOptions: [String: UInt32] = [:]
   var selectedInstrumentOptions: [String: UInt32] = [:]
   var selectedVesselOptions: [String: UInt32] = [:]

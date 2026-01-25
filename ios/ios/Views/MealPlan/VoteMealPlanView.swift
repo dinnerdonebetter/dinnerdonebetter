@@ -585,7 +585,9 @@ struct VoteDeadlineCountdown: View {
     timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
       updateTimeRemaining()
     }
-    RunLoop.main.add(timer!, forMode: .common)
+    if let timer = timer {
+      RunLoop.main.add(timer, forMode: .common)
+    }
   }
 
   private func stopTimer() {
