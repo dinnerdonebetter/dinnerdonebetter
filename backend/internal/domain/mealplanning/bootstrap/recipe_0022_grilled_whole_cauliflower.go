@@ -300,6 +300,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 			{
 				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
 				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
@@ -353,6 +354,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 			{
 				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
 				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),
@@ -400,6 +402,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 			{
 				// RecipeStepProductRecipeID references the "Teriyaki Sauce" recipe (slug: "teriyaki-sauce")
 				// The product "teriyaki sauce" is from step 4 (index 4), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:        pointer.To[uint64](4),
 				ProductOfRecipeStepProductIndex: pointer.To[uint64](0),
 				RecipeStepProductRecipeID:       getRecipeIDBySlug(createdRecipes, "teriyaki-sauce"),

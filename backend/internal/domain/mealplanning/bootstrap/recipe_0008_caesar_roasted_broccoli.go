@@ -429,6 +429,7 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 			{
 				// RecipeStepProductRecipeID references the "Caesar Breadcrumbs" recipe (slug: "caesar-breadcrumbs")
 				// The product "caesar breadcrumbs" is from step 7 (index 7), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:         pointer.To[uint64](7),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-breadcrumbs"),

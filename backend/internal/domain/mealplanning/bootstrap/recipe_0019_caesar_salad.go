@@ -228,6 +228,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
 				// The product "Caesar dressing" is from step 6 (index 6), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:         pointer.To[uint64](6),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
@@ -342,6 +343,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),
@@ -441,6 +443,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 			{
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
 				// The product "garlic parmesan croutons" is from step 9 (index 9), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:         pointer.To[uint64](9),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "garlic-parmesan-croutons"),

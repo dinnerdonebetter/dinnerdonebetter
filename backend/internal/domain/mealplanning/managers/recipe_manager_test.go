@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"errors"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -131,6 +132,10 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 		expected := fakes.BuildFakeRecipe()
 		fakeInput := fakes.BuildFakeRecipeCreationRequestInput()
 
+		analyzer := &recipeanalysis.MockRecipeAnalyzer{}
+		analyzer.On(reflection.GetMethodName(analyzer.ValidateRecipeCreationRequestInputIsDAG), testutils.ContextMatcher, testutils.MatchType[*types.RecipeCreationRequestInput]()).Return(nil)
+		rm.recipeAnalyzer = analyzer
+
 		expectations := setupExpectationsForRecipeManager(
 			rm,
 			func(db *mealplanningmock.Repository) {
@@ -148,7 +153,27 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
-		mock.AssertExpectationsForObjects(t, expectations...)
+		mock.AssertExpectationsForObjects(t, append(expectations, analyzer)...)
+	})
+
+	T.Run("with DAG error", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		rm := buildRecipeManagerForTest(t)
+
+		fakeCreatorID := fakes.BuildFakeID()
+		fakeInput := fakes.BuildFakeRecipeCreationRequestInput()
+
+		analyzer := &recipeanalysis.MockRecipeAnalyzer{}
+		analyzer.On(reflection.GetMethodName(analyzer.ValidateRecipeCreationRequestInputIsDAG), testutils.ContextMatcher, testutils.MatchType[*types.RecipeCreationRequestInput]()).Return(errors.New("blah"))
+		rm.recipeAnalyzer = analyzer
+
+		actual, err := rm.CreateRecipe(ctx, fakeCreatorID, fakeInput)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, analyzer)
 	})
 }
 

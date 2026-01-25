@@ -187,13 +187,16 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 		return nil, internalerrors.ErrEmptyInputParameter
 	}
 
+	if err := m.recipeAnalyzer.ValidateRecipeCreationRequestInputIsDAG(ctx, input); err != nil {
+		return nil, observability.PrepareError(err, span, "evaluating recipe cyclicity")
+	}
+
 	convertedInput, err := converters.ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "converting recipe input")
 	}
 
 	convertedInput.CreatedByUser = creatorID
-
 	logger = logger.WithValue(keys.RecipeIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, convertedInput.ID)
 

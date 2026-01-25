@@ -175,6 +175,7 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 			{
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
 				// The product "garlic-infused olive oil" is from step 2 (index 2), product index 0
+				// Note: ProductOfRecipeStepIndex refers to the step index in the OTHER recipe, not this one
 				ProductOfRecipeStepIndex:         pointer.To[uint64](2),
 				ProductOfRecipeStepProductIndex:  pointer.To[uint64](0),
 				RecipeStepProductRecipeID:        getRecipeIDBySlug(createdRecipes, "caesar-dressing"),
