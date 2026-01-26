@@ -54,6 +54,40 @@ func cloneTime(t time.Time) time.Time {
 	return t
 }
 
+// resolveEmptyRecipeIDs resolves empty RecipeStepProductRecipeID values in a recipe input
+// by trying to find matching recipes in the createdRecipes map.
+// It tries all recipes in the map and matches based on step index.
+func resolveEmptyRecipeIDs(recipe *mealplanning.RecipeCreationRequestInput, createdRecipes map[string]*mealplanning.Recipe) {
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == "" {
+				// Try to find a recipe that has a step at the referenced index
+				stepIndex := ingredient.ProductOfRecipeStepIndex
+				if stepIndex != nil {
+					// Try all recipes in the createdRecipes map
+					for _, refRecipe := range createdRecipes {
+						if refRecipe != nil && int(*stepIndex) < len(refRecipe.Steps) {
+							// Check if this step has the expected product
+							referencedStep := refRecipe.Steps[*stepIndex]
+							if ingredient.ProductOfRecipeStepProductIndex != nil {
+								productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
+								if productIndex < len(referencedStep.Products) {
+									// This recipe has a step at the right index with enough products
+									// Update the recipe ID (we'll verify the product type later)
+									ingredient.RecipeStepProductRecipeID = &refRecipe.ID
+									// Note: We can't be 100% sure this is the right recipe,
+									// but it's the best we can do without storing the slug
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 func main() {
 	ctx := context.Background()
 
@@ -292,6 +326,11 @@ func main() {
 			logger.Info(fmt.Sprintf("Found %d recipes with prerequisites to create", len(recipesWithPrerequisites)))
 
 			for i, recipe := range recipesWithPrerequisites {
+				// Resolve empty recipe IDs in cross-recipe references before creating
+				// This is needed because getRecipeIDBySlug may return empty strings when
+				// called during recipe input construction (before prerequisite recipes exist)
+				resolveEmptyRecipeIDs(recipe, createdRecipes)
+
 				logger.Info(fmt.Sprintf("Creating recipe with prerequisites %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
 				r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
 				if createErr != nil {

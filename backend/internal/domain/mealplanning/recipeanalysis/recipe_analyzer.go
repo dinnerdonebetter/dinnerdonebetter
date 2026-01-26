@@ -198,25 +198,16 @@ func (g *recipeAnalyzer) ValidateRecipeCreationRequestInputIsDAG(ctx context.Con
 
 			// Skip cross-recipe references (they don't affect this recipe's DAG)
 			// Check this first before validating index bounds
-			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != "" {
+			// If RecipeStepProductRecipeID is set (even if empty), it indicates a cross-recipe reference
+			// The empty string case can happen when getRecipeIDBySlug returns nil but we still want to indicate
+			// this is a cross-recipe reference that will be resolved later
+			if ingredient.RecipeStepProductRecipeID != nil {
 				continue
 			}
 
 			// Validate that the referenced step array index exists
-			// If the index is out of bounds, it might be a cross-recipe reference where
-			// RecipeStepProductRecipeID is nil (because getRecipeIDBySlug returned nil).
-			// In that case, we skip DAG validation to avoid false positives.
-			// The product resolution code will handle the actual lookup and error if needed.
 			if fromStepArrayIndex >= uint64(len(input.Steps)) {
-				// If RecipeStepProductRecipeID field is set (even if nil/empty), it indicates
-				// an attempt to reference another recipe, so skip DAG validation
-				if ingredient.RecipeStepProductRecipeID != nil {
-					continue
-				}
-				// If index is out of bounds, it's likely a cross-recipe reference
-				// (the RecipeStepProductRecipeID might be nil if getRecipeIDBySlug failed to find the recipe)
-				// Skip DAG validation - the product resolution code will handle errors if the recipe doesn't exist
-				continue
+				return fmt.Errorf("ingredient in step at array index %d references invalid step array index %d", stepIdx, fromStepArrayIndex)
 			}
 
 			// Prevent self-references (which would create a cycle)

@@ -4,10 +4,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 )
 
-// getRecipeIDBySlug returns the recipe ID for the given slug, or nil if not found.
+// getRecipeIDBySlug returns the recipe ID for the given slug, or a pointer to an empty string if not found.
+// The empty string is used as a sentinel value to indicate a cross-recipe reference that will be resolved later,
+// allowing DAG validation to skip these references even when the prerequisite recipe hasn't been created yet.
 func getRecipeIDBySlug(createdRecipes map[string]*mealplanning.Recipe, slug string) *string {
 	if recipe, ok := createdRecipes[slug]; ok && recipe != nil {
 		return &recipe.ID
 	}
-	return nil
+	// Return empty string pointer to indicate this is a cross-recipe reference
+	// that will be resolved later (when the prerequisite recipe is created)
+	empty := ""
+	return &empty
 }

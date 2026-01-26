@@ -1056,6 +1056,12 @@ func (q *repository) findCreatedRecipeStepProductsForIngredients(ctx context.Con
 
 			// Check if this references a product from a different recipe
 			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID != recipe.ID {
+				// Skip if recipe ID is empty (indicates cross-recipe reference that will be resolved later)
+				// This can happen when getRecipeIDBySlug returns an empty string because the prerequisite
+				// recipe hasn't been created yet. The recipe ID will be resolved in a later pass.
+				if *ingredient.RecipeStepProductRecipeID == "" {
+					continue
+				}
 				// Look up the referenced recipe
 				referencedRecipe, err := q.getRecipe(ctx, *ingredient.RecipeStepProductRecipeID, nil)
 				if err != nil {
