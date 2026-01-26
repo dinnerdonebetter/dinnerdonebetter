@@ -157,18 +157,21 @@ func TestMeals_Searching(T *testing.T) {
 
 		_, userClient := createUserAndClientForTest(t)
 
+		// Use a unique prefix based on test name to avoid collisions with other tests
+		// that might also create meals/recipes with "example" in the name
+		uniquePrefix := fmt.Sprintf("mealsearch-%s", t.Name())
 		exampleMeal := fakes.BuildFakeMeal()
 		var expected []*types.Meal
 		for i := 0; i < 5; i++ {
-			exampleMeal.Name = fmt.Sprintf("example%d", i)
+			exampleMeal.Name = fmt.Sprintf("%s-example%d", uniquePrefix, i)
 			createdMeal := createMealForTest(t, userClient, exampleMeal)
 
 			expected = append(expected, createdMeal)
 		}
 
-		// assert meal list equality
+		// assert meal list equality - search for the unique prefix to avoid finding meals from other tests
 		actual, err := userClient.SearchForMeals(ctx, &mealplanninggrpc.SearchForMealsRequest{
-			Query:            "example",
+			Query:            uniquePrefix,
 			UseSearchService: false,
 		})
 		require.NoError(t, err)
