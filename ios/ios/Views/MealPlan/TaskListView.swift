@@ -250,6 +250,69 @@ struct TaskRow: View {
   let isExpanded: Bool
   let onToggleExpand: (() -> Void)?
 
+  // Extract recipe ID and step IDs from prep task
+  private var recipeID: String? {
+    guard task.hasRecipePrepTask else { return nil }
+    let prepTask = task.recipePrepTask
+    var recipeID = prepTask.belongsToRecipe
+
+    if recipeID.isEmpty && !prepTask.id.isEmpty {
+      if let loadedPrepTask = loadedPrepTasks[prepTask.id] {
+        recipeID = loadedPrepTask.belongsToRecipe
+      }
+    }
+
+    if recipeID.isEmpty && task.hasMealPlanOption {
+      recipeID = findRecipeIDFromMealOption(task: task, prepTask: prepTask)
+    }
+
+    return recipeID.isEmpty ? nil : recipeID
+  }
+
+  private var highlightedStepIDs: Set<String>? {
+    guard task.hasRecipePrepTask else { return nil }
+    let prepTask = task.recipePrepTask
+    let stepIDs = prepTask.taskSteps
+      .filter { !$0.belongsToRecipeStep.isEmpty }
+      .map { $0.belongsToRecipeStep }
+    return stepIDs.isEmpty ? nil : Set(stepIDs)
+  }
+
+  // Get prep task context information
+  private var prepTaskContext: PerformRecipeView.PrepTaskContext? {
+    guard task.hasRecipePrepTask else { return nil }
+    let prepTask = task.recipePrepTask
+
+    // Get event information from meal plan option
+    var eventName: String?
+    var eventTime: Date?
+
+    if task.hasMealPlanOption {
+      let eventID = task.mealPlanOption.belongsToMealPlanEvent
+      if !eventID.isEmpty, let event = viewModel.mealPlan.events.first(where: { $0.id == eventID })
+      {
+        eventName = MealPlanningUtils.formatMealName(event.mealName)
+        eventTime = HomeViewModel.timestampToDate(event.startsAt)
+      }
+    }
+
+    // Get recipe name
+    var recipeName: String?
+    if let recipeID = recipeID, let recipe = loadedRecipes[recipeID] {
+      recipeName = recipe.name
+    }
+
+    // Get prep task name
+    let prepTaskName = prepTask.name.isEmpty ? nil : prepTask.name
+
+    return PerformRecipeView.PrepTaskContext(
+      prepTaskName: prepTaskName,
+      recipeName: recipeName,
+      eventName: eventName,
+      eventTime: eventTime
+    )
+  }
+
   var body: some View {
     HStack(alignment: .top, spacing: 12) {
       // Disclosure indicator for parent tasks
@@ -315,42 +378,87 @@ struct TaskRow: View {
         .disabled(viewModel.isUpdating)
       }
 
-      // Task content
-      VStack(alignment: .leading, spacing: 4) {
-        // Task description - show prep task name or creation explanation
-        let isCompleted = task.status == .finished
+      // Task content - make clickable if it has a recipe prep task
+      let hasNavigation = recipeID != nil && highlightedStepIDs != nil
+      let isCompleted = task.status == .finished
+      let context = prepTaskContext
 
-        if task.hasRecipePrepTask && !task.recipePrepTask.name.isEmpty {
-          Text(task.recipePrepTask.name)
-            .font(.body)
-            .fontWeight(.medium)
-            .strikethrough(isCompleted)
-            .foregroundColor(
-              isCompleted ? .secondary : .primary
+      Group {
+        if hasNavigation, let recipeID = recipeID, let highlightedStepIDs = highlightedStepIDs {
+          NavigationLink(
+            destination: PerformRecipeView(
+              recipeID: recipeID,
+              highlightedStepIDs: highlightedStepIDs,
+              prepTaskContext: context
             )
+          ) {
+            taskDescriptionContent(isCompleted: isCompleted)
+          }
+          .buttonStyle(.plain)
         } else {
-          Text(task.creationExplanation)
-            .font(.body)
-            .fontWeight(.medium)
-            .strikethrough(isCompleted)
-            .foregroundColor(
-              isCompleted ? .secondary : .primary
-            )
-        }
-
-        if !task.statusExplanation.isEmpty {
-          Text(task.statusExplanation)
-            .font(.caption)
-            .foregroundColor(.secondary)
+          taskDescriptionContent(isCompleted: isCompleted)
         }
       }
 
       Spacer()
+
+      // Show chevron if this task is clickable (has recipe prep task)
+      if hasNavigation {
+        Image(systemName: "chevron.right")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
     }
     .padding()
     .background(Color(.systemGray6))
     .cornerRadius(8)
     .opacity(task.status == .finished ? 0.7 : 1.0)
+  }
+
+  // Get event start time for countdown
+  private var eventStartTime: Date? {
+    guard task.hasMealPlanOption else { return nil }
+    let eventID = task.mealPlanOption.belongsToMealPlanEvent
+    guard !eventID.isEmpty,
+      let event = viewModel.mealPlan.events.first(where: { $0.id == eventID })
+    else {
+      return nil
+    }
+    return HomeViewModel.timestampToDate(event.startsAt)
+  }
+
+  private func taskDescriptionContent(isCompleted: Bool) -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      // Task description - show prep task name or creation explanation
+      if task.hasRecipePrepTask && !task.recipePrepTask.name.isEmpty {
+        Text(task.recipePrepTask.name)
+          .font(.body)
+          .fontWeight(.medium)
+          .strikethrough(isCompleted)
+          .foregroundColor(
+            isCompleted ? .secondary : .primary
+          )
+      } else {
+        Text(task.creationExplanation)
+          .font(.body)
+          .fontWeight(.medium)
+          .strikethrough(isCompleted)
+          .foregroundColor(
+            isCompleted ? .secondary : .primary
+          )
+      }
+
+      if !task.statusExplanation.isEmpty {
+        Text(task.statusExplanation)
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+
+      // Countdown timer (only show if task is not completed and we have an event time)
+      if !isCompleted, let eventTime = eventStartTime {
+        TaskCountdownTimer(dueDate: eventTime)
+      }
+    }
   }
 
   // Helper struct for step data
@@ -519,6 +627,96 @@ struct TaskRow: View {
 // Make MealPlanTask Identifiable
 extension Mealplanning_MealPlanTask: Identifiable {
   // Already has id property, so this extension just makes it conform to Identifiable
+}
+
+// MARK: - Task Countdown Timer
+
+struct TaskCountdownTimer: View {
+  let dueDate: Date
+  @State private var timeRemaining: TimeInterval = 0
+  @State private var timer: Timer?
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "clock.fill")
+        .font(.caption2)
+      Text(formattedDisplayText)
+        .font(.caption)
+        .fontWeight(.semibold)
+        .monospacedDigit()
+    }
+    .foregroundColor(timeRemainingColor)
+    .onAppear {
+      updateTimeRemaining()
+      startTimer()
+    }
+    .onDisappear {
+      stopTimer()
+    }
+  }
+
+  private var formattedDate: String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .short
+    return formatter.string(from: dueDate)
+  }
+
+  private var formattedTimeRemaining: String {
+    if timeRemaining <= 0 {
+      return "Overdue"
+    }
+
+    let days = Int(timeRemaining) / 86400
+    let hours = (Int(timeRemaining) % 86400) / 3600
+    let minutes = (Int(timeRemaining) % 3600) / 60
+    let seconds = Int(timeRemaining) % 60
+
+    if days > 0 {
+      return String(format: "%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+    } else if hours > 0 {
+      return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+      return String(format: "%02d:%02d", minutes, seconds)
+    }
+  }
+
+  private var formattedDisplayText: String {
+    let dateString = formattedDate
+    let countdownString = formattedTimeRemaining
+    return "by \(dateString) (\(countdownString))"
+  }
+
+  private var timeRemainingColor: Color {
+    if timeRemaining <= 0 {
+      return .red
+    } else if timeRemaining < 3600 {  // Less than 1 hour
+      return .red
+    } else if timeRemaining < 86400 {  // Less than 1 day
+      return .orange
+    } else {
+      return .secondary
+    }
+  }
+
+  private func updateTimeRemaining() {
+    let now = Date()
+    timeRemaining = max(0, dueDate.timeIntervalSince(now))
+  }
+
+  private func startTimer() {
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+      updateTimeRemaining()
+    }
+    if let timer = timer {
+      RunLoop.main.add(timer, forMode: .common)
+    }
+  }
+
+  private func stopTimer() {
+    timer?.invalidate()
+    timer = nil
+  }
 }
 
 #Preview {

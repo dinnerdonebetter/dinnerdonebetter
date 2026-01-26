@@ -30,8 +30,59 @@ struct RecipeOptionSelectionView: View {
           .foregroundColor(.secondary)
           .padding(.horizontal)
 
-          ForEach(recipes, id: \.id) { recipe in
-            recipeOptionSection(recipe: recipe)
+          if recipes.isEmpty {
+            Text("No recipes provided")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .padding(.horizontal)
+          } else {
+            let sectionsWithOptions = recipes.filter { recipe in
+              var hasOptions = false
+              for step in recipe.steps {
+                let (_, groups) = groupIngredientsForSelection(
+                  step.ingredients, stepID: step.id, recipeID: recipe.id)
+                if !groups.isEmpty {
+                  hasOptions = true
+                  break
+                }
+              }
+              if !hasOptions {
+                for associatedRecipe in recipe.associatedRecipes {
+                  for step in associatedRecipe.steps {
+                    let (_, groups) = groupIngredientsForSelection(
+                      step.ingredients, stepID: step.id, recipeID: associatedRecipe.id)
+                    if !groups.isEmpty {
+                      hasOptions = true
+                      break
+                    }
+                  }
+                  if hasOptions { break }
+                }
+              }
+              return hasOptions
+            }
+
+            if sectionsWithOptions.isEmpty {
+              VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: "info.circle")
+                  .foregroundColor(.secondary)
+                Text("No selectable options found in these recipes")
+                  .font(.subheadline)
+                  .foregroundColor(.secondary)
+                Text("All recipes will use their default options")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+              .padding()
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .background(Color(.systemGray6))
+              .cornerRadius(8)
+              .padding(.horizontal)
+            } else {
+              ForEach(recipes, id: \.id) { recipe in
+                recipeOptionSection(recipe: recipe)
+              }
+            }
           }
         }
         .padding(.vertical)
@@ -54,37 +105,111 @@ struct RecipeOptionSelectionView: View {
         }
       }
     }
-  }
-
-  private func recipeOptionSection(recipe: Mealplanning_Recipe) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
-        .font(.headline)
-        .padding(.horizontal)
-
-      // Process each step for option groups
-      ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { stepIndex, step in
-        stepOptionSection(recipe: recipe, step: step, stepIndex: stepIndex)
-      }
-
-      // Process associated recipes
-      ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
-        VStack(alignment: .leading, spacing: 8) {
-          Text("From \(associatedRecipe.name.isEmpty ? "Unnamed Recipe" : associatedRecipe.name)")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-            .padding(.horizontal)
-
-          ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) { stepIndex, step in
-            stepOptionSection(recipe: associatedRecipe, step: step, stepIndex: stepIndex)
+    .onAppear {
+      print("🔍 RecipeOptionSelectionView.onAppear called")
+      print("  recipes parameter has \(recipes.count) recipe(s)")
+      if recipes.isEmpty {
+        print("  ⚠️ WARNING: recipes array is empty!")
+      } else {
+        for (index, recipe) in recipes.enumerated() {
+          print("  📝 Recipe \(index + 1): '\(recipe.name)' (ID: \(recipe.id))")
+          print("    Steps: \(recipe.steps.count)")
+          if recipe.steps.isEmpty {
+            print("    ⚠️ WARNING: Recipe has no steps!")
+          }
+          for (stepIndex, step) in recipe.steps.enumerated() {
+            print(
+              "    Step \(stepIndex + 1) (ID: \(step.id)): \(step.ingredients.count) ingredients")
+            if step.ingredients.isEmpty {
+              print("      ⚠️ Step has no ingredients")
+            } else {
+              // Show ingredient indices for debugging
+              let indices = step.ingredients.map {
+                "index:\($0.index), optionIndex:\($0.optionIndex)"
+              }
+              print("      Ingredient indices: \(indices.joined(separator: ", "))")
+            }
+            let (_, groups) = groupIngredientsForSelection(
+              step.ingredients, stepID: step.id, recipeID: recipe.id)
+            print("      Option groups found: \(groups.count)")
+            for group in groups {
+              print("        Group index \(group.index): \(group.options.count) options")
+              for option in group.options {
+                print("          Option \(option.optionIndex): \(option.ingredient.name)")
+              }
+            }
+          }
+          if !recipe.associatedRecipes.isEmpty {
+            print("    Associated recipes: \(recipe.associatedRecipes.count)")
           }
         }
       }
     }
-    .padding(.vertical, 8)
-    .background(Color(.systemGray6))
-    .cornerRadius(12)
-    .padding(.horizontal)
+  }
+
+  private func recipeOptionSection(recipe: Mealplanning_Recipe) -> some View {
+    // Check if this recipe has any option groups
+    var hasAnyOptions = false
+    for step in recipe.steps {
+      let (_, groups) = groupIngredientsForSelection(
+        step.ingredients, stepID: step.id, recipeID: recipe.id)
+      if !groups.isEmpty {
+        hasAnyOptions = true
+        break
+      }
+    }
+
+    // Also check associated recipes
+    if !hasAnyOptions {
+      for associatedRecipe in recipe.associatedRecipes {
+        for step in associatedRecipe.steps {
+          let (_, groups) = groupIngredientsForSelection(
+            step.ingredients, stepID: step.id, recipeID: associatedRecipe.id)
+          if !groups.isEmpty {
+            hasAnyOptions = true
+            break
+          }
+        }
+        if hasAnyOptions { break }
+      }
+    }
+
+    // Only show the section if there are options
+    guard hasAnyOptions else {
+      return AnyView(EmptyView())
+    }
+
+    return AnyView(
+      VStack(alignment: .leading, spacing: 12) {
+        Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
+          .font(.headline)
+          .padding(.horizontal)
+
+        // Process each step for option groups
+        ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { stepIndex, step in
+          stepOptionSection(recipe: recipe, step: step, stepIndex: stepIndex)
+        }
+
+        // Process associated recipes
+        ForEach(recipe.associatedRecipes, id: \.id) { associatedRecipe in
+          VStack(alignment: .leading, spacing: 8) {
+            Text("From \(associatedRecipe.name.isEmpty ? "Unnamed Recipe" : associatedRecipe.name)")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .padding(.horizontal)
+
+            ForEach(Array(associatedRecipe.steps.enumerated()), id: \.element.id) {
+              stepIndex, step in
+              stepOptionSection(recipe: associatedRecipe, step: step, stepIndex: stepIndex)
+            }
+          }
+        }
+      }
+      .padding(.vertical, 8)
+      .background(Color(.systemGray6))
+      .cornerRadius(12)
+      .padding(.horizontal)
+    )
   }
 
   private func stepOptionSection(

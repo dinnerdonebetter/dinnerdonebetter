@@ -78,12 +78,15 @@ func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 			}
 		}
 
+		recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID)
+		if recipeErr != nil {
+			return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe")
+		}
+
 		meal.Components = append(meal.Components, &mealplanning.MealComponent{
 			ComponentType: string(result.ComponentMealComponentType),
-			Recipe: mealplanning.Recipe{
-				ID: result.ComponentRecipeID,
-			},
-			RecipeScale: database.Float32FromString(result.ComponentRecipeScale),
+			Recipe:        *recipe,
+			RecipeScale:   database.Float32FromString(result.ComponentRecipeScale),
 		})
 	}
 
@@ -359,12 +362,15 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 			}
 		}
 
+		recipe, recipeErr := q.getRecipe(ctx, result.ComponentRecipeID)
+		if recipeErr != nil {
+			return nil, observability.PrepareAndLogError(recipeErr, logger, span, "getting recipe for meal component")
+		}
+
 		meal.Components = append(meal.Components, &mealplanning.MealComponent{
 			ComponentType: string(result.ComponentMealComponentType),
-			Recipe: mealplanning.Recipe{
-				ID: result.ComponentRecipeID,
-			},
-			RecipeScale: database.Float32FromString(result.ComponentRecipeScale),
+			Recipe:        *recipe,
+			RecipeScale:   database.Float32FromString(result.ComponentRecipeScale),
 		})
 
 		filteredCount = uint64(result.FilteredCount)

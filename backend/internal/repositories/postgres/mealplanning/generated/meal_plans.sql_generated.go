@@ -103,6 +103,87 @@ func (q *Queries) FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMe
 	return err
 }
 
+const findMealPlansForDates = `-- name: FindMealPlansForDates :many
+SELECT DISTINCT
+	meal_plans.id,
+	meal_plans.notes,
+	meal_plans.status,
+	meal_plans.voting_deadline,
+	meal_plans.grocery_list_initialized,
+	meal_plans.tasks_created,
+	meal_plans.election_method,
+	meal_plans.created_at,
+	meal_plans.last_updated_at,
+	meal_plans.archived_at,
+	meal_plans.belongs_to_account,
+	meal_plans.created_by_user
+FROM meal_plans
+	JOIN meal_plan_events ON meal_plans.id = meal_plan_events.belongs_to_meal_plan
+WHERE meal_plans.archived_at IS NULL
+	AND meal_plan_events.archived_at IS NULL
+	AND meal_plans.belongs_to_account = $1
+	AND meal_plan_events.starts_at <= $2
+	AND meal_plan_events.ends_at >= $3
+ORDER BY meal_plans.id
+`
+
+type FindMealPlansForDatesParams struct {
+	EndTime          time.Time
+	StartTime        time.Time
+	BelongsToAccount string
+}
+
+type FindMealPlansForDatesRow struct {
+	VotingDeadline         time.Time
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
+	BelongsToAccount       string
+	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
+}
+
+func (q *Queries) FindMealPlansForDates(ctx context.Context, db DBTX, arg *FindMealPlansForDatesParams) ([]*FindMealPlansForDatesRow, error) {
+	rows, err := db.QueryContext(ctx, findMealPlansForDates, arg.BelongsToAccount, arg.EndTime, arg.StartTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*FindMealPlansForDatesRow{}
+	for rows.Next() {
+		var i FindMealPlansForDatesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Notes,
+			&i.Status,
+			&i.VotingDeadline,
+			&i.GroceryListInitialized,
+			&i.TasksCreated,
+			&i.ElectionMethod,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToAccount,
+			&i.CreatedByUser,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getExpiredAndUnresolvedMealPlans = `-- name: GetExpiredAndUnresolvedMealPlans :many
 SELECT
 	meal_plans.id,

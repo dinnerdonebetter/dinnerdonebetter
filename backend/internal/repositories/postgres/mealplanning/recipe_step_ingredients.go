@@ -441,6 +441,12 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 	if input.MeasurementUnitID != "" {
 		measurementUnit = database.NullStringFromString(input.MeasurementUnitID)
 	}
+	// Convert empty string to nil for RecipeStepProductRecipeID to avoid foreign key constraint violations
+	// Empty string is used as a sentinel value to indicate cross-recipe references that will be resolved later
+	var recipeStepProductRecipeID *string
+	if input.RecipeStepProductRecipeID != nil && *input.RecipeStepProductRecipeID != "" {
+		recipeStepProductRecipeID = input.RecipeStepProductRecipeID
+	}
 	if err := q.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
 		QuantityNotes:             input.QuantityNotes,
 		Name:                      input.Name,
@@ -453,7 +459,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		MeasurementUnit:           measurementUnit,
 		IngredientID:              database.NullStringFromStringPointer(input.IngredientID),
 		ProductPercentageToUse:    database.NullStringFromFloat32Pointer(input.ProductPercentageToUse),
-		RecipeStepProductRecipeID: database.NullStringFromStringPointer(input.RecipeStepProductRecipeID),
+		RecipeStepProductRecipeID: database.NullStringFromStringPointer(recipeStepProductRecipeID),
 		VesselIndex:               database.NullInt32FromUint16Pointer(input.VesselIndex),
 		Index:                     int32(input.Index),
 		OptionIndex:               int32(input.OptionIndex),

@@ -13,6 +13,7 @@ struct MealPlanDetailView: View {
   let mealPlan: Mealplanning_MealPlan
   let groceryListItems: [Mealplanning_MealPlanGroceryListItem]?
   @State private var taskCount: Int?
+  @State private var groceryListItemCount: Int?
 
   var body: some View {
     ScrollView {
@@ -28,8 +29,8 @@ struct MealPlanDetailView: View {
         // Events
         eventsSection
 
-        // Grocery List Link (if finalized and initialized)
-        if mealPlan.status == .finalized && mealPlan.groceryListInitialized {
+        // Grocery List Link (if finalized and has items)
+        if mealPlan.status == .finalized {
           groceryListSection
         }
 
@@ -43,6 +44,7 @@ struct MealPlanDetailView: View {
     .navigationBarTitleDisplayMode(.inline)
     .task {
       await loadTaskCount()
+      await loadGroceryListItemCount()
     }
   }
 
@@ -85,6 +87,39 @@ struct MealPlanDetailView: View {
     } catch {
       print("⚠️ Failed to fetch task count: \(error)")
       taskCount = 0
+    }
+  }
+
+  private func loadGroceryListItemCount() async {
+    guard mealPlan.status == .finalized else {
+      return
+    }
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        return
+      }
+
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        return
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      var request = Mealplanning_GetMealPlanGroceryListItemsForMealPlanRequest()
+      request.mealPlanID = mealPlan.id
+
+      let response = try await clientManager.client.mealPlanning
+        .getMealPlanGroceryListItemsForMealPlan(
+          request,
+          metadata: metadata,
+          options: clientManager.defaultCallOptions
+        )
+
+      groceryListItemCount = response.results.count
+    } catch {
+      print("⚠️ Failed to fetch grocery list item count: \(error)")
+      groceryListItemCount = 0
     }
   }
 
@@ -166,28 +201,44 @@ struct MealPlanDetailView: View {
   }
 
   private var groceryListSection: some View {
-    NavigationLink(
-      destination: GroceryListView(
-        mealPlan: mealPlan,
-        items: [],  // Always start with empty array, GroceryListView will fetch fresh data
-        authManager: authManager
-      )
-    ) {
-      HStack {
-        Image(systemName: "cart")
-          .foregroundColor(.blue)
-        Text("View Grocery List")
-          .font(.headline)
-        Spacer()
+    let count = groceryListItemCount ?? 0
+    let hasItems = count > 0
+
+    return Group {
+      if hasItems {
+        NavigationLink(
+          destination: GroceryListView(
+            mealPlan: mealPlan,
+            items: [],  // Always start with empty array, GroceryListView will fetch fresh data
+            authManager: authManager
+          )
+        ) {
+          groceryListCardContent(count: count)
+        }
+        .buttonStyle(.plain)
+      } else {
+        groceryListCardContent(count: count)
+          .opacity(0.6)
+      }
+    }
+  }
+
+  private func groceryListCardContent(count: Int) -> some View {
+    HStack {
+      Image(systemName: "cart")
+        .foregroundColor(.blue)
+      Text("View Grocery List\(count > 0 ? " (\(count))" : "")")
+        .font(.headline)
+      Spacer()
+      if count > 0 {
         Image(systemName: "chevron.right")
           .foregroundColor(.secondary)
           .font(.caption)
       }
-      .padding()
-      .background(Color(.systemGray6))
-      .cornerRadius(10)
     }
-    .buttonStyle(.plain)
+    .padding()
+    .background(Color(.systemGray6))
+    .cornerRadius(10)
   }
 
   private var tasksSection: some View {
@@ -239,12 +290,11 @@ struct EventCard: View {
 
   private func eventTimeRange(event: Mealplanning_MealPlanEvent) -> some View {
     let startDate = HomeViewModel.timestampToDate(event.startsAt)
-    let endDate = HomeViewModel.timestampToDate(event.endsAt)
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
     formatter.timeStyle = .short
 
-    return Text("\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))")
+    return Text(formatter.string(from: startDate))
       .font(.caption)
       .foregroundColor(.secondary)
   }
@@ -278,19 +328,6 @@ struct EventCard: View {
               MealOptionCard(option: option, isChosen: true)
             }
             .buttonStyle(.plain)
-          }
-
-          // Show other options if not chosen
-          let unchosenOptions = event.options.filter { !$0.chosen }
-          if !unchosenOptions.isEmpty {
-            Text("Other options:")
-              .font(.caption)
-              .foregroundColor(.secondary)
-              .padding(.top, 4)
-
-            ForEach(unchosenOptions, id: \.id) { option in
-              MealOptionCard(option: option, isChosen: false)
-            }
           }
         }
       } else {

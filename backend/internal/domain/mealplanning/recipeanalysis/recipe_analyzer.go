@@ -77,6 +77,7 @@ func graphIDForStep(step *mealplanning.RecipeStep) int64 {
 // RecipeAnalyzer analyzes recipes for insights (ugh).
 type RecipeAnalyzer interface {
 	MakeGraphForRecipe(ctx context.Context, recipe *mealplanning.Recipe) (*simple.DirectedGraph, error)
+	ValidateRecipeCreationRequestInputIsDAG(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) error
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *mealplanning.Recipe) ([]*mealplanning.MealPlanTaskDatabaseCreationInput, error)
 	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string
 	RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string
@@ -165,6 +166,115 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *mealpla
 	}
 
 	return recipeGraph, nil
+}
+
+// ValidateRecipeCreationRequestInputIsDAG validates that a RecipeCreationRequestInput represents a valid DAG.
+// It builds a graph from the request input and checks for cycles.
+// ProductOfRecipeStepIndex is treated as an array index into the Steps slice.
+func (g *recipeAnalyzer) ValidateRecipeCreationRequestInputIsDAG(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) error {
+	_, span := g.tracer.StartSpan(ctx)
+	defer span.End()
+
+	recipeGraph := simple.NewDirectedGraph()
+
+	// Add nodes for each step (using array index+1 as the graph ID, similar to graphIDForStep)
+	for stepIdx := range input.Steps {
+		graphID := int64(stepIdx + 1)
+		recipeGraph.AddNode(newGraphNode(graphID))
+	}
+
+	// Build edges based on ProductOfRecipeStepIndex references
+	for stepIdx := range input.Steps {
+		currentStepGraphID := int64(stepIdx + 1)
+		step := input.Steps[stepIdx]
+
+		// Check ingredients for references to other steps
+		for _, ingredient := range step.Ingredients {
+			if ingredient.ProductOfRecipeStepIndex == nil {
+				continue
+			}
+
+			fromStepArrayIndex := *ingredient.ProductOfRecipeStepIndex
+
+			// Skip cross-recipe references (they don't affect this recipe's DAG)
+			// Check this first before validating index bounds
+			// If RecipeStepProductRecipeID is set (even if empty), it indicates a cross-recipe reference
+			// The empty string case can happen when getRecipeIDBySlug returns nil but we still want to indicate
+			// this is a cross-recipe reference that will be resolved later
+			if ingredient.RecipeStepProductRecipeID != nil {
+				continue
+			}
+
+			// Validate that the referenced step array index exists
+			if fromStepArrayIndex >= uint64(len(input.Steps)) {
+				return fmt.Errorf("ingredient in step at array index %d references invalid step array index %d", stepIdx, fromStepArrayIndex)
+			}
+
+			// Prevent self-references (which would create a cycle)
+			if fromStepArrayIndex == uint64(stepIdx) {
+				return fmt.Errorf("%w: step at array index %d references itself", errNotAcyclic, stepIdx)
+			}
+
+			fromStepGraphID := int64(fromStepArrayIndex + 1)
+			from := recipeGraph.Node(fromStepGraphID)
+			to := recipeGraph.Node(currentStepGraphID)
+			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
+		}
+
+		// Check instruments for references to other steps
+		for _, instrument := range step.Instruments {
+			if instrument.ProductOfRecipeStepIndex == nil {
+				continue
+			}
+
+			fromStepArrayIndex := *instrument.ProductOfRecipeStepIndex
+			// Validate that the referenced step array index exists
+			if fromStepArrayIndex >= uint64(len(input.Steps)) {
+				return fmt.Errorf("instrument in step at array index %d references invalid step array index %d", stepIdx, fromStepArrayIndex)
+			}
+
+			// Prevent self-references (which would create a cycle)
+			if fromStepArrayIndex == uint64(stepIdx) {
+				return fmt.Errorf("%w: step at array index %d references itself", errNotAcyclic, stepIdx)
+			}
+
+			fromStepGraphID := int64(fromStepArrayIndex + 1)
+			from := recipeGraph.Node(fromStepGraphID)
+			to := recipeGraph.Node(currentStepGraphID)
+			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
+		}
+
+		// Check vessels for references to other steps
+		for _, vessel := range step.Vessels {
+			if vessel.ProductOfRecipeStepIndex == nil {
+				continue
+			}
+
+			fromStepArrayIndex := *vessel.ProductOfRecipeStepIndex
+			// Validate that the referenced step array index exists
+			if fromStepArrayIndex >= uint64(len(input.Steps)) {
+				return fmt.Errorf("vessel in step at array index %d references invalid step array index %d", stepIdx, fromStepArrayIndex)
+			}
+
+			// Prevent self-references (which would create a cycle)
+			if fromStepArrayIndex == uint64(stepIdx) {
+				return fmt.Errorf("%w: step at array index %d references itself", errNotAcyclic, stepIdx)
+			}
+
+			fromStepGraphID := int64(fromStepArrayIndex + 1)
+			from := recipeGraph.Node(fromStepGraphID)
+			to := recipeGraph.Node(currentStepGraphID)
+			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
+		}
+	}
+
+	// Check for cycles
+	directedCycles := topo.DirectedCyclesIn(recipeGraph)
+	if len(directedCycles) > 0 {
+		return fmt.Errorf("%w: recipe contains %d cycle(s)", errNotAcyclic, len(directedCycles))
+	}
+
+	return nil
 }
 
 type RecipeStepIdentifier struct {

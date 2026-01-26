@@ -18,9 +18,23 @@ struct PerformRecipeView: View {
   @State private var checkedInstrumentsVessels: Set<String> = []
 
   let recipeID: String
+  let highlightedStepIDs: Set<String>?
+  let prepTaskContext: PrepTaskContext?
 
-  init(recipeID: String) {
+  struct PrepTaskContext {
+    let prepTaskName: String?
+    let recipeName: String?
+    let eventName: String?
+    let eventTime: Date?
+  }
+
+  init(
+    recipeID: String, highlightedStepIDs: Set<String>? = nil,
+    prepTaskContext: PrepTaskContext? = nil
+  ) {
     self.recipeID = recipeID
+    self.highlightedStepIDs = highlightedStepIDs
+    self.prepTaskContext = prepTaskContext
   }
 
   var body: some View {
@@ -57,9 +71,12 @@ struct PerformRecipeView: View {
               isInstrumentsVesselsExpanded: $isInstrumentsVesselsExpanded,
               isIngredientsExpanded: $isIngredientsExpanded,
               recipe: recipe,
-              viewModel: viewModel
+              viewModel: viewModel,
+              highlightedStepIDs: highlightedStepIDs,
+              prepTaskContext: prepTaskContext,
+              externalScale: .constant(nil)
             )
-            .navigationTitle("Perform Recipe")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
           } else {
             ProgressView("Loading...")
@@ -79,6 +96,33 @@ struct PerformRecipeView: View {
         }
       }
     }
+  }
+
+  private var navigationTitle: String {
+    if let context = prepTaskContext {
+      var parts: [String] = []
+
+      if let prepTaskName = context.prepTaskName, !prepTaskName.isEmpty {
+        parts.append(prepTaskName)
+      } else {
+        parts.append("Prep Task")
+      }
+
+      if let recipeName = context.recipeName, !recipeName.isEmpty {
+        parts.append("for \(recipeName)")
+      }
+
+      if let eventName = context.eventName, let eventTime = context.eventTime {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        parts.append("at \(formatter.string(from: eventTime))")
+      }
+
+      return parts.joined(separator: " ")
+    }
+
+    return "Perform Recipe"
   }
 }
 

@@ -137,6 +137,10 @@ class GroceryListViewModel {
     await updateItem(item, status: .needs)
   }
 
+  func markAsUnavailable(_ item: Mealplanning_MealPlanGroceryListItem) async {
+    await updateItem(item, status: .unavailable)
+  }
+
   func updateQuantityNeeded(
     _ item: Mealplanning_MealPlanGroceryListItem,
     min: Float,

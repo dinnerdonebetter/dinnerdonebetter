@@ -15,6 +15,7 @@ extension CreateMealPlanView {
 
   func mealPlanDetailsSection(viewModel: CreateMealPlanViewModel) -> some View {
     let bindableViewModel = Bindable(viewModel)
+    let validationErrors = viewModel.getValidationErrors()
 
     return VStack(alignment: .leading, spacing: 16) {
       Text("Meal Plan Details")
@@ -22,16 +23,39 @@ extension CreateMealPlanView {
         .fontWeight(.bold)
 
       VStack(alignment: .leading, spacing: 12) {
-        Text("Name")
-          .font(.headline)
+        HStack {
+          Text("Name")
+            .font(.headline)
+          if validationErrors.hasNameError {
+            Image(systemName: "exclamationmark.circle.fill")
+              .foregroundColor(.red)
+              .font(.caption)
+          }
+        }
         TextField("Enter meal plan name", text: bindableViewModel.mealPlanName)
           .textFieldStyle(.roundedBorder)
           .focused($focusedField, equals: .mealPlanName)
+          .overlay(
+            RoundedRectangle(cornerRadius: 5)
+              .stroke(validationErrors.hasNameError ? Color.red : Color.clear, lineWidth: 1)
+          )
+        if validationErrors.hasNameError {
+          Text("Meal plan name is required")
+            .font(.caption)
+            .foregroundColor(.red)
+        }
       }
 
       VStack(alignment: .leading, spacing: 12) {
-        Text("Voting Deadline")
-          .font(.headline)
+        HStack {
+          Text("Voting Deadline")
+            .font(.headline)
+          if validationErrors.hasVotingDeadlineError {
+            Image(systemName: "exclamationmark.circle.fill")
+              .foregroundColor(.red)
+              .font(.caption)
+          }
+        }
         DatePicker(
           "",
           selection: bindableViewModel.votingDeadline,
@@ -39,6 +63,11 @@ extension CreateMealPlanView {
         )
         .datePickerStyle(.compact)
         .labelsHidden()
+        if validationErrors.hasVotingDeadlineError {
+          Text("Voting deadline must be at least 12 hours from now")
+            .font(.caption)
+            .foregroundColor(.red)
+        }
       }
     }
     .padding()
@@ -50,6 +79,7 @@ extension CreateMealPlanView {
 
   func mealPlanDetailsSectionHorizontal(viewModel: CreateMealPlanViewModel) -> some View {
     let bindableViewModel = Bindable(viewModel)
+    let validationErrors = viewModel.getValidationErrors()
 
     return VStack(alignment: .leading, spacing: 16) {
       Text("Meal Plan Details")
@@ -58,17 +88,40 @@ extension CreateMealPlanView {
 
       HStack(alignment: .top, spacing: 24) {
         VStack(alignment: .leading, spacing: 12) {
-          Text("Name")
-            .font(.headline)
+          HStack {
+            Text("Name")
+              .font(.headline)
+            if validationErrors.hasNameError {
+              Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.red)
+                .font(.caption)
+            }
+          }
           TextField("Enter meal plan name", text: bindableViewModel.mealPlanName)
             .textFieldStyle(.roundedBorder)
             .focused($focusedField, equals: .mealPlanName)
+            .overlay(
+              RoundedRectangle(cornerRadius: 5)
+                .stroke(validationErrors.hasNameError ? Color.red : Color.clear, lineWidth: 1)
+            )
+          if validationErrors.hasNameError {
+            Text("Meal plan name is required")
+              .font(.caption)
+              .foregroundColor(.red)
+          }
         }
         .frame(maxWidth: .infinity)
 
         VStack(alignment: .leading, spacing: 12) {
-          Text("Voting Deadline")
-            .font(.headline)
+          HStack {
+            Text("Voting Deadline")
+              .font(.headline)
+            if validationErrors.hasVotingDeadlineError {
+              Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.red)
+                .font(.caption)
+            }
+          }
           DatePicker(
             "",
             selection: bindableViewModel.votingDeadline,
@@ -77,6 +130,11 @@ extension CreateMealPlanView {
           .datePickerStyle(.compact)
           .labelsHidden()
           .frame(maxWidth: .infinity, alignment: .leading)
+          if validationErrors.hasVotingDeadlineError {
+            Text("Voting deadline must be at least 12 hours from now")
+              .font(.caption)
+              .foregroundColor(.red)
+          }
         }
         .frame(maxWidth: .infinity)
       }
@@ -138,11 +196,10 @@ extension CreateMealPlanView {
 
   func createButton(
     viewModel: CreateMealPlanViewModel,
-    showOptionSelectionModal: Binding<Bool>,
-    recipesForOptionSelection: Binding<[Mealplanning_Recipe]>
+    recipesForOptionSelection: Binding<[Mealplanning_Recipe]?>
   ) -> some View {
     _ = Bindable(viewModel)
-    let hasSelectedMeals = viewModel.events.contains { !$0.selectedMeals.isEmpty }
+    let canCreate = viewModel.canCreateMealPlan()
 
     return Button(
       action: {
@@ -155,15 +212,24 @@ extension CreateMealPlanView {
         // Use ViewModel method to check for recipes with options
         let recipesWithOptions = viewModel.collectRecipesWithOptions(from: allSelectedMeals)
 
+        print("🔍 Create button: Found \(recipesWithOptions.count) recipe(s) with options")
+
         if !recipesWithOptions.isEmpty {
           // Get all unique recipes for the modal
           let allRecipes = viewModel.getAllRecipes(from: allSelectedMeals)
-          // Filter to only recipes with options
-          recipesForOptionSelection.wrappedValue = allRecipes.filter {
-            recipesWithOptions.contains($0.id)
+          print("🔍 Create button: getAllRecipes returned \(allRecipes.count) recipe(s)")
+          for recipe in allRecipes {
+            print("  📝 Recipe: \(recipe.name) (ID: \(recipe.id)), has \(recipe.steps.count) steps")
           }
-          showOptionSelectionModal.wrappedValue = true
+
+          // Pass all recipes to the modal - it will filter internally to only show recipes with options
+          // This is safer than pre-filtering in case there are ID mismatches
+          print(
+            "🔍 Create button: Passing \(allRecipes.count) recipe(s) to modal (modal will filter)")
+          // Set recipes first, then the sheet will appear automatically via the binding
+          recipesForOptionSelection.wrappedValue = allRecipes
         } else {
+          print("⚠️ Create button: No recipes with options found, proceeding directly")
           // No options, proceed directly
           Task {
             let success = await viewModel.createMealPlan()
@@ -186,13 +252,13 @@ extension CreateMealPlanView {
         .frame(maxWidth: .infinity)
         .padding()
         .background(
-          viewModel.isCreating || !hasSelectedMeals
+          viewModel.isCreating || !canCreate
             ? Color.gray : Color.blue
         )
         .foregroundColor(.white)
         .cornerRadius(10)
       }
     )
-    .disabled(viewModel.isCreating || !hasSelectedMeals)
+    .disabled(viewModel.isCreating || !canCreate)
   }
 }

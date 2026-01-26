@@ -183,6 +183,29 @@ WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'awaiting_votes'
 	AND NOW() > meal_plans.voting_deadline;
 
+-- name: FindMealPlansForDates :many
+SELECT DISTINCT
+	meal_plans.id,
+	meal_plans.notes,
+	meal_plans.status,
+	meal_plans.voting_deadline,
+	meal_plans.grocery_list_initialized,
+	meal_plans.tasks_created,
+	meal_plans.election_method,
+	meal_plans.created_at,
+	meal_plans.last_updated_at,
+	meal_plans.archived_at,
+	meal_plans.belongs_to_account,
+	meal_plans.created_by_user
+FROM meal_plans
+	JOIN meal_plan_events ON meal_plans.id = meal_plan_events.belongs_to_meal_plan
+WHERE meal_plans.archived_at IS NULL
+	AND meal_plan_events.archived_at IS NULL
+	AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
+	AND meal_plan_events.starts_at <= sqlc.arg(end_time)
+	AND meal_plan_events.ends_at >= sqlc.arg(start_time)
+ORDER BY meal_plans.id;
+
 -- name: MarkMealPlanAsGroceryListInitialized :exec
 UPDATE meal_plans SET
 	grocery_list_initialized = TRUE,

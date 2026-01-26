@@ -37,6 +37,12 @@ import (
 
 const (
 	apiConfigurationFilepath = "deploy/environments/testing/config_files/integration-tests-config.json"
+	// createMealPlansAndVotes controls whether meal plans and votes are created during localdev startup.
+	// Set to true via environment variable CREATE_MEAL_PLANS_AND_VOTES=true to enable.
+)
+
+var (
+	createMealPlansAndVotes = true // os.Getenv("CREATE_MEAL_PLANS_AND_VOTES") == "true"
 )
 
 func cloneTime(t time.Time) time.Time {
@@ -46,6 +52,40 @@ func cloneTime(t time.Time) time.Time {
 	}
 
 	return t
+}
+
+// resolveEmptyRecipeIDs resolves empty RecipeStepProductRecipeID values in a recipe input
+// by trying to find matching recipes in the createdRecipes map.
+// It tries all recipes in the map and matches based on step index.
+func resolveEmptyRecipeIDs(recipe *mealplanning.RecipeCreationRequestInput, createdRecipes map[string]*mealplanning.Recipe) {
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil && *ingredient.RecipeStepProductRecipeID == "" {
+				// Try to find a recipe that has a step at the referenced index
+				stepIndex := ingredient.ProductOfRecipeStepIndex
+				if stepIndex != nil {
+					// Try all recipes in the createdRecipes map
+					for _, refRecipe := range createdRecipes {
+						if refRecipe != nil && int(*stepIndex) < len(refRecipe.Steps) {
+							// Check if this step has the expected product
+							referencedStep := refRecipe.Steps[*stepIndex]
+							if ingredient.ProductOfRecipeStepProductIndex != nil {
+								productIndex := int(*ingredient.ProductOfRecipeStepProductIndex)
+								if productIndex < len(referencedStep.Products) {
+									// This recipe has a step at the right index with enough products
+									// Update the recipe ID (we'll verify the product type later)
+									ingredient.RecipeStepProductRecipeID = &refRecipe.ID
+									// Note: We can't be 100% sure this is the right recipe,
+									// but it's the best we can do without storing the slug
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 func main() {
@@ -286,6 +326,11 @@ func main() {
 			logger.Info(fmt.Sprintf("Found %d recipes with prerequisites to create", len(recipesWithPrerequisites)))
 
 			for i, recipe := range recipesWithPrerequisites {
+				// Resolve empty recipe IDs in cross-recipe references before creating
+				// This is needed because getRecipeIDBySlug may return empty strings when
+				// called during recipe input construction (before prerequisite recipes exist)
+				resolveEmptyRecipeIDs(recipe, createdRecipes)
+
 				logger.Info(fmt.Sprintf("Creating recipe with prerequisites %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
 				r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
 				if createErr != nil {
@@ -316,6 +361,12 @@ func main() {
 		}),
 		// Create meal plan with 3 chicken dishes
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping meal plan creation (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -427,6 +478,12 @@ func main() {
 		}),
 		// Create finalized meal plan with votes and extend current meal plan deadline
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping finalized meal plan and vote creation (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			if adminUserID == "" || adminAccountID == "" {
 				return fmt.Errorf("admin user ID or account ID not set")
 			}
@@ -604,6 +661,12 @@ func main() {
 		}),
 		// Run grocery list initializer and task creator workers for finalized meal plans
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			// Check if meal plan creation is enabled (via constant or environment variable)
+			shouldCreate := createMealPlansAndVotes
+			if !shouldCreate {
+				logger.Info("Skipping grocery list and task creator workers (CREATE_MEAL_PLANS_AND_VOTES=false)")
+				return nil
+			}
 			logger.Info("Running grocery list initializer and task creator workers...")
 
 			// Build grocery list initializer worker

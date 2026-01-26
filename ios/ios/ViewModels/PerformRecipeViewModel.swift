@@ -14,11 +14,16 @@ import SwiftUI
 @MainActor
 class PerformRecipeViewModel {
   var recipe: Mealplanning_Recipe?
+  var prepTasks: [Mealplanning_RecipePrepTask] = []
   var isLoading = false
+  var isLoadingPrepTasks = false
   var errorMessage: String?
 
   // Track which steps are completed (by step ID: "recipeID:stepID")
   var completedSteps: Set<String> = []
+
+  // Track which prep tasks are completed (by prep task ID)
+  var completedPrepTasks: Set<String> = []
 
   // Special step: wash hands (index -1)
   var washHandsCompleted: Bool = false
@@ -70,12 +75,54 @@ class PerformRecipeViewModel {
 
       self.recipe = response.result
       buildProductIDToStepIndexMapping()
+
+      // Load prep tasks after recipe is loaded
+      await loadPrepTasks()
     } catch {
       errorMessage = "Failed to load recipe: \(error.localizedDescription)"
       print("❌ Error loading recipe: \(error)")
     }
 
     isLoading = false
+  }
+
+  func loadPrepTasks() async {
+    isLoadingPrepTasks = true
+
+    do {
+      guard let clientManager = try? authManager.getClientManager() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 1,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get client manager"])
+      }
+
+      // Get OAuth2 token (will refresh if needed)
+      guard let oauth2Token = await authManager.getOAuth2AccessToken() else {
+        throw NSError(
+          domain: "PerformRecipeViewModel", code: 2,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to get OAuth2 access token"])
+      }
+
+      let metadata = clientManager.authenticatedMetadata(accessToken: oauth2Token)
+
+      // Create request
+      var request = Mealplanning_GetRecipePrepTasksRequest()
+      request.recipeID = recipeID
+
+      // Execute request
+      let response = try await clientManager.client.mealPlanning.getRecipePrepTasks(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+
+      self.prepTasks = response.results
+    } catch {
+      print("⚠️ Error loading prep tasks: \(error)")
+      // Don't set error message for prep tasks - it's not critical
+    }
+
+    isLoadingPrepTasks = false
   }
 
   // Build a mapping from recipe step product IDs to the step that produces them
@@ -353,6 +400,33 @@ class PerformRecipeViewModel {
     return Array(prerequisites).sorted()
   }
 
+  // Step categorization
+  enum StepCategory {
+    case upNext
+    case forLater
+    case done
+  }
+
+  // Categorize a step based on its completion status and dependencies
+  func categorizeStep(recipeID: String, stepID: String) -> StepCategory {
+    let stepKey = self.stepKey(recipeID: recipeID, stepID: stepID)
+
+    // If step is completed, it's done
+    if completedSteps.contains(stepKey) {
+      return .done
+    }
+
+    // Check if all dependencies are satisfied
+    let prerequisiteKeys = getPrerequisiteStepKeys(recipeID: recipeID, stepID: stepID)
+    let allDependenciesDone = prerequisiteKeys.allSatisfy { completedSteps.contains($0) }
+
+    if allDependenciesDone {
+      return .upNext
+    } else {
+      return .forLater
+    }
+  }
+
   // Get all prerequisite step keys for a given step
   func getPrerequisiteStepKeys(recipeID: String, stepID: String) -> [String] {
     guard let recipe = recipe else { return [] }
@@ -421,5 +495,68 @@ class PerformRecipeViewModel {
 
     // Find the step index in main recipe
     return recipe.steps.firstIndex(where: { $0.id == stepID })
+  }
+
+  // MARK: - Prep Task Completion
+
+  // Check if a prep task is completed
+  func isPrepTaskCompleted(_ prepTaskID: String) -> Bool {
+    return completedPrepTasks.contains(prepTaskID)
+  }
+
+  // Toggle prep task completion and mark/unmark associated steps
+  func togglePrepTask(_ prepTask: Mealplanning_RecipePrepTask) {
+    let prepTaskID = prepTask.id
+
+    if completedPrepTasks.contains(prepTaskID) {
+      // Uncheck prep task
+      completedPrepTasks.remove(prepTaskID)
+
+      // Uncheck all associated steps
+      for taskStep in prepTask.taskSteps where !taskStep.belongsToRecipeStep.isEmpty {
+        let stepID = taskStep.belongsToRecipeStep
+        // Find which recipe this step belongs to
+        if let recipe = recipe {
+          // Check main recipe steps
+          if recipe.steps.contains(where: { $0.id == stepID }) {
+            let stepKey = stepKey(recipeID: recipe.id, stepID: stepID)
+            uncheckStepAndDependents(stepKey: stepKey)
+          } else {
+            // Check associated recipe steps
+            for associatedRecipe in recipe.associatedRecipes where associatedRecipe.steps.contains(where: { $0.id == stepID }) {
+              let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
+              uncheckStepAndDependents(stepKey: stepKey)
+              break
+            }
+          }
+        }
+      }
+    } else {
+      // Check prep task
+      completedPrepTasks.insert(prepTaskID)
+
+      // Check all associated steps (allow checking even if prerequisites aren't satisfied,
+      // since the user has already done the prep task ahead of time)
+      for taskStep in prepTask.taskSteps where !taskStep.belongsToRecipeStep.isEmpty {
+        let stepID = taskStep.belongsToRecipeStep
+        // Find which recipe this step belongs to
+        if let recipe = recipe {
+          // Check main recipe steps
+          if recipe.steps.contains(where: { $0.id == stepID }) {
+            let stepKey = stepKey(recipeID: recipe.id, stepID: stepID)
+            // Check the step (don't require prerequisites since prep task is done)
+            completedSteps.insert(stepKey)
+          } else {
+            // Check associated recipe steps
+            for associatedRecipe in recipe.associatedRecipes where associatedRecipe.steps.contains(where: { $0.id == stepID }) {
+              let stepKey = stepKey(recipeID: associatedRecipe.id, stepID: stepID)
+              // Check the step (don't require prerequisites since prep task is done)
+              completedSteps.insert(stepKey)
+              break
+            }
+          }
+        }
+      }
+    }
   }
 }

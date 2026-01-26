@@ -17,6 +17,7 @@ struct MealPlanEvent: Identifiable {
   var mealType: Mealplanning_MealPlanEventName = .dinner
   var startDate: Date
   var endDate: Date
+  var notes: String = ""
   var searchQuery: String = ""
   var searchResults: [Mealplanning_Meal] = []
   var isSearching: Bool = false
@@ -239,6 +240,11 @@ class CreateMealPlanViewModel {
     updateDefaultMealPlanName()
   }
 
+  func updateEventNotes(_ eventID: UUID, notes: String) {
+    guard let index = events.firstIndex(where: { $0.id == eventID }) else { return }
+    events[index].notes = notes
+  }
+
   // MARK: - Search Functions (per event)
 
   func searchForMeals(for event: MealPlanEvent) async {
@@ -339,6 +345,48 @@ class CreateMealPlanViewModel {
 
   // MARK: - Validation
 
+  struct ValidationErrors {
+    var hasNameError: Bool = false
+    var hasVotingDeadlineError: Bool = false
+    var eventTimelineErrors: [UUID: Bool] = [:]  // Event ID -> has error
+  }
+
+  func getValidationErrors() -> ValidationErrors {
+    var errors = ValidationErrors()
+    let now = Date()
+    let twelveHoursInSeconds: TimeInterval = 12 * 60 * 60
+
+    // Check meal plan name
+    if mealPlanName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+      errors.hasNameError = true
+    }
+
+    // Check voting deadline (must be at least 12 hours from now)
+    let timeUntilDeadline = votingDeadline.timeIntervalSince(now)
+    if timeUntilDeadline < twelveHoursInSeconds {
+      errors.hasVotingDeadlineError = true
+    }
+
+    // Check each event's start and end times (must be at least 12 hours from now)
+    for event in events {
+      let timeUntilStart = event.startDate.timeIntervalSince(now)
+      let timeUntilEnd = event.endDate.timeIntervalSince(now)
+      if timeUntilStart < twelveHoursInSeconds || timeUntilEnd < twelveHoursInSeconds {
+        errors.eventTimelineErrors[event.id] = true
+      }
+    }
+
+    return errors
+  }
+
+  func canCreateMealPlan() -> Bool {
+    let errors = getValidationErrors()
+    return !errors.hasNameError
+      && !errors.hasVotingDeadlineError
+      && errors.eventTimelineErrors.isEmpty
+      && events.contains { !$0.selectedMeals.isEmpty }
+  }
+
   func validateEvents() -> String? {
     // Check that all events have at least one meal selected
     for event in events where event.selectedMeals.isEmpty {
@@ -407,7 +455,7 @@ class CreateMealPlanViewModel {
         eventInput.startsAt = dateToTimestamp(event.startDate)
         eventInput.endsAt = dateToTimestamp(event.endDate)
         eventInput.mealName = event.mealType
-        eventInput.notes = ""
+        eventInput.notes = event.notes
 
         // Create options for each selected meal in this event
         for meal in event.selectedMeals {
@@ -489,21 +537,49 @@ class CreateMealPlanViewModel {
 
     // Check if any recipes have option groups
     for recipe in allRecipes {
+      // Debug: Check if recipe has steps loaded
+      if recipe.steps.isEmpty {
+        print(
+          "⚠️ Recipe '\(recipe.name)' (ID: \(recipe.id)) has no steps loaded - may need to fetch full recipe details"
+        )
+        continue
+      }
+
       let hasOptions = recipe.steps.contains { step in
         // Check for ingredient option groups (only ingredients have selectable options)
-        // Filter out index 0 (which typically means not in an option group)
-        let ingredientIndices = step.ingredients
-          .filter { $0.index != 0 }
-          .map { $0.index }
-        // If there are duplicate indices, it means there are multiple options for the same index
-        let hasIngredientOptions = ingredientIndices.count != Set(ingredientIndices).count
+        // Group ingredients by their index to find option groups
+        var indexGroups: [UInt32: [Mealplanning_RecipeStepIngredient]] = [:]
+
+        for ingredient in step.ingredients where ingredient.index != 0 {
+          // Index 0 typically means not in an option group
+          let index = ingredient.index
+          if indexGroups[index] == nil {
+            indexGroups[index] = []
+          }
+          indexGroups[index]?.append(ingredient)
+        }
+
+        // Check if any index group has multiple ingredients (i.e., has options)
+        let hasIngredientOptions = indexGroups.values.contains { $0.count > 1 }
+        if hasIngredientOptions {
+          print(
+            "  📝 Step \(step.id) in recipe '\(recipe.name)' has option groups: \(indexGroups.filter { $0.value.count > 1 }.keys.sorted())"
+          )
+        }
         return hasIngredientOptions
       }
 
       if hasOptions {
         recipeIDsWithOptions.insert(recipe.id)
+        print("✅ Found recipe with options: \(recipe.name) (ID: \(recipe.id))")
+      } else {
+        print("ℹ️ Recipe '\(recipe.name)' (ID: \(recipe.id)) has no option groups")
       }
     }
+
+    print(
+      "📊 collectRecipesWithOptions: Found \(recipeIDsWithOptions.count) recipe(s) with options out of \(allRecipes.count) total recipe(s)"
+    )
 
     return recipeIDsWithOptions
   }

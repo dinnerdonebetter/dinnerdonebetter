@@ -24,6 +24,13 @@ func (m *MockRecipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *mea
 	return returnArgs.Get(0).(*simple.DirectedGraph), returnArgs.Error(1)
 }
 
+// ValidateRecipeCreationRequestInputIsDAG implements our interface.
+func (m *MockRecipeAnalyzer) ValidateRecipeCreationRequestInputIsDAG(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) error {
+	returnArgs := m.Called(ctx, input)
+
+	return returnArgs.Error(0)
+}
+
 // GenerateMealPlanTasksForRecipe implements our interface.
 func (m *MockRecipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *mealplanning.Recipe) ([]*mealplanning.MealPlanTaskDatabaseCreationInput, error) {
 	returnArgs := m.Called(ctx, mealPlanOptionID, recipe)

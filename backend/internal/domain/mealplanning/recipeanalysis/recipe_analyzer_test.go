@@ -278,3 +278,508 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid DAG with no dependencies", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Simple Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{Index: 0},
+				{Index: 1},
+				{Index: 2},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("valid DAG with linear dependencies via ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Linear Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{Name: "raw ingredient", Quantity: types.Float32RangeWithOptionalMax{Min: 1}},
+					},
+				},
+				{
+					Index: 1,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "product from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("valid DAG with multiple dependencies", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+		step2Index := uint64(2)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Multi-dependency Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{Index: 0},
+				{Index: 1},
+				{Index: 2},
+				{
+					Index: 3,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+						{
+							Name:                     "from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                     "instrument from step 2",
+							ProductOfRecipeStepIndex: &step2Index,
+							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("valid DAG with vessel dependencies", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Vessel Dependency Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{Index: 0},
+				{
+					Index: 1,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "vessel from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("invalid DAG with direct cycle via ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Cyclic Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 1,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errNotAcyclic)
+	})
+
+	T.Run("invalid DAG with three-step cycle", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+		step2Index := uint64(2)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Three-Step Cycle",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 2",
+							ProductOfRecipeStepIndex: &step2Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 1,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 2,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errNotAcyclic)
+	})
+
+	T.Run("invalid DAG with cycle via instruments", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Instrument Cycle",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                     "instrument from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 1,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                     "instrument from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errNotAcyclic)
+	})
+
+	T.Run("invalid DAG with cycle via vessels", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Vessel Cycle",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "vessel from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 1,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "vessel from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errNotAcyclic)
+	})
+
+	T.Run("invalid step index reference in ingredient", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		invalidIndex := uint64(99)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Invalid Index Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "invalid reference",
+							ProductOfRecipeStepIndex: &invalidIndex,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "references invalid step array index")
+	})
+
+	T.Run("invalid step index reference in instrument", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		invalidIndex := uint64(50)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Invalid Instrument Index",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                     "invalid instrument",
+							ProductOfRecipeStepIndex: &invalidIndex,
+							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "references invalid step array index")
+	})
+
+	T.Run("invalid step index reference in vessel", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		invalidIndex := uint64(10)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Invalid Vessel Index",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
+						{
+							Name:                     "invalid vessel",
+							ProductOfRecipeStepIndex: &invalidIndex,
+							Quantity:                 types.Uint16RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "references invalid step array index")
+	})
+
+	T.Run("empty steps", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name:  "Empty Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("single step with no dependencies", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Single Step Recipe",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{Index: 0},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+
+	T.Run("valid DAG with self-reference prevention", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Self-Reference Test",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					Index: 0,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "self-reference",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errNotAcyclic)
+	})
+
+	T.Run("valid DAG with complex branching", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+		ctx := t.Context()
+
+		step0Index := uint64(0)
+		step1Index := uint64(1)
+		step2Index := uint64(2)
+
+		input := &mealplanning.RecipeCreationRequestInput{
+			Name: "Complex Branching",
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{Index: 0},
+				{Index: 1},
+				{Index: 2},
+				{
+					Index: 3,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 0",
+							ProductOfRecipeStepIndex: &step0Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+						{
+							Name:                     "from step 1",
+							ProductOfRecipeStepIndex: &step1Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+				{
+					Index: 4,
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                     "from step 2",
+							ProductOfRecipeStepIndex: &step2Index,
+							Quantity:                 types.Float32RangeWithOptionalMax{Min: 1},
+						},
+					},
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:                     "from step 3",
+							ProductOfRecipeStepIndex: pointer.To(uint64(3)),
+							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
+						},
+					},
+				},
+			},
+		}
+
+		err := g.ValidateRecipeCreationRequestInputIsDAG(ctx, input)
+		assert.NoError(t, err)
+	})
+}
