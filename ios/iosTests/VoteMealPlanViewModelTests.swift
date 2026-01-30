@@ -330,6 +330,7 @@ struct BallotManagementTests {
 
 // MARK: - CanSubmit Tests
 
+@Suite(.serialized)
 struct CanSubmitTests {
   @Test("canSubmit returns false when no ballots")
   @MainActor
@@ -340,7 +341,11 @@ struct CanSubmitTests {
     let authManager = createMockAuthenticationManager()
     let viewModel = VoteMealPlanViewModel(mealPlan: mealPlan, authManager: authManager)
 
-    #expect(viewModel.canSubmit == false)
+    // Ensure initialization completes
+    try? await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+
+    #expect(viewModel.ballots.isEmpty == true, "Ballots should be empty for meal plan with no events")
+    #expect(viewModel.canSubmit == false, "canSubmit should be false when there are no ballots")
   }
 
   @Test("canSubmit returns false when ballots not locked")

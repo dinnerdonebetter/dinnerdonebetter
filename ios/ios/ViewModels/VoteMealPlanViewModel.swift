@@ -164,6 +164,9 @@ class VoteMealPlanViewModel {
 
   /// Check if all ballots are complete and locked (or abstained)
   var canSubmit: Bool {
+    // Can't submit if there are no events
+    guard !mealPlan.events.isEmpty else { return false }
+
     for event in mealPlan.events {
       guard let ballot = ballots[event.id] else { return false }
       // Ballot is valid if it's abstained, or if it's locked and complete

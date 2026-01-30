@@ -19,12 +19,6 @@ struct LoginView: View {
   @State private var isLoading: Bool = false
   @State private var loginTask: Task<Void, Never>?
 
-  // Temporary dev feature: always show TOTP and auto-generate
-  @State private var alwaysShowTOTP: Bool = true
-  private let totpSecret: String =
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-  @State private var totpUpdateTask: Task<Void, Never>?
-
   var body: some View {
     VStack(spacing: DSTheme.Spacing.xl) {
       Spacer()
@@ -59,7 +53,7 @@ struct LoginView: View {
         )
         .accessibilityIdentifier("passwordTextField")
 
-        if requiresTOTP || alwaysShowTOTP {
+        if requiresTOTP {
           DSTextField(
             "2FA Code",
             text: $totpCode,
@@ -82,7 +76,7 @@ struct LoginView: View {
           fullWidth: true,
           isLoading: isLoading,
           isDisabled: username.isEmpty || password.isEmpty
-            || ((requiresTOTP || alwaysShowTOTP) && totpCode.isEmpty)
+            || (requiresTOTP && totpCode.isEmpty)
         ) {
           loginTask?.cancel()
           loginTask = Task { await handleLogin() }
@@ -107,52 +101,6 @@ struct LoginView: View {
       Spacer()
     }
     .dsScreenPadding()
-    .onAppear {
-      startTOTPTimer()
-    }
-    .onDisappear {
-      stopTOTPTimer()
-    }
-  }
-
-  // MARK: - TOTP Generation
-
-  private func updateTOTPCode() {
-    guard !totpSecret.isEmpty else {
-      totpCode = ""
-      return
-    }
-
-    if let code = TOTPGenerator.generate(secret: totpSecret) {
-      totpCode = code
-    } else {
-      totpCode = ""
-    }
-  }
-
-  private func startTOTPTimer() {
-    if alwaysShowTOTP {
-      updateTOTPCode()
-    }
-
-    totpUpdateTask?.cancel()
-
-    guard alwaysShowTOTP else { return }
-
-    totpUpdateTask = Task {
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        guard !Task.isCancelled else { break }
-        await MainActor.run {
-          updateTOTPCode()
-        }
-      }
-    }
-  }
-
-  private func stopTOTPTimer() {
-    totpUpdateTask?.cancel()
-    totpUpdateTask = nil
   }
 
   private func handleLogin() async {
@@ -175,9 +123,7 @@ struct LoginView: View {
       if result.success {
         username = ""
         password = ""
-        if !alwaysShowTOTP {
-          totpCode = ""
-        }
+        totpCode = ""
         requiresTOTP = false
       } else {
         if result.requiresTOTP {
