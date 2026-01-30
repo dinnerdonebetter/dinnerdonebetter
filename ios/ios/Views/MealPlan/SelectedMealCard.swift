@@ -22,77 +22,71 @@ struct SelectedMealCard: View {
 
   var body: some View {
     if isRegularWidth {
-      // Horizontal layout for iPad
       horizontalLayout
     } else {
-      // Vertical layout for iPhone
       verticalLayout
     }
   }
 
   private var horizontalLayout: some View {
-    HStack(alignment: .top, spacing: 16) {
-      VStack(alignment: .leading, spacing: 4) {
-        Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-          .font(.headline)
+    DSCard(style: .outlined) {
+      HStack(alignment: .top, spacing: DSTheme.Spacing.lg) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+          Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
 
-        if !meal.components.isEmpty {
-          let recipeNames = meal.components.compactMap { component -> String? in
-            component.recipe.name.isEmpty ? nil : component.recipe.name
-          }
-          if !recipeNames.isEmpty {
-            Text(recipeNames.joined(separator: ", "))
-              .font(.caption)
-              .foregroundColor(.secondary)
-          }
-        }
-
-        if meal.hasEstimatedPortions {
-          Label(
-            "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
-            systemImage: "person.2"
-          )
-          .font(.caption)
-          .foregroundColor(.secondary)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-
-      // Scale control
-      VStack(alignment: .leading, spacing: 4) {
-        Text("Scale")
-          .font(.caption)
-          .foregroundColor(.secondary)
-        HStack(spacing: 8) {
-          TextField("1.0", text: $scaleText)
-            .keyboardType(.decimalPad)
-            .textFieldStyle(.roundedBorder)
-            .frame(width: 100)
-            .focused($isScaleFocused)
-            .onSubmit {
-              updateScaleFromText()
+          if !meal.components.isEmpty {
+            let recipeNames = meal.components.compactMap { component -> String? in
+              component.recipe.name.isEmpty ? nil : component.recipe.name
             }
-            .onChange(of: isScaleFocused) { _, isFocused in
-              if !isFocused {
+            if !recipeNames.isEmpty {
+              Text(recipeNames.joined(separator: ", "))
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+            }
+          }
+
+          if meal.hasEstimatedPortions {
+            Label(
+              "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
+              systemImage: "person.2"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        // Scale control
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+          Text("Scale")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          HStack(spacing: DSTheme.Spacing.sm) {
+            DSTextField("1.0", text: $scaleText, type: .number)
+              .frame(width: 100)
+              .focused($isScaleFocused)
+              .onSubmit {
                 updateScaleFromText()
               }
-            }
-          Text("x")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+              .onChange(of: isScaleFocused) { _, isFocused in
+                if !isFocused {
+                  updateScaleFromText()
+                }
+              }
+            Text("x")
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+        }
+        .frame(maxWidth: 200)
+
+        DSIconButton("xmark.circle.fill", style: .destructive) {
+          onRemove()
         }
       }
-      .frame(maxWidth: 200)
-
-      Button(action: onRemove) {
-        Image(systemName: "xmark.circle.fill")
-          .foregroundColor(.red)
-          .font(.title3)
-      }
     }
-    .padding()
-    .background(Color(.systemBackground))
-    .cornerRadius(8)
     .onAppear {
       scaleText = String(format: "%.2f", scale)
     }
@@ -104,69 +98,65 @@ struct SelectedMealCard: View {
   }
 
   private var verticalLayout: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      HStack {
-        VStack(alignment: .leading, spacing: 4) {
-          Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-            .font(.headline)
+    DSCard(style: .outlined) {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+        HStack {
+          VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+            Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
+              .font(DSTheme.Typography.label)
+              .foregroundColor(DSTheme.Colors.textPrimary)
 
-          if !meal.components.isEmpty {
-            let recipeNames = meal.components.compactMap { component -> String? in
-              component.recipe.name.isEmpty ? nil : component.recipe.name
-            }
-            if !recipeNames.isEmpty {
-              Text(recipeNames.joined(separator: ", "))
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-          }
-
-          if meal.hasEstimatedPortions {
-            Label(
-              "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
-              systemImage: "person.2"
-            )
-            .font(.caption)
-            .foregroundColor(.secondary)
-          }
-        }
-
-        Spacer()
-
-        Button(action: onRemove) {
-          Image(systemName: "xmark.circle.fill")
-            .foregroundColor(.red)
-            .font(.title3)
-        }
-      }
-
-      // Scale control
-      VStack(alignment: .leading, spacing: 4) {
-        Text("Scale")
-          .font(.caption)
-          .foregroundColor(.secondary)
-        HStack(spacing: 8) {
-          TextField("1.0", text: $scaleText)
-            .keyboardType(.decimalPad)
-            .textFieldStyle(.roundedBorder)
-            .focused($isScaleFocused)
-            .onSubmit {
-              updateScaleFromText()
-            }
-            .onChange(of: isScaleFocused) { _, isFocused in
-              if !isFocused {
-                updateScaleFromText()
+            if !meal.components.isEmpty {
+              let recipeNames = meal.components.compactMap { component -> String? in
+                component.recipe.name.isEmpty ? nil : component.recipe.name
+              }
+              if !recipeNames.isEmpty {
+                Text(recipeNames.joined(separator: ", "))
+                  .font(DSTheme.Typography.caption)
+                  .foregroundColor(DSTheme.Colors.textSecondary)
               }
             }
-          Text("x")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+
+            if meal.hasEstimatedPortions {
+              Label(
+                "\(formatScaledPortions(meal.estimatedPortions, scale: scale)) servings",
+                systemImage: "person.2"
+              )
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+            }
+          }
+
+          Spacer()
+
+          DSIconButton("xmark.circle.fill", style: .destructive) {
+            onRemove()
+          }
+        }
+
+        // Scale control
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+          Text("Scale")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          HStack(spacing: DSTheme.Spacing.sm) {
+            DSTextField("1.0", text: $scaleText, type: .number)
+              .focused($isScaleFocused)
+              .onSubmit {
+                updateScaleFromText()
+              }
+              .onChange(of: isScaleFocused) { _, isFocused in
+                if !isFocused {
+                  updateScaleFromText()
+                }
+              }
+            Text("x")
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
         }
       }
     }
-    .padding()
-    .background(Color(.systemBackground))
-    .cornerRadius(8)
     .onAppear {
       scaleText = String(format: "%.2f", scale)
     }
@@ -178,17 +168,14 @@ struct SelectedMealCard: View {
   }
 
   private func updateScaleFromText() {
-    // Parse the text input and validate it's a positive number
     if let parsedValue = Float(scaleText.trimmingCharacters(in: .whitespacesAndNewlines)) {
       if parsedValue > 0 {
         onScaleChange(parsedValue)
         scaleText = String(format: "%.2f", parsedValue)
       } else {
-        // Invalid: not positive, reset to current scale
         scaleText = String(format: "%.2f", scale)
       }
     } else {
-      // Invalid: not a number, reset to current scale
       scaleText = String(format: "%.2f", scale)
     }
   }
@@ -205,7 +192,6 @@ struct SelectedMealCard: View {
         return String(format: "%.1f-%.1f", scaledMin, scaledMax)
       }
     } else {
-      // min is always present, but max is optional
       return String(format: "%.1f+", scaledMin)
     }
   }

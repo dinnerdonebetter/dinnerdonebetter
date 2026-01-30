@@ -41,50 +41,32 @@ struct PerformRecipeView: View {
     NavigationStack {
       Group {
         if let viewModel = viewModel {
-          if viewModel.isLoading {
-            ProgressView("Loading recipe...")
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let errorMessage = viewModel.errorMessage {
-            VStack(spacing: 16) {
-              Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundColor(.orange)
-              Text("Error")
-                .font(.headline)
-              Text(errorMessage)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-              Button("Retry") {
-                Task {
-                  await viewModel.loadRecipe()
-                }
+          DSContentState(
+            isLoading: viewModel.isLoading,
+            loadingMessage: "Loading recipe...",
+            error: viewModel.errorMessage,
+            onRetry: { await viewModel.loadRecipe() },
+            content: {
+              if let recipe = viewModel.recipe {
+                RecipePerformanceContentView(
+                  checkedIngredients: $checkedIngredients,
+                  checkedInstrumentsVessels: $checkedInstrumentsVessels,
+                  isInstrumentsVesselsExpanded: $isInstrumentsVesselsExpanded,
+                  isIngredientsExpanded: $isIngredientsExpanded,
+                  recipe: recipe,
+                  viewModel: viewModel,
+                  highlightedStepIDs: highlightedStepIDs,
+                  prepTaskContext: prepTaskContext,
+                  externalScale: .constant(nil)
+                )
+                .navigationTitle(navigationTitle)
+                .navigationBarTitleDisplayMode(.inline)
+              } else {
+                DSLoadingView("Loading...")
               }
-              .buttonStyle(.borderedProminent)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let recipe = viewModel.recipe {
-            RecipePerformanceContentView(
-              checkedIngredients: $checkedIngredients,
-              checkedInstrumentsVessels: $checkedInstrumentsVessels,
-              isInstrumentsVesselsExpanded: $isInstrumentsVesselsExpanded,
-              isIngredientsExpanded: $isIngredientsExpanded,
-              recipe: recipe,
-              viewModel: viewModel,
-              highlightedStepIDs: highlightedStepIDs,
-              prepTaskContext: prepTaskContext,
-              externalScale: .constant(nil)
-            )
-            .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.inline)
-          } else {
-            ProgressView("Loading...")
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          }
+            })
         } else {
-          ProgressView("Initializing...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          DSInitializingView()
         }
       }
       .onAppear {

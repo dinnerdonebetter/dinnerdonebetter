@@ -1083,7 +1083,8 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
 
     // Collect steps from associated recipes
     for associatedRecipe in recipe.associatedRecipes {
-      for (index, step) in associatedRecipe.steps.enumerated() where shouldShowStep(stepID: step.id) {
+      for (index, step) in associatedRecipe.steps.enumerated() where shouldShowStep(stepID: step.id)
+      {
         allSteps.append(
           StepInfo(
             step: step,

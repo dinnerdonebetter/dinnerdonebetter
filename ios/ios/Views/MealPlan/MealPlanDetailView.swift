@@ -17,7 +17,7 @@ struct MealPlanDetailView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 20) {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
         // Header with title, status, and range inline
         headerSection
 
@@ -39,7 +39,7 @@ struct MealPlanDetailView: View {
           tasksSection
         }
       }
-      .padding()
+      .dsScreenPadding()
     }
     .navigationBarTitleDisplayMode(.inline)
     .task {

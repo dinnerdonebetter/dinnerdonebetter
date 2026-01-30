@@ -289,7 +289,7 @@ struct AccountSettingsValidationTests {
     let result = await viewModel.updateAccount()
 
     #expect(result == false)
-    #expect(viewModel.errorMessage?.contains("account admins") == true)
+    #expect(viewModel.errorMessage?.contains("household admins") == true)
   }
 
   @Test("sendInvitation returns false when no account")
@@ -325,7 +325,7 @@ struct AccountSettingsValidationTests {
     let result = await viewModel.sendInvitation()
 
     #expect(result == false)
-    #expect(viewModel.errorMessage?.contains("account admins") == true)
+    #expect(viewModel.errorMessage?.contains("household admins") == true)
   }
 
   @Test("sendInvitation returns false when email empty")
@@ -387,7 +387,7 @@ struct AccountSettingsValidationTests {
     let result = await viewModel.updateMemberRole(membershipID: "membership-123", newRole: "member", reason: "Test reason")
 
     #expect(result == false)
-    #expect(viewModel.errorMessage?.contains("account admins") == true)
+    #expect(viewModel.errorMessage?.contains("household admins") == true)
   }
 
   @Test("updateMemberRole returns false when reason empty")

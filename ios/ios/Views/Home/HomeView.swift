@@ -17,81 +17,76 @@ struct HomeView: View {
     NavigationStack {
       Group {
         if let viewModel = viewModel {
-          if viewModel.isLoading {
-            ProgressView("Loading...")
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let errorMessage = viewModel.errorMessage {
-            VStack(spacing: 16) {
-              Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundColor(.orange)
-              Text("Error")
-                .font(.headline)
-              Text(errorMessage)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-              Button("Retry") {
-                Task {
-                  await viewModel.loadData()
+          DSContentState(
+            isLoading: viewModel.isLoading,
+            loadingMessage: "Loading...",
+            error: viewModel.errorMessage,
+            onRetry: { await viewModel.loadData() },
+            content: {
+              ScrollView {
+                VStack(spacing: DSTheme.Spacing.xl) {
+                  // Welcome & Create CTA
+                  heroSection(viewModel: viewModel)
+
+                  // Quick Access Row
+                  quickAccessRow
+
+                  // Pending Votes Section
+                  if !viewModel.pendingVoteMealPlans.isEmpty {
+                    pendingVotesSection(viewModel: viewModel)
+                  }
+
+                  // Upcoming Meals Section
+                  if !viewModel.upcomingMealPlans.isEmpty {
+                    upcomingMealsSection(viewModel: viewModel)
+                  }
+
+                  // My Tasks Section
+                  if !viewModel.userTasks.isEmpty {
+                    myTasksSection(viewModel: viewModel)
+                  }
+
+                  // Grocery Lists Section
+                  if !viewModel.activeGroceryLists.isEmpty {
+                    groceryListsSection(viewModel: viewModel)
+                  }
+
+                  // Empty State
+                  if viewModel.pendingVoteMealPlans.isEmpty
+                    && viewModel.upcomingMealPlans.isEmpty
+                    && viewModel.userTasks.isEmpty
+                    && viewModel.activeGroceryLists.isEmpty
+                  {
+                    emptyStateView
+                  }
+
+                  // Sign Out Button
+                  signOutButton
                 }
+                .dsScreenPadding()
               }
-              .buttonStyle(.borderedProminent)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else {
-            ScrollView {
-              VStack(spacing: 24) {
-                // Header Section
-                headerSection(viewModel: viewModel)
-
-                // Pending Votes Section (always show, even if empty)
-                pendingVotesSection(viewModel: viewModel)
-
-                // Upcoming Meals Section
-                if !viewModel.upcomingMealPlans.isEmpty {
-                  upcomingMealsSection(viewModel: viewModel)
-                }
-
-                // My Tasks Section
-                if !viewModel.userTasks.isEmpty {
-                  myTasksSection(viewModel: viewModel)
-                }
-
-                // Grocery Lists Section
-                if !viewModel.activeGroceryLists.isEmpty {
-                  groceryListsSection(viewModel: viewModel)
-                }
-
-                // Empty State
-                if viewModel.pendingVoteMealPlans.isEmpty
-                  && viewModel.upcomingMealPlans.isEmpty
-                  && viewModel.userTasks.isEmpty
-                  && viewModel.activeGroceryLists.isEmpty
-                {
-                  emptyStateView
-                }
-
-                // Sign Out Button
-                signOutButton
-              }
-              .padding()
-            }
-          }
+            })
         } else {
-          ProgressView("Initializing...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          DSInitializingView()
         }
       }
       .navigationTitle("Home")
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          NavigationLink(destination: AccountSettingsView()) {
+            DSAvatarView(
+              name: authManager.username,
+              size: .sm
+            )
+          }
+        }
+      }
       .refreshable {
         if let viewModel = viewModel {
           await viewModel.loadData()
         }
       }
       .onAppear {
-        // Initialize viewModel with the actual authManager from environment
         if viewModel == nil {
           viewModel = HomeViewModel(authManager: authManager)
         }
@@ -102,7 +97,6 @@ struct HomeView: View {
         }
       }
       .onReceive(NotificationCenter.default.publisher(for: .mealPlanCreated)) { _ in
-        // Refresh data when a meal plan is created
         if let viewModel = viewModel {
           Task {
             await viewModel.loadData()
@@ -112,138 +106,184 @@ struct HomeView: View {
     }
   }
 
-  // MARK: - Header Section
-  private func headerSection(viewModel: HomeViewModel) -> some View {
-    VStack(spacing: 16) {
-      Text("Welcome, \(authManager.username)!")
-        .font(.largeTitle)
-        .fontWeight(.bold)
+  // MARK: - Hero Section
+  private func heroSection(viewModel: HomeViewModel) -> some View {
+    VStack(spacing: DSTheme.Spacing.lg) {
+      // Greeting
+      Text("\(greeting), \(authManager.username)!")
+        .font(DSTheme.Typography.largeTitle)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
+      // Create Meal Plan CTA Card
       NavigationLink(destination: CreateMealPlanView()) {
-        HStack {
-          Image(systemName: "plus.circle.fill")
-          Text("Create New Meal Plan")
-        }
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.blue)
-        .foregroundColor(.white)
-        .cornerRadius(10)
-      }
+        HStack(spacing: DSTheme.Spacing.md) {
+          ZStack {
+            Circle()
+              .fill(DSTheme.Colors.primary.opacity(0.15))
+              .frame(width: 48, height: 48)
 
-      NavigationLink(destination: RecipeListView()) {
-        HStack {
-          Image(systemName: "book.closed")
-          Text("View Recipes")
-        }
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.green)
-        .foregroundColor(.white)
-        .cornerRadius(10)
-      }
+            Image(systemName: "plus")
+              .font(.system(size: 20, weight: .semibold))
+              .foregroundColor(DSTheme.Colors.primary)
+          }
 
-      NavigationLink(destination: MealListView()) {
-        HStack {
-          Image(systemName: "fork.knife")
-          Text("View Meals")
-        }
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.orange)
-        .foregroundColor(.white)
-        .cornerRadius(10)
-      }
+          VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+            Text("Create Meal Plan")
+              .font(DSTheme.Typography.label)
+              .foregroundColor(DSTheme.Colors.textPrimary)
 
-      NavigationLink(destination: AccountSettingsView()) {
-        HStack {
-          Image(systemName: "person.2.fill")
-          Text("Account Settings")
+            Text("Plan your meals for the week")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
+          Spacer()
+
+          Image(systemName: "chevron.right")
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(DSTheme.Colors.textTertiary)
         }
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.purple)
-        .foregroundColor(.white)
-        .cornerRadius(10)
+        .padding(DSTheme.Spacing.lg)
+        .background(
+          RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+            .fill(DSTheme.Colors.cardBackground)
+            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+        )
+        .overlay(
+          RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+            .stroke(DSTheme.Colors.primary.opacity(0.2), lineWidth: 1)
+        )
       }
+      .buttonStyle(.plain)
+    }
+  }
+
+  private var greeting: String {
+    let hour = Calendar.current.component(.hour, from: Date())
+    switch hour {
+    case 0..<12:
+      return "Good morning"
+    case 12..<17:
+      return "Good afternoon"
+    default:
+      return "Good evening"
+    }
+  }
+
+  // MARK: - Quick Access Row
+  private var quickAccessRow: some View {
+    HStack(spacing: DSTheme.Spacing.md) {
+      QuickAccessButton(
+        icon: "book.closed.fill",
+        label: "Recipes",
+        color: DSTheme.Colors.secondary,
+        destination: RecipeListView()
+      )
+
+      QuickAccessButton(
+        icon: "fork.knife",
+        label: "Meals",
+        color: DSTheme.Colors.tertiary,
+        destination: MealListView()
+      )
     }
   }
 
   // MARK: - Pending Votes Section
   private func pendingVotesSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Pending Votes")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      HStack {
+        Label("Pending Votes", systemImage: "hand.raised.fill")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
 
-      if viewModel.pendingVoteMealPlans.isEmpty {
-        Text("No meal plans require voting at this time.")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-          .padding(.vertical, 8)
-      } else {
-        ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
-          NavigationLink(destination: VoteMealPlanView(mealPlan: mealPlan)) {
-            PendingVoteCardContent(
-              mealPlan: mealPlan,
-              hasVoted: viewModel.hasUserVoted(on: mealPlan),
-              timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
-            )
-          }
-          .buttonStyle(.plain)
+        Spacer()
+
+        Text("\(viewModel.pendingVoteMealPlans.count)")
+          .font(DSTheme.Typography.caption)
+          .fontWeight(.semibold)
+          .foregroundColor(DSTheme.Colors.warning)
+          .padding(.horizontal, DSTheme.Spacing.sm)
+          .padding(.vertical, DSTheme.Spacing.xxs)
+          .background(DSTheme.Colors.warning.opacity(0.15))
+          .cornerRadius(DSTheme.Radius.full)
+      }
+
+      ForEach(viewModel.pendingVoteMealPlans, id: \.id) { mealPlan in
+        NavigationLink(destination: VoteMealPlanView(mealPlan: mealPlan)) {
+          PendingVoteCardContent(
+            mealPlan: mealPlan,
+            hasVoted: viewModel.hasUserVoted(on: mealPlan),
+            timeUntilDeadline: viewModel.timeUntilDeadline(mealPlan.votingDeadline)
+          )
         }
+        .buttonStyle(.plain)
       }
     }
   }
 
   // MARK: - Upcoming Meals Section
   private func upcomingMealsSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Upcoming Meals")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      HStack {
+        Label("Upcoming Meals", systemImage: "calendar")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+
+        Spacer()
+
+        Text(
+          "\(viewModel.upcomingMealPlans.count) plan\(viewModel.upcomingMealPlans.count == 1 ? "" : "s")"
+        )
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
+      }
 
       ForEach(viewModel.upcomingMealPlans, id: \.id) { mealPlan in
         NavigationLink(
           destination: MealPlanDetailView(
             mealPlan: mealPlan,
-            groceryListItems: nil  // Don't pass grocery list items, they'll be fetched when needed
+            groceryListItems: nil
           )
         ) {
-          UpcomingMealCard(mealPlan: mealPlan) {
-            // Navigation handled by NavigationLink
-          }
+          UpcomingMealCardContent(mealPlan: mealPlan)
         }
+        .buttonStyle(.plain)
       }
     }
   }
 
   // MARK: - My Tasks Section
   private func myTasksSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("My Tasks")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      HStack {
+        Label("My Tasks", systemImage: "checklist")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
 
-      // Group tasks by date
+        Spacer()
+
+        let unfinishedCount = viewModel.userTasks.filter { $0.status != .finished }.count
+        if unfinishedCount > 0 {
+          Text("\(unfinishedCount) remaining")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.warning)
+        }
+      }
+
       let groupedTasks = Dictionary(grouping: viewModel.userTasks) { task in
         formatTaskDate(task)
       }
       let sortedDates = groupedTasks.keys.sorted()
 
       ForEach(sortedDates, id: \.self) { date in
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
           Text(date)
-            .font(.headline)
-            .foregroundColor(.secondary)
-            .padding(.horizontal, 4)
+            .font(DSTheme.Typography.caption)
+            .fontWeight(.medium)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+            .padding(.horizontal, DSTheme.Spacing.xs)
 
           ForEach(groupedTasks[date] ?? [], id: \.id) { task in
             TaskCard(task: task)
@@ -255,18 +295,21 @@ struct HomeView: View {
 
   // MARK: - Grocery Lists Section
   private func groceryListsSection(viewModel: HomeViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Grocery Lists")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
+      HStack {
+        Label("Grocery Lists", systemImage: "cart.fill")
+          .font(DSTheme.Typography.title2)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+
+        Spacer()
+      }
 
       ForEach(viewModel.activeGroceryLists, id: \.mealPlanID) { groceryList in
         if let mealPlan = viewModel.allMealPlans.first(where: { $0.id == groceryList.mealPlanID }) {
           NavigationLink(
             destination: GroceryListView(
               mealPlan: mealPlan,
-              items: [],  // Always start with empty array, GroceryListView will fetch fresh data
+              items: [],
               authManager: viewModel.authManager
             )
           ) {
@@ -283,55 +326,38 @@ struct HomeView: View {
 
   // MARK: - Empty State
   private var emptyStateView: some View {
-    VStack(spacing: 16) {
-      Image(systemName: "calendar.badge.plus")
-        .font(.system(size: 60))
-        .foregroundColor(.secondary)
-      Text("No Active Meal Plans")
-        .font(.title2)
-        .fontWeight(.semibold)
-      Text("Create a meal plan to get started!")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
-    }
-    .padding(.vertical, 40)
+    DSEmptyState(
+      icon: "calendar.badge.plus",
+      title: "No Active Meal Plans",
+      message: "Create a meal plan to get started!",
+      size: .large
+    )
   }
 
   // MARK: - Sign Out Button
   private var signOutButton: some View {
-    Button(action: authManager.logout) {
-      Text("Sign Out")
-        .fontWeight(.semibold)
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.red)
-        .foregroundColor(.white)
-        .cornerRadius(10)
+    DSButton("Sign Out", style: .ghost, fullWidth: true) {
+      authManager.logout()
     }
-    .padding(.top, 20)
+    .padding(.top, DSTheme.Spacing.xl)
   }
 
   // MARK: - Helper Functions
 
   private func formatTaskDate(_ task: Mealplanning_MealPlanTask) -> String {
-    // Get the date from the task's meal plan option's event
-    // For now, use a simple format
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
     formatter.timeStyle = .none
 
-    // Try to get date from completedAt or createdAt
     let timestamp = task.completedAt.seconds > 0 ? task.completedAt : task.createdAt
     let date = timestampToDate(timestamp)
     return formatter.string(from: date)
   }
 
-  // Reuse the timestampToDate function from HomeViewModel
   private func timestampToDate(_ timestamp: SwiftProtobuf.Google_Protobuf_Timestamp) -> Date {
     return HomeViewModel.timestampToDate(timestamp)
   }
 
-  // Format meal plan time range (earliest start to latest end)
   static func formatMealPlanTimeRange(_ mealPlan: Mealplanning_MealPlan) -> String {
     guard !mealPlan.events.isEmpty else {
       return ""
@@ -347,7 +373,6 @@ struct HomeView: View {
 
     let startString = dateFormatter.string(from: earliestStart)
 
-    // If all events are on the same day, just show the date once
     let calendar = Calendar.current
     if calendar.isDate(earliestStart, inSameDayAs: latestEnd) {
       let timeFormatter = DateFormatter()
@@ -359,6 +384,38 @@ struct HomeView: View {
       let endString = dateFormatter.string(from: latestEnd)
       return "\(startString) - \(endString)"
     }
+  }
+}
+
+// MARK: - Quick Access Button
+
+struct QuickAccessButton<Destination: View>: View {
+  let icon: String
+  let label: String
+  let color: Color
+  let destination: Destination
+
+  var body: some View {
+    NavigationLink(destination: destination) {
+      VStack(spacing: DSTheme.Spacing.sm) {
+        ZStack {
+          RoundedRectangle(cornerRadius: DSTheme.Radius.md)
+            .fill(color.opacity(0.12))
+            .frame(height: 56)
+
+          Image(systemName: icon)
+            .font(.system(size: 22))
+            .foregroundColor(color)
+        }
+
+        Text(label)
+          .font(DSTheme.Typography.caption)
+          .fontWeight(.medium)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+      }
+      .frame(maxWidth: .infinity)
+    }
+    .buttonStyle(.plain)
   }
 }
 
@@ -388,87 +445,129 @@ struct PendingVoteCardContent: View {
   let timeUntilDeadline: String
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      HStack {
-        VStack(alignment: .leading, spacing: 2) {
-          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-            .font(.headline)
-            .foregroundColor(.primary)
-          Text(HomeView.formatMealPlanTimeRange(mealPlan))
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
-        Spacer()
-        HStack(spacing: 6) {
-          if hasVoted {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-            Text("Ballot submitted")
-              .font(.caption)
-              .foregroundColor(.green)
-          } else {
-            Image(systemName: "exclamationmark.circle.fill")
-              .foregroundColor(.orange)
-            Text("Vote requested")
-              .font(.caption)
-              .foregroundColor(.orange)
-          }
-        }
+    HStack(spacing: DSTheme.Spacing.md) {
+      // Status indicator
+      ZStack {
+        Circle()
+          .fill(
+            hasVoted ? DSTheme.Colors.success.opacity(0.15) : DSTheme.Colors.warning.opacity(0.15)
+          )
+          .frame(width: 44, height: 44)
+
+        Image(systemName: hasVoted ? "checkmark" : "hand.raised.fill")
+          .font(.system(size: 18, weight: .medium))
+          .foregroundColor(hasVoted ? DSTheme.Colors.success : DSTheme.Colors.warning)
       }
 
-      Text(timeUntilDeadline)
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+          .font(DSTheme.Typography.label)
+          .foregroundColor(DSTheme.Colors.textPrimary)
+
+        Text(HomeView.formatMealPlanTimeRange(mealPlan))
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
+
+        HStack(spacing: DSTheme.Spacing.xs) {
+          Image(systemName: "clock")
+            .font(.system(size: 11))
+          Text(timeUntilDeadline)
+            .font(DSTheme.Typography.caption)
+        }
+        .foregroundColor(hasVoted ? DSTheme.Colors.textTertiary : DSTheme.Colors.warning)
+      }
+
+      Spacer()
 
       if !hasVoted {
-        Text("Tap to vote")
-          .font(.caption)
-          .foregroundColor(.blue)
+        Text("Vote")
+          .font(DSTheme.Typography.caption)
+          .fontWeight(.semibold)
+          .foregroundColor(.white)
+          .padding(.horizontal, DSTheme.Spacing.md)
+          .padding(.vertical, DSTheme.Spacing.sm)
+          .background(DSTheme.Colors.primary)
+          .cornerRadius(DSTheme.Radius.full)
+      } else {
+        Image(systemName: "chevron.right")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundColor(DSTheme.Colors.textTertiary)
       }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
+    .overlay(
+      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+        .stroke(
+          hasVoted ? DSTheme.Colors.border : DSTheme.Colors.warning.opacity(0.3),
+          lineWidth: 1
+        )
+    )
   }
 }
 
-// MARK: - Upcoming Meal Card
-struct UpcomingMealCard: View {
+// MARK: - Upcoming Meal Card Content
+struct UpcomingMealCardContent: View {
   let mealPlan: Mealplanning_MealPlan
-  let onTap: () -> Void
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      VStack(alignment: .leading, spacing: 2) {
-        Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
-          .font(.headline)
-          .foregroundColor(.primary)
-        Text(HomeView.formatMealPlanTimeRange(mealPlan))
-          .font(.caption)
-          .foregroundColor(.secondary)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      HStack {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+          Text(mealPlan.notes.isEmpty ? "Meal Plan" : mealPlan.notes)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
+
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+        }
+
+        Spacer()
+
+        Image(systemName: "chevron.right")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundColor(DSTheme.Colors.textTertiary)
       }
 
-      // Show upcoming events
-      ForEach(mealPlan.events.prefix(3), id: \.id) { event in
-        HStack {
-          Text(MealPlanningUtils.formatMealName(event.mealName))
-            .font(.subheadline)
-          Spacer()
-          Text(formatEventDate(event))
-            .font(.caption)
-            .foregroundColor(.secondary)
+      if !mealPlan.events.isEmpty {
+        Divider()
+
+        VStack(spacing: DSTheme.Spacing.xs) {
+          ForEach(mealPlan.events.prefix(3), id: \.id) { event in
+            HStack {
+              Circle()
+                .fill(mealColor(for: event.mealName))
+                .frame(width: 8, height: 8)
+
+              Text(MealPlanningUtils.formatMealName(event.mealName))
+                .font(DSTheme.Typography.body)
+                .foregroundColor(DSTheme.Colors.textPrimary)
+
+              Spacer()
+
+              Text(formatEventDate(event))
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+            }
+          }
+        }
+
+        if mealPlan.events.count > 3 {
+          Text("+ \(mealPlan.events.count - 3) more")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textTertiary)
         }
       }
-
-      if mealPlan.events.count > 3 {
-        Text("+ \(mealPlan.events.count - 3) more events")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
+    .overlay(
+      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+        .stroke(DSTheme.Colors.border, lineWidth: 1)
+    )
   }
 
   private func formatEventDate(_ event: Mealplanning_MealPlanEvent) -> String {
@@ -479,6 +578,31 @@ struct UpcomingMealCard: View {
     let date = HomeViewModel.timestampToDate(event.startsAt)
     return formatter.string(from: date)
   }
+
+  private func mealColor(for mealName: Mealplanning_MealPlanEventName) -> Color {
+    switch mealName {
+    case .breakfast, .secondBreakfast:
+      return .orange
+    case .brunch:
+      return .yellow
+    case .lunch:
+      return DSTheme.Colors.primary
+    case .supper, .dinner:
+      return .purple
+    default:
+      return DSTheme.Colors.secondary
+    }
+  }
+}
+
+// MARK: - Upcoming Meal Card (legacy wrapper)
+struct UpcomingMealCard: View {
+  let mealPlan: Mealplanning_MealPlan
+  let onTap: () -> Void
+
+  var body: some View {
+    UpcomingMealCardContent(mealPlan: mealPlan)
+  }
 }
 
 // MARK: - Task Card
@@ -486,29 +610,42 @@ struct TaskCard: View {
   let task: Mealplanning_MealPlanTask
 
   var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 4) {
+    HStack(spacing: DSTheme.Spacing.md) {
+      ZStack {
+        Circle()
+          .fill(
+            task.status == .finished
+              ? DSTheme.Colors.success.opacity(0.15) : DSTheme.Colors.warning.opacity(0.15)
+          )
+          .frame(width: 36, height: 36)
+
+        Image(systemName: task.status == .finished ? "checkmark" : "circle")
+          .font(.system(size: 14, weight: .medium))
+          .foregroundColor(
+            task.status == .finished ? DSTheme.Colors.success : DSTheme.Colors.warning)
+      }
+
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
         Text(task.creationExplanation)
-          .font(.subheadline)
-          .fontWeight(.medium)
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textPrimary)
 
         if !task.statusExplanation.isEmpty {
           Text(task.statusExplanation)
-            .font(.caption)
-            .foregroundColor(.secondary)
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
         }
       }
 
       Spacer()
-
-      // Status indicator
-      Circle()
-        .fill(task.status == .finished ? Color.green : Color.orange)
-        .frame(width: 12, height: 12)
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(8)
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.md)
+    .overlay(
+      RoundedRectangle(cornerRadius: DSTheme.Radius.md)
+        .stroke(DSTheme.Colors.border, lineWidth: 1)
+    )
   }
 }
 
@@ -517,49 +654,56 @@ struct GroceryListCard: View {
   let mealPlan: Mealplanning_MealPlan
   let items: [Mealplanning_MealPlanGroceryListItem]
 
-  // Computed property for items to show
   private var itemsToShow: [Mealplanning_MealPlanGroceryListItem] {
     Array(items.prefix(3))
   }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      VStack(alignment: .leading, spacing: 2) {
-        Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
-          .font(.headline)
-          .foregroundColor(.primary)
-        Text(HomeView.formatMealPlanTimeRange(mealPlan))
-          .font(.caption)
-          .foregroundColor(.secondary)
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+      HStack {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+          Text(mealPlan.notes.isEmpty ? "Grocery List" : mealPlan.notes)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
+
+          Text(HomeView.formatMealPlanTimeRange(mealPlan))
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+        }
+
+        Spacer()
+
+        Text("\(items.count)")
+          .font(DSTheme.Typography.caption)
+          .fontWeight(.semibold)
+          .foregroundColor(DSTheme.Colors.primary)
+          .padding(.horizontal, DSTheme.Spacing.sm)
+          .padding(.vertical, DSTheme.Spacing.xxs)
+          .background(DSTheme.Colors.primary.opacity(0.1))
+          .cornerRadius(DSTheme.Radius.full)
       }
 
-      Text("\(items.count) item\(items.count == 1 ? "" : "s") needed")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+      if !itemsToShow.isEmpty {
+        Divider()
 
-      // Show first few items
-      ForEach(itemsToShow, id: \.id) { item in
-        GroceryItemRow(item: item)
-      }
+        ForEach(itemsToShow, id: \.id) { item in
+          GroceryItemRow(item: item)
+        }
 
-      if items.count > 3 {
-        Text("+ \(items.count - 3) more items")
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if items.count > 3 {
+          Text("+ \(items.count - 3) more items")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textTertiary)
+        }
       }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
-    .contentShape(Rectangle())
-  }
-
-  private func formatQuantity(_ quantity: Common_Float32RangeWithOptionalMax) -> String {
-    if quantity.hasMax {
-      return "\(quantity.min) - \(quantity.max)"
-    } else {
-      return "\(quantity.min)+"
-    }
+    .padding(DSTheme.Spacing.md)
+    .background(DSTheme.Colors.cardBackground)
+    .cornerRadius(DSTheme.Radius.lg)
+    .overlay(
+      RoundedRectangle(cornerRadius: DSTheme.Radius.lg)
+        .stroke(DSTheme.Colors.border, lineWidth: 1)
+    )
   }
 }
 
@@ -569,13 +713,20 @@ struct GroceryItemRow: View {
 
   var body: some View {
     HStack {
+      Circle()
+        .stroke(DSTheme.Colors.textTertiary, lineWidth: 1.5)
+        .frame(width: 16, height: 16)
+
       Text(item.ingredient.name)
-        .font(.caption)
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textPrimary)
+
       Spacer()
+
       if item.hasQuantityNeeded && item.quantityNeeded.hasMax {
         Text(formatQuantity(item.quantityNeeded))
-          .font(.caption)
-          .foregroundColor(.secondary)
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
       }
     }
   }

@@ -198,7 +198,7 @@ class AccountSettingsViewModel {
     }
 
     guard isAccountAdmin else {
-      errorMessage = "Only account admins can update account information"
+      errorMessage = "Only household admins can update household details"
       return nil
     }
 
@@ -255,7 +255,7 @@ class AccountSettingsViewModel {
     }
 
     guard isAccountAdmin else {
-      errorMessage = "Only account admins can send invitations"
+      errorMessage = "Only household admins can send invitations"
       return false
     }
 
@@ -299,6 +299,33 @@ class AccountSettingsViewModel {
     )
   }
 
+  func cancelInvitation(invitationID: String) async -> Bool {
+    guard isAccountAdmin else {
+      errorMessage = "Only household admins can cancel invitations"
+      return false
+    }
+    guard !invitationID.isEmpty else {
+      errorMessage = "Invitation ID is required"
+      return false
+    }
+
+    return await performUpdate {
+      let (clientManager, metadata) = try await getClientManagerAndMetadata()
+      var request = Identity_CancelAccountInvitationRequest()
+      request.accountInvitationID = invitationID
+      request.input = Identity_AccountInvitationUpdateRequestInput()
+
+      _ = try await clientManager.client.identity.cancelAccountInvitation(
+        request,
+        metadata: metadata,
+        options: clientManager.defaultCallOptions
+      )
+      await loadData()
+    } errorMessage: {
+      "Failed to cancel invitation: \($0.localizedDescription)"
+    }
+  }
+
   func updateMemberRole(membershipID: String, newRole: String, reason: String) async -> Bool {
     guard let membership = validateMemberRoleUpdate(membershipID: membershipID, reason: reason)
     else {
@@ -318,7 +345,7 @@ class AccountSettingsViewModel {
     membershipID: String, reason: String
   ) -> Identity_AccountUserMembershipWithUser? {
     guard isAccountAdmin else {
-      errorMessage = "Only account admins can change member roles"
+      errorMessage = "Only household admins can change member roles"
       return nil
     }
 

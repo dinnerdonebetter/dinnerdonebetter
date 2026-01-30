@@ -95,8 +95,7 @@ struct VoteMealPlanView: View {
             )
           }
         } else {
-          ProgressView("Initializing...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          DSInitializingView()
         }
       }
       .onAppear {

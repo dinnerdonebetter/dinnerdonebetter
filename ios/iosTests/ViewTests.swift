@@ -361,7 +361,11 @@ struct InvitationCardTests {
     invitation.toName = "Test User"
     invitation.status = "pending"
 
-    let card = InvitationCard(invitation: invitation)
+    let card = InvitationCard(
+      invitation: invitation,
+      isAccountAdmin: false,
+      onCancel: nil
+    )
 
     #expect(card != nil)
   }
@@ -374,7 +378,11 @@ struct InvitationCardTests {
     invitation.toName = "Test User"
     invitation.status = "pending"
 
-    let card = InvitationCard(invitation: invitation)
+    let card = InvitationCard(
+      invitation: invitation,
+      isAccountAdmin: false,
+      onCancel: nil
+    )
 
     #expect(card != nil)
   }
@@ -386,7 +394,11 @@ struct InvitationCardTests {
     invitation.toEmail = "test@example.com"
     invitation.status = "accepted"
 
-    let card = InvitationCard(invitation: invitation)
+    let card = InvitationCard(
+      invitation: invitation,
+      isAccountAdmin: false,
+      onCancel: nil
+    )
 
     #expect(card != nil)
   }
@@ -399,7 +411,11 @@ struct InvitationCardTests {
     invitation.toName = ""
     invitation.status = "pending"
 
-    let card = InvitationCard(invitation: invitation)
+    let card = InvitationCard(
+      invitation: invitation,
+      isAccountAdmin: false,
+      onCancel: nil
+    )
 
     #expect(card != nil)
   }
@@ -414,7 +430,11 @@ struct InvitationCardTests {
       invitation.toEmail = "test@example.com"
       invitation.status = status
 
-      let card = InvitationCard(invitation: invitation)
+      let card = InvitationCard(
+        invitation: invitation,
+        isAccountAdmin: false,
+        onCancel: nil
+      )
       #expect(card != nil)
     }
   }

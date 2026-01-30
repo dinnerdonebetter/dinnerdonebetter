@@ -107,8 +107,7 @@ struct CreateMealPlanView: View {
           }
         }
       } else {
-        ProgressView("Initializing...")
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
+        DSInitializingView()
       }
     }
     .navigationTitle("Create Meal Plan")

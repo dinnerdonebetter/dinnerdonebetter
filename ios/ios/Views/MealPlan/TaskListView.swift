@@ -28,14 +28,12 @@ struct TaskListView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 20) {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
         // Header
         headerSection
 
         if viewModel.isLoading {
-          ProgressView("Loading tasks...")
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding()
+          DSLoadingView("Loading tasks...")
         } else if viewModel.tasks.isEmpty {
           emptyStateView
         } else {
@@ -48,7 +46,7 @@ struct TaskListView: View {
             tasksSection(
               title: "To Do",
               groups: unfinishedGroups,
-              color: .orange
+              color: DSTheme.Colors.warning
             )
           }
 
@@ -57,18 +55,19 @@ struct TaskListView: View {
             tasksSection(
               title: "Completed",
               groups: finishedGroups,
-              color: .green
+              color: DSTheme.Colors.success
             )
           }
         }
 
         if let errorMessage = viewModel.errorMessage {
           Text(errorMessage)
-            .foregroundColor(.red)
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.error)
             .padding()
         }
       }
-      .padding()
+      .dsScreenPadding()
     }
     .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Tasks" : "Tasks")
     .navigationBarTitleDisplayMode(.large)
@@ -78,34 +77,23 @@ struct TaskListView: View {
   }
 
   private var headerSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textSecondary)
 
       Text("\(viewModel.tasks.count) task\(viewModel.tasks.count == 1 ? "" : "s")")
-        .font(.caption)
-        .foregroundColor(.secondary)
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
     }
   }
 
   private var emptyStateView: some View {
-    VStack(spacing: 16) {
-      Image(systemName: "checklist")
-        .font(.system(size: 48))
-        .foregroundColor(.secondary)
-
-      Text("No tasks")
-        .font(.headline)
-        .foregroundColor(.secondary)
-
-      Text("Tasks will appear here once the meal plan is finalized.")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
-        .multilineTextAlignment(.center)
-    }
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, 40)
+    DSEmptyState(
+      icon: "checklist",
+      title: "No tasks",
+      message: "Tasks will appear here once the meal plan is finalized."
+    )
   }
 
   private func tasksSection(
@@ -113,9 +101,9 @@ struct TaskListView: View {
     groups: [TaskGroup],
     color: Color
   ) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       Text(title)
-        .font(.headline)
+        .font(DSTheme.Typography.label)
         .foregroundColor(color)
 
       ForEach(groups, id: \.parent.id) { group in

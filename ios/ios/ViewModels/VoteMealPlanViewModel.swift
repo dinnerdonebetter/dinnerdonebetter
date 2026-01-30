@@ -179,7 +179,8 @@ class VoteMealPlanViewModel {
   /// Check if user has already voted on this meal plan
   var hasUserVoted: Bool {
     for event in mealPlan.events {
-      for option in event.options where option.votes.contains(where: { $0.byUser == authManager.userID && !$0.abstain }) {
+      for option in event.options
+      where option.votes.contains(where: { $0.byUser == authManager.userID && !$0.abstain }) {
         return true
       }
     }
