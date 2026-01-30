@@ -19,30 +19,29 @@ struct AssociatedRecipeCard: View {
           .environment(authManager)
       },
       label: {
-        HStack {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
-              .font(.subheadline)
-              .fontWeight(.medium)
-              .foregroundColor(.primary)
+        DSCard {
+          HStack {
+            VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+              Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
+                .font(DSTheme.Typography.body)
+                .fontWeight(.medium)
+                .foregroundColor(DSTheme.Colors.textPrimary)
 
-            if !recipe.description_p.isEmpty {
-              Text(recipe.description_p)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .lineLimit(2)
+              if !recipe.description_p.isEmpty {
+                Text(recipe.description_p)
+                  .font(DSTheme.Typography.caption)
+                  .foregroundColor(DSTheme.Colors.textSecondary)
+                  .lineLimit(2)
+              }
             }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(DSTheme.Colors.textTertiary)
           }
-
-          Spacer()
-
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
       }
     )
   }

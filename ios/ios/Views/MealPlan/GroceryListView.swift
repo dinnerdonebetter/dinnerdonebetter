@@ -33,14 +33,12 @@ struct GroceryListView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 20) {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
         // Header
         headerSection
 
         if viewModel.isLoading {
-          ProgressView("Loading grocery list...")
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding()
+          DSLoadingView("Loading grocery list...")
         } else if viewModel.items.isEmpty {
           emptyStateView
         } else {
@@ -80,11 +78,12 @@ struct GroceryListView: View {
 
         if let errorMessage = viewModel.errorMessage {
           Text(errorMessage)
-            .foregroundColor(.red)
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.error)
             .padding()
         }
       }
-      .padding()
+      .dsScreenPadding()
     }
     .navigationTitle(viewModel.mealPlan.notes.isEmpty ? "Grocery List" : viewModel.mealPlan.notes)
     .navigationBarTitleDisplayMode(.large)
@@ -94,34 +93,23 @@ struct GroceryListView: View {
   }
 
   private var headerSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
       Text(HomeView.formatMealPlanTimeRange(viewModel.mealPlan))
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textSecondary)
 
       Text("\(viewModel.items.count) item\(viewModel.items.count == 1 ? "" : "s")")
-        .font(.caption)
-        .foregroundColor(.secondary)
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
     }
   }
 
   private var emptyStateView: some View {
-    VStack(spacing: 16) {
-      Image(systemName: "cart")
-        .font(.system(size: 48))
-        .foregroundColor(.secondary)
-
-      Text("No grocery items")
-        .font(.headline)
-        .foregroundColor(.secondary)
-
-      Text("Grocery list items will appear here once the meal plan is finalized.")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
-        .multilineTextAlignment(.center)
-    }
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, 40)
+    DSEmptyState(
+      icon: "cart",
+      title: "No grocery items",
+      message: "Grocery list items will appear here once the meal plan is finalized."
+    )
   }
 
   private func itemsSection(
@@ -129,9 +117,9 @@ struct GroceryListView: View {
     items: [Mealplanning_MealPlanGroceryListItem],
     color: Color
   ) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: DSTheme.Spacing.md) {
       Text(title)
-        .font(.headline)
+        .font(DSTheme.Typography.label)
         .foregroundColor(color)
 
       ForEach(items, id: \.id) { item in

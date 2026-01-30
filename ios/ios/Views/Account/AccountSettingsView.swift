@@ -15,61 +15,42 @@ struct AccountSettingsView: View {
     NavigationStack {
       Group {
         if let viewModel = viewModel {
-          if viewModel.isLoading {
-            ProgressView("Loading...")
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let errorMessage = viewModel.errorMessage {
-            VStack(spacing: 16) {
-              Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundColor(.orange)
-              Text("Error")
-                .font(.headline)
-              Text(errorMessage)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-              Button("Retry") {
-                Task {
-                  await viewModel.loadData()
+          DSContentState(
+            isLoading: viewModel.isLoading,
+            loadingMessage: "Loading household...",
+            error: viewModel.errorMessage,
+            onRetry: { await viewModel.loadData() },
+            content: {
+              ScrollView {
+                VStack(spacing: DSTheme.Spacing.xl) {
+                  // Members Section
+                  if let account = viewModel.account {
+                    membersSection(viewModel: viewModel, account: account)
+                  }
+
+                  // Send Invitation Section (admins only)
+                  if viewModel.isAccountAdmin {
+                    sendInvitationSection(viewModel: viewModel)
+                  }
+
+                  // Invitations (sent) and their status
+                  if !viewModel.invitations.isEmpty {
+                    pendingInvitationsSection(viewModel: viewModel)
+                  }
+
+                  // Household details (address, contact)
+                  if viewModel.account != nil {
+                    accountInformationSection(viewModel: viewModel)
+                  }
                 }
+                .dsScreenPadding()
               }
-              .buttonStyle(.borderedProminent)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else {
-            ScrollView {
-              VStack(spacing: 24) {
-                // Members Section
-                if let account = viewModel.account, !account.members.isEmpty {
-                  membersSection(viewModel: viewModel, account: account)
-                }
-
-                // Account Information Section
-                if viewModel.account != nil {
-                  accountInformationSection(viewModel: viewModel)
-                }
-
-                // Pending Invitations Section
-                if !viewModel.invitations.isEmpty {
-                  pendingInvitationsSection(viewModel: viewModel)
-                }
-
-                // Send Invitation Section
-                if viewModel.isAccountAdmin {
-                  sendInvitationSection(viewModel: viewModel)
-                }
-              }
-              .padding()
-            }
-          }
+            })
         } else {
-          ProgressView("Initializing...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          DSInitializingView()
         }
       }
-      .navigationTitle("Account Settings")
+      .navigationTitle("My Household")
       .refreshable {
         if let viewModel = viewModel {
           await viewModel.loadData()
@@ -92,105 +73,95 @@ struct AccountSettingsView: View {
   private func membersSection(viewModel: AccountSettingsViewModel, account: Identity_Account)
     -> some View
   {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Members")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
-
-      ForEach(account.members, id: \.id) { member in
-        MemberCard(
-          member: member,
-          currentUserID: viewModel.currentUserID,
-          isAccountAdmin: viewModel.isAccountAdmin,
-          onRoleChange: { newRole, reason in
-            Task {
-              await viewModel.updateMemberRole(
-                membershipID: member.id, newRole: newRole, reason: reason)
-            }
-          }
+    DSSection("Household Members") {
+      if account.members.isEmpty {
+        DSSectionEmptyContent(
+          "No members yet. Invite someone to join your household.",
+          icon: "person.2"
         )
+      } else {
+        ForEach(account.members, id: \.id) { member in
+          MemberCard(
+            member: member,
+            currentUserID: viewModel.currentUserID,
+            isAccountAdmin: viewModel.isAccountAdmin,
+            onRoleChange: { newRole, reason in
+              Task {
+                await viewModel.updateMemberRole(
+                  membershipID: member.id, newRole: newRole, reason: reason)
+              }
+            }
+          )
+        }
       }
     }
   }
 
   // MARK: - Account Information Section
   private func accountInformationSection(viewModel: AccountSettingsViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Information")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
-
-      if !viewModel.isAccountAdmin {
-        Text("Only account admins can edit account information")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-          .padding(.vertical, 8)
-      }
-
-      VStack(spacing: 16) {
-        TextField(
-          "Account Name",
-          text: Binding(get: { viewModel.accountName }, set: { viewModel.accountName = $0 })
+    DSSection(
+      "Household Details",
+      subtitle: viewModel.isAccountAdmin ? nil : "Only household admins can edit household details"
+    ) {
+      VStack(spacing: DSTheme.Spacing.lg) {
+        DSTextField(
+          "Household Name",
+          text: Binding(get: { viewModel.accountName }, set: { viewModel.accountName = $0 }),
+          isDisabled: !viewModel.isAccountAdmin
         )
-        .textFieldStyle(.roundedBorder)
-        .disabled(!viewModel.isAccountAdmin)
 
-        TextField(
+        DSTextField(
           "Contact Phone",
-          text: Binding(get: { viewModel.contactPhone }, set: { viewModel.contactPhone = $0 })
+          text: Binding(get: { viewModel.contactPhone }, set: { viewModel.contactPhone = $0 }),
+          type: .phone,
+          isDisabled: !viewModel.isAccountAdmin
         )
-        .textFieldStyle(.roundedBorder)
-        .keyboardType(.phonePad)
-        .disabled(!viewModel.isAccountAdmin)
 
-        TextField(
+        DSTextField(
           "Address Line 1",
-          text: Binding(get: { viewModel.addressLine1 }, set: { viewModel.addressLine1 = $0 })
+          text: Binding(get: { viewModel.addressLine1 }, set: { viewModel.addressLine1 = $0 }),
+          isDisabled: !viewModel.isAccountAdmin
         )
-        .textFieldStyle(.roundedBorder)
-        .disabled(!viewModel.isAccountAdmin)
 
-        TextField(
+        DSTextField(
           "Address Line 2",
-          text: Binding(get: { viewModel.addressLine2 }, set: { viewModel.addressLine2 = $0 })
+          text: Binding(get: { viewModel.addressLine2 }, set: { viewModel.addressLine2 = $0 }),
+          isDisabled: !viewModel.isAccountAdmin
         )
-        .textFieldStyle(.roundedBorder)
-        .disabled(!viewModel.isAccountAdmin)
 
-        HStack(spacing: 12) {
-          TextField("City", text: Binding(get: { viewModel.city }, set: { viewModel.city = $0 }))
-            .textFieldStyle(.roundedBorder)
-            .disabled(!viewModel.isAccountAdmin)
-
-          TextField("State", text: Binding(get: { viewModel.state }, set: { viewModel.state = $0 }))
-            .textFieldStyle(.roundedBorder)
-            .disabled(!viewModel.isAccountAdmin)
-
-          TextField(
-            "Zip Code",
-            text: Binding(get: { viewModel.zipCode }, set: { viewModel.zipCode = $0 })
+        HStack(spacing: DSTheme.Spacing.md) {
+          DSTextField(
+            "City",
+            text: Binding(get: { viewModel.city }, set: { viewModel.city = $0 }),
+            isDisabled: !viewModel.isAccountAdmin
           )
-          .textFieldStyle(.roundedBorder)
-          .keyboardType(.numberPad)
-          .disabled(!viewModel.isAccountAdmin)
+
+          DSTextField(
+            "State",
+            text: Binding(get: { viewModel.state }, set: { viewModel.state = $0 }),
+            isDisabled: !viewModel.isAccountAdmin
+          )
+
+          DSTextField(
+            "Zip Code",
+            text: Binding(get: { viewModel.zipCode }, set: { viewModel.zipCode = $0 }),
+            type: .number,
+            isDisabled: !viewModel.isAccountAdmin
+          )
         }
 
-        TextField(
-          "Country", text: Binding(get: { viewModel.country }, set: { viewModel.country = $0 })
+        DSTextField(
+          "Country",
+          text: Binding(get: { viewModel.country }, set: { viewModel.country = $0 }),
+          isDisabled: !viewModel.isAccountAdmin
         )
-        .textFieldStyle(.roundedBorder)
-        .disabled(!viewModel.isAccountAdmin)
 
         if viewModel.isAccountAdmin && viewModel.accountDataHasChanged {
-          Button("Update Account") {
+          DSButton("Update Household", icon: "checkmark", fullWidth: true) {
             Task {
               await viewModel.updateAccount()
             }
           }
-          .buttonStyle(.borderedProminent)
-          .frame(maxWidth: .infinity)
         }
       }
     }
@@ -198,57 +169,57 @@ struct AccountSettingsView: View {
 
   // MARK: - Pending Invitations Section
   private func pendingInvitationsSection(viewModel: AccountSettingsViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Awaiting Invites")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
-
+    DSSection(
+      "Invitations",
+      subtitle: "Invitations you've sent for this household and their status."
+    ) {
       ForEach(viewModel.invitations, id: \.id) { invitation in
-        InvitationCard(invitation: invitation)
+        InvitationCard(
+          invitation: invitation,
+          isAccountAdmin: viewModel.isAccountAdmin,
+          onCancel: {
+            _ = await viewModel.cancelInvitation(invitationID: invitation.id)
+          }
+        )
       }
     }
   }
 
   // MARK: - Send Invitation Section
   private func sendInvitationSection(viewModel: AccountSettingsViewModel) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Send Invite")
-        .font(.title2)
-        .fontWeight(.bold)
-        .padding(.horizontal, 4)
-
-      VStack(spacing: 16) {
-        TextField(
+    DSSection(
+      "Add Someone to Your Household",
+      subtitle: "Send an invitation by email. They can join once they have an account."
+    ) {
+      VStack(spacing: DSTheme.Spacing.lg) {
+        DSTextField(
           "Email Address",
-          text: Binding(get: { viewModel.invitationEmail }, set: { viewModel.invitationEmail = $0 })
+          text: Binding(
+            get: { viewModel.invitationEmail }, set: { viewModel.invitationEmail = $0 }),
+          type: .email
         )
-        .textFieldStyle(.roundedBorder)
-        .keyboardType(.emailAddress)
-        .autocapitalization(.none)
 
-        TextField(
+        DSTextField(
           "Name (Optional)",
           text: Binding(get: { viewModel.invitationName }, set: { viewModel.invitationName = $0 })
         )
-        .textFieldStyle(.roundedBorder)
 
-        TextField(
+        DSTextField(
           "Note (Optional)",
           text: Binding(get: { viewModel.invitationNote }, set: { viewModel.invitationNote = $0 }),
-          axis: .vertical
+          type: .multiline
         )
-        .textFieldStyle(.roundedBorder)
-        .lineLimit(3...6)
 
-        Button("Send Invitation") {
+        DSButton(
+          "Send Invitation",
+          icon: "envelope",
+          fullWidth: true,
+          isDisabled: viewModel.invitationEmail.isEmpty
+        ) {
           Task {
             await viewModel.sendInvitation()
           }
         }
-        .buttonStyle(.borderedProminent)
-        .frame(maxWidth: .infinity)
-        .disabled(viewModel.invitationEmail.isEmpty)
       }
     }
   }
@@ -283,66 +254,59 @@ struct MemberCard: View {
   }
 
   var body: some View {
-    HStack(spacing: 12) {
-      // Avatar placeholder
-      Circle()
-        .fill(Color.gray.opacity(0.3))
-        .frame(width: 50, height: 50)
-        .overlay {
-          Text(displayName.prefix(1).uppercased())
-            .font(.headline)
-            .foregroundColor(.secondary)
+    DSCard {
+      HStack(spacing: DSTheme.Spacing.md) {
+        // Avatar
+        DSAvatarView(name: displayName, size: .lg)
+
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
+          Text(displayName)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
+
+          if member.hasBelongsToUser && member.belongsToUser.id == currentUserID {
+            Text("(You)")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
         }
 
-      VStack(alignment: .leading, spacing: 4) {
-        Text(displayName)
-          .font(.headline)
+        Spacer()
 
-        if member.hasBelongsToUser && member.belongsToUser.id == currentUserID {
-          Text("(You)")
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
-      }
-
-      Spacer()
-
-      if isAccountAdmin {
-        Picker(
-          "Role",
-          selection: Binding(
-            get: { selectedRole },
-            set: { newValue in
-              // Don't update selectedRole yet - show the confirmation sheet first
-              let newRole = newValue == "Admin" ? "account_admin" : "account_member"
-              let currentRole = member.accountRole
-              if newRole != currentRole {
-                // Store what they selected
-                pendingNewRole = newRole
-                reasonText = ""
-                showReasonAlert = true
-              } else {
-                // If they selected the same role, just update it (no change needed)
-                selectedRole = newValue
+        if isAccountAdmin {
+          Picker(
+            "Role",
+            selection: Binding(
+              get: { selectedRole },
+              set: { newValue in
+                let newRole = newValue == "Admin" ? "account_admin" : "account_member"
+                let currentRole = member.accountRole
+                if newRole != currentRole {
+                  pendingNewRole = newRole
+                  reasonText = ""
+                  showReasonAlert = true
+                } else {
+                  selectedRole = newValue
+                }
               }
-            }
+            )
+          ) {
+            Text("Member").tag("Member")
+            Text("Admin").tag("Admin")
+          }
+          .pickerStyle(.menu)
+        } else {
+          DSStatusBadge(
+            .custom(
+              member.accountRole == "account_admin" ? "Admin" : "Member",
+              DSTheme.Colors.textSecondary
+            ),
+            style: .minimal
           )
-        ) {
-          Text("Member").tag("Member")
-          Text("Admin").tag("Admin")
         }
-        .pickerStyle(.menu)
-      } else {
-        Text(member.accountRole == "account_admin" ? "Admin" : "Member")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
       }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
     .onChange(of: member.accountRole) { _, newRole in
-      // When member role changes (e.g., after successful update), sync the UI
       let newRoleString = newRole == "account_admin" ? "Admin" : "Member"
       originalRole = newRoleString
       selectedRole = newRoleString
@@ -353,8 +317,8 @@ struct MemberCard: View {
           Section {
             let roleName = pendingNewRole == "account_admin" ? "Admin" : "Member"
             Text("Please provide a reason for changing this user's role to \(roleName).")
-              .font(.subheadline)
-              .foregroundColor(.secondary)
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
           }
           Section {
             TextField("Reason", text: $reasonText, axis: .vertical)
@@ -366,7 +330,6 @@ struct MemberCard: View {
         .toolbar {
           ToolbarItem(placement: .cancellationAction) {
             Button("Cancel") {
-              // Don't update selectedRole - it's already at the original value
               pendingNewRole = ""
               reasonText = ""
               showReasonAlert = false
@@ -375,10 +338,8 @@ struct MemberCard: View {
           ToolbarItem(placement: .confirmationAction) {
             Button("Confirm") {
               if !reasonText.isEmpty {
-                // Update selectedRole to reflect the change
                 selectedRole = pendingNewRole == "account_admin" ? "Admin" : "Member"
                 onRoleChange(pendingNewRole, reasonText)
-                // originalRole will be updated via onChange when member.accountRole changes
                 pendingNewRole = ""
                 reasonText = ""
                 showReasonAlert = false
@@ -391,10 +352,7 @@ struct MemberCard: View {
       .presentationDetents([.medium])
     }
     .onChange(of: showReasonAlert) { _, isPresented in
-      // When the sheet is dismissed (isPresented becomes false) without confirmation
       if !isPresented && !pendingNewRole.isEmpty {
-        // Sheet was dismissed without confirmation - clear the pending change
-        // selectedRole is already at the correct value (wasn't updated)
         pendingNewRole = ""
         reasonText = ""
       }
@@ -419,29 +377,37 @@ struct MemberCard: View {
 // MARK: - Invitation Card
 struct InvitationCard: View {
   let invitation: Identity_AccountInvitation
+  let isAccountAdmin: Bool
+  let onCancel: (() async -> Void)?
 
   var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 4) {
-        Text(invitation.toEmail)
-          .font(.headline)
+    DSCard {
+      HStack {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
+          Text(invitation.toEmail)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
 
-        if !invitation.toName.isEmpty {
-          Text(invitation.toName)
-            .font(.subheadline)
-            .foregroundColor(.secondary)
+          if !invitation.toName.isEmpty {
+            Text(invitation.toName)
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
+          DSStatusBadge(status: invitation.status)
         }
 
-        Text("Status: \(invitation.status)")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
+        Spacer()
 
-      Spacer()
+        if isAccountAdmin && invitation.status.lowercased() == "pending" {
+          DSButton("Cancel", style: .ghost, size: .small) {
+            Task {
+              await onCancel?()
+            }
+          }
+        }
+      }
     }
-    .padding()
-    .background(Color(.systemGray6))
-    .cornerRadius(10)
   }
 }
 

@@ -19,164 +19,91 @@ struct LoginView: View {
   @State private var isLoading: Bool = false
   @State private var loginTask: Task<Void, Never>?
 
-  // Temporary dev feature: always show TOTP and auto-generate
-  // Set alwaysShowTOTP to false to disable this feature
-  // The TOTP secret is hardcoded for development
-  @State private var alwaysShowTOTP: Bool = true  // Set to false to disable
-  // Hardcoded TOTP secret (base32) for dev
-  private let totpSecret: String =
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-  @State private var totpUpdateTask: Task<Void, Never>?
-
   var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: DSTheme.Spacing.xl) {
       Spacer()
 
       // App Title
-      Text("Dinner Done Better")
-        .font(.largeTitle)
-        .fontWeight(.bold)
+      VStack(spacing: DSTheme.Spacing.sm) {
+        Text("Dinner Done Better")
+          .font(DSTheme.Typography.largeTitle)
+          .foregroundColor(DSTheme.Colors.textPrimary)
 
-      Text("Sign in to continue")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
+        Text("Sign in to continue")
+          .font(DSTheme.Typography.body)
+          .foregroundColor(DSTheme.Colors.textSecondary)
+      }
 
       Spacer()
 
       // Login Form
-      VStack(spacing: 16) {
-        TextField("Username", text: $username)
-          .textFieldStyle(.roundedBorder)
-          .textInputAutocapitalization(.never)
-          .autocorrectionDisabled()
-          .disabled(isLoading)
-          .accessibilityIdentifier("usernameTextField")
+      VStack(spacing: DSTheme.Spacing.lg) {
+        DSTextField(
+          "Username",
+          text: $username,
+          isDisabled: isLoading
+        )
+        .accessibilityIdentifier("usernameTextField")
 
-        SecureField("Password", text: $password)
-          .textFieldStyle(.roundedBorder)
-          .disabled(isLoading)
-          .accessibilityIdentifier("passwordTextField")
+        DSTextField(
+          "Password",
+          text: $password,
+          type: .password,
+          isDisabled: isLoading
+        )
+        .accessibilityIdentifier("passwordTextField")
 
-        if requiresTOTP || alwaysShowTOTP {
-          TextField("2FA Code", text: $totpCode)
-            .textFieldStyle(.roundedBorder)
-            .keyboardType(.numberPad)
-            .disabled(isLoading)
-            .accessibilityIdentifier("totpTextField")
+        if requiresTOTP {
+          DSTextField(
+            "2FA Code",
+            text: $totpCode,
+            type: .number,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("totpTextField")
         }
 
         if !errorMessage.isEmpty {
           Text(errorMessage)
-            .font(.caption)
-            .foregroundColor(.red)
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.error)
             .multilineTextAlignment(.center)
             .accessibilityIdentifier("errorMessage")
         }
 
-        Button(
-          action: {
-            // Cancel any existing login task
-            loginTask?.cancel()
-            // Create new task and store reference
-            loginTask = Task { await handleLogin() }
-          },
-          label: {
-            HStack {
-              if isLoading {
-                ProgressView()
-                  .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                  .scaleEffect(0.8)
-              }
-              Text(isLoading ? "Signing In..." : "Sign In")
-                .fontWeight(.semibold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(isLoading ? Color.gray : Color.accentColor)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-          }
-        )
-        .disabled(
-          isLoading || username.isEmpty || password.isEmpty
-            || ((requiresTOTP || alwaysShowTOTP) && totpCode.isEmpty)
-        )
+        DSButton(
+          isLoading ? "Signing In..." : "Sign In",
+          fullWidth: true,
+          isLoading: isLoading,
+          isDisabled: username.isEmpty || password.isEmpty
+            || (requiresTOTP && totpCode.isEmpty)
+        ) {
+          loginTask?.cancel()
+          loginTask = Task { await handleLogin() }
+        }
         .accessibilityIdentifier("signInButton")
-        .padding(.top, 8)
+        .padding(.top, DSTheme.Spacing.sm)
 
         // Navigation to register
-        Button(
-          action: {
-            showRegister = true
-          },
-          label: {
-            Text("Don't have an account? Sign up")
-              .font(.caption)
-              .foregroundColor(.accentColor)
-          }
-        )
-        .padding(.top, 8)
-      }
-      .padding(.horizontal, 32)
-      .animation(.easeInOut(duration: 0.3), value: requiresTOTP)
-
-      Spacer()
-      Spacer()
-    }
-    .padding()
-    .onAppear {
-      startTOTPTimer()
-    }
-    .onDisappear {
-      stopTOTPTimer()
-    }
-  }
-
-  // MARK: - TOTP Generation
-
-  private func updateTOTPCode() {
-    guard !totpSecret.isEmpty else {
-      totpCode = ""
-      return
-    }
-
-    if let code = TOTPGenerator.generate(secret: totpSecret) {
-      totpCode = code
-    } else {
-      totpCode = ""
-    }
-  }
-
-  private func startTOTPTimer() {
-    // Update immediately
-    if alwaysShowTOTP {
-      updateTOTPCode()
-    }
-
-    // Cancel any existing task
-    totpUpdateTask?.cancel()
-
-    // Update every second to refresh the code when it changes
-    guard alwaysShowTOTP else { return }
-
-    totpUpdateTask = Task {
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
-        guard !Task.isCancelled else { break }
-        await MainActor.run {
-          updateTOTPCode()
+        Button {
+          showRegister = true
+        } label: {
+          Text("Don't have an account? Sign up")
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.primary)
         }
+        .padding(.top, DSTheme.Spacing.sm)
       }
-    }
-  }
+      .padding(.horizontal, DSTheme.Spacing.xxl)
+      .animation(DSTheme.Animation.normal, value: requiresTOTP)
 
-  private func stopTOTPTimer() {
-    totpUpdateTask?.cancel()
-    totpUpdateTask = nil
+      Spacer()
+      Spacer()
+    }
+    .dsScreenPadding()
   }
 
   private func handleLogin() async {
-    // Check for cancellation at the start
     guard !Task.isCancelled else { return }
 
     await MainActor.run {
@@ -184,34 +111,25 @@ struct LoginView: View {
       isLoading = true
     }
 
-    // Use TOTP code if it's been entered, otherwise pass nil
     let totpToken = totpCode.isEmpty ? nil : totpCode
     let result = await authManager.login(
       username: username, password: password, totpToken: totpToken)
 
-    // Check for cancellation before updating UI
     guard !Task.isCancelled else { return }
 
     await MainActor.run {
       isLoading = false
 
       if result.success {
-        // Login successful, state change will trigger view update
         username = ""
         password = ""
-        // Only clear TOTP code if not using always-show feature
-        if !alwaysShowTOTP {
-          totpCode = ""
-        }
+        totpCode = ""
         requiresTOTP = false
       } else {
-        // Check if TOTP is required
         if result.requiresTOTP {
           requiresTOTP = true
           errorMessage = result.error ?? "Please enter your 2FA code."
         } else {
-          // If TOTP was required but login failed, keep the TOTP field visible
-          // but show the error message
           errorMessage = result.error ?? "Unknown error occurred"
         }
       }

@@ -30,90 +30,97 @@ struct RegisterView: View {
 
   var body: some View {
     ScrollView {
-      VStack(spacing: 20) {
+      VStack(spacing: DSTheme.Spacing.xl) {
         Spacer()
-          .frame(height: 20)
+          .frame(height: DSTheme.Spacing.xl)
 
         // App Title
-        Text("Dinner Done Better")
-          .font(.largeTitle)
-          .fontWeight(.bold)
+        VStack(spacing: DSTheme.Spacing.sm) {
+          Text("Dinner Done Better")
+            .font(DSTheme.Typography.largeTitle)
+            .foregroundColor(DSTheme.Colors.textPrimary)
 
-        Text("Create your account")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
+          Text("Create your account")
+            .font(DSTheme.Typography.body)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+        }
 
         // Registration Form
-        VStack(spacing: 16) {
+        VStack(spacing: DSTheme.Spacing.lg) {
           // Required fields
-          TextField("Email Address", text: $emailAddress)
-            .textFieldStyle(.roundedBorder)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .keyboardType(.emailAddress)
-            .disabled(isLoading)
-            .accessibilityIdentifier("registrationEmailAddressInput")
+          DSTextField(
+            "Email Address",
+            text: $emailAddress,
+            type: .email,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("registrationEmailAddressInput")
 
-          TextField("Username", text: $username)
-            .textFieldStyle(.roundedBorder)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .disabled(isLoading)
-            .accessibilityIdentifier("registrationUsernameInput")
+          DSTextField(
+            "Username",
+            text: $username,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("registrationUsernameInput")
 
-          SecureField("Password", text: $password)
-            .textFieldStyle(.roundedBorder)
-            .disabled(isLoading)
-            .accessibilityIdentifier("registrationPasswordInput")
+          DSTextField(
+            "Password",
+            text: $password,
+            type: .password,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("registrationPasswordInput")
 
-          SecureField("Password (again)", text: $repeatedPassword)
-            .textFieldStyle(.roundedBorder)
-            .disabled(isLoading)
-            .accessibilityIdentifier("registrationPasswordConfirmInput")
+          DSTextField(
+            "Password (again)",
+            text: $repeatedPassword,
+            type: .password,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("registrationPasswordConfirmInput")
 
           // Divider for optional fields
           HStack {
             Rectangle()
-              .fill(Color.gray.opacity(0.3))
+              .fill(DSTheme.Colors.border)
               .frame(height: 1)
             Text("optional fields")
-              .font(.caption)
-              .foregroundColor(.secondary)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
             Rectangle()
-              .fill(Color.gray.opacity(0.3))
+              .fill(DSTheme.Colors.border)
               .frame(height: 1)
           }
-          .padding(.vertical, 8)
+          .padding(.vertical, DSTheme.Spacing.sm)
 
           // Optional fields
-          TextField("Account Name", text: $accountName)
-            .textFieldStyle(.roundedBorder)
-            .disabled(isLoading)
-            .accessibilityIdentifier("registrationAccountNameInput")
+          DSTextField(
+            "Account Name",
+            text: $accountName,
+            isDisabled: isLoading
+          )
+          .accessibilityIdentifier("registrationAccountNameInput")
 
           // Birthday picker
-          Button(
-            action: {
-              showBirthdayPicker.toggle()
-            },
-            label: {
-              HStack {
-                if let birthday = birthday {
-                  Text(formatDate(birthday))
-                    .foregroundColor(.primary)
-                } else {
-                  Text("Birthday (optional)")
-                    .foregroundColor(.secondary)
-                }
-                Spacer()
-                Image(systemName: "calendar")
-                  .foregroundColor(.secondary)
+          Button {
+            showBirthdayPicker.toggle()
+          } label: {
+            HStack {
+              if let birthday = birthday {
+                Text(formatDate(birthday))
+                  .foregroundColor(DSTheme.Colors.textPrimary)
+              } else {
+                Text("Birthday (optional)")
+                  .foregroundColor(DSTheme.Colors.textSecondary)
               }
-              .padding()
-              .background(Color(uiColor: .systemGray6))
-              .cornerRadius(8)
+              Spacer()
+              Image(systemName: "calendar")
+                .foregroundColor(DSTheme.Colors.textSecondary)
             }
-          )
+            .padding(DSTheme.Spacing.md)
+            .background(DSTheme.Colors.cardBackground)
+            .cornerRadius(DSTheme.Radius.sm)
+          }
           .disabled(isLoading)
           .accessibilityIdentifier("registrationBirthdayInput")
 
@@ -135,72 +142,59 @@ struct RegisterView: View {
             }
           }
 
-          HStack(spacing: 12) {
-            TextField("First Name", text: $firstName)
-              .textFieldStyle(.roundedBorder)
-              .disabled(isLoading)
-              .accessibilityIdentifier("registrationFirstNameInput")
+          HStack(spacing: DSTheme.Spacing.md) {
+            DSTextField(
+              "First Name",
+              text: $firstName,
+              isDisabled: isLoading
+            )
+            .accessibilityIdentifier("registrationFirstNameInput")
 
-            TextField("Last Name", text: $lastName)
-              .textFieldStyle(.roundedBorder)
-              .disabled(isLoading)
-              .accessibilityIdentifier("registrationLastNameInput")
+            DSTextField(
+              "Last Name",
+              text: $lastName,
+              isDisabled: isLoading
+            )
+            .accessibilityIdentifier("registrationLastNameInput")
           }
 
           if !errorMessage.isEmpty {
             Text(errorMessage)
-              .font(.caption)
-              .foregroundColor(.red)
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.error)
               .multilineTextAlignment(.center)
               .accessibilityIdentifier("errorMessage")
           }
 
-          Button(
-            action: {
-              registrationTask?.cancel()
-              registrationTask = Task { await handleRegistration() }
-            },
-            label: {
-              HStack {
-                if isLoading {
-                  ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(0.8)
-                }
-                Text(isLoading ? "Registering..." : "Register")
-                  .fontWeight(.semibold)
-              }
-              .frame(maxWidth: .infinity)
-              .padding()
-              .background(isLoading ? Color.gray : Color.accentColor)
-              .foregroundColor(.white)
-              .cornerRadius(10)
-            }
-          )
-          .disabled(isLoading || !isFormValid)
+          DSButton(
+            isLoading ? "Registering..." : "Register",
+            fullWidth: true,
+            isLoading: isLoading,
+            isDisabled: !isFormValid
+          ) {
+            registrationTask?.cancel()
+            registrationTask = Task { await handleRegistration() }
+          }
           .accessibilityIdentifier("registrationButton")
-          .padding(.top, 8)
+          .padding(.top, DSTheme.Spacing.sm)
 
           // Navigation to login
-          Button(
-            action: {
-              showLogin = true
-            },
-            label: {
-              Text("Already have an account? Sign in")
-                .font(.caption)
-                .foregroundColor(.accentColor)
-            }
-          )
-          .padding(.top, 8)
+          Button {
+            showLogin = true
+          } label: {
+            Text("Already have an account? Sign in")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.primary)
+          }
+          .padding(.top, DSTheme.Spacing.sm)
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, DSTheme.Spacing.xxl)
 
         Spacer()
-          .frame(height: 20)
+          .frame(height: DSTheme.Spacing.xl)
       }
     }
-    .padding()
+    .dsScreenPadding()
   }
 
   // MARK: - Validation
@@ -237,7 +231,6 @@ struct RegisterView: View {
       isLoading = true
     }
 
-    // Validate passwords match
     if password != repeatedPassword {
       await MainActor.run {
         errorMessage = "Passwords do not match"
@@ -246,7 +239,6 @@ struct RegisterView: View {
       return
     }
 
-    // Validate password length
     if password.count < 8 {
       await MainActor.run {
         errorMessage = "Password must have at least 8 characters"
@@ -255,7 +247,6 @@ struct RegisterView: View {
       return
     }
 
-    // Validate email
     if !isValidEmail(emailAddress) {
       await MainActor.run {
         errorMessage = "Invalid email address"
@@ -283,7 +274,6 @@ struct RegisterView: View {
       isLoading = false
 
       if result.success {
-        // Registration successful, navigate to login
         clearForm()
         showLogin = true
       } else {

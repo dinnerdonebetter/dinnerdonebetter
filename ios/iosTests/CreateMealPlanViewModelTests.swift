@@ -592,6 +592,7 @@ struct CreationTests {
 
 // MARK: - Date Calculation Tests
 
+@Suite(.serialized)
 struct DateCalculationTests {
   @Test("updateEventStartDate updates voting deadline")
   @MainActor
@@ -612,12 +613,26 @@ struct DateCalculationTests {
     let authManager = createMockAuthenticationManagerForMealPlan()
     let viewModel = CreateMealPlanViewModel(authManager: authManager)
 
-    let earlierDate = Date().addingTimeInterval(-86400)
-    let eventID = viewModel.events[0].id
-    let originalDeadline = viewModel.votingDeadline
-    viewModel.updateEventStartDate(eventID, date: earlierDate)
+    // Ensure initialization completes
+    try? await Task.sleep(nanoseconds: 10_000_000)  // 10ms
 
-    #expect(viewModel.votingDeadline != originalDeadline)
+    // Get the original deadline and event date
+    let originalDeadline = viewModel.votingDeadline
+    let eventID = viewModel.events[0].id
+
+    // Move the event to 3 weeks in the future (significantly different from original)
+    // This should result in a different voting deadline
+    let futureDate = Date().addingTimeInterval(21 * 86400)  // 3 weeks from now
+    viewModel.updateEventStartDate(eventID, date: futureDate)
+
+    // Give time for any async updates
+    try? await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+
+    // The voting deadline should have changed since the event date changed significantly
+    #expect(
+      viewModel.votingDeadline != originalDeadline,
+      "Voting deadline should update when event start date changes significantly"
+    )
   }
 
   @Test("updateDefaultMealPlanName updates name with date range")

@@ -16,49 +16,40 @@ struct MealSearchResultCard: View {
   let onTap: () -> Void
 
   var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 8) {
-        Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
-          .font(.headline)
-          .foregroundColor(.primary)
+    DSCard(style: isSelected ? .selected : .outlined, action: onTap) {
+      HStack {
+        VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+          Text(meal.name.isEmpty ? "Unnamed Meal" : meal.name)
+            .font(DSTheme.Typography.label)
+            .foregroundColor(DSTheme.Colors.textPrimary)
 
-        if !meal.description_p.isEmpty {
-          Text(meal.description_p)
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-            .lineLimit(2)
+          if !meal.description_p.isEmpty {
+            Text(meal.description_p)
+              .font(DSTheme.Typography.body)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+              .lineLimit(2)
+          }
+
+          // Show recipe names from components
+          if !meal.components.isEmpty {
+            let recipeNames = meal.components.compactMap { component -> String? in
+              component.recipe.name.isEmpty ? nil : component.recipe.name
+            }
+            if !recipeNames.isEmpty {
+              Text(recipeNames.joined(separator: ", "))
+                .font(DSTheme.Typography.caption)
+                .foregroundColor(DSTheme.Colors.textSecondary)
+                .lineLimit(1)
+            }
+          }
         }
 
-        // Show recipe names from components
-        if !meal.components.isEmpty {
-          let recipeNames = meal.components.compactMap { component -> String? in
-            component.recipe.name.isEmpty ? nil : component.recipe.name
-          }
-          if !recipeNames.isEmpty {
-            Text(recipeNames.joined(separator: ", "))
-              .font(.caption)
-              .foregroundColor(.secondary)
-              .lineLimit(1)
-          }
-        }
+        Spacer()
+
+        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+          .foregroundColor(isSelected ? DSTheme.Colors.primary : DSTheme.Colors.textTertiary)
+          .font(.title2)
       }
-
-      Spacer()
-
-      Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-        .foregroundColor(isSelected ? .blue : .gray)
-        .font(.title2)
-    }
-    .padding()
-    .background(isSelected ? Color.blue.opacity(0.1) : Color(.systemBackground))
-    .cornerRadius(8)
-    .overlay(
-      RoundedRectangle(cornerRadius: 8)
-        .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
-    )
-    .contentShape(Rectangle())
-    .onTapGesture {
-      onTap()
     }
   }
 }

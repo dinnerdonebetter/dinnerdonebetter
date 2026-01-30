@@ -17,91 +17,58 @@ struct RecipeListView: View {
     NavigationStack {
       Group {
         if let viewModel = viewModel {
-          if viewModel.isLoading {
-            ProgressView("Loading recipes...")
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else if let errorMessage = viewModel.errorMessage {
-            VStack(spacing: 16) {
-              Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundColor(.orange)
-              Text("Error")
-                .font(.headline)
-              Text(errorMessage)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-              Button("Retry") {
-                Task {
-                  await viewModel.loadRecipes()
-                }
-              }
-              .buttonStyle(.borderedProminent)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          } else {
-            let displayedRecipes = viewModel.displayedRecipes
-            let isSearching = viewModel.isSearching
-            let hasSearchQuery = !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-              .isEmpty
+          DSContentState(
+            isLoading: viewModel.isLoading,
+            loadingMessage: "Loading recipes...",
+            error: viewModel.errorMessage,
+            onRetry: { await viewModel.loadRecipes() },
+            content: {
+              let displayedRecipes = viewModel.displayedRecipes
+              let isSearching = viewModel.isSearching
+              let hasSearchQuery = !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+                .isEmpty
 
-            if isSearching {
-              ProgressView("Searching recipes...")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if displayedRecipes.isEmpty {
-              if hasSearchQuery {
-                VStack(spacing: 16) {
-                  Image(systemName: "magnifyingglass")
-                    .font(.largeTitle)
-                    .foregroundColor(.secondary)
-                  Text("No Results")
-                    .font(.headline)
-                  Text("No recipes found matching \"\(searchQuery)\"")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+              if isSearching {
+                DSLoadingView("Searching recipes...")
+              } else if displayedRecipes.isEmpty {
+                if hasSearchQuery {
+                  VStack(spacing: DSTheme.Spacing.lg) {
+                    DSEmptyState(
+                      icon: "magnifyingglass",
+                      title: "No Results",
+                      message: "No recipes found matching \"\(searchQuery)\""
+                    )
 
-                  if let searchError = viewModel.searchError {
-                    Text(searchError)
-                      .font(.caption)
-                      .foregroundColor(.red)
-                      .padding(.horizontal)
-                  }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-              } else {
-                VStack(spacing: 16) {
-                  Image(systemName: "book.closed")
-                    .font(.largeTitle)
-                    .foregroundColor(.secondary)
-                  Text("No Recipes")
-                    .font(.headline)
-                  Text("No recipes found. Create some recipes to get started.")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-              }
-            } else {
-              ScrollView {
-                LazyVStack(spacing: 12) {
-                  ForEach(displayedRecipes, id: \.id) { recipe in
-                    NavigationLink(destination: PerformRecipeView(recipeID: recipe.id)) {
-                      RecipeCard(recipe: recipe)
+                    if let searchError = viewModel.searchError {
+                      Text(searchError)
+                        .font(DSTheme.Typography.caption)
+                        .foregroundColor(DSTheme.Colors.error)
+                        .padding(.horizontal)
                     }
                   }
+                } else {
+                  DSEmptyState(
+                    icon: "book.closed",
+                    title: "No Recipes",
+                    message: "No recipes found. Create some recipes to get started.",
+                    size: .large
+                  )
                 }
-                .padding()
+              } else {
+                ScrollView {
+                  LazyVStack(spacing: DSTheme.Spacing.md) {
+                    ForEach(displayedRecipes, id: \.id) { recipe in
+                      NavigationLink(destination: PerformRecipeView(recipeID: recipe.id)) {
+                        RecipeCard(recipe: recipe)
+                      }
+                    }
+                  }
+                  .dsScreenPadding()
+                }
               }
-            }
-          }
+            })
         } else {
-          ProgressView("Initializing...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+          DSInitializingView()
         }
       }
       .navigationTitle("Recipes")
@@ -114,7 +81,6 @@ struct RecipeListView: View {
       }
       .refreshable {
         if let viewModel = viewModel {
-          // Clear search when refreshing
           searchQuery = ""
           viewModel.searchResults = []
           await viewModel.loadRecipes()
@@ -140,46 +106,41 @@ struct RecipeCard: View {
   let recipe: Mealplanning_Recipe
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
-        .font(.headline)
-        .foregroundColor(.primary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-
-      if !recipe.description_p.isEmpty {
-        Text(recipe.description_p)
-          .font(.subheadline)
-          .foregroundColor(.secondary)
-          .lineLimit(2)
+    DSCard(style: .outlined) {
+      VStack(alignment: .leading, spacing: DSTheme.Spacing.sm) {
+        Text(recipe.name.isEmpty ? "Unnamed Recipe" : recipe.name)
+          .font(DSTheme.Typography.label)
+          .foregroundColor(DSTheme.Colors.textPrimary)
           .frame(maxWidth: .infinity, alignment: .leading)
-      }
 
-      // Recipe metadata
-      HStack(spacing: 12) {
-        if !recipe.steps.isEmpty {
-          Label(
-            "\(recipe.steps.count) step\(recipe.steps.count == 1 ? "" : "s")",
-            systemImage: "list.number"
-          )
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if !recipe.description_p.isEmpty {
+          Text(recipe.description_p)
+            .font(DSTheme.Typography.body)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+            .lineLimit(2)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        if recipe.hasEstimatedPortions {
-          Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        // Recipe metadata
+        HStack(spacing: DSTheme.Spacing.md) {
+          if !recipe.steps.isEmpty {
+            Label(
+              "\(recipe.steps.count) step\(recipe.steps.count == 1 ? "" : "s")",
+              systemImage: "list.number"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+
+          if recipe.hasEstimatedPortions {
+            Label("\(formatPortions(recipe.estimatedPortions))", systemImage: "person.2")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
         }
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .padding()
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .background(Color(.systemBackground))
-    .cornerRadius(12)
-    .overlay(
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(Color(.systemGray4), lineWidth: 1)
-    )
   }
 
   private func formatPortions(_ range: Common_Float32RangeWithOptionalMax) -> String {
@@ -190,7 +151,6 @@ struct RecipeCard: View {
         return String(format: "%.1f-%.1f", range.min, range.max)
       }
     } else {
-      // min is always present, but max is optional
       return String(format: "%.1f+", range.min)
     }
   }

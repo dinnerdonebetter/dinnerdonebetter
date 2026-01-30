@@ -30,55 +30,40 @@ struct MealDetailView: View {
   var body: some View {
     Group {
       if let viewModel = viewModel {
-        if viewModel.isLoading {
-          ProgressView("Loading meal...")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if let errorMessage = viewModel.errorMessage {
-          VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle")
-              .font(.largeTitle)
-              .foregroundColor(.orange)
-            Text("Error")
-              .font(.headline)
-            Text(errorMessage)
-              .font(.subheadline)
-              .foregroundColor(.secondary)
-              .multilineTextAlignment(.center)
-              .padding(.horizontal)
-            Button("Retry") {
-              Task {
-                await viewModel.loadMeal()
-              }
-            }
-            .buttonStyle(.borderedProminent)
-          }
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if let meal = viewModel.meal {
-          ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-              // Overall Info Section
-              overallInfoSection(meal: meal)
+        DSContentState(
+          isLoading: viewModel.isLoading,
+          loadingMessage: "Loading meal...",
+          error: viewModel.errorMessage,
+          onRetry: { await viewModel.loadMeal() },
+          content: {
+            if let meal = viewModel.meal {
+              ScrollView {
+                VStack(alignment: .leading, spacing: DSTheme.Spacing.xl) {
+                  // Overall Info Section
+                  overallInfoSection(meal: meal)
 
-              // Aggregated Ingredients & Instruments/Vessels
-              if !loadedRecipes.isEmpty {
-                aggregatedListsSection
-              }
+                  // Aggregated Ingredients & Instruments/Vessels
+                  if !loadedRecipes.isEmpty {
+                    aggregatedListsSection
+                  }
 
-              // Components
-              if !meal.components.isEmpty {
-                componentsSection(meal: meal)
+                  // Components
+                  if !meal.components.isEmpty {
+                    componentsSection(meal: meal)
+                  }
+                }
+                .dsScreenPadding()
               }
+            } else {
+              DSEmptyState(
+                icon: "fork.knife",
+                title: "Meal not found",
+                message: "This meal could not be loaded."
+              )
             }
-            .padding()
-          }
-        } else {
-          Text("Meal not found")
-            .foregroundColor(.secondary)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
+          })
       } else {
-        ProgressView("Initializing...")
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
+        DSInitializingView()
       }
     }
     .navigationTitle(viewModel?.meal?.name ?? "Meal")
