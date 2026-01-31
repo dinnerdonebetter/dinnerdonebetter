@@ -35,12 +35,20 @@ var (
 func main() {
 	devOutputPath := "deploy/environments/dev/kustomize/configs"
 
+	// localdev config is generated to two locations:
+	// - config_files/ for docker-compose usage
+	// - kustomize/configs/ for Kubernetes usage (hostnames overridden via env vars)
+	localdevConfig := buildLocalDevConfig()
+
 	envConfigs := map[string]*config.EnvironmentConfigSet{
 		devOutputPath: {
 			RootConfig: buildDevEnvironmentServerConfig(),
 		},
 		"deploy/environments/localdev/config_files": {
-			RootConfig: buildLocalDevConfig(),
+			RootConfig: localdevConfig,
+		},
+		"deploy/environments/localdev/kustomize/configs": {
+			RootConfig: localdevConfig,
 		},
 		"deploy/environments/testing/config_files": {
 			APIServiceConfigPath: "integration-tests-config.json",

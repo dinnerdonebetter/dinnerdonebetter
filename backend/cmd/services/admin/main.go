@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	adminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
+	defaultAdminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 )
 
 func must(err error) {
@@ -44,7 +44,12 @@ func main() {
 	must(os.Setenv(envvars.CookiesDomainEnvVarKey, "localhost"))
 	must(os.Setenv(envvars.CookiesLifetimeEnvVarKey, (7 * 24 * time.Hour).String()))
 
-	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, adminServerConfigurationFilepath)
+	configFilepath := os.Getenv("CONFIGURATION_FILEPATH")
+	if configFilepath == "" {
+		configFilepath = defaultAdminServerConfigurationFilepath
+	}
+
+	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, configFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
