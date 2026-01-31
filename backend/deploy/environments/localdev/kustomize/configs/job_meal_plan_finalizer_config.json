@@ -1,27 +1,10 @@
 {
-	"observability": {
-		"logging": {
-			"level": 0,
-			"provider": "slog"
-		},
-		"metrics": {
-			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
-				"collectionInterval": 3000000000,
-				"insecure": false,
-				"collectionTimeout": 0
-			},
-			"provider": "otelgrpc"
-		},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://0.0.0.0:4317"
-			},
-			"service_name": "dinner_done_better_api",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
-		}
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
 	"events": {
 		"consumers": {
@@ -35,7 +18,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"redis-master.localdev.svc.cluster.local:6379"
+					"worker_queue:6379"
 				]
 			}
 		},
@@ -50,25 +33,67 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"redis-master.localdev.svc.cluster.local:6379"
+					"worker_queue:6379"
 				]
 			}
 		}
 	},
+	"observability": {
+		"logging": {
+			"serviceName": "meal_plan_finalizer",
+			"level": "debug",
+			"otelslog": {
+				"endpointURL": "otel_collector:4317",
+				"insecure": true,
+				"timeout": 3000000000
+			},
+			"provider": "otelslog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"metricsCollectorEndpoint": "otel_collector:4317",
+				"collectionInterval": 1000000000,
+				"insecure": true,
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
+			},
+			"serviceName": "meal_plan_finalizer",
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "otel_collector:4317",
+				"insecure": true
+			},
+			"service_name": "meal_plan_finalizer",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"provider": "",
 		"connectionDetails": {
 			"username": "dbuser",
 			"password": "hunter2",
 			"database": "dinner-done-better",
-			"hostname": "postgres-postgresql.localdev.svc.cluster.local",
+			"hostname": "pgdatabase",
 			"port": 5432,
 			"disableSSL": true
 		},
+		"writeConnectionDetails": {
+			"username": "dbuser",
+			"password": "hunter2",
+			"database": "dinner-done-better",
+			"hostname": "pgdatabase",
+			"port": 5432,
+			"disableSSL": true
+		},
+		"migrations": null,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
+		"runMigrations": true
 	}
 }

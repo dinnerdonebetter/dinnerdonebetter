@@ -10,6 +10,8 @@ profiles:
     activation:
       - kubeContext: docker-desktop
     build:
+      local:
+        push: false
       tagPolicy:
         sha256: {}
       artifacts:
@@ -80,6 +82,28 @@ profiles:
             main: ./cmd/workers/search_data_index_scheduler
             fromImage: golang:1.25-trixie
 
+        - image: dinner-done-better-admin-webapp
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/services/admin
+            fromImage: golang:1.25-trixie
+
+        - image: dinner-done-better-mcp-server
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/services/mcp
+            fromImage: golang:1.25-trixie
+
           # NOTE: no cmd/functions here
 
     manifests:
@@ -96,6 +120,10 @@ profiles:
         resourceName: dinner-done-better-api-svc
         namespace: localdev
         port: 8000
+      - resourceType: Service
+        resourceName: dinner-done-better-admin-webapp-svc
+        namespace: localdev
+        port: 8888
 
   - name: dev
     build:
@@ -179,6 +207,29 @@ profiles:
               - -extldflags "-static"
             main: ./cmd/functions/async_message_handler
             fromImage: golang:1.25-trixie
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-webapp
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/services/admin
+            fromImage: golang:1.25-trixie
+
+        # Uncomment to enable MCP server deployment
+        # - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-mcp-server
+        #   ko:
+        #     dir: .
+        #     flags:
+        #       - -trimpath
+        #     ldflags:
+        #       - -s -w
+        #       - -extldflags "-static"
+        #     main: ./cmd/services/mcp
+        #     fromImage: golang:1.25-trixie
 
     manifests:
       kustomize:

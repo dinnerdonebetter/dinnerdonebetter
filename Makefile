@@ -1,7 +1,6 @@
 PWD           := $(shell pwd)
 MYSELF        := $(shell id -u)
 MY_GROUP      := $(shell id -g)
-DEV_NAMESPACE := dev
 
 # CONTAINER VERSIONS
 PROTOBUF_FORMAT := bufbuild/buf:1.5.0
@@ -89,14 +88,20 @@ regit:
 	cp -rf tempdir/.git .
 	rm -rf tempdir
 
-.PHONY: deploy_dev
-deploy_dev:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-	skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
+# Deploy to Docker Desktop Kubernetes cluster (no Helm required)
+.PHONY: deploy_localdev
+deploy_localdev:
+	@echo "Deploying infrastructure to Docker Desktop Kubernetes..."
+	skaffold run --filename=infra/skaffold.yaml --build-concurrency 1 --profile localdev
+	@echo "Deploying backend services to Docker Desktop Kubernetes..."
+	KO_DOCKER_REPO=ko.local skaffold run --filename=backend/skaffold.yaml --build-concurrency 1 --profile localdev
+	@echo "Deployment complete! Services available at:"
+	@echo "  - API Server: http://localhost:8000"
+	@echo "  - Admin Webapp: http://localhost:8888"
 
-.PHONY: nuke_dev
-nuke_dev:
-	kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
+.PHONY: nuke_localdev
+nuke_localdev:
+	kubectl delete namespace localdev --ignore-not-found
 
 .PHONY: format_proto
 format_proto:

@@ -241,6 +241,7 @@ GCP_DEV_PROJECT_NAME := dinner-done-better-dev
 proxy_dev_db:
 	$(SCRIPTS_DIR)/proxy_dev_db.sh $(GCP_DEV_PROJECT_NAME)
 
-.PHONY: deploy_dev
-deploy_dev:
-	$(SCRIPTS_DIR)/deploy_dev.sh
+# Deploy backend to Docker Desktop Kubernetes (localdev profile)
+.PHONY: deploy_localdev
+deploy_localdev:
+	KO_DOCKER_REPO=ko.local skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile localdev

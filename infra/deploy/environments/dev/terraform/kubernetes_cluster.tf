@@ -46,6 +46,17 @@ resource "google_container_cluster" "primary" {
 
   network = google_compute_network.private_network.name
   # subnetwork = google_compute_subnetwork.subnet.name
+
+  # Enable the Secret Manager add-on for native GCP Secret Manager integration
+  # This allows pods to mount secrets from GCP Secret Manager as volumes
+  secret_manager_config {
+    enabled = true
+  }
+
+  # Workload Identity is required for the Secret Manager add-on
+  workload_identity_config {
+    workload_pool = "${local.project_id}.svc.id.goog"
+  }
 }
 
 # Separately Managed Node Pool
@@ -88,5 +99,31 @@ resource "google_container_node_pool" "primary_nodes" {
     metadata = {
       disable-legacy-endpoints = "true"
     }
+
+    # Use Workload Identity for pod-level GCP authentication
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
   }
+}
+
+# Kubernetes service account for workloads that need to access GCP Secret Manager
+resource "google_service_account" "workload_identity_sa" {
+  account_id   = "workload-identity-sa"
+  display_name = "Workload Identity Service Account"
+  description  = "Service account for Kubernetes workloads to access GCP resources"
+}
+
+# Grant the workload identity SA access to secrets
+resource "google_project_iam_member" "workload_identity_secret_accessor" {
+  project = local.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
+}
+
+# Allow the Kubernetes service account to impersonate the GCP service account
+resource "google_service_account_iam_member" "workload_identity_binding" {
+  service_account_id = google_service_account.workload_identity_sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${local.project_id}.svc.id.goog[dev/api-service-account]"
 }
