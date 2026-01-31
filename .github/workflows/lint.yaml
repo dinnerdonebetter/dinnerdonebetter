@@ -21,7 +21,7 @@ jobs:
         with:
           filters: |
             backend:
-              - backend/**
+              - backend/**/*.go
             ios:
               - ios/**/*.swift
               - ios/.swiftlint.yml
