@@ -85,7 +85,7 @@ func ProvideAPIRouter(
 				}
 
 				res.Header().Set("Content-Type", "application/json")
-				if err := json.NewEncoder(res).Encode(aasa); err != nil {
+				if err = json.NewEncoder(res).Encode(aasa); err != nil {
 					logger.Error("encoding apple-app-site-association", err)
 					res.WriteHeader(http.StatusInternalServerError)
 				}

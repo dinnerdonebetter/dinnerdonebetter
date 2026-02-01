@@ -6,6 +6,7 @@
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
+	"appleAppSiteAssociation": {},
 	"routing": {
 		"chiConfig": {
 			"serviceName": "dinner_done_better",
@@ -223,6 +224,5 @@
 		"oauth2Clients": {
 			"creationEnabled": false
 		}
-	},
-	"appleAppSiteAssociation": {}
+	}
 }
