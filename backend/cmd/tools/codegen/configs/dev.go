@@ -218,6 +218,14 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				UseSearchService: true,
 			},
 		},
+		// AppleAppSiteAssociation configures the apple-app-site-association endpoint for iOS Universal Links.
+		// Set these values once you have an Apple Developer account.
+		// TeamID: Your 10-character Apple Developer Team ID from https://developer.apple.com/account
+		// BundleID: Your iOS app bundle identifier (e.g., "com.dinnerdonebetter.ios")
+		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
+			TeamID:   "", // TODO: Set your Apple Developer Team ID
+			BundleID: "com.dinnerdonebetter.ios",
+		},
 	}
 
 	return cfg

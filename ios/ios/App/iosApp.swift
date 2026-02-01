@@ -10,11 +10,17 @@ import SwiftUI
 @main
 struct IOSApp: App {
   @State private var authManager = AuthenticationManager()
+  @State private var deepLinkHandler = DeepLinkHandler()
 
   var body: some Scene {
     WindowGroup {
       ContentView()
         .environment(authManager)
+        .environment(deepLinkHandler)
+        .onOpenURL { url in
+          print("Received Universal Link: \(url)")
+          deepLinkHandler.handleURL(url)
+        }
     }
   }
 }

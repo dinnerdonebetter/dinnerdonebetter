@@ -172,5 +172,10 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				Uploads: uploadsConfig,
 			},
 		},
+		// AppleAppSiteAssociation is not needed for integration tests.
+		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
+			TeamID:   "",
+			BundleID: "",
+		},
 	}
 }

@@ -90,7 +90,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService)
+	appleAppSiteAssociationConfig := cfg.AppleAppSiteAssociation
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, appleAppSiteAssociationConfig)
 	if err != nil {
 		return nil, err
 	}

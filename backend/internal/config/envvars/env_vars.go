@@ -19,6 +19,12 @@ const (
 	// APIServiceOauth2APIClientSecretEnvVarKey is the environment variable name to set to override `config.APIServiceConnection.OAuth2APIClientSecret`.
 	APIServiceOauth2APIClientSecretEnvVarKey = "DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET"
 
+	// AasaBundleIDEnvVarKey is the environment variable name to set to override `config.AppleAppSiteAssociation.BundleID`.
+	AasaBundleIDEnvVarKey = "DINNER_DONE_BETTER_AASA_BUNDLE_ID"
+
+	// AasaTeamIDEnvVarKey is the environment variable name to set to override `config.AppleAppSiteAssociation.TeamID`.
+	AasaTeamIDEnvVarKey = "DINNER_DONE_BETTER_AASA_TEAM_ID"
+
 	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set to override `config.Analytics.CircuitBreaker.ErrorRate`.
 	AnalyticsCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_ERROR_RATE"
 

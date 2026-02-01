@@ -252,5 +252,8 @@
 		"oauth2Clients": {
 			"creationEnabled": false
 		}
+	},
+	"appleAppSiteAssociation": {
+		"bundleID": "com.dinnerdonebetter.ios"
 	}
 }

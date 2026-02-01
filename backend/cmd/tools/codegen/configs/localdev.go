@@ -216,5 +216,12 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				Uploads: uploadsConfig,
 			},
 		},
+		// AppleAppSiteAssociation is not needed for local development since
+		// Universal Links require HTTPS and a publicly accessible domain.
+		// These values are left empty for localdev.
+		AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
+			TeamID:   "",
+			BundleID: "",
+		},
 	}
 }
