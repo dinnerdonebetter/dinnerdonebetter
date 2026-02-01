@@ -11,6 +11,10 @@ struct RegisterView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @Binding var showLogin: Bool
 
+  // Invitation data passed from deep link (immutable once set)
+  let invitationID: String
+  let invitationToken: String
+
   @State private var emailAddress: String = ""
   @State private var username: String = ""
   @State private var password: String = ""
@@ -24,9 +28,16 @@ struct RegisterView: View {
   @State private var isLoading: Bool = false
   @State private var registrationTask: Task<Void, Never>?
 
-  // Optional invitation fields
-  @State private var invitationToken: String = ""
-  @State private var invitationID: String = ""
+  /// Whether this registration is via an invitation link
+  private var isInvitedRegistration: Bool {
+    !invitationID.isEmpty && !invitationToken.isEmpty
+  }
+
+  init(showLogin: Binding<Bool>, invitationID: String = "", invitationToken: String = "") {
+    self._showLogin = showLogin
+    self.invitationID = invitationID
+    self.invitationToken = invitationToken
+  }
 
   var body: some View {
     ScrollView {
@@ -40,9 +51,23 @@ struct RegisterView: View {
             .font(DSTheme.Typography.largeTitle)
             .foregroundColor(DSTheme.Colors.textPrimary)
 
-          Text("Create your account")
+          Text(isInvitedRegistration ? "Accept your invitation" : "Create your account")
             .font(DSTheme.Typography.body)
             .foregroundColor(DSTheme.Colors.textSecondary)
+        }
+
+        // Show invitation banner if from deep link
+        if isInvitedRegistration {
+          HStack {
+            Image(systemName: "envelope.badge")
+              .foregroundColor(DSTheme.Colors.primary)
+            Text("You've been invited to join an account!")
+              .font(DSTheme.Typography.caption)
+              .foregroundColor(DSTheme.Colors.textSecondary)
+          }
+          .padding(DSTheme.Spacing.md)
+          .background(DSTheme.Colors.primary.opacity(0.1))
+          .cornerRadius(DSTheme.Radius.sm)
         }
 
         // Registration Form
@@ -291,12 +316,19 @@ struct RegisterView: View {
     firstName = ""
     lastName = ""
     birthday = nil
-    invitationToken = ""
-    invitationID = ""
   }
 }
 
-#Preview {
+#Preview("Standard Registration") {
   RegisterView(showLogin: .constant(false))
     .environment(AuthenticationManager())
+}
+
+#Preview("Invitation Registration") {
+  RegisterView(
+    showLogin: .constant(false),
+    invitationID: "abc123",
+    invitationToken: "token456"
+  )
+  .environment(AuthenticationManager())
 }

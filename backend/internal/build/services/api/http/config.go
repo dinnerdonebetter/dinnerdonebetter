@@ -25,6 +25,7 @@ var (
 			"HTTPServer",
 			"Database",
 			"Services",
+			"AppleAppSiteAssociation",
 		),
 		wire.FieldsOf(
 			new(*config.ServicesConfig),

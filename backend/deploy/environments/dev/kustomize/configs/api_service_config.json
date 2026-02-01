@@ -6,6 +6,9 @@
 		"userDataAggregationTopicName": "",
 		"webhookExecutionRequestsTopicName": ""
 	},
+	"appleAppSiteAssociation": {
+		"bundleID": "com.dinnerdonebetter.ios"
+	},
 	"routing": {
 		"chiConfig": {
 			"serviceName": "dinner_done_better",

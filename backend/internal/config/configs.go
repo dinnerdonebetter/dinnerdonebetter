@@ -65,23 +65,24 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_                struct{}               `json:"-"`
-		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
-		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		GRPCServer       grpc.Config            `envPrefix:"GRPC_"          json:"grpc"`
-		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
-		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		TextSearch       textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
-		HTTPServer       http.Config            `envPrefix:"HTTP_"          json:"http"`
-		Auth             authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
-		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
-		validateServices bool
+		_                       struct{}                      `json:"-"`
+		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"        json:"queues"`
+		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"          json:"appleAppSiteAssociation,omitempty"`
+		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"       json:"routing"`
+		Encoding                encoding.Config               `envPrefix:"ENCODING_"      json:"encoding"`
+		Events                  msgconfig.Config              `envPrefix:"EVENTS_"        json:"events"`
+		Observability           observability.Config          `envPrefix:"OBSERVABILITY_" json:"observability"`
+		GRPCServer              grpc.Config                   `envPrefix:"GRPC_"          json:"grpc"`
+		Meta                    MetaSettings                  `envPrefix:"META_"          json:"meta"`
+		Email                   emailcfg.Config               `envPrefix:"EMAIL_"         json:"email"`
+		Analytics               analyticscfg.Config           `envPrefix:"ANALYTICS_"     json:"analytics"`
+		TextSearch              textsearchcfg.Config          `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags            featureflagscfg.Config        `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		HTTPServer              http.Config                   `envPrefix:"HTTP_"          json:"http"`
+		Auth                    authcfg.Config                `envPrefix:"AUTH_"          json:"auth"`
+		Database                databasecfg.Config            `envPrefix:"DATABASE_"      json:"database"`
+		Services                ServicesConfig                `envPrefix:"SERVICE_"       json:"services"`
+		validateServices        bool
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
@@ -162,6 +163,18 @@ type (
 
 		CacheCapacity uint64        `env:"CACHE_CAPACITY" json:"cacheCapacity"`
 		CacheTTL      time.Duration `env:"CACHE_TTL"      json:"cacheTTL"`
+	}
+
+	// AppleAppSiteAssociationConfig holds configuration for the apple-app-site-association file
+	// used by iOS for Universal Links. See: https://developer.apple.com/documentation/xcode/supporting-associated-domains
+	AppleAppSiteAssociationConfig struct {
+		_ struct{} `json:"-"`
+
+		// TeamID is the Apple Developer Team ID (e.g., "ABCD1234XY").
+		// This can be found in the Apple Developer Portal under Membership.
+		TeamID string `env:"TEAM_ID" json:"teamID,omitempty"`
+		// BundleID is the iOS app bundle identifier (e.g., "com.dinnerdonebetter.ios").
+		BundleID string `env:"BUNDLE_ID" json:"bundleID,omitempty"`
 	}
 
 	// AdminWebappConfig configures an instance of the service. It is composed of all the other setting structs.

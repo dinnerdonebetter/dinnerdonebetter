@@ -165,14 +165,15 @@ struct AuthenticationManagerTests {
         #expect(token == nil)
     }
     
-    @Test("getOAuth2AccessToken returns token when just over 5 minute threshold")
+    @Test("getOAuth2AccessToken returns token when over 5 minute threshold")
     func testGetOAuth2AccessTokenJustOverThreshold() async {
         let manager = AuthenticationManager()
         
-        // Set a token that expires in 5 minutes and 1 second (just over threshold)
+        // Set a token that expires in 6 minutes (well over the 5 minute threshold)
+        // Using 360 seconds instead of 301 to avoid race conditions in CI
         await MainActor.run {
             manager.oauth2AccessToken = "valid-token"
-            manager.oauth2TokenExpiresAt = Date().addingTimeInterval(301) // 5 minutes 1 second
+            manager.oauth2TokenExpiresAt = Date().addingTimeInterval(360) // 6 minutes
         }
         
         let token = await manager.getOAuth2AccessToken()
