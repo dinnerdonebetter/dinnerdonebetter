@@ -59,11 +59,13 @@ struct ContentView: View {
       deepLinkHandler.clearPendingDestination()
 
     case .resetPassword(let token):
+      // swiftlint:disable:next todo
       // TODO: Navigate to password reset flow
       print("Password reset token: \(token)")
       deepLinkHandler.clearPendingDestination()
 
     case .verifyEmail(let token):
+      // swiftlint:disable:next todo
       // TODO: Handle email verification
       print("Email verification token: \(token)")
       deepLinkHandler.clearPendingDestination()

@@ -5,6 +5,8 @@
 //  Unit tests for DeepLinkHandler URL parsing.
 //
 
+// swiftlint:disable force_unwrapping
+
 import Foundation
 @testable import ios
 import Testing
@@ -395,3 +397,5 @@ struct DeepLinkHandlerTests {
     }
   #endif
 }
+
+// swiftlint:enable force_unwrapping
