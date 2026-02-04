@@ -371,7 +371,7 @@ func (q *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInst
 	return nil
 }
 
-// ArchiveValidInstrument archives a valid instrument from the database by its MealPlanTaskID.
+// ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *repository) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

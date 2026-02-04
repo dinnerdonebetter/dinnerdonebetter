@@ -11,7 +11,7 @@ import (
 // Note: This recipe references the Teriyaki Sauce recipe, which must be created first.
 // The createdRecipes map should contain the "teriyaki-sauce" recipe keyed by its slug.
 func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[string]*mealplanning.Recipe) []*mealplanning.RecipeCreationRequestInput {
-	// Helper to safely get MealPlanTaskID pointer from VIP
+	// Helper to safely get ID pointer from VIP
 	vipID := func(v *mealplanning.ValidIngredientPreparation) *string {
 		if v == nil {
 			return nil
@@ -19,7 +19,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		return &v.ID
 	}
 
-	// Helper to safely get MealPlanTaskID pointer from VPV
+	// Helper to safely get ID pointer from VPV
 	vpvID := func(v *mealplanning.ValidPreparationVessel) *string {
 		if v == nil {
 			return nil
@@ -27,7 +27,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		return &v.ID
 	}
 
-	// Helper to safely get MealPlanTaskID pointer from VPI
+	// Helper to safely get ID pointer from VPI
 	vpiID := func(v *mealplanning.ValidPreparationInstrument) *string {
 		if v == nil {
 			return nil
@@ -35,7 +35,7 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		return &v.ID
 	}
 
-	// Helper to safely get MealPlanTaskID pointer from VIMU
+	// Helper to safely get ID pointer from VIMU
 	vimuID := func(v *mealplanning.ValidIngredientMeasurementUnit) *string {
 		if v == nil {
 			return nil

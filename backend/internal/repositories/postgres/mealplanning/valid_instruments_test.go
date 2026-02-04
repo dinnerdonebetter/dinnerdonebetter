@@ -124,7 +124,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 func TestQuerier_ValidInstrumentExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid instrument MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid instrument ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

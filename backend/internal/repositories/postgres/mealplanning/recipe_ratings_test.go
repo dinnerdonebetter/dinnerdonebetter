@@ -96,7 +96,7 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 func TestQuerier_RecipeRatingExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -107,7 +107,7 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe rating MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -122,7 +122,7 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 func TestQuerier_GetRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -133,7 +133,7 @@ func TestQuerier_GetRecipeRating(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe rating MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -176,7 +176,7 @@ func TestQuerier_UpdateRecipeRating(T *testing.T) {
 func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -185,7 +185,7 @@ func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeRating(ctx, "", t.Name()))
 	})
 
-	T.Run("with invalid recipe rating MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

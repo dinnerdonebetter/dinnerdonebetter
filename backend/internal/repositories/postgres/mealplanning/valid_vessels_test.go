@@ -151,7 +151,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 func TestQuerier_ValidVesselExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid vessel MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -167,7 +167,7 @@ func TestQuerier_ValidVesselExists(T *testing.T) {
 func TestQuerier_GetValidVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid vessel MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -240,7 +240,7 @@ func TestQuerier_UpdateValidVessel(T *testing.T) {
 func TestQuerier_ArchiveValidVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid vessel MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -253,7 +253,7 @@ func TestQuerier_ArchiveValidVessel(T *testing.T) {
 func TestQuerier_MarkValidVesselAsIndexed(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

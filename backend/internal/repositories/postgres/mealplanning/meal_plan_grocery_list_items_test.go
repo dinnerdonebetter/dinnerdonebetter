@@ -115,7 +115,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -147,7 +147,7 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -191,7 +191,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

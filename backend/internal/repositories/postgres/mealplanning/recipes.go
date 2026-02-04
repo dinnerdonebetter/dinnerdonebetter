@@ -1358,7 +1358,7 @@ func (q *repository) validateNoCircularDependencyForIngredient(ctx context.Conte
 	return q.checkForCircularDependency(ctx, recipeID, newDependencies)
 }
 
-// ArchiveRecipe archives a recipe from the database by its MealPlanTaskID.
+// ArchiveRecipe archives a recipe from the database by its ID.
 func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

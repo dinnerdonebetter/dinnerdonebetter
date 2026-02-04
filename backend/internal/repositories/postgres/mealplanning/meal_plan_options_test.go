@@ -128,7 +128,7 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

@@ -488,7 +488,7 @@ func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPre
 	return nil
 }
 
-// ArchiveValidPreparation archives a valid preparation from the database by its MealPlanTaskID.
+// ArchiveValidPreparation archives a valid preparation from the database by its ID.
 func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

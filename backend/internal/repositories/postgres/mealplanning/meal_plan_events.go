@@ -358,7 +358,7 @@ func (q *repository) UpdateMealPlanEvent(ctx context.Context, updated *types.Mea
 	return nil
 }
 
-// ArchiveMealPlanEvent archives a meal plan event from the database by its MealPlanTaskID.
+// ArchiveMealPlanEvent archives a meal plan event from the database by its ID.
 func (q *repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

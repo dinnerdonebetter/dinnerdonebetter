@@ -573,7 +573,7 @@ func (q *repository) UpdateValidPreparationInstrument(ctx context.Context, updat
 	return nil
 }
 
-// ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its MealPlanTaskID.
+// ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its ID.
 func (q *repository) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

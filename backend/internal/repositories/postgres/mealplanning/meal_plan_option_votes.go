@@ -330,7 +330,7 @@ func (q *repository) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	return nil
 }
 
-// ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its MealPlanTaskID.
+// ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *repository) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

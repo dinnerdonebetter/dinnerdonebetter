@@ -223,7 +223,7 @@ func (q *repository) UpdateRecipeMedia(ctx context.Context, updated *types.Recip
 	return nil
 }
 
-// ArchiveRecipeMedia archives a recipe media from the database by its MealPlanTaskID.
+// ArchiveRecipeMedia archives a recipe media from the database by its ID.
 func (q *repository) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

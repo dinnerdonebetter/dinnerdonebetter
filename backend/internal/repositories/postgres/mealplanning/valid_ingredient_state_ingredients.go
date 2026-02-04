@@ -549,7 +549,7 @@ func (q *repository) UpdateValidIngredientStateIngredient(ctx context.Context, u
 	return nil
 }
 
-// ArchiveValidIngredientStateIngredient archives a valid ingredient state ingredient from the database by its MealPlanTaskID.
+// ArchiveValidIngredientStateIngredient archives a valid ingredient state ingredient from the database by its ID.
 func (q *repository) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

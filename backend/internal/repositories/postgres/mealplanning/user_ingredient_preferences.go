@@ -344,7 +344,7 @@ func (q *repository) UpdateUserIngredientPreference(ctx context.Context, updated
 	return nil
 }
 
-// ArchiveUserIngredientPreference archives a user ingredient preference from the database by its MealPlanTaskID.
+// ArchiveUserIngredientPreference archives a user ingredient preference from the database by its ID.
 func (q *repository) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

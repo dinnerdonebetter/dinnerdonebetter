@@ -459,7 +459,7 @@ func (q *repository) UpdateRecipeStepProduct(ctx context.Context, updated *mealp
 	return nil
 }
 
-// ArchiveRecipeStepProduct archives a recipe step product from the database by its MealPlanTaskID.
+// ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *repository) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

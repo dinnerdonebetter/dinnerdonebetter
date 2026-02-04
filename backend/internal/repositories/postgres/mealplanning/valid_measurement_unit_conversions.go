@@ -294,7 +294,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
 
-	// Normalize to canonical ordering (smaller MealPlanTaskID first) to satisfy CHECK constraint
+	// Normalize to canonical ordering (smaller ID first) to satisfy CHECK constraint
 	// This ensures duplicate entries hit the unique constraint rather than the check constraint
 	fromUnit := input.From
 	toUnit := input.To
@@ -395,7 +395,7 @@ func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 	return nil
 }
 
-// ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its MealPlanTaskID.
+// ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its ID.
 func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

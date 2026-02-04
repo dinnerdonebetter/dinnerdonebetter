@@ -198,7 +198,7 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	// Group results by task MealPlanTaskID (since each task can have multiple rows - one per prep task step)
+	// Group results by task ID (since each task can have multiple rows - one per prep task step)
 	taskMap := make(map[string]*types.MealPlanTask)
 
 	for _, result := range results {

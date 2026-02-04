@@ -32,7 +32,7 @@ var getValidIngredientPreparationTool = &mcp.Tool{
 	Name:        "GetValidIngredientPreparation",
 	Description: "Get a valid ingredient preparation by it's ID",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientPreparationID": stringField("The MealPlanTaskID of the valid ingredient preparation to get"),
+		"ValidIngredientPreparationID": stringField("The ID of the valid ingredient preparation to get"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),
 }
@@ -94,8 +94,8 @@ var validIngredientPreparationCreationTool = &mcp.Tool{
 	Description: "Create a valid ingredient preparation linking an ingredient to a preparation.",
 	InputSchema: schemaObject(map[string]any{
 		"Notes":              stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID": stringField("The MealPlanTaskID of the valid preparation"),
-		"ValidIngredientID":  stringField("The MealPlanTaskID of the valid ingredient"),
+		"ValidPreparationID": stringField("The ID of the valid preparation"),
+		"ValidIngredientID":  stringField("The ID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),
 }
@@ -114,7 +114,7 @@ func (h *mcpToolManager) CreateValidIngredientPreparation() mcp.ToolHandlerFor[*
 type (
 	UpdateValidIngredientPreparationInvocation struct {
 		*mealplanning.ValidIngredientPreparationUpdateRequestInput
-		ValidIngredientPreparationID string `jsonschema:"required,description=The ingredient preparation MealPlanTaskID"`
+		ValidIngredientPreparationID string `jsonschema:"required,description=The ingredient preparation ID"`
 	}
 )
 
@@ -122,9 +122,9 @@ var validIngredientPreparationUpdateTool = &mcp.Tool{
 	Name:        "UpdateValidIngredientPreparation",
 	Description: "Update a valid ingredient preparation.",
 	InputSchema: schemaObject(map[string]any{
-		"ValidIngredientPreparationID": stringField("The MealPlanTaskID of the valid ingredient preparation to update"),
+		"ValidIngredientPreparationID": stringField("The ID of the valid ingredient preparation to update"),
 		"Notes":                        stringField("Notes about the ingredient preparation"),
-		"ValidPreparationID":           stringField("The MealPlanTaskID of the valid preparation"),
+		"ValidPreparationID":           stringField("The ID of the valid preparation"),
 		"ValidIngredientID":            stringField("The ID of the valid ingredient"),
 	}),
 	OutputSchema: schemaObject(validIngredientPreparationsSchema),

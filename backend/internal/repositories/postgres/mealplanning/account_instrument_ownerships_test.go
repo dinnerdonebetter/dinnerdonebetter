@@ -112,7 +112,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 func TestQuerier_AccountInstrumentOwnershipExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account instrument ownership MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -129,7 +129,7 @@ func TestQuerier_AccountInstrumentOwnershipExists(T *testing.T) {
 func TestQuerier_GetAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account instrument ownership MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -174,7 +174,7 @@ func TestQuerier_UpdateAccountInstrumentOwnership(T *testing.T) {
 func TestQuerier_ArchiveAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account instrument ownership MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()

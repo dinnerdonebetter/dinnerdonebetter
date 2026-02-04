@@ -237,7 +237,7 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 	return nil
 }
 
-// ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its MealPlanTaskID.
+// ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its ID.
 func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

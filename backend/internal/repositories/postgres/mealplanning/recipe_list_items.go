@@ -168,7 +168,7 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	return nil
 }
 
-// ArchiveRecipeListItem archives a recipe list item from the database by its MealPlanTaskID.
+// ArchiveRecipeListItem archives a recipe list item from the database by its ID.
 func (q *repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID, recipeListID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
