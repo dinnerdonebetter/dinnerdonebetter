@@ -37,7 +37,7 @@ func (q *repository) GetMealLists(ctx context.Context, filter *filtering.QueryFi
 	)
 	listsByID := map[string]*types.MealList{}
 
-	results, err := q.generatedQuerier.GetMealLists(ctx, q.db, &generated.GetMealListsParams{
+	results, err := q.generatedQuerier.GetMealLists(ctx, q.readDB, &generated.GetMealListsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -107,7 +107,7 @@ func (q *repository) CreateMealList(ctx context.Context, input *types.MealListDa
 	tracing.AttachToSpan(span, keys.MealListIDKey, input.ID)
 	logger := q.logger.WithValue(keys.MealListIDKey, input.ID)
 
-	if err := q.generatedQuerier.CreateMealList(ctx, q.db, &generated.CreateMealListParams{
+	if err := q.generatedQuerier.CreateMealList(ctx, q.writeDB, &generated.CreateMealListParams{
 		ID:            input.ID,
 		Name:          input.Name,
 		Description:   input.Description,
@@ -140,7 +140,7 @@ func (q *repository) UpdateMealList(ctx context.Context, updated *types.MealList
 	logger := q.logger.WithValue(keys.MealListIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealListIDKey, updated.ID)
 
-	rowsAffected, err := q.generatedQuerier.UpdateMealList(ctx, q.db, &generated.UpdateMealListParams{
+	rowsAffected, err := q.generatedQuerier.UpdateMealList(ctx, q.writeDB, &generated.UpdateMealListParams{
 		Name:          updated.Name,
 		Description:   updated.Description,
 		BelongsToUser: updated.BelongsToUser,
@@ -178,7 +178,7 @@ func (q *repository) ArchiveMealList(ctx context.Context, mealListID, userID str
 	logger = logger.WithValue(keys.MealListIDKey, mealListID)
 	tracing.AttachToSpan(span, keys.MealListIDKey, mealListID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealList(ctx, q.db, &generated.ArchiveMealListParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealList(ctx, q.writeDB, &generated.ArchiveMealListParams{
 		BelongsToUser: userID,
 		ID:            mealListID,
 	})

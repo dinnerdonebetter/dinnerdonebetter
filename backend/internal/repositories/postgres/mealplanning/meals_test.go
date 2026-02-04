@@ -35,7 +35,7 @@ func createMealForTest(t *testing.T, ctx context.Context, exampleMeal *types.Mea
 
 	// create
 	if exampleMeal == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 		exampleMeal = buildMealForIntegrationTest(user.ID, recipe)
 	}
@@ -77,7 +77,7 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	exampleMeal := buildMealForIntegrationTest(user.ID, recipe)
@@ -135,7 +135,7 @@ func TestQuerier_Integration_GetMealsWithIDs(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}()
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	meal1 := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
@@ -214,7 +214,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 
 		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
 
-		err := c.CreateMealComponent(ctx, c.db, "", exampleInput)
+		err := c.CreateMealComponent(ctx, c.writeDB, "", exampleInput)
 		assert.Error(t, err)
 	})
 
@@ -226,7 +226,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
+		err := c.CreateMealComponent(ctx, c.writeDB, exampleMeal.ID, nil)
 		assert.Error(t, err)
 	})
 }
@@ -287,7 +287,7 @@ func TestQuerier_Integration_Meals_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	// Use the generic pagination test helper

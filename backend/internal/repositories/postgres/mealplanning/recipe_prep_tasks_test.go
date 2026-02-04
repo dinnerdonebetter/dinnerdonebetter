@@ -58,7 +58,7 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)

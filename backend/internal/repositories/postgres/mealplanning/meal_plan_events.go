@@ -42,7 +42,7 @@ func (q *repository) MealPlanEventExists(ctx context.Context, mealPlanID, mealPl
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
-	result, err := q.generatedQuerier.CheckMealPlanEventExistence(ctx, q.db, &generated.CheckMealPlanEventExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanEventExistence(ctx, q.readDB, &generated.CheckMealPlanEventExistenceParams{
 		ID:         mealPlanEventID,
 		MealPlanID: mealPlanID,
 	})
@@ -72,7 +72,7 @@ func (q *repository) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanE
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
-	result, err := q.generatedQuerier.GetMealPlanEvent(ctx, q.db, &generated.GetMealPlanEventParams{
+	result, err := q.generatedQuerier.GetMealPlanEvent(ctx, q.readDB, &generated.GetMealPlanEventParams{
 		ID:                mealPlanEventID,
 		BelongsToMealPlan: mealPlanID,
 	})
@@ -116,7 +116,7 @@ func (q *repository) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanI
 
 	x = []*types.MealPlanEvent{}
 
-	results, err := q.generatedQuerier.GetAllMealPlanEventsForMealPlan(ctx, q.db, mealPlanID)
+	results, err := q.generatedQuerier.GetAllMealPlanEventsForMealPlan(ctx, q.readDB, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
@@ -172,7 +172,7 @@ func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, f
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetMealPlanEvents(ctx, q.db, &generated.GetMealPlanEventsParams{
+	results, err := q.generatedQuerier.GetMealPlanEvents(ctx, q.readDB, &generated.GetMealPlanEventsParams{
 		MealPlanID:      mealPlanID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -234,7 +234,7 @@ func (q *repository) MealPlanEventIsEligibleForVoting(ctx context.Context, mealP
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
-	result, err := q.generatedQuerier.MealPlanEventIsEligibleForVoting(ctx, q.db, &generated.MealPlanEventIsEligibleForVotingParams{
+	result, err := q.generatedQuerier.MealPlanEventIsEligibleForVoting(ctx, q.readDB, &generated.MealPlanEventIsEligibleForVotingParams{
 		MealPlanID:      mealPlanID,
 		MealPlanEventID: mealPlanEventID,
 	})
@@ -314,7 +314,7 @@ func (q *repository) CreateMealPlanEvent(ctx context.Context, input *types.MealP
 		return nil, database.ErrNilInputProvided
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
@@ -342,7 +342,7 @@ func (q *repository) UpdateMealPlanEvent(ctx context.Context, updated *types.Mea
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateMealPlanEvent(ctx, q.db, &generated.UpdateMealPlanEventParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanEvent(ctx, q.writeDB, &generated.UpdateMealPlanEventParams{
 		Notes:             updated.Notes,
 		StartsAt:          updated.StartsAt,
 		EndsAt:            updated.EndsAt,
@@ -377,7 +377,7 @@ func (q *repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealP
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanEvent(ctx, q.db, &generated.ArchiveMealPlanEventParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanEvent(ctx, q.writeDB, &generated.ArchiveMealPlanEventParams{
 		ID:                mealPlanEventID,
 		BelongsToMealPlan: mealPlanID,
 	})

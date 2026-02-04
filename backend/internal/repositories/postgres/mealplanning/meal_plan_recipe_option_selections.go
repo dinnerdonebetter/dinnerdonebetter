@@ -43,7 +43,7 @@ func (q *repository) GetMealPlanRecipeOptionSelection(ctx context.Context, mealP
 	logger = logger.WithValue("selection_type", selectionType)
 	tracing.AttachToSpan(span, "selection_type", selectionType)
 
-	result, err := q.generatedQuerier.GetMealPlanRecipeOptionSelection(ctx, q.db, &generated.GetMealPlanRecipeOptionSelectionParams{
+	result, err := q.generatedQuerier.GetMealPlanRecipeOptionSelection(ctx, q.readDB, &generated.GetMealPlanRecipeOptionSelectionParams{
 		MealPlanOptionID: mealPlanOptionID,
 		RecipeStepID:     recipeStepID,
 		IngredientIndex:  int32(ingredientIndex),
@@ -91,7 +91,7 @@ func (q *repository) GetSelectionsForMealPlanOption(ctx context.Context, mealPla
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx, q.db, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanOptionParams{
+	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlanOption(ctx, q.readDB, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanOptionParams{
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -155,7 +155,7 @@ func (q *repository) GetSelectionsForMealPlan(ctx context.Context, mealPlanID st
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlan(ctx, q.db, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanParams{
+	results, err := q.generatedQuerier.GetMealPlanRecipeOptionSelectionsForMealPlan(ctx, q.readDB, &generated.GetMealPlanRecipeOptionSelectionsForMealPlanParams{
 		MealPlanID:    mealPlanID,
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -205,7 +205,7 @@ func (q *repository) CreateMealPlanRecipeOptionSelection(ctx context.Context, in
 	tracing.AttachToSpan(span, "meal_plan_recipe_option_selection_id", input.ID)
 
 	// create the selection
-	if err := q.generatedQuerier.CreateMealPlanRecipeOptionSelection(ctx, q.db, &generated.CreateMealPlanRecipeOptionSelectionParams{
+	if err := q.generatedQuerier.CreateMealPlanRecipeOptionSelection(ctx, q.writeDB, &generated.CreateMealPlanRecipeOptionSelectionParams{
 		ID:                      input.ID,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
 		RecipeID:                input.RecipeID,
@@ -276,7 +276,7 @@ func (q *repository) UpdateMealPlanRecipeOptionSelection(ctx context.Context, me
 		return sql.ErrNoRows
 	}
 
-	rowsAffected, err := q.generatedQuerier.UpdateMealPlanRecipeOptionSelection(ctx, q.db, &generated.UpdateMealPlanRecipeOptionSelectionParams{
+	rowsAffected, err := q.generatedQuerier.UpdateMealPlanRecipeOptionSelection(ctx, q.writeDB, &generated.UpdateMealPlanRecipeOptionSelectionParams{
 		RecipeID:            existing.RecipeID,
 		MealPlanOptionID:    mealPlanOptionID,
 		RecipeStepID:        recipeStepID,
@@ -322,7 +322,7 @@ func (q *repository) ArchiveMealPlanRecipeOptionSelection(ctx context.Context, m
 	logger = logger.WithValue("selection_type", selectionType)
 	tracing.AttachToSpan(span, "selection_type", selectionType)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanRecipeOptionSelection(ctx, q.db, &generated.ArchiveMealPlanRecipeOptionSelectionParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanRecipeOptionSelection(ctx, q.writeDB, &generated.ArchiveMealPlanRecipeOptionSelectionParams{
 		MealPlanOptionID: mealPlanOptionID,
 		RecipeStepID:     recipeStepID,
 		IngredientIndex:  int32(ingredientIndex),

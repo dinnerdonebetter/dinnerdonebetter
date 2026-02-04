@@ -22,7 +22,7 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	t.Helper()
 
 	if userID == "" {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		userID = user.ID
 	}
 
@@ -173,7 +173,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	createdRecipes := []*mealplanning.Recipe{}
 
@@ -236,7 +236,7 @@ func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}()
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	r1 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 	r2 := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
@@ -661,7 +661,7 @@ func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[mealplanning.Recipe]{
@@ -700,7 +700,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 			assert.NoError(t, container.Terminate(ctx))
 		}()
 
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 		// Create first recipe (base recipe with a product)
 		preparation1 := createValidPreparationForTest(t, ctx, nil, dbc)
@@ -946,7 +946,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 			assert.NoError(t, container.Terminate(ctx))
 		}()
 
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 		// Create preparation, measurement unit, ingredient, and instrument for both recipes
 		preparation := createValidPreparationForTest(t, ctx, nil, dbc)
@@ -1145,7 +1145,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 		// Now manually create a cycle by directly updating Recipe A to reference Recipe B
 		// This simulates the edge case where a cycle exists (even though validation should prevent it)
 		// We'll use raw SQL to bypass validation for testing purposes
-		_, err = dbc.db.ExecContext(ctx, `
+		_, err = dbc.writeDB.ExecContext(ctx, `
 			UPDATE recipe_step_ingredients 
 			SET recipe_step_product_recipe_id = $1
 			WHERE belongs_to_recipe_step IN (
@@ -1191,7 +1191,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 			assert.NoError(t, container.Terminate(ctx))
 		}()
 
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 		// Create Recipe C (base recipe, no dependencies)
 		preparationC := createValidPreparationForTest(t, ctx, nil, dbc)

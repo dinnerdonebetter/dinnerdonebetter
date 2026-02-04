@@ -47,7 +47,7 @@ func (q *repository) MealPlanOptionExists(ctx context.Context, mealPlanID, mealP
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	result, err := q.generatedQuerier.CheckMealPlanOptionExistence(ctx, q.db, &generated.CheckMealPlanOptionExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanOptionExistence(ctx, q.readDB, &generated.CheckMealPlanOptionExistenceParams{
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 		MealPlanOptionID: mealPlanOptionID,
 		MealPlanID:       mealPlanID,
@@ -85,7 +85,7 @@ func (q *repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	result, err := q.generatedQuerier.GetMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionParams{
+	result, err := q.generatedQuerier.GetMealPlanOption(ctx, q.readDB, &generated.GetMealPlanOptionParams{
 		MealPlanID:       mealPlanID,
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 		MealPlanOptionID: mealPlanOptionID,
@@ -138,7 +138,7 @@ func (q *repository) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	result, err := q.generatedQuerier.GetMealPlanOptionByID(ctx, q.db, mealPlanOptionID)
+	result, err := q.generatedQuerier.GetMealPlanOptionByID(ctx, q.readDB, mealPlanOptionID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
 	}
@@ -195,7 +195,7 @@ func (q *repository) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mea
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanEventID)
 
-	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.db, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
+	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.readDB, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
 		MealPlanID:      mealPlanID,
 		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 	})
@@ -277,7 +277,7 @@ func (q *repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPla
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetMealPlanOptions(ctx, q.db, &generated.GetMealPlanOptionsParams{
+	results, err := q.generatedQuerier.GetMealPlanOptions(ctx, q.readDB, &generated.GetMealPlanOptionsParams{
 		MealPlanID:      mealPlanID,
 		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -370,7 +370,7 @@ func (q *repository) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 // CreateMealPlanOption creates a meal plan option in the database.
 func (q *repository) CreateMealPlanOption(ctx context.Context, input *mealplanning.MealPlanOptionDatabaseCreationInput) (*mealplanning.MealPlanOption, error) {
-	return q.createMealPlanOption(ctx, q.db, input, false)
+	return q.createMealPlanOption(ctx, q.writeDB, input, false)
 }
 
 // UpdateMealPlanOption updates a particular meal plan option.
@@ -384,7 +384,7 @@ func (q *repository) UpdateMealPlanOption(ctx context.Context, updated *mealplan
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.writeDB, &generated.UpdateMealPlanOptionParams{
 		MealID:             updated.Meal.ID,
 		Notes:              updated.Notes,
 		MealScale:          database.StringFromFloat32(updated.MealScale),
@@ -426,7 +426,7 @@ func (q *repository) ArchiveMealPlanOption(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.writeDB, &generated.ArchiveMealPlanOptionParams{
 		ID:                     mealPlanOptionID,
 		BelongsToMealPlanEvent: sql.NullString{String: mealPlanEventID, Valid: true},
 	})
@@ -587,7 +587,7 @@ func (q *repository) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
-		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
+		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.readDB, &generated.FinalizeMealPlanOptionParams{
 			MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 			ID:              winner,
 			Tiebroken:       tiebroken,

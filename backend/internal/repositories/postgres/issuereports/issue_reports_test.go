@@ -65,8 +65,8 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	exampleIssueReport := fakes.BuildFakeIssueReport()
 	exampleIssueReport.BelongsToAccount = account.ID
@@ -166,8 +166,8 @@ func TestQuerier_GetIssueReports(T *testing.T) {
 			assert.NoError(t, container.Terminate(ctx))
 		}(t)
 
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-		account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+		account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 		exampleIssueReport := fakes.BuildFakeIssueReport()
 		exampleIssueReport.BelongsToAccount = account.ID
@@ -305,8 +305,8 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.IssueReport]{

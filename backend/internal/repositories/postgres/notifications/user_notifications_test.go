@@ -18,7 +18,7 @@ func createUserNotificationForTest(t *testing.T, ctx context.Context, userID str
 	t.Helper()
 
 	if userID == "" {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		userID = user.ID
 	}
 
@@ -60,7 +60,7 @@ func TestQuerier_Integration_UserNotifications(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleUserNotification := fakes.BuildFakeUserNotification()
 	createdUserNotifications := []*types.UserNotification{}

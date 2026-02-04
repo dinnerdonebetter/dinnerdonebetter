@@ -60,8 +60,8 @@ func TestQuerier_Integration_MealPlanOptionVotes(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
@@ -311,8 +311,8 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 	}(t)
 
 	// Follow the same setup pattern as TestQuerier_Integration_MealPlanOptionVotes
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
@@ -321,13 +321,13 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 	// Add extra non-voting users to the account to prevent the meal plan from being finalized
 	// when all votes are received (we'll create 9 votes but have 10+ users in the account)
 	addUserToAccountHelper := func(userID string) {
-		_, execErr := dbc.db.ExecContext(ctx,
+		_, execErr := dbc.writeDB.ExecContext(ctx,
 			`INSERT INTO account_user_memberships (id, belongs_to_user, belongs_to_account, account_role, default_account) VALUES ($1, $2, $3, $4, $5)`,
 			identifiers.New(), userID, account.ID, "account_member", false)
 		require.NoError(t, execErr)
 	}
 	// Add one extra non-voting user
-	nonVotingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	nonVotingUser := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	addUserToAccountHelper(nonVotingUser.ID)
 
 	// We need to create a meal plan with 2 options so it stays in "awaiting_votes" status
@@ -369,7 +369,7 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 		ItemName:   "meal plan option vote",
 		CreateItem: func(ctx context.Context, i int) *types.MealPlanOptionVote {
 			// Create voting users and add them to the account
-			votingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
+			votingUser := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 			addUserToAccountHelper(votingUser.ID)
 
 			mealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()

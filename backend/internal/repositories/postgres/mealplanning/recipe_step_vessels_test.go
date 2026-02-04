@@ -20,7 +20,7 @@ func createRecipeStepVesselForTest(t *testing.T, ctx context.Context, recipeID s
 
 	// create
 	if exampleRecipeStepVessel == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 		exampleRecipeStep := createdRecipe.Steps[0]
@@ -70,7 +70,7 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -323,7 +323,7 @@ func TestQuerier_Integration_RecipeStepVessels_CursorBasedPagination(t *testing.
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default vessels from the step so we start fresh
 	for _, step := range recipeStruct.Steps {

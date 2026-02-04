@@ -20,7 +20,7 @@ func createRecipeStepProductForTest(t *testing.T, ctx context.Context, recipeID 
 
 	// create
 	if exampleRecipeStepProduct == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 		exampleRecipeStep := createdRecipe.Steps[0]
@@ -68,7 +68,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -330,7 +330,7 @@ func TestQuerier_Integration_RecipeStepProducts_CursorBasedPagination(t *testing
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default products from the step so we start fresh
 	for _, step := range recipeStruct.Steps {

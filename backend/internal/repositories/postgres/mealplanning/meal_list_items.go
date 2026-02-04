@@ -43,7 +43,7 @@ func (q *repository) GetMealListItems(ctx context.Context, mealListID string, fi
 	)
 	mealIDs := []string{}
 
-	results, err := q.generatedQuerier.GetMealListItems(ctx, q.db, &generated.GetMealListItemsParams{
+	results, err := q.generatedQuerier.GetMealListItems(ctx, q.readDB, &generated.GetMealListItemsParams{
 		MealListID:      mealListID,
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -116,7 +116,7 @@ func (q *repository) CreateMealListItem(ctx context.Context, input *types.MealLi
 	tracing.AttachToSpan(span, keys.MealListItemIDKey, input.ID)
 	logger := q.logger.WithValue(keys.MealListItemIDKey, input.ID)
 
-	if err := q.generatedQuerier.CreateMealListItem(ctx, q.db, &generated.CreateMealListItemParams{
+	if err := q.generatedQuerier.CreateMealListItem(ctx, q.writeDB, &generated.CreateMealListItemParams{
 		ID:                input.ID,
 		MealID:            input.MealID,
 		Notes:             input.Notes,
@@ -149,7 +149,7 @@ func (q *repository) UpdateMealListItem(ctx context.Context, updated *types.Meal
 	logger := q.logger.WithValue(keys.MealListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealListItemIDKey, updated.ID)
 
-	rowsAffected, err := q.generatedQuerier.UpdateMealListItem(ctx, q.db, &generated.UpdateMealListItemParams{
+	rowsAffected, err := q.generatedQuerier.UpdateMealListItem(ctx, q.writeDB, &generated.UpdateMealListItemParams{
 		MealID:            updated.Meal.ID,
 		Notes:             updated.Notes,
 		BelongsToMealList: updated.BelongsToMealList,
@@ -187,7 +187,7 @@ func (q *repository) ArchiveMealListItem(ctx context.Context, mealListItemID, me
 	logger = logger.WithValue(keys.MealListItemIDKey, mealListItemID)
 	tracing.AttachToSpan(span, keys.MealListItemIDKey, mealListItemID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealListItem(ctx, q.db, &generated.ArchiveMealListItemParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealListItem(ctx, q.writeDB, &generated.ArchiveMealListItemParams{
 		BelongsToMealList: mealListID,
 		ID:                mealListItemID,
 	})

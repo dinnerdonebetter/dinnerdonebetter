@@ -30,7 +30,7 @@ func (r *repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string
 	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
 
-	exists, err := r.generatedQuerier.CheckWaitlistExistence(ctx, r.db, waitlistID)
+	exists, err := r.generatedQuerier.CheckWaitlistExistence(ctx, r.readDB, waitlistID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "checking waitlist existence")
 	}
@@ -39,7 +39,7 @@ func (r *repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string
 		return false, sql.ErrNoRows
 	}
 
-	result, err := r.generatedQuerier.WaitlistIsNotExpired(ctx, r.db, waitlistID)
+	result, err := r.generatedQuerier.WaitlistIsNotExpired(ctx, r.readDB, waitlistID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "checking waitlist expiration status")
 	}
@@ -60,7 +60,7 @@ func (r *repository) GetWaitlist(ctx context.Context, waitlistID string) (*types
 	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
 
-	result, err := r.generatedQuerier.GetWaitlist(ctx, r.db, waitlistID)
+	result, err := r.generatedQuerier.GetWaitlist(ctx, r.readDB, waitlistID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching waitlist")
 	}
@@ -91,7 +91,7 @@ func (r *repository) GetWaitlists(ctx context.Context, filter *filtering.QueryFi
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := r.generatedQuerier.GetWaitlists(ctx, r.db, &generated.GetWaitlistsParams{
+	results, err := r.generatedQuerier.GetWaitlists(ctx, r.readDB, &generated.GetWaitlistsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -149,7 +149,7 @@ func (r *repository) GetActiveWaitlists(ctx context.Context, filter *filtering.Q
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := r.generatedQuerier.GetActiveWaitlists(ctx, r.db, &generated.GetActiveWaitlistsParams{
+	results, err := r.generatedQuerier.GetActiveWaitlists(ctx, r.readDB, &generated.GetActiveWaitlistsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -206,7 +206,7 @@ func (r *repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDa
 	logger := r.logger.WithValue(keys.WaitlistIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, input.ID)
 
-	if err := r.generatedQuerier.CreateWaitlist(ctx, r.db, &generated.CreateWaitlistParams{
+	if err := r.generatedQuerier.CreateWaitlist(ctx, r.writeDB, &generated.CreateWaitlistParams{
 		ID:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
@@ -238,7 +238,7 @@ func (r *repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist
 	logger := r.logger.WithValue(keys.WaitlistIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateWaitlist(ctx, r.db, &generated.UpdateWaitlistParams{
+	if _, err := r.generatedQuerier.UpdateWaitlist(ctx, r.writeDB, &generated.UpdateWaitlistParams{
 		Name:        updated.Name,
 		Description: updated.Description,
 		ValidUntil:  updated.ValidUntil,
@@ -261,7 +261,7 @@ func (r *repository) ArchiveWaitlist(ctx context.Context, waitlistID string) err
 	logger := r.logger.WithValue(keys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
 
-	recordsChanged, err := r.generatedQuerier.ArchiveWaitlist(ctx, r.db, waitlistID)
+	recordsChanged, err := r.generatedQuerier.ArchiveWaitlist(ctx, r.writeDB, waitlistID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving waitlist")
 	}
@@ -293,7 +293,7 @@ func (r *repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, wa
 	logger = logger.WithValue(keys.WaitlistIDKey, waitlistID)
 	tracing.AttachToSpan(span, keys.WaitlistIDKey, waitlistID)
 
-	result, err := r.generatedQuerier.GetWaitlistSignup(ctx, r.db, &generated.GetWaitlistSignupParams{
+	result, err := r.generatedQuerier.GetWaitlistSignup(ctx, r.readDB, &generated.GetWaitlistSignupParams{
 		ID:                waitlistSignupID,
 		BelongsToWaitlist: database.NullStringFromString(waitlistID),
 	})
@@ -334,7 +334,7 @@ func (r *repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlist
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := r.generatedQuerier.GetWaitlistSignupsForWaitlist(ctx, r.db, &generated.GetWaitlistSignupsForWaitlistParams{
+	results, err := r.generatedQuerier.GetWaitlistSignupsForWaitlist(ctx, r.readDB, &generated.GetWaitlistSignupsForWaitlistParams{
 		BelongsToWaitlist: database.NullStringFromString(waitlistID),
 		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -393,7 +393,7 @@ func (r *repository) CreateWaitlistSignup(ctx context.Context, input *types.Wait
 	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, input.ID)
 
-	if err := r.generatedQuerier.CreateWaitlistSignup(ctx, r.db, &generated.CreateWaitlistSignupParams{
+	if err := r.generatedQuerier.CreateWaitlistSignup(ctx, r.writeDB, &generated.CreateWaitlistSignupParams{
 		ID:                input.ID,
 		Notes:             input.Notes,
 		BelongsToWaitlist: database.NullStringFromString(input.BelongsToWaitlist),
@@ -427,7 +427,7 @@ func (r *repository) UpdateWaitlistSignup(ctx context.Context, updated *types.Wa
 	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateWaitlistSignup(ctx, r.db, &generated.UpdateWaitlistSignupParams{
+	if _, err := r.generatedQuerier.UpdateWaitlistSignup(ctx, r.writeDB, &generated.UpdateWaitlistSignupParams{
 		Notes: updated.Notes,
 		ID:    updated.ID,
 	}); err != nil {
@@ -448,7 +448,7 @@ func (r *repository) ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID
 	logger := r.logger.WithValue(keys.WaitlistSignupIDKey, waitlistSignupID)
 	tracing.AttachToSpan(span, keys.WaitlistSignupIDKey, waitlistSignupID)
 
-	recordsChanged, err := r.generatedQuerier.ArchiveWaitlistSignup(ctx, r.db, waitlistSignupID)
+	recordsChanged, err := r.generatedQuerier.ArchiveWaitlistSignup(ctx, r.writeDB, waitlistSignupID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving waitlist signup")
 	}

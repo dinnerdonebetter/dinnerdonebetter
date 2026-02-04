@@ -57,7 +57,7 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -212,7 +212,7 @@ func TestQuerier_Integration_RecipeRatings_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	// Use the generic pagination test helper
@@ -222,7 +222,7 @@ func TestQuerier_Integration_RecipeRatings_CursorBasedPagination(t *testing.T) {
 		ItemName:   "recipe rating",
 		CreateItem: func(ctx context.Context, i int) *types.RecipeRating {
 			// Create a unique user for each rating since there's a unique constraint on (by_user, recipe_id)
-			ratingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
+			ratingUser := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 			recipeRating := fakes.BuildFakeRecipeRating()
 			recipeRating.RecipeID = recipe.ID
 			recipeRating.ByUser = ratingUser.ID

@@ -37,7 +37,7 @@ func (q *repository) GetRecipeLists(ctx context.Context, filter *filtering.Query
 	)
 	listsByID := map[string]*types.RecipeList{}
 
-	results, err := q.generatedQuerier.GetRecipeLists(ctx, q.db, &generated.GetRecipeListsParams{
+	results, err := q.generatedQuerier.GetRecipeLists(ctx, q.readDB, &generated.GetRecipeListsParams{
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -107,7 +107,7 @@ func (q *repository) CreateRecipeList(ctx context.Context, input *types.RecipeLi
 	tracing.AttachToSpan(span, keys.RecipeListIDKey, input.ID)
 	logger := q.logger.WithValue(keys.RecipeListIDKey, input.ID)
 
-	if err := q.generatedQuerier.CreateRecipeList(ctx, q.db, &generated.CreateRecipeListParams{
+	if err := q.generatedQuerier.CreateRecipeList(ctx, q.writeDB, &generated.CreateRecipeListParams{
 		ID:            input.ID,
 		Name:          input.Name,
 		Description:   input.Description,
@@ -140,7 +140,7 @@ func (q *repository) UpdateRecipeList(ctx context.Context, updated *types.Recipe
 	logger := q.logger.WithValue(keys.RecipeListIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeListIDKey, updated.ID)
 
-	rowsAffected, err := q.generatedQuerier.UpdateRecipeList(ctx, q.db, &generated.UpdateRecipeListParams{
+	rowsAffected, err := q.generatedQuerier.UpdateRecipeList(ctx, q.writeDB, &generated.UpdateRecipeListParams{
 		Name:          updated.Name,
 		Description:   updated.Description,
 		BelongsToUser: updated.BelongsToUser,
@@ -178,7 +178,7 @@ func (q *repository) ArchiveRecipeList(ctx context.Context, recipeListID, userID
 	logger = logger.WithValue(keys.RecipeListIDKey, recipeListID)
 	tracing.AttachToSpan(span, keys.RecipeListIDKey, recipeListID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeList(ctx, q.db, &generated.ArchiveRecipeListParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeList(ctx, q.writeDB, &generated.ArchiveRecipeListParams{
 		BelongsToUser: userID,
 		ID:            recipeListID,
 	})

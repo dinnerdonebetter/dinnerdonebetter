@@ -38,7 +38,8 @@ func buildMockSQLTestClient(t *testing.T) (*repository, *sqlmockExpecterWrapper)
 	require.NoError(t, err)
 
 	c := &repository{
-		db:               fakeDB,
+		readDB:           fakeDB,
+		writeDB:          fakeDB,
 		logger:           logging.NewNoopLogger(),
 		generatedQuerier: generated.New(),
 		tracer:           tracing.NewTracerForTest("test"),

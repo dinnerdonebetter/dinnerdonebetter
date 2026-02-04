@@ -36,7 +36,7 @@ func (q *repository) RecipeRatingExists(ctx context.Context, recipeID, recipeRat
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
-	result, err := q.generatedQuerier.CheckRecipeRatingExistence(ctx, q.db, recipeRatingID)
+	result, err := q.generatedQuerier.CheckRecipeRatingExistence(ctx, q.readDB, recipeRatingID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe rating existence check")
 	}
@@ -63,7 +63,7 @@ func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRating
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
-	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.db, recipeRatingID)
+	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.readDB, recipeRatingID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe rating")
 	}
@@ -111,7 +111,7 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetRecipeRatingsForRecipe(ctx, q.db, &generated.GetRecipeRatingsForRecipeParams{
+	results, err := q.generatedQuerier.GetRecipeRatingsForRecipe(ctx, q.readDB, &generated.GetRecipeRatingsForRecipeParams{
 		RecipeID:        recipeID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -182,7 +182,7 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetRecipeRatingsForUser(ctx, q.db, &generated.GetRecipeRatingsForUserParams{
+	results, err := q.generatedQuerier.GetRecipeRatingsForUser(ctx, q.readDB, &generated.GetRecipeRatingsForUserParams{
 		ByUser:          userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -240,7 +240,7 @@ func (q *repository) CreateRecipeRating(ctx context.Context, input *types.Recipe
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, input.ID)
 
 	// create the recipe rating.
-	if err := q.generatedQuerier.CreateRecipeRating(ctx, q.db, &generated.CreateRecipeRatingParams{
+	if err := q.generatedQuerier.CreateRecipeRating(ctx, q.writeDB, &generated.CreateRecipeRatingParams{
 		ID:           input.ID,
 		RecipeID:     input.RecipeID,
 		Notes:        input.Notes,
@@ -284,7 +284,7 @@ func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.Reci
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
+	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.writeDB, &generated.UpdateRecipeRatingParams{
 		RecipeID:     updated.RecipeID,
 		Taste:        database.NullStringFromFloat32(updated.Taste),
 		Difficulty:   database.NullStringFromFloat32(updated.Difficulty),
@@ -321,7 +321,7 @@ func (q *repository) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRa
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.db, recipeRatingID)
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.writeDB, recipeRatingID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}

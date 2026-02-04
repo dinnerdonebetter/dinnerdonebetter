@@ -26,7 +26,7 @@ func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	changed, err := r.generatedQuerier.DeleteUser(ctx, r.db, userID)
+	changed, err := r.generatedQuerier.DeleteUser(ctx, r.writeDB, userID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
