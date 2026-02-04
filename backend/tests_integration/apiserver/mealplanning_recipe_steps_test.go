@@ -36,11 +36,9 @@ func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplan
 	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
 }
 
+//nolint:paralleltest // test is inexplicably flaky when run in parallel
 func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
-	T.Parallel()
-
 	T.Run("should update", func(t *testing.T) {
-		t.Parallel()
 		ctx := t.Context()
 
 		createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(t, nil)

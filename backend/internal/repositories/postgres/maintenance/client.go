@@ -35,5 +35,8 @@ func ProvideMaintenanceRepository(logger logging.Logger, tracerProvider tracing.
 		logger:           logging.EnsureLogger(logger).WithName(o11yName),
 	}
 
+	// these are here for future use
+	_, _ = c.readDB, c.writeDB
+
 	return c
 }
