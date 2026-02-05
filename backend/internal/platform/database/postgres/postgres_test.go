@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// testClientConfig is a test implementation of database.ClientConfig
+// testClientConfig is a test implementation of database.ClientConfig.
 type testClientConfig struct {
 	connectionString string
 	maxPingAttempts  uint64

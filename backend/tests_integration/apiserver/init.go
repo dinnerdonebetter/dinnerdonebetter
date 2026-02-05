@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -46,11 +47,16 @@ func getFreePort() (int, error) {
 		return 0, err
 	}
 
+	tcpAddr, ok := l.Addr().(*net.TCPAddr)
+	if !ok {
+		return 0, errors.New("listener address is not TCP")
+	}
+
 	if err = l.Close(); err != nil {
 		return 0, err
 	}
 
-	return l.Addr().(*net.TCPAddr).Port, nil
+	return tcpAddr.Port, nil
 }
 
 func init() {

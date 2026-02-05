@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/GuiaBolso/darwin"
 )
@@ -29,17 +28,15 @@ func fetchMigration(name string) string {
 
 // Migrator implements database.Migrator for postgres databases.
 type Migrator struct {
-	logger         logging.Logger
-	tracerProvider tracing.TracerProvider
+	logger logging.Logger
 }
 
 var _ database.Migrator = (*Migrator)(nil)
 
 // NewMigrator creates a new postgres Migrator.
-func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider) *Migrator {
+func NewMigrator(logger logging.Logger) *Migrator {
 	return &Migrator{
-		logger:         logging.EnsureLogger(logger),
-		tracerProvider: tracerProvider,
+		logger: logging.EnsureLogger(logger),
 	}
 }
 

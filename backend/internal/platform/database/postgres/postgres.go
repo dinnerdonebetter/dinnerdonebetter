@@ -34,7 +34,7 @@ type Client struct {
 func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg database.ClientConfig) (database.Client, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
-	ctx, span := tracer.StartSpan(ctx)
+	_, span := tracer.StartSpan(ctx)
 	defer span.End()
 
 	db, err := otelsql.Open("pgx", cfg.GetConnectionString(), otelsql.WithAttributes(
