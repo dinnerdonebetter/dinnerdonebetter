@@ -118,22 +118,22 @@ const (
 	// CookiesSecureOnlyEnvVarKey is the environment variable name to set to override `config.Cookies.SecureOnly`.
 	CookiesSecureOnlyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_SECURE_ONLY"
 
-	// DatabaseConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Database`.
+	// DatabaseConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.Database`.
 	DatabaseConnectionDetailsDatabaseEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_DATABASE"
 
-	// DatabaseConnectionDetailsDisableSslEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.DisableSSL`.
+	// DatabaseConnectionDetailsDisableSslEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.DisableSSL`.
 	DatabaseConnectionDetailsDisableSslEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_DISABLE_SSL"
 
-	// DatabaseConnectionDetailsHostEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Host`.
+	// DatabaseConnectionDetailsHostEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.Host`.
 	DatabaseConnectionDetailsHostEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST"
 
-	// DatabaseConnectionDetailsPasswordEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Password`.
+	// DatabaseConnectionDetailsPasswordEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.Password`.
 	DatabaseConnectionDetailsPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD"
 
-	// DatabaseConnectionDetailsPortEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Port`.
+	// DatabaseConnectionDetailsPortEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.Port`.
 	DatabaseConnectionDetailsPortEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PORT"
 
-	// DatabaseConnectionDetailsUsernameEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Username`.
+	// DatabaseConnectionDetailsUsernameEnvVarKey is the environment variable name to set to override `config.Database.ReadConnection.Username`.
 	DatabaseConnectionDetailsUsernameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_USERNAME"
 
 	// DatabaseDebugEnvVarKey is the environment variable name to set to override `config.Database.Debug`.
@@ -144,9 +144,6 @@ const (
 
 	// DatabaseMaxPingAttemptsEnvVarKey is the environment variable name to set to override `config.Database.MaxPingAttempts`.
 	DatabaseMaxPingAttemptsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_MAX_PING_ATTEMPTS"
-
-	// DatabaseMigrationsEnvVarKey is the environment variable name to set to override `config.Database.Migrations`.
-	DatabaseMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_MIGRATIONS"
 
 	// DatabaseOauth2TokenEncryptionKeyEnvVarKey is the environment variable name to set to override `config.Database.OAuth2TokenEncryptionKey`.
 	DatabaseOauth2TokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY"
@@ -160,22 +157,22 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
-	// DatabaseWriteConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Database`.
+	// DatabaseWriteConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.Database`.
 	DatabaseWriteConnectionDetailsDatabaseEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_DATABASE"
 
-	// DatabaseWriteConnectionDetailsDisableSslEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.DisableSSL`.
+	// DatabaseWriteConnectionDetailsDisableSslEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.DisableSSL`.
 	DatabaseWriteConnectionDetailsDisableSslEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_DISABLE_SSL"
 
-	// DatabaseWriteConnectionDetailsHostEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Host`.
+	// DatabaseWriteConnectionDetailsHostEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.Host`.
 	DatabaseWriteConnectionDetailsHostEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_HOST"
 
-	// DatabaseWriteConnectionDetailsPasswordEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Password`.
+	// DatabaseWriteConnectionDetailsPasswordEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.Password`.
 	DatabaseWriteConnectionDetailsPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_PASSWORD"
 
-	// DatabaseWriteConnectionDetailsPortEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Port`.
+	// DatabaseWriteConnectionDetailsPortEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.Port`.
 	DatabaseWriteConnectionDetailsPortEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_PORT"
 
-	// DatabaseWriteConnectionDetailsUsernameEnvVarKey is the environment variable name to set to override `config.Database.WriteConnectionDetails.Username`.
+	// DatabaseWriteConnectionDetailsUsernameEnvVarKey is the environment variable name to set to override `config.Database.WriteConnection.Username`.
 	DatabaseWriteConnectionDetailsUsernameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_DETAILS_USERNAME"
 
 	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set to override `config.Email.CircuitBreaker.ErrorRate`.

@@ -10,6 +10,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
@@ -38,8 +39,9 @@ func Build(ctx context.Context, cfg *config.DBCleanerConfig) (*dbcleaner.Job, er
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	databasecfgConfig := cfg.Database
+	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
 	if err != nil {
 		return nil, err
 	}

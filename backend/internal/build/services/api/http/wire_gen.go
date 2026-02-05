@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
@@ -53,13 +54,15 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	databasecfgConfig := &cfg.Database
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	databasecfgConfig := cfg.Database
+	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
 	if err != nil {
 		return nil, err
 	}
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
+	config2 := &cfg.Database
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
@@ -80,8 +83,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	config2 := &cfg.Routing
-	routeParamManager, err := routingcfg.ProvideRouteParamManager(config2)
+	config3 := &cfg.Routing
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(config3)
 	if err != nil {
 		return nil, err
 	}

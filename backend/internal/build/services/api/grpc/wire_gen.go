@@ -19,6 +19,7 @@ import (
 	managers2 "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -74,8 +75,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	databasecfgConfig := cfg.Database
+	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +164,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsRepository)
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
+	config2 := &cfg.Database
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
 	oAuth2Manager, err := manager2.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
@@ -172,8 +175,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	settingsServiceServer := grpc10.NewService(logger, tracerProvider, settingsRepository)
 	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
 	configConfig := &servicesConfig.UploadedMedia
-	config2 := &configConfig.Uploads
-	objectstorageConfig := &config2.Storage
+	config3 := &configConfig.Uploads
+	objectstorageConfig := &config3.Storage
 	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
 	if err != nil {
 		return nil, err

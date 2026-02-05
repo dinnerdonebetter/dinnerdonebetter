@@ -4,11 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -25,22 +23,21 @@ const (
 
 // Client is the primary database querying client.
 type Client struct {
-	tracer      tracing.Tracer
-	logger      logging.Logger
-	timeFunc    func() time.Time
-	config      *databasecfg.Config
-	db          *sql.DB
-	migrateOnce sync.Once
+	tracer   tracing.Tracer
+	logger   logging.Logger
+	timeFunc func() time.Time
+	config   database.ClientConfig
+	db       *sql.DB
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *databasecfg.Config) (database.Client, error) {
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg database.ClientConfig) (database.Client, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := otelsql.Open("pgx", cfg.ConnectionDetails.String(), otelsql.WithAttributes(
+	db, err := otelsql.Open("pgx", cfg.GetConnectionString(), otelsql.WithAttributes(
 		attribute.KeyValue{
 			Key:   semconv.ServiceNameKey,
 			Value: attribute.StringValue("database"),
@@ -60,17 +57,6 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 		tracer:   tracer,
 		timeFunc: defaultTimeFunc,
 		logger:   logging.EnsureLogger(logger).WithName("querier"),
-	}
-
-	if cfg.RunMigrations {
-		c.logger.Info("migrating querier")
-
-		start := time.Now()
-		if err = c.Migrate(ctx); err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
-		}
-
-		c.logger.WithValue("elapsed", time.Since(start).Milliseconds()).Info("querier migrated!")
 	}
 
 	return c, nil
@@ -106,16 +92,16 @@ func (q *Client) IsReady(ctx context.Context) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails.String())
+	logger := q.logger.WithValue("connection_url", q.config.GetConnectionString())
 
 	attemptCount := 0
 	for {
 		if err := q.db.PingContext(ctx); err != nil {
 			logger.WithValue("attempt_count", attemptCount).Info("ping failed, waiting for db")
-			time.Sleep(q.config.PingWaitPeriod)
+			time.Sleep(q.config.GetPingWaitPeriod())
 
 			attemptCount++
-			if attemptCount >= int(q.config.MaxPingAttempts) {
+			if attemptCount >= int(q.config.GetMaxPingAttempts()) {
 				break
 			}
 		} else {

@@ -1,14 +1,16 @@
 package migrations
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"fmt"
 
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	pgmigrations "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/GuiaBolso/darwin"
 )
 
 var (
@@ -25,54 +27,42 @@ func fetchMigration(name string) string {
 	return string(file)
 }
 
-func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB, config *databasecfg.Config) *pgmigrations.Migrator {
-	migrations := []*databasecfg.MigrationSpec{
-		{
-			Description: "identity tables",
-			RawQuery:    fetchMigration("00001_identity"),
-		},
-		{
-			Description: "audit log entries tables",
-			RawQuery:    fetchMigration("00002_auditlogentries"),
-		},
-		{
-			Description: "auth tables",
-			RawQuery:    fetchMigration("00003_auth"),
-		},
-		{
-			Description: "oauth tables",
-			RawQuery:    fetchMigration("00004_oauth"),
-		},
-		{
-			Description: "settings tables",
-			RawQuery:    fetchMigration("00005_settings"),
-		},
-		{
-			Description: "user notifications table",
-			RawQuery:    fetchMigration("00006_notifications"),
-		},
-		{
-			Description: "webhooks tables",
-			RawQuery:    fetchMigration("00007_webhooks"),
-		},
-		{
-			Description: "waitlist tables",
-			RawQuery:    fetchMigration("00008_waitlists"),
-		},
-		{
-			Description: "issue reports table",
-			RawQuery:    fetchMigration("00009_issue_reports"),
-		},
-		{
-			Description: "uploaded media table",
-			RawQuery:    fetchMigration("00010_uploaded_media"),
-		},
-		// meal planning tables should always be last
-		{
-			Description: "meal planning tables",
-			RawQuery:    fetchMigration("00015_mealplanning"),
-		},
+// Migrator implements database.Migrator for postgres databases.
+type Migrator struct {
+	logger         logging.Logger
+	tracerProvider tracing.TracerProvider
+}
+
+var _ database.Migrator = (*Migrator)(nil)
+
+// NewMigrator creates a new postgres Migrator.
+func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider) *Migrator {
+	return &Migrator{
+		logger:         logging.EnsureLogger(logger),
+		tracerProvider: tracerProvider,
+	}
+}
+
+// Migrate runs all postgres migrations on the given database connection.
+func (m *Migrator) Migrate(ctx context.Context, db *sql.DB) error {
+	migrations := []darwin.Migration{
+		{Version: 1, Description: "identity tables", Script: fetchMigration("00001_identity")},
+		{Version: 2, Description: "audit log entries tables", Script: fetchMigration("00002_auditlogentries")},
+		{Version: 3, Description: "auth tables", Script: fetchMigration("00003_auth")},
+		{Version: 4, Description: "oauth tables", Script: fetchMigration("00004_oauth")},
+		{Version: 5, Description: "settings tables", Script: fetchMigration("00005_settings")},
+		{Version: 6, Description: "user notifications table", Script: fetchMigration("00006_notifications")},
+		{Version: 7, Description: "webhooks tables", Script: fetchMigration("00007_webhooks")},
+		{Version: 8, Description: "waitlist tables", Script: fetchMigration("00008_waitlists")},
+		{Version: 9, Description: "issue reports table", Script: fetchMigration("00009_issue_reports")},
+		{Version: 10, Description: "uploaded media table", Script: fetchMigration("00010_uploaded_media")},
+		{Version: 15, Description: "meal planning tables", Script: fetchMigration("00015_mealplanning")},
 	}
 
-	return pgmigrations.NewMigrator(logger, tracerProvider, db, config, migrations)
+	if err := darwin.New(darwin.NewGenericDriver(db, darwin.PostgresDialect{}), migrations, nil).Migrate(); err != nil {
+		return fmt.Errorf("running migrations: %w", err)
+	}
+
+	m.logger.Info("migrations completed successfully")
+	return nil
 }

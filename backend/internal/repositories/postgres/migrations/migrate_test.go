@@ -19,8 +19,8 @@ func TestQuerier_Migrate(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		container, db, config := pgtesting.BuildDatabaseContainerForTest(t)
-		require.NoError(t, NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config).Migrate(ctx))
+		container, db, _ := pgtesting.BuildDatabaseContainerForTest(t)
+		require.NoError(t, NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()).Migrate(ctx, db))
 
 		if err := container.Stop(ctx, pointer.To(time.Second*10)); err != nil {
 			t.Log(err)

@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -37,6 +38,7 @@ func Build(
 	wire.Build(
 		datachangemessagehandler.Providers,
 		msgconfig.MessageQueueProviders,
+		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		auditlogentries.AuditRepoProviders,
 		identity.IDRepoProviders,

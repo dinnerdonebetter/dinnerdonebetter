@@ -16,6 +16,7 @@ import (
 	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	recipeanalysis "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	oauthmgr "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -76,6 +77,7 @@ func Build(
 		sessions.SessionProviders,
 		observability.O11yProviders,
 		random.RandProviders,
+		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,

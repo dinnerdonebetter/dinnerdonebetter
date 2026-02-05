@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -44,8 +45,9 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	databasecfgConfig := cfg.Database
+	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
 	if err != nil {
 		return nil, err
 	}

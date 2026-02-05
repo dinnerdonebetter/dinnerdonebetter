@@ -126,12 +126,13 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			Provider: textsearchcfg.AlgoliaProvider,
 		},
 		Database: databasecfg.Config{
+			Provider:        databasecfg.ProviderPostgres,
 			Debug:           true,
 			LogQueries:      true,
 			RunMigrations:   true,
 			MaxPingAttempts: maxAttempts,
 			PingWaitPeriod:  time.Second,
-			ConnectionDetails: databasecfg.ConnectionDetails{
+			ReadConnection: databasecfg.ConnectionDetails{
 				Username:   "api_db_user",
 				Password:   "",
 				Database:   "dinner-done-better",
@@ -139,7 +140,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				Port:       5432,
 				DisableSSL: false,
 			},
-			WriteConnectionDetails: databasecfg.ConnectionDetails{
+			WriteConnection: databasecfg.ConnectionDetails{
 				Username:   "api_db_user",
 				Password:   "",
 				Database:   "dinner-done-better",

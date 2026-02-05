@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
@@ -42,6 +43,7 @@ func Build(
 		tracing.ProvidersTracing,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
+		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		loggingcfg.LogConfigProviders,
 		authservice.AuthHTTPServiceProviders,
