@@ -100,12 +100,24 @@ public enum Webhooks_WebhookMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
+public struct Webhooks_WebhookList: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var webhooks: [Webhooks_Webhook] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Webhooks_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var webhooks: Dictionary<String,Webhooks_Webhook> = [:]
+  public var webhooks: Dictionary<String,Webhooks_WebhookList> = [:]
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -216,6 +228,36 @@ extension Webhooks_WebhookMethod: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WEBHOOK_METHOD_GET\0\u{1}WEBHOOK_METHOD_PUT\0\u{1}WEBHOOK_METHOD_PATCH\0\u{1}WEBHOOK_METHOD_POST\0\u{1}WEBHOOK_METHOD_DELETE\0")
 }
 
+extension Webhooks_WebhookList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WebhookList"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}webhooks\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.webhooks) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.webhooks.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.webhooks, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Webhooks_WebhookList, rhs: Webhooks_WebhookList) -> Bool {
+    if lhs.webhooks != rhs.webhooks {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}webhooks\0")
@@ -226,7 +268,7 @@ extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_Webhook>.self, value: &self.webhooks) }()
+      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_WebhookList>.self, value: &self.webhooks) }()
       default: break
       }
     }
@@ -234,7 +276,7 @@ extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.webhooks.isEmpty {
-      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_Webhook>.self, value: self.webhooks, fieldNumber: 1)
+      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_WebhookList>.self, value: self.webhooks, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

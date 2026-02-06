@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
+	"github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -147,7 +148,7 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "reading report from storage")
 	}
 
-	// Unmarshal the report to validate it
+	// Unmarshal the report
 	var collection dataprivacy.UserDataCollection
 	if err = json.Unmarshal(reportBytes, &collection); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "unmarshaling report")
@@ -156,12 +157,10 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 	logger.Info("user data report fetched successfully")
 
 	// Convert to proto type
-	// Note: For simplicity, we're returning an empty proto UserDataCollection
-	// In a full implementation, you would convert the Go types to proto types
 	return &dataprivacysvc.FetchUserDataReportResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
-		UserDataCollection: &dataprivacysvc.UserDataCollection{},
+		UserDataCollection: converters.ConvertUserDataCollectionToGRPCUserDataCollection(&collection, reportID),
 	}, nil
 }
