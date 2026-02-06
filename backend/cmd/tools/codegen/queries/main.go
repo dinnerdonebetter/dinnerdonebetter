@@ -87,6 +87,7 @@ func main() {
 		"internal/repositories/postgres/waitlists/sqlc_queries/waitlist_signups.sql":                                buildWaitlistSignupsQueries(databaseToUse),
 		"internal/repositories/postgres/issuereports/sqlc_queries/issue_reports.sql":                                buildIssueReportsQueries(databaseToUse),
 		"internal/repositories/postgres/uploadedmedia/sqlc_queries/uploaded_media.sql":                              buildUploadedMediaQueries(databaseToUse),
+		"internal/repositories/postgres/dataprivacy/sqlc_queries/user_data_disclosures.sql":                         buildUserDataDisclosuresQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

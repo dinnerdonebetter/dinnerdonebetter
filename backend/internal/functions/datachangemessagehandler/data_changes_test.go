@@ -30,7 +30,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		handler, identityRepo, webhookRepo, _, _, analyticsReporter, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, webhookRepo, _, _, analyticsReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -72,7 +72,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 	t.Run("with invalid JSON", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 		rawMsg := []byte("invalid json")
@@ -89,7 +89,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 	t.Run("with nil message", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -101,7 +101,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 	t.Run("with analytics event reporting", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, analyticsEventReporter, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -131,7 +131,7 @@ func TestAsyncDataChangeMessageHandler_handleDataChangeMessage(t *testing.T) {
 	t.Run("with webhook execution", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, webhookRepo, _, _, analyticsEventReporter, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, webhookRepo, _, _, analyticsEventReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -175,7 +175,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("user signed up event", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -204,7 +204,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("user archived event", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -233,7 +233,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("recipe created event", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, decoder := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -272,7 +272,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("unhandled event type", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -290,7 +290,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 	t.Run("with missing user ID", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -315,7 +315,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 
 func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T) {
 	T.Run("with nil message", func(t *testing.T) {
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -328,7 +328,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		// Set environment variable needed for email configuration
 		t.Setenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT", "testing")
 
-		handler, identityRepo, _, _, _, analyticsEventReporter, _, _, _, decoder := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, _, _, _, analyticsEventReporter, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -366,7 +366,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		// Set environment variable needed for email configuration
 		t.Setenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT", "testing")
 
-		handler, identityRepo, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -391,7 +391,7 @@ func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T)
 		// Set environment variable needed for email configuration
 		t.Setenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT", "testing")
 
-		handler, identityRepo, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 

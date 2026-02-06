@@ -151,6 +151,30 @@ WHERE %s.%s IS NULL
 					buildCursorLimitClause(waitlistSignupsTableName),
 				)),
 			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetWaitlistSignupsForUser",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	%s
+%s;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(waitlistSignupsTableName, true, true, nil, fmt.Sprintf("%s.%s = sqlc.arg(%s)", waitlistSignupsTableName, belongsToUserColumn, belongsToUserColumn)),
+					buildTotalCountSelect(waitlistSignupsTableName, true, nil, fmt.Sprintf("%s.%s = sqlc.arg(%s)", waitlistSignupsTableName, belongsToUserColumn, belongsToUserColumn)),
+					waitlistSignupsTableName,
+					waitlistSignupsTableName, archivedAtColumn,
+					waitlistSignupsTableName, belongsToUserColumn, belongsToUserColumn,
+					buildFilterConditions(waitlistSignupsTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", waitlistSignupsTableName, belongsToUserColumn, belongsToUserColumn)),
+					buildCursorLimitClause(waitlistSignupsTableName),
+				)),
+			},
 		}
 	default:
 		return nil

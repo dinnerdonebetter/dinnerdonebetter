@@ -23,8 +23,14 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	indexing2 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -53,7 +59,14 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	}
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
+	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
+	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
+	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
+	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, issuereportsRepository, mealplanningRepository, notificationsRepository, settingsRepository, uploadedmediaRepository, waitlistsRepository, webhooksRepository, client)
 	msgconfigConfig := &cfg.Events
 	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, msgconfigConfig)
 	if err != nil {
@@ -94,7 +107,6 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	userDataIndexer := indexing.NewCoreDataIndexer(logger, tracerProvider, identityRepository, userTextSearcher)
-	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	recipeTextSearcher, err := ProvideRecipeTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
 	if err != nil {
 		return nil, err
@@ -128,7 +140,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, webhooksRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(ctx, logger, tracerProvider, cfg, identityRepository, dataprivacyRepository, webhooksRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
 	if err != nil {
 		return nil, err
 	}

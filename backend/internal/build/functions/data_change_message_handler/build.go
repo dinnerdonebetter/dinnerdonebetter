@@ -21,8 +21,14 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -41,9 +47,15 @@ func Build(
 		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		auditlogentries.AuditRepoProviders,
+		dataprivacy.DataPrivProviders,
 		identity.IDRepoProviders,
-		webhooks.WebhookProviders,
+		issue_reports.IssueReportsRepoProviders,
 		mealplanning.MPRepoProviders,
+		notifications.NotifRepoProviders,
+		settings.SettingsRepoProviders,
+		uploadedmedia.UploadedMediaRepoProviders,
+		waitlists.WaitlistsRepoProviders,
+		webhooks.WebhookProviders,
 		analyticscfg.Providers,
 		emailcfg.Providers,
 		metricscfg.MetricsConfigProviders,

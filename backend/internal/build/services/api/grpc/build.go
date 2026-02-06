@@ -30,6 +30,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	dataprivacyrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issuereportsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
@@ -97,6 +98,7 @@ func Build(
 		oauthrepo.OAuthRepoProviders,
 		mealplanningrepo.MPRepoProviders,
 		waitlistsrepo.WaitlistsRepoProviders,
+		dataprivacyrepo.DataPrivProviders,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,
