@@ -44,7 +44,9 @@ func TestUpgrader_UpgradeToEventStream(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -62,7 +64,7 @@ func TestUpgrader_UpgradeToEventStream(T *testing.T) {
 
 		u := NewUpgrader()
 		w := &nonFlushableResponseWriter{header: http.Header{}}
-		r := httptest.NewRequest(http.MethodGet, "/", nil)
+		r := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
 
 		stream, err := u.UpgradeToEventStream(w, r)
 		assert.Nil(t, stream)
@@ -90,7 +92,9 @@ func TestSSEStream_Send(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -135,7 +139,9 @@ func TestSSEStream_Send(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -175,7 +181,9 @@ func TestSSEStream_Send(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -220,7 +228,9 @@ func TestSSEStream_Send(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -257,7 +267,9 @@ func TestSSEStream_Done(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -291,7 +303,9 @@ func TestSSEStream_Done(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 
 		stream := <-streamReady
@@ -329,7 +343,9 @@ func TestSSEStream_Close(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
@@ -370,7 +386,9 @@ func TestSSEStream_Send_verifies_SSE_format(T *testing.T) {
 		}))
 		defer server.Close()
 
-		resp, err := http.Get(server.URL)
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL, http.NoBody)
+		require.NoError(t, err)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
