@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	_ eventstream.EventStreamUpgrader            = (*Upgrader)(nil)
+	_ eventstream.EventStreamUpgrader              = (*Upgrader)(nil)
 	_ eventstream.BidirectionalEventStreamUpgrader = (*Upgrader)(nil)
 	_ eventstream.EventStream                      = (*wsStream)(nil)
 	_ eventstream.BidirectionalEventStream         = (*bidirectionalWSStream)(nil)

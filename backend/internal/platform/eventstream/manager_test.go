@@ -13,9 +13,9 @@ import (
 
 // mockStream implements EventStream for testing.
 type mockStream struct {
+	done   chan struct{}
 	events []*Event
 	mu     sync.Mutex
-	done   chan struct{}
 	closed bool
 }
 
@@ -364,5 +364,5 @@ func TestStreamManager_BroadcastToGroup_with_failing_stream(T *testing.T) {
 type failingStream struct{}
 
 func (f *failingStream) Send(context.Context, *Event) error { return assert.AnError }
-func (f *failingStream) Done() <-chan struct{}               { return make(chan struct{}) }
+func (f *failingStream) Done() <-chan struct{}              { return make(chan struct{}) }
 func (f *failingStream) Close() error                       { return nil }
