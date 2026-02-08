@@ -62,7 +62,7 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleUploadedMedia := fakes.BuildFakeUploadedMedia()
 	exampleUploadedMedia.CreatedByUser = user.ID
@@ -189,7 +189,7 @@ func TestQuerier_GetUploadedMediaForUser(T *testing.T) {
 			assert.NoError(t, container.Terminate(ctx))
 		}(t)
 
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 		exampleUploadedMedia := fakes.BuildFakeUploadedMedia()
 		exampleUploadedMedia.CreatedByUser = user.ID
@@ -266,7 +266,7 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.UploadedMedia]{

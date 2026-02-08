@@ -41,7 +41,7 @@ func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID s
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.db, &generated.CheckMealPlanExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.readDB, &generated.CheckMealPlanExistenceParams{
 		MealPlanID:       mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -71,7 +71,7 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated.GetMealPlanParams{
+	result, err := q.generatedQuerier.GetMealPlan(ctx, q.readDB, &generated.GetMealPlanParams{
 		ID:               mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -137,7 +137,7 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.db, &generated.GetMealPlansForAccountParams{
+	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.readDB, &generated.GetMealPlansForAccountParams{
 		BelongsToAccount: accountID,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -215,13 +215,13 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		}
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	// create the meal plan.
-	if err = q.generatedQuerier.CreateMealPlan(ctx, q.db, &generated.CreateMealPlanParams{
+	if err = q.generatedQuerier.CreateMealPlan(ctx, q.writeDB, &generated.CreateMealPlanParams{
 		ID:               input.ID,
 		Notes:            input.Notes,
 		Status:           generated.MealPlanStatus(status),
@@ -356,7 +356,7 @@ func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, updated.BelongsToAccount)
 
-	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
+	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.writeDB, &generated.UpdateMealPlanParams{
 		Notes:            updated.Notes,
 		Status:           generated.MealPlanStatus(updated.Status),
 		VotingDeadline:   updated.VotingDeadline,
@@ -371,7 +371,7 @@ func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 	return nil
 }
 
-// ArchiveMealPlan archives a meal plan from the database by its MealPlanTaskID.
+// ArchiveMealPlan archives a meal plan from the database by its ID.
 func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -390,7 +390,7 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.writeDB, &generated.ArchiveMealPlanParams{
 		BelongsToAccount: accountID,
 		ID:               mealPlanID,
 	})
@@ -418,7 +418,7 @@ func (q *repository) MarkMealPlanAsGroceryListInitialized(ctx context.Context, m
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.db, mealPlanID); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.writeDB, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having grocery list initialized")
 	}
 
@@ -463,7 +463,7 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	}
 
 	usersWhoHaveNotVoted := []string{}
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -516,7 +516,7 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 		if chosen {
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
-			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
+			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.readDB, &generated.FinalizeMealPlanOptionParams{
 				MealPlanEventID: database.NullStringFromString(event.ID),
 				ID:              winner,
 				Tiebroken:       tiebroken,
@@ -533,7 +533,7 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	if allVotesAreSubmitted || votingDeadlineHasPassed {
 		logger.Info("finalizing meal plan")
 
-		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated.FinalizeMealPlanParams{
+		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.readDB, &generated.FinalizeMealPlanParams{
 			Status: generated.MealPlanStatus(types.MealPlanStatusFinalized),
 			ID:     mealPlanID,
 		}); err != nil {
@@ -561,7 +561,7 @@ func (q *repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, q.db)
+	results, err := q.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
 	}
@@ -593,7 +593,7 @@ func (q *repository) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, q.db)
+	results, err := q.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plan IDs for the week retrieval query")
 	}
@@ -635,7 +635,7 @@ func (q *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx cont
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.db)
+	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plans without grocery list initialization query")
 	}

@@ -30,7 +30,7 @@ func NewRecipeValidator(
 }
 
 // ValidateAndPopulate validates a recipe creation input and populates derived fields.
-// It returns an error if any bridge table MealPlanTaskID is invalid or doesn't match the step's preparation.
+// It returns an error if any bridge table ID is invalid or doesn't match the step's preparation.
 func (v *RecipeValidator) ValidateAndPopulate(input *mealplanning.RecipeDatabaseCreationInput) error {
 	if input == nil {
 		return fmt.Errorf("input is nil")
@@ -194,7 +194,7 @@ func (v *RecipeValidator) validateAndPopulateIngredient(
 	return nil
 }
 
-// validateAndPopulateInstrument validates the bridge table MealPlanTaskID for an instrument and populates derived fields.
+// validateAndPopulateInstrument validates the bridge table ID for an instrument and populates derived fields.
 func (v *RecipeValidator) validateAndPopulateInstrument(
 	stepIdx, instrumentIdx int,
 	preparationID string,
@@ -225,7 +225,7 @@ func (v *RecipeValidator) validateAndPopulateInstrument(
 	return nil
 }
 
-// validateAndPopulateVessel validates the bridge table MealPlanTaskID for a vessel and populates derived fields.
+// validateAndPopulateVessel validates the bridge table ID for a vessel and populates derived fields.
 func (v *RecipeValidator) validateAndPopulateVessel(
 	stepIdx, vesselIdx int,
 	preparationID string,

@@ -29,7 +29,7 @@ func (q *repository) RecipeMediaExists(ctx context.Context, recipeMediaID string
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
-	result, err := q.generatedQuerier.CheckRecipeMediaExistence(ctx, q.db, recipeMediaID)
+	result, err := q.generatedQuerier.CheckRecipeMediaExistence(ctx, q.readDB, recipeMediaID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe media existence check")
 	}
@@ -50,7 +50,7 @@ func (q *repository) GetRecipeMedia(ctx context.Context, recipeMediaID string) (
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
-	result, err := q.generatedQuerier.GetRecipeMedia(ctx, q.db, recipeMediaID)
+	result, err := q.generatedQuerier.GetRecipeMedia(ctx, q.readDB, recipeMediaID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe media")
 	}
@@ -84,7 +84,7 @@ func (q *repository) getRecipeMediaForRecipe(ctx context.Context, recipeID strin
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetRecipeMediaForRecipe(ctx, q.db, database.NullStringFromString(recipeID))
+	results, err := q.generatedQuerier.GetRecipeMediaForRecipe(ctx, q.readDB, database.NullStringFromString(recipeID))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
 	}
@@ -127,7 +127,7 @@ func (q *repository) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, 
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	results, err := q.generatedQuerier.GetRecipeMediaForRecipeStep(ctx, q.db, &generated.GetRecipeMediaForRecipeStepParams{
+	results, err := q.generatedQuerier.GetRecipeMediaForRecipeStep(ctx, q.readDB, &generated.GetRecipeMediaForRecipeStepParams{
 		RecipeID:     database.NullStringFromString(recipeID),
 		RecipeStepID: database.NullStringFromString(recipeStepID),
 	})
@@ -166,7 +166,7 @@ func (q *repository) CreateRecipeMedia(ctx context.Context, input *types.RecipeM
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, input.ID)
 
 	// create the recipe media.
-	if err := q.generatedQuerier.CreateRecipeMedia(ctx, q.db, &generated.CreateRecipeMediaParams{
+	if err := q.generatedQuerier.CreateRecipeMedia(ctx, q.writeDB, &generated.CreateRecipeMediaParams{
 		ID:                  input.ID,
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
@@ -206,7 +206,7 @@ func (q *repository) UpdateRecipeMedia(ctx context.Context, updated *types.Recip
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
+	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.writeDB, &generated.UpdateRecipeMediaParams{
 		ID:                  updated.ID,
 		BelongsToRecipe:     database.NullStringFromStringPointer(updated.BelongsToRecipe),
 		BelongsToRecipeStep: database.NullStringFromStringPointer(updated.BelongsToRecipeStep),
@@ -223,7 +223,7 @@ func (q *repository) UpdateRecipeMedia(ctx context.Context, updated *types.Recip
 	return nil
 }
 
-// ArchiveRecipeMedia archives a recipe media from the database by its MealPlanTaskID.
+// ArchiveRecipeMedia archives a recipe media from the database by its ID.
 func (q *repository) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -236,7 +236,7 @@ func (q *repository) ArchiveRecipeMedia(ctx context.Context, recipeMediaID strin
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID)
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.writeDB, recipeMediaID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe media")
 	}

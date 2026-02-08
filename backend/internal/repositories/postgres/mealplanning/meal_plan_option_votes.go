@@ -48,7 +48,7 @@ func (q *repository) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, m
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	result, err := q.generatedQuerier.CheckMealPlanOptionVoteExistence(ctx, q.db, &generated.CheckMealPlanOptionVoteExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanOptionVoteExistence(ctx, q.readDB, &generated.CheckMealPlanOptionVoteExistenceParams{
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,
 		MealPlanEventID:      database.NullStringFromString(mealPlanEventID),
@@ -86,7 +86,7 @@ func (q *repository) GetMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	result, err := q.generatedQuerier.GetMealPlanOptionVote(ctx, q.db, &generated.GetMealPlanOptionVoteParams{
+	result, err := q.generatedQuerier.GetMealPlanOptionVote(ctx, q.readDB, &generated.GetMealPlanOptionVoteParams{
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,
 		MealPlanID:           mealPlanID,
@@ -136,7 +136,7 @@ func (q *repository) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	results, err := q.generatedQuerier.GetMealPlanOptionVotesForMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionVotesForMealPlanOptionParams{
+	results, err := q.generatedQuerier.GetMealPlanOptionVotesForMealPlanOption(ctx, q.readDB, &generated.GetMealPlanOptionVotesForMealPlanOptionParams{
 		MealPlanID:       mealPlanID,
 		MealPlanOptionID: mealPlanOptionID,
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
@@ -200,7 +200,7 @@ func (q *repository) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetMealPlanOptionVotes(ctx, q.db, &generated.GetMealPlanOptionVotesParams{
+	results, err := q.generatedQuerier.GetMealPlanOptionVotes(ctx, q.readDB, &generated.GetMealPlanOptionVotesParams{
 		MealPlanID:       mealPlanID,
 		MealPlanOptionID: mealPlanOptionID,
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
@@ -257,7 +257,7 @@ func (q *repository) CreateMealPlanOptionVote(ctx context.Context, input *types.
 	logger := q.logger.WithValue("vote_count", len(input.Votes))
 
 	// begin transaction
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -314,7 +314,7 @@ func (q *repository) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.db, &generated.UpdateMealPlanOptionVoteParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.writeDB, &generated.UpdateMealPlanOptionVoteParams{
 		Notes:                   updated.Notes,
 		ByUser:                  updated.ByUser,
 		BelongsToMealPlanOption: updated.BelongsToMealPlanOption,
@@ -330,7 +330,7 @@ func (q *repository) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	return nil
 }
 
-// ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its MealPlanTaskID.
+// ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *repository) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -361,7 +361,7 @@ func (q *repository) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, 
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.writeDB, &generated.ArchiveMealPlanOptionVoteParams{
 		BelongsToMealPlanOption: mealPlanOptionID,
 		ID:                      mealPlanOptionVoteID,
 	})

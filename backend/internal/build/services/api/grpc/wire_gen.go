@@ -19,6 +19,8 @@ import (
 	managers2 "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	manager3 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -30,6 +32,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
@@ -74,8 +77,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	databasecfgConfig := cfg.Database
+	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +114,24 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	authServiceServer := grpc2.NewAuthService(logger, tracerProvider, identityRepository, authManagerInterface, authenticationManager)
-	dataPrivacyServiceServer := grpc3.NewDataPrivacyService(logger, tracerProvider)
 	v := sessions.ProvideContextDataFetcherFromContext()
+	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
+	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
+	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
+	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
+	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, issuereportsRepository, mealplanningRepository, notificationsRepository, settingsRepository, uploadedmediaRepository, waitlistsRepository, webhooksRepository, client)
+	configConfig := &servicesConfig.UploadedMedia
+	config2 := &configConfig.Uploads
+	objectstorageConfig := &config2.Storage
+	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
+	if err != nil {
+		return nil, err
+	}
+	uploadManager := objectstorage.ProvideUploadManager(uploader)
+	dataPrivacyServiceServer := grpc3.NewDataPrivacyService(logger, tracerProvider, v, dataprivacyRepository, uploadManager)
 	hasher := authentication.ProvideHasher(authenticator)
 	metricscfgConfig := &observabilityConfig.Metrics
 	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
@@ -129,9 +149,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	identityServiceServer := grpc4.NewService(logger, tracerProvider, v, identityDataManager)
 	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig)
-	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	issueReportsServiceServer := grpc6.NewService(logger, tracerProvider, issuereportsRepository)
-	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	recipeManager, err := managers2.NewRecipeManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, recipeAnalyzer, textsearchcfgConfig, provider)
 	if err != nil {
@@ -160,29 +178,18 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker)
-	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsRepository)
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
+	config3 := &cfg.Database
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config3, client)
 	oAuth2Manager, err := manager2.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	oAuthServiceServer := grpc9.NewService(logger, tracerProvider, oAuth2Manager)
-	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
 	settingsServiceServer := grpc10.NewService(logger, tracerProvider, settingsRepository)
-	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
-	configConfig := &servicesConfig.UploadedMedia
-	config2 := &configConfig.Uploads
-	objectstorageConfig := &config2.Storage
-	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, objectstorageConfig)
-	if err != nil {
-		return nil, err
-	}
-	uploadManager := objectstorage.ProvideUploadManager(uploader)
 	uploadedMediaServiceServer := grpc11.NewService(logger, tracerProvider, uploadedmediaRepository, uploadManager)
-	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	webhooksServiceServer := grpc12.NewService(logger, tracerProvider, webhooksRepository)
-	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	webhookDataManager := manager3.NewWebhookDataManager(tracerProvider, logger, webhooksRepository)
+	webhooksServiceServer := grpc12.NewService(logger, tracerProvider, webhookDataManager)
 	waitlistsServiceServer := grpc13.NewService(logger, tracerProvider, waitlistsRepository)
 	grpcConfig := &cfg.GRPCServer
 	oAuth2Config := &authenticationConfig.OAuth2

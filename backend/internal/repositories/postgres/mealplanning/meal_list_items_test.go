@@ -32,7 +32,7 @@ func TestIntegration_MealListItems(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}()
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
 	listInput := buildMealListForTest(user.ID)

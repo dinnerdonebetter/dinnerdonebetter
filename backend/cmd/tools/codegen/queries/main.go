@@ -82,11 +82,13 @@ func main() {
 		"internal/repositories/postgres/settings/sqlc_queries/service_setting_configurations.sql":                   buildServiceSettingConfigurationQueries(databaseToUse),
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhooks.sql":                                         buildWebhooksQueries(databaseToUse),
 		"internal/repositories/postgres/webhooks/sqlc_queries/webhook_trigger_events.sql":                           buildWebhookTriggerEventsQueries(databaseToUse),
+		"internal/repositories/postgres/webhooks/sqlc_queries/webhook_trigger_configs.sql":                          buildWebhookTriggerConfigsQueries(databaseToUse),
 		"internal/repositories/postgres/notifications/sqlc_queries/user_notifications.sql":                          buildUserNotificationQueries(databaseToUse),
 		"internal/repositories/postgres/waitlists/sqlc_queries/waitlists.sql":                                       buildWaitlistsQueries(databaseToUse),
 		"internal/repositories/postgres/waitlists/sqlc_queries/waitlist_signups.sql":                                buildWaitlistSignupsQueries(databaseToUse),
 		"internal/repositories/postgres/issuereports/sqlc_queries/issue_reports.sql":                                buildIssueReportsQueries(databaseToUse),
 		"internal/repositories/postgres/uploadedmedia/sqlc_queries/uploaded_media.sql":                              buildUploadedMediaQueries(databaseToUse),
+		"internal/repositories/postgres/dataprivacy/sqlc_queries/user_data_disclosures.sql":                         buildUserDataDisclosuresQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

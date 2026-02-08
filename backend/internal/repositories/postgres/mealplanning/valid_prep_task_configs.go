@@ -31,7 +31,7 @@ func (q *repository) ValidPrepTaskConfigExists(ctx context.Context, validPrepTas
 	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
-	result, err := q.generatedQuerier.CheckValidPrepTaskConfigExistence(ctx, q.db, validPrepTaskConfigID)
+	result, err := q.generatedQuerier.CheckValidPrepTaskConfigExistence(ctx, q.readDB, validPrepTaskConfigID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid prep task config existence check")
 	}
@@ -52,7 +52,7 @@ func (q *repository) GetValidPrepTaskConfig(ctx context.Context, validPrepTaskCo
 	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
-	result, err := q.generatedQuerier.GetValidPrepTaskConfig(ctx, q.db, validPrepTaskConfigID)
+	result, err := q.generatedQuerier.GetValidPrepTaskConfig(ctx, q.readDB, validPrepTaskConfigID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid prep task config retrieval")
 	}
@@ -165,7 +165,7 @@ func (q *repository) GetValidPrepTaskConfigs(ctx context.Context, filter *filter
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidPrepTaskConfigs(ctx, q.db, &generated.GetValidPrepTaskConfigsParams{
+	results, err := q.generatedQuerier.GetValidPrepTaskConfigs(ctx, q.readDB, &generated.GetValidPrepTaskConfigsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -314,7 +314,7 @@ func (q *repository) GetValidPrepTaskConfigsForPreparation(ctx context.Context, 
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForPreparation(ctx, q.db, &generated.GetValidPrepTaskConfigsForPreparationParams{
+	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForPreparation(ctx, q.readDB, &generated.GetValidPrepTaskConfigsForPreparationParams{
 		ID:              preparationID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -464,7 +464,7 @@ func (q *repository) GetValidPrepTaskConfigsForIngredient(ctx context.Context, i
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForIngredient(ctx, q.db, &generated.GetValidPrepTaskConfigsForIngredientParams{
+	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForIngredient(ctx, q.readDB, &generated.GetValidPrepTaskConfigsForIngredientParams{
 		ID:              ingredientID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -620,7 +620,7 @@ func (q *repository) GetValidPrepTaskConfigsForIngredientAndPreparation(ctx cont
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForIngredientAndPreparation(ctx, q.db, &generated.GetValidPrepTaskConfigsForIngredientAndPreparationParams{
+	results, err := q.generatedQuerier.GetValidPrepTaskConfigsForIngredientAndPreparation(ctx, q.readDB, &generated.GetValidPrepTaskConfigsForIngredientAndPreparationParams{
 		ValidIngredientID:  ingredientID,
 		ValidPreparationID: preparationID,
 		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -764,7 +764,7 @@ func (q *repository) CreateValidPrepTaskConfig(ctx context.Context, input *mealp
 	logger := q.logger.WithValue(keys.ValidPrepTaskConfigIDKey, input.ID)
 
 	// create the valid prep task config.
-	if err := q.generatedQuerier.CreateValidPrepTaskConfig(ctx, q.db, &generated.CreateValidPrepTaskConfigParams{
+	if err := q.generatedQuerier.CreateValidPrepTaskConfig(ctx, q.writeDB, &generated.CreateValidPrepTaskConfigParams{
 		ID:                                 input.ID,
 		ValidIngredientID:                  input.ValidIngredientID,
 		ValidPreparationID:                 input.ValidPreparationID,
@@ -825,7 +825,7 @@ func (q *repository) UpdateValidPrepTaskConfig(ctx context.Context, updated *mea
 	logger := q.logger.WithValue(keys.ValidPrepTaskConfigIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidPrepTaskConfig(ctx, q.db, &generated.UpdateValidPrepTaskConfigParams{
+	if _, err := q.generatedQuerier.UpdateValidPrepTaskConfig(ctx, q.writeDB, &generated.UpdateValidPrepTaskConfigParams{
 		ValidIngredientID:                  updated.Ingredient.ID,
 		ValidPreparationID:                 updated.Preparation.ID,
 		MinimumStorageDurationInSeconds:    int32(updated.StorageDurationInSeconds.Min),
@@ -846,7 +846,7 @@ func (q *repository) UpdateValidPrepTaskConfig(ctx context.Context, updated *mea
 	return nil
 }
 
-// ArchiveValidPrepTaskConfig archives a valid prep task config from the database by its MealPlanTaskID.
+// ArchiveValidPrepTaskConfig archives a valid prep task config from the database by its ID.
 func (q *repository) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTaskConfigID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -859,7 +859,7 @@ func (q *repository) ArchiveValidPrepTaskConfig(ctx context.Context, validPrepTa
 	logger = logger.WithValue(keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 	tracing.AttachToSpan(span, keys.ValidPrepTaskConfigIDKey, validPrepTaskConfigID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidPrepTaskConfig(ctx, q.db, validPrepTaskConfigID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidPrepTaskConfig(ctx, q.writeDB, validPrepTaskConfigID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid prep task config")
 	}

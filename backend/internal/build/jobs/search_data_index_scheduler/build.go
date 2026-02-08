@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -31,6 +32,7 @@ func Build(
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
+		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		loggingcfg.LogConfigProviders,
 		metricscfg.MetricsConfigProviders,

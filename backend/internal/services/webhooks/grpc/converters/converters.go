@@ -82,22 +82,40 @@ func ConvertWebhookToGRPCWebhook(webhook *webhooks.Webhook) *webhookssvc.Webhook
 		Id:               webhook.ID,
 		BelongsToAccount: webhook.BelongsToAccount,
 		ContentType:      ConvertStringToWebhookContentType(webhook.ContentType),
+		CreatedByUser:    webhook.CreatedByUser,
 	}
-
-	for _, event := range webhook.Events {
-		converted.Events = append(converted.Events, ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(event))
+	for _, cfg := range webhook.TriggerConfigs {
+		converted.TriggerConfigs = append(converted.TriggerConfigs, ConvertWebhookTriggerConfigToGRPCWebhookTriggerConfig(cfg))
 	}
-
 	return converted
 }
 
-func ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(z *webhooks.WebhookTriggerEvent) *webhookssvc.WebhookTriggerEvent {
-	return &webhookssvc.WebhookTriggerEvent{
+// ConvertWebhookTriggerConfigToGRPCWebhookTriggerConfig converts domain join-table WebhookTriggerConfig to proto.
+func ConvertWebhookTriggerConfigToGRPCWebhookTriggerConfig(z *webhooks.WebhookTriggerConfig) *webhookssvc.WebhookTriggerConfig {
+	if z == nil {
+		return nil
+	}
+	return &webhookssvc.WebhookTriggerConfig{
 		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(z.CreatedAt),
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(z.ArchivedAt),
 		Id:               z.ID,
 		BelongsToWebhook: z.BelongsToWebhook,
-		TriggerEvent:     z.TriggerEvent,
+		TriggerEventId:   z.TriggerEventID,
+	}
+}
+
+// ConvertWebhookTriggerEventCatalogToGRPCWebhookTriggerEvent converts domain catalog WebhookTriggerEvent to proto.
+func ConvertWebhookTriggerEventCatalogToGRPCWebhookTriggerEvent(z *webhooks.WebhookTriggerEvent) *webhookssvc.WebhookTriggerEvent {
+	if z == nil {
+		return nil
+	}
+	return &webhookssvc.WebhookTriggerEvent{
+		Id:            z.ID,
+		Name:          z.Name,
+		Description:   z.Description,
+		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(z.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(z.LastUpdatedAt),
+		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(z.ArchivedAt),
 	}
 }
 
@@ -112,64 +130,142 @@ func ConvertGRPCWebhookToWebhook(webhook *webhookssvc.Webhook) *webhooks.Webhook
 		ContentType:      ConvertWebhookContentTypeToString(webhook.ContentType),
 		ID:               webhook.Id,
 		BelongsToAccount: webhook.BelongsToAccount,
+		CreatedByUser:    webhook.CreatedByUser,
 	}
-
-	for _, event := range webhook.Events {
-		converted.Events = append(converted.Events, ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(event))
+	for _, cfg := range webhook.TriggerConfigs {
+		converted.TriggerConfigs = append(converted.TriggerConfigs, ConvertGRPCWebhookTriggerConfigToWebhookTriggerConfig(cfg))
 	}
-
 	return converted
 }
 
-func ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(z *webhookssvc.WebhookTriggerEvent) *webhooks.WebhookTriggerEvent {
-	return &webhooks.WebhookTriggerEvent{
+// ConvertGRPCWebhookTriggerConfigToWebhookTriggerConfig converts proto WebhookTriggerConfig to domain join-table type.
+func ConvertGRPCWebhookTriggerConfigToWebhookTriggerConfig(z *webhookssvc.WebhookTriggerConfig) *webhooks.WebhookTriggerConfig {
+	if z == nil {
+		return nil
+	}
+	return &webhooks.WebhookTriggerConfig{
 		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(z.CreatedAt),
 		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(z.ArchivedAt),
 		ID:               z.Id,
 		BelongsToWebhook: z.BelongsToWebhook,
-		TriggerEvent:     z.TriggerEvent,
+		TriggerEventID:   z.TriggerEventId,
 	}
 }
 
-func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *webhookssvc.WebhookCreationRequestInput, accountID string) *webhooks.WebhookDatabaseCreationInput {
-	webhookID := identifiers.New()
-
-	var events []*webhooks.WebhookTriggerEventDatabaseCreationInput
-	for _, event := range input.Events {
-		events = append(events, &webhooks.WebhookTriggerEventDatabaseCreationInput{
-			ID:               identifiers.New(),
-			BelongsToWebhook: webhookID,
-			TriggerEvent:     event,
-		})
+func ConvertGRPCWebhookCreationRequestInputToWebhookCreationRequestInput(input *webhookssvc.WebhookCreationRequestInput) *webhooks.WebhookCreationRequestInput {
+	if input == nil {
+		return nil
 	}
-
-	x := &webhooks.WebhookDatabaseCreationInput{
-		ID:               webhookID,
-		Name:             input.Name,
-		URL:              input.Url,
-		Method:           ConvertWebhookMethodToString(input.Method),
-		ContentType:      ConvertWebhookContentTypeToString(input.ContentType),
-		BelongsToAccount: accountID,
-		Events:           events,
+	events := make([]*webhooks.WebhookTriggerEventCreationRequestInput, 0, len(input.GetEvents()))
+	for _, pev := range input.GetEvents() {
+		if pev == nil {
+			continue
+		}
+		events = append(events, convertGRPCWebhookTriggerEventCreationRequestInputToDomain(pev))
 	}
+	return &webhooks.WebhookCreationRequestInput{
+		Name:        input.Name,
+		ContentType: ConvertWebhookContentTypeToString(input.ContentType),
+		URL:         input.Url,
+		Method:      ConvertWebhookMethodToString(input.Method),
+		Events:      events,
+	}
+}
 
-	return x
+func convertGRPCWebhookTriggerEventCreationRequestInputToDomain(pev *webhookssvc.WebhookTriggerEventCreationRequestInput) *webhooks.WebhookTriggerEventCreationRequestInput {
+	if pev == nil {
+		return nil
+	}
+	out := &webhooks.WebhookTriggerEventCreationRequestInput{
+		ID:          identifiers.New(),
+		Name:        pev.GetName(),
+		Description: pev.GetDescription(),
+	}
+	if id := pev.GetId(); id != "" {
+		out.ID = id
+	}
+	return out
 }
 
 func ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(input *webhooks.WebhookCreationRequestInput) *webhookssvc.WebhookCreationRequestInput {
+	events := make([]*webhookssvc.WebhookTriggerEventCreationRequestInput, 0, len(input.Events))
+	for _, ev := range input.Events {
+		if ev == nil {
+			continue
+		}
+		events = append(events, convertDomainWebhookTriggerEventCreationRequestInputToGRPC(ev))
+	}
 	return &webhookssvc.WebhookCreationRequestInput{
 		Name:        input.Name,
 		ContentType: ConvertStringToWebhookContentType(input.ContentType),
 		Url:         input.URL,
 		Method:      ConvertStringToWebhookMethod(input.Method),
-		Events:      input.Events,
+		Events:      events,
 	}
 }
 
-func ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(input *webhookssvc.WebhookTriggerEventCreationRequestInput) *webhooks.WebhookTriggerEventDatabaseCreationInput {
-	return &webhooks.WebhookTriggerEventDatabaseCreationInput{
+func convertDomainWebhookTriggerEventCreationRequestInputToGRPC(ev *webhooks.WebhookTriggerEventCreationRequestInput) *webhookssvc.WebhookTriggerEventCreationRequestInput {
+	if ev == nil {
+		return nil
+	}
+	out := &webhookssvc.WebhookTriggerEventCreationRequestInput{
+		Name:        ev.Name,
+		Description: ev.Description,
+	}
+	if ev.ID != "" {
+		out.Id = &ev.ID
+	}
+	return out
+}
+
+// ConvertGRPCWebhookTriggerConfigCreationRequestInputToWebhookTriggerConfigDatabaseCreationInput converts proto AddWebhookTriggerConfig input to domain DB input.
+func ConvertGRPCWebhookTriggerConfigCreationRequestInputToWebhookTriggerConfigDatabaseCreationInput(input *webhookssvc.WebhookTriggerConfigCreationRequestInput) *webhooks.WebhookTriggerConfigDatabaseCreationInput {
+	if input == nil {
+		return nil
+	}
+	return &webhooks.WebhookTriggerConfigDatabaseCreationInput{
 		ID:               identifiers.New(),
 		BelongsToWebhook: input.BelongsToWebhook,
-		TriggerEvent:     input.TriggerEvent,
+		TriggerEventID:   input.TriggerEventId,
 	}
+}
+
+// ConvertGRPCWebhookTriggerEventCreationRequestInputToWebhookTriggerEventCreationRequestInput converts proto catalog CreateWebhookTriggerEvent input to domain request input.
+func ConvertGRPCWebhookTriggerEventCreationRequestInputToWebhookTriggerEventCreationRequestInput(input *webhookssvc.WebhookTriggerEventCreationRequestInput) *webhooks.WebhookTriggerEventCreationRequestInput {
+	if input == nil {
+		return nil
+	}
+	return &webhooks.WebhookTriggerEventCreationRequestInput{
+		ID:          identifiers.New(),
+		Name:        input.Name,
+		Description: input.Description,
+	}
+}
+
+// ConvertGRPCWebhookTriggerEventUpdateRequestInputToWebhookTriggerEventUpdateRequestInput converts proto catalog Update input to domain.
+func ConvertGRPCWebhookTriggerEventUpdateRequestInputToWebhookTriggerEventUpdateRequestInput(input *webhookssvc.WebhookTriggerEventUpdateRequestInput) *webhooks.WebhookTriggerEventUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+	return &webhooks.WebhookTriggerEventUpdateRequestInput{
+		Name:        input.Name,
+		Description: input.Description,
+	}
+}
+
+// ConvertUserDataCollectionToGRPCDataCollection converts a domain webhooks UserDataCollection to a proto DataCollection.
+func ConvertUserDataCollectionToGRPCDataCollection(input *webhooks.UserDataCollection) *webhookssvc.DataCollection {
+	result := &webhookssvc.DataCollection{
+		Webhooks: make(map[string]*webhookssvc.WebhookList),
+	}
+
+	for accountID, webhookList := range input.Data {
+		var grpcWebhooks []*webhookssvc.Webhook
+		for i := range webhookList {
+			grpcWebhooks = append(grpcWebhooks, ConvertWebhookToGRPCWebhook(&webhookList[i]))
+		}
+		result.Webhooks[accountID] = &webhookssvc.WebhookList{Webhooks: grpcWebhooks}
+	}
+
+	return result
 }

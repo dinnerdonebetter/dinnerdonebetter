@@ -122,7 +122,7 @@ func TestQuerier_Integration_ValidIngredientStateIngredients(t *testing.T) {
 func TestQuerier_ValidIngredientStateIngredientExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient preparation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -138,7 +138,7 @@ func TestQuerier_ValidIngredientStateIngredientExists(T *testing.T) {
 func TestQuerier_GetValidIngredientStateIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient preparation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -181,7 +181,7 @@ func TestQuerier_UpdateValidIngredientStateIngredient(T *testing.T) {
 func TestQuerier_ArchiveValidIngredientStateIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid ingredient preparation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

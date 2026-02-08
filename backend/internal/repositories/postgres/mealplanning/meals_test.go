@@ -35,7 +35,7 @@ func createMealForTest(t *testing.T, ctx context.Context, exampleMeal *types.Mea
 
 	// create
 	if exampleMeal == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 		exampleMeal = buildMealForIntegrationTest(user.ID, recipe)
 	}
@@ -77,7 +77,7 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	exampleMeal := buildMealForIntegrationTest(user.ID, recipe)
@@ -135,7 +135,7 @@ func TestQuerier_Integration_GetMealsWithIDs(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}()
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	meal1 := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
@@ -158,7 +158,7 @@ func TestQuerier_Integration_GetMealsWithIDs(t *testing.T) {
 func TestQuerier_MealExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -174,7 +174,7 @@ func TestQuerier_MealExists(T *testing.T) {
 func TestQuerier_GetMeal(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -204,7 +204,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 func TestQuerier_CreateMealRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with missing meal MealPlanTaskID", func(t *testing.T) {
+	T.Run("with missing meal ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
@@ -214,7 +214,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 
 		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
 
-		err := c.CreateMealComponent(ctx, c.db, "", exampleInput)
+		err := c.CreateMealComponent(ctx, c.writeDB, "", exampleInput)
 		assert.Error(t, err)
 	})
 
@@ -226,7 +226,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
+		err := c.CreateMealComponent(ctx, c.writeDB, exampleMeal.ID, nil)
 		assert.Error(t, err)
 	})
 }
@@ -234,7 +234,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 func TestQuerier_ArchiveMeal(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleAccountID := fakes.BuildFakeID()
@@ -245,7 +245,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 		assert.Error(t, c.ArchiveMeal(ctx, "", exampleAccountID))
 	})
 
-	T.Run("with invalid account MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
@@ -260,7 +260,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 func TestQuerier_MarkMealAsIndexed(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -287,7 +287,7 @@ func TestQuerier_Integration_Meals_CursorBasedPagination(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 
 	// Use the generic pagination test helper

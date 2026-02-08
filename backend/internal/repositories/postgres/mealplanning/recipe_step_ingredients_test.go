@@ -20,7 +20,7 @@ func createRecipeStepIngredientForTest(t *testing.T, ctx context.Context, recipe
 
 	// create
 	if exampleRecipeStepIngredient == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 		exampleRecipeStep := createdRecipe.Steps[0]
@@ -71,7 +71,7 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -133,7 +133,7 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -148,7 +148,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -163,7 +163,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid recipe step ingredient MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -182,7 +182,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
@@ -196,7 +196,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -210,7 +210,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step ingredient MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -228,7 +228,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with missing recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with missing recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -243,7 +243,7 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -257,7 +257,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
 		filter := filtering.DefaultQueryFilter()
@@ -296,7 +296,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.createRecipeStepIngredient(ctx, c.db, nil)
+		actual, err := c.createRecipeStepIngredient(ctx, c.writeDB, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -318,7 +318,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid recipe step MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
@@ -329,7 +329,7 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepIngredient(ctx, "", exampleRecipeStepIngredient.ID))
 	})
 
-	T.Run("with invalid recipe step ingredient MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid recipe step ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
@@ -358,7 +358,7 @@ func TestQuerier_Integration_RecipeStepIngredients_CursorBasedPagination(t *test
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default ingredients from the step so we start fresh
 	for _, step := range recipeStruct.Steps {

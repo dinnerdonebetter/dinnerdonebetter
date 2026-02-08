@@ -37,7 +37,7 @@ func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated.CheckRecipePrepTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.readDB, &generated.CheckRecipePrepTaskExistenceParams{
 		RecipeID:         recipeID,
 		RecipePrepTaskID: recipePrepTaskID,
 	})
@@ -69,7 +69,7 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	results, err := q.generatedQuerier.GetRecipePrepTask(ctx, q.db, recipePrepTaskID)
+	results, err := q.generatedQuerier.GetRecipePrepTask(ctx, q.readDB, recipePrepTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe prep task")
 	}
@@ -200,7 +200,7 @@ func (q *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanni
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -268,7 +268,7 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, q.db, recipeID)
+	results, err := q.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, q.readDB, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe prep tasks list retrieval query")
 	}
@@ -379,7 +379,7 @@ func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
+	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.writeDB, &generated.UpdateRecipePrepTaskParams{
 		Name:                                   updated.Name,
 		Description:                            updated.Description,
 		Notes:                                  updated.Notes,
@@ -420,7 +420,7 @@ func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipe
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID)
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.writeDB, recipePrepTaskID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}

@@ -36,7 +36,7 @@ func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accou
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, q.db, &generated.CheckAccountInstrumentOwnershipExistenceParams{
+	result, err := q.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, q.readDB, &generated.CheckAccountInstrumentOwnershipExistenceParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})
@@ -66,7 +66,7 @@ func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountI
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetAccountInstrumentOwnership(ctx, q.db, &generated.GetAccountInstrumentOwnershipParams{
+	result, err := q.generatedQuerier.GetAccountInstrumentOwnership(ctx, q.readDB, &generated.GetAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})
@@ -120,7 +120,7 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetAccountInstrumentOwnerships(ctx, q.db, &generated.GetAccountInstrumentOwnershipsParams{
+	results, err := q.generatedQuerier.GetAccountInstrumentOwnerships(ctx, q.readDB, &generated.GetAccountInstrumentOwnershipsParams{
 		AccountID:       accountID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -187,7 +187,7 @@ func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input
 	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, input.ID)
 
 	// create the account instrument ownership.
-	if err := q.generatedQuerier.CreateAccountInstrumentOwnership(ctx, q.db, &generated.CreateAccountInstrumentOwnershipParams{
+	if err := q.generatedQuerier.CreateAccountInstrumentOwnership(ctx, q.writeDB, &generated.CreateAccountInstrumentOwnershipParams{
 		ID:                input.ID,
 		Notes:             input.Notes,
 		ValidInstrumentID: input.ValidInstrumentID,
@@ -222,7 +222,7 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, q.db, &generated.UpdateAccountInstrumentOwnershipParams{
+	if _, err := q.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, q.writeDB, &generated.UpdateAccountInstrumentOwnershipParams{
 		Notes:             updated.Notes,
 		ValidInstrumentID: updated.Instrument.ID,
 		ID:                updated.ID,
@@ -237,7 +237,7 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 	return nil
 }
 
-// ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its MealPlanTaskID.
+// ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its ID.
 func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -256,7 +256,7 @@ func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, acco
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.db, &generated.ArchiveAccountInstrumentOwnershipParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.writeDB, &generated.ArchiveAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})

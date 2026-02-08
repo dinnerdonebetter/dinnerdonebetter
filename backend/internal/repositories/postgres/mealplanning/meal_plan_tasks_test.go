@@ -64,8 +64,8 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
@@ -107,7 +107,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -121,7 +121,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid meal plan task MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

@@ -78,8 +78,8 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
@@ -128,7 +128,7 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -508,8 +508,8 @@ func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T)
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
 

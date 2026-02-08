@@ -31,7 +31,7 @@ func (q *repository) ValidMeasurementUnitConversionExists(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	result, err := q.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, q.db, validMeasurementUnitConversionID)
+	result, err := q.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, q.readDB, validMeasurementUnitConversionID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid measurement conversion existence check")
 	}
@@ -52,7 +52,7 @@ func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	result, err := q.generatedQuerier.GetValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID)
+	result, err := q.generatedQuerier.GetValidMeasurementUnitConversion(ctx, q.readDB, validMeasurementUnitConversionID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement conversion")
 	}
@@ -162,7 +162,7 @@ func (q *repository) GetValidMeasurementUnitConversionsForUnit(ctx context.Conte
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	results, err := q.generatedQuerier.GetValidMeasurementUnitConversionsForMeasurementUnit(ctx, q.db, &generated.GetValidMeasurementUnitConversionsForMeasurementUnitParams{
+	results, err := q.generatedQuerier.GetValidMeasurementUnitConversionsForMeasurementUnit(ctx, q.readDB, &generated.GetValidMeasurementUnitConversionsForMeasurementUnitParams{
 		ID:              validMeasurementUnitID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -294,7 +294,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
 
-	// Normalize to canonical ordering (smaller MealPlanTaskID first) to satisfy CHECK constraint
+	// Normalize to canonical ordering (smaller ID first) to satisfy CHECK constraint
 	// This ensures duplicate entries hit the unique constraint rather than the check constraint
 	fromUnit := input.From
 	toUnit := input.To
@@ -307,7 +307,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 	}
 
 	// create the valid measurement conversion.
-	if err := q.generatedQuerier.CreateValidMeasurementUnitConversion(ctx, q.db, &generated.CreateValidMeasurementUnitConversionParams{
+	if err := q.generatedQuerier.CreateValidMeasurementUnitConversion(ctx, q.writeDB, &generated.CreateValidMeasurementUnitConversionParams{
 		ID:                input.ID,
 		FromUnit:          fromUnit,
 		ToUnit:            toUnit,
@@ -379,7 +379,7 @@ func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 		ingredientID = &updated.OnlyForIngredient.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, q.db, &generated.UpdateValidMeasurementUnitConversionParams{
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, q.writeDB, &generated.UpdateValidMeasurementUnitConversionParams{
 		FromUnit:          updated.From.ID,
 		ToUnit:            updated.To.ID,
 		OnlyForIngredient: database.NullStringFromStringPointer(ingredientID),
@@ -395,7 +395,7 @@ func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 	return nil
 }
 
-// ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its MealPlanTaskID.
+// ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its ID.
 func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -408,7 +408,7 @@ func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.writeDB, validMeasurementUnitConversionID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}

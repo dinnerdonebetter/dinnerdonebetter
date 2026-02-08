@@ -100,12 +100,24 @@ public enum Webhooks_WebhookMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
+public struct Webhooks_WebhookList: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var webhooks: [Webhooks_Webhook] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Webhooks_DataCollection: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var webhooks: Dictionary<String,Webhooks_Webhook> = [:]
+  public var webhooks: Dictionary<String,Webhooks_WebhookList> = [:]
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -156,7 +168,9 @@ public struct Webhooks_Webhook: Sendable {
 
   public var contentType: Webhooks_WebhookContentType = .json
 
-  public var events: [Webhooks_WebhookTriggerEvent] = []
+  public var triggerConfigs: [Webhooks_WebhookTriggerConfig] = []
+
+  public var createdByUser: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -167,7 +181,8 @@ public struct Webhooks_Webhook: Sendable {
   fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-public struct Webhooks_WebhookTriggerEvent: Sendable {
+/// WebhookTriggerConfig is the join-table record (webhook subscription to a trigger event).
+public struct Webhooks_WebhookTriggerConfig: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -194,13 +209,61 @@ public struct Webhooks_WebhookTriggerEvent: Sendable {
 
   public var belongsToWebhook: String = String()
 
-  public var triggerEvent: String = String()
+  public var triggerEventID: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+}
+
+/// WebhookTriggerEvent is the catalog entity for available trigger event types.
+public struct Webhooks_WebhookTriggerEvent: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var id: String = String()
+
+  public var name: String = String()
+
+  public var description_p: String = String()
+
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_createdAt = newValue}
+  }
+  /// Returns true if `createdAt` has been explicitly set.
+  public var hasCreatedAt: Bool {return self._createdAt != nil}
+  /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
+  public mutating func clearCreatedAt() {self._createdAt = nil}
+
+  public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_lastUpdatedAt = newValue}
+  }
+  /// Returns true if `lastUpdatedAt` has been explicitly set.
+  public var hasLastUpdatedAt: Bool {return self._lastUpdatedAt != nil}
+  /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
+
+  public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {return _archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_archivedAt = newValue}
+  }
+  /// Returns true if `archivedAt` has been explicitly set.
+  public var hasArchivedAt: Bool {return self._archivedAt != nil}
+  /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearArchivedAt() {self._archivedAt = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
@@ -216,6 +279,36 @@ extension Webhooks_WebhookMethod: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WEBHOOK_METHOD_GET\0\u{1}WEBHOOK_METHOD_PUT\0\u{1}WEBHOOK_METHOD_PATCH\0\u{1}WEBHOOK_METHOD_POST\0\u{1}WEBHOOK_METHOD_DELETE\0")
 }
 
+extension Webhooks_WebhookList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WebhookList"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}webhooks\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.webhooks) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.webhooks.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.webhooks, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Webhooks_WebhookList, rhs: Webhooks_WebhookList) -> Bool {
+    if lhs.webhooks != rhs.webhooks {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}webhooks\0")
@@ -226,7 +319,7 @@ extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_Webhook>.self, value: &self.webhooks) }()
+      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_WebhookList>.self, value: &self.webhooks) }()
       default: break
       }
     }
@@ -234,7 +327,7 @@ extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.webhooks.isEmpty {
-      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_Webhook>.self, value: self.webhooks, fieldNumber: 1)
+      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Webhooks_WebhookList>.self, value: self.webhooks, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -248,7 +341,7 @@ extension Webhooks_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Webhook"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}name\0\u{1}url\0\u{1}method\0\u{1}id\0\u{3}belongs_to_account\0\u{3}content_type\0\u{1}events\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}name\0\u{1}url\0\u{1}method\0\u{1}id\0\u{3}belongs_to_account\0\u{3}content_type\0\u{3}trigger_configs\0\u{3}created_by_user\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -265,7 +358,8 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 7: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.belongsToAccount) }()
       case 9: try { try decoder.decodeSingularEnumField(value: &self.contentType) }()
-      case 10: try { try decoder.decodeRepeatedMessageField(value: &self.events) }()
+      case 10: try { try decoder.decodeRepeatedMessageField(value: &self.triggerConfigs) }()
+      case 11: try { try decoder.decodeSingularStringField(value: &self.createdByUser) }()
       default: break
       }
     }
@@ -303,8 +397,11 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if self.contentType != .json {
       try visitor.visitSingularEnumField(value: self.contentType, fieldNumber: 9)
     }
-    if !self.events.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.events, fieldNumber: 10)
+    if !self.triggerConfigs.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.triggerConfigs, fieldNumber: 10)
+    }
+    if !self.createdByUser.isEmpty {
+      try visitor.visitSingularStringField(value: self.createdByUser, fieldNumber: 11)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -319,15 +416,16 @@ extension Webhooks_Webhook: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs.id != rhs.id {return false}
     if lhs.belongsToAccount != rhs.belongsToAccount {return false}
     if lhs.contentType != rhs.contentType {return false}
-    if lhs.events != rhs.events {return false}
+    if lhs.triggerConfigs != rhs.triggerConfigs {return false}
+    if lhs.createdByUser != rhs.createdByUser {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Webhooks_WebhookTriggerEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".WebhookTriggerEvent"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{1}id\0\u{3}belongs_to_webhook\0\u{3}trigger_event\0")
+extension Webhooks_WebhookTriggerConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WebhookTriggerConfig"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{1}id\0\u{3}belongs_to_webhook\0\u{3}trigger_event_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -339,7 +437,7 @@ extension Webhooks_WebhookTriggerEvent: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 2: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.belongsToWebhook) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.triggerEvent) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.triggerEventID) }()
       default: break
       }
     }
@@ -362,18 +460,77 @@ extension Webhooks_WebhookTriggerEvent: SwiftProtobuf.Message, SwiftProtobuf._Me
     if !self.belongsToWebhook.isEmpty {
       try visitor.visitSingularStringField(value: self.belongsToWebhook, fieldNumber: 4)
     }
-    if !self.triggerEvent.isEmpty {
-      try visitor.visitSingularStringField(value: self.triggerEvent, fieldNumber: 5)
+    if !self.triggerEventID.isEmpty {
+      try visitor.visitSingularStringField(value: self.triggerEventID, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Webhooks_WebhookTriggerEvent, rhs: Webhooks_WebhookTriggerEvent) -> Bool {
+  public static func ==(lhs: Webhooks_WebhookTriggerConfig, rhs: Webhooks_WebhookTriggerConfig) -> Bool {
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._archivedAt != rhs._archivedAt {return false}
     if lhs.id != rhs.id {return false}
     if lhs.belongsToWebhook != rhs.belongsToWebhook {return false}
-    if lhs.triggerEvent != rhs.triggerEvent {return false}
+    if lhs.triggerEventID != rhs.triggerEventID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Webhooks_WebhookTriggerEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WebhookTriggerEvent"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}description\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
+      case 6: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if !self.description_p.isEmpty {
+      try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 3)
+    }
+    try { if let v = self._createdAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._lastUpdatedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._archivedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Webhooks_WebhookTriggerEvent, rhs: Webhooks_WebhookTriggerEvent) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.description_p != rhs.description_p {return false}
+    if lhs._createdAt != rhs._createdAt {return false}
+    if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
+    if lhs._archivedAt != rhs._archivedAt {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

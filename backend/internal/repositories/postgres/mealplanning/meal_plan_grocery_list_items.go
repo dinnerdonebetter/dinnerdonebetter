@@ -37,7 +37,7 @@ func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.readDB, &generated.CheckMealPlanGroceryListItemExistenceParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -102,7 +102,7 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.db, &generated.GetMealPlanGroceryListItemParams{
+	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.readDB, &generated.GetMealPlanGroceryListItemParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -225,7 +225,7 @@ func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, q.db, &generated.GetMealPlanGroceryListItemsForMealPlanParams{
+	results, err := q.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, q.readDB, &generated.GetMealPlanGroceryListItemsForMealPlanParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -423,7 +423,7 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 
 // CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
 func (q *repository) CreateMealPlanGroceryListItem(ctx context.Context, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
-	return q.createMealPlanGroceryListItem(ctx, q.db, input)
+	return q.createMealPlanGroceryListItem(ctx, q.writeDB, input)
 }
 
 // UpdateMealPlanGroceryListItem updates a particular meal plan grocery list.
@@ -442,7 +442,7 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.writeDB, &generated.UpdateMealPlanGroceryListItemParams{
 		BelongsToMealPlanOption:  database.NullStringFromStringPointer(updated.BelongsToMealPlanOption),
 		RecipeID:                 database.NullStringFromStringPointer(updated.RecipeID),
 		RecipeStepID:             database.NullStringFromStringPointer(updated.RecipeStepID),
@@ -469,7 +469,7 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 	return nil
 }
 
-// ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its MealPlanTaskID.
+// ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its ID.
 func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -482,7 +482,7 @@ func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPla
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.db, mealPlanGroceryListItemID)
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.writeDB, mealPlanGroceryListItemID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list")
 	}

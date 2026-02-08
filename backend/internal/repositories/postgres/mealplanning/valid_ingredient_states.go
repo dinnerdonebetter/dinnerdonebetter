@@ -30,7 +30,7 @@ func (q *repository) ValidIngredientStateExists(ctx context.Context, validIngred
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	result, err := q.generatedQuerier.CheckValidIngredientStateExistence(ctx, q.db, validIngredientStateID)
+	result, err := q.generatedQuerier.CheckValidIngredientStateExistence(ctx, q.readDB, validIngredientStateID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state existence check")
 	}
@@ -51,7 +51,7 @@ func (q *repository) GetValidIngredientState(ctx context.Context, validIngredien
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	result, err := q.generatedQuerier.GetValidIngredientState(ctx, q.db, validIngredientStateID)
+	result, err := q.generatedQuerier.GetValidIngredientState(ctx, q.readDB, validIngredientStateID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state retrieval query")
 	}
@@ -91,7 +91,7 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, &generated.SearchForValidIngredientStatesParams{
+	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.readDB, &generated.SearchForValidIngredientStatesParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -145,7 +145,7 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated.GetValidIngredientStatesParams{
+	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.readDB, &generated.GetValidIngredientStatesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -201,7 +201,7 @@ func (q *repository) GetValidIngredientStatesWithIDs(ctx context.Context, ids []
 
 	logger := q.logger.Clone()
 
-	results, err := q.generatedQuerier.GetValidIngredientStatesWithIDs(ctx, q.db, ids)
+	results, err := q.generatedQuerier.GetValidIngredientStatesWithIDs(ctx, q.readDB, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states id list retrieval query")
 	}
@@ -230,7 +230,7 @@ func (q *repository) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetValidIngredientStatesNeedingIndexing(ctx, q.db)
+	results, err := q.generatedQuerier.GetValidIngredientStatesNeedingIndexing(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid ingredient states list retrieval query")
 	}
@@ -250,7 +250,7 @@ func (q *repository) CreateValidIngredientState(ctx context.Context, input *type
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, input.ID)
 
 	// create the valid ingredient state.
-	if err := q.generatedQuerier.CreateValidIngredientState(ctx, q.db, &generated.CreateValidIngredientStateParams{
+	if err := q.generatedQuerier.CreateValidIngredientState(ctx, q.writeDB, &generated.CreateValidIngredientStateParams{
 		ID:            input.ID,
 		Name:          input.Name,
 		Description:   input.Description,
@@ -290,7 +290,7 @@ func (q *repository) UpdateValidIngredientState(ctx context.Context, updated *ty
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated.UpdateValidIngredientStateParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.writeDB, &generated.UpdateValidIngredientStateParams{
 		Name:          updated.Name,
 		Description:   updated.Description,
 		IconPath:      updated.IconPath,
@@ -320,7 +320,7 @@ func (q *repository) MarkValidIngredientStateAsIndexed(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredientStateLastIndexedAt(ctx, q.db, validIngredientStateID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidIngredientStateLastIndexedAt(ctx, q.writeDB, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid ingredient state as indexed")
 	}
 
@@ -329,7 +329,7 @@ func (q *repository) MarkValidIngredientStateAsIndexed(ctx context.Context, vali
 	return nil
 }
 
-// ArchiveValidIngredientState archives a valid ingredient state from the database by its MealPlanTaskID.
+// ArchiveValidIngredientState archives a valid ingredient state from the database by its ID.
 func (q *repository) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -342,7 +342,7 @@ func (q *repository) ArchiveValidIngredientState(ctx context.Context, validIngre
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientState(ctx, q.db, validIngredientStateID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientState(ctx, q.writeDB, validIngredientStateID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}

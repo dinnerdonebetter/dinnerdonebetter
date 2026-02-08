@@ -150,7 +150,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 			Steps: []*mealplanning.RecipeStepDatabaseCreationInput{
 				{
 					ID:            fakes.BuildFakeID(),
-					PreparationID: stepPreparation.ID, // Different from vip.Preparation.MealPlanTaskID
+					PreparationID: stepPreparation.ID, // Different from vip.Preparation.ID
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),

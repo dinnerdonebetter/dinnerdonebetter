@@ -31,7 +31,7 @@ func (q *repository) ValidVesselExists(ctx context.Context, validVesselID string
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	result, err := q.generatedQuerier.CheckValidVesselExistence(ctx, q.db, validVesselID)
+	result, err := q.generatedQuerier.CheckValidVesselExistence(ctx, q.readDB, validVesselID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid vessel existence check")
 	}
@@ -52,7 +52,7 @@ func (q *repository) GetValidVessel(ctx context.Context, validVesselID string) (
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	result, err := q.generatedQuerier.GetValidVessel(ctx, q.db, validVesselID)
+	result, err := q.generatedQuerier.GetValidVessel(ctx, q.readDB, validVesselID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid vessels")
 	}
@@ -100,7 +100,7 @@ func (q *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVess
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := q.generatedQuerier.GetRandomValidVessel(ctx, q.db)
+	result, err := q.generatedQuerier.GetRandomValidVessel(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for random valid vessel")
 	}
@@ -162,7 +162,7 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, &generated.SearchForValidVesselsParams{
+	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.readDB, &generated.SearchForValidVesselsParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -236,7 +236,7 @@ func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidVessels(ctx, q.db, &generated.GetValidVesselsParams{
+	results, err := q.generatedQuerier.GetValidVessels(ctx, q.readDB, &generated.GetValidVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -312,7 +312,7 @@ func (q *repository) GetValidVesselsWithIDs(ctx context.Context, ids []string) (
 		return nil, sql.ErrNoRows
 	}
 
-	results, err := q.generatedQuerier.GetValidVesselsWithIDs(ctx, q.db, ids)
+	results, err := q.generatedQuerier.GetValidVesselsWithIDs(ctx, q.readDB, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid vessels id list retrieval query")
 	}
@@ -363,7 +363,7 @@ func (q *repository) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetValidVesselIDsNeedingIndexing(ctx, q.db)
+	results, err := q.generatedQuerier.GetValidVesselIDsNeedingIndexing(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid vessels list retrieval query")
 	}
@@ -382,7 +382,7 @@ func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 	logger := q.logger.WithValue(keys.ValidVesselIDKey, input.ID)
 
 	// create the valid vessel.
-	if err := q.generatedQuerier.CreateValidVessel(ctx, q.db, &generated.CreateValidVesselParams{
+	if err := q.generatedQuerier.CreateValidVessel(ctx, q.writeDB, &generated.CreateValidVesselParams{
 		Slug:                           input.Slug,
 		ID:                             input.ID,
 		PluralName:                     input.PluralName,
@@ -445,7 +445,7 @@ func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 		return fmt.Errorf("capacity unit: %w", database.ErrNilInputProvided)
 	}
 
-	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated.UpdateValidVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.writeDB, &generated.UpdateValidVesselParams{
 		Name:                           updated.Name,
 		PluralName:                     updated.PluralName,
 		Description:                    updated.Description,
@@ -483,7 +483,7 @@ func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.db, validVesselID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.writeDB, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
 	}
 
@@ -492,7 +492,7 @@ func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	return nil
 }
 
-// ArchiveValidVessel archives a valid vessel from the database by its MealPlanTaskID.
+// ArchiveValidVessel archives a valid vessel from the database by its ID.
 func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -505,7 +505,7 @@ func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID strin
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.writeDB, validVesselID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}

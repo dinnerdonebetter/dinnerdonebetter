@@ -22,9 +22,9 @@ func createServiceSettingConfigurationForTest(t *testing.T, ctx context.Context,
 
 	// create
 	if exampleServiceSettingConfiguration == nil {
-		user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+		user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 		generatedIdentity := generated.New()
-		accountID, err := generatedIdentity.GetDefaultAccountIDForUser(ctx, dbc.db, user.ID)
+		accountID, err := generatedIdentity.GetDefaultAccountIDForUser(ctx, dbc.writeDB, user.ID)
 		require.NoError(t, err)
 
 		serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
@@ -71,8 +71,8 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 	exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
@@ -124,7 +124,7 @@ func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 func TestQuerier_GetServiceSettingConfiguration(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting configuration MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid service setting configuration ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -139,7 +139,7 @@ func TestQuerier_GetServiceSettingConfiguration(T *testing.T) {
 func TestQuerier_GetServiceSettingConfigurationForUserByName(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -171,7 +171,7 @@ func TestQuerier_GetServiceSettingConfigurationForAccountByName(T *testing.T) {
 func TestQuerier_GetServiceSettingConfigurationsForUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -214,7 +214,7 @@ func TestQuerier_UpdateServiceSettingConfiguration(T *testing.T) {
 func TestQuerier_ArchiveServiceSettingConfiguration(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -242,8 +242,8 @@ func TestQuerier_Integration_ServiceSettingConfigurationsForUser_CursorBasedPagi
 	}(t)
 
 	// Create a user and account for testing
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSettingConfiguration]{
@@ -293,8 +293,8 @@ func TestQuerier_Integration_ServiceSettingConfigurationsForAccount_CursorBasedP
 	}(t)
 
 	// Create a user and account for testing
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSettingConfiguration]{

@@ -21,7 +21,7 @@ type Enumerations struct {
 	Vessels          map[string]*mealplanning.ValidVessel
 	IngredientStates map[string]*mealplanning.ValidIngredientState
 
-	// Bridge table lookups (keyed by [first entity MealPlanTaskID][second entity MealPlanTaskID])
+	// Bridge table lookups (keyed by [first entity ID][second entity ID])
 	IngredientPreparations     map[string]map[string]*mealplanning.ValidIngredientPreparation     // [preparationID][ingredientID]
 	IngredientMeasurementUnits map[string]map[string]*mealplanning.ValidIngredientMeasurementUnit // [ingredientID][unitID]
 	PreparationInstruments     map[string]map[string]*mealplanning.ValidPreparationInstrument     // [preparationID][instrumentID]

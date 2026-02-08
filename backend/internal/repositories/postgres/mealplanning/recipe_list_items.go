@@ -43,7 +43,7 @@ func (q *repository) GetRecipeListItems(ctx context.Context, recipeListID string
 	)
 	recipeIDs := []string{}
 
-	results, err := q.generatedQuerier.GetRecipeListItems(ctx, q.db, &generated.GetRecipeListItemsParams{
+	results, err := q.generatedQuerier.GetRecipeListItems(ctx, q.readDB, &generated.GetRecipeListItemsParams{
 		RecipeListID:    recipeListID,
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -116,7 +116,7 @@ func (q *repository) CreateRecipeListItem(ctx context.Context, input *types.Reci
 	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, input.ID)
 	logger := q.logger.WithValue(keys.RecipeListItemIDKey, input.ID)
 
-	if err := q.generatedQuerier.CreateRecipeListItem(ctx, q.db, &generated.CreateRecipeListItemParams{
+	if err := q.generatedQuerier.CreateRecipeListItem(ctx, q.writeDB, &generated.CreateRecipeListItemParams{
 		ID:                  input.ID,
 		RecipeID:            input.RecipeID,
 		Notes:               input.Notes,
@@ -149,7 +149,7 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	logger := q.logger.WithValue(keys.RecipeListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, updated.ID)
 
-	rowsAffected, err := q.generatedQuerier.UpdateRecipeListItem(ctx, q.db, &generated.UpdateRecipeListItemParams{
+	rowsAffected, err := q.generatedQuerier.UpdateRecipeListItem(ctx, q.writeDB, &generated.UpdateRecipeListItemParams{
 		RecipeID:            updated.Recipe.ID,
 		Notes:               updated.Notes,
 		BelongsToRecipeList: updated.BelongsToRecipeList,
@@ -168,7 +168,7 @@ func (q *repository) UpdateRecipeListItem(ctx context.Context, updated *types.Re
 	return nil
 }
 
-// ArchiveRecipeListItem archives a recipe list item from the database by its MealPlanTaskID.
+// ArchiveRecipeListItem archives a recipe list item from the database by its ID.
 func (q *repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID, recipeListID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -187,7 +187,7 @@ func (q *repository) ArchiveRecipeListItem(ctx context.Context, recipeListItemID
 	logger = logger.WithValue(keys.RecipeListItemIDKey, recipeListItemID)
 	tracing.AttachToSpan(span, keys.RecipeListItemIDKey, recipeListItemID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeListItem(ctx, q.db, &generated.ArchiveRecipeListItemParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeListItem(ctx, q.writeDB, &generated.ArchiveRecipeListItemParams{
 		BelongsToRecipeList: recipeListID,
 		ID:                  recipeListItemID,
 	})

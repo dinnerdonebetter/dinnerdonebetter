@@ -23,11 +23,26 @@ func ProvideMethodPermissions() WebhooksMethodPermissions {
 		webhookssvc.WebhooksService_ArchiveWebhook_FullMethodName: {
 			authorization.ArchiveWebhooksPermission,
 		},
-		webhookssvc.WebhooksService_AddWebhookTriggerEvent_FullMethodName: {
-			authorization.CreateWebhookTriggerEventsPermission,
+		webhookssvc.WebhooksService_AddWebhookTriggerConfig_FullMethodName: {
+			authorization.CreateWebhookTriggerConfigsPermission,
+		},
+		webhookssvc.WebhooksService_ArchiveWebhookTriggerConfig_FullMethodName: {
+			authorization.ArchiveWebhookTriggerConfigsPermission,
 		},
 		webhookssvc.WebhooksService_ArchiveWebhookTriggerEvent_FullMethodName: {
 			authorization.ArchiveWebhookTriggerEventsPermission,
+		},
+		webhookssvc.WebhooksService_CreateWebhookTriggerEvent_FullMethodName: {
+			authorization.CreateWebhookTriggerEventsPermission,
+		},
+		webhookssvc.WebhooksService_GetWebhookTriggerEvent_FullMethodName: {
+			authorization.ReadWebhookTriggerEventsPermission,
+		},
+		webhookssvc.WebhooksService_GetWebhookTriggerEvents_FullMethodName: {
+			authorization.ReadWebhookTriggerEventsPermission,
+		},
+		webhookssvc.WebhooksService_UpdateWebhookTriggerEvent_FullMethodName: {
+			authorization.UpdateWebhookTriggerEventsPermission,
 		},
 	}
 }

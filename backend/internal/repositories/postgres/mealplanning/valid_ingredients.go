@@ -31,7 +31,7 @@ func (q *repository) ValidIngredientExists(ctx context.Context, validIngredientI
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	result, err := q.generatedQuerier.CheckValidIngredientExistence(ctx, q.db, validIngredientID)
+	result, err := q.generatedQuerier.CheckValidIngredientExistence(ctx, q.readDB, validIngredientID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient existence check")
 	}
@@ -52,7 +52,7 @@ func (q *repository) GetValidIngredient(ctx context.Context, validIngredientID s
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	result, err := q.generatedQuerier.GetValidIngredient(ctx, q.db, validIngredientID)
+	result, err := q.generatedQuerier.GetValidIngredient(ctx, q.readDB, validIngredientID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
 	}
@@ -107,7 +107,7 @@ func (q *repository) GetRandomValidIngredient(ctx context.Context) (*mealplannin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := q.generatedQuerier.GetRandomValidIngredient(ctx, q.db)
+	result, err := q.generatedQuerier.GetRandomValidIngredient(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching random valid ingredient")
 	}
@@ -176,7 +176,7 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, &generated.SearchForValidIngredientsParams{
+	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.readDB, &generated.SearchForValidIngredientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -271,7 +271,7 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	results, err := q.generatedQuerier.SearchValidIngredientsByPreparationAndIngredientName(ctx, q.db, &generated.SearchValidIngredientsByPreparationAndIngredientNameParams{
+	results, err := q.generatedQuerier.SearchValidIngredientsByPreparationAndIngredientName(ctx, q.readDB, &generated.SearchValidIngredientsByPreparationAndIngredientNameParams{
 		ValidPreparationID: preparationID,
 		NameQuery:          query,
 	})
@@ -349,7 +349,7 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidIngredients(ctx, q.db, &generated.GetValidIngredientsParams{
+	results, err := q.generatedQuerier.GetValidIngredients(ctx, q.readDB, &generated.GetValidIngredientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -440,7 +440,7 @@ func (q *repository) GetValidIngredientsWithIDs(ctx context.Context, ids []strin
 		return nil, database.ErrEmptyInputProvided
 	}
 
-	results, err := q.generatedQuerier.GetValidIngredientsWithIDs(ctx, q.db, ids)
+	results, err := q.generatedQuerier.GetValidIngredientsWithIDs(ctx, q.readDB, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients id list retrieval query")
 	}
@@ -500,7 +500,7 @@ func (q *repository) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Con
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetValidIngredientsNeedingIndexing(ctx, q.db)
+	results, err := q.generatedQuerier.GetValidIngredientsNeedingIndexing(ctx, q.readDB)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
 	}
@@ -520,7 +520,7 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 	logger := q.logger.WithValue(keys.ValidIngredientIDKey, input.ID)
 
 	// create the valid ingredient.
-	if err := q.generatedQuerier.CreateValidIngredient(ctx, q.db, &generated.CreateValidIngredientParams{
+	if err := q.generatedQuerier.CreateValidIngredient(ctx, q.writeDB, &generated.CreateValidIngredientParams{
 		ID:                                      input.ID,
 		Name:                                    input.Name,
 		Description:                             input.Description,
@@ -616,7 +616,7 @@ func (q *repository) UpdateValidIngredient(ctx context.Context, updated *mealpla
 	logger := q.logger.WithValue(keys.ValidIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredient(ctx, q.db, &generated.UpdateValidIngredientParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredient(ctx, q.writeDB, &generated.UpdateValidIngredientParams{
 		Description:                             updated.Description,
 		Warning:                                 updated.Warning,
 		ID:                                      updated.ID,
@@ -673,7 +673,7 @@ func (q *repository) MarkValidIngredientAsIndexed(ctx context.Context, validIngr
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredientLastIndexedAt(ctx, q.db, validIngredientID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidIngredientLastIndexedAt(ctx, q.writeDB, validIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid ingredient as indexed")
 	}
 
@@ -682,7 +682,7 @@ func (q *repository) MarkValidIngredientAsIndexed(ctx context.Context, validIngr
 	return nil
 }
 
-// ArchiveValidIngredient archives a valid ingredient from the database by its MealPlanTaskID.
+// ArchiveValidIngredient archives a valid ingredient from the database by its ID.
 func (q *repository) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -695,7 +695,7 @@ func (q *repository) ArchiveValidIngredient(ctx context.Context, validIngredient
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredient(ctx, q.db, validIngredientID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredient(ctx, q.writeDB, validIngredientID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}

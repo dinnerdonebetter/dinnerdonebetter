@@ -17,7 +17,7 @@ func TestWebhookCreationInput_Validate(T *testing.T) {
 			ContentType: "application/xml",
 			URL:         "https://blah.verygoodsoftwarenotvirus.ru",
 			Method:      http.MethodPatch,
-			Events:      []string{"more_things"},
+			Events:      []*WebhookTriggerEventCreationRequestInput{{ID: "more_things"}},
 		}
 	}
 
@@ -62,7 +62,7 @@ func TestWebhookCreationInput_Validate(T *testing.T) {
 	T.Run("empty events", func(t *testing.T) {
 		t.Parallel()
 		exampleInput := buildValidWebhookCreationInput()
-		exampleInput.Events = []string{}
+		exampleInput.Events = []*WebhookTriggerEventCreationRequestInput{}
 
 		assert.Error(t, exampleInput.ValidateWithContext(t.Context()))
 	})
@@ -81,7 +81,7 @@ func TestWebhookCreationRequestInput_ValidateWithContext(T *testing.T) {
 			ContentType: "application/json",
 			URL:         "https://pkg.go.dev",
 			Method:      http.MethodPatch,
-			Events:      []string{name},
+			Events:      []*WebhookTriggerEventCreationRequestInput{{ID: name}},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -97,15 +97,14 @@ func TestWebhookDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 		name := t.Name()
 		ctx := t.Context()
 		x := &WebhookDatabaseCreationInput{
-			ID:          name,
-			Name:        name,
-			ContentType: "application/json",
-			URL:         "https://pkg.go.dev",
-			Method:      http.MethodPatch,
-			Events: []*WebhookTriggerEventDatabaseCreationInput{
-				{},
-			},
+			ID:               name,
+			Name:             name,
+			ContentType:      "application/json",
+			URL:              "https://pkg.go.dev",
+			Method:           http.MethodPatch,
+			TriggerConfigs:   []*WebhookTriggerConfigDatabaseCreationInput{{}},
 			BelongsToAccount: name,
+			CreatedByUser:    name,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

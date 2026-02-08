@@ -43,7 +43,7 @@ func (q *repository) RecipeStepProductExists(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepProductExistence(ctx, q.db, &generated.CheckRecipeStepProductExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepProductExistence(ctx, q.readDB, &generated.CheckRecipeStepProductExistenceParams{
 		RecipeStepID:        recipeStepID,
 		RecipeStepProductID: recipeStepProductID,
 		RecipeID:            recipeID,
@@ -80,7 +80,7 @@ func (q *repository) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	result, err := q.generatedQuerier.GetRecipeStepProduct(ctx, q.db, &generated.GetRecipeStepProductParams{
+	result, err := q.generatedQuerier.GetRecipeStepProduct(ctx, q.readDB, &generated.GetRecipeStepProductParams{
 		RecipeStepID:        recipeStepID,
 		RecipeStepProductID: recipeStepProductID,
 		RecipeID:            recipeID,
@@ -156,7 +156,7 @@ func (q *repository) getRecipeStepProductsForRecipe(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetRecipeStepProductsForRecipe(ctx, q.db, recipeID)
+	results, err := q.generatedQuerier.GetRecipeStepProductsForRecipe(ctx, q.readDB, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe")
 	}
@@ -251,7 +251,7 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		totalCount    uint64
 	)
 
-	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.db, &generated.GetRecipeStepProductsParams{
+	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.readDB, &generated.GetRecipeStepProductsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -411,7 +411,7 @@ func (q *repository) createRecipeStepProduct(ctx context.Context, db database.SQ
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *repository) CreateRecipeStepProduct(ctx context.Context, input *mealplanning.RecipeStepProductDatabaseCreationInput) (*mealplanning.RecipeStepProduct, error) {
-	return q.createRecipeStepProduct(ctx, q.db, input)
+	return q.createRecipeStepProduct(ctx, q.writeDB, input)
 }
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
@@ -430,7 +430,7 @@ func (q *repository) UpdateRecipeStepProduct(ctx context.Context, updated *mealp
 		measurementUnitID = &updated.MeasurementUnit.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated.UpdateRecipeStepProductParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.writeDB, &generated.UpdateRecipeStepProductParams{
 		Name:                               updated.Name,
 		Type:                               generated.RecipeStepProductType(updated.Type),
 		MeasurementUnit:                    database.NullStringFromStringPointer(measurementUnitID),
@@ -459,7 +459,7 @@ func (q *repository) UpdateRecipeStepProduct(ctx context.Context, updated *mealp
 	return nil
 }
 
-// ArchiveRecipeStepProduct archives a recipe step product from the database by its MealPlanTaskID.
+// ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *repository) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -478,7 +478,7 @@ func (q *repository) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID,
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated.ArchiveRecipeStepProductParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.writeDB, &generated.ArchiveRecipeStepProductParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepProductID,
 	})

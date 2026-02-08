@@ -43,7 +43,7 @@ func (q *repository) RecipeStepVesselExists(ctx context.Context, recipeID, recip
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepVesselExistence(ctx, q.db, &generated.CheckRecipeStepVesselExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepVesselExistence(ctx, q.readDB, &generated.CheckRecipeStepVesselExistenceParams{
 		RecipeStepID:       recipeStepID,
 		RecipeStepVesselID: recipeStepVesselID,
 		RecipeID:           recipeID,
@@ -80,7 +80,7 @@ func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
-	result, err := q.generatedQuerier.GetRecipeStepVessel(ctx, q.db, &generated.GetRecipeStepVesselParams{
+	result, err := q.generatedQuerier.GetRecipeStepVessel(ctx, q.readDB, &generated.GetRecipeStepVesselParams{
 		RecipeStepID:       recipeStepID,
 		RecipeStepVesselID: recipeStepVesselID,
 		RecipeID:           recipeID,
@@ -178,7 +178,7 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetRecipeStepVessels(ctx, q.db, &generated.GetRecipeStepVesselsParams{
+	results, err := q.generatedQuerier.GetRecipeStepVessels(ctx, q.readDB, &generated.GetRecipeStepVesselsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -291,7 +291,7 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetRecipeStepVesselsForRecipe(ctx, q.db, recipeID)
+	results, err := q.generatedQuerier.GetRecipeStepVesselsForRecipe(ctx, q.readDB, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe")
 	}
@@ -423,7 +423,7 @@ func (q *repository) createRecipeStepVessel(ctx context.Context, querier databas
 
 // CreateRecipeStepVessel creates a recipe step vessel in the database.
 func (q *repository) CreateRecipeStepVessel(ctx context.Context, input *mealplanning.RecipeStepVesselDatabaseCreationInput) (*mealplanning.RecipeStepVessel, error) {
-	return q.createRecipeStepVessel(ctx, q.db, input)
+	return q.createRecipeStepVessel(ctx, q.writeDB, input)
 }
 
 // UpdateRecipeStepVessel updates a particular recipe step vessel.
@@ -442,7 +442,7 @@ func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealpl
 		vesselID = &updated.Vessel.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.writeDB, &generated.UpdateRecipeStepVesselParams{
 		Name:                 updated.Name,
 		Notes:                updated.Notes,
 		BelongsToRecipeStep:  updated.BelongsToRecipeStep,
@@ -464,7 +464,7 @@ func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealpl
 	return nil
 }
 
-// ArchiveRecipeStepVessel archives a recipe step vessel from the database by its MealPlanTaskID.
+// ArchiveRecipeStepVessel archives a recipe step vessel from the database by its ID.
 func (q *repository) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -483,7 +483,7 @@ func (q *repository) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, 
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.db, &generated.ArchiveRecipeStepVesselParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.writeDB, &generated.ArchiveRecipeStepVesselParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepVesselID,
 	})

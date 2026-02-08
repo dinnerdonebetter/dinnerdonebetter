@@ -264,7 +264,7 @@ func TestQuerier_CreateAccountInvitation(T *testing.T) {
 func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid account invitation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -272,7 +272,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 
 		c := buildInertClientForTest(t)
 
-		err := c.setInvitationStatus(ctx, c.db, "", exampleAccountInvitation.Note, exampleAccountInvitation.Status)
+		err := c.setInvitationStatus(ctx, c.writeDB, "", exampleAccountInvitation.Note, exampleAccountInvitation.Status)
 		assert.Error(t, err)
 	})
 }
@@ -280,7 +280,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid invitation MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid invitation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -316,11 +316,11 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 
 		c := buildInertClientForTest(t)
 
-		err := c.attachInvitationsToUser(ctx, c.db, "", exampleUser.ID)
+		err := c.attachInvitationsToUser(ctx, c.writeDB, "", exampleUser.ID)
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid user MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -328,7 +328,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 
 		c := buildInertClientForTest(t)
 
-		err := c.attachInvitationsToUser(ctx, c.db, exampleUser.EmailAddress, "")
+		err := c.attachInvitationsToUser(ctx, c.writeDB, exampleUser.EmailAddress, "")
 		assert.Error(t, err)
 	})
 }

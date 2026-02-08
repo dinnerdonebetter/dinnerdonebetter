@@ -61,7 +61,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 
 	exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
@@ -217,7 +217,7 @@ func TestQuerier_Integration_UserIngredientPreferences_CursorBasedPagination(t *
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.UserIngredientPreference]{

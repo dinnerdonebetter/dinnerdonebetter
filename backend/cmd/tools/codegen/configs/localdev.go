@@ -165,14 +165,15 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Database: databasecfg.Config{
+			Provider:                 databasecfg.ProviderPostgres,
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
 			RunMigrations:            true,
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
-			ConnectionDetails:        localdevPostgresDBConnectionDetails,
-			WriteConnectionDetails:   localdevPostgresDBConnectionDetails,
+			ReadConnection:           localdevPostgresDBConnectionDetails,
+			WriteConnection:          localdevPostgresDBConnectionDetails,
 		},
 		Observability: localObservabilityConfig,
 		Services: config.ServicesConfig{

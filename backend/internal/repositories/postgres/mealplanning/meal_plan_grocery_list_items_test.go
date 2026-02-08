@@ -68,8 +68,8 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
@@ -115,7 +115,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -147,7 +147,7 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -191,7 +191,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan grocery list item MealPlanTaskID", func(t *testing.T) {
+	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()

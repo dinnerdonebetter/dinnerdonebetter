@@ -153,7 +153,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			GRPCServer: grpc.Config{},
 			Database: databasecfg.Config{
 				Debug: true,
-				ConnectionDetails: databasecfg.ConnectionDetails{
+				ReadConnection: databasecfg.ConnectionDetails{
 					Username: "user",
 					Password: "pass",
 					Database: "db",
@@ -217,7 +217,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			Observability: observability.Config{},
 			Database: databasecfg.Config{
 				Debug: true,
-				ConnectionDetails: databasecfg.ConnectionDetails{
+				ReadConnection: databasecfg.ConnectionDetails{
 					Username: "user",
 					Password: "pass",
 					Database: "db",
@@ -264,7 +264,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			Observability: observability.Config{},
 			Database: databasecfg.Config{
 				Debug: true,
-				ConnectionDetails: databasecfg.ConnectionDetails{
+				ReadConnection: databasecfg.ConnectionDetails{
 					Username: "user",
 					Password: "pass",
 					Database: "db",

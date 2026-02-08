@@ -37,7 +37,7 @@ func (q *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepI
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepExistence(ctx, q.db, &generated.CheckRecipeStepExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepExistence(ctx, q.readDB, &generated.CheckRecipeStepExistenceParams{
 		RecipeID:     recipeID,
 		RecipeStepID: recipeStepID,
 	})
@@ -67,7 +67,7 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.db, &generated.GetRecipeStepParams{
+	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.readDB, &generated.GetRecipeStepParams{
 		RecipeID:     recipeID,
 		RecipeStepID: recipeStepID,
 	})
@@ -348,7 +348,7 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetRecipeSteps(ctx, q.db, &generated.GetRecipeStepsParams{
+	results, err := q.generatedQuerier.GetRecipeSteps(ctx, q.readDB, &generated.GetRecipeStepsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -613,7 +613,7 @@ func (q *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 // CreateRecipeStep creates a recipe step in the database.
 func (q *repository) CreateRecipeStep(ctx context.Context, input *mealplanning.RecipeStepDatabaseCreationInput) (*mealplanning.RecipeStep, error) {
-	return q.createRecipeStep(ctx, q.db, input)
+	return q.createRecipeStep(ctx, q.writeDB, input)
 }
 
 // UpdateRecipeStep updates a particular recipe step.
@@ -627,7 +627,7 @@ func (q *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning
 	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipeStep(ctx, q.db, &generated.UpdateRecipeStepParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStep(ctx, q.writeDB, &generated.UpdateRecipeStepParams{
 		ConditionExpression:           updated.ConditionExpression,
 		PreparationID:                 updated.Preparation.ID,
 		ID:                            updated.ID,
@@ -648,7 +648,7 @@ func (q *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning
 	return nil
 }
 
-// ArchiveRecipeStep archives a recipe step from the database by its MealPlanTaskID.
+// ArchiveRecipeStep archives a recipe step from the database by its ID.
 func (q *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -667,7 +667,7 @@ func (q *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStep
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.writeDB, &generated.ArchiveRecipeStepParams{
 		BelongsToRecipe: recipeID,
 		ID:              recipeStepID,
 	})

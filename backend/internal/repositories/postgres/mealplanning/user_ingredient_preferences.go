@@ -38,7 +38,7 @@ func (q *repository) UserIngredientPreferenceExists(ctx context.Context, userIng
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	exists, err = q.generatedQuerier.CheckUserIngredientPreferenceExistence(ctx, q.db, &generated.CheckUserIngredientPreferenceExistenceParams{
+	exists, err = q.generatedQuerier.CheckUserIngredientPreferenceExistence(ctx, q.readDB, &generated.CheckUserIngredientPreferenceExistenceParams{
 		ID:            userIngredientPreferenceID,
 		BelongsToUser: userID,
 	})
@@ -68,7 +68,7 @@ func (q *repository) GetUserIngredientPreference(ctx context.Context, userIngred
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	result, err := q.generatedQuerier.GetUserIngredientPreference(ctx, q.db, &generated.GetUserIngredientPreferenceParams{
+	result, err := q.generatedQuerier.GetUserIngredientPreference(ctx, q.readDB, &generated.GetUserIngredientPreferenceParams{
 		ID:            userIngredientPreferenceID,
 		BelongsToUser: userID,
 	})
@@ -150,7 +150,7 @@ func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID st
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetUserIngredientPreferencesForUser(ctx, q.db, &generated.GetUserIngredientPreferencesForUserParams{
+	results, err := q.generatedQuerier.GetUserIngredientPreferencesForUser(ctx, q.readDB, &generated.GetUserIngredientPreferencesForUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -264,7 +264,7 @@ func (q *repository) CreateUserIngredientPreference(ctx context.Context, input *
 		validIngredientIDs = append(validIngredientIDs, input.ValidIngredientID)
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -328,7 +328,7 @@ func (q *repository) UpdateUserIngredientPreference(ctx context.Context, updated
 	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.db, &generated.UpdateUserIngredientPreferenceParams{
+	if _, err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.writeDB, &generated.UpdateUserIngredientPreferenceParams{
 		Ingredient:    updated.Ingredient.ID,
 		Notes:         updated.Notes,
 		ID:            updated.ID,
@@ -344,7 +344,7 @@ func (q *repository) UpdateUserIngredientPreference(ctx context.Context, updated
 	return nil
 }
 
-// ArchiveUserIngredientPreference archives a user ingredient preference from the database by its MealPlanTaskID.
+// ArchiveUserIngredientPreference archives a user ingredient preference from the database by its ID.
 func (q *repository) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -363,7 +363,7 @@ func (q *repository) ArchiveUserIngredientPreference(ctx context.Context, userIn
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.db, &generated.ArchiveUserIngredientPreferenceParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.writeDB, &generated.ArchiveUserIngredientPreferenceParams{
 		ID:            userIngredientPreferenceID,
 		BelongsToUser: userID,
 	})

@@ -100,8 +100,8 @@
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
-		"provider": "",
-		"connectionDetails": {
+		"provider": "postgres",
+		"readConnection": {
 			"username": "dbuser",
 			"password": "hunter2",
 			"database": "dinner-done-better",
@@ -109,7 +109,7 @@
 			"port": 5432,
 			"disableSSL": true
 		},
-		"writeConnectionDetails": {
+		"writeConnection": {
 			"username": "dbuser",
 			"password": "hunter2",
 			"database": "dinner-done-better",
@@ -117,7 +117,6 @@
 			"port": 5432,
 			"disableSSL": true
 		},
-		"migrations": null,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1500000000,
 		"debug": true,

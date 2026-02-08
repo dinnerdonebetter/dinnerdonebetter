@@ -16,6 +16,8 @@ import (
 	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	recipeanalysis "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	oauthmgr "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -29,6 +31,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	dataprivacyrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issuereportsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
@@ -76,6 +79,7 @@ func Build(
 		sessions.SessionProviders,
 		observability.O11yProviders,
 		random.RandProviders,
+		databasecfg.ClientConfigProviders,
 		postgres.PGProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,
@@ -95,6 +99,7 @@ func Build(
 		oauthrepo.OAuthRepoProviders,
 		mealplanningrepo.MPRepoProviders,
 		waitlistsrepo.WaitlistsRepoProviders,
+		dataprivacyrepo.DataPrivProviders,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,
@@ -116,6 +121,7 @@ func Build(
 		oauthmgr.OAuthManagerProviders,
 		mealplanningmgr.MPManagerProviders,
 		authmgr.AuthManagerProviders,
+		webhooksmanager.WebhookManagerProviders,
 		// workers
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,

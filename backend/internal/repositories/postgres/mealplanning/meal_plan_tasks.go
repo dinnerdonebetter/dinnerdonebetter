@@ -38,7 +38,7 @@ func (q *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.db, &generated.CheckMealPlanTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.readDB, &generated.CheckMealPlanTaskExistenceParams{
 		MealPlanID:     mealPlanID,
 		MealPlanTaskID: mealPlanTaskID,
 	})
@@ -64,7 +64,7 @@ func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	result, err := q.generatedQuerier.GetMealPlanTask(ctx, q.db, mealPlanTaskID)
+	result, err := q.generatedQuerier.GetMealPlanTask(ctx, q.readDB, mealPlanTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan task")
 	}
@@ -160,7 +160,7 @@ func (q *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPl
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -193,12 +193,12 @@ func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := q.generatedQuerier.ListAllMealPlanTasksByMealPlan(ctx, q.db, mealPlanID)
+	results, err := q.generatedQuerier.ListAllMealPlanTasksByMealPlan(ctx, q.readDB, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	// Group results by task MealPlanTaskID (since each task can have multiple rows - one per prep task step)
+	// Group results by task ID (since each task can have multiple rows - one per prep task step)
 	taskMap := make(map[string]*types.MealPlanTask)
 
 	for _, result := range results {
@@ -308,7 +308,7 @@ func (q *repository) CreateMealPlanTasksForMealPlanOption(ctx context.Context, i
 
 	logger := q.logger.Clone()
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := q.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -346,7 +346,7 @@ func (q *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealP
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	if err := q.generatedQuerier.MarkMealPlanAsPrepTasksCreated(ctx, q.db, mealPlanID); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsPrepTasksCreated(ctx, q.writeDB, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
@@ -366,7 +366,7 @@ func (q *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Cont
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.db, mealPlanID); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.writeDB, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
@@ -398,7 +398,7 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 		newStatus = *input.Status
 	}
 
-	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated.ChangeMealPlanTaskStatusParams{
+	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.writeDB, &generated.ChangeMealPlanTaskStatusParams{
 		ID:                input.MealPlanTaskID,
 		Status:            generated.PrepStepStatus(newStatus),
 		StatusExplanation: input.StatusExplanation,

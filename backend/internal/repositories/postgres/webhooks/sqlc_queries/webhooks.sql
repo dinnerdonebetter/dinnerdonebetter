@@ -12,6 +12,7 @@ INSERT INTO webhooks (
 	content_type,
 	url,
 	method,
+	created_by_user,
 	belongs_to_account
 ) VALUES (
 	sqlc.arg(id),
@@ -19,6 +20,7 @@ INSERT INTO webhooks (
 	sqlc.arg(content_type),
 	sqlc.arg(url),
 	sqlc.arg(method),
+	sqlc.arg(created_by_user),
 	sqlc.arg(belongs_to_account)
 );
 
@@ -38,14 +40,15 @@ SELECT
 	webhooks.content_type,
 	webhooks.url,
 	webhooks.method,
-	webhook_trigger_events.id,
-	webhook_trigger_events.trigger_event,
-	webhook_trigger_events.belongs_to_webhook,
-	webhook_trigger_events.created_at,
-	webhook_trigger_events.archived_at,
+	webhook_trigger_configs.id,
+	webhook_trigger_configs.trigger_event,
+	webhook_trigger_configs.belongs_to_webhook,
+	webhook_trigger_configs.created_at,
+	webhook_trigger_configs.archived_at,
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
+	webhooks.created_by_user,
 	webhooks.belongs_to_account,
 	(
 		SELECT COUNT(webhooks.id)
@@ -70,10 +73,9 @@ SELECT
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
 			AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
-			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
-	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL
 	AND webhooks.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND webhooks.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -87,7 +89,7 @@ WHERE webhooks.archived_at IS NULL
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
 	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
-	AND webhook_trigger_events.archived_at IS NULL
+	AND webhook_trigger_configs.archived_at IS NULL
 	AND webhooks.id > COALESCE(sqlc.narg(cursor), '')
 ORDER BY webhooks.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
@@ -102,11 +104,12 @@ SELECT
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
+	webhooks.created_by_user,
 	webhooks.belongs_to_account
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE webhook_trigger_events.archived_at IS NULL
-	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
+	JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
+WHERE webhook_trigger_configs.archived_at IS NULL
+	AND webhook_trigger_configs.trigger_event = sqlc.arg(trigger_event)
 	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhooks.archived_at IS NULL;
 
@@ -117,18 +120,19 @@ SELECT
 	webhooks.content_type as webhook_content_type,
 	webhooks.url as webhook_url,
 	webhooks.method as webhook_method,
-	webhook_trigger_events.id as webhook_trigger_event_id,
-	webhook_trigger_events.trigger_event as webhook_trigger_event_trigger_event,
-	webhook_trigger_events.belongs_to_webhook as webhook_trigger_event_belongs_to_webhook,
-	webhook_trigger_events.created_at as webhook_trigger_event_created_at,
-	webhook_trigger_events.archived_at as webhook_trigger_event_archived_at,
+	webhook_trigger_configs.id as webhook_trigger_config_id,
+	webhook_trigger_configs.trigger_event as webhook_trigger_config_trigger_event,
+	webhook_trigger_configs.belongs_to_webhook as webhook_trigger_config_belongs_to_webhook,
+	webhook_trigger_configs.created_at as webhook_trigger_config_created_at,
+	webhook_trigger_configs.archived_at as webhook_trigger_config_archived_at,
 	webhooks.created_at as webhook_created_at,
 	webhooks.last_updated_at as webhook_last_updated_at,
 	webhooks.archived_at as webhook_archived_at,
+	webhooks.created_by_user as webhook_created_by_user,
 	webhooks.belongs_to_account as webhook_belongs_to_account
 FROM webhooks
-	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE webhook_trigger_events.archived_at IS NULL
+	LEFT JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
+WHERE webhook_trigger_configs.archived_at IS NULL
 	AND webhooks.archived_at IS NULL
 	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhooks.id = sqlc.arg(id);

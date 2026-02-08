@@ -13,10 +13,8 @@ import (
 // BuildFakeWebhook builds a faked Webhook.
 func BuildFakeWebhook() *types.Webhook {
 	webhookID := BuildFakeID()
-
-	fakeEvent := BuildFakeWebhookTriggerEvent()
-	fakeEvent.BelongsToWebhook = webhookID
-	events := []*types.WebhookTriggerEvent{fakeEvent}
+	cfg := BuildFakeWebhookTriggerConfig()
+	cfg.BelongsToWebhook = webhookID
 
 	return &types.Webhook{
 		ID:               webhookID,
@@ -24,10 +22,11 @@ func BuildFakeWebhook() *types.Webhook {
 		ContentType:      "application/json",
 		URL:              fake.URL(),
 		Method:           http.MethodPost,
-		Events:           events,
+		TriggerConfigs:   []*types.WebhookTriggerConfig{cfg},
 		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,
 		BelongsToAccount: fake.UUID(),
+		CreatedByUser:    fake.UUID(),
 	}
 }
 
@@ -49,14 +48,26 @@ func BuildFakeWebhooksList() *filtering.QueryFilteredResult[types.Webhook] {
 	}
 }
 
-// BuildFakeWebhookTriggerEvent builds a faked WebhookTriggerEvent.
-func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
-	return &types.WebhookTriggerEvent{
+// BuildFakeWebhookTriggerConfig builds a faked WebhookTriggerConfig (join table).
+func BuildFakeWebhookTriggerConfig() *types.WebhookTriggerConfig {
+	return &types.WebhookTriggerConfig{
 		ID:               BuildFakeID(),
-		TriggerEvent:     string(types.WebhookCreatedServiceEventType),
 		BelongsToWebhook: BuildFakeID(),
+		TriggerEventID:   BuildFakeID(),
 		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,
+	}
+}
+
+// BuildFakeWebhookTriggerEvent builds a faked catalog WebhookTriggerEvent.
+func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
+	return &types.WebhookTriggerEvent{
+		ID:            BuildFakeID(),
+		Name:          fake.UUID(),
+		Description:   fake.LoremIpsumSentence(5),
+		CreatedAt:     BuildFakeTime(),
+		LastUpdatedAt: nil,
+		ArchivedAt:    nil,
 	}
 }
 
@@ -79,8 +90,10 @@ func BuildFakeWebhookTriggerEventList() *filtering.QueryFilteredResult[types.Web
 }
 
 func BuildFakeWebhookTriggerEventCreationRequestInput() *types.WebhookTriggerEventCreationRequestInput {
-	triggerEvent := BuildFakeWebhookTriggerEvent()
-	return converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(triggerEvent)
+	return &types.WebhookTriggerEventCreationRequestInput{
+		Name:        fake.UUID(),
+		Description: fake.LoremIpsumSentence(5),
+	}
 }
 
 // BuildFakeWebhookCreationRequestInput builds a faked WebhookCreationRequestInput from a webhook.

@@ -43,7 +43,7 @@ func (q *repository) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepIngredientExistence(ctx, q.db, &generated.CheckRecipeStepIngredientExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepIngredientExistence(ctx, q.readDB, &generated.CheckRecipeStepIngredientExistenceParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepIngredientID: recipeStepIngredientID,
 		RecipeID:               recipeID,
@@ -80,7 +80,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	result, err := q.generatedQuerier.GetRecipeStepIngredient(ctx, q.db, &generated.GetRecipeStepIngredientParams{
+	result, err := q.generatedQuerier.GetRecipeStepIngredient(ctx, q.readDB, &generated.GetRecipeStepIngredientParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepIngredientID: recipeStepIngredientID,
 		RecipeID:               recipeID,
@@ -187,7 +187,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetAllRecipeStepIngredientsForRecipe(ctx, q.db, recipeID)
+	results, err := q.generatedQuerier.GetAllRecipeStepIngredientsForRecipe(ctx, q.readDB, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
@@ -307,7 +307,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetRecipeStepIngredients(ctx, q.db, &generated.GetRecipeStepIngredientsParams{
+	results, err := q.generatedQuerier.GetRecipeStepIngredients(ctx, q.readDB, &generated.GetRecipeStepIngredientsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -510,7 +510,7 @@ func (q *repository) CreateRecipeStepIngredient(ctx context.Context, input *meal
 	}
 
 	// Get the recipe ID from the step
-	step, err := q.getRecipeStepByID(ctx, q.db, input.BelongsToRecipeStep)
+	step, err := q.getRecipeStepByID(ctx, q.readDB, input.BelongsToRecipeStep)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step")
 	}
@@ -520,7 +520,7 @@ func (q *repository) CreateRecipeStepIngredient(ctx context.Context, input *meal
 		return nil, observability.PrepareError(err, span, "validating ingredient dependencies")
 	}
 
-	return q.createRecipeStepIngredient(ctx, q.db, input)
+	return q.createRecipeStepIngredient(ctx, q.writeDB, input)
 }
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
@@ -535,7 +535,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, updated.ID)
 
 	// Get the recipe ID from the step
-	step, err := q.getRecipeStepByID(ctx, q.db, updated.BelongsToRecipeStep)
+	step, err := q.getRecipeStepByID(ctx, q.readDB, updated.BelongsToRecipeStep)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
 	}
@@ -550,7 +550,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 		ingredientID = &updated.Ingredient.ID
 	}
 
-	if _, err = q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
+	if _, err = q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.writeDB, &generated.UpdateRecipeStepIngredientParams{
 		IngredientID:              database.NullStringFromStringPointer(ingredientID),
 		Name:                      updated.Name,
 		Optional:                  updated.Optional,
@@ -577,7 +577,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 	return nil
 }
 
-// ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its MealPlanTaskID.
+// ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.
 func (q *repository) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -596,7 +596,7 @@ func (q *repository) ArchiveRecipeStepIngredient(ctx context.Context, recipeStep
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepIngredient(ctx, q.db, &generated.ArchiveRecipeStepIngredientParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepIngredient(ctx, q.writeDB, &generated.ArchiveRecipeStepIngredientParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepIngredientID,
 	})

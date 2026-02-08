@@ -6,8 +6,12 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks";
 
+message WebhookList {
+  repeated Webhook webhooks = 1;
+}
+
 message DataCollection {
-  map<string, Webhook> webhooks = 1;
+  map<string, WebhookList> webhooks = 1;
 }
 
 message Webhook {
@@ -20,15 +24,27 @@ message Webhook {
   string id = 7;
   string belongs_to_account = 8;
   WebhookContentType content_type = 9;
-  repeated WebhookTriggerEvent events = 10;
+  repeated WebhookTriggerConfig trigger_configs = 10;
+  string created_by_user = 11;
 }
 
-message WebhookTriggerEvent {
+// WebhookTriggerConfig is the join-table record (webhook subscription to a trigger event).
+message WebhookTriggerConfig {
   google.protobuf.Timestamp created_at = 1;
   google.protobuf.Timestamp archived_at = 2;
   string id = 3;
   string belongs_to_webhook = 4;
-  string trigger_event = 5;
+  string trigger_event_id = 5;
+}
+
+// WebhookTriggerEvent is the catalog entity for available trigger event types.
+message WebhookTriggerEvent {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp last_updated_at = 5;
+  google.protobuf.Timestamp archived_at = 6;
 }
 
 enum WebhookContentType {

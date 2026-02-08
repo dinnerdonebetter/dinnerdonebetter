@@ -125,15 +125,15 @@ The project uses `golangci-lint` with custom configuration:
 
 - Use descriptive suffixes that indicate purpose:
   - `Logger` - for logging abstractions
-  - `Manager` or `<Domain>Manager` - for business logic coordinators (e.g., `MealPlanningManager`, `RecipeManager`)
+  - `Manager` or `<Domain>Manager` - for business logic coordinators (e.g., `IdentityManager`, `WehbhookManager`)
   - `Repository` - for data access abstractions (consistently just `Repository` within each domain)
-  - `DataManager` - for data layer abstractions (e.g., `MealPlanDataManager`)
+  - `DataManager` - for data layer abstractions (e.g., `IdentityDataManager`)
   - `Handler` - for request handlers
 
 ### Structs
 
 - **Configuration structs**: End with `Config` (e.g., `APIServiceConfig`, `DatabaseConfig`)
-- **Domain entities**: Use clear business terms (e.g., `MealPlan`, `Recipe`, `ValidIngredient`)
+- **Domain entities**: Use clear business terms (e.g., `User`, `Account`, `Webhook`)
 
 ### Constants and Variables
 

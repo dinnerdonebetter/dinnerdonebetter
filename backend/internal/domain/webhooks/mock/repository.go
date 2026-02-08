@@ -63,17 +63,56 @@ func (m *Repository) ArchiveWebhook(ctx context.Context, webhookID, accountID st
 	return args.Error(0)
 }
 
-// AddWebhookTriggerEvent is a mock function.
-func (m *Repository) AddWebhookTriggerEvent(ctx context.Context, accountID string, input *webhooks.WebhookTriggerEventDatabaseCreationInput) (*webhooks.WebhookTriggerEvent, error) {
+// AddWebhookTriggerConfig is a mock function.
+func (m *Repository) AddWebhookTriggerConfig(ctx context.Context, accountID string, input *webhooks.WebhookTriggerConfigDatabaseCreationInput) (*webhooks.WebhookTriggerConfig, error) {
 	args := m.Called(ctx, accountID, input)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*webhooks.WebhookTriggerConfig), args.Error(1)
+}
+
+// ArchiveWebhookTriggerConfig is a mock function.
+func (m *Repository) ArchiveWebhookTriggerConfig(ctx context.Context, webhookID, configID string) error {
+	args := m.Called(ctx, webhookID, configID)
+	return args.Error(0)
+}
+
+// CreateWebhookTriggerEvent is a mock function (catalog).
+func (m *Repository) CreateWebhookTriggerEvent(ctx context.Context, input *webhooks.WebhookTriggerEventDatabaseCreationInput) (*webhooks.WebhookTriggerEvent, error) {
+	args := m.Called(ctx, input)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*webhooks.WebhookTriggerEvent), args.Error(1)
 }
 
-// ArchiveWebhookTriggerEvent is a mock function.
-func (m *Repository) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
-	args := m.Called(ctx, webhookID, webhookTriggerEventID)
+// GetWebhookTriggerEvent is a mock function (catalog).
+func (m *Repository) GetWebhookTriggerEvent(ctx context.Context, id string) (*webhooks.WebhookTriggerEvent, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*webhooks.WebhookTriggerEvent), args.Error(1)
+}
+
+// GetWebhookTriggerEvents is a mock function (catalog).
+func (m *Repository) GetWebhookTriggerEvents(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[webhooks.WebhookTriggerEvent], error) {
+	args := m.Called(ctx, filter)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*filtering.QueryFilteredResult[webhooks.WebhookTriggerEvent]), args.Error(1)
+}
+
+// UpdateWebhookTriggerEvent is a mock function (catalog).
+func (m *Repository) UpdateWebhookTriggerEvent(ctx context.Context, id string, input *webhooks.WebhookTriggerEventUpdateRequestInput) error {
+	args := m.Called(ctx, id, input)
+	return args.Error(0)
+}
+
+// ArchiveWebhookTriggerEvent is a mock function (catalog).
+func (m *Repository) ArchiveWebhookTriggerEvent(ctx context.Context, id string) error {
+	args := m.Called(ctx, id)
 	return args.Error(0)
 }
