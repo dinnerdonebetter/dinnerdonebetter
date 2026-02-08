@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
@@ -39,7 +39,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	cfg, err := config.LoadConfigFromEnvironment[config.APIServiceConfig]()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not load config from docker: %w", err)
 	}
 
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
@@ -47,12 +47,12 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	logger, err := cfg.Observability.Logging.ProvideLogger(rootCtx)
 	if err != nil {
-		log.Fatalf("could not create logger: %v", err)
+		return fmt.Errorf("could not create logger: %w", err)
 	}
 
 	server, err := apiserver.NewServer(buildCtx, logger, cfg)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not create server: %w", err)
 	}
 
 	server.Run()

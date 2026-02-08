@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+const (
+	unknownVersion = "unknown"
+)
+
 // Build-injected variables (set via -ldflags -X at build time).
 var (
 	CommitHash string
@@ -23,15 +27,15 @@ type Info struct {
 func Get() Info {
 	commitHash := CommitHash
 	if commitHash == "" {
-		commitHash = "unknown"
+		commitHash = unknownVersion
 	}
 	commitTime := CommitTime
 	if commitTime == "" {
-		commitTime = "unknown"
+		commitTime = unknownVersion
 	}
 	buildTime := BuildTime
 	if buildTime == "" {
-		buildTime = "unknown"
+		buildTime = unknownVersion
 	}
 	return Info{
 		CommitHash: commitHash,
