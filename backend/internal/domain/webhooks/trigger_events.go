@@ -1,10 +1,4 @@
 package webhooks
 
-type TriggerEvent string
-
-const (
-	// TODO: make sure these match up with the database enums somehow?
-	WebhookCreatedTriggerEvent  = "webhook_created"
-	WebhookUpdatedTriggerEvent  = "webhook_updated"
-	WebhookArchivedTriggerEvent = "webhook_archived"
-)
+// Trigger event types are now dynamic and stored in the webhook_trigger_events catalog table.
+// This file is kept for potential backward compatibility or shared constants if needed later.

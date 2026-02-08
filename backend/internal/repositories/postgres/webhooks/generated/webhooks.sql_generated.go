@@ -61,6 +61,7 @@ INSERT INTO webhooks (
 	content_type,
 	url,
 	method,
+	created_by_user,
 	belongs_to_account
 ) VALUES (
 	$1,
@@ -68,16 +69,18 @@ INSERT INTO webhooks (
 	$3,
 	$4,
 	$5,
-	$6
+	$6,
+	$7
 )
 `
 
 type CreateWebhookParams struct {
 	ID               string
 	Name             string
-	ContentType      string
+	ContentType      WebhookContentType
 	URL              string
-	Method           string
+	Method           WebhookMethod
+	CreatedByUser    string
 	BelongsToAccount string
 }
 
@@ -88,6 +91,7 @@ func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhook
 		arg.ContentType,
 		arg.URL,
 		arg.Method,
+		arg.CreatedByUser,
 		arg.BelongsToAccount,
 	)
 	return err
@@ -100,18 +104,19 @@ SELECT
 	webhooks.content_type as webhook_content_type,
 	webhooks.url as webhook_url,
 	webhooks.method as webhook_method,
-	webhook_trigger_events.id as webhook_trigger_event_id,
-	webhook_trigger_events.trigger_event as webhook_trigger_event_trigger_event,
-	webhook_trigger_events.belongs_to_webhook as webhook_trigger_event_belongs_to_webhook,
-	webhook_trigger_events.created_at as webhook_trigger_event_created_at,
-	webhook_trigger_events.archived_at as webhook_trigger_event_archived_at,
+	webhook_trigger_configs.id as webhook_trigger_config_id,
+	webhook_trigger_configs.trigger_event as webhook_trigger_config_trigger_event,
+	webhook_trigger_configs.belongs_to_webhook as webhook_trigger_config_belongs_to_webhook,
+	webhook_trigger_configs.created_at as webhook_trigger_config_created_at,
+	webhook_trigger_configs.archived_at as webhook_trigger_config_archived_at,
 	webhooks.created_at as webhook_created_at,
 	webhooks.last_updated_at as webhook_last_updated_at,
 	webhooks.archived_at as webhook_archived_at,
+	webhooks.created_by_user as webhook_created_by_user,
 	webhooks.belongs_to_account as webhook_belongs_to_account
 FROM webhooks
-	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE webhook_trigger_events.archived_at IS NULL
+	LEFT JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
+WHERE webhook_trigger_configs.archived_at IS NULL
 	AND webhooks.archived_at IS NULL
 	AND webhooks.belongs_to_account = $1
 	AND webhooks.id = $2
@@ -123,20 +128,21 @@ type GetWebhookParams struct {
 }
 
 type GetWebhookRow struct {
-	WebhookCreatedAt                    time.Time
-	WebhookTriggerEventCreatedAt        sql.NullTime
-	WebhookArchivedAt                   sql.NullTime
-	WebhookLastUpdatedAt                sql.NullTime
-	WebhookTriggerEventArchivedAt       sql.NullTime
-	WebhookUrl                          string
-	WebhookMethod                       string
-	WebhookID                           string
-	WebhookContentType                  string
-	WebhookName                         string
-	WebhookBelongsToAccount             string
-	WebhookTriggerEventTriggerEvent     NullWebhookEvent
-	WebhookTriggerEventBelongsToWebhook sql.NullString
-	WebhookTriggerEventID               sql.NullString
+	WebhookCreatedAt                     time.Time
+	WebhookTriggerConfigCreatedAt        sql.NullTime
+	WebhookArchivedAt                    sql.NullTime
+	WebhookLastUpdatedAt                 sql.NullTime
+	WebhookTriggerConfigArchivedAt       sql.NullTime
+	WebhookUrl                           string
+	WebhookMethod                        WebhookMethod
+	WebhookID                            string
+	WebhookContentType                   WebhookContentType
+	WebhookName                          string
+	WebhookCreatedByUser                 string
+	WebhookBelongsToAccount              string
+	WebhookTriggerConfigTriggerEvent     sql.NullString
+	WebhookTriggerConfigBelongsToWebhook sql.NullString
+	WebhookTriggerConfigID               sql.NullString
 }
 
 func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
@@ -154,14 +160,15 @@ func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams
 			&i.WebhookContentType,
 			&i.WebhookUrl,
 			&i.WebhookMethod,
-			&i.WebhookTriggerEventID,
-			&i.WebhookTriggerEventTriggerEvent,
-			&i.WebhookTriggerEventBelongsToWebhook,
-			&i.WebhookTriggerEventCreatedAt,
-			&i.WebhookTriggerEventArchivedAt,
+			&i.WebhookTriggerConfigID,
+			&i.WebhookTriggerConfigTriggerEvent,
+			&i.WebhookTriggerConfigBelongsToWebhook,
+			&i.WebhookTriggerConfigCreatedAt,
+			&i.WebhookTriggerConfigArchivedAt,
 			&i.WebhookCreatedAt,
 			&i.WebhookLastUpdatedAt,
 			&i.WebhookArchivedAt,
+			&i.WebhookCreatedByUser,
 			&i.WebhookBelongsToAccount,
 		); err != nil {
 			return nil, err
@@ -184,14 +191,15 @@ SELECT
 	webhooks.content_type,
 	webhooks.url,
 	webhooks.method,
-	webhook_trigger_events.id,
-	webhook_trigger_events.trigger_event,
-	webhook_trigger_events.belongs_to_webhook,
-	webhook_trigger_events.created_at,
-	webhook_trigger_events.archived_at,
+	webhook_trigger_configs.id,
+	webhook_trigger_configs.trigger_event,
+	webhook_trigger_configs.belongs_to_webhook,
+	webhook_trigger_configs.created_at,
+	webhook_trigger_configs.archived_at,
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
+	webhooks.created_by_user,
 	webhooks.belongs_to_account,
 	(
 		SELECT COUNT(webhooks.id)
@@ -216,10 +224,9 @@ SELECT
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
 			AND webhooks.belongs_to_account = $6
-			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
-	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL
 	AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
@@ -233,7 +240,7 @@ WHERE webhooks.archived_at IS NULL
 	)
 			AND (NOT COALESCE($5, false)::boolean OR webhooks.archived_at = NULL)
 	AND webhooks.belongs_to_account = $6
-	AND webhook_trigger_events.archived_at IS NULL
+	AND webhook_trigger_configs.archived_at IS NULL
 	AND webhooks.id > COALESCE($7, '')
 ORDER BY webhooks.id ASC
 LIMIT COALESCE($8, 50)
@@ -253,18 +260,19 @@ type GetWebhooksForAccountParams struct {
 type GetWebhooksForAccountRow struct {
 	CreatedAt_2      time.Time
 	ArchivedAt_2     sql.NullTime
-	CreatedAt        sql.NullTime
 	ArchivedAt       sql.NullTime
 	LastUpdatedAt    sql.NullTime
-	ContentType      string
-	Method           string
+	CreatedAt        sql.NullTime
 	Name             string
+	ContentType      WebhookContentType
+	Method           WebhookMethod
 	URL              string
 	ID               string
+	CreatedByUser    string
 	BelongsToAccount string
-	ID_2             sql.NullString
-	TriggerEvent     NullWebhookEvent
+	TriggerEvent     sql.NullString
 	BelongsToWebhook sql.NullString
+	ID_2             sql.NullString
 	FilteredCount    int64
 	TotalCount       int64
 }
@@ -301,6 +309,7 @@ func (q *Queries) GetWebhooksForAccount(ctx context.Context, db DBTX, arg *GetWe
 			&i.CreatedAt_2,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt_2,
+			&i.CreatedByUser,
 			&i.BelongsToAccount,
 			&i.FilteredCount,
 			&i.TotalCount,
@@ -328,17 +337,18 @@ SELECT
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
+	webhooks.created_by_user,
 	webhooks.belongs_to_account
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE webhook_trigger_events.archived_at IS NULL
-	AND webhook_trigger_events.trigger_event = $1
+	JOIN webhook_trigger_configs ON webhooks.id = webhook_trigger_configs.belongs_to_webhook
+WHERE webhook_trigger_configs.archived_at IS NULL
+	AND webhook_trigger_configs.trigger_event = $1
 	AND webhooks.belongs_to_account = $2
 	AND webhooks.archived_at IS NULL
 `
 
 type GetWebhooksForAccountAndEventParams struct {
-	TriggerEvent     WebhookEvent
+	TriggerEvent     string
 	BelongsToAccount string
 }
 
@@ -360,6 +370,7 @@ func (q *Queries) GetWebhooksForAccountAndEvent(ctx context.Context, db DBTX, ar
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.CreatedByUser,
 			&i.BelongsToAccount,
 		); err != nil {
 			return nil, err

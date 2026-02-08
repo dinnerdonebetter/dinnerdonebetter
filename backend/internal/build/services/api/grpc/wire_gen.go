@@ -19,6 +19,7 @@ import (
 	managers2 "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	manager3 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -187,7 +188,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	oAuthServiceServer := grpc9.NewService(logger, tracerProvider, oAuth2Manager)
 	settingsServiceServer := grpc10.NewService(logger, tracerProvider, settingsRepository)
 	uploadedMediaServiceServer := grpc11.NewService(logger, tracerProvider, uploadedmediaRepository, uploadManager)
-	webhooksServiceServer := grpc12.NewService(logger, tracerProvider, webhooksRepository)
+	webhookDataManager := manager3.NewWebhookDataManager(tracerProvider, logger, webhooksRepository)
+	webhooksServiceServer := grpc12.NewService(logger, tracerProvider, webhookDataManager)
 	waitlistsServiceServer := grpc13.NewService(logger, tracerProvider, waitlistsRepository)
 	grpcConfig := &cfg.GRPCServer
 	oAuth2Config := &authenticationConfig.OAuth2

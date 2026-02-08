@@ -25,6 +25,7 @@ var (
 		createdAtColumn,
 		lastUpdatedAtColumn,
 		archivedAtColumn,
+		createdByUserColumn,
 		belongsToAccountColumn,
 	}
 )
@@ -38,8 +39,8 @@ func buildWebhooksQueries(database string) []*Query {
 			applyToEach(webhooksColumns, func(_ int, s string) string {
 				return fullColumnName(webhooksTableName, s)
 			}),
-			applyToEach(webhookTriggerEventsColumns, func(_ int, s string) string {
-				return fullColumnName(webhookTriggerEventsTableName, s)
+			applyToEach(webhookTriggerConfigsColumns, func(_ int, s string) string {
+				return fullColumnName(webhookTriggerConfigsTableName, s)
 			}),
 			5,
 		)
@@ -119,12 +120,11 @@ WHERE %s.%s IS NULL
 						true,
 						nil,
 						fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn),
-						fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn),
 					),
 					webhooksTableName,
-					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
+					webhookTriggerConfigsTableName, webhooksTableName, idColumn, webhookTriggerConfigsTableName, belongsToWebhookColumn,
 					webhooksTableName, archivedAtColumn,
-					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn)),
+					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerConfigsTableName, archivedAtColumn)),
 					buildCursorLimitClause(webhooksTableName),
 				)),
 			},
@@ -145,9 +145,9 @@ WHERE %s.%s IS NULL
 						return fullColumnName(webhooksTableName, s)
 					}), ",\n\t"),
 					webhooksTableName,
-					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
-					webhookTriggerEventsTableName, archivedAtColumn,
-					webhookTriggerEventsTableName, triggerEventColumn, triggerEventColumn,
+					webhookTriggerConfigsTableName, webhooksTableName, idColumn, webhookTriggerConfigsTableName, belongsToWebhookColumn,
+					webhookTriggerConfigsTableName, archivedAtColumn,
+					webhookTriggerConfigsTableName, triggerEventColumn, triggerEventColumn,
 					webhooksTableName, belongsToAccountColumn, belongsToAccountColumn,
 					webhooksTableName, archivedAtColumn,
 				)),
@@ -172,8 +172,8 @@ WHERE %s.%s IS NULL
 						)
 					}), ",\n\t"),
 					webhooksTableName,
-					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
-					webhookTriggerEventsTableName, archivedAtColumn,
+					webhookTriggerConfigsTableName, webhooksTableName, idColumn, webhookTriggerConfigsTableName, belongsToWebhookColumn,
+					webhookTriggerConfigsTableName, archivedAtColumn,
 					webhooksTableName, archivedAtColumn,
 					webhooksTableName, belongsToAccountColumn, belongsToAccountColumn,
 					webhooksTableName, idColumn, idColumn,

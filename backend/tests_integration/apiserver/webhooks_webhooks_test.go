@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
@@ -26,25 +27,36 @@ func checkWebhookEquality(t *testing.T, expected, actual *webhooks.Webhook) {
 	assert.Equal(t, expected.ContentType, actual.ContentType, "expected Webhook ContentType")
 	assert.NotEmpty(t, actual.BelongsToAccount, "expected Webhook to have BelongsToAccount")
 
-	require.Equal(t, len(expected.Events), len(actual.Events), "expected Webhook Events length")
-	for i, expectedEvent := range expected.Events {
-		if i > len(actual.Events) {
+	require.Equal(t, len(expected.TriggerConfigs), len(actual.TriggerConfigs), "expected Webhook TriggerConfigs length")
+	for i, expectedCfg := range expected.TriggerConfigs {
+		if i >= len(actual.TriggerConfigs) {
 			continue
 		}
-
-		actualEvent := actual.Events[i]
-		assert.NotEmpty(t, actualEvent.ID, "expected Webhook Event %d to have MealPlanTaskID", i)
-		assert.NotZero(t, actualEvent.CreatedAt, "expected Webhook Event %d to have CreatedAt", i)
-		assert.Equal(t, expectedEvent.TriggerEvent, actualEvent.TriggerEvent, "expected Webhook Event %d TriggerEvent", i)
-		assert.Equal(t, actual.ID, actualEvent.BelongsToWebhook, "expected Webhook Event %d BelongsToWebhook", i)
+		actualCfg := actual.TriggerConfigs[i]
+		assert.NotEmpty(t, actualCfg.ID, "expected Webhook TriggerConfig %d to have ID", i)
+		assert.NotZero(t, actualCfg.CreatedAt, "expected Webhook TriggerConfig %d to have CreatedAt", i)
+		assert.Equal(t, expectedCfg.TriggerEventID, actualCfg.TriggerEventID, "expected Webhook TriggerConfig %d TriggerEventID", i)
+		assert.Equal(t, actual.ID, actualCfg.BelongsToWebhook, "expected Webhook TriggerConfig %d BelongsToWebhook", i)
 	}
+}
+
+func createWebhookTriggerEventCatalogForTest(t *testing.T, ctx context.Context, testClient client.Client, name, description string) *webhookssvc.WebhookTriggerEvent {
+	t.Helper()
+	resp, err := testClient.CreateWebhookTriggerEvent(ctx, &webhookssvc.CreateWebhookTriggerEventRequest{
+		Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{Name: name, Description: description},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp.Created)
+	return resp.Created
 }
 
 func createWebhookForTest(t *testing.T, testClient client.Client) *webhooks.Webhook {
 	t.Helper()
 	ctx := t.Context()
 
+	catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "test_trigger", "for integration test")
 	exampleWebhook := fakes.BuildFakeWebhook()
+	exampleWebhook.TriggerConfigs[0].TriggerEventID = catalogEvent.Id
 	exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 
 	input := grpcconverters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
@@ -95,7 +107,7 @@ func TestWebhooks_Creating(T *testing.T) {
 			Method:      "UNRECOGNIZED",
 			Name:        t.Name(),
 			URL:         "invalid protocol :\\ neato.ai",
-			Events:      []string{},
+			Events:      []*webhooks.WebhookTriggerEventCreationRequestInput{},
 		}
 
 		input := grpcconverters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
@@ -215,12 +227,13 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 		createdWebhook := createWebhookForTest(t, testClient)
+		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "webhook_archived", "when webhook is archived")
 
-		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
+		_, err := testClient.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{
 			WebhookId: createdWebhook.ID,
-			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: createdWebhook.ID,
-				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
+				TriggerEventId:   catalogEvent.Id,
 			},
 		})
 		assert.NoError(t, err)
@@ -233,7 +246,7 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createWebhookForTest(t, testClient)
 
-		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{WebhookId: nonexistentID, Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{}})
+		_, err := testClient.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{WebhookId: nonexistentID, Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{}})
 		assert.Error(t, err)
 	})
 
@@ -242,12 +255,12 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 		ctx := t.Context()
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		_, err := c.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{})
+		_, err := c.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{})
 		assert.Error(t, err)
 	})
 }
 
-func TestWebhookTriggerEvents_Removing(T *testing.T) {
+func TestWebhookTriggerConfigs_Removing(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
@@ -256,19 +269,20 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 
 		_, testClient := createUserAndClientForTest(t)
 		createdWebhook := createWebhookForTest(t, testClient)
+		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "webhook_archived", "when webhook is archived")
 
-		createdTriggerEvent, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
+		createdTriggerConfig, err := testClient.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{
 			WebhookId: createdWebhook.ID,
-			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: createdWebhook.ID,
-				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
+				TriggerEventId:   catalogEvent.Id,
 			},
 		})
 		require.NoError(t, err)
 
-		_, err = testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookId:             createdWebhook.ID,
-			WebhookTriggerEventId: createdTriggerEvent.Created.Id,
+		_, err = testClient.ArchiveWebhookTriggerConfig(ctx, &webhookssvc.ArchiveWebhookTriggerConfigRequest{
+			WebhookId:              createdWebhook.ID,
+			WebhookTriggerConfigId: createdTriggerConfig.Created.Id,
 		})
 		assert.NoError(t, err)
 	})
@@ -280,7 +294,7 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 		createWebhookForTest(t, testClient)
 
-		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{WebhookId: nonexistentID})
+		_, err := testClient.ArchiveWebhookTriggerConfig(ctx, &webhookssvc.ArchiveWebhookTriggerConfigRequest{WebhookId: nonexistentID})
 		assert.Error(t, err)
 	})
 
@@ -289,7 +303,7 @@ func TestWebhookTriggerEvents_Removing(T *testing.T) {
 		ctx := t.Context()
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
-		_, err := c.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{})
+		_, err := c.ArchiveWebhookTriggerConfig(ctx, &webhookssvc.ArchiveWebhookTriggerConfigRequest{})
 		assert.Error(t, err)
 	})
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	webhookfakes "github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
-	webhookmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/mock"
+	webhookmgrmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager/mock"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -22,12 +22,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *webhookmock.Repository) {
+func buildTestService(t *testing.T) (*serviceImpl, *webhookmgrmock.WebhookDataManager) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	webhookRepo := &webhookmock.Repository{}
+	webhookManager := &webhookmgrmock.WebhookDataManager{}
 
 	service := &serviceImpl{
 		tracer: tracer,
@@ -35,12 +35,13 @@ func buildTestService(t *testing.T) (*serviceImpl, *webhookmock.Repository) {
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				ActiveAccountID: "test-account-id",
+				Requester:       sessions.RequesterInfo{UserID: "test-user-id"},
 			}, nil
 		},
-		webhookRepository: webhookRepo,
+		webhookManager: webhookManager,
 	}
 
-	return service, webhookRepo
+	return service, webhookManager
 }
 
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
@@ -55,7 +56,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
-		webhookRepository: &webhookmock.Repository{},
+		webhookManager: &webhookmgrmock.WebhookDataManager{},
 	}
 
 	return service
@@ -73,16 +74,10 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		fakeWebhook := webhookfakes.BuildFakeWebhook()
 		fakeInput := webhookfakes.BuildFakeWebhookCreationRequestInput()
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.CreateWebhook), testutils.ContextMatcher, mock.AnythingOfType("*webhooks.WebhookDatabaseCreationInput")).Return(fakeWebhook, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateWebhook), testutils.ContextMatcher, "test-user-id", "test-account-id", mock.AnythingOfType("*webhooks.WebhookCreationRequestInput")).Return(fakeWebhook, nil)
 
 		request := &webhookssvc.CreateWebhookRequest{
-			Input: &webhookssvc.WebhookCreationRequestInput{
-				Name:        fakeInput.Name,
-				ContentType: converters.ConvertStringToWebhookContentType(fakeInput.ContentType),
-				Method:      converters.ConvertStringToWebhookMethod(fakeInput.Method),
-				Url:         fakeInput.URL,
-				Events:      fakeInput.Events,
-			},
+			Input: converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(fakeInput),
 		}
 
 		response, err := service.CreateWebhook(ctx, request)
@@ -104,13 +99,14 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		ctx := context.Background()
 		service := buildTestServiceWithSessionError(t)
 
+		testEventID := "test_event"
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
 				Name:        "test webhook",
 				Url:         "https://example.com/webhook",
 				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
 				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
-				Events:      []string{"test_event"},
+				Events:      []*webhookssvc.WebhookTriggerEventCreationRequestInput{{Id: &testEventID}},
 			},
 		}
 
@@ -127,6 +123,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 		ctx := context.Background()
 		service, _ := buildTestService(t)
 
+		testEventID := "test_event"
 		// Invalid request with empty name
 		request := &webhookssvc.CreateWebhookRequest{
 			Input: &webhookssvc.WebhookCreationRequestInput{
@@ -134,7 +131,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
 				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
 				Url:         "https://example.com/webhook",
-				Events:      []string{"test_event"},
+				Events:      []*webhookssvc.WebhookTriggerEventCreationRequestInput{{Id: &testEventID}},
 			},
 		}
 
@@ -153,16 +150,10 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 
 		fakeInput := webhookfakes.BuildFakeWebhookCreationRequestInput()
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.CreateWebhook), testutils.ContextMatcher, mock.AnythingOfType("*webhooks.WebhookDatabaseCreationInput")).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.CreateWebhook), testutils.ContextMatcher, "test-user-id", "test-account-id", mock.AnythingOfType("*webhooks.WebhookCreationRequestInput")).Return(nil, errors.New("repository error"))
 
 		request := &webhookssvc.CreateWebhookRequest{
-			Input: &webhookssvc.WebhookCreationRequestInput{
-				Name:        fakeInput.Name,
-				Url:         fakeInput.URL,
-				Method:      webhookssvc.WebhookMethod_WEBHOOK_METHOD_POST,
-				ContentType: webhookssvc.WebhookContentType_WEBHOOK_CONTENT_TYPE_JSON,
-				Events:      fakeInput.Events,
-			},
+			Input: converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(fakeInput),
 		}
 
 		response, err := service.CreateWebhook(ctx, request)
@@ -175,7 +166,7 @@ func TestServiceImpl_CreateWebhook(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_AddWebhookTriggerEvent(t *testing.T) {
+func TestServiceImpl_AddWebhookTriggerConfig(t *testing.T) {
 	t.Parallel()
 
 	t.Run("success", func(t *testing.T) {
@@ -184,25 +175,28 @@ func TestServiceImpl_AddWebhookTriggerEvent(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo := buildTestService(t)
 
-		fakeEvent := webhookfakes.BuildFakeWebhookTriggerEvent()
+		fakeConfig := webhookfakes.BuildFakeWebhookTriggerConfig()
+		webhookID := "test-webhook-id"
+		triggerEventID := fakeConfig.TriggerEventID
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.AddWebhookTriggerEvent), testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*webhooks.WebhookTriggerEventDatabaseCreationInput")).Return(fakeEvent, nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.AddWebhookTriggerConfig), testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*webhooks.WebhookTriggerConfigCreationRequestInput")).Return(fakeConfig, nil)
 
-		request := &webhookssvc.AddWebhookTriggerEventRequest{
-			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
-				BelongsToWebhook: fakeEvent.BelongsToWebhook,
-				TriggerEvent:     fakeEvent.TriggerEvent,
+		request := &webhookssvc.AddWebhookTriggerConfigRequest{
+			WebhookId: webhookID,
+			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
+				BelongsToWebhook: webhookID,
+				TriggerEventId:   triggerEventID,
 			},
 		}
 
-		response, err := service.AddWebhookTriggerEvent(ctx, request)
+		response, err := service.AddWebhookTriggerConfig(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 		assert.NotNil(t, response.Created)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.Equal(t, fakeEvent.ID, response.Created.Id)
-		assert.Equal(t, fakeEvent.TriggerEvent, response.Created.TriggerEvent)
+		assert.Equal(t, fakeConfig.ID, response.Created.Id)
+		assert.Equal(t, fakeConfig.TriggerEventID, response.Created.TriggerEventId)
 
 		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
@@ -213,14 +207,15 @@ func TestServiceImpl_AddWebhookTriggerEvent(t *testing.T) {
 		ctx := context.Background()
 		service := buildTestServiceWithSessionError(t)
 
-		request := &webhookssvc.AddWebhookTriggerEventRequest{
-			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+		request := &webhookssvc.AddWebhookTriggerConfigRequest{
+			WebhookId: "test-webhook-id",
+			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: "test-webhook-id",
-				TriggerEvent:     "test_event",
+				TriggerEventId:   "test-event-id",
 			},
 		}
 
-		response, err := service.AddWebhookTriggerEvent(ctx, request)
+		response, err := service.AddWebhookTriggerConfig(ctx, request)
 
 		assert.Error(t, err)
 		assert.Nil(t, response)
@@ -233,16 +228,17 @@ func TestServiceImpl_AddWebhookTriggerEvent(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo := buildTestService(t)
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.AddWebhookTriggerEvent), testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*webhooks.WebhookTriggerEventDatabaseCreationInput")).Return(nil, errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.AddWebhookTriggerConfig), testutils.ContextMatcher, "test-account-id", mock.AnythingOfType("*webhooks.WebhookTriggerConfigCreationRequestInput")).Return(nil, errors.New("repository error"))
 
-		request := &webhookssvc.AddWebhookTriggerEventRequest{
-			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+		request := &webhookssvc.AddWebhookTriggerConfigRequest{
+			WebhookId: "test-webhook-id",
+			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: "test-webhook-id",
-				TriggerEvent:     "test_event",
+				TriggerEventId:   "test_event",
 			},
 		}
 
-		response, err := service.AddWebhookTriggerEvent(ctx, request)
+		response, err := service.AddWebhookTriggerConfig(ctx, request)
 
 		assert.Error(t, err)
 		assert.Nil(t, response)
@@ -459,7 +455,7 @@ func TestServiceImpl_ArchiveWebhook(t *testing.T) {
 	})
 }
 
-func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
+func TestServiceImpl_ArchiveWebhookTriggerConfig(t *testing.T) {
 	t.Parallel()
 
 	t.Run("success", func(t *testing.T) {
@@ -469,13 +465,65 @@ func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
 		service, mockRepo := buildTestService(t)
 
 		webhookID := "test-webhook-id"
-		eventID := "test-event-id"
+		configID := "test-config-id"
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerEvent), testutils.ContextMatcher, webhookID, eventID).Return(nil)
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerConfig), testutils.ContextMatcher, webhookID, configID).Return(nil)
+
+		request := &webhookssvc.ArchiveWebhookTriggerConfigRequest{
+			WebhookId:              webhookID,
+			WebhookTriggerConfigId: configID,
+		}
+
+		response, err := service.ArchiveWebhookTriggerConfig(ctx, request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.NotNil(t, response.ResponseDetails)
+
+		mock.AssertExpectationsForObjects(t, mockRepo)
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		service, mockRepo := buildTestService(t)
+
+		webhookID := "test-webhook-id"
+		configID := "test-config-id"
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerConfig), testutils.ContextMatcher, webhookID, configID).Return(errors.New("repository error"))
+
+		request := &webhookssvc.ArchiveWebhookTriggerConfigRequest{
+			WebhookId:              webhookID,
+			WebhookTriggerConfigId: configID,
+		}
+
+		response, err := service.ArchiveWebhookTriggerConfig(ctx, request)
+
+		assert.Error(t, err)
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Internal, status.Code(err))
+
+		mock.AssertExpectationsForObjects(t, mockRepo)
+	})
+}
+
+func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
+	t.Parallel()
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		service, mockRepo := buildTestService(t)
+
+		eventID := "test-catalog-event-id"
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerEvent), testutils.ContextMatcher, eventID).Return(nil)
 
 		request := &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookId:             webhookID,
-			WebhookTriggerEventId: eventID,
+			Id: eventID,
 		}
 
 		response, err := service.ArchiveWebhookTriggerEvent(ctx, request)
@@ -493,14 +541,12 @@ func TestServiceImpl_ArchiveWebhookTriggerEvent(t *testing.T) {
 		ctx := context.Background()
 		service, mockRepo := buildTestService(t)
 
-		webhookID := "test-webhook-id"
-		eventID := "test-event-id"
+		eventID := "test-catalog-event-id"
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerEvent), testutils.ContextMatcher, webhookID, eventID).Return(errors.New("repository error"))
+		mockRepo.On(reflection.GetMethodName(mockRepo.ArchiveWebhookTriggerEvent), testutils.ContextMatcher, eventID).Return(errors.New("repository error"))
 
 		request := &webhookssvc.ArchiveWebhookTriggerEventRequest{
-			WebhookId:             webhookID,
-			WebhookTriggerEventId: eventID,
+			Id: eventID,
 		}
 
 		response, err := service.ArchiveWebhookTriggerEvent(ctx, request)

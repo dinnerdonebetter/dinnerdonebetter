@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -25,12 +26,12 @@ func (s *serviceImpl) CreateWebhook(ctx context.Context, request *webhookssvc.Cr
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	input := converters.ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID)
-	if err = input.ValidateWithContext(ctx); err != nil {
+	requestInput := converters.ConvertGRPCWebhookCreationRequestInputToWebhookCreationRequestInput(request.Input)
+	if err = requestInput.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate webhook creation request")
 	}
 
-	created, err := s.webhookRepository.CreateWebhook(ctx, input)
+	created, err := s.webhookManager.CreateWebhook(ctx, sessionContextData.GetUserID(), sessionContextData.ActiveAccountID, requestInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create webhook")
 	}
@@ -45,7 +46,7 @@ func (s *serviceImpl) CreateWebhook(ctx context.Context, request *webhookssvc.Cr
 	return x, nil
 }
 
-func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *webhookssvc.AddWebhookTriggerEventRequest) (*webhookssvc.AddWebhookTriggerEventResponse, error) {
+func (s *serviceImpl) AddWebhookTriggerConfig(ctx context.Context, request *webhookssvc.AddWebhookTriggerConfigRequest) (*webhookssvc.AddWebhookTriggerConfigResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -57,17 +58,20 @@ func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *webho
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	input := converters.ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input)
-	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, input)
+	requestInput := &webhooks.WebhookTriggerConfigCreationRequestInput{
+		BelongsToWebhook: request.WebhookId,
+		TriggerEventID:   request.Input.GetTriggerEventId(),
+	}
+	created, err := s.webhookManager.AddWebhookTriggerConfig(ctx, sessionContextData.ActiveAccountID, requestInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add webhook trigger event")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add webhook trigger config")
 	}
 
-	x := &webhookssvc.AddWebhookTriggerEventResponse{
+	x := &webhookssvc.AddWebhookTriggerConfigResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
-		Created: converters.ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(created),
+		Created: converters.ConvertWebhookTriggerConfigToGRPCWebhookTriggerConfig(created),
 	}
 
 	return x, nil
@@ -85,7 +89,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookId, sessionContextData.GetActiveAccountID())
+	webhook, err := s.webhookManager.GetWebhook(ctx, request.WebhookId, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhook")
 	}
@@ -113,7 +117,7 @@ func (s *serviceImpl) GetWebhooks(ctx context.Context, request *webhookssvc.GetW
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
-	retrieved, err := s.webhookRepository.GetWebhooks(ctx, sessionContextData.ActiveAccountID, filter)
+	retrieved, err := s.webhookManager.GetWebhooks(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhooks")
 	}
@@ -144,7 +148,7 @@ func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *webhookssvc.A
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookId, sessionContextData.ActiveAccountID); err != nil {
+	if err = s.webhookManager.ArchiveWebhook(ctx, request.WebhookId, sessionContextData.ActiveAccountID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook")
 	}
 
@@ -157,21 +161,101 @@ func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *webhookssvc.A
 	return x, nil
 }
 
+func (s *serviceImpl) ArchiveWebhookTriggerConfig(ctx context.Context, request *webhookssvc.ArchiveWebhookTriggerConfigRequest) (*webhookssvc.ArchiveWebhookTriggerConfigResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookId).WithValue(keys.WebhookTriggerConfigIDKey, request.WebhookTriggerConfigId)
+
+	if err := s.webhookManager.ArchiveWebhookTriggerConfig(ctx, request.WebhookId, request.WebhookTriggerConfigId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook trigger config")
+	}
+
+	return &webhookssvc.ArchiveWebhookTriggerConfigResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceId: span.SpanContext().TraceID().String(),
+		},
+	}, nil
+}
+
 func (s *serviceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *webhookssvc.ArchiveWebhookTriggerEventRequest) (*webhookssvc.ArchiveWebhookTriggerEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookId).WithValue(keys.WebhookTriggerEventIDKey, request.WebhookTriggerEventId)
+	logger := s.logger.WithValue(keys.WebhookTriggerEventIDKey, request.Id)
 
-	if err := s.webhookRepository.ArchiveWebhookTriggerEvent(ctx, request.WebhookId, request.WebhookTriggerEventId); err != nil {
+	if err := s.webhookManager.ArchiveWebhookTriggerEvent(ctx, request.Id); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook trigger event")
 	}
 
-	x := &webhookssvc.ArchiveWebhookTriggerEventResponse{
+	return &webhookssvc.ArchiveWebhookTriggerEventResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
+	}, nil
+}
+
+func (s *serviceImpl) CreateWebhookTriggerEvent(ctx context.Context, request *webhookssvc.CreateWebhookTriggerEventRequest) (*webhookssvc.CreateWebhookTriggerEventResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if _, err := s.sessionContextDataFetcher(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithSpan(span), span, codes.Unauthenticated, "failed to fetch session context data")
 	}
 
+	requestInput := converters.ConvertGRPCWebhookTriggerEventCreationRequestInputToWebhookTriggerEventCreationRequestInput(request.Input)
+	created, err := s.webhookManager.CreateWebhookTriggerEvent(ctx, requestInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithSpan(span), span, codes.Internal, "failed to create webhook trigger event")
+	}
+	return &webhookssvc.CreateWebhookTriggerEventResponse{
+		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
+		Created:         converters.ConvertWebhookTriggerEventCatalogToGRPCWebhookTriggerEvent(created),
+	}, nil
+}
+
+func (s *serviceImpl) GetWebhookTriggerEvent(ctx context.Context, request *webhookssvc.GetWebhookTriggerEventRequest) (*webhookssvc.GetWebhookTriggerEventResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	result, err := s.webhookManager.GetWebhookTriggerEvent(ctx, request.Id)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithSpan(span), span, codes.Internal, "failed to get webhook trigger event")
+	}
+	return &webhookssvc.GetWebhookTriggerEventResponse{
+		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
+		Result:          converters.ConvertWebhookTriggerEventCatalogToGRPCWebhookTriggerEvent(result),
+	}, nil
+}
+
+func (s *serviceImpl) GetWebhookTriggerEvents(ctx context.Context, request *webhookssvc.GetWebhookTriggerEventsRequest) (*webhookssvc.GetWebhookTriggerEventsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	retrieved, err := s.webhookManager.GetWebhookTriggerEvents(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithSpan(span), span, codes.Internal, "failed to get webhook trigger events")
+	}
+	x := &webhookssvc.GetWebhookTriggerEventsResponse{
+		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
+		Pagination:      grpcconverters.ConvertPaginationToGRPCPagination(retrieved.Pagination, filter),
+	}
+	for _, ev := range retrieved.Data {
+		x.Results = append(x.Results, converters.ConvertWebhookTriggerEventCatalogToGRPCWebhookTriggerEvent(ev))
+	}
 	return x, nil
+}
+
+func (s *serviceImpl) UpdateWebhookTriggerEvent(ctx context.Context, request *webhookssvc.UpdateWebhookTriggerEventRequest) (*webhookssvc.UpdateWebhookTriggerEventResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	input := converters.ConvertGRPCWebhookTriggerEventUpdateRequestInputToWebhookTriggerEventUpdateRequestInput(request.Input)
+	if err := s.webhookManager.UpdateWebhookTriggerEvent(ctx, request.Id, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger.WithSpan(span), span, codes.Internal, "failed to update webhook trigger event")
+	}
+	return &webhookssvc.UpdateWebhookTriggerEventResponse{
+		ResponseDetails: &types.ResponseDetails{TraceId: span.SpanContext().TraceID().String()},
+	}, nil
 }

@@ -11,75 +11,149 @@ import (
 	"time"
 )
 
-type WebhookEvent string
+type WebhookContentType string
 
 const (
-	WebhookEventWebhookCreated  WebhookEvent = "webhook_created"
-	WebhookEventWebhookUpdated  WebhookEvent = "webhook_updated"
-	WebhookEventWebhookArchived WebhookEvent = "webhook_archived"
+	WebhookContentTypeApplicationJson WebhookContentType = "application/json"
+	WebhookContentTypeApplicationXml  WebhookContentType = "application/xml"
 )
 
-func (e *WebhookEvent) Scan(src interface{}) error {
+func (e *WebhookContentType) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = WebhookEvent(s)
+		*e = WebhookContentType(s)
 	case string:
-		*e = WebhookEvent(s)
+		*e = WebhookContentType(s)
 	default:
-		return fmt.Errorf("unsupported scan type for WebhookEvent: %T", src)
+		return fmt.Errorf("unsupported scan type for WebhookContentType: %T", src)
 	}
 	return nil
 }
 
-type NullWebhookEvent struct {
-	WebhookEvent WebhookEvent
-	Valid        bool // Valid is true if WebhookEvent is not NULL
+type NullWebhookContentType struct {
+	WebhookContentType WebhookContentType
+	Valid              bool // Valid is true if WebhookContentType is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullWebhookEvent) Scan(value interface{}) error {
+func (ns *NullWebhookContentType) Scan(value interface{}) error {
 	if value == nil {
-		ns.WebhookEvent, ns.Valid = "", false
+		ns.WebhookContentType, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.WebhookEvent.Scan(value)
+	return ns.WebhookContentType.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullWebhookEvent) Value() (driver.Value, error) {
+func (ns NullWebhookContentType) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.WebhookEvent), nil
+	return string(ns.WebhookContentType), nil
 }
 
-func (e WebhookEvent) Valid() bool {
+func (e WebhookContentType) Valid() bool {
 	switch e {
-	case WebhookEventWebhookCreated,
-		WebhookEventWebhookUpdated,
-		WebhookEventWebhookArchived:
+	case WebhookContentTypeApplicationJson,
+		WebhookContentTypeApplicationXml:
 		return true
 	}
 	return false
 }
 
-func AllWebhookEventValues() []WebhookEvent {
-	return []WebhookEvent{
-		WebhookEventWebhookCreated,
-		WebhookEventWebhookUpdated,
-		WebhookEventWebhookArchived,
+func AllWebhookContentTypeValues() []WebhookContentType {
+	return []WebhookContentType{
+		WebhookContentTypeApplicationJson,
+		WebhookContentTypeApplicationXml,
 	}
+}
+
+type WebhookMethod string
+
+const (
+	WebhookMethodGET    WebhookMethod = "GET"
+	WebhookMethodPUT    WebhookMethod = "PUT"
+	WebhookMethodPATCH  WebhookMethod = "PATCH"
+	WebhookMethodPOST   WebhookMethod = "POST"
+	WebhookMethodDELETE WebhookMethod = "DELETE"
+)
+
+func (e *WebhookMethod) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = WebhookMethod(s)
+	case string:
+		*e = WebhookMethod(s)
+	default:
+		return fmt.Errorf("unsupported scan type for WebhookMethod: %T", src)
+	}
+	return nil
+}
+
+type NullWebhookMethod struct {
+	WebhookMethod WebhookMethod
+	Valid         bool // Valid is true if WebhookMethod is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullWebhookMethod) Scan(value interface{}) error {
+	if value == nil {
+		ns.WebhookMethod, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.WebhookMethod.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullWebhookMethod) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.WebhookMethod), nil
+}
+
+func (e WebhookMethod) Valid() bool {
+	switch e {
+	case WebhookMethodGET,
+		WebhookMethodPUT,
+		WebhookMethodPATCH,
+		WebhookMethodPOST,
+		WebhookMethodDELETE:
+		return true
+	}
+	return false
+}
+
+func AllWebhookMethodValues() []WebhookMethod {
+	return []WebhookMethod{
+		WebhookMethodGET,
+		WebhookMethodPUT,
+		WebhookMethodPATCH,
+		WebhookMethodPOST,
+		WebhookMethodDELETE,
+	}
+}
+
+type WebhookTriggerEvents struct {
+	ID            string
+	Name          string
+	Description   string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 type Webhooks struct {
 	ID               string
 	Name             string
-	ContentType      string
+	ContentType      WebhookContentType
 	URL              string
-	Method           string
+	Method           WebhookMethod
 	CreatedAt        time.Time
 	LastUpdatedAt    sql.NullTime
 	ArchivedAt       sql.NullTime
+	CreatedByUser    string
 	BelongsToAccount string
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -22,19 +22,19 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
-		webhookRepository         webhooks.Repository
+		webhookManager            manager.WebhookDataManager
 	}
 )
 
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	webhookRepository webhooks.Repository,
+	webhookManager manager.WebhookDataManager,
 ) webhookssvc.WebhooksServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
-		webhookRepository:         webhookRepository,
+		webhookManager:            webhookManager,
 	}
 }

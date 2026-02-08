@@ -104,12 +104,18 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		user, testClient := createUserAndClientForTest(t)
 		_, testClient2 := createUserAndClientForTest(t)
 
+		catalogEvent, err := testClient.CreateWebhookTriggerEvent(ctx, &webhookssvc.CreateWebhookTriggerEventRequest{
+			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{Name: "webhook_created", Description: "when webhook is created"},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, catalogEvent.Created)
+
 		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
 			ContentType: "application/json",
 			Method:      http.MethodPost,
 			Name:        t.Name(),
 			URL:         "https://whatever.gov",
-			Events:      []string{webhooks.WebhookCreatedTriggerEvent},
+			Events:      []*webhooks.WebhookTriggerEventCreationRequestInput{{ID: catalogEvent.Created.Id}},
 		}
 
 		input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)

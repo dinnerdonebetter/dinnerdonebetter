@@ -8,9 +8,14 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated
 
 service WebhooksService {
   rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);
-  rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
+  rpc ArchiveWebhookTriggerConfig(ArchiveWebhookTriggerConfigRequest) returns (ArchiveWebhookTriggerConfigResponse);
   rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
-  rpc AddWebhookTriggerEvent(AddWebhookTriggerEventRequest) returns (AddWebhookTriggerEventResponse);
+  rpc AddWebhookTriggerConfig(AddWebhookTriggerConfigRequest) returns (AddWebhookTriggerConfigResponse);
   rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse);
   rpc GetWebhooks(GetWebhooksRequest) returns (GetWebhooksResponse);
+  rpc CreateWebhookTriggerEvent(CreateWebhookTriggerEventRequest) returns (CreateWebhookTriggerEventResponse);
+  rpc GetWebhookTriggerEvent(GetWebhookTriggerEventRequest) returns (GetWebhookTriggerEventResponse);
+  rpc GetWebhookTriggerEvents(GetWebhookTriggerEventsRequest) returns (GetWebhookTriggerEventsResponse);
+  rpc UpdateWebhookTriggerEvent(UpdateWebhookTriggerEventRequest) returns (UpdateWebhookTriggerEventResponse);
+  rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
 }

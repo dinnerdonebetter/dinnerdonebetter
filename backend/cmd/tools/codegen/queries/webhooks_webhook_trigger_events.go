@@ -9,8 +9,6 @@ import (
 
 const (
 	webhookTriggerEventsTableName = "webhook_trigger_events"
-	belongsToWebhookColumn        = "belongs_to_webhook"
-	triggerEventColumn            = "trigger_event"
 )
 
 func init() {
@@ -20,9 +18,10 @@ func init() {
 var (
 	webhookTriggerEventsColumns = []string{
 		idColumn,
-		triggerEventColumn,
-		belongsToWebhookColumn,
+		nameColumn,
+		descriptionColumn,
 		createdAtColumn,
+		lastUpdatedAtColumn,
 		archivedAtColumn,
 	}
 )
@@ -30,8 +29,10 @@ var (
 func buildWebhookTriggerEventsQueries(database string) []*Query {
 	switch database {
 	case postgres:
-
 		insertColumns := filterForInsert(webhookTriggerEventsColumns)
+		fullSelectColumns := applyToEach(webhookTriggerEventsColumns, func(_ int, s string) string {
+			return fullColumnName(webhookTriggerEventsTableName, s)
+		})
 
 		return []*Query{
 			{
@@ -53,19 +54,93 @@ func buildWebhookTriggerEventsQueries(database string) []*Query {
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetWebhookTriggerEvent",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					webhookTriggerEventsTableName,
+					webhookTriggerEventsTableName, archivedAtColumn,
+					webhookTriggerEventsTableName, idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckWebhookTriggerEventExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
+);`,
+					webhookTriggerEventsTableName, idColumn,
+					webhookTriggerEventsTableName,
+					webhookTriggerEventsTableName, archivedAtColumn,
+					webhookTriggerEventsTableName, idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetWebhookTriggerEvents",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	%s
+%s;`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(webhookTriggerEventsTableName, true, true, nil),
+					buildTotalCountSelect(webhookTriggerEventsTableName, true, nil),
+					webhookTriggerEventsTableName,
+					webhookTriggerEventsTableName, archivedAtColumn,
+					buildFilterConditions(webhookTriggerEventsTableName, true, true),
+					buildCursorLimitClause(webhookTriggerEventsTableName),
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateWebhookTriggerEvent",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s,
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+					webhookTriggerEventsTableName,
+					strings.Join(applyToEach(filterForUpdate(webhookTriggerEventsColumns), func(_ int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ArchiveWebhookTriggerEvent",
 					Type: ExecRowsType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = %s,
 	%s = %s
 WHERE %s IS NULL
-	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 					webhookTriggerEventsTableName,
+					lastUpdatedAtColumn, currentTimeExpression,
 					archivedAtColumn, currentTimeExpression,
 					archivedAtColumn,
 					idColumn, idColumn,
-					belongsToWebhookColumn, belongsToWebhookColumn,
 				)),
 			},
 		}

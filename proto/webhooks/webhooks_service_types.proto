@@ -14,7 +14,7 @@ message WebhookCreationRequestInput {
   WebhookContentType content_type = 2;
   string url = 3;
   WebhookMethod method = 4;
-  repeated string events = 5;
+  repeated WebhookTriggerEventCreationRequestInput events = 5;
 }
 
 message WebhookExecutionRequest {
@@ -25,9 +25,9 @@ message WebhookExecutionRequest {
   string trigger_event = 5;
 }
 
-message WebhookTriggerEventCreationRequestInput {
+message WebhookTriggerConfigCreationRequestInput {
   string belongs_to_webhook = 1;
-  string trigger_event = 2;
+  string trigger_event_id = 2;
 }
 
 message CreateWebhookRequest {
@@ -39,14 +39,14 @@ message CreateWebhookResponse {
   Webhook created = 2;
 }
 
-message AddWebhookTriggerEventRequest {
+message AddWebhookTriggerConfigRequest {
   string webhook_id = 1;
-  WebhookTriggerEventCreationRequestInput input = 2;
+  WebhookTriggerConfigCreationRequestInput input = 2;
 }
 
-message AddWebhookTriggerEventResponse {
+message AddWebhookTriggerConfigResponse {
   common.ResponseDetails response_details = 1;
-  WebhookTriggerEvent created = 2;
+  WebhookTriggerConfig created = 2;
 }
 
 message ArchiveWebhookRequest {
@@ -57,12 +57,12 @@ message ArchiveWebhookResponse {
   common.ResponseDetails response_details = 1;
 }
 
-message ArchiveWebhookTriggerEventRequest {
+message ArchiveWebhookTriggerConfigRequest {
   string webhook_id = 1;
-  string webhook_trigger_event_id = 2;
+  string webhook_trigger_config_id = 2;
 }
 
-message ArchiveWebhookTriggerEventResponse {
+message ArchiveWebhookTriggerConfigResponse {
   common.ResponseDetails response_details = 1;
 }
 
@@ -83,4 +83,62 @@ message GetWebhooksResponse {
   common.ResponseDetails response_details = 1;
   filtering.Pagination pagination = 2;
   repeated Webhook results = 3;
+}
+
+// Catalog trigger event CRUD
+// When id is set, the existing catalog event is used; otherwise name (and optionally description) create a new catalog event.
+message WebhookTriggerEventCreationRequestInput {
+  optional string id = 3; // reference existing catalog event by id
+  string name = 1;
+  string description = 2;
+}
+
+message CreateWebhookTriggerEventRequest {
+  WebhookTriggerEventCreationRequestInput input = 1;
+}
+
+message CreateWebhookTriggerEventResponse {
+  common.ResponseDetails response_details = 1;
+  WebhookTriggerEvent created = 2;
+}
+
+message GetWebhookTriggerEventRequest {
+  string id = 1;
+}
+
+message GetWebhookTriggerEventResponse {
+  common.ResponseDetails response_details = 1;
+  WebhookTriggerEvent result = 2;
+}
+
+message GetWebhookTriggerEventsRequest {
+  filtering.QueryFilter filter = 1;
+}
+
+message GetWebhookTriggerEventsResponse {
+  common.ResponseDetails response_details = 1;
+  filtering.Pagination pagination = 2;
+  repeated WebhookTriggerEvent results = 3;
+}
+
+message WebhookTriggerEventUpdateRequestInput {
+  string name = 1;
+  string description = 2;
+}
+
+message UpdateWebhookTriggerEventRequest {
+  string id = 1;
+  WebhookTriggerEventUpdateRequestInput input = 2;
+}
+
+message UpdateWebhookTriggerEventResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message ArchiveWebhookTriggerEventRequest {
+  string id = 1;
+}
+
+message ArchiveWebhookTriggerEventResponse {
+  common.ResponseDetails response_details = 1;
 }
