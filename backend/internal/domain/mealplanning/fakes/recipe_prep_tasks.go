@@ -11,7 +11,7 @@ import (
 
 func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 	recipePrepTaskSteps := []*types.RecipePrepTaskStep{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		recipePrepTaskSteps = append(recipePrepTaskSteps, BuildFakeRecipePrepTaskStep())
 	}
 
@@ -40,7 +40,7 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 
 func BuildFakeRecipePrepTasksList() *filtering.QueryFilteredResult[types.RecipePrepTask] {
 	recipePrepTasks := &filtering.QueryFilteredResult[types.RecipePrepTask]{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		recipePrepTasks.Data = append(recipePrepTasks.Data, BuildFakeRecipePrepTask())
 	}
 
@@ -65,15 +65,15 @@ func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStep
 
 func BuildFakeRecipePrepTaskStepUpdateRequestInput() *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
-		BelongsToRecipeStep:     pointer.To(BuildFakeID()),
-		BelongsToRecipePrepTask: pointer.To(BuildFakeID()),
-		SatisfiesRecipeStep:     pointer.To(fake.Bool()),
+		BelongsToRecipeStep:     new(BuildFakeID()),
+		BelongsToRecipePrepTask: new(BuildFakeID()),
+		SatisfiesRecipeStep:     new(fake.Bool()),
 	}
 }
 
 func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreationRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepCreationRequestInput{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepCreationRequestInput())
 	}
 
@@ -93,18 +93,18 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 
 func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepUpdateRequestInput())
 	}
 
 	return &types.RecipePrepTaskUpdateRequestInput{
-		Notes:                           pointer.To(buildUniqueString()),
-		ExplicitStorageInstructions:     pointer.To(buildUniqueString()),
-		Name:                            pointer.To(buildUniqueString()),
-		Description:                     pointer.To(buildUniqueString()),
-		Optional:                        pointer.To(fake.Bool()),
+		Notes:                           new(buildUniqueString()),
+		ExplicitStorageInstructions:     new(buildUniqueString()),
+		Name:                            new(buildUniqueString()),
+		Description:                     new(buildUniqueString()),
+		Optional:                        new(fake.Bool()),
 		StorageType:                     pointer.To(types.RecipePrepTaskStorageTypeUncovered),
-		BelongsToRecipe:                 pointer.To(BuildFakeID()),
+		BelongsToRecipe:                 new(BuildFakeID()),
 		TimeBufferBeforeRecipeInSeconds: BuildFakeUint32RangeWithOptionalMaxUpdateRequestInput(),
 		StorageTemperatureInCelsius:     BuildFakeOptionalFloat32Range(),
 		TaskSteps:                       taskSteps,
@@ -118,13 +118,13 @@ func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.Re
 	}
 
 	return &types.RecipePrepTaskUpdateRequestInput{
-		Notes:                           pointer.To(buildUniqueString()),
-		ExplicitStorageInstructions:     pointer.To(buildUniqueString()),
-		Name:                            pointer.To(buildUniqueString()),
-		Description:                     pointer.To(buildUniqueString()),
-		Optional:                        pointer.To(fake.Bool()),
+		Notes:                           new(buildUniqueString()),
+		ExplicitStorageInstructions:     new(buildUniqueString()),
+		Name:                            new(buildUniqueString()),
+		Description:                     new(buildUniqueString()),
+		Optional:                        new(fake.Bool()),
 		StorageType:                     pointer.To(types.RecipePrepTaskStorageTypeUncovered),
-		BelongsToRecipe:                 pointer.To(BuildFakeID()),
+		BelongsToRecipe:                 new(BuildFakeID()),
 		TaskSteps:                       taskSteps,
 		TimeBufferBeforeRecipeInSeconds: BuildFakeUint32RangeWithOptionalMaxUpdateRequestInput(),
 		StorageTemperatureInCelsius:     BuildFakeOptionalFloat32Range(),

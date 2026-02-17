@@ -628,7 +628,7 @@ SELECT
 				OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE($5, false)::boolean OR valid_measurement_units.archived_at = NULL)
-			AND (
+			AND  (
 				valid_ingredient_measurement_units.valid_ingredient_id = $6
 				OR valid_measurement_units.universal = true
 			)

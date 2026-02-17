@@ -43,5 +43,5 @@ func TestRecipeListValidation(t *testing.T) {
 	}).ValidateWithContext(ctx))
 	require.Error(t, (&RecipeListDatabaseCreationInput{}).ValidateWithContext(ctx))
 
-	require.NoError(t, (&RecipeListUpdateRequestInput{Name: strPtr("x")}).ValidateWithContext(ctx))
+	require.NoError(t, (&RecipeListUpdateRequestInput{Name: new("x")}).ValidateWithContext(ctx))
 }

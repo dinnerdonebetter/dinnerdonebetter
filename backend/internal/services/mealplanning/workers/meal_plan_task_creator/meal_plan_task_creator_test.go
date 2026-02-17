@@ -14,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -106,7 +105,7 @@ func TestWorker_Work(T *testing.T) {
 						{
 							Ingredient: &mealplanning.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
-									Min: pointer.To(float32(2.5)),
+									Min: new(float32(2.5)),
 								},
 								PluralName:          "chicken breasts",
 								StorageInstructions: "keep frozen",
@@ -118,7 +117,7 @@ func TestWorker_Work(T *testing.T) {
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
-								Max: pointer.To(float32(900)),
+								Max: new(float32(900)),
 								Min: 900,
 							},
 						},

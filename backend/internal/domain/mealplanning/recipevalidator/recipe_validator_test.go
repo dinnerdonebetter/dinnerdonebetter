@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -59,20 +58,20 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                               fakes.BuildFakeID(),
-							ValidIngredientPreparationID:     pointer.To(vip.ID),
-							ValidIngredientMeasurementUnitID: pointer.To(vimu.ID),
+							ValidIngredientPreparationID:     new(vip.ID),
+							ValidIngredientMeasurementUnitID: new(vimu.ID),
 						},
 					},
 					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidPreparationInstrumentID: pointer.To(vpi.ID),
+							ValidPreparationInstrumentID: new(vpi.ID),
 						},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ValidPreparationVesselID: pointer.To(vpv.ID),
+							ValidPreparationVesselID: new(vpv.ID),
 						},
 					},
 				},
@@ -116,7 +115,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidIngredientPreparationID: pointer.To("nonexistent-vip-id"),
+							ValidIngredientPreparationID: new("nonexistent-vip-id"),
 						},
 					},
 				},
@@ -154,7 +153,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidIngredientPreparationID: pointer.To(vip.ID),
+							ValidIngredientPreparationID: new(vip.ID),
 						},
 					},
 				},
@@ -196,8 +195,8 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                               fakes.BuildFakeID(),
-							ValidIngredientPreparationID:     pointer.To(vip.ID),
-							ValidIngredientMeasurementUnitID: pointer.To(vimu.ID),
+							ValidIngredientPreparationID:     new(vip.ID),
+							ValidIngredientMeasurementUnitID: new(vimu.ID),
 						},
 					},
 				},
@@ -228,7 +227,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidPreparationInstrumentID: pointer.To("nonexistent-vpi-id"),
+							ValidPreparationInstrumentID: new("nonexistent-vpi-id"),
 						},
 					},
 				},
@@ -265,7 +264,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidPreparationInstrumentID: pointer.To(vpi.ID),
+							ValidPreparationInstrumentID: new(vpi.ID),
 						},
 					},
 				},
@@ -296,7 +295,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ValidPreparationVesselID: pointer.To("nonexistent-vpv-id"),
+							ValidPreparationVesselID: new("nonexistent-vpv-id"),
 						},
 					},
 				},
@@ -333,7 +332,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ValidPreparationVesselID: pointer.To(vpv.ID),
+							ValidPreparationVesselID: new(vpv.ID),
 						},
 					},
 				},
@@ -365,7 +364,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                  fakes.BuildFakeID(),
-							RecipeStepProductID: pointer.To("some-product-id"),
+							RecipeStepProductID: new("some-product-id"),
 							// No ValidIngredientPreparationID - should be skipped, not error
 						},
 					},
@@ -373,7 +372,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ProductOfRecipeStepIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex: new(uint64(0)),
 							// No ValidPreparationInstrumentID - should be skipped, not error
 						},
 					},
@@ -381,7 +380,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ProductOfRecipeStepIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex: new(uint64(0)),
 							// No ValidPreparationVesselID - should be skipped, not error
 						},
 					},
@@ -445,22 +444,22 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							ID:                               fakes.BuildFakeID(),
-							ValidIngredientPreparationID:     pointer.To(vip.ID),
-							ValidIngredientMeasurementUnitID: pointer.To(vimu.ID),
+							ValidIngredientPreparationID:     new(vip.ID),
+							ValidIngredientMeasurementUnitID: new(vimu.ID),
 							// IngredientID and MeasurementUnitID should be nil before validation
 						},
 					},
 					Instruments: []*mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 						{
 							ID:                           fakes.BuildFakeID(),
-							ValidPreparationInstrumentID: pointer.To(vpi.ID),
+							ValidPreparationInstrumentID: new(vpi.ID),
 							// InstrumentID should be nil before validation
 						},
 					},
 					Vessels: []*mealplanning.RecipeStepVesselDatabaseCreationInput{
 						{
 							ID:                       fakes.BuildFakeID(),
-							ValidPreparationVesselID: pointer.To(vpv.ID),
+							ValidPreparationVesselID: new(vpv.ID),
 							// VesselID should be nil before validation
 						},
 					},
@@ -566,7 +565,7 @@ func TestRecipeValidator_ValidateAndPopulate(T *testing.T) {
 						{
 							ID: fakes.BuildFakeID(),
 							// Only VIMU, no VIP
-							ValidIngredientMeasurementUnitID: pointer.To(vimu.ID),
+							ValidIngredientMeasurementUnitID: new(vimu.ID),
 						},
 					},
 				},

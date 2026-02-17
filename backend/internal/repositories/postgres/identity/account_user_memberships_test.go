@@ -36,7 +36,7 @@ func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
 
 	memberUserIDs := []string{exampleUser.ID}
 
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		newMember := createUserForTest(t, ctx, nil, dbc)
 		assert.NoError(t, dbc.addUserToAccount(ctx, dbc.writeDB, &identity.AccountUserMembershipDatabaseCreationInput{
 			ID:          identifiers.New(),

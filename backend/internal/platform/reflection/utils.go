@@ -22,7 +22,7 @@ func GetTagNameByValue(strukt, fieldValue any, tagKey string) (string, error) {
 		return "", fmt.Errorf("nil value")
 	}
 
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return "", fmt.Errorf("nil pointer to struct")
 		}
@@ -43,7 +43,7 @@ func GetTagNameByValue(strukt, fieldValue any, tagKey string) (string, error) {
 			if sf.Anonymous {
 				// handle pointer-to-embedded
 				fvKind := fv.Kind()
-				if fvKind == reflect.Ptr && !fv.IsNil() {
+				if fvKind == reflect.Pointer && !fv.IsNil() {
 					fv = fv.Elem()
 					fvKind = fv.Kind()
 				}
@@ -106,7 +106,7 @@ func GetFieldTypes(strukt any) (map[string]any, error) {
 			return nil, fmt.Errorf("nil value")
 		}
 
-		if rv.Kind() == reflect.Ptr {
+		if rv.Kind() == reflect.Pointer {
 			if rv.IsNil() {
 				// For nil pointer, try to get the type from the pointer type
 				t = rv.Type().Elem()
@@ -118,7 +118,7 @@ func GetFieldTypes(strukt any) (map[string]any, error) {
 		}
 	}
 
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 
@@ -128,17 +128,17 @@ func GetFieldTypes(strukt any) (map[string]any, error) {
 
 	result := make(map[string]any)
 
-	for i := 0; i < t.NumField(); i++ {
-		sf := t.Field(i)
-		fieldType := sf.Type
+	for sf := range t.Fields() {
+		x := sf
+		fieldType := x.Type
 
 		// Skip unexported fields
-		if !sf.IsExported() {
+		if !x.IsExported() {
 			continue
 		}
 
 		// Check if it's a pointer type
-		if fieldType.Kind() == reflect.Ptr {
+		if fieldType.Kind() == reflect.Pointer {
 			fieldType = fieldType.Elem()
 		}
 
@@ -146,12 +146,12 @@ func GetFieldTypes(strukt any) (map[string]any, error) {
 		if fieldType.Kind() == reflect.Struct {
 			nestedMap, err := GetFieldTypes(fieldType)
 			if err != nil {
-				return nil, fmt.Errorf("error processing nested struct field %s: %w", sf.Name, err)
+				return nil, fmt.Errorf("error processing nested struct field %s: %w", x.Name, err)
 			}
-			result[sf.Name] = nestedMap
+			result[x.Name] = nestedMap
 		} else {
 			// For non-struct fields, store the type string
-			result[sf.Name] = fieldType.String()
+			result[x.Name] = fieldType.String()
 		}
 	}
 

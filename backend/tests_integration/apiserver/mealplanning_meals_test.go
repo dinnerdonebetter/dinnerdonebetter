@@ -35,7 +35,7 @@ func createMealForTest(t *testing.T, clientToUse client.Client, mealInput *types
 
 	createdComponents := []*types.MealComponentCreationRequestInput{}
 	createdRecipeIDs := []string{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		_, _, recipe := createRecipeForTest(t, nil)
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 		createdComponents = append(createdComponents, &types.MealComponentCreationRequestInput{
@@ -114,7 +114,7 @@ func TestMeals_Listing(T *testing.T) {
 		_, userClient := createUserAndClientForTest(t)
 
 		var expected []*types.Meal
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			createdMeal := createMealForTest(t, userClient, nil)
 
 			expected = append(expected, createdMeal)
@@ -162,7 +162,7 @@ func TestMeals_Searching(T *testing.T) {
 		uniquePrefix := fmt.Sprintf("mealsearch-%s", t.Name())
 		exampleMeal := fakes.BuildFakeMeal()
 		var expected []*types.Meal
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			exampleMeal.Name = fmt.Sprintf("%s-example%d", uniquePrefix, i)
 			createdMeal := createMealForTest(t, userClient, exampleMeal)
 

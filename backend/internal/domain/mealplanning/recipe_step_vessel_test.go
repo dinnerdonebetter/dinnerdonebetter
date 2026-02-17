@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -18,7 +17,7 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 
 		x := &RecipeStepVessel{
 			Quantity: types.Uint16RangeWithOptionalMax{
-				Max: pointer.To(uint16(1234)),
+				Max: new(uint16(1234)),
 				Min: 1234,
 			},
 			Vessel: &ValidVessel{},
@@ -26,12 +25,12 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 		input := &RecipeStepVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.UnavailableAfterStep = pointer.To(true)
+		input.UnavailableAfterStep = new(true)
 		input.Quantity = types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(1)),
-			Max: pointer.To(uint16(1)),
+			Min: new(uint16(1)),
+			Max: new(uint16(1)),
 		}
-		input.VesselID = pointer.To(t.Name())
+		input.VesselID = new(t.Name())
 
 		x.Update(input)
 	})
@@ -44,12 +43,12 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselCreationRequestInput{
-			ValidPreparationVesselID: pointer.To(t.Name()),
+			ValidPreparationVesselID: new(t.Name()),
 			Name:                     t.Name(),
-			RecipeStepProductID:      pointer.To(t.Name()),
+			RecipeStepProductID:      new(t.Name()),
 			Notes:                    t.Name(),
 			Quantity: types.Uint16RangeWithOptionalMax{
-				Max: pointer.To(fake.Uint16()),
+				Max: new(fake.Uint16()),
 				Min: fake.Uint16(),
 			},
 		}
@@ -62,12 +61,12 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselCreationRequestInput{
-			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			ProductOfRecipeStepIndex:        new(uint64(0)),
+			ProductOfRecipeStepProductIndex: new(uint64(0)),
 			Name:                            t.Name(),
 			Notes:                           t.Name(),
 			Quantity: types.Uint16RangeWithOptionalMax{
-				Max: pointer.To(fake.Uint16()),
+				Max: new(fake.Uint16()),
 				Min: fake.Uint16(),
 			},
 		}
@@ -118,13 +117,13 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselUpdateRequestInput{
-			Name:                pointer.To(t.Name()),
-			BelongsToRecipeStep: pointer.To(t.Name()),
-			RecipeStepProductID: pointer.To(t.Name()),
-			Notes:               pointer.To(t.Name()),
+			Name:                new(t.Name()),
+			BelongsToRecipeStep: new(t.Name()),
+			RecipeStepProductID: new(t.Name()),
+			Notes:               new(t.Name()),
 			Quantity: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-				Max: pointer.To(fake.Uint16()),
-				Min: pointer.To(fake.Uint16()),
+				Max: new(fake.Uint16()),
+				Min: new(fake.Uint16()),
 			},
 		}
 

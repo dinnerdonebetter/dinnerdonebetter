@@ -11,7 +11,7 @@ func BuildFakeValidIngredientGroup() *types.ValidIngredientGroup {
 	groupID := BuildFakeID()
 
 	var members []*types.ValidIngredientGroupMember
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		newMember := BuildFakeValidIngredientGroupMember()
 		newMember.BelongsToGroup = groupID
 		members = append(members, newMember)
@@ -40,7 +40,7 @@ func BuildFakeValidIngredientGroupMember() *types.ValidIngredientGroupMember {
 // BuildFakeValidIngredientGroupsList builds a faked ValidIngredientGroupList.
 func BuildFakeValidIngredientGroupsList() *filtering.QueryFilteredResult[types.ValidIngredientGroup] {
 	var examples []*types.ValidIngredientGroup
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidIngredientGroup())
 	}
 

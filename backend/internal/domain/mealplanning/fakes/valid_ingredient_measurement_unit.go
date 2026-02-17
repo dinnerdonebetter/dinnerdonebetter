@@ -22,7 +22,7 @@ func BuildFakeValidIngredientMeasurementUnit() *mealplanning.ValidIngredientMeas
 // BuildFakeValidIngredientMeasurementUnitsList builds a faked ValidIngredientMeasurementUnitList.
 func BuildFakeValidIngredientMeasurementUnitsList() *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit] {
 	var examples []*mealplanning.ValidIngredientMeasurementUnit
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidIngredientMeasurementUnit())
 	}
 

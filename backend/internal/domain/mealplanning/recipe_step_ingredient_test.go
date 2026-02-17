@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -20,11 +19,11 @@ func TestRecipeStepIngredient_Update(T *testing.T) {
 		input := &RecipeStepIngredientUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.RecipeStepProductRecipeID = pointer.To(t.Name())
-		input.Quantity.Max = pointer.To(fake.Float32())
-		input.Optional = pointer.To(true)
-		input.VesselIndex = pointer.To(fake.Uint16())
-		input.ProductPercentageToUse = pointer.To(fake.Float32())
+		input.RecipeStepProductRecipeID = new(t.Name())
+		input.Quantity.Max = new(fake.Float32())
+		input.Optional = new(true)
+		input.VesselIndex = new(fake.Uint16())
+		input.ProductPercentageToUse = new(fake.Float32())
 
 		x.Update(input)
 	})
@@ -37,8 +36,8 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			ValidIngredientPreparationID:     pointer.To(t.Name()),
-			ValidIngredientMeasurementUnitID: pointer.To(t.Name()),
+			ValidIngredientPreparationID:     new(t.Name()),
+			ValidIngredientMeasurementUnitID: new(t.Name()),
 			Quantity:                         types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 			QuantityNotes:                    t.Name(),
 			IngredientNotes:                  t.Name(),
@@ -53,8 +52,8 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			ProductOfRecipeStepIndex:        new(uint64(0)),
+			ProductOfRecipeStepProductIndex: new(uint64(0)),
 			Quantity:                        types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 			QuantityNotes:                   t.Name(),
 			IngredientNotes:                 t.Name(),
@@ -108,12 +107,12 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:      pointer.To(t.Name()),
-			MeasurementUnitID: pointer.To(t.Name()),
-			Quantity:          types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
-			QuantityNotes:     pointer.To(t.Name()),
-			IngredientNotes:   pointer.To(t.Name()),
-			Optional:          pointer.To(fake.Bool()),
+			IngredientID:      new(t.Name()),
+			MeasurementUnitID: new(t.Name()),
+			Quantity:          types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: new(fake.Float32())},
+			QuantityNotes:     new(t.Name()),
+			IngredientNotes:   new(t.Name()),
+			Optional:          new(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

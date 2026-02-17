@@ -7,7 +7,6 @@ import (
 	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -19,7 +18,7 @@ func TestBuildGeneratedPasswordResetTokenEmail(T *testing.T) {
 		t.Parallel()
 
 		user := fakes.BuildFakeUser()
-		user.EmailAddressVerifiedAt = pointer.To(time.Now())
+		user.EmailAddressVerifiedAt = new(time.Now())
 		token := authfakes.BuildFakePasswordResetToken()
 
 		actual, err := BuildGeneratedPasswordResetTokenEmail(user, token, &email.EnvironmentConfig{})
@@ -51,7 +50,7 @@ func TestBuildPasswordResetTokenRedeemedEmail(T *testing.T) {
 		t.Parallel()
 
 		user := fakes.BuildFakeUser()
-		user.EmailAddressVerifiedAt = pointer.To(time.Now())
+		user.EmailAddressVerifiedAt = new(time.Now())
 
 		actual, err := BuildPasswordResetTokenRedeemedEmail(user, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
@@ -66,7 +65,7 @@ func TestBuildUsernameReminderEmail(T *testing.T) {
 		t.Parallel()
 
 		user := fakes.BuildFakeUser()
-		user.EmailAddressVerifiedAt = pointer.To(time.Now())
+		user.EmailAddressVerifiedAt = new(time.Now())
 
 		actual, err := BuildUsernameReminderEmail(user, &email.EnvironmentConfig{})
 		assert.NoError(t, err)

@@ -4,7 +4,6 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
 // BuildFakeServiceSetting builds a faked service setting.
@@ -17,7 +16,7 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 		Type:         "user",
 		Description:  buildUniqueString(),
 		Enumeration:  []string{defaultValue},
-		DefaultValue: pointer.To(defaultValue),
+		DefaultValue: new(defaultValue),
 		AdminsOnly:   true,
 		CreatedAt:    BuildFakeTime(),
 	}
@@ -26,7 +25,7 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 // BuildFakeServiceSettingsList builds a faked ServiceSettingList.
 func BuildFakeServiceSettingsList() *filtering.QueryFilteredResult[types.ServiceSetting] {
 	var examples []*types.ServiceSetting
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeServiceSetting())
 	}
 

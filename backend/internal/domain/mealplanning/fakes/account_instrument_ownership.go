@@ -22,7 +22,7 @@ func BuildFakeAccountInstrumentOwnership() *types.AccountInstrumentOwnership {
 // BuildFakeAccountInstrumentOwnershipsList builds a faked AccountInstrumentOwnershipList.
 func BuildFakeAccountInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.AccountInstrumentOwnership] {
 	var examples []*types.AccountInstrumentOwnership
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeAccountInstrumentOwnership())
 	}
 

@@ -149,7 +149,7 @@ func TestRecipeStepProducts_Listing(T *testing.T) {
 		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
 
 		var expected []*mealplanning.RecipeStepProduct
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit

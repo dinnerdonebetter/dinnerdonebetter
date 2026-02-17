@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
@@ -346,7 +345,7 @@ func TestMealPlanningManager_UpdateMealListItem(T *testing.T) {
 		itemID := fakes.BuildFakeID()
 		listID := fakes.BuildFakeID()
 		mealID := fakes.BuildFakeID()
-		notes := pointer.To(t.Name())
+		notes := new(t.Name())
 		input := &mealplanning.MealListItemUpdateRequestInput{
 			Notes: notes,
 		}

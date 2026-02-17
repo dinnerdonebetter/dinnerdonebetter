@@ -7,7 +7,6 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -84,7 +83,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 		// Set bridge table ID (required)
 		exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 		// Set Index (required for individual creation) - use nextIndex to ensure uniqueness
-		exampleRecipeStepVesselInput.Index = pointer.To(nextIndex)
+		exampleRecipeStepVesselInput.Index = new(nextIndex)
 
 		createdRecipeStepVesselRes, err := userClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 			RecipeId:     createdRecipe.ID,
@@ -203,7 +202,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -249,7 +248,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -271,8 +270,8 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		}
 
 		exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
-		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
-		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = new(uint64(0))
+		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = new(uint64(0))
 
 		// Set bridge table IDs
 		// Step 0: aluminumFoil ingredient and bakingSheet vessel with line preparation
@@ -342,7 +341,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		nextIndex := uint16(len(existingVessels)) // Start from the next index after existing ones
 
 		var expected []*mealplanning.RecipeStepVessel
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
@@ -353,7 +352,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			// Set bridge table ID (required)
 			exampleRecipeStepVesselInput.ValidPreparationVesselID = &createdValidPreparationVessel.ID
 			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
-			exampleRecipeStepVesselInput.Index = pointer.To(vesselIndex)
+			exampleRecipeStepVesselInput.Index = new(vesselIndex)
 			createdRecipeStepVesselRes, createErr := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

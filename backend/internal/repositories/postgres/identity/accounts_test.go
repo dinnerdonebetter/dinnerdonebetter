@@ -84,7 +84,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	assert.NoError(t, dbc.UpdateAccount(ctx, updatedAccount))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeAccount()
 		input.BelongsToUser = exampleUser.ID
 		input.Name = fmt.Sprintf("%s %d", updatedAccount.Name, i)

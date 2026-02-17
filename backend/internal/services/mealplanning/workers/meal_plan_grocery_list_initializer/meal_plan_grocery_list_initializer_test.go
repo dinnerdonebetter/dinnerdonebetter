@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
@@ -80,7 +79,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient: onion,
 																Quantity: types.Float32RangeWithOptionalMax{
-																	Max: pointer.To(float32(100)),
+																	Max: new(float32(100)),
 																	Min: 100,
 																},
 																MeasurementUnit: *grams,
@@ -109,7 +108,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient: carrot,
 																Quantity: types.Float32RangeWithOptionalMax{
-																	Max: pointer.To(float32(100)),
+																	Max: new(float32(100)),
 																	Min: 100,
 																},
 																MeasurementUnit: *grams,
@@ -138,7 +137,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient: celery,
 																Quantity: types.Float32RangeWithOptionalMax{
-																	Max: pointer.To(float32(100)),
+																	Max: new(float32(100)),
 																	Min: 100,
 																},
 																MeasurementUnit: *grams,
@@ -167,7 +166,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient: salt,
 																Quantity: types.Float32RangeWithOptionalMax{
-																	Max: pointer.To(float32(100)),
+																	Max: new(float32(100)),
 																	Min: 100,
 																},
 																MeasurementUnit: *grams,
@@ -196,7 +195,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient: onion,
 																Quantity: types.Float32RangeWithOptionalMax{
-																	Max: pointer.To(float32(100)),
+																	Max: new(float32(100)),
 																	Min: 100,
 																},
 																MeasurementUnit: *grams,
@@ -227,7 +226,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(200)),
+					Max: new(float32(200)),
 					Min: 200,
 				},
 			},
@@ -237,7 +236,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -247,7 +246,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -257,7 +256,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},

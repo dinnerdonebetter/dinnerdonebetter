@@ -296,12 +296,12 @@ func ConvertGRPCRecipeListUpdateRequestInputToRecipeListUpdateRequestInput(input
 
 	var name *string
 	if input.Name != nil {
-		name = pointer.To(input.GetName())
+		name = new(input.GetName())
 	}
 
 	var desc *string
 	if input.Description != nil {
-		desc = pointer.To(input.GetDescription())
+		desc = new(input.GetDescription())
 	}
 
 	return &mealplanning.RecipeListUpdateRequestInput{
@@ -317,7 +317,7 @@ func ConvertGRPCRecipeListItemUpdateRequestInputToRecipeListItemUpdateRequestInp
 
 	var notes *string
 	if input.Notes != nil {
-		notes = pointer.To(input.GetNotes())
+		notes = new(input.GetNotes())
 	}
 
 	return &mealplanning.RecipeListItemUpdateRequestInput{
@@ -1259,8 +1259,8 @@ func ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
-		BelongsToRecipe:     pointer.To(input.BelongsToRecipe),
-		BelongsToRecipeStep: pointer.To(input.BelongsToRecipeStep),
+		BelongsToRecipe:     new(input.BelongsToRecipe),
+		BelongsToRecipeStep: new(input.BelongsToRecipeStep),
 		Index:               uint16(input.Index),
 	}
 
@@ -1395,7 +1395,7 @@ func ConvertGRPCRecipeRatingToRecipeRating(input *mealplanningsvc.RecipeRating) 
 func ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(input *mealplanningsvc.RecipeUpdateRequestInput) *mealplanning.RecipeUpdateRequestInput {
 	var componentType *string
 	if input.YieldsComponentType != nil {
-		componentType = pointer.To(ConvertMealComponentTypeToString(*input.YieldsComponentType))
+		componentType = new(ConvertMealComponentTypeToString(*input.YieldsComponentType))
 	}
 
 	return &mealplanning.RecipeUpdateRequestInput{
@@ -1418,7 +1418,7 @@ func ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(input *mealpl
 func ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(input *mealplanning.RecipeUpdateRequestInput) *mealplanningsvc.RecipeUpdateRequestInput {
 	var componentType *mealplanningsvc.MealComponentType
 	if input.YieldsComponentType != nil {
-		componentType = pointer.To(ConvertStringToMealComponentType(*input.YieldsComponentType))
+		componentType = new(ConvertStringToMealComponentType(*input.YieldsComponentType))
 	}
 
 	return &mealplanningsvc.RecipeUpdateRequestInput{
@@ -1677,7 +1677,7 @@ func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpda
 func ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequestInput(input *mealplanningsvc.RecipeStepProductUpdateRequestInput) *mealplanning.RecipeStepProductUpdateRequestInput {
 	var newType *string
 	if input.Type != nil {
-		newType = pointer.To(ConvertRecipeStepProductTypeToString(*input.Type))
+		newType = new(ConvertRecipeStepProductTypeToString(*input.Type))
 	}
 
 	return &mealplanning.RecipeStepProductUpdateRequestInput{
@@ -1714,7 +1714,7 @@ func ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequ
 func ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequestInput(input *mealplanning.RecipeStepProductUpdateRequestInput) *mealplanningsvc.RecipeStepProductUpdateRequestInput {
 	var newType *mealplanningsvc.RecipeStepProductType
 	if input.Type != nil {
-		newType = pointer.To(ConvertStringToRecipeStepProductType(*input.Type))
+		newType = new(ConvertStringToRecipeStepProductType(*input.Type))
 	}
 
 	return &mealplanningsvc.RecipeStepProductUpdateRequestInput{

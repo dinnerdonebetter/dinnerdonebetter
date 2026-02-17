@@ -117,9 +117,11 @@ func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtCol
 		archivedAddendum = fmt.Sprintf("\n\t\t\tAND (NOT COALESCE(sqlc.narg(%s), false)::boolean OR %s.%s = NULL)", includeArchivedArg, tableName, archivedAtColumn)
 	}
 
-	allConditions := ""
+	var allConditions strings.Builder
 	for _, condition := range conditions {
-		allConditions += fmt.Sprintf("\n\tAND %s", condition)
+		if _, err := fmt.Fprintf(&allConditions, "\n\tAND %s", condition); err != nil {
+			panic(err)
+		}
 	}
 
 	// Add cursor-based pagination condition
@@ -135,7 +137,7 @@ func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtCol
 		currentTimeExpression,
 		updateAddendum,
 		archivedAddendum,
-		allConditions,
+		allConditions.String(),
 		cursorCondition,
 	)))
 
@@ -167,9 +169,11 @@ func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtCo
 		archivedAddendum = fmt.Sprintf("\n\t\t\tAND (NOT COALESCE(sqlc.narg(%s), false)::boolean OR %s.%s = NULL)", includeArchivedArg, tableName, archivedAtColumn)
 	}
 
-	allConditions := ""
+	var allConditions strings.Builder
 	for _, condition := range conditions {
-		allConditions += fmt.Sprintf("\n\t\t\tAND %s", strings.TrimSpace(condition))
+		if _, err := fmt.Fprintf(&allConditions, "\n\t\t\tAND %s", condition); err != nil {
+			panic(err)
+		}
 	}
 
 	archivedAtAddendum := "\n\t\tWHERE"
@@ -194,18 +198,20 @@ func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtCo
 		tableName, createdAtColumn, currentTimeExpression,
 		updateAddendum,
 		archivedAddendum,
-		allConditions,
+		allConditions.String(),
 	)))
 }
 
 func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, joins []string, conditions ...string) string {
-	allConditons := ""
+	var allConditons strings.Builder
 	for i, condition := range conditions {
 		prefix := "AND "
 		if !withArchivedAtColumn && i == 0 {
 			prefix = ""
 		}
-		allConditons += fmt.Sprintf("\n\t\t\t%s%s", prefix, strings.TrimSpace(condition))
+		if _, err := fmt.Fprintf(&allConditons, "\n\t\t\t%s%s", prefix, strings.TrimSpace(condition)); err != nil {
+			panic(err)
+		}
 	}
 
 	archivedAtAddendum := "WHERE"
@@ -227,7 +233,7 @@ func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, joins []
 		tableName,
 		joinStmnt,
 		archivedAtAddendum,
-		allConditons,
+		allConditons.String(),
 	)))
 }
 

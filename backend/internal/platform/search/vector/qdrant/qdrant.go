@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/vector"
 
 	"github.com/qdrant/go-client/qdrant"
@@ -98,7 +97,7 @@ func convertUpsertVectorToUpsertPoints(indexName string, data vector.UpsertVecto
 	return &qdrant.UpsertPoints{
 		CollectionName: indexName,
 		Points:         points,
-		Wait:           pointer.To(true),
+		Wait:           new(true),
 	}, nil
 }
 
@@ -157,7 +156,7 @@ func (c *client) DeleteVector(ctx context.Context, indexName, vectorID string) e
 			Names: []string{vectorID},
 		},
 		PointsSelector: qdrant.NewPointsSelector(qdrant.NewID(vectorID)),
-		Wait:           pointer.To(true),
+		Wait:           new(true),
 	}); err != nil {
 		return observability.PrepareError(err, span, "deleting vector")
 	}

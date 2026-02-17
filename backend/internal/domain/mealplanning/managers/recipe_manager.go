@@ -18,7 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -448,21 +447,21 @@ func cloneRecipe(x *mealplanning.Recipe, userID string) *mealplanning.RecipeData
 		cloneInput.Steps[i].ID = newRecipeStepID
 		for j := range cloneInput.Steps[i].Ingredients {
 			if index, ok := ingredientProductIndices[x.Steps[i].Ingredients[j].ID]; ok {
-				cloneInput.Steps[i].Ingredients[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
+				cloneInput.Steps[i].Ingredients[j].ProductOfRecipeStepIndex = new(uint64(index))
 			}
 			cloneInput.Steps[i].Ingredients[j].ID = identifiers.New()
 			cloneInput.Steps[i].Ingredients[j].BelongsToRecipeStep = newRecipeStepID
 		}
 		for j := range cloneInput.Steps[i].Instruments {
 			if index, ok := instrumentProductIndices[x.Steps[i].Instruments[j].ID]; ok {
-				cloneInput.Steps[i].Instruments[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
+				cloneInput.Steps[i].Instruments[j].ProductOfRecipeStepIndex = new(uint64(index))
 			}
 			cloneInput.Steps[i].Instruments[j].ID = identifiers.New()
 			cloneInput.Steps[i].Instruments[j].BelongsToRecipeStep = newRecipeStepID
 		}
 		for j := range cloneInput.Steps[i].Vessels {
 			if index, ok := vesselProductIndices[x.Steps[i].Vessels[j].ID]; ok {
-				cloneInput.Steps[i].Vessels[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
+				cloneInput.Steps[i].Vessels[j].ProductOfRecipeStepIndex = new(uint64(index))
 			}
 			cloneInput.Steps[i].Vessels[j].ID = identifiers.New()
 			cloneInput.Steps[i].Vessels[j].BelongsToRecipeStep = newRecipeStepID

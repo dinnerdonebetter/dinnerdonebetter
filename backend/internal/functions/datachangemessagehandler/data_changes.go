@@ -67,8 +67,7 @@ func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(
 
 	var wg sync.WaitGroup
 
-	wg.Add(1)
-	go func() {
+	wg.Go(func() {
 		a.nonWebhookEventTypesHat.RLock()
 		eventTypeIsValid := slices.Contains(a.nonWebhookEventTypes, changeMessage.EventType)
 		a.nonWebhookEventTypesHat.RUnlock()
@@ -90,24 +89,19 @@ func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(
 				}
 			}
 		}
-		wg.Done()
-	}()
+	})
 
-	wg.Add(1)
-	go func() {
+	wg.Go(func() {
 		if err := a.handleOutboundNotifications(ctx, changeMessage); err != nil {
 			observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
 		}
-		wg.Done()
-	}()
+	})
 
-	wg.Add(1)
-	go func() {
+	wg.Go(func() {
 		if err := a.handleSearchIndexUpdates(ctx, changeMessage); err != nil {
 			observability.AcknowledgeError(err, logger, span, "updating search index)")
 		}
-		wg.Done()
-	}()
+	})
 
 	wg.Wait()
 

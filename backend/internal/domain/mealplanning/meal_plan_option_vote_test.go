@@ -4,8 +4,6 @@ import (
 	"math"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +18,7 @@ func TestMealPlanOptionVote_Update(T *testing.T) {
 		input := &MealPlanOptionVoteUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Abstain = pointer.To(true)
+		input.Abstain = new(true)
 
 		x.Update(input)
 	})
@@ -85,9 +83,9 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			Rank:                    pointer.To(uint8(fake.Number(1, math.MaxUint8))),
-			Abstain:                 pointer.To(fake.Bool()),
-			Notes:                   pointer.To(t.Name()),
+			Rank:                    new(uint8(fake.Number(1, math.MaxUint8))),
+			Abstain:                 new(fake.Bool()),
+			Notes:                   new(t.Name()),
 			BelongsToMealPlanOption: t.Name(),
 		}
 

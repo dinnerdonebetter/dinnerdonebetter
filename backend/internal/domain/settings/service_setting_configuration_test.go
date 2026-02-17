@@ -3,8 +3,6 @@ package settings
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -91,8 +89,8 @@ func TestServiceSettingConfigurationUpdateRequestInput_ValidateWithContext(T *te
 
 		ctx := t.Context()
 		x := &ServiceSettingConfigurationUpdateRequestInput{
-			Value:            pointer.To(t.Name()),
-			ServiceSettingID: pointer.To(t.Name()),
+			Value:            new(t.Name()),
+			ServiceSettingID: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)

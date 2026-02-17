@@ -14,7 +14,7 @@ func TestTo(T *testing.T) {
 		t.Parallel()
 
 		expected := "things"
-		actual := To(expected)
+		actual := new(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)

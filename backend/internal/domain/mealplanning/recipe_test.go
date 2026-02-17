@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -104,14 +103,14 @@ func TestRecipe_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredient{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 				{
 					ID: "step-2",
 					Ingredients: []*RecipeStepIngredient{
-						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+						{RecipeStepProductRecipeID: new("recipe-3")},
 					},
 				},
 			},
@@ -129,15 +128,15 @@ func TestRecipe_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredient{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 				{
 					ID: "step-2",
 					Ingredients: []*RecipeStepIngredient{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")}, // duplicate
-						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+						{RecipeStepProductRecipeID: new("recipe-1")}, // duplicate
+						{RecipeStepProductRecipeID: new("recipe-3")},
 					},
 				},
 			},
@@ -155,10 +154,10 @@ func TestRecipe_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredient{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
 						{RecipeStepProductRecipeID: nil},
-						{RecipeStepProductRecipeID: pointer.To("")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 			},
@@ -253,7 +252,7 @@ func TestRecipe_Update(T *testing.T) {
 		input := &RecipeUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.EligibleForMeals = pointer.To(true)
+		input.EligibleForMeals = new(true)
 
 		x.Update(input)
 	})
@@ -273,7 +272,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			PluralPortionName:   t.Name(),
 			Description:         t.Name(),
 			YieldsComponentType: MealComponentTypesMain,
-			InspiredByRecipeID:  pointer.To(t.Name()),
+			InspiredByRecipeID:  new(t.Name()),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),
@@ -313,7 +312,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			PluralPortionName:   t.Name(),
 			Description:         t.Name(),
 			YieldsComponentType: MealComponentTypesMain,
-			InspiredByRecipeID:  pointer.To(t.Name()),
+			InspiredByRecipeID:  new(t.Name()),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),
@@ -412,13 +411,13 @@ func TestRecipeDatabaseCreationInput_GetAllValidIngredientPreparationIDs(T *test
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientPreparationID: pointer.To("vip-1")},
-						{ValidIngredientPreparationID: pointer.To("vip-2")},
+						{ValidIngredientPreparationID: new("vip-1")},
+						{ValidIngredientPreparationID: new("vip-2")},
 					},
 				},
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientPreparationID: pointer.To("vip-3")},
+						{ValidIngredientPreparationID: new("vip-3")},
 					},
 				},
 			},
@@ -435,10 +434,10 @@ func TestRecipeDatabaseCreationInput_GetAllValidIngredientPreparationIDs(T *test
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientPreparationID: pointer.To("vip-1")},
+						{ValidIngredientPreparationID: new("vip-1")},
 						{ValidIngredientPreparationID: nil},
-						{ValidIngredientPreparationID: pointer.To("")},
-						{ValidIngredientPreparationID: pointer.To("vip-2")},
+						{ValidIngredientPreparationID: new("")},
+						{ValidIngredientPreparationID: new("vip-2")},
 					},
 				},
 			},
@@ -476,13 +475,13 @@ func TestRecipeDatabaseCreationInput_GetAllValidIngredientMeasurementUnitIDs(T *
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientMeasurementUnitID: pointer.To("vimu-1")},
-						{ValidIngredientMeasurementUnitID: pointer.To("vimu-2")},
+						{ValidIngredientMeasurementUnitID: new("vimu-1")},
+						{ValidIngredientMeasurementUnitID: new("vimu-2")},
 					},
 				},
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientMeasurementUnitID: pointer.To("vimu-3")},
+						{ValidIngredientMeasurementUnitID: new("vimu-3")},
 					},
 				},
 			},
@@ -499,10 +498,10 @@ func TestRecipeDatabaseCreationInput_GetAllValidIngredientMeasurementUnitIDs(T *
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{ValidIngredientMeasurementUnitID: pointer.To("vimu-1")},
+						{ValidIngredientMeasurementUnitID: new("vimu-1")},
 						{ValidIngredientMeasurementUnitID: nil},
-						{ValidIngredientMeasurementUnitID: pointer.To("")},
-						{ValidIngredientMeasurementUnitID: pointer.To("vimu-2")},
+						{ValidIngredientMeasurementUnitID: new("")},
+						{ValidIngredientMeasurementUnitID: new("vimu-2")},
 					},
 				},
 			},
@@ -540,13 +539,13 @@ func TestRecipeDatabaseCreationInput_GetAllValidPreparationInstrumentIDs(T *test
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
-						{ValidPreparationInstrumentID: pointer.To("vpi-1")},
-						{ValidPreparationInstrumentID: pointer.To("vpi-2")},
+						{ValidPreparationInstrumentID: new("vpi-1")},
+						{ValidPreparationInstrumentID: new("vpi-2")},
 					},
 				},
 				{
 					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
-						{ValidPreparationInstrumentID: pointer.To("vpi-3")},
+						{ValidPreparationInstrumentID: new("vpi-3")},
 					},
 				},
 			},
@@ -563,10 +562,10 @@ func TestRecipeDatabaseCreationInput_GetAllValidPreparationInstrumentIDs(T *test
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Instruments: []*RecipeStepInstrumentDatabaseCreationInput{
-						{ValidPreparationInstrumentID: pointer.To("vpi-1")},
+						{ValidPreparationInstrumentID: new("vpi-1")},
 						{ValidPreparationInstrumentID: nil},
-						{ValidPreparationInstrumentID: pointer.To("")},
-						{ValidPreparationInstrumentID: pointer.To("vpi-2")},
+						{ValidPreparationInstrumentID: new("")},
+						{ValidPreparationInstrumentID: new("vpi-2")},
 					},
 				},
 			},
@@ -604,13 +603,13 @@ func TestRecipeDatabaseCreationInput_GetAllValidPreparationVesselIDs(T *testing.
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Vessels: []*RecipeStepVesselDatabaseCreationInput{
-						{ValidPreparationVesselID: pointer.To("vpv-1")},
-						{ValidPreparationVesselID: pointer.To("vpv-2")},
+						{ValidPreparationVesselID: new("vpv-1")},
+						{ValidPreparationVesselID: new("vpv-2")},
 					},
 				},
 				{
 					Vessels: []*RecipeStepVesselDatabaseCreationInput{
-						{ValidPreparationVesselID: pointer.To("vpv-3")},
+						{ValidPreparationVesselID: new("vpv-3")},
 					},
 				},
 			},
@@ -627,10 +626,10 @@ func TestRecipeDatabaseCreationInput_GetAllValidPreparationVesselIDs(T *testing.
 			Steps: []*RecipeStepDatabaseCreationInput{
 				{
 					Vessels: []*RecipeStepVesselDatabaseCreationInput{
-						{ValidPreparationVesselID: pointer.To("vpv-1")},
+						{ValidPreparationVesselID: new("vpv-1")},
 						{ValidPreparationVesselID: nil},
-						{ValidPreparationVesselID: pointer.To("")},
-						{ValidPreparationVesselID: pointer.To("vpv-2")},
+						{ValidPreparationVesselID: new("")},
+						{ValidPreparationVesselID: new("vpv-2")},
 					},
 				},
 			},
@@ -669,14 +668,14 @@ func TestRecipeDatabaseCreationInput_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 				{
 					ID: "step-2",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+						{RecipeStepProductRecipeID: new("recipe-3")},
 					},
 				},
 			},
@@ -694,15 +693,15 @@ func TestRecipeDatabaseCreationInput_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 				{
 					ID: "step-2",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")}, // duplicate
-						{RecipeStepProductRecipeID: pointer.To("recipe-3")},
+						{RecipeStepProductRecipeID: new("recipe-1")}, // duplicate
+						{RecipeStepProductRecipeID: new("recipe-3")},
 					},
 				},
 			},
@@ -720,10 +719,10 @@ func TestRecipeDatabaseCreationInput_GetRelatedRecipeIDs(T *testing.T) {
 				{
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{RecipeStepProductRecipeID: pointer.To("recipe-1")},
+						{RecipeStepProductRecipeID: new("recipe-1")},
 						{RecipeStepProductRecipeID: nil},
-						{RecipeStepProductRecipeID: pointer.To("")},
-						{RecipeStepProductRecipeID: pointer.To("recipe-2")},
+						{RecipeStepProductRecipeID: new("")},
+						{RecipeStepProductRecipeID: new("recipe-2")},
 					},
 				},
 			},
@@ -790,14 +789,14 @@ func TestRecipeDatabaseCreationInput_GetRelatedRecipeIDs(T *testing.T) {
 					ID: "step-1",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
 						{Name: "salt", RecipeStepProductRecipeID: nil},
-						{Name: "caesar breadcrumbs", RecipeStepProductRecipeID: pointer.To("breadcrumbs-recipe-id")},
+						{Name: "caesar breadcrumbs", RecipeStepProductRecipeID: new("breadcrumbs-recipe-id")},
 						{Name: "pepper", RecipeStepProductRecipeID: nil},
 					},
 				},
 				{
 					ID: "step-2",
 					Ingredients: []*RecipeStepIngredientDatabaseCreationInput{
-						{Name: "garlic butter", RecipeStepProductRecipeID: pointer.To("garlic-butter-recipe-id")},
+						{Name: "garlic butter", RecipeStepProductRecipeID: new("garlic-butter-recipe-id")},
 						{Name: "olive oil", RecipeStepProductRecipeID: nil},
 					},
 				},
@@ -842,11 +841,11 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:               pointer.To(t.Name()),
-			Source:             pointer.To(t.Name()),
-			Description:        pointer.To(t.Name()),
-			InspiredByRecipeID: pointer.To(t.Name()),
-			EstimatedPortions:  types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
+			Name:               new(t.Name()),
+			Source:             new(t.Name()),
+			Description:        new(t.Name()),
+			InspiredByRecipeID: new(t.Name()),
+			EstimatedPortions:  types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: new(fake.Float32())},
 		}
 
 		actual := x.ValidateWithContext(t.Context())

@@ -106,16 +106,16 @@ func main() {
 			}
 		}
 
-		var fileContent string
+		var fileContent strings.Builder
 		for i, query := range queries {
 			if i != 0 {
-				fileContent += "\n"
+				fileContent.WriteString("\n")
 			}
-			fileContent += query.Render()
+			fileContent.WriteString(query.Render())
 		}
 
 		fileOutput := ""
-		for _, line := range strings.Split(strings.TrimSpace(fileContent), "\n") {
+		for line := range strings.SplitSeq(strings.TrimSpace(fileContent.String()), "\n") {
 			fileOutput += strings.TrimSuffix(line, " ") + "\n"
 		}
 

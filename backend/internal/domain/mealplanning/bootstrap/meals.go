@@ -3,7 +3,6 @@ package bootstrap
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -51,7 +50,7 @@ func AllMeals(userID string, recipes []*mealplanning.Recipe) []*mealplanning.Mea
 	getMainPortions := func(recipe *mealplanning.Recipe) (minimum float32, maximum *float32) {
 		minimum = recipe.EstimatedPortions.Min
 		if recipe.EstimatedPortions.Max != nil {
-			maximum = pointer.To(*recipe.EstimatedPortions.Max)
+			maximum = new(*recipe.EstimatedPortions.Max)
 		}
 		return minimum, maximum
 	}

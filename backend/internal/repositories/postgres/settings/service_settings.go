@@ -70,7 +70,7 @@ func (q *repository) getServiceSetting(ctx context.Context, db database.SQLQuery
 	}
 
 	usableEnumeration := []string{}
-	for _, x := range strings.Split(result.Enumeration, serviceSettingsEnumDelimiter) {
+	for x := range strings.SplitSeq(result.Enumeration, serviceSettingsEnumDelimiter) {
 		if strings.TrimSpace(x) != "" {
 			usableEnumeration = append(usableEnumeration, x)
 		}

@@ -72,7 +72,7 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 	createdUploadedMedia = append(createdUploadedMedia, createUploadedMediaForTest(t, ctx, exampleUploadedMedia, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeUploadedMedia()
 		input.StoragePath = fmt.Sprintf("/storage/path/%d.png", i)
 		input.CreatedByUser = user.ID

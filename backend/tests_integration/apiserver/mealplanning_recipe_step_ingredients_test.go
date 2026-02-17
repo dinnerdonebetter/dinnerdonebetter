@@ -7,7 +7,6 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -162,7 +161,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 		nextIndex := uint16(len(existingIngredients)) // Start from the next index after existing ones
 
 		var expected []*mealplanning.RecipeStepIngredient
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			x, _, _ := createRecipeForTest(t, nil)
 
 			// Create bridge table entries for this ingredient
@@ -184,7 +183,7 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 			exampleRecipeStepIngredientInput.ValidIngredientPreparationID = &createdVIP.ID
 			exampleRecipeStepIngredientInput.ValidIngredientMeasurementUnitID = &createdVIMU.ID
 			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
-			exampleRecipeStepIngredientInput.Index = pointer.To(ingredientIndex)
+			exampleRecipeStepIngredientInput.Index = new(ingredientIndex)
 			createdRecipeStepIngredientRes, createErr := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

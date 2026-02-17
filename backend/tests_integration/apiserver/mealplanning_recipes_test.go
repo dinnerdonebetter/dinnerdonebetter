@@ -8,7 +8,6 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -224,7 +223,7 @@ func TestRecipes_Creating(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1000)),
+								Min: new(float32(1000)),
 							},
 						},
 					},
@@ -271,7 +270,7 @@ func TestRecipes_Creating(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1010)),
+								Min: new(float32(1010)),
 							},
 						},
 					},
@@ -388,8 +387,8 @@ func TestRecipes_Creating(T *testing.T) {
 						{
 							// This is a recipe step product (from step 0), no bridge table IDs needed
 							Name:                            expected.Steps[1].Ingredients[0].Name,
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: nil,
 								Min: expected.Steps[1].Ingredients[0].Quantity.Min,
@@ -584,7 +583,7 @@ func TestRecipes_Searching(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		var expected []*mealplanning.Recipe
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			exampleRecipe.Name = fmt.Sprintf("example%d", i)
 			_, _, createdRecipe := createRecipeForTest(t, exampleRecipe)
 
@@ -714,7 +713,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1000)),
+								Min: new(float32(1000)),
 							},
 						},
 					},
@@ -748,7 +747,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							QuantityNotes:   "",
 							MeasurementQuantity: types.OptionalFloat32Range{
 								Max: nil,
-								Min: pointer.To(float32(1010)),
+								Min: new(float32(1010)),
 							},
 						},
 					},
@@ -792,7 +791,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID:   &grams.ID,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
+							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1000))},
 						},
 					},
 					Notes:         "first step",
@@ -820,7 +819,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID:   &grams.ID,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
+							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1010))},
 						},
 					},
 					Notes:         "second step",
@@ -836,8 +835,8 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							// This is a recipe step product (from step 0), no bridge table IDs needed
 							Name:                            "diced chicken breast",
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 						},
 					},
 					Index: 1,
@@ -907,11 +906,11 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							QuantityNotes:   "",
 							// Discrete product: 4 patties, each 4 ounces
 							ItemQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)),
+								Min: new(float32(4)),
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)), // per-item measurement
+								Min: new(float32(4)), // per-item measurement
 								Max: nil,
 							},
 						},
@@ -949,7 +948,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(8)), // total quantity
+								Min: new(float32(8)), // total quantity
 								Max: nil,
 							},
 						},
@@ -996,11 +995,11 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							QuantityNotes:     "",
 							// Discrete product: 4 patties, each 4 ounces
 							ItemQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)),
+								Min: new(float32(4)),
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)), // per-item measurement
+								Min: new(float32(4)), // per-item measurement
 								Max: nil,
 							},
 						},
@@ -1036,7 +1035,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(8)), // total quantity
+								Min: new(float32(8)), // total quantity
 								Max: nil,
 							},
 						},
@@ -1174,11 +1173,11 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Min set
 							ItemQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(12)),
+								Min: new(float32(12)),
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(2)), // per-item measurement (2 oz per cookie)
+								Min: new(float32(2)), // per-item measurement (2 oz per cookie)
 								Max: nil,
 							},
 						},
@@ -1199,7 +1198,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1278,11 +1277,11 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Max set (range)
 							ItemQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(8)),
-								Max: pointer.To(float32(10)),
+								Min: new(float32(8)),
+								Max: new(float32(10)),
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)), // per-item measurement (1 oz per slice)
+								Min: new(float32(1)), // per-item measurement (1 oz per slice)
 								Max: nil,
 							},
 						},
@@ -1303,7 +1302,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1392,7 +1391,7 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(16)), // total quantity (16 oz total)
+								Min: new(float32(16)), // total quantity (16 oz total)
 								Max: nil,
 							},
 						},
@@ -1413,7 +1412,7 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1496,11 +1495,11 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete: ItemQuantity.Min set, Max null
 							ItemQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)),
+								Min: new(float32(4)),
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(4)), // per-item
+								Min: new(float32(4)), // per-item
 								Max: nil,
 							},
 						},
@@ -1521,7 +1520,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1598,10 +1597,10 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							// Discrete: ItemQuantity.Min null, Max set
 							ItemQuantity: types.OptionalFloat32Range{
 								Min: nil,
-								Max: pointer.To(float32(6)),
+								Max: new(float32(6)),
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(3)), // per-item
+								Min: new(float32(3)), // per-item
 								Max: nil,
 							},
 						},
@@ -1622,7 +1621,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1702,7 +1701,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 								Max: nil,
 							},
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(32)), // total quantity
+								Min: new(float32(32)), // total quantity
 								Max: nil,
 							},
 						},
@@ -1723,7 +1722,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1830,7 +1829,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1892,7 +1891,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1912,7 +1911,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1973,7 +1972,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1993,7 +1992,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2047,7 +2046,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2062,7 +2061,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2123,7 +2122,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2143,7 +2142,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2208,7 +2207,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2228,7 +2227,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2293,7 +2292,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2313,7 +2312,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2378,7 +2377,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2398,7 +2397,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2462,7 +2461,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2482,7 +2481,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2542,7 +2541,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2562,7 +2561,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2622,7 +2621,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2642,7 +2641,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2720,7 +2719,7 @@ func TestRecipes_Validation(T *testing.T) {
 									Type:              mealplanning.RecipeStepProductIngredientType,
 									MeasurementUnitID: &measurementUnit.ID,
 									MeasurementQuantity: types.OptionalFloat32Range{
-										Min: pointer.To(float32(1)),
+										Min: new(float32(1)),
 									},
 								},
 							},
@@ -2740,7 +2739,7 @@ func TestRecipes_Validation(T *testing.T) {
 									Type:              mealplanning.RecipeStepProductIngredientType,
 									MeasurementUnitID: &measurementUnit.ID,
 									MeasurementQuantity: types.OptionalFloat32Range{
-										Min: pointer.To(float32(1)),
+										Min: new(float32(1)),
 									},
 								},
 							},
@@ -2848,7 +2847,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2868,7 +2867,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2924,8 +2923,8 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 						{
 							// Reference the product from the first recipe
 							// The product "base sauce" is from step 0 (index 0), product index 0
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &firstRecipe.ID,
 							Name:                            "base sauce",
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 0.5},
@@ -2937,7 +2936,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -2957,7 +2956,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},

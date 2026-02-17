@@ -69,7 +69,7 @@ func TestQuerier_Integration_Waitlists(t *testing.T) {
 
 	createdWaitlists = append(createdWaitlists, createWaitlistForTest(t, ctx, exampleWaitlist, dbc))
 
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeWaitlist()
 		input.Name = fmt.Sprintf("%s %d", exampleWaitlist.Name, i)
 		createdWaitlists = append(createdWaitlists, createWaitlistForTest(t, ctx, input, dbc))

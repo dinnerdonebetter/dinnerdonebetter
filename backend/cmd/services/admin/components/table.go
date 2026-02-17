@@ -175,7 +175,7 @@ func extractFields(item any) ([]*fieldInfo, error) {
 	}
 
 	// Handle pointers
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return nil, fmt.Errorf("nil pointer")
 		}
@@ -188,16 +188,16 @@ func extractFields(item any) ([]*fieldInfo, error) {
 
 	t := v.Type()
 
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	for field := range t.Fields() {
+		f := field
 
 		// Skip unexported fields
-		if !field.IsExported() {
+		if !f.IsExported() {
 			continue
 		}
 
 		// Extract JSON tag
-		jsonTag := field.Tag.Get("json")
+		jsonTag := f.Tag.Get("json")
 		if jsonTag == "" || jsonTag == "-" {
 			// Skip fields without JSON tags or with "-" tag
 			continue
@@ -210,13 +210,13 @@ func extractFields(item any) ([]*fieldInfo, error) {
 		}
 
 		// Create a display name (convert CamelCase to Title Case)
-		displayName := camelCaseToTitleCase(field.Name)
+		displayName := camelCaseToTitleCase(f.Name)
 
 		fields = append(fields, &fieldInfo{
-			Name:        jsonName,   // Use JSON tag name
-			GoFieldName: field.Name, // Keep Go struct field name for reflection
+			Name:        jsonName, // Use JSON tag name
+			GoFieldName: f.Name,   // Keep Go struct field name for reflection
 			DisplayName: displayName,
-			Type:        field.Type,
+			Type:        f.Type,
 		})
 	}
 
@@ -412,7 +412,7 @@ func createTableBody[T any](data []T, fields []*fieldInfo, options *TableOptions
 		var cells []g.Node
 
 		v := reflect.ValueOf(item)
-		if v.Kind() == reflect.Ptr {
+		if v.Kind() == reflect.Pointer {
 			if v.IsNil() {
 				continue // Skip nil pointers
 			}

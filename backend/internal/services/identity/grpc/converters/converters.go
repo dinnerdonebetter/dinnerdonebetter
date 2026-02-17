@@ -82,8 +82,8 @@ func ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequ
 func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *identitysvc.AccountCreationRequestInput, belongsToUser string) *identity.AccountCreationRequestInput {
 	return &identity.AccountCreationRequestInput{
 		BelongsToUser: belongsToUser,
-		Latitude:      pointer.To(float64(pointer.Dereference(input.Latitude))),
-		Longitude:     pointer.To(float64(pointer.Dereference(input.Longitude))),
+		Latitude:      new(float64(pointer.Dereference(input.Latitude))),
+		Longitude:     new(float64(pointer.Dereference(input.Longitude))),
 		Name:          input.Name,
 		ContactPhone:  input.ContactPhone,
 		AddressLine1:  input.AddressLine1,
@@ -97,8 +97,8 @@ func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *
 
 func ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(input *identity.AccountCreationRequestInput) *identitysvc.AccountCreationRequestInput {
 	return &identitysvc.AccountCreationRequestInput{
-		Latitude:      pointer.To(float32(pointer.Dereference(input.Latitude))),
-		Longitude:     pointer.To(float32(pointer.Dereference(input.Longitude))),
+		Latitude:      new(float32(pointer.Dereference(input.Latitude))),
+		Longitude:     new(float32(pointer.Dereference(input.Longitude))),
 		Name:          input.Name,
 		ContactPhone:  input.ContactPhone,
 		AddressLine1:  input.AddressLine1,
@@ -121,8 +121,8 @@ func ConvertAccountToGRPCAccount(input *identity.Account) *identitysvc.Account {
 		CreatedAt:                  grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:                 grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		Longitude:                  pointer.To(float32(pointer.Dereference(input.Longitude))),
-		Latitude:                   pointer.To(float32(pointer.Dereference(input.Latitude))),
+		Longitude:                  new(float32(pointer.Dereference(input.Longitude))),
+		Latitude:                   new(float32(pointer.Dereference(input.Latitude))),
 		SubscriptionPlanId:         input.SubscriptionPlanID,
 		State:                      input.State,
 		ContactPhone:               input.ContactPhone,
@@ -164,8 +164,8 @@ func ConvertGRPCAccountToAccount(input *identitysvc.Account) *identity.Account {
 		CreatedAt:                  grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:                 grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		Longitude:                  pointer.To(float64(pointer.Dereference(input.Longitude))),
-		Latitude:                   pointer.To(float64(pointer.Dereference(input.Latitude))),
+		Longitude:                  new(float64(pointer.Dereference(input.Longitude))),
+		Latitude:                   new(float64(pointer.Dereference(input.Latitude))),
 		SubscriptionPlanID:         input.SubscriptionPlanId,
 		State:                      input.State,
 		ContactPhone:               input.ContactPhone,
@@ -303,7 +303,7 @@ func convertFloat32PointerToFloat64Pointer(input *float32) *float64 {
 	if input == nil {
 		return nil
 	}
-	return pointer.To(float64(*input))
+	return new(float64(*input))
 }
 
 func ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(input *identitysvc.AccountUpdateRequestInput) *identity.AccountUpdateRequestInput {
@@ -326,7 +326,7 @@ func convertFloat64PointerToFloat32Pointer(input *float64) *float32 {
 	if input == nil {
 		return nil
 	}
-	return pointer.To(float32(*input))
+	return new(float32(*input))
 }
 
 func ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(input *identity.AccountUpdateRequestInput) *identitysvc.AccountUpdateRequestInput {

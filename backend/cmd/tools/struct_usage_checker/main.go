@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"go/ast"
-	"go/parser"
 	"go/token"
 	"log"
-	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
+	"golang.org/x/tools/go/packages"
 )
 
 const (
@@ -28,34 +28,75 @@ type CheckConfig struct {
 	TargetPkgs      []string
 }
 
-func noTestFiles(f os.FileInfo) bool {
-	return !f.IsDir() && !strings.HasSuffix(f.Name(), "_test.go")
+// fileWithPath pairs an AST file with its path for error reporting.
+type fileWithPath struct {
+	file *ast.File
+	path string // path relative to backend/ for error messages
+}
+
+// loadPackageAST loads a package by import path and returns its non-test AST files with paths and FileSet.
+func loadPackageAST(importPath string) ([]fileWithPath, *token.FileSet, error) {
+	cfg := &packages.Config{
+		Mode:  packages.NeedSyntax | packages.NeedFiles | packages.NeedCompiledGoFiles,
+		Tests: false,
+	}
+	pkgs, err := packages.Load(cfg, importPath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("loading package %s: %w", importPath, err)
+	}
+	if len(pkgs) == 0 {
+		return nil, nil, fmt.Errorf("no packages found for %s", importPath)
+	}
+	if len(pkgs) > 1 {
+		return nil, nil, fmt.Errorf("multiple packages found for %s (consider build tags)", importPath)
+	}
+	pkg := pkgs[0]
+	// Build path->file map; Syntax and CompiledGoFiles can differ in length (e.g. cgo, generated files).
+	pathToFile := make(map[string]*ast.File)
+	for _, f := range pkg.Syntax {
+		if f != nil {
+			pathToFile[pkg.Fset.Position(f.Pos()).Filename] = f
+		}
+	}
+	var result []fileWithPath
+	for _, fullPath := range pkg.CompiledGoFiles {
+		if strings.HasSuffix(filepath.Base(fullPath), "_test.go") {
+			continue
+		}
+		f := pathToFile[fullPath]
+		if f == nil {
+			continue // e.g. cgo-generated file with no syntax
+		}
+		path := fullPath
+		if idx := strings.Index(fullPath, "backend/"); idx >= 0 {
+			path = fullPath[idx+len("backend/"):]
+		}
+		result = append(result, fileWithPath{file: f, path: path})
+	}
+	return result, pkg.Fset, nil
 }
 
 func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*ast.StructType {
-	fileset := token.NewFileSet()
-	astPkg, err := parser.ParseDir(fileset, pkg, noTestFiles, parser.AllErrors)
+	importPath := getSourceImportPath(pkg)
+	filesWithPath, _, err := loadPackageAST(importPath)
 	if err != nil {
 		log.Fatalf("failed to parse package: %v", err)
 	}
-
-	if len(astPkg) != 1 {
+	if len(filesWithPath) == 0 {
 		return nil
 	}
 
 	foundTypes := map[string]*ast.StructType{}
-	for _, p := range astPkg {
-		for _, f := range p.Files {
-			ast.Inspect(f, func(n ast.Node) bool {
-				switch t := n.(type) {
-				case *ast.TypeSpec:
-					if structType, ok := t.Type.(*ast.StructType); ok && nameFilter(t.Name.Name) {
-						foundTypes[t.Name.Name] = structType
-					}
+	for _, fwp := range filesWithPath {
+		ast.Inspect(fwp.file, func(n ast.Node) bool {
+			switch t := n.(type) {
+			case *ast.TypeSpec:
+				if structType, ok := t.Type.(*ast.StructType); ok && nameFilter(t.Name.Name) {
+					foundTypes[t.Name.Name] = structType
 				}
-				return true
-			})
-		}
+			}
+			return true
+		})
 	}
 
 	return foundTypes
@@ -111,57 +152,54 @@ func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 	paramTypes := fetchTypesForPackage(config.SourcePkg, config.TypeFilter)
 	sourceImportPath := getSourceImportPath(config.SourcePkg)
 
-	fileset := token.NewFileSet()
-	astPkg, err := parser.ParseDir(fileset, auxPackage, noTestFiles, parser.AllErrors)
+	filesWithPath, fileset, err := loadPackageAST(getSourceImportPath(auxPackage))
 	if err != nil {
-		log.Fatalf("failed to parse package: %p", err)
+		log.Fatalf("failed to parse package: %v", err)
 	}
 
 	errors := &multierror.Error{}
 	structCount := 0
 
 	var count int
-	for _, p := range astPkg {
-		for fileName, f := range p.Files {
-			importMap := buildImportMap(f)
-			ast.Inspect(f, func(n ast.Node) bool {
-				switch config.PatternType {
-				case PatternTypeFunctionCallArgs:
-					if et, ok := n.(*ast.CallExpr); ok {
-						count, err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
-						structCount += count
-						if err != nil {
-							errors = multierror.Append(errors, err)
-						}
-					}
-				case PatternTypeStructLiterals:
-					if cl, ok := n.(*ast.CompositeLit); ok {
-						count, err = checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
-						structCount += count
-						if err != nil {
-							errors = multierror.Append(errors, err)
-						}
-					}
-				default:
-					// Check both patterns for backward compatibility
-					if et, ok := n.(*ast.CallExpr); ok {
-						count, err = checkFunctionCallArgs(et, paramTypes, fileName, config.TargetFieldName, fileset, sourceImportPath, importMap)
-						structCount += count
-						if err != nil {
-							errors = multierror.Append(errors, err)
-						}
-					}
-					if cl, ok := n.(*ast.CompositeLit); ok {
-						count, err = checkStructLiteral(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
-						structCount += count
-						if err != nil {
-							errors = multierror.Append(errors, err)
-						}
+	for _, fwp := range filesWithPath {
+		importMap := buildImportMap(fwp.file)
+		ast.Inspect(fwp.file, func(n ast.Node) bool {
+			switch config.PatternType {
+			case PatternTypeFunctionCallArgs:
+				if et, ok := n.(*ast.CallExpr); ok {
+					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, sourceImportPath, importMap)
+					structCount += count
+					if err != nil {
+						errors = multierror.Append(errors, err)
 					}
 				}
-				return true
-			})
-		}
+			case PatternTypeStructLiterals:
+				if cl, ok := n.(*ast.CompositeLit); ok {
+					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, sourceImportPath, importMap)
+					structCount += count
+					if err != nil {
+						errors = multierror.Append(errors, err)
+					}
+				}
+			default:
+				// Check both patterns for backward compatibility
+				if et, ok := n.(*ast.CallExpr); ok {
+					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, sourceImportPath, importMap)
+					structCount += count
+					if err != nil {
+						errors = multierror.Append(errors, err)
+					}
+				}
+				if cl, ok := n.(*ast.CompositeLit); ok {
+					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, sourceImportPath, importMap)
+					structCount += count
+					if err != nil {
+						errors = multierror.Append(errors, err)
+					}
+				}
+			}
+			return true
+		})
 	}
 
 	return structCount, errors.ErrorOrNil()

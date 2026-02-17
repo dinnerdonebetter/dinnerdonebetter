@@ -89,7 +89,7 @@ func TestServiceImpl_CreateServiceSetting(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On(reflection.GetMethodName(settingsRepo.CreateServiceSetting), testutils.ContextMatcher, mock.MatchedBy(func(input interface{}) bool {
+		settingsRepo.On(reflection.GetMethodName(settingsRepo.CreateServiceSetting), testutils.ContextMatcher, mock.MatchedBy(func(input any) bool {
 			return input != nil
 		})).Return(exampleServiceSetting, nil)
 

@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -14,18 +13,18 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 	return &RecipeStepCreationRequestInput{
 		PreparationID: "PreparationID",
 		EstimatedTimeInSeconds: types.OptionalUint32Range{
-			Max: pointer.To(fake.Uint32()),
-			Min: pointer.To(fake.Uint32()),
+			Max: new(fake.Uint32()),
+			Min: new(fake.Uint32()),
 		},
 		TemperatureInCelsius: types.OptionalFloat32Range{
 			Max: nil,
-			Min: pointer.To(float32(123.45)),
+			Min: new(float32(123.45)),
 		},
 		Notes:                "Notes",
 		ExplicitInstructions: "ExplicitInstructions",
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
-				ValidPreparationInstrumentID: pointer.To("ValidPreparationInstrumentID"),
+				ValidPreparationInstrumentID: new("ValidPreparationInstrumentID"),
 				Name:                         "Name",
 				Quantity:                     types.Uint32RangeWithOptionalMax{Min: fake.Uint32()},
 			},
@@ -34,15 +33,15 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				Name:                "Name",
 				Type:                RecipeStepProductIngredientType,
-				MeasurementUnitID:   pointer.To("MeasurementUnitID"),
-				MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+				MeasurementUnitID:   new("MeasurementUnitID"),
+				MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 				QuantityNotes:       "QuantityNotes",
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
 			{
-				ValidIngredientPreparationID:     pointer.To("ValidIngredientPreparationID"),
-				ValidIngredientMeasurementUnitID: pointer.To("ValidIngredientMeasurementUnitID"),
+				ValidIngredientPreparationID:     new("ValidIngredientPreparationID"),
+				ValidIngredientMeasurementUnitID: new("ValidIngredientMeasurementUnitID"),
 				QuantityNotes:                    "QuantityNotes",
 				IngredientNotes:                  "IngredientNotes",
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
@@ -58,15 +57,15 @@ func TestRecipeStep_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStep{
-			TemperatureInCelsius: types.OptionalFloat32Range{Min: pointer.To(float32(123.45))},
+			TemperatureInCelsius: types.OptionalFloat32Range{Min: new(float32(123.45))},
 		}
 
 		input := &RecipeStepUpdateRequestInput{}
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointer.To(true)
-		input.StartTimerAutomatically = pointer.To(true)
-		input.TemperatureInCelsius.Min = pointer.To(float32(543.21))
-		input.TemperatureInCelsius.Max = pointer.To(float32(123.45))
+		input.Optional = new(true)
+		input.StartTimerAutomatically = new(true)
+		input.TemperatureInCelsius.Min = new(float32(543.21))
+		input.TemperatureInCelsius.Max = new(float32(123.45))
 
 		x.Update(input)
 	})
@@ -99,12 +98,12 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepCreationRequestInput{
 			PreparationID: t.Name(),
 			EstimatedTimeInSeconds: types.OptionalUint32Range{
-				Max: pointer.To(fake.Uint32()),
-				Min: pointer.To(fake.Uint32()),
+				Max: new(fake.Uint32()),
+				Min: new(fake.Uint32()),
 			},
 			TemperatureInCelsius: types.OptionalFloat32Range{
 				Max: nil,
-				Min: pointer.To(float32(123.45)),
+				Min: new(float32(123.45)),
 			},
 			Notes:                t.Name(),
 			ExplicitInstructions: t.Name(),
@@ -116,10 +115,10 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			Ingredients: []*RecipeStepIngredientCreationRequestInput{},
 		}
 
-		for i := 0; i < maxIngredientsPerStep*2; i++ {
+		for range maxIngredientsPerStep * 2 {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
-				ValidIngredientPreparationID:     pointer.To(t.Name()),
-				ValidIngredientMeasurementUnitID: pointer.To(t.Name()),
+				ValidIngredientPreparationID:     new(t.Name()),
+				ValidIngredientMeasurementUnitID: new(t.Name()),
 				QuantityNotes:                    t.Name(),
 				IngredientNotes:                  t.Name(),
 				Quantity:                         types.Float32RangeWithOptionalMax{Min: 1},
@@ -171,18 +170,18 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:       pointer.To(fake.Uint32()),
+			Index:       new(fake.Uint32()),
 			Preparation: &ValidPreparation{},
 			EstimatedTimeInSeconds: types.OptionalUint32Range{
-				Max: pointer.To(fake.Uint32()),
-				Min: pointer.To(fake.Uint32()),
+				Max: new(fake.Uint32()),
+				Min: new(fake.Uint32()),
 			},
 			TemperatureInCelsius: types.OptionalFloat32Range{
 				Max: nil,
-				Min: pointer.To(float32(123.45)),
+				Min: new(float32(123.45)),
 			},
-			Notes:                pointer.To(t.Name()),
-			ExplicitInstructions: pointer.To(t.Name()),
+			Notes:                new(t.Name()),
+			ExplicitInstructions: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

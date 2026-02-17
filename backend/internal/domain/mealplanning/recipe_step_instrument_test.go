@@ -4,7 +4,6 @@ import (
 	"math"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -18,15 +17,15 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrument{
-			RecipeStepProductID: pointer.To(t.Name()),
-			Quantity:            types.Uint32RangeWithOptionalMax{Max: pointer.To(uint32(321))},
+			RecipeStepProductID: new(t.Name()),
+			Quantity:            types.Uint32RangeWithOptionalMax{Max: new(uint32(321))},
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointer.To(true)
-		input.RecipeStepProductID = pointer.To("whatever")
-		input.Quantity.Max = pointer.To(uint32(123))
+		input.Optional = new(true)
+		input.RecipeStepProductID = new("whatever")
+		input.Quantity.Max = new(uint32(123))
 
 		x.Update(input)
 	})
@@ -39,14 +38,14 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			ValidPreparationInstrumentID: pointer.To(t.Name()),
+			ValidPreparationInstrumentID: new(t.Name()),
 			Name:                         t.Name(),
-			RecipeStepProductID:          pointer.To(t.Name()),
+			RecipeStepProductID:          new(t.Name()),
 			Notes:                        t.Name(),
 			PreferenceRank:               uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                     fake.Bool(),
 			Quantity: types.Uint32RangeWithOptionalMax{
-				Max: pointer.To(fake.Uint32()),
+				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
 		}
@@ -59,14 +58,14 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-			ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+			ProductOfRecipeStepIndex:        new(uint64(0)),
+			ProductOfRecipeStepProductIndex: new(uint64(0)),
 			Name:                            t.Name(),
 			Notes:                           t.Name(),
 			PreferenceRank:                  uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                        fake.Bool(),
 			Quantity: types.Uint32RangeWithOptionalMax{
-				Max: pointer.To(fake.Uint32()),
+				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
 		}
@@ -93,7 +92,7 @@ func TestRecipeStepInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &RecipeStepInstrumentDatabaseCreationInput{
 			ID:                  t.Name(),
-			InstrumentID:        pointer.To(t.Name()),
+			InstrumentID:        new(t.Name()),
 			BelongsToRecipeStep: t.Name(),
 		}
 
@@ -118,16 +117,16 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{
-			InstrumentID:        pointer.To(t.Name()),
-			Name:                pointer.To(t.Name()),
-			BelongsToRecipeStep: pointer.To(t.Name()),
-			RecipeStepProductID: pointer.To(t.Name()),
-			Notes:               pointer.To(t.Name()),
-			PreferenceRank:      pointer.To(uint8(fake.Number(1, math.MaxUint8))),
-			Optional:            pointer.To(fake.Bool()),
+			InstrumentID:        new(t.Name()),
+			Name:                new(t.Name()),
+			BelongsToRecipeStep: new(t.Name()),
+			RecipeStepProductID: new(t.Name()),
+			Notes:               new(t.Name()),
+			PreferenceRank:      new(uint8(fake.Number(1, math.MaxUint8))),
+			Optional:            new(fake.Bool()),
 			Quantity: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
-				Min: pointer.To(fake.Uint32()),
-				Max: pointer.To(fake.Uint32()),
+				Min: new(fake.Uint32()),
+				Max: new(fake.Uint32()),
 			},
 		}
 

@@ -81,8 +81,8 @@ type (
 	ValidPrepTaskConfigUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		StorageDurationInSeconds    types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"storageDurationInSeconds,omitempty"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range                         `json:"storageTemperatureInCelsius,omitempty"`
+		StorageDurationInSeconds    types.Uint32RangeWithOptionalMaxUpdateRequestInput `json:"storageDurationInSeconds"`
+		StorageTemperatureInCelsius types.OptionalFloat32Range                         `json:"storageTemperatureInCelsius"`
 		StorageType                 *string                                            `json:"storageType,omitempty"`
 		StorageInstructions         *string                                            `json:"storageInstructions,omitempty"`
 		Notes                       *string                                            `json:"notes,omitempty"`

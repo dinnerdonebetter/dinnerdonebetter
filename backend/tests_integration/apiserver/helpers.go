@@ -18,7 +18,6 @@ import (
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -163,7 +162,7 @@ func buildUserRegistrationInputForTest(t *testing.T) *identity.UserRegistrationI
 	t.Helper()
 
 	return &identity.UserRegistrationInput{
-		Birthday:              pointer.To(time.Now()),
+		Birthday:              new(time.Now()),
 		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 		FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 		AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -334,7 +333,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 		}
 
 		// Follow pointers with cycle detection
-		if rv.Kind() == reflect.Ptr {
+		if rv.Kind() == reflect.Pointer {
 			if rv.IsNil() {
 				out[join(path)] = nilStr
 				return
@@ -353,7 +352,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 		}
 
 		// time.Time special case
-		if rv.Type() == reflect.TypeOf(time.Time{}) {
+		if rv.Type() == reflect.TypeFor[time.Time]() {
 			if x, ok := rv.Interface().(time.Time); ok {
 				writeTime(x, path)
 			}
@@ -377,7 +376,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 
 		case reflect.Slice, reflect.Array:
 			l := rv.Len()
-			for i := 0; i < l; i++ {
+			for i := range l {
 				walk(rv.Index(i), append(path, fmt.Sprintf("[%d]", i)))
 			}
 

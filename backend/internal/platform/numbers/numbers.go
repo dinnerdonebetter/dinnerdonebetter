@@ -3,7 +3,7 @@ package numbers
 // RoundToDecimalPlaces rounds a float32 value to the specified number of decimal places.
 func RoundToDecimalPlaces(value float32, precision uint8) float32 {
 	multiplier := float32(1)
-	for i := uint8(0); i < precision; i++ {
+	for range precision {
 		multiplier *= 10
 	}
 

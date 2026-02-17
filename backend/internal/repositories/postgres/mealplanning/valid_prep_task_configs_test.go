@@ -93,7 +93,7 @@ func TestQuerier_Integration_ValidPrepTaskConfigs(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidPrepTaskConfig(ctx, updatedValidPrepTaskConfig))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeValidPrepTaskConfig()
 		input.Preparation = createdValidPrepTaskConfigs[0].Preparation
 		input.Ingredient = createdValidPrepTaskConfigs[0].Ingredient

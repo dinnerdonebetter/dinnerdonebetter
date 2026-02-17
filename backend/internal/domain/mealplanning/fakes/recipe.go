@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -13,7 +12,7 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 	recipeID := BuildFakeID()
 
 	var steps []*mealplanning.RecipeStep
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		step := BuildFakeRecipeStep()
 		step.Index = uint32(i)
 		step.BelongsToRecipe = recipeID
@@ -44,7 +43,7 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 		Status:             mealplanning.RecipeStatusSubmitted,
 		Media:              recipeMedia,
 		EstimatedPortions: types.Float32RangeWithOptionalMax{
-			Max: pointer.To(float32(buildFakeNumber())),
+			Max: new(float32(buildFakeNumber())),
 			Min: float32(buildFakeNumber()),
 		},
 		PortionName:         buildUniqueString(),
@@ -57,7 +56,7 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 // BuildFakeRecipesList builds a faked RecipeList.
 func BuildFakeRecipesList() *filtering.QueryFilteredResult[mealplanning.Recipe] {
 	var examples []*mealplanning.Recipe
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeRecipe())
 	}
 

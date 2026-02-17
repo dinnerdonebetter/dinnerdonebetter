@@ -512,7 +512,9 @@ func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, reci
 	mermaid.WriteString("flowchart TD;\n")
 
 	for _, step := range recipe.Steps {
-		mermaid.WriteString(fmt.Sprintf("	Step%d[\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
+		if _, err := fmt.Fprintf(&mermaid, "	Step%d[\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name); err != nil {
+			observability.AcknowledgeError(err, g.logger, span, "writing mermaid step node")
+		}
 	}
 
 	for i := range recipe.Steps {
@@ -522,7 +524,9 @@ func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, reci
 			}
 
 			if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
-				mermaid.WriteString(fmt.Sprintf("\tStep%d -->|%s| Step%d;\n", graphIDForStep(recipe.Steps[i]), provides, graphIDForStep(recipe.Steps[j])))
+				if _, err := fmt.Fprintf(&mermaid, "\tStep%d -->|%s| Step%d;\n", graphIDForStep(recipe.Steps[i]), provides, graphIDForStep(recipe.Steps[j])); err != nil {
+					observability.AcknowledgeError(err, g.logger, span, "writing mermaid step edge")
+				}
 			}
 		}
 	}
@@ -530,9 +534,13 @@ func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, reci
 	for i := range recipe.PrepTasks {
 		prepTask := recipe.PrepTasks[i]
 
-		mermaid.WriteString(fmt.Sprintf("subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1))
+		if _, err := fmt.Fprintf(&mermaid, "subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1); err != nil {
+			observability.AcknowledgeError(err, g.logger, span, "writing mermaid subgraph header")
+		}
 		for j := range prepTask.TaskSteps {
-			mermaid.WriteString(fmt.Sprintf("Step%d\n", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
+			if _, err := fmt.Fprintf(&mermaid, "Step%d\n", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)); err != nil {
+				observability.AcknowledgeError(err, g.logger, span, "writing mermaid subgraph step")
+			}
 		}
 		mermaid.WriteString("end\n")
 	}
@@ -569,7 +577,9 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, rec
 	graphViz.WriteString(graphvizPreamble + "\n")
 
 	for _, step := range recipe.Steps {
-		graphViz.WriteString(fmt.Sprintf("\tStep%d [label=\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
+		if _, err := fmt.Fprintf(&graphViz, "\tStep%d [label=\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name); err != nil {
+			observability.AcknowledgeError(err, g.logger, span, "writing graphviz step node")
+		}
 	}
 
 	for i := range recipe.Steps {
@@ -584,7 +594,9 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, rec
 					stepLabel = durafmt.Parse(time.Duration(*recipe.Steps[i].EstimatedTimeInSeconds.Min) * time.Second).String()
 				}
 
-				graphViz.WriteString(fmt.Sprintf("\tStep%d -> Step%d [color=\"black\" label=%q];\n", graphIDForStep(recipe.Steps[i]), graphIDForStep(recipe.Steps[j]), stepLabel))
+				if _, err := fmt.Fprintf(&graphViz, "\tStep%d -> Step%d [color=\"black\" label=%q];\n", graphIDForStep(recipe.Steps[i]), graphIDForStep(recipe.Steps[j]), stepLabel); err != nil {
+					observability.AcknowledgeError(err, g.logger, span, "writing graphviz step edge")
+				}
 			}
 		}
 	}
@@ -592,17 +604,23 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, rec
 	for i := range recipe.PrepTasks {
 		prepTask := recipe.PrepTasks[i]
 
-		graphViz.WriteString(fmt.Sprintf("\n\tsubgraph cluster_%d {\n\t\tnode [style=filled];\n\t\t", i))
+		if _, err := fmt.Fprintf(&graphViz, "\n\tsubgraph cluster_%d {\n\t\tnode [style=filled];\n\t\t", i); err != nil {
+			observability.AcknowledgeError(err, g.logger, span, "writing graphviz subgraph header")
+		}
 		for j := range prepTask.TaskSteps {
 			var arrow string
 			if j != len(prepTask.TaskSteps)-1 {
 				arrow = " -> "
 			}
-			graphViz.WriteString(fmt.Sprintf("Step%d%s", graphIDForStep(recipe.Steps[recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)]), arrow))
+			if _, err := fmt.Fprintf(&graphViz, "Step%d%s", graphIDForStep(recipe.Steps[recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)]), arrow); err != nil {
+				observability.AcknowledgeError(err, g.logger, span, "writing graphviz subgraph step")
+			}
 		}
 		colorToUse := colorNames[i%len(colorNames)]
 
-		graphViz.WriteString(fmt.Sprintf(";\n\t\tlabel = \"(prep task #%d)\";\n\t\tcolor=%s;\n\t}\n", i+1, colorToUse))
+		if _, err := fmt.Fprintf(&graphViz, ";\n\t\tlabel = \"(prep task #%d)\";\n\t\tcolor=%s;\n\t}\n", i+1, colorToUse); err != nil {
+			observability.AcknowledgeError(err, g.logger, span, "writing graphviz subgraph footer")
+		}
 	}
 
 	graphViz.WriteString("}\n")

@@ -87,7 +87,7 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	createdWebhooks = append(createdWebhooks, createWebhookForTest(t, ctx, exampleWebhook, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeWebhook()
 		input.Name = fmt.Sprintf("%s %d", exampleWebhook.Name, i)
 		input.BelongsToAccount = account.ID

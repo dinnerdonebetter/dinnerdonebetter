@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,9 +39,9 @@ func TestValidPreparationVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationVesselUpdateRequestInput{
-			Notes:              pointer.To(t.Name()),
-			ValidPreparationID: pointer.To(t.Name()),
-			ValidVesselID:      pointer.To(t.Name()),
+			Notes:              new(t.Name()),
+			ValidPreparationID: new(t.Name()),
+			ValidVesselID:      new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -101,8 +99,8 @@ func TestValidPreparationVesselUpdateRequestInput_ValidateWithContext(T *testing
 
 		ctx := t.Context()
 		x := &ValidPreparationVesselUpdateRequestInput{
-			ValidPreparationID: pointer.To(t.Name()),
-			ValidVesselID:      pointer.To(t.Name()),
+			ValidPreparationID: new(t.Name()),
+			ValidVesselID:      new(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -118,9 +116,9 @@ func TestValidPreparationVessel_Update(T *testing.T) {
 		x := &ValidPreparationVessel{}
 
 		x.Update(&ValidPreparationVesselUpdateRequestInput{
-			Notes:              pointer.To(t.Name()),
-			ValidPreparationID: pointer.To(t.Name()),
-			ValidVesselID:      pointer.To(t.Name()),
+			Notes:              new(t.Name()),
+			ValidPreparationID: new(t.Name()),
+			ValidVesselID:      new(t.Name()),
 		})
 	})
 }

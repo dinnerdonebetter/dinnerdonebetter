@@ -130,7 +130,7 @@ func (sm *indexManager[T]) ensureIndices(ctx context.Context) error {
 
 	res, err := esapi.IndicesExistsRequest{
 		Index:             []string{sm.indexName},
-		IgnoreUnavailable: esapi.BoolPtr(false),
+		IgnoreUnavailable: new(false),
 		ErrorTrace:        false,
 		FilterPath:        nil,
 	}.Do(ctx, sm.esClient)

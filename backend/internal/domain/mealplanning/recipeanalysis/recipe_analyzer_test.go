@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
@@ -104,7 +103,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 						{
 							Ingredient: &mealplanning.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
-									Min: pointer.To(float32(2.5)),
+									Min: new(float32(2.5)),
 								},
 								PluralName:          "chicken breasts",
 								StorageInstructions: "keep frozen",
@@ -117,7 +116,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 900,
-								Max: pointer.To(float32(900)),
+								Max: new(float32(900)),
 							},
 						},
 					},
@@ -240,15 +239,15 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Name:                "diced onion",
-							RecipeStepProductID: pointer.To(dicedOnionRecipeStepProductID),
+							RecipeStepProductID: new(dicedOnionRecipeStepProductID),
 						},
 						{
 							Name:                "diced carrot",
-							RecipeStepProductID: pointer.To(dicedCarrotRecipeStepProductID),
+							RecipeStepProductID: new(dicedCarrotRecipeStepProductID),
 						},
 						{
 							Name:                "diced celery",
-							RecipeStepProductID: pointer.To(dicedCeleryRecipeStepProductID),
+							RecipeStepProductID: new(dicedCeleryRecipeStepProductID),
 						},
 					},
 					Products: []*mealplanning.RecipeStepProduct{
@@ -771,7 +770,7 @@ func TestRecipeAnalyzer_ValidateRecipeCreationRequestInputIsDAG(T *testing.T) {
 					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 						{
 							Name:                     "from step 3",
-							ProductOfRecipeStepIndex: pointer.To(uint64(3)),
+							ProductOfRecipeStepIndex: new(uint64(3)),
 							Quantity:                 types.Uint32RangeWithOptionalMax{Min: 1},
 						},
 					},

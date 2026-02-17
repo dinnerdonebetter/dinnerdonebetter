@@ -23,7 +23,7 @@ func BuildFakeUserIngredientPreference() *types.UserIngredientPreference {
 // BuildFakeUserIngredientPreferencesList builds a faked UserIngredientPreferenceList.
 func BuildFakeUserIngredientPreferencesList() *filtering.QueryFilteredResult[types.UserIngredientPreference] {
 	var examples []*types.UserIngredientPreference
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeUserIngredientPreference())
 	}
 

@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,8 +29,8 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:       pointer.To(t.Name()),
-			AssignedDishwasher: pointer.To(t.Name()),
+			AssignedCook:       new(t.Name()),
+			AssignedDishwasher: new(t.Name()),
 			MealID:             t.Name(),
 			Notes:              t.Name(),
 		}
@@ -84,11 +82,11 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionUpdateRequestInput{
-			AssignedCook:           pointer.To(t.Name()),
-			AssignedDishwasher:     pointer.To(t.Name()),
-			BelongsToMealPlanEvent: pointer.To(t.Name()),
-			MealID:                 pointer.To(t.Name()),
-			Notes:                  pointer.To(t.Name()),
+			AssignedCook:           new(t.Name()),
+			AssignedDishwasher:     new(t.Name()),
+			BelongsToMealPlanEvent: new(t.Name()),
+			MealID:                 new(t.Name()),
+			Notes:                  new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

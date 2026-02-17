@@ -397,11 +397,8 @@ func main() {
 				otherMeals   []*mealplanning.Meal
 			)
 			for _, meal := range mealsResult.Data {
-				for _, name := range chickenMealNames {
-					if meal.Name == name {
-						chickenMeals = append(chickenMeals, meal)
-						break
-					}
+				if slices.Contains(chickenMealNames, meal.Name) {
+					chickenMeals = append(chickenMeals, meal)
 				}
 
 				for _, name := range otherMealNames {
@@ -528,11 +525,8 @@ func main() {
 				otherMeals   []*mealplanning.Meal
 			)
 			for _, meal := range mealsResult.Data {
-				for _, name := range chickenMealNames {
-					if meal.Name == name {
-						chickenMeals = append(chickenMeals, meal)
-						break
-					}
+				if slices.Contains(chickenMealNames, meal.Name) {
+					chickenMeals = append(chickenMeals, meal)
 				}
 
 				for _, name := range otherMealNames {

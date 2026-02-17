@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -17,12 +16,12 @@ func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnit{
-			AllowableQuantity: types.Float32RangeWithOptionalMax{Max: pointer.To(float32(3.21))},
+			AllowableQuantity: types.Float32RangeWithOptionalMax{Max: new(float32(3.21))},
 		}
 		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.AllowableQuantity.Max = pointer.To(float32(1.23))
+		input.AllowableQuantity.Max = new(float32(1.23))
 
 		x.Update(input)
 	})
@@ -39,7 +38,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 			ValidMeasurementUnitID: t.Name(),
 			ValidIngredientID:      t.Name(),
 			AllowableQuantity: types.Float32RangeWithOptionalMax{
-				Max: pointer.To(fake.Float32()),
+				Max: new(fake.Float32()),
 				Min: fake.Float32(),
 			},
 		}
@@ -94,12 +93,12 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                  pointer.To(t.Name()),
-			ValidMeasurementUnitID: pointer.To(t.Name()),
-			ValidIngredientID:      pointer.To(t.Name()),
+			Notes:                  new(t.Name()),
+			ValidMeasurementUnitID: new(t.Name()),
+			ValidIngredientID:      new(t.Name()),
 			AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
-				Min: pointer.To(fake.Float32()),
-				Max: pointer.To(fake.Float32()),
+				Min: new(fake.Float32()),
+				Max: new(fake.Float32()),
 			},
 		}
 

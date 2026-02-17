@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 
 	"github.com/stretchr/testify/assert"
@@ -24,14 +23,14 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
-			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
-			CreatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
-			UpdatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
-			UpdatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
+			CreatedAfter:    new(time.Now().Truncate(time.Second)),
+			CreatedBefore:   new(time.Now().Truncate(time.Second)),
+			UpdatedAfter:    new(time.Now().Truncate(time.Second)),
+			UpdatedBefore:   new(time.Now().Truncate(time.Second)),
 			SortBy:          SortDescending,
-			IncludeArchived: pointer.To(true),
+			IncludeArchived: new(true),
 		}
 
 		assert.NotNil(t, qf.AttachToLogger(logger))
@@ -57,14 +56,14 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
-			CreatedAfter:    pointer.To(tt),
-			CreatedBefore:   pointer.To(tt),
-			UpdatedAfter:    pointer.To(tt),
-			UpdatedBefore:   pointer.To(tt),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
+			CreatedAfter:    new(tt),
+			CreatedBefore:   new(tt),
+			UpdatedAfter:    new(tt),
+			UpdatedBefore:   new(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointer.To(true),
+			IncludeArchived: new(true),
 		}
 
 		exampleInput := url.Values{
@@ -114,14 +113,14 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
-			CreatedAfter:    pointer.To(tt),
-			CreatedBefore:   pointer.To(tt),
-			UpdatedAfter:    pointer.To(tt),
-			UpdatedBefore:   pointer.To(tt),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
+			CreatedAfter:    new(tt),
+			CreatedBefore:   new(tt),
+			UpdatedAfter:    new(tt),
+			UpdatedBefore:   new(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointer.To(true),
+			IncludeArchived: new(true),
 		}
 
 		expected := url.Values{
@@ -160,12 +159,12 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
-			CreatedAfter:    pointer.To(tt),
-			CreatedBefore:   pointer.To(tt),
-			UpdatedAfter:    pointer.To(tt),
-			UpdatedBefore:   pointer.To(tt),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
+			CreatedAfter:    new(tt),
+			CreatedBefore:   new(tt),
+			UpdatedAfter:    new(tt),
+			UpdatedBefore:   new(tt),
 			SortBy:          SortDescending,
 		}
 		exampleInput := url.Values{
@@ -194,8 +193,8 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := t.Context()
 
 		expected := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(DefaultQueryFilterLimit)),
 			SortBy:          SortAscending,
 		}
 		exampleInput := url.Values{
@@ -220,8 +219,8 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
 		}
 
 		expected := Pagination{
@@ -250,11 +249,11 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
 		}
 
-		data := []*string{pointer.To("a"), pointer.To("b")}
+		data := []*string{new("a"), new("b")}
 		filteredCount := uint64(len(data))
 		totalCount := uint64(len(data))
 		idExtractor := func(s *string) string { return *s }
@@ -279,8 +278,8 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Cursor:          pointer.To(t.Name()),
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          new(t.Name()),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
 		}
 
 		data := []*string{}
@@ -308,10 +307,10 @@ func TestNewQueryFilteredResult(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			MaxResponseSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			MaxResponseSize: new(uint8(MaxQueryFilterLimit)),
 		}
 
-		data := []*string{pointer.To("a"), pointer.To("b")}
+		data := []*string{new("a"), new("b")}
 		filteredCount := uint64(len(data))
 		totalCount := uint64(len(data))
 		idExtractor := func(s *string) string { return *s }

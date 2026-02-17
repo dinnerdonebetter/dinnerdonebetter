@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -20,8 +19,8 @@ func TestRecipePrepTask_Update(T *testing.T) {
 		input := &RecipePrepTaskUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointer.To(true)
-		input.BelongsToRecipe = pointer.To(t.Name())
+		input.Optional = new(true)
+		input.BelongsToRecipe = new(t.Name())
 
 		x.Update(input)
 	})
@@ -38,11 +37,11 @@ func TestRecipePrepTaskCreationRequestInput_Validate(T *testing.T) {
 			Name:            t.Name(),
 			StorageType:     t.Name(),
 			StorageTemperatureInCelsius: types.OptionalFloat32Range{
-				Max: pointer.To(fake.Float32()),
-				Min: pointer.To(fake.Float32()),
+				Max: new(fake.Float32()),
+				Min: new(fake.Float32()),
 			},
 			TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
-				Max: pointer.To(fake.Uint32()),
+				Max: new(fake.Uint32()),
 				Min: fake.Uint32(),
 			},
 		}
@@ -93,7 +92,7 @@ func TestRecipePrepTaskUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipePrepTaskUpdateRequestInput{
-			BelongsToRecipe: pointer.To(t.Name()),
+			BelongsToRecipe: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

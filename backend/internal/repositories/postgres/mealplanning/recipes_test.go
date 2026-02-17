@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	types "github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
@@ -187,7 +186,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	assert.NoError(t, dbc.UpdateRecipe(ctx, updatedRecipe))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		exampleRecipe = buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		exampleRecipe.Name = fmt.Sprintf("%s %d", exampleRecipe.Name, i)
 		createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc, true))
@@ -383,8 +382,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
 						},
 						{
 							IngredientID:      &garlicPaste.ID,
@@ -463,8 +462,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 						},
 						{
 							IngredientID:      &garlicPaste.ID,
@@ -517,8 +516,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
-							ProductOfRecipeStepIndex:        pointer.To(uint64(2)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(2)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 						},
 						{
 							Name:              "pressure cooked beans",
@@ -604,8 +603,8 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 							InstrumentID:                    &bakingSheet.ID,
 							RecipeStepProductID:             nil,
 							Name:                            productName,
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 						},
 					},
 					Notes:         "second step",
@@ -765,7 +764,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -788,7 +787,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -861,8 +860,8 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							ID: identifiers.New(),
 							// Reference the product from the first recipe
 							// The product "base sauce" is from step 0 (index 0), product index 0
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &firstRecipe.ID,
 							Name:                            "base sauce",
 							IngredientID:                    nil,                 // No ingredient ID when referencing a product from another recipe
@@ -879,7 +878,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -902,7 +901,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1013,7 +1012,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1036,7 +1035,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1088,8 +1087,8 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 						{
 							ID: identifiers.New(),
 							// Reference Recipe A's product
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &recipeA.ID,
 							Name:                            "product A",
 							IngredientID:                    nil,                // No ingredient ID when referencing a product from another recipe
@@ -1106,7 +1105,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1129,7 +1128,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1256,7 +1255,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitC.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1279,7 +1278,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitC.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1350,8 +1349,8 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 						{
 							ID: identifiers.New(),
 							// Reference the product from Recipe C
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &recipeC.ID,
 							Name:                            "product C",
 							IngredientID:                    nil,
@@ -1368,7 +1367,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitB.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1391,7 +1390,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitB.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1462,8 +1461,8 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 						{
 							ID: identifiers.New(),
 							// Reference the product from Recipe B
-							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        new(uint64(0)),
+							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &recipeB.ID,
 							Name:                            "product B",
 							IngredientID:                    nil,
@@ -1480,7 +1479,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitA.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},
@@ -1503,7 +1502,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnitA.ID,
 							MeasurementQuantity: types.OptionalFloat32Range{
-								Min: pointer.To(float32(1)),
+								Min: new(float32(1)),
 							},
 						},
 					},

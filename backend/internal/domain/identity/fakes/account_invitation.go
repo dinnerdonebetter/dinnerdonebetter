@@ -29,7 +29,7 @@ func BuildFakeAccountInvitation() *types.AccountInvitation {
 // BuildFakeAccountInvitationsList builds a faked AccountInvitationList.
 func BuildFakeAccountInvitationsList() *filtering.QueryFilteredResult[types.AccountInvitation] {
 	var examples []*types.AccountInvitation
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeAccountInvitation())
 	}
 

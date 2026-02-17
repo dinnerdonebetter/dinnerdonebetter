@@ -3,8 +3,6 @@ package grpcconverters
 import (
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -31,33 +29,33 @@ func ConvertPBTimestampToTimePointer(t *timestamppb.Timestamp) *time.Time {
 		return nil
 	}
 
-	return pointer.To(t.AsTime())
+	return new(t.AsTime())
 }
 
 func ConvertUint16PointerToUint32Pointer(i *uint16) *uint32 {
 	if i == nil {
 		return nil
 	}
-	return pointer.To(uint32(*i))
+	return new(uint32(*i))
 }
 
 func ConvertUint32PointerToUint16Pointer(i *uint32) *uint16 {
 	if i == nil {
 		return nil
 	}
-	return pointer.To(uint16(*i))
+	return new(uint16(*i))
 }
 
 func ConvertUint8PointerToUint32Pointer(i *uint8) *uint32 {
 	if i == nil {
 		return nil
 	}
-	return pointer.To(uint32(*i))
+	return new(uint32(*i))
 }
 
 func ConvertUint32PointerToUint8Pointer(i *uint32) *uint8 {
 	if i == nil {
 		return nil
 	}
-	return pointer.To(uint8(*i))
+	return new(uint8(*i))
 }

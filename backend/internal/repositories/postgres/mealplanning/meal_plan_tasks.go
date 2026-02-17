@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	platformtypes "github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
@@ -390,7 +389,7 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 
 	var settledAt *time.Time
 	if input.Status != nil && *input.Status == types.MealPlanTaskStatusFinished {
-		settledAt = pointer.To(q.CurrentTime())
+		settledAt = new(q.CurrentTime())
 	}
 
 	var newStatus string

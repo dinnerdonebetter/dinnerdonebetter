@@ -137,7 +137,7 @@ func TestRecipeSteps_Listing(T *testing.T) {
 		createdValidPreparationVessel := createValidPreparationVesselWithEntitiesForTest(t, createdValidPreparation, createdValidVessel)
 
 		var expected []*mealplanning.RecipeStep
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			t.Logf("creating recipe step #%d", i+1)
 
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()

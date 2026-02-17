@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -228,7 +227,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		response, err := testClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
 			ValidIngredientId: created.ID,
 			Input: &mealplanningsvc.ValidIngredientUpdateRequestInput{
-				Name: pointer.To("doesn't matter"),
+				Name: new("doesn't matter"),
 			},
 		})
 		assert.Error(t, err)

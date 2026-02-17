@@ -10,7 +10,7 @@ import (
 // BuildFakeMeal builds a faked meal.
 func BuildFakeMeal() *mealplanning.Meal {
 	recipes := []*mealplanning.MealComponent{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		recipes = append(recipes, BuildFakeMealComponent())
 	}
 
@@ -41,7 +41,7 @@ func BuildFakeMealComponent() *mealplanning.MealComponent {
 // BuildFakeMealsList builds a faked MealList.
 func BuildFakeMealsList() *filtering.QueryFilteredResult[mealplanning.Meal] {
 	var examples []*mealplanning.Meal
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMeal())
 	}
 

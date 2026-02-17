@@ -51,8 +51,8 @@ func (p *sqsPublisher) Publish(ctx context.Context, data any) error {
 
 	input := &sqs.SendMessageInput{
 		MessageAttributes: nil,
-		MessageBody:       aws.String(b.String()),
-		QueueUrl:          aws.String(p.topic),
+		MessageBody:       new(b.String()),
+		QueueUrl:          new(p.topic),
 	}
 
 	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {
@@ -78,8 +78,8 @@ func (p *sqsPublisher) PublishAsync(ctx context.Context, data any) {
 
 	input := &sqs.SendMessageInput{
 		MessageAttributes: nil,
-		MessageBody:       aws.String(b.String()),
-		QueueUrl:          aws.String(p.topic),
+		MessageBody:       new(b.String()),
+		QueueUrl:          new(p.topic),
 	}
 
 	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {

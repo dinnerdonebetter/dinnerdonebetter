@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"maps"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
@@ -381,9 +382,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string, visited ...
 			}
 		}
 		// Add all collected recipes at once
-		for id, recipe := range toAdd {
-			fetchedRecipes[id] = recipe
-		}
+		maps.Copy(fetchedRecipes, toAdd)
 	}
 
 	// Second pass: flatten by clearing AssociatedRecipes from all fetched recipes

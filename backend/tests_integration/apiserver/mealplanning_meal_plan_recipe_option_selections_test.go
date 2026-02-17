@@ -10,7 +10,6 @@ import (
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
@@ -38,7 +37,7 @@ func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {
 
 		// Create 3 additional household members (total of 4 users including admin)
 		householdClients := []client.Client{accountAdminUserClient}
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			u, c := createUserAndClientForTest(t)
 
 			invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, &identitygrpc.CreateAccountInvitationRequest{
@@ -306,7 +305,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 	ingredientPreparationIDs := make(map[string]string)
 	ingredientMeasurementUnitIDs := make(map[string]string)
 
-	for i := 0; i < 3; i++ { // Create 3 ingredients: 2 alternatives + 1 regular
+	for range 3 { // Create 3 ingredients: 2 alternatives + 1 regular
 		createdValidIngredient := createValidIngredientForTest(t)
 		createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
@@ -339,7 +338,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Alternative A " + nameSuffix,
 			Ingredient:          createdValidIngredients[0],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            types.Float32RangeWithOptionalMax{Min: 1.0, Max: pointer.To(float32(2.0))},
+			Quantity:            types.Float32RangeWithOptionalMax{Min: 1.0, Max: new(float32(2.0))},
 			Index:               0, // Same index as Alternative B
 			OptionIndex:         0, // First option
 			BelongsToRecipeStep: step1.ID,
@@ -350,7 +349,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Alternative B " + nameSuffix,
 			Ingredient:          createdValidIngredients[1],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            types.Float32RangeWithOptionalMax{Min: 1.5, Max: pointer.To(float32(2.5))},
+			Quantity:            types.Float32RangeWithOptionalMax{Min: 1.5, Max: new(float32(2.5))},
 			Index:               0, // Same index as Alternative A
 			OptionIndex:         1, // Second option (alternative)
 			BelongsToRecipeStep: step1.ID,
@@ -361,7 +360,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Regular Ingredient " + nameSuffix,
 			Ingredient:          createdValidIngredients[2],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            types.Float32RangeWithOptionalMax{Min: 0.5, Max: pointer.To(float32(1.0))},
+			Quantity:            types.Float32RangeWithOptionalMax{Min: 0.5, Max: new(float32(1.0))},
 			Index:               1, // Different index
 			OptionIndex:         0, // Only one option at this index
 			BelongsToRecipeStep: step1.ID,
@@ -376,7 +375,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Secondary Ingredient " + nameSuffix,
 			Ingredient:          createdValidIngredients[0],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            types.Float32RangeWithOptionalMax{Min: 0.5, Max: pointer.To(float32(1.0))},
+			Quantity:            types.Float32RangeWithOptionalMax{Min: 0.5, Max: new(float32(1.0))},
 			Index:               0,
 			OptionIndex:         0,
 			BelongsToRecipeStep: step2.ID,
