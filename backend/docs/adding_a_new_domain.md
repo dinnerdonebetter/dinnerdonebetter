@@ -160,7 +160,7 @@ make querier   # Runs: queries (codegen) + queries_lint + sqlc generate
 - `BuildFakeXxx()` functions returning realistic test data
 - Used in integration tests and unit tests
 
-### Converters
+Converters:
 
 - **Domain <-> DB models**: Convert between domain structs and sqlc-generated models
 - Place in `backend/internal/domain/<domain>/converters/` or inline in repository
@@ -191,7 +191,7 @@ Preferred pattern: **Manager wraps Repository** (not Repository-only).
 - Methods: call generated querier, convert sqlc models to domain, return
 - **o11yName**: `"<domain>_db_client"` (e.g., `"webhook_db_client"`)
 
-#### wire.go
+wire.go:
 
 - `ProvideXxxRepository(logger, tracerProvider, ..., client) Repository`
 
@@ -222,7 +222,7 @@ type XxxDataManager interface {
 - Adds: validation, multi-step logic, event publishing, ID generation
 - **o11yName**: `"<domain>_data_manager"` (e.g., `"webhook_data_manager"`)
 
-#### wire.go
+wire.go:
 
 - `ProvideXxxManager(...)` or `NewXxxDataManager(...)`
 
@@ -279,12 +279,12 @@ Output: `backend/internal/grpc/generated/services/<domain>/*.pb.go`
 - **o11yName**: `"<domain>_service"` (e.g., `"configuration_service"`)
 - Method handlers: extract session from context, call Manager, convert domain -> proto, return (or handle gRPC status errors)
 
-#### Converters
+Converters:
 
 - Domain types <-> proto types
 - in `converters/` subpackage
 
-#### wire.go
+wire.go:
 
 - `NewService(logger, tracerProvider, xxxManager) XxxServiceServer`
 
@@ -442,25 +442,25 @@ Shorter path — reuse:
 
 ## 12. Quick Reference: File Checklist
 
-| PR Checklist Item        | Files / Paths |
-|--------------------------|---------------|
-| Migration                | `backend/internal/repositories/postgres/migrations/migration_files/NNNNN_name.sql`; register in `migrate.go` |
+| PR Checklist Item        | Files / Paths                                                                                                         |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| Migration                | `backend/internal/repositories/postgres/migrations/migration_files/NNNNN_name.sql`; register in `migrate.go`          |
 | Queries                  | `cmd/tools/codegen/queries/<domain>_<entity>.go`; `main.go`; `sqlc_queries/<entity>.sql`; `sqlc.yaml` (if new domain) |
-| Observability keys       | `o11yName` in repo client, gRPC service, manager |
-| Types - Definitions      | `backend/internal/domain/<domain>/*.go` |
-| Types - Fakes            | `backend/internal/domain/<domain>/fakes/` |
-| Types - Converters      | `backend/internal/domain/<domain>/converters/` or inline |
-| Types - Mocks            | `backend/internal/domain/<domain>/mock/`, `manager/mock/` |
-| Data Manager - Storage   | `backend/internal/repositories/postgres/<domain>/*.go` |
-| Data Manager - Interface | `backend/internal/domain/<domain>/manager/interface.go` |
-| Data Manager - Impl      | `backend/internal/domain/<domain>/manager/*.go` |
-| Data Manager - Wire      | `manager/wire.go`; `build.go` |
-| gRPC - Proto             | `proto/<domain>/*.proto` |
-| gRPC - Service           | `backend/internal/services/<domain>/grpc/service.go` |
-| gRPC - Converters        | `services/<domain>/grpc/converters/` or inline |
-| gRPC - Registration      | `build/services/api/grpc/extras.go`, `build.go` |
-| Auth interceptor         | `authorization/*_permissions.go`; `services/<domain>/grpc/permissions.go`; `extras.go` AggregateMethodPermissions |
-| Configs                  | `config/services_config.go`, `wire.go`, `codegen/configs/*.go` (if needed) |
-| Integration tests        | `tests_integration/apiserver/<domain>_<entity>_test.go` |
-| Admin - List view        | `cmd/services/admin/routes.go`; handler in `cmd/services/admin/` |
-| Admin - Edit view        | Same |
+| Observability keys       | `o11yName` in repo client, gRPC service, manager                                                                      |
+| Types - Definitions      | `backend/internal/domain/<domain>/*.go`                                                                               |
+| Types - Fakes            | `backend/internal/domain/<domain>/fakes/`                                                                             |
+| Types - Converters       | `backend/internal/domain/<domain>/converters/` or inline                                                              |
+| Types - Mocks            | `backend/internal/domain/<domain>/mock/`, `manager/mock/`                                                             |
+| Data Manager - Storage   | `backend/internal/repositories/postgres/<domain>/*.go`                                                                |
+| Data Manager - Interface | `backend/internal/domain/<domain>/manager/interface.go`                                                               |
+| Data Manager - Impl      | `backend/internal/domain/<domain>/manager/*.go`                                                                       |
+| Data Manager - Wire      | `manager/wire.go`; `build.go`                                                                                         |
+| gRPC - Proto             | `proto/<domain>/*.proto`                                                                                              |
+| gRPC - Service           | `backend/internal/services/<domain>/grpc/service.go`                                                                  |
+| gRPC - Converters        | `services/<domain>/grpc/converters/` or inline                                                                        |
+| gRPC - Registration      | `build/services/api/grpc/extras.go`, `build.go`                                                                       |
+| Auth interceptor         | `authorization/*_permissions.go`; `services/<domain>/grpc/permissions.go`; `extras.go` AggregateMethodPermissions     |
+| Configs                  | `config/services_config.go`, `wire.go`, `codegen/configs/*.go` (if needed)                                            |
+| Integration tests        | `tests_integration/apiserver/<domain>_<entity>_test.go`                                                               |
+| Admin - List view        | `cmd/services/admin/routes.go`; handler in `cmd/services/admin/`                                                      |
+| Admin - Edit view        | Same                                                                                                                  |

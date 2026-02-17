@@ -127,7 +127,7 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 
 - **Purpose**: Contains recipes that are referenced as components within this recipe's steps
 - **Usage**: Automatically populated when fetching a recipe from the database. Provides complete recipe information for recipes that use other recipes as ingredients
-- **How It Works**: 
+- **How It Works**:
   - When a recipe step ingredient references a product from another recipe via `RecipeStepProductRecipeID`, that other recipe is considered an "associated recipe"
   - The system recursively loads nested associated recipes (if recipe A uses recipe B, and recipe B uses recipe C, then recipe A will have both B and C in its `AssociatedRecipes`)
   - **Flattening**: All associated recipes are returned in a **flat list** at the root level. If you have a recipe chain (e.g., Salad uses Croutons, which uses Infused Olive Oil), fetching the Salad recipe will return both Croutons and Infused Olive Oil in a single flat list
@@ -237,12 +237,14 @@ A product is **discrete** if `ItemQuantity.Min` or `ItemQuantity.Max` is set (no
 When a vessel (like a saucepan, pot, or skillet) is used throughout multiple steps of a recipe, it should be **chained** through the steps rather than having one step's vessel product used in multiple subsequent steps.
 
 **Pattern:**
+
 1. The first step that uses the vessel should reference it via `ValidPreparationVesselID` and output it as a vessel product
 2. Each subsequent step that uses the same vessel should:
    - Consume the vessel product from the immediately previous step (using `ProductOfRecipeStepIndex` and `ProductOfRecipeStepProductIndex`)
    - Output a new vessel product for the next step to use
 
 **Example - Simple White Rice Recipe:**
+
 ```text
 Step 1 (Simmer): 
   - Uses ValidPreparationVesselID for "2-quart saucepan"
