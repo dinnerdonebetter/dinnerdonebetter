@@ -25,7 +25,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/api
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-job-db-cleaner
           ko:
@@ -36,7 +36,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/db_cleaner
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-job-meal-plan-finalizer
           ko:
@@ -47,7 +47,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_finalizer
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-job-meal-plan-grocery-list-init
           ko:
@@ -58,7 +58,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_grocery_list_initializer
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-job-meal-plan-task-creator
           ko:
@@ -69,7 +69,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_task_creator
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-job-search-data-index-scheduler
           ko:
@@ -80,7 +80,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/search_data_index_scheduler
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-admin-webapp
           ko:
@@ -91,7 +91,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/admin
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: dinner-done-better-mcp-server
           ko:
@@ -102,7 +102,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/mcp
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
           # NOTE: no cmd/functions here
 
@@ -140,7 +140,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/api
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
           ko:
@@ -151,7 +151,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/db_cleaner
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
           ko:
@@ -162,7 +162,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_finalizer
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
           ko:
@@ -173,7 +173,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_grocery_list_initializer
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
           ko:
@@ -184,7 +184,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/meal_plan_task_creator
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
           ko:
@@ -195,7 +195,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/workers/search_data_index_scheduler
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
           ko:
@@ -206,7 +206,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/functions/async_message_handler
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-webapp
           ko:
@@ -217,7 +217,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/admin
-            fromImage: golang:1.25-trixie
+            fromImage: golang:1.26-trixie
 
         # Uncomment to enable MCP server deployment
         # - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-mcp-server
