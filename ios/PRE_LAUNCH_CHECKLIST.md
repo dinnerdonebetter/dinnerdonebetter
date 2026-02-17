@@ -20,15 +20,18 @@ This document outlines all the steps required before submitting the Dinner Done 
 ## 1. Apple Developer Account Setup
 
 ### Prerequisites
+
 - [ ] Enroll in Apple Developer Program ($99/year) at [developer.apple.com](https://developer.apple.com)
 - [ ] Complete enrollment verification (may take 24-48 hours)
 
 ### Account Configuration
+
 - [ ] Log in to [Apple Developer Portal](https://developer.apple.com/account)
 - [ ] Note your **Team ID** (Membership → Team ID, 10-character alphanumeric string)
 - [ ] Set up two-factor authentication if not already enabled
 
 ### Certificates & Provisioning
+
 - [ ] Create a **Distribution Certificate** (Certificates, Identifiers & Profiles → Certificates)
 - [ ] Create an **App ID** with bundle identifier `com.dinnerdonebetter.ios`
 - [ ] Enable required capabilities on the App ID:
@@ -42,6 +45,7 @@ This document outlines all the steps required before submitting the Dinner Done 
 ## 2. App Store Connect Configuration
 
 ### Create App Record
+
 - [ ] Log in to [App Store Connect](https://appstoreconnect.apple.com)
 - [ ] Create new app (My Apps → + → New App)
 - [ ] Set app name: "Dinner Done Better"
@@ -49,6 +53,7 @@ This document outlines all the steps required before submitting the Dinner Done 
 - [ ] Set primary language and category (Food & Drink)
 
 ### App Information
+
 - [ ] Write app description (up to 4000 characters)
 - [ ] Add keywords for App Store search optimization
 - [ ] Set content rating (complete questionnaire)
@@ -57,6 +62,7 @@ This document outlines all the steps required before submitting the Dinner Done 
 - [ ] Set age rating
 
 ### App Media
+
 - [ ] Create app icon (1024x1024px, no transparency)
 - [ ] Create screenshots for required device sizes:
   - [ ] iPhone 6.7" (1290 x 2796px) - iPhone 15 Pro Max
@@ -66,6 +72,7 @@ This document outlines all the steps required before submitting the Dinner Done 
 - [ ] Create app preview videos (optional but recommended)
 
 ### Pricing & Availability
+
 - [ ] Set pricing (Free or paid)
 - [ ] Select availability by country/region
 - [ ] Configure pre-orders (optional)
@@ -75,6 +82,7 @@ This document outlines all the steps required before submitting the Dinner Done 
 ## 3. Xcode Project Configuration
 
 ### Project Settings
+
 - [ ] Set correct Bundle Identifier: `com.dinnerdonebetter.ios`
 - [ ] Set Version number (e.g., `1.0.0`)
 - [ ] Set Build number (e.g., `1`)
@@ -82,12 +90,14 @@ This document outlines all the steps required before submitting the Dinner Done 
 - [ ] Enable "Automatically manage signing" or configure manual signing
 
 ### Build Settings
+
 - [ ] Set deployment target (minimum iOS version)
 - [ ] Configure app icons in Assets.xcassets
 - [ ] Configure launch screen
 - [ ] Remove any debug/development code flags for release
 
 ### Capabilities
+
 - [ ] Add required capabilities in Signing & Capabilities:
   - [ ] Associated Domains (for Universal Links)
   - [ ] Push Notifications (if applicable)
@@ -95,6 +105,7 @@ This document outlines all the steps required before submitting the Dinner Done 
   - [ ] Background Modes (if applicable)
 
 ### Info.plist
+
 - [ ] Add required usage descriptions:
   - [ ] `NSCameraUsageDescription` (if using camera)
   - [ ] `NSPhotoLibraryUsageDescription` (if accessing photos)
@@ -124,7 +135,7 @@ AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 - [ ] Run `make configs` in backend folder to regenerate config files
 - [ ] Deploy backend with updated configuration
 
-### Apple Developer Portal
+### ADP (Apple Developer Portal)
 
 - [ ] Enable **Associated Domains** capability on your App ID
   - Go to Certificates, Identifiers & Profiles → Identifiers
@@ -148,7 +159,7 @@ AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 ### Verification
 
 - [ ] Verify AASA file is accessible at `https://www.dinnerdonebetter.dev/.well-known/apple-app-site-association`
-- [ ] Validate with Apple's tool: https://search.developer.apple.com/appsearch-validation-tool/
+- [ ] Validate with Apple's tool: <https://search.developer.apple.com/appsearch-validation-tool/>
 - [ ] Test on physical device (Universal Links don't work in Simulator):
   - [ ] Send test invitation email
   - [ ] Tap link and verify app opens
@@ -173,6 +184,7 @@ deepLinkHandler.simulateInvitationLink(
 ### Troubleshooting
 
 If Universal Links aren't working:
+
 1. Verify AASA file is at `/.well-known/apple-app-site-association`
 2. Ensure HTTPS with valid certificate
 3. Check App ID matches `TEAMID.bundleid`
@@ -184,21 +196,25 @@ If Universal Links aren't working:
 
 ## 5. Push Notifications
 
-*(Skip this section if not implementing push notifications)*
+(Skip this section if not implementing push notifications)
 
-### Apple Developer Portal
+### Developer Portal
+
 - [ ] Enable Push Notifications on App ID
 - [ ] Create APNs Key or Certificate
 
-### Backend Configuration
+### Back end
+
 - [ ] Configure push notification service (e.g., Firebase, AWS SNS)
 - [ ] Store APNs credentials securely
 
-### Xcode Configuration
+### Xcode
+
 - [ ] Add Push Notifications capability
 - [ ] Add Background Modes → Remote notifications (if needed)
 
 ### Implementation
+
 - [ ] Request notification permission from user
 - [ ] Register for remote notifications
 - [ ] Handle device token registration with backend
@@ -209,11 +225,13 @@ If Universal Links aren't working:
 ## 6. App Privacy & Compliance
 
 ### Privacy Policy
+
 - [ ] Create privacy policy document
 - [ ] Host privacy policy at accessible URL
 - [ ] Add URL to App Store Connect
 
 ### App Privacy Details (App Store Connect)
+
 - [ ] Complete "App Privacy" section:
   - [ ] Data types collected
   - [ ] Data linked to user identity
@@ -221,13 +239,16 @@ If Universal Links aren't working:
   - [ ] Third-party data sharing
 
 ### Data Collection Disclosure
+
 Document what data is collected:
+
 - [ ] Account information (email, username)
 - [ ] User content (recipes, meal plans)
 - [ ] Usage data (analytics)
 - [ ] Device identifiers
 
 ### Compliance
+
 - [ ] Export compliance (encryption usage)
 - [ ] GDPR compliance (for EU users)
 - [ ] CCPA compliance (for California users)
@@ -238,16 +259,19 @@ Document what data is collected:
 ## 7. Testing & Quality Assurance
 
 ### Unit Tests
+
 - [ ] All unit tests passing
 - [ ] Run: `cd ios && make unit_test`
 
 ### UI Tests
+
 - [ ] UI tests passing
 - [ ] Run: `cd ios && make ui_test`
 
 ### Manual Testing Checklist
 
 #### Authentication
+
 - [ ] User registration works
 - [ ] User login works
 - [ ] TOTP/2FA works (if enabled)
@@ -255,6 +279,7 @@ Document what data is collected:
 - [ ] Password reset flow works
 
 #### Core Features
+
 - [ ] Browse recipes
 - [ ] Create meal plans
 - [ ] View meal plan details
@@ -262,23 +287,27 @@ Document what data is collected:
 - [ ] Recipe performance/cooking mode
 
 #### Account Management
+
 - [ ] View account settings
 - [ ] Update profile
 - [ ] Account invitation acceptance (via deep link)
 
 #### Edge Cases
+
 - [ ] No network connection handling
 - [ ] Session expiration handling
 - [ ] Large data sets (many recipes, meal plans)
 - [ ] Different device sizes
 
 ### TestFlight Beta Testing
+
 - [ ] Upload build to TestFlight
 - [ ] Internal testing with team
 - [ ] External beta testing (optional)
 - [ ] Address feedback from beta testers
 
 ### Performance
+
 - [ ] App launch time acceptable
 - [ ] No memory leaks
 - [ ] Smooth scrolling/animations
@@ -289,6 +318,7 @@ Document what data is collected:
 ## 8. Final Submission
 
 ### Pre-Submission Checks
+
 - [ ] All tests passing
 - [ ] No compiler warnings
 - [ ] No console errors in release build
@@ -296,17 +326,20 @@ Document what data is collected:
 - [ ] App runs correctly on latest iOS version
 
 ### Archive & Upload
+
 - [ ] Create Archive in Xcode (Product → Archive)
 - [ ] Validate archive
 - [ ] Upload to App Store Connect
 
 ### App Store Connect
+
 - [ ] Select build for review
 - [ ] Complete all required metadata
 - [ ] Answer export compliance questions
 - [ ] Submit for review
 
 ### Post-Submission
+
 - [ ] Monitor app review status
 - [ ] Respond to any reviewer questions promptly
 - [ ] Prepare marketing materials for launch
@@ -319,6 +352,7 @@ Document what data is collected:
 ### Deep Linking Files
 
 #### iOS App
+
 - `ios/ios/ios.entitlements` - Associated Domains configuration
 - `ios/ios/Services/DeepLink/DeepLinkHandler.swift` - URL parsing logic
 - `ios/ios/App/iosApp.swift` - onOpenURL handler
@@ -328,6 +362,7 @@ Document what data is collected:
 - `ios/iosTests/DeepLinkHandlerTests.swift` - Unit tests
 
 #### Backend
+
 - `backend/internal/config/configs.go` - `AppleAppSiteAssociationConfig` struct
 - `backend/internal/build/services/api/http/http_routes.go` - AASA endpoint
 - `backend/internal/build/services/api/http/config.go` - Wire provider
@@ -338,13 +373,13 @@ Document what data is collected:
 
 ## Quick Reference
 
-| Item | Location/Command |
-|------|------------------|
-| Team ID | Apple Developer Portal → Membership |
-| Bundle ID | `com.dinnerdonebetter.ios` |
-| Run unit tests | `cd ios && make unit_test` |
-| Run UI tests | `cd ios && make ui_test` |
-| Regenerate backend configs | `cd backend && make configs` |
-| AASA validation | https://search.developer.apple.com/appsearch-validation-tool/ |
-| App Store Connect | https://appstoreconnect.apple.com |
-| Apple Developer Portal | https://developer.apple.com/account |
+| Item                       | Location/Command                                                |
+|----------------------------|-----------------------------------------------------------------|
+| Team ID                    | Apple Developer Portal → Membership                             |
+| Bundle ID                  | `com.dinnerdonebetter.ios`                                      |
+| Run unit tests             | `cd ios && make unit_test`                                      |
+| Run UI tests               | `cd ios && make ui_test`                                        |
+| Regenerate backend configs | `cd backend && make configs`                                    |
+| AASA validation            | <https://search.developer.apple.com/appsearch-validation-tool/> |
+| App Store Connect          | <https://appstoreconnect.apple.com>                             |
+| Apple Developer Portal     | <https://developer.apple.com/account>                           |

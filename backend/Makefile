@@ -205,6 +205,10 @@ integration_tests_postgres:
 build:
 	$(SCRIPTS_DIR)/build.sh $(TOTAL_PACKAGE_LIST)
 
+.PHONY: build-api
+build-api: $(ARTIFACTS_DIR)
+	$(SCRIPTS_DIR)/build.sh -o $(ARTIFACTS_DIR)/api $(THIS)/cmd/services/api
+
 .PHONY: test
 test: $(ARTIFACTS_DIR) vendor
 	$(SCRIPTS_DIR)/test.sh
