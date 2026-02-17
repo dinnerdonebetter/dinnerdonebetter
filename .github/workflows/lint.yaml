@@ -27,7 +27,7 @@ jobs:
               - ios/.swiftlint.yml
               - ios/Makefile
             markdown:
-              - **/*.md
+              - ./**/*.md
 
   markdown:
     needs: [ changes ]
