@@ -3,6 +3,7 @@ package components
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -126,7 +127,7 @@ func extractFieldsAndValues(item any) ([]*fieldInfo, map[string]any, error) {
 	}
 
 	// Handle pointers
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return nil, nil, fmt.Errorf("nil pointer")
 		}
@@ -344,7 +345,7 @@ func isZeroValue(value any) bool {
 	v := reflect.ValueOf(value)
 
 	switch v.Kind() {
-	case reflect.Ptr, reflect.Interface:
+	case reflect.Pointer, reflect.Interface:
 		return v.IsNil()
 	case reflect.Array, reflect.Slice, reflect.Map, reflect.Chan:
 		return v.Len() == 0
@@ -374,13 +375,7 @@ func isZeroValue(value any) bool {
 // It automatically enables fields with zero values unless explicitly disabled via DisableAutoEnableZeroValues.
 func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOptions[T]) *FieldConfig {
 	// Check if field is explicitly in enabled list
-	explicitlyEnabled := false
-	for _, name := range options.EnabledFields {
-		if name == fieldName {
-			explicitlyEnabled = true
-			break
-		}
-	}
+	explicitlyEnabled := slices.Contains(options.EnabledFields, fieldName)
 
 	// Get or create config
 	var config *FieldConfig
@@ -588,7 +583,7 @@ func buildSelectClasses(palette *design.Palette) string {
 // inferInputType infers the HTML input type from the Go type.
 func inferInputType(t reflect.Type) string {
 	// Handle pointers
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 

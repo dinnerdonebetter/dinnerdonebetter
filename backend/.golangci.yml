@@ -258,6 +258,9 @@ linters:
           - gosec
         text: 'G115:'
       - linters:
+          - gosec
+        text: 'G117:'
+      - linters:
           - cyclop
           - contextcheck
         path: (.+)_test\.go # test files

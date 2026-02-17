@@ -4,7 +4,6 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
 // BuildFakeMealPlanTask builds a faked meal plan task.
@@ -31,7 +30,7 @@ func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequ
 // BuildFakeMealPlanTasksList builds a faked MealPlanTaskList.
 func BuildFakeMealPlanTasksList() *filtering.QueryFilteredResult[types.MealPlanTask] {
 	var examples []*types.MealPlanTask
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlanTask())
 	}
 
@@ -49,7 +48,7 @@ func BuildFakeMealPlanTasksList() *filtering.QueryFilteredResult[types.MealPlanT
 // BuildFakeMealPlanTaskDatabaseCreationInputs builds a faked MealPlanTaskList.
 func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabaseCreationInput {
 	var examples []*types.MealPlanTaskDatabaseCreationInput
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
 			MealPlanOptionID:    "",
 			ID:                  BuildFakeID(),
@@ -65,7 +64,7 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusChangeRequestInput {
 	return &types.MealPlanTaskStatusChangeRequestInput{
 		MealPlanTaskID:    BuildFakeID(),
-		Status:            pointer.To("unfinished"),
+		Status:            new("unfinished"),
 		StatusExplanation: buildUniqueString(),
 	}
 }

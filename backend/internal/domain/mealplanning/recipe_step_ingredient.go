@@ -119,7 +119,7 @@ type (
 		QuantityNotes             *string                                             `json:"quantityNotes,omitempty"`
 		IngredientNotes           *string                                             `json:"ingredientNotes,omitempty"`
 		BelongsToRecipeStep       *string                                             `json:"belongsToRecipeStep,omitempty"`
-		Quantity                  types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"`
+		Quantity                  types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
 		Index                     *uint16                                             `json:"index,omitempty"`
 		OptionIndex               *uint16                                             `json:"optionIndex,omitempty"`
 		VesselIndex               *uint16                                             `json:"vesselIndex,omitempty"`

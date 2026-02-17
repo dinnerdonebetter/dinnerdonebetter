@@ -3,8 +3,6 @@ package notifications
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -81,7 +79,7 @@ func TestUserNotificationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &UserNotificationUpdateRequestInput{
-			Status: pointer.To(UserNotificationStatusTypeUnread),
+			Status: new(UserNotificationStatusTypeUnread),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

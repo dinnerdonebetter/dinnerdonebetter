@@ -106,7 +106,7 @@ func TestMealPlanOptions_Listing(T *testing.T) {
 		require.NotNil(t, createdMealPlanOption)
 
 		var expected []*types.MealPlanOption
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 			exampleMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
 			exampleMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID

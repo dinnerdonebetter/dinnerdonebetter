@@ -84,8 +84,8 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &RecipeRatingUpdateRequestInput{
-			ByUser:     pointer.To(t.Name()),
-			RecipeID:   pointer.To(t.Name()),
+			ByUser:     new(t.Name()),
+			RecipeID:   new(t.Name()),
 			Difficulty: pointer.To[float32](1.0),
 		}
 

@@ -77,7 +77,7 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 	createdIssueReports = append(createdIssueReports, createIssueReportForTest(t, ctx, exampleIssueReport, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeIssueReport()
 		input.IssueType = fmt.Sprintf("%s %d", exampleIssueReport.IssueType, i)
 		input.BelongsToAccount = account.ID

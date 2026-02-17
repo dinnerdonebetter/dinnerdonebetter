@@ -9,7 +9,6 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -538,8 +537,8 @@ func TestServiceImpl_UpdateAccount(t *testing.T) {
 		request := &identitysvc.UpdateAccountRequest{
 			AccountId: exampleAccountID,
 			Input: &identitysvc.AccountUpdateRequestInput{
-				Name:         pointer.To("Updated Account Name"),
-				ContactPhone: pointer.To("555-0123"),
+				Name:         new("Updated Account Name"),
+				ContactPhone: new("555-0123"),
 			},
 		}
 
@@ -558,7 +557,7 @@ func TestServiceImpl_UpdateAccount(t *testing.T) {
 		request := &identitysvc.UpdateAccountRequest{
 			AccountId: identityfakes.BuildFakeID(),
 			Input: &identitysvc.AccountUpdateRequestInput{
-				Name: pointer.To("Updated Account Name"),
+				Name: new("Updated Account Name"),
 			},
 		}
 
@@ -582,7 +581,7 @@ func TestServiceImpl_UpdateAccount(t *testing.T) {
 		request := &identitysvc.UpdateAccountRequest{
 			AccountId: identityfakes.BuildFakeID(),
 			Input: &identitysvc.AccountUpdateRequestInput{
-				Name: pointer.To("Updated Account Name"),
+				Name: new("Updated Account Name"),
 			},
 		}
 

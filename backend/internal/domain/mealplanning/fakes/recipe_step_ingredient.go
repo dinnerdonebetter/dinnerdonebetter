@@ -4,7 +4,6 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -25,16 +24,16 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		BelongsToRecipeStep:    BuildFakeID(),
 		Index:                  0, // Will be set from array index during recipe creation (via converter)
 		OptionIndex:            0, // Default to 0 for single-option items
-		VesselIndex:            pointer.To(fake.Uint16()),
+		VesselIndex:            new(fake.Uint16()),
 		ToTaste:                fake.Bool(),
-		ProductPercentageToUse: pointer.To(float32(buildFakeNumber())),
+		ProductPercentageToUse: new(float32(buildFakeNumber())),
 	}
 }
 
 // BuildFakeRecipeStepIngredientsList builds a faked RecipeStepIngredientList.
 func BuildFakeRecipeStepIngredientsList() *filtering.QueryFilteredResult[types.RecipeStepIngredient] {
 	var examples []*types.RecipeStepIngredient
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeRecipeStepIngredient())
 	}
 
@@ -61,8 +60,8 @@ func BuildFakeRecipeStepIngredientCreationRequestInput() *types.RecipeStepIngred
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	input := converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient)
 	// Bridge table IDs are now required
-	input.ValidIngredientPreparationID = pointer.To(BuildFakeID())
-	input.ValidIngredientMeasurementUnitID = pointer.To(BuildFakeID())
+	input.ValidIngredientPreparationID = new(BuildFakeID())
+	input.ValidIngredientMeasurementUnitID = new(BuildFakeID())
 	return input
 }
 
@@ -71,7 +70,7 @@ func BuildFakeRecipeStepIngredientCreationRequestInput() *types.RecipeStepIngred
 func BuildFakeRecipeStepIngredientCreationRequestInputForRecipeStepProduct() *types.RecipeStepIngredientCreationRequestInput {
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	input := converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient)
-	input.ProductOfRecipeStepIndex = pointer.To(uint64(0))
-	input.ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+	input.ProductOfRecipeStepIndex = new(uint64(0))
+	input.ProductOfRecipeStepProductIndex = new(uint64(0))
 	return input
 }

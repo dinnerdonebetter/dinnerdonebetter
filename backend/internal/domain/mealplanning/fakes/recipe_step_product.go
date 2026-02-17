@@ -4,7 +4,6 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -27,7 +26,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		StorageTemperatureInCelsius: BuildFakeOptionalFloat32Range(),
 		StorageInstructions:         buildUniqueString(),
 		Index:                       fake.Uint16(),
-		ContainedInVesselIndex:      pointer.To(fake.Uint16()),
+		ContainedInVesselIndex:      new(fake.Uint16()),
 	}
 
 	// TODO: there's no database field for this
@@ -39,7 +38,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 // BuildFakeRecipeStepProductsList builds a faked RecipeStepProductList.
 func BuildFakeRecipeStepProductsList() *filtering.QueryFilteredResult[types.RecipeStepProduct] {
 	var examples []*types.RecipeStepProduct
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeRecipeStepProduct())
 	}
 

@@ -78,7 +78,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidVessel(ctx, updatedValidVessel))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeValidVessel()
 		input.CapacityUnit = createdValidMeasurementUnit
 		input.Name = fmt.Sprintf("%s %d", updatedValidVessel.Name, i)

@@ -7,7 +7,6 @@ import (
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -19,7 +18,7 @@ func TestBuildMealPlanCreatedEmail(T *testing.T) {
 		t.Parallel()
 
 		user := identityfakes.BuildFakeUser()
-		user.EmailAddressVerifiedAt = pointer.To(time.Now())
+		user.EmailAddressVerifiedAt = new(time.Now())
 		mealPlan := mealplanningfakes.BuildFakeMealPlan()
 
 		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, &email.EnvironmentConfig{})

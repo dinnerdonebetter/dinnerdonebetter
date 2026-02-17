@@ -72,7 +72,7 @@ func TestMealPlans_Listing(T *testing.T) {
 		_, userClient := createUserAndClientForTest(t)
 
 		var expected []*mealplanning.MealPlan
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			createdMealPlan := createMealPlanForTest(t, userClient, nil)
 			expected = append(expected, createdMealPlan)
 		}
@@ -112,7 +112,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 		relevantAccountID := currentStatus.ActiveAccount
 
 		createdClients := []client.Client{}
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			u, c := createUserAndClientForTest(t)
 
 			invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, &identitygrpc.CreateAccountInvitationRequest{
@@ -159,7 +159,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 
 		// create recipes for meal plan
 		createdMeals := []*mealplanning.Meal{}
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			createdMeal := createMealForTest(t, accountAdminUserClient, nil)
 			createdMeals = append(createdMeals, createdMeal)
 		}
@@ -328,7 +328,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		relevantAccountID := currentStatus.ActiveAccount
 
 		createdClients := []client.Client{}
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			u, c := createUserAndClientForTest(t)
 
 			invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, &identitygrpc.CreateAccountInvitationRequest{
@@ -375,7 +375,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 
 		// create recipes for meal plan
 		createdMeals := []*mealplanning.Meal{}
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			createdMeal := createMealForTest(t, accountAdminUserClient, nil)
 			createdMeals = append(createdMeals, createdMeal)
 		}

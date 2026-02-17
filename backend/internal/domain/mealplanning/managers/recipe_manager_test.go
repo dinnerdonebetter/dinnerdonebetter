@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
@@ -527,7 +526,7 @@ func TestRecipeManager_UpdateRecipeListItem(T *testing.T) {
 		itemID := fakes.BuildFakeID()
 		listID := fakes.BuildFakeID()
 		recipeID := fakes.BuildFakeID()
-		notes := pointer.To(t.Name())
+		notes := new(t.Name())
 		input := &types.RecipeListItemUpdateRequestInput{
 			Notes: notes,
 		}
@@ -999,7 +998,7 @@ func TestRecipeManager_CreateRecipeStepInstrument(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepInstrument()
 		fakeInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
-		fakeInput.Index = pointer.To(uint16(0))
+		fakeInput.Index = new(uint16(0))
 
 		// Create a fake ValidPreparationInstrument for the bridge table lookup
 		fakeValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
@@ -1164,7 +1163,7 @@ func TestRecipeManager_CreateRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepIngredient()
 		fakeInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInput()
-		fakeInput.Index = pointer.To(uint16(0))
+		fakeInput.Index = new(uint16(0))
 
 		// Create fake bridge table entries for the lookups
 		fakeValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
@@ -1643,7 +1642,7 @@ func TestRecipeManager_CreateRecipeStepVessel(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipeStepVessel()
 		fakeInput := fakes.BuildFakeRecipeStepVesselCreationRequestInput()
-		fakeInput.Index = pointer.To(uint16(0))
+		fakeInput.Index = new(uint16(0))
 
 		// Create a fake ValidPreparationVessel for the bridge table lookup
 		fakeValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()

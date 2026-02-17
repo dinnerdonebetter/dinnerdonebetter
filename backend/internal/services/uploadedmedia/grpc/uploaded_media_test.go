@@ -85,12 +85,12 @@ func (m *mockUploadStream) Context() context.Context {
 	return m.ctx
 }
 
-func (m *mockUploadStream) SendMsg(msg interface{}) error {
+func (m *mockUploadStream) SendMsg(msg any) error {
 	args := m.Called(msg)
 	return args.Error(0)
 }
 
-func (m *mockUploadStream) RecvMsg(msg interface{}) error {
+func (m *mockUploadStream) RecvMsg(msg any) error {
 	args := m.Called(msg)
 	return args.Error(0)
 }

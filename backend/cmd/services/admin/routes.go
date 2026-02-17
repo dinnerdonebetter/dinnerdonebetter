@@ -174,9 +174,25 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 			return
 		}
 
-		// Check if the file exists in the assets directory
-		filePath := filepath.Join(assetsDir, filepath.Clean(r.URL.Path))
-		if info, err := os.Stat(filePath); err == nil && !info.IsDir() {
+		// Check if the file exists in the assets directory (guard against path traversal)
+		filePath := filepath.Clean(filepath.Join(assetsDir, r.URL.Path))
+		absAssets, err := filepath.Abs(assetsDir)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		absFilePath, err := filepath.Abs(filePath)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		rel, err := filepath.Rel(absAssets, absFilePath)
+		if err != nil || strings.HasPrefix(rel, "..") {
+			http.NotFound(w, r)
+			return
+		}
+		if info, err := os.Stat(filePath); err == nil && !info.IsDir() { //nolint:gosec // G703: path validated above to be within assetsDir
 			// File exists, serve it
 			fileServer.ServeHTTP(w, r)
 			return

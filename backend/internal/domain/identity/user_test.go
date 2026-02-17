@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +16,7 @@ func TestUser_Update(T *testing.T) {
 			Username:        "old_username",
 			HashedPassword:  "hashed_pass",
 			TwoFactorSecret: "two factor secret",
-			Birthday:        pointer.To[time.Time](time.Now()),
+			Birthday:        new(time.Now()),
 		}
 
 		exampleInput := User{
@@ -27,7 +25,7 @@ func TestUser_Update(T *testing.T) {
 			TwoFactorSecret: "new fancy secret",
 			FirstName:       "first",
 			LastName:        "last",
-			Birthday:        pointer.To[time.Time](time.Now()),
+			Birthday:        new(time.Now()),
 		}
 
 		actual.Update(&exampleInput)

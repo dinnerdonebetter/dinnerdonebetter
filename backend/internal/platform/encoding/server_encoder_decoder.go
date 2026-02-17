@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -183,7 +184,7 @@ func (e *serverEncoderDecoder) MustEncodeJSON(ctx context.Context, v any) []byte
 
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(v); err != nil {
-		e.panicker.Panicf("encoding JSON content: %w", err)
+		e.panicker.Panic(fmt.Errorf("encoding JSON content: %w", err))
 	}
 
 	return b.Bytes()
@@ -213,7 +214,7 @@ func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v any) []byte {
 	}
 
 	if err := enc.Encode(v); err != nil {
-		e.panicker.Panicf("encoding %s content: %w", e.contentType, err)
+		e.panicker.Panic(fmt.Errorf("encoding %s content: %w", ContentTypeToString(e.contentType), err))
 	}
 
 	return b.Bytes()

@@ -23,7 +23,7 @@ type (
 	}
 
 	SSOConfigs struct {
-		Google GoogleSSOConfig `envPrefix:"GOOGLE_" json:"google,omitempty"`
+		Google GoogleSSOConfig `envPrefix:"GOOGLE_" json:"google"`
 	}
 
 	// Config is our configuration.
@@ -31,8 +31,8 @@ type (
 		_ struct{} `json:"-"`
 
 		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"           json:"tokens"`
-		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
-		OAuth2                OAuth2Config     `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`
+		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso"`
+		OAuth2                OAuth2Config     `envPrefix:"OAUTH2"            json:"oauth2"`
 		TokenLifetime         time.Duration    `env:"JWT_LIFETIME"            json:"jwtLifetime"`
 		Debug                 bool             `env:"DEBUG"                   json:"debug,omitempty"`
 		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`

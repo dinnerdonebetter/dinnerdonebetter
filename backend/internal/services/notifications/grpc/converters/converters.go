@@ -6,7 +6,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
 func ConvertStringToUserNotificationStatus(s string) notificationssvc.UserNotificationStatus {
@@ -62,7 +61,7 @@ func ConvertGRPCUserNotificationToUserNotification(notification *notificationssv
 func ConvertUserNotificationUpdateRequestInputToGRPCUserNotificationUpdateRequestInput(input *notifications.UserNotificationUpdateRequestInput) *notificationssvc.UserNotificationUpdateRequestInput {
 	var newStatus *notificationssvc.UserNotificationStatus
 	if input.Status != nil {
-		newStatus = pointer.To(ConvertStringToUserNotificationStatus(*input.Status))
+		newStatus = new(ConvertStringToUserNotificationStatus(*input.Status))
 	}
 
 	return &notificationssvc.UserNotificationUpdateRequestInput{

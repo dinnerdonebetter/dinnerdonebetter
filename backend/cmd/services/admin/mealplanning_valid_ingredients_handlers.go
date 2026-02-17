@@ -510,7 +510,7 @@ func (s *AdminFrontendServer) ValidIngredientsSearch(_ http.ResponseWriter, req 
 		appliedCursorStr = *pagination.AppliedQueryFilter.Cursor
 	}
 	logger := s.logger.WithSpan(span)
-	logger.WithValue("table_pagination", map[string]interface{}{
+	logger.WithValue("table_pagination", map[string]any{
 		"cursor":                   pagination.Cursor,
 		"appliedCursor":            appliedCursorStr,
 		"hasAppliedFilter":         pagination.AppliedQueryFilter != nil,

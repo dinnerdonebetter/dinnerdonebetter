@@ -8,7 +8,6 @@ import (
 	uploadedmediafakes "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -432,7 +431,7 @@ func TestUploadedMedia_Pagination(T *testing.T) {
 		results, err := testClient.GetUploadedMediaForUser(ctx, &uploadedmediasvc.GetUploadedMediaForUserRequest{
 			UserId: user.ID,
 			Filter: &grpcfiltering.QueryFilter{
-				MaxResponseSize: pointer.To(uint32(5)),
+				MaxResponseSize: new(uint32(5)),
 			},
 		})
 		assert.NoError(t, err)

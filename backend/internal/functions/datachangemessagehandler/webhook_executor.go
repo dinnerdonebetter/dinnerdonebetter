@@ -93,7 +93,7 @@ func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(
 	digest.Write(payloadBody)
 	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
 
-	res, err := tracing.BuildTracedHTTPClient().Do(req)
+	res, err := tracing.BuildTracedHTTPClient().Do(req) //nolint:gosec // G704: webhook URL is admin-configured; webhooks intentionally deliver to external URLs
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing webhook request")
 		return nil

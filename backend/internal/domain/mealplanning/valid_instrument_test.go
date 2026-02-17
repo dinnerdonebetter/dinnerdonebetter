@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,9 +17,9 @@ func TestValidInstrument_Update(T *testing.T) {
 
 		input := &ValidInstrumentUpdateRequestInput{}
 		assert.NoError(t, fake.Struct(&input))
-		input.UsableForStorage = pointer.To(true)
-		input.DisplayInSummaryLists = pointer.To(true)
-		input.IncludeInGeneratedInstructions = pointer.To(true)
+		input.UsableForStorage = new(true)
+		input.DisplayInSummaryLists = new(true)
+		input.IncludeInGeneratedInstructions = new(true)
 
 		x.Update(input)
 	})
@@ -85,9 +83,9 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        pointer.To(t.Name()),
-			Description: pointer.To(t.Name()),
-			IconPath:    pointer.To(t.Name()),
+			Name:        new(t.Name()),
+			Description: new(t.Name()),
+			IconPath:    new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

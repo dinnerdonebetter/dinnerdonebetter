@@ -58,9 +58,9 @@ type (
 	UserDataCollection struct {
 		Identity        identity.UserDataCollection      `json:"identity"`
 		MealPlanning    mealplanning.UserDataCollection  `json:"meal_planning"`
-		Webhooks        webhooks.UserDataCollection      `json:"webhooks,omitempty"`
-		Settings        settings.UserDataCollection      `json:"settings,omitempty"`
-		Notifications   notifications.UserDataCollection `json:"notifications,omitempty"`
+		Webhooks        webhooks.UserDataCollection      `json:"webhooks"`
+		Settings        settings.UserDataCollection      `json:"settings"`
+		Notifications   notifications.UserDataCollection `json:"notifications"`
 		AuditLogEntries []audit.AuditLogEntry            `json:"audit_log_entries,omitempty"`
 		IssueReports    []issuereports.IssueReport       `json:"issue_reports,omitempty"`
 		UploadedMedia   []uploadedmedia.UploadedMedia    `json:"uploaded_media,omitempty"`

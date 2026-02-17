@@ -50,9 +50,9 @@ func TestRenderJSON(T *testing.T) {
 	T.Run("pretty formatting", func(t *testing.T) {
 		t.Parallel()
 
-		obj := map[string]interface{}{
+		obj := map[string]any{
 			"key": "value",
-			"nested": map[string]interface{}{
+			"nested": map[string]any{
 				"inner": "data",
 			},
 		}
@@ -66,7 +66,7 @@ func TestRenderJSON(T *testing.T) {
 	T.Run("compact formatting", func(t *testing.T) {
 		t.Parallel()
 
-		obj := map[string]interface{}{
+		obj := map[string]any{
 			"key": "value",
 		}
 
@@ -196,7 +196,7 @@ func TestEnvironmentConfigSet_Render(T *testing.T) {
 			data, dataErr := os.ReadFile(filePath)
 			require.NoError(t, dataErr)
 
-			var jsonData interface{}
+			var jsonData any
 			err = json.Unmarshal(data, &jsonData)
 			assert.NoError(t, err, "File %s should contain valid JSON", fileName)
 		}

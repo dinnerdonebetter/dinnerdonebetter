@@ -3,8 +3,6 @@ package settings
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +20,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointer.To(t.Name()),
+			DefaultValue: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -52,7 +50,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointer.To("whatever"),
+			DefaultValue: new("whatever"),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -76,7 +74,7 @@ func TestServiceSettingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointer.To(t.Name()),
+			DefaultValue: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)

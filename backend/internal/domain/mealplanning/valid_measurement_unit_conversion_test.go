@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -86,9 +84,9 @@ func TestValidMeasurementUnitConversionUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidMeasurementUnitConversionUpdateRequestInput{
-			From:     pointer.To("from"),
-			To:       pointer.To("to"),
-			Modifier: pointer.To(float32(1.0)),
+			From:     new("from"),
+			To:       new("to"),
+			Modifier: new(float32(1.0)),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

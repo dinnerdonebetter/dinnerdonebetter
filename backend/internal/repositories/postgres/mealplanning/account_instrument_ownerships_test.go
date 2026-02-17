@@ -78,7 +78,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	assert.NoError(t, dbc.UpdateAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnerships[0]))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		newInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeAccountInstrumentOwnership()
 		input.BelongsToAccount = account.ID

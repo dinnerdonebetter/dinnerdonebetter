@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
@@ -69,7 +68,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -105,7 +104,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: carrot,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -141,7 +140,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: celery,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -177,7 +176,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: salt,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -213,7 +212,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -245,7 +244,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(200)),
+					Max: new(float32(200)),
 					Min: 200,
 				},
 			},
@@ -258,7 +257,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -271,7 +270,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -284,7 +283,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe4ID,
 				RecipeStepID:            &step4ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -348,7 +347,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -384,7 +383,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: carrot,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -420,7 +419,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: celery,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -452,7 +451,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(100)),
+					Max: new(float32(100)),
 					Min: 100,
 				},
 			},
@@ -465,7 +464,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(200)),
+					Max: new(float32(200)),
 					Min: 200,
 				},
 			},
@@ -478,7 +477,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
 				QuantityNeeded: types.Float32RangeWithOptionalMax{
-					Max: pointer.To(float32(300)),
+					Max: new(float32(300)),
 					Min: 300,
 				},
 			},
@@ -537,7 +536,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: spaghetti,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -547,7 +546,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: angelHair,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -558,7 +557,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(50)),
+																Max: new(float32(50)),
 																Min: 50,
 															},
 															MeasurementUnit: *grams,
@@ -668,7 +667,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: spaghetti,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -678,7 +677,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: angelHair,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(100)),
+																Max: new(float32(100)),
 																Min: 100,
 															},
 															MeasurementUnit: *grams,
@@ -689,7 +688,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(50)),
+																Max: new(float32(50)),
 																Min: 50,
 															},
 															MeasurementUnit: *grams,
@@ -726,7 +725,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(50)),
+																Max: new(float32(50)),
 																Min: 50,
 															},
 															MeasurementUnit: *grams,
@@ -956,7 +955,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: chicken,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(500)),
+																Max: new(float32(500)),
 																Min: 500,
 															},
 															MeasurementUnit: *grams,
@@ -977,7 +976,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																{
 																	Ingredient: oliveOil,
 																	Quantity: types.Float32RangeWithOptionalMax{
-																		Max: pointer.To(float32(100)),
+																		Max: new(float32(100)),
 																		Min: 100,
 																	},
 																	MeasurementUnit: *grams,
@@ -987,7 +986,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																{
 																	Ingredient: lemon,
 																	Quantity: types.Float32RangeWithOptionalMax{
-																		Max: pointer.To(float32(50)),
+																		Max: new(float32(50)),
 																		Min: 50,
 																	},
 																	MeasurementUnit: *grams,
@@ -1094,7 +1093,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: chicken,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(500)),
+																Max: new(float32(500)),
 																Min: 500,
 															},
 															MeasurementUnit: *grams,
@@ -1114,7 +1113,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																{
 																	Ingredient: oliveOil,
 																	Quantity: types.Float32RangeWithOptionalMax{
-																		Max: pointer.To(float32(100)),
+																		Max: new(float32(100)),
 																		Min: 100,
 																	},
 																	MeasurementUnit: *grams,
@@ -1203,7 +1202,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: chicken,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(500)),
+																Max: new(float32(500)),
 																Min: 500,
 															},
 															MeasurementUnit: *grams,
@@ -1213,7 +1212,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient: salt,
 															Quantity: types.Float32RangeWithOptionalMax{
-																Max: pointer.To(float32(10)),
+																Max: new(float32(10)),
 																Min: 10,
 															},
 															MeasurementUnit: *grams,
@@ -1233,7 +1232,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 																{
 																	Ingredient: salt, // Same salt ingredient
 																	Quantity: types.Float32RangeWithOptionalMax{
-																		Max: pointer.To(float32(5)),
+																		Max: new(float32(5)),
 																		Min: 5,
 																	},
 																	MeasurementUnit: *grams,

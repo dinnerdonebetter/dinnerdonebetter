@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -226,7 +225,7 @@ func TestValidVessels_Updating(T *testing.T) {
 		response, err := testClient.UpdateValidVessel(ctx, &mealplanningsvc.UpdateValidVesselRequest{
 			ValidVesselId: created.ID,
 			Input: &mealplanningsvc.ValidVesselUpdateRequestInput{
-				Name: pointer.To("doesn't matter"),
+				Name: new("doesn't matter"),
 			},
 		})
 		assert.Error(t, err)

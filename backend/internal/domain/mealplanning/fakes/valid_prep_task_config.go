@@ -32,7 +32,7 @@ func BuildFakeValidPrepTaskConfig() *types.ValidPrepTaskConfig {
 // BuildFakeValidPrepTaskConfigsList builds a faked ValidPrepTaskConfigList.
 func BuildFakeValidPrepTaskConfigsList() *filtering.QueryFilteredResult[types.ValidPrepTaskConfig] {
 	var examples []*types.ValidPrepTaskConfig
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidPrepTaskConfig())
 	}
 

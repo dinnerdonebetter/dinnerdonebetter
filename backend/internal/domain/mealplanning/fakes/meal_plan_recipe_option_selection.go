@@ -26,7 +26,7 @@ func BuildFakeMealPlanRecipeOptionSelection() *types.MealPlanRecipeOptionSelecti
 // BuildFakeMealPlanRecipeOptionSelectionsList builds a faked MealPlanRecipeOptionSelectionsList.
 func BuildFakeMealPlanRecipeOptionSelectionsList() *filtering.QueryFilteredResult[types.MealPlanRecipeOptionSelection] {
 	var examples []*types.MealPlanRecipeOptionSelection
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlanRecipeOptionSelection())
 	}
 

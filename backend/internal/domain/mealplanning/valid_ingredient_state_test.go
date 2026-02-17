@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -82,8 +80,8 @@ func TestValidIngredientStateUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientStateUpdateRequestInput{
-			Name:          pointer.To(t.Name()),
-			AttributeType: pointer.To(ValidIngredientStateAttributeTypeTexture),
+			Name:          new(t.Name()),
+			AttributeType: new(ValidIngredientStateAttributeTypeTexture),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

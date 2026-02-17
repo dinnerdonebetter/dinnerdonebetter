@@ -66,7 +66,7 @@ func TestAccountInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *tes
 		ctx := t.Context()
 		x := &AccountInstrumentOwnershipUpdateRequestInput{
 			Quantity:          pointer.To[uint16](1),
-			ValidInstrumentID: pointer.To(t.Name()),
+			ValidInstrumentID: new(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

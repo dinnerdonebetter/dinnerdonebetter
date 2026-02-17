@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,10 +19,10 @@ func TestValidVessel_Update(T *testing.T) {
 		input := &ValidVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.CapacityUnitID = pointer.To(t.Name())
-		input.UsableForStorage = pointer.To(true)
-		input.DisplayInSummaryLists = pointer.To(true)
-		input.IncludeInGeneratedInstructions = pointer.To(true)
+		input.CapacityUnitID = new(t.Name())
+		input.UsableForStorage = new(true)
+		input.DisplayInSummaryLists = new(true)
+		input.IncludeInGeneratedInstructions = new(true)
 
 		x.Update(input)
 	})
@@ -41,7 +39,7 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 			Description:    t.Name(),
 			IconPath:       t.Name(),
 			Capacity:       exampleQuantity,
-			CapacityUnitID: pointer.To(t.Name()),
+			CapacityUnitID: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -67,7 +65,7 @@ func TestValidVesselDatabaseCreationInput_Validate(T *testing.T) {
 		x := &ValidVesselDatabaseCreationInput{
 			ID:             t.Name(),
 			Name:           t.Name(),
-			CapacityUnitID: pointer.To(t.Name()),
+			CapacityUnitID: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -91,9 +89,9 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidVesselUpdateRequestInput{
-			Name:        pointer.To(t.Name()),
-			Description: pointer.To(t.Name()),
-			IconPath:    pointer.To(t.Name()),
+			Name:        new(t.Name()),
+			Description: new(t.Name()),
+			IconPath:    new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

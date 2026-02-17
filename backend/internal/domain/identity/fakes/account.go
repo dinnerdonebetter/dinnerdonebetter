@@ -4,7 +4,6 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -14,7 +13,7 @@ func BuildFakeAccount() *types.Account {
 	accountID := BuildFakeID()
 
 	var memberships []*types.AccountUserMembershipWithUser
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		membership := BuildFakeAccountUserMembershipWithUser()
 		membership.BelongsToAccount = accountID
 		memberships = append(memberships, membership)
@@ -38,8 +37,8 @@ func BuildFakeAccount() *types.Account {
 		State:                      fakeAddress.State,
 		ZipCode:                    fakeAddress.Zip,
 		Country:                    fakeAddress.Country,
-		Latitude:                   pointer.To(buildFakeNumber()),
-		Longitude:                  pointer.To(buildFakeNumber()),
+		Latitude:                   new(buildFakeNumber()),
+		Longitude:                  new(buildFakeNumber()),
 		WebhookEncryptionKey:       key,
 	}
 }
@@ -47,7 +46,7 @@ func BuildFakeAccount() *types.Account {
 // BuildFakeAccountsList builds a faked AccountList.
 func BuildFakeAccountsList() *filtering.QueryFilteredResult[types.Account] {
 	var examples []*types.Account
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeAccount())
 	}
 

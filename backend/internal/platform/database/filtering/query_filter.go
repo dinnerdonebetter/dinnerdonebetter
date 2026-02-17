@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
 const (
@@ -22,9 +21,9 @@ const (
 
 var (
 	// SortAscending is the pre-determined Ascending string for external use.
-	SortAscending = pointer.To(sortAscendingString)
+	SortAscending = new(sortAscendingString)
 	// SortDescending is the pre-determined Descending string for external use.
-	SortDescending = pointer.To(sortDescendingString)
+	SortDescending = new(sortDescendingString)
 )
 
 const (
@@ -90,7 +89,7 @@ type (
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		MaxResponseSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+		MaxResponseSize: new(uint8(DefaultQueryFilterLimit)),
 		SortBy:          SortAscending,
 	}
 }
@@ -141,7 +140,7 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 
 	if i, err := strconv.ParseUint(params.Get(QueryKeyLimit), 10, 64); err == nil {
-		qf.MaxResponseSize = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
+		qf.MaxResponseSize = new(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedBefore)); err == nil {
@@ -248,7 +247,7 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 
 	if qf.MaxResponseSize != nil {
 		if *qf.MaxResponseSize == 0 {
-			qf.MaxResponseSize = pointer.To(uint8(DefaultQueryFilterLimit))
+			qf.MaxResponseSize = new(uint8(DefaultQueryFilterLimit))
 		}
 	}
 

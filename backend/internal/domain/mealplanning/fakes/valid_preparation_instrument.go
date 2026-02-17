@@ -20,7 +20,7 @@ func BuildFakeValidPreparationInstrument() *types.ValidPreparationInstrument {
 // BuildFakeValidPreparationInstrumentsList builds a faked ValidPreparationInstrumentList.
 func BuildFakeValidPreparationInstrumentsList() *filtering.QueryFilteredResult[types.ValidPreparationInstrument] {
 	var examples []*types.ValidPreparationInstrument
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidPreparationInstrument())
 	}
 

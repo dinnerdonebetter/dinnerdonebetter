@@ -67,7 +67,7 @@ type (
 	APIServiceConfig struct {
 		_                       struct{}                      `json:"-"`
 		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"        json:"queues"`
-		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"          json:"appleAppSiteAssociation,omitempty"`
+		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"          json:"appleAppSiteAssociation"`
 		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"       json:"routing"`
 		Encoding                encoding.Config               `envPrefix:"ENCODING_"      json:"encoding"`
 		Events                  msgconfig.Config              `envPrefix:"EVENTS_"        json:"events"`
@@ -202,7 +202,7 @@ func (cfg *APIServiceConfig) EncodeToFile(path string, marshaller func(v any) ([
 		return err
 	}
 
-	return os.WriteFile(path, byteSlice, 0o600)
+	return os.WriteFile(path, byteSlice, 0o600) //nolint:gosec // G703: path from caller; caller must pass trusted path
 }
 
 func (cfg *APIServiceConfig) Commit() string {
@@ -409,7 +409,7 @@ func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
 func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey)
 
-	configBytes, err := os.ReadFile(configFilepath)
+	configBytes, err := os.ReadFile(configFilepath) //nolint:gosec // G703: path from env var (deployer-configured)
 	if err != nil {
 		return nil, fmt.Errorf("reading local config file: %w", err)
 	}

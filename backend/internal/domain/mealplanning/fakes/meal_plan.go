@@ -15,7 +15,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 	mealPlanID := BuildFakeID()
 
 	var events []*types.MealPlanEvent
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		event := BuildFakeMealPlanEvent()
 		event.BelongsToMealPlan = mealPlanID
 		events = append(events, event)
@@ -40,7 +40,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 // BuildFakeMealPlansList builds a faked MealPlanList.
 func BuildFakeMealPlansList() *filtering.QueryFilteredResult[types.MealPlan] {
 	var examples []*types.MealPlan
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlan())
 	}
 

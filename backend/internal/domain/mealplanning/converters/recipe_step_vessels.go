@@ -3,7 +3,6 @@ package converters
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -60,7 +59,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
 	var indexPtr *uint16
 	if input.Index != 0 {
-		indexPtr = pointer.To(input.Index)
+		indexPtr = new(input.Index)
 	}
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
 		Name:                 input.Name,

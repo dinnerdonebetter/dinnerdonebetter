@@ -146,7 +146,7 @@ func WithOAuth2Credentials(
 		return http.ErrUseLastResponse
 	}
 
-	res, err := c.Do(req)
+	res, err := c.Do(req) //nolint:gosec // G704: authCodeURL from OAuth config (authServerAddress), not user-controlled
 	if err != nil {
 		return nil, fmt.Errorf("failed to get oauth2 code: %w", err)
 	}

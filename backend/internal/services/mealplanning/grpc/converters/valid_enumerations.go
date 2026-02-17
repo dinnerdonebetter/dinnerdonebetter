@@ -573,7 +573,7 @@ func ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCr
 func ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateUpdateRequestInput) *mealplanning.ValidIngredientStateUpdateRequestInput {
 	var attributeType *string
 	if x.AttributeType != nil {
-		attributeType = pointer.To(ConvertValidIngredientStateAttributeTypeToString(*x.AttributeType))
+		attributeType = new(ConvertValidIngredientStateAttributeTypeToString(*x.AttributeType))
 	}
 
 	return &mealplanning.ValidIngredientStateUpdateRequestInput{
@@ -589,7 +589,7 @@ func ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpda
 func ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(x *mealplanning.ValidIngredientStateUpdateRequestInput) *mealplanninggrpc.ValidIngredientStateUpdateRequestInput {
 	var attributeType *mealplanninggrpc.ValidIngredientStateAttributeType
 	if x.AttributeType != nil {
-		attributeType = pointer.To(ConvertStringToValidIngredientStateAttributeType(*x.AttributeType))
+		attributeType = new(ConvertStringToValidIngredientStateAttributeType(*x.AttributeType))
 	}
 
 	return &mealplanninggrpc.ValidIngredientStateUpdateRequestInput{
@@ -1009,15 +1009,15 @@ func ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRe
 func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(x *mealplanninggrpc.ValidPreparationUpdateRequestInput) *mealplanning.ValidPreparationUpdateRequestInput {
 	return &mealplanning.ValidPreparationUpdateRequestInput{
 		InstrumentCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(pointer.Dereference(x.InstrumentCount.Min))),
+			Min: new(uint16(pointer.Dereference(x.InstrumentCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
 		},
 		IngredientCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(pointer.Dereference(x.IngredientCount.Min))),
+			Min: new(uint16(pointer.Dereference(x.IngredientCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
 		},
 		VesselCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(pointer.Dereference(x.VesselCount.Min))),
+			Min: new(uint16(pointer.Dereference(x.VesselCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
 		},
 		Name:                        x.Name,
@@ -1038,15 +1038,15 @@ func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateReques
 func ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x *mealplanning.ValidPreparationUpdateRequestInput) *mealplanninggrpc.ValidPreparationUpdateRequestInput {
 	return &mealplanninggrpc.ValidPreparationUpdateRequestInput{
 		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint32(pointer.Dereference(x.InstrumentCount.Min))),
+			Min: new(uint32(pointer.Dereference(x.InstrumentCount.Min))),
 			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
 		},
 		IngredientCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint32(pointer.Dereference(x.IngredientCount.Min))),
+			Min: new(uint32(pointer.Dereference(x.IngredientCount.Min))),
 			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
 		},
 		VesselCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint32(pointer.Dereference(x.VesselCount.Min))),
+			Min: new(uint32(pointer.Dereference(x.VesselCount.Min))),
 			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
 		},
 		Name:                        x.Name,
@@ -1330,7 +1330,7 @@ func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput
 func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *mealplanninggrpc.ValidVesselUpdateRequestInput) *mealplanning.ValidVesselUpdateRequestInput {
 	var shape *string
 	if x.Shape != nil {
-		shape = pointer.To(ConvertValidVesselShapeToString(*x.Shape))
+		shape = new(ConvertValidVesselShapeToString(*x.Shape))
 	}
 
 	return &mealplanning.ValidVesselUpdateRequestInput{
@@ -1354,7 +1354,7 @@ func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *
 func ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x *mealplanning.ValidVesselUpdateRequestInput) *mealplanninggrpc.ValidVesselUpdateRequestInput {
 	var shape *mealplanninggrpc.ValidVesselShape
 	if x.Shape != nil {
-		shape = pointer.To(ConvertStringToValidVesselShape(*x.Shape))
+		shape = new(ConvertStringToValidVesselShape(*x.Shape))
 	}
 
 	return &mealplanninggrpc.ValidVesselUpdateRequestInput{

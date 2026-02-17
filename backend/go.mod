@@ -99,6 +99,7 @@ require (
 	golang.org/x/net v0.47.0
 	golang.org/x/oauth2 v0.32.0
 	golang.org/x/text v0.31.0
+	golang.org/x/tools v0.38.0
 	gonum.org/v1/gonum v0.16.0
 	google.golang.org/adk v0.2.0
 	google.golang.org/api v0.252.0

@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/fake"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -319,7 +318,7 @@ func TestServiceImpl_UpdateRecipeListItem(T *testing.T) {
 		itemID := mealplanningfakes.BuildFakeID()
 		listID := mealplanningfakes.BuildFakeID()
 		recipeID := mealplanningfakes.BuildFakeID()
-		notes := pointer.To(t.Name())
+		notes := new(t.Name())
 		input := &mealplanninggrpc.RecipeListItemUpdateRequestInput{
 			BelongsToRecipeList: &listID,
 			RecipeId:            &recipeID,

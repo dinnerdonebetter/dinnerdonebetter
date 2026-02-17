@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -68,9 +66,9 @@ func TestMealPlanEventUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &MealPlanEventUpdateRequestInput{
-			MealName: pointer.To(SecondBreakfastMealName),
-			StartsAt: pointer.To(time.Now()),
-			EndsAt:   pointer.To(time.Now()),
+			MealName: new(SecondBreakfastMealName),
+			StartsAt: new(time.Now()),
+			EndsAt:   new(time.Now()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -87,8 +85,8 @@ func TestMealPlanEvent_Update(T *testing.T) {
 		input := &MealPlanEventUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.StartsAt = pointer.To(time.Now())
-		input.EndsAt = pointer.To(time.Now())
+		input.StartsAt = new(time.Now())
+		input.EndsAt = new(time.Now())
 
 		x.Update(input)
 	})

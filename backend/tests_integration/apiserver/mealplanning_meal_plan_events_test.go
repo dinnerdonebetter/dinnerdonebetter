@@ -86,7 +86,7 @@ func TestMealPlanEvents_Listing(T *testing.T) {
 		createdMealPlan := createMealPlanForTest(t, userClient, nil)
 
 		var expected []*mealplanning.MealPlanEvent
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
 			exampleMealPlanEvent.Options = nil
 			exampleMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID

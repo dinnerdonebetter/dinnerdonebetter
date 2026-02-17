@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -217,7 +216,7 @@ func TestValidMeasurementUnits_Updating(T *testing.T) {
 		response, err := testClient.UpdateValidMeasurementUnit(ctx, &mealplanningsvc.UpdateValidMeasurementUnitRequest{
 			ValidMeasurementUnitId: created.ID,
 			Input: &mealplanningsvc.ValidMeasurementUnitUpdateRequestInput{
-				Name: pointer.To("doesn't matter"),
+				Name: new("doesn't matter"),
 			},
 		})
 		assert.Error(t, err)

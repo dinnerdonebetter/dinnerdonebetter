@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -182,9 +181,9 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *mealplanning.RecipePrepTaskStep) *mealplanning.RecipePrepTaskStepUpdateRequestInput {
 	return &mealplanning.RecipePrepTaskStepUpdateRequestInput{
-		BelongsToRecipeStep:     pointer.To(input.BelongsToRecipeStep),
-		BelongsToRecipePrepTask: pointer.To(input.BelongsToRecipePrepTask),
-		SatisfiesRecipeStep:     pointer.To(input.SatisfiesRecipeStep),
+		BelongsToRecipeStep:     new(input.BelongsToRecipeStep),
+		BelongsToRecipePrepTask: new(input.BelongsToRecipePrepTask),
+		SatisfiesRecipeStep:     new(input.SatisfiesRecipeStep),
 	}
 }
 

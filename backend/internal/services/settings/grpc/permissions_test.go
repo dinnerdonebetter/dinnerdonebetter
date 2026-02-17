@@ -20,13 +20,13 @@ func TestProvideMethodPermissions_CoverageAndValidity(t *testing.T) {
 		methodPerms := ProvideMethodPermissions()
 
 		// Get all methods from the interface
-		interfaceType := reflect.TypeOf((*settingssvc.SettingsServiceServer)(nil)).Elem()
+		interfaceType := reflect.TypeFor[settingssvc.SettingsServiceServer]()
 		validMethods := make(map[string]bool)
 
-		for i := 0; i < interfaceType.NumMethod(); i++ {
-			method := interfaceType.Method(i)
+		for method := range interfaceType.Methods() {
+			m := method
 			// Build the full method name format: /settings.SettingsService/MethodName
-			fullMethodName := "/settings.SettingsService/" + method.Name
+			fullMethodName := "/settings.SettingsService/" + m.Name
 			validMethods[fullMethodName] = true
 		}
 

@@ -2,6 +2,7 @@ package grpcapi
 
 import (
 	"context"
+	"maps"
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -117,36 +118,16 @@ func AggregateMethodPermissions(
 	result := make(interceptors.MethodPermissionsMap)
 
 	// Copy all service permissions into the aggregated map
-	for method, perms := range authPermissions {
-		result[method] = perms
-	}
-	for method, perms := range identityPermissions {
-		result[method] = perms
-	}
-	for method, perms := range issuereportsPermissions {
-		result[method] = perms
-	}
-	for method, perms := range mealplanningPermissions {
-		result[method] = perms
-	}
-	for method, perms := range notificationsPermissions {
-		result[method] = perms
-	}
-	for method, perms := range oauthPermissions {
-		result[method] = perms
-	}
-	for method, perms := range settingsPermissions {
-		result[method] = perms
-	}
-	for method, perms := range uploadedmediaPermissions {
-		result[method] = perms
-	}
-	for method, perms := range waitlistsPermissions {
-		result[method] = perms
-	}
-	for method, perms := range webhooksPermissions {
-		result[method] = perms
-	}
+	maps.Copy(result, authPermissions)
+	maps.Copy(result, identityPermissions)
+	maps.Copy(result, issuereportsPermissions)
+	maps.Copy(result, mealplanningPermissions)
+	maps.Copy(result, notificationsPermissions)
+	maps.Copy(result, oauthPermissions)
+	maps.Copy(result, settingsPermissions)
+	maps.Copy(result, uploadedmediaPermissions)
+	maps.Copy(result, waitlistsPermissions)
+	maps.Copy(result, webhooksPermissions)
 
 	return result
 }

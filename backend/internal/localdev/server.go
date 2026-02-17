@@ -285,7 +285,7 @@ func BuildInsecureOAuthedGRPCClient(
 		return http.ErrUseLastResponse
 	}
 
-	res, err := httpClient.Do(req)
+	res, err := httpClient.Do(req) //nolint:gosec // G704: authCodeURL from OAuth config (httpTestServerAddress), not user-controlled
 	if err != nil {
 		return nil, fmt.Errorf("failed to get oauth2 code: %w", err)
 	}

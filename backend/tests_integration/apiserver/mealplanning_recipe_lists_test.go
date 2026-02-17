@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -102,7 +101,7 @@ func TestRecipeListItems_CompleteLifecycle(T *testing.T) {
 		require.True(t, found)
 
 		// Update item
-		newNotes := pointer.To("new notes")
+		newNotes := new("new notes")
 		_, err = userClient.UpdateRecipeListItem(ctx, &mealplanninggrpc.UpdateRecipeListItemRequest{
 			RecipeListItemId: itemID,
 			Input: &mealplanninggrpc.RecipeListItemUpdateRequestInput{

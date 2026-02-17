@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -59,14 +57,14 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          pointer.To(t.Name()),
-			Description:   pointer.To(t.Name()),
-			CreatedByUser: pointer.To(t.Name()),
+			Name:          new(t.Name()),
+			Description:   new(t.Name()),
+			CreatedByUser: new(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      pointer.To(t.Name()),
-					RecipeScale:   pointer.To(float32(exampleQuantity)),
-					ComponentType: pointer.To(MealComponentTypesAmuseBouche),
+					RecipeID:      new(t.Name()),
+					RecipeScale:   new(float32(exampleQuantity)),
+					ComponentType: new(MealComponentTypesAmuseBouche),
 				},
 			},
 		}
@@ -131,14 +129,14 @@ func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &MealUpdateRequestInput{
-			Name:        pointer.To(t.Name()),
-			Description: pointer.To(t.Name()),
+			Name:        new(t.Name()),
+			Description: new(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID: pointer.To(t.Name()),
+					RecipeID: new(t.Name()),
 				},
 			},
-			CreatedByUser: pointer.To(t.Name()),
+			CreatedByUser: new(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -170,7 +168,7 @@ func TestMeal_Update(T *testing.T) {
 		input := &MealUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.EligibleForMealPlans = pointer.To(true)
+		input.EligibleForMealPlans = new(true)
 
 		x.Update(input)
 	})

@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -90,7 +88,7 @@ func Test_nullStringFromStringPointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullString{String: t.Name(), Valid: true}
-		assert.Equal(t, expected, NullStringFromStringPointer(pointer.To(t.Name())))
+		assert.Equal(t, expected, NullStringFromStringPointer(new(t.Name())))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -121,7 +119,7 @@ func Test_nullTimeFromTimePointer(T *testing.T) {
 
 		exampleTime := time.Now()
 		expected := sql.NullTime{Time: exampleTime, Valid: true}
-		assert.Equal(t, expected, NullTimeFromTimePointer(pointer.To(exampleTime)))
+		assert.Equal(t, expected, NullTimeFromTimePointer(new(exampleTime)))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -139,7 +137,7 @@ func Test_nullInt32FromUint8Pointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, expected, NullInt32FromUint8Pointer(pointer.To(uint8(expected.Int32))))
+		assert.Equal(t, expected, NullInt32FromUint8Pointer(new(uint8(expected.Int32))))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -157,7 +155,7 @@ func Test_nullInt32FromUint16Pointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, expected, NullInt32FromUint16Pointer(pointer.To(uint16(expected.Int32))))
+		assert.Equal(t, expected, NullInt32FromUint16Pointer(new(uint16(expected.Int32))))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -215,7 +213,7 @@ func Test_nullInt32FromInt32Pointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, expected, NullInt32FromInt32Pointer(pointer.To(expected.Int32)))
+		assert.Equal(t, expected, NullInt32FromInt32Pointer(new(expected.Int32)))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -233,7 +231,7 @@ func Test_nullInt32FromUint32Pointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, expected, NullInt32FromUint32Pointer(pointer.To(uint32(expected.Int32))))
+		assert.Equal(t, expected, NullInt32FromUint32Pointer(new(uint32(expected.Int32))))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -251,7 +249,7 @@ func Test_int32PointerFromNullInt32(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, pointer.To(input.Int32), Int32PointerFromNullInt32(input))
+		assert.Equal(t, new(input.Int32), Int32PointerFromNullInt32(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {
@@ -269,7 +267,7 @@ func Test_float32PointerFromNullString(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullString{String: "1.23", Valid: true}
-		assert.Equal(t, pointer.To(float32(1.23)), Float32PointerFromNullString(input))
+		assert.Equal(t, new(float32(1.23)), Float32PointerFromNullString(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {
@@ -287,7 +285,7 @@ func Test_float64PointerFromNullString(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullString{String: "1.23", Valid: true}
-		assert.Equal(t, pointer.To(1.23), Float64PointerFromNullString(input))
+		assert.Equal(t, new(1.23), Float64PointerFromNullString(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {
@@ -351,7 +349,7 @@ func Test_nullStringFromFloat32Pointer(T *testing.T) {
 
 		value := float32(1.23)
 		expected := sql.NullString{String: fmt.Sprintf("%v", value), Valid: true}
-		assert.Equal(t, expected, NullStringFromFloat32Pointer(pointer.To(value)))
+		assert.Equal(t, expected, NullStringFromFloat32Pointer(new(value)))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -393,7 +391,7 @@ func Test_nullStringFromFloat64Pointer(T *testing.T) {
 
 		value := float64(1.23)
 		expected := sql.NullString{String: fmt.Sprintf("%v", value), Valid: true}
-		assert.Equal(t, expected, NullStringFromFloat64Pointer(pointer.To(value)))
+		assert.Equal(t, expected, NullStringFromFloat64Pointer(new(value)))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -411,7 +409,7 @@ func Test_nullInt64FromUint32Pointer(T *testing.T) {
 		t.Parallel()
 
 		expected := sql.NullInt64{Int64: 123, Valid: true}
-		assert.Equal(t, expected, NullInt64FromUint32Pointer(pointer.To(uint32(expected.Int64))))
+		assert.Equal(t, expected, NullInt64FromUint32Pointer(new(uint32(expected.Int64))))
 	})
 
 	T.Run("with nil value", func(t *testing.T) {
@@ -429,7 +427,7 @@ func Test_uint16PointerFromNullInt32(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, pointer.To(uint16(input.Int32)), Uint16PointerFromNullInt32(input))
+		assert.Equal(t, new(uint16(input.Int32)), Uint16PointerFromNullInt32(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {
@@ -447,7 +445,7 @@ func Test_uint32PointerFromNullInt32(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullInt32{Int32: 123, Valid: true}
-		assert.Equal(t, pointer.To(uint32(input.Int32)), Uint32PointerFromNullInt32(input))
+		assert.Equal(t, new(uint32(input.Int32)), Uint32PointerFromNullInt32(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {
@@ -465,7 +463,7 @@ func Test_uint32PointerFromNullInt64(T *testing.T) {
 		t.Parallel()
 
 		input := sql.NullInt64{Int64: 123, Valid: true}
-		assert.Equal(t, pointer.To(uint32(input.Int64)), Uint32PointerFromNullInt64(input))
+		assert.Equal(t, new(uint32(input.Int64)), Uint32PointerFromNullInt64(input))
 	})
 
 	T.Run("with invalid value", func(t *testing.T) {

@@ -166,7 +166,7 @@ func TestRecipePrepTasks_Listing(T *testing.T) {
 		require.NotNil(t, createdRecipeStep)
 
 		var expected []*mealplanning.RecipePrepTask
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 			exampleRecipePrepTask.BelongsToRecipe = createdRecipe.ID
 			exampleRecipePrepTask.TaskSteps = []*mealplanning.RecipePrepTaskStep{

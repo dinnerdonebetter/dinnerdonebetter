@@ -11,7 +11,6 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	identitygrpcconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -313,7 +312,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -422,7 +421,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -485,7 +484,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -560,7 +559,7 @@ func TestAccounts_Inviting(T *testing.T) {
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -631,7 +630,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -695,7 +694,7 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 
 		// create a user to invite
 		input := &identity.UserRegistrationInput{
-			Birthday:              pointer.To(time.Now()),
+			Birthday:              new(time.Now()),
 			EmailAddress:          inviteeEmailAddress,
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),

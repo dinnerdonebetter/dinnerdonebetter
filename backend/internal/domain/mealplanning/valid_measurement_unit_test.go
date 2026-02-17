@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,10 +19,10 @@ func TestValidMeasurementUnit_Update(T *testing.T) {
 		input := &ValidMeasurementUnitUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Volumetric = pointer.To(true)
-		input.Universal = pointer.To(true)
-		input.Imperial = pointer.To(false)
-		input.Metric = pointer.To(true)
+		input.Volumetric = new(true)
+		input.Universal = new(true)
+		input.Imperial = new(false)
+		input.Metric = new(true)
 
 		x.Update(input)
 	})
@@ -115,7 +113,7 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name: pointer.To(t.Name()),
+			Name: new(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

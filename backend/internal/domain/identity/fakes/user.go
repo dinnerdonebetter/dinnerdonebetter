@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -22,7 +21,7 @@ func BuildFakeUser() *identity.User {
 		LastName:                  fake.LastName(),
 		EmailAddress:              fake.Email(),
 		Username:                  fmt.Sprintf("%s_%d_%s", fake.Username(), fake.Uint8(), fake.Username()),
-		Birthday:                  pointer.To(BuildFakeTime()),
+		Birthday:                  new(BuildFakeTime()),
 		AccountStatus:             string(identity.UnverifiedAccountStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
@@ -34,7 +33,7 @@ func BuildFakeUser() *identity.User {
 // BuildFakeUsersList builds a faked UserList.
 func BuildFakeUsersList() *filtering.QueryFilteredResult[identity.User] {
 	var examples []*identity.User
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeUser())
 	}
 

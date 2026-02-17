@@ -7,7 +7,6 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
@@ -84,7 +83,7 @@ func TestRecipeStepInstruments_CompleteLifecycle(T *testing.T) {
 		// Set bridge table ID (required)
 		exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 		// Set Index (required for individual creation) - use nextIndex to ensure uniqueness
-		exampleRecipeStepInstrumentInput.Index = pointer.To(nextIndex)
+		exampleRecipeStepInstrumentInput.Index = new(nextIndex)
 		createdRecipeStepInstrumentRes, err := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 			RecipeId:     createdRecipe.ID,
 			RecipeStepId: createdRecipeStepID,
@@ -199,7 +198,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductInstrumentType,
 							MeasurementUnit:     unit,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 						},
 					},
 					Notes:       "first step",
@@ -226,7 +225,7 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit:     stick,
 							QuantityNotes:       "",
-							MeasurementQuantity: types.OptionalFloat32Range{Min: pointer.To(float32(1))},
+							MeasurementQuantity: types.OptionalFloat32Range{Min: new(float32(1))},
 						},
 					},
 					Notes: "second step",
@@ -247,8 +246,8 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 		}
 
 		exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
-		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
-		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepIndex = new(uint64(0))
+		exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepProductIndex = new(uint64(0))
 
 		// Set bridge table IDs
 		// Step 0: knife with preheat preparation
@@ -316,7 +315,7 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 		nextIndex := uint16(len(existingInstruments)) // Start from the next index after existing ones
 
 		var expected []*mealplanning.RecipeStepInstrument
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &mealplanning.ValidInstrument{ID: createdValidInstrument.ID}
@@ -327,7 +326,7 @@ func TestRecipeStepInstruments_Listing(T *testing.T) {
 			// Set bridge table ID (required)
 			exampleRecipeStepInstrumentInput.ValidPreparationInstrumentID = &createdValidPreparationInstrument.ID
 			// Set Index (required for individual creation) - use nextIndex + loop index to ensure uniqueness
-			exampleRecipeStepInstrumentInput.Index = pointer.To(instrumentIndex)
+			exampleRecipeStepInstrumentInput.Index = new(instrumentIndex)
 			createdRecipeStepInstrumentRes, createErr := adminClient.CreateRecipeStepInstrument(ctx, &mealplanninggrpc.CreateRecipeStepInstrumentRequest{
 				RecipeId:     createdRecipe.ID,
 				RecipeStepId: createdRecipeStepID,

@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -46,12 +45,12 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{
-			Name:                  pointer.To(t.Name()),
-			Description:           pointer.To(t.Name()),
-			IconPath:              pointer.To(t.Name()),
-			PastTense:             pointer.To(t.Name()),
-			YieldsNothing:         pointer.To(fake.Bool()),
-			RestrictToIngredients: pointer.To(fake.Bool()),
+			Name:                  new(t.Name()),
+			Description:           new(t.Name()),
+			IconPath:              new(t.Name()),
+			PastTense:             new(t.Name()),
+			YieldsNothing:         new(fake.Bool()),
+			RestrictToIngredients: new(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -75,23 +74,23 @@ func TestValidPreparation_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparation{
-			InstrumentCount: types.Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
-			IngredientCount: types.Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
-			VesselCount:     types.Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
+			InstrumentCount: types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
+			IngredientCount: types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
+			VesselCount:     types.Uint16RangeWithOptionalMax{Max: new(uint16(0))},
 		}
 		input := &ValidPreparationUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.YieldsNothing = pointer.To(true)
-		input.RestrictToIngredients = pointer.To(true)
-		input.IngredientCount.Max = pointer.To(uint16(1))
-		input.InstrumentCount.Max = pointer.To(uint16(1))
-		input.VesselCount.Max = pointer.To(uint16(1))
-		input.TemperatureRequired = pointer.To(true)
-		input.TimeEstimateRequired = pointer.To(true)
-		input.OnlyForVessels = pointer.To(true)
-		input.ConsumesVessel = pointer.To(true)
-		input.ConditionExpressionRequired = pointer.To(true)
+		input.YieldsNothing = new(true)
+		input.RestrictToIngredients = new(true)
+		input.IngredientCount.Max = new(uint16(1))
+		input.InstrumentCount.Max = new(uint16(1))
+		input.VesselCount.Max = new(uint16(1))
+		input.TemperatureRequired = new(true)
+		input.TimeEstimateRequired = new(true)
+		input.OnlyForVessels = new(true)
+		input.ConsumesVessel = new(true)
+		input.ConditionExpressionRequired = new(true)
 
 		x.Update(input)
 	})
@@ -136,7 +135,7 @@ func TestValidPreparationUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &ValidPreparationUpdateRequestInput{
-			Name: pointer.To(t.Name()),
+			Name: new(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

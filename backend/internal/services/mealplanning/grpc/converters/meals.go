@@ -818,7 +818,7 @@ func ConvertMealPlanEventUpdateRequestInputToGRPCMealPlanEventUpdateRequestInput
 
 	var mealName *mealplanningsvc.MealPlanEventName
 	if input.MealName != nil {
-		mealName = pointer.To(ConvertStringToMealPlanEventName(*input.MealName))
+		mealName = new(ConvertStringToMealPlanEventName(*input.MealName))
 	}
 
 	return &mealplanningsvc.MealPlanEventUpdateRequestInput{
@@ -833,7 +833,7 @@ func ConvertMealPlanEventUpdateRequestInputToGRPCMealPlanEventUpdateRequestInput
 func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(input *mealplanningsvc.MealPlanEventUpdateRequestInput) *mealplanning.MealPlanEventUpdateRequestInput {
 	var mealName *string
 	if input.MealName != nil {
-		mealName = pointer.To(ConvertMealPlanEventNameToString(*input.MealName))
+		mealName = new(ConvertMealPlanEventNameToString(*input.MealName))
 	}
 
 	return &mealplanning.MealPlanEventUpdateRequestInput{
@@ -848,7 +848,7 @@ func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput
 func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(input *mealplanningsvc.MealPlanGroceryListItemUpdateRequestInput) *mealplanning.MealPlanGroceryListItemUpdateRequestInput {
 	var status *string
 	if input.Status != nil {
-		status = pointer.To(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
+		status = new(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
 	}
 
 	var quantityNeeded types.Float32RangeWithOptionalMaxUpdateRequestInput
@@ -916,7 +916,7 @@ func ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRe
 func ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(input *mealplanningsvc.MealPlanTaskStatusChangeRequestInput) *mealplanning.MealPlanTaskStatusChangeRequestInput {
 	var status *string
 	if input.Status != nil {
-		status = pointer.To(ConvertMealPlanTaskStatusToString(*input.Status))
+		status = new(ConvertMealPlanTaskStatusToString(*input.Status))
 	}
 
 	return &mealplanning.MealPlanTaskStatusChangeRequestInput{
@@ -931,7 +931,7 @@ func ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPrefer
 	return &mealplanning.UserIngredientPreferenceUpdateRequestInput{
 		Notes:        input.Notes,
 		IngredientID: input.IngredientId,
-		Rating:       pointer.To(int8(pointer.Dereference(input.Rating))),
+		Rating:       new(int8(pointer.Dereference(input.Rating))),
 		Allergy:      input.Allergy,
 	}
 }
@@ -981,7 +981,7 @@ func ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(input *me
 func ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentOwnershipUpdateRequestInput(input *mealplanningsvc.AccountInstrumentOwnershipUpdateRequestInput) *mealplanning.AccountInstrumentOwnershipUpdateRequestInput {
 	var quantity *uint16
 	if input.Quantity != nil {
-		quantity = pointer.To(uint16(*input.Quantity))
+		quantity = new(uint16(*input.Quantity))
 	}
 
 	return &mealplanning.AccountInstrumentOwnershipUpdateRequestInput{
@@ -1095,12 +1095,12 @@ func ConvertGRPCMealListUpdateRequestInputToMealListUpdateRequestInput(input *me
 
 	var name *string
 	if input.Name != nil {
-		name = pointer.To(input.GetName())
+		name = new(input.GetName())
 	}
 
 	var desc *string
 	if input.Description != nil {
-		desc = pointer.To(input.GetDescription())
+		desc = new(input.GetDescription())
 	}
 
 	return &mealplanning.MealListUpdateRequestInput{
@@ -1116,7 +1116,7 @@ func ConvertGRPCMealListItemUpdateRequestInputToMealListItemUpdateRequestInput(i
 
 	var notes *string
 	if input.Notes != nil {
-		notes = pointer.To(input.GetNotes())
+		notes = new(input.GetNotes())
 	}
 
 	return &mealplanning.MealListItemUpdateRequestInput{

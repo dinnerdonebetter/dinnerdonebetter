@@ -22,7 +22,7 @@ func BuildFakeWaitlist() *types.Waitlist {
 // BuildFakeWaitlistsList builds a fake list of waitlists.
 func BuildFakeWaitlistsList() *filtering.QueryFilteredResult[types.Waitlist] {
 	var waitlists []*types.Waitlist
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		waitlists = append(waitlists, BuildFakeWaitlist())
 	}
 
@@ -64,7 +64,7 @@ func BuildFakeWaitlistSignup() *types.WaitlistSignup {
 // BuildFakeWaitlistSignupsList builds a fake list of waitlist signups.
 func BuildFakeWaitlistSignupsList() *filtering.QueryFilteredResult[types.WaitlistSignup] {
 	var waitlistSignups []*types.WaitlistSignup
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		waitlistSignups = append(waitlistSignups, BuildFakeWaitlistSignup())
 	}
 
