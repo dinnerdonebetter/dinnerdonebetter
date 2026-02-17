@@ -192,7 +192,8 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 			http.NotFound(w, r)
 			return
 		}
-		if info, err := os.Stat(filePath); err == nil && !info.IsDir() { //nolint:gosec // G703: path validated above to be within assetsDir
+		info, statErr := os.Stat(filePath) //nolint:gosec // G703: path validated above to be within assetsDir
+		if statErr == nil && !info.IsDir() {
 			// File exists, serve it
 			fileServer.ServeHTTP(w, r)
 			return

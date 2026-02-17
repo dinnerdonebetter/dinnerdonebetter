@@ -171,7 +171,7 @@ func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtCo
 
 	var allConditions strings.Builder
 	for _, condition := range conditions {
-		if _, err := fmt.Fprintf(&allConditions, "\n\tAND %s", condition); err != nil {
+		if _, err := fmt.Fprintf(&allConditions, "\n\t\t\tAND %s", condition); err != nil {
 			panic(err)
 		}
 	}
