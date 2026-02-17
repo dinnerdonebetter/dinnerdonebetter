@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.25-trixie
+FROM golang:1.26-trixie
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 COPY . .

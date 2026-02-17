@@ -229,7 +229,7 @@ profiles:
         #       - -s -w
         #       - -extldflags "-static"
         #     main: ./cmd/services/mcp
-        #     fromImage: golang:1.25-trixie
+        #     fromImage: golang:1.26-trixie
 
     manifests:
       kustomize:
