@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -30,6 +31,7 @@ type (
 		SetDefaultAccount(ctx context.Context, userID, accountID string) error
 		TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error
 		UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error
+		UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error
 		UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error
 		UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsUpdateRequestInput) error
 		UpdateUserEmailAddress(ctx context.Context, userID, newEmail string) error

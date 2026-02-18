@@ -63,6 +63,8 @@ func header(config *LayoutConfig) g.Node {
 						navLink("Waitlists", "/waitlists", config.Palette),
 						navLink("Issue Reports", "/issue_reports", config.Palette),
 						navLink("Settings", "/settings", config.Palette),
+						navLink("Products", "/products", config.Palette),
+						navLink("Subscriptions", "/subscriptions", config.Palette),
 						navDropdown("Enumerations", config.Palette, []*dropdownItem{
 							{Text: "Ingredients", Href: "/valid_ingredients"},
 							{Text: "Instruments", Href: "/valid_instruments"},
@@ -109,6 +111,8 @@ func header(config *LayoutConfig) g.Node {
 					mobileNavLink("Waitlists", "/waitlists", config.Palette),
 					mobileNavLink("Issue Reports", "/issue_reports", config.Palette),
 					mobileNavLink("Settings", "/settings", config.Palette),
+					mobileNavLink("Products", "/products", config.Palette),
+					mobileNavLink("Subscriptions", "/subscriptions", config.Palette),
 					mobileNavDropdown("Enumerations", config.Palette, []*dropdownItem{
 						{Text: "Ingredients", Href: "/valid_ingredients"},
 						{Text: "Instruments", Href: "/valid_instruments"},

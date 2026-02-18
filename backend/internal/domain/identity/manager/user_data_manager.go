@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"image/png"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -796,6 +797,17 @@ func (m *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 	}))
 
 	return nil
+}
+
+func (m *manager) UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if accountID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	return m.identityRepo.UpdateAccountBillingFields(ctx, accountID, billingStatus, subscriptionPlanID, paymentProcessorCustomerID, lastPaymentProviderSyncOccurredAt)
 }
 
 func (m *manager) UpdateAccountMemberPermissions(ctx context.Context, accountID, userID string, input *identity.ModifyUserPermissionsInput) error {

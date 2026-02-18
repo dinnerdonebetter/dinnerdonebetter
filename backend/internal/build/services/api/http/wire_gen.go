@@ -11,6 +11,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	manager2 "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -21,12 +23,16 @@ import (
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	"github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
+	http2 "github.com/dinnerdonebetter/backend/internal/services/payments/http"
 )
 
 // Injectors from build.go:
@@ -94,7 +100,23 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	appleAppSiteAssociationConfig := cfg.AppleAppSiteAssociation
-	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, appleAppSiteAssociationConfig)
+	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, client)
+	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
+	generator := random.NewGenerator(logger, tracerProvider)
+	hasher := authentication.ProvideHasher(authenticator)
+	textsearchcfgConfig := ProvideTextSearchConfig(cfg)
+	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	identityDataManager, err := manager.NewIdentityDataManager(ctx, tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	paymentsDataManager := manager2.NewPaymentsDataManager(tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager)
+	webhookSignatureHeader := _wireWebhookSignatureHeaderValue
+	webhookHandler := http2.NewWebhookHandler(logger, tracerProvider, paymentsDataManager, webhookSignatureHeader)
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, appleAppSiteAssociationConfig, webhookHandler)
 	if err != nil {
 		return nil, err
 	}
@@ -104,3 +126,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	return server, nil
 }
+
+var (
+	_wireWebhookSignatureHeaderValue = http2.WebhookSignatureHeader(http2.StripeSignatureHeader)
+)

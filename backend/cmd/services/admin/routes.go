@@ -133,6 +133,22 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/settings", ghttp.Adapt(s.SettingsList))
 	r.Get("/api/settings/search", ghttp.Adapt(s.SettingsSearch))
 
+	// Products
+	r.Get("/products/new", ghttp.Adapt(s.ProductNewPage))
+	r.Post("/api/products", ghttp.Adapt(s.ProductCreate))
+	r.Get(fmt.Sprintf("/products/{%s}", productIDURLParamKey), ghttp.Adapt(s.ProductPage))
+	r.Post(fmt.Sprintf("/api/products/{%s}", productIDURLParamKey), ghttp.Adapt(s.ProductUpdate))
+	r.Get("/products", ghttp.Adapt(s.ProductsList))
+	r.Get("/api/products/search", ghttp.Adapt(s.ProductsSearch))
+
+	// Subscriptions
+	r.Get("/subscriptions/new", ghttp.Adapt(s.SubscriptionNewPage))
+	r.Post("/api/subscriptions", ghttp.Adapt(s.SubscriptionCreate))
+	r.Get(fmt.Sprintf("/subscriptions/{%s}", subscriptionIDURLParamKey), ghttp.Adapt(s.SubscriptionPage))
+	r.Post(fmt.Sprintf("/api/subscriptions/{%s}", subscriptionIDURLParamKey), ghttp.Adapt(s.SubscriptionUpdate))
+	r.Get("/subscriptions", ghttp.Adapt(s.SubscriptionsList))
+	r.Get("/api/subscriptions/search", ghttp.Adapt(s.SubscriptionsSearch))
+
 	// Valid Prep Task Configs
 	r.Get(fmt.Sprintf("/valid_prep_task_configs/{%s}", validPrepTaskConfigIDURLParamKey), ghttp.Adapt(s.ValidPrepTaskConfigPage))
 	r.Get("/valid_prep_task_configs", ghttp.Adapt(s.ValidPrepTaskConfigsList))

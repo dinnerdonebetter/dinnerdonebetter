@@ -541,6 +541,39 @@ func (q *Queries) UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccount
 	return result.RowsAffected()
 }
 
+const updateAccountBillingFields = `-- name: UpdateAccountBillingFields :execrows
+UPDATE accounts SET
+	billing_status = COALESCE($1, billing_status),
+	payment_processor_customer_id = COALESCE($2, payment_processor_customer_id),
+	subscription_plan_id = $3,
+	last_payment_provider_sync_occurred_at = COALESCE($4, last_payment_provider_sync_occurred_at),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $5
+`
+
+type UpdateAccountBillingFieldsParams struct {
+	LastPaymentProviderSyncOccurredAt sql.NullTime
+	ID                                string
+	BillingStatus                     sql.NullString
+	PaymentProcessorCustomerID        sql.NullString
+	SubscriptionPlanID                sql.NullString
+}
+
+func (q *Queries) UpdateAccountBillingFields(ctx context.Context, db DBTX, arg *UpdateAccountBillingFieldsParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateAccountBillingFields,
+		arg.BillingStatus,
+		arg.PaymentProcessorCustomerID,
+		arg.SubscriptionPlanID,
+		arg.LastPaymentProviderSyncOccurredAt,
+		arg.ID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const updateAccountWebhookEncryptionKey = `-- name: UpdateAccountWebhookEncryptionKey :execrows
 UPDATE accounts SET
 	webhook_hmac_secret = $1,

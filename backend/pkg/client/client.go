@@ -16,6 +16,7 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	paymentsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 	settingsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
@@ -45,6 +46,7 @@ type Client interface {
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
+	paymentsgrpc.PaymentsServiceClient
 	settingsgrpc.SettingsServiceClient
 	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
@@ -61,6 +63,7 @@ type client struct {
 	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
+	paymentsgrpc.PaymentsServiceClient
 	settingsgrpc.SettingsServiceClient
 	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
@@ -84,6 +87,7 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		MealPlanningServiceClient:      mealplanninggrpc.NewMealPlanningServiceClient(conn),
 		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
 		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
+		PaymentsServiceClient:          paymentsgrpc.NewPaymentsServiceClient(conn),
 		SettingsServiceClient:          settingsgrpc.NewSettingsServiceClient(conn),
 		UploadedMediaServiceClient:     uploadedmediagrpc.NewUploadedMediaServiceClient(conn),
 		WaitlistsServiceClient:         waitlistsgrpc.NewWaitlistsServiceClient(conn),

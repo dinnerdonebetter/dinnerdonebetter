@@ -43,6 +43,14 @@ var (
 		CreateWaitlistsPermission,
 		UpdateWaitlistsPermission,
 		ArchiveWaitlistsPermission,
+		CreateProductsPermission,
+		ReadProductsPermission,
+		UpdateProductsPermission,
+		ArchiveProductsPermission,
+		CreateSubscriptionsPermission,
+		ReadSubscriptionsPermission,
+		UpdateSubscriptionsPermission,
+		ArchiveSubscriptionsPermission,
 	}
 
 	// ServiceDataAdminPermissions is every service admin permission.
@@ -131,6 +139,11 @@ var (
 		ReadRecipeListsPermission,
 		UpdateRecipeListsPermission,
 		ArchiveRecipeListsPermission,
+		CreateCheckoutSessionPermission,
+		CancelSubscriptionPermission,
+		ReadPurchasesPermission,
+		ReadPaymentHistoryPermission,
+		ReadSubscriptionsPermission,
 	}
 
 	// AccountMemberPermissions is every account member permission.
@@ -255,6 +268,11 @@ var (
 		UpdateWaitlistSignupsPermission,
 		ArchiveWaitlistSignupsPermission,
 		ReadValidPrepTaskConfigsPermission,
+		CreateCheckoutSessionPermission,
+		CancelSubscriptionPermission,
+		ReadPurchasesPermission,
+		ReadPaymentHistoryPermission,
+		ReadSubscriptionsPermission,
 	}
 )
 

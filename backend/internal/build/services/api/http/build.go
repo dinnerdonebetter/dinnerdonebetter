@@ -7,6 +7,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -18,12 +20,16 @@ import (
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	paymentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	paymentsadapters "github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
+	paymentshttp "github.com/dinnerdonebetter/backend/internal/services/payments/http"
 
 	"github.com/google/wire"
 )
@@ -53,6 +59,16 @@ func Build(
 		auditrepo.AuditRepoProviders,
 		identityrepo.IDRepoProviders,
 		oauthrepo.OAuthRepoProviders,
+		paymentsrepo.PaymentsRepoProviders,
+		// manager
+		random.RandProviders,
+		identitymgr.IDManagerProviders,
+		paymentsmanager.PaymentsManagerProviders,
+		paymentsadapters.PaymentsAdapterProviders,
+		// payments http
+		paymentshttp.PaymentsHTTPProviders,
+		ProvideTextSearchConfig,
+		ProvideUserTextSearcher,
 		ConfigProviders,
 		ProvideAPIRouter,
 	)

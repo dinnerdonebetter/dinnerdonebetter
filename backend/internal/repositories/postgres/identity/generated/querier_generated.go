@@ -60,6 +60,7 @@ type Querier interface {
 	TransferAccountMembership(ctx context.Context, db DBTX, arg *TransferAccountMembershipParams) error
 	TransferAccountOwnership(ctx context.Context, db DBTX, arg *TransferAccountOwnershipParams) error
 	UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccountParams) (int64, error)
+	UpdateAccountBillingFields(ctx context.Context, db DBTX, arg *UpdateAccountBillingFieldsParams) (int64, error)
 	UpdateAccountWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateAccountWebhookEncryptionKeyParams) (int64, error)
 	UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error)
 	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error)
