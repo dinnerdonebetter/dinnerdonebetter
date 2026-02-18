@@ -6,7 +6,6 @@ import (
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
@@ -24,6 +23,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"

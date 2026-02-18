@@ -400,12 +400,12 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 			},
 			FieldReplacements: map[string]string{
 				"payment_processor_customer_id": "Payment Processor ID",
-				"subscription_plan_id":         "Subscription Plan",
+				"subscription_plan_id":          "Subscription Plan",
 			},
 			FieldRenderers: map[string]components.FieldRenderer{
-				"created_at":     renderTimestamp,
+				"created_at":      renderTimestamp,
 				"last_updated_at": renderTimestamp,
-				"archived_at":    renderTimestamp,
+				"archived_at":     renderTimestamp,
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
@@ -502,12 +502,12 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		},
 		FieldReplacements: map[string]string{
 			"payment_processor_customer_id": "Payment Processor ID",
-			"subscription_plan_id":         "Subscription Plan",
+			"subscription_plan_id":          "Subscription Plan",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
-			"created_at":     renderTimestamp,
+			"created_at":      renderTimestamp,
 			"last_updated_at": renderTimestamp,
-			"archived_at":    renderTimestamp,
+			"archived_at":     renderTimestamp,
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,

@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
@@ -18,12 +18,12 @@ import (
 // userSubscriptionRow holds subscription display fields for the user page table.
 // We use a flat struct to avoid copying protobuf types (which contain mutexes).
 type userSubscriptionRow struct {
+	CurrentPeriodStart *timestamppb.Timestamp `json:"current_period_start,omitempty"`
+	CurrentPeriodEnd   *timestamppb.Timestamp `json:"current_period_end,omitempty"`
 	AccountName        string                 `json:"account_name"`
 	ID                 string                 `json:"id"`
 	ProductID          string                 `json:"product_id"`
 	Status             string                 `json:"status"`
-	CurrentPeriodStart *timestamppb.Timestamp `json:"current_period_start,omitempty"`
-	CurrentPeriodEnd   *timestamppb.Timestamp `json:"current_period_end,omitempty"`
 }
 
 func (s *AdminFrontendServer) AccountSubscriptionsList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
