@@ -4,48 +4,105 @@ import (
 	"testing"
 
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestAuditLogEntries_Listing(T *testing.T) {
+func TestAuditLogEntries_Listing_ForUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("should be able to be read in a list", func(t *testing.T) {
+	T.Run("create user and fetch audit logs for that user", func(t *testing.T) {
 		t.Parallel()
-		t.SkipNow()
+		ctx := t.Context()
+
+		user, userClient := createUserAndClientForTest(t)
+
+		// User creation creates: user, account, account_user_membership - each generates an audit log entry
+		forUser, err := userClient.GetAuditLogEntriesForUser(ctx, &auditgrpc.GetAuditLogEntriesForUserRequest{
+			UserId: user.ID,
+		})
+		require.NoError(t, err)
+
+		assert.GreaterOrEqual(t, len(forUser.Results), 3, "expected at least 3 audit log entries (user, account, membership)")
+	})
+
+	T.Run("create user and fetch audit logs for that user returns entries with expected structure", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, userClient := createUserAndClientForTest(t)
+
+		forUser, err := userClient.GetAuditLogEntriesForUser(ctx, &auditgrpc.GetAuditLogEntriesForUserRequest{
+			UserId: user.ID,
+		})
+		require.NoError(t, err)
+		require.NotEmpty(t, forUser.Results)
+
+		// Verify we have at least one entry with the user's ID
+		foundUserEntry := false
+		for _, entry := range forUser.Results {
+			if entry.BelongsToUser == user.ID {
+				foundUserEntry = true
+				break
+			}
+		}
+		assert.True(t, foundUserEntry, "expected at least one audit log entry belonging to the created user")
+	})
+}
+
+func TestAuditLogEntries_Listing_ForAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("create user and fetch audit logs for default account", func(t *testing.T) {
+		t.Parallel()
 		ctx := t.Context()
 
 		_, userClient := createUserAndClientForTest(t)
 
-		forUser, err := userClient.GetAuditLogEntriesForUser(ctx, &auditgrpc.GetAuditLogEntriesForUserRequest{})
+		accountsRes, err := userClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+		require.NoError(t, err)
+		require.NotEmpty(t, accountsRes.Results, "user registration should create a default account")
+		accountID := accountsRes.Results[0].Id
+
+		// Account creation creates: account, account_user_membership - each generates an audit log entry
+		forAccount, err := userClient.GetAuditLogEntriesForAccount(ctx, &auditgrpc.GetAuditLogEntriesForAccountRequest{
+			AccountId: accountID,
+		})
 		require.NoError(t, err)
 
-		assert.Equal(t, 4, len(forUser.Results))
-
-		forAccount, err := userClient.GetAuditLogEntriesForAccount(ctx, &auditgrpc.GetAuditLogEntriesForAccountRequest{})
-		require.NoError(t, err)
-
-		assert.Equal(t, 2, len(forAccount.Results))
+		assert.GreaterOrEqual(t, len(forAccount.Results), 2, "expected at least 2 audit log entries (account, membership)")
 	})
-}
 
-/*
+	T.Run("create account and fetch audit logs for that account", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-func (s *TestSuite) TestWebhooks_Retrieving_Returns404ForNonexistentAuditLogEntry() {
-	s.runTest("should error when archiving a non-existent auditLogEntry", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+		_, userClient := createUserAndClientForTest(t)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		lat, lng := float32(39.15643684457086), float32(-83.09156328830157)
+		createRes, err := userClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{
+			Input: &identitysvc.AccountCreationRequestInput{
+				Name:      "integration test account",
+				Latitude:  &lat,
+				Longitude: &lng,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createRes.Created)
+		accountID := createRes.Created.Id
 
-			actual, err := testClients.userClient.GetAuditLogEntryByID(ctx, nonexistentID)
-			assert.Nil(t, actual)
-			assert.Error(t, err)
+		forAccount, err := userClient.GetAuditLogEntriesForAccount(ctx, &auditgrpc.GetAuditLogEntriesForAccountRequest{
+			AccountId: accountID,
+		})
+		require.NoError(t, err)
+
+		assert.GreaterOrEqual(t, len(forAccount.Results), 2, "expected at least 2 audit log entries (account, membership)")
+
+		// Verify entries belong to the correct account
+		for _, entry := range forAccount.Results {
+			assert.Equal(t, accountID, entry.BelongsToAccount, "audit log entry should belong to the created account")
 		}
 	})
 }
-
-*/

@@ -23,6 +23,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
@@ -108,6 +109,7 @@ func ProvideUserTextSearcher(
 // Each service provides its permissions via a typed map (e.g., SettingsMethodPermissions),
 // which are then aggregated here for the auth interceptor.
 func AggregateMethodPermissions(
+	auditPermissions auditgrpc.AuditMethodPermissions,
 	authPermissions authgrpc.AuthMethodPermissions,
 	identityPermissions identitygrpc.IdentityMethodPermissions,
 	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
@@ -123,6 +125,7 @@ func AggregateMethodPermissions(
 	result := make(interceptors.MethodPermissionsMap)
 
 	// Copy all service permissions into the aggregated map
+	maps.Copy(result, auditPermissions)
 	maps.Copy(result, authPermissions)
 	maps.Copy(result, identityPermissions)
 	maps.Copy(result, issuereportsPermissions)

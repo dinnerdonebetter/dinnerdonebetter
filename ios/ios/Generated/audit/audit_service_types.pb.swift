@@ -34,6 +34,8 @@ public struct Audit_GetAuditLogEntriesForAccountRequest: Sendable {
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
   public mutating func clearFilter() {self._filter = nil}
 
+  public var accountID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -87,6 +89,8 @@ public struct Audit_GetAuditLogEntriesForUserRequest: Sendable {
   public var hasFilter: Bool {return self._filter != nil}
   /// Clears the value of `filter`. Subsequent reads from it will return its default value.
   public mutating func clearFilter() {self._filter = nil}
+
+  public var userID: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -177,7 +181,7 @@ fileprivate let _protobuf_package = "audit"
 
 extension Audit_GetAuditLogEntriesForAccountRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForAccountRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}account_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -186,6 +190,7 @@ extension Audit_GetAuditLogEntriesForAccountRequest: SwiftProtobuf.Message, Swif
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.accountID) }()
       default: break
       }
     }
@@ -199,11 +204,15 @@ extension Audit_GetAuditLogEntriesForAccountRequest: SwiftProtobuf.Message, Swif
     try { if let v = self._filter {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    if !self.accountID.isEmpty {
+      try visitor.visitSingularStringField(value: self.accountID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Audit_GetAuditLogEntriesForAccountRequest, rhs: Audit_GetAuditLogEntriesForAccountRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
+    if lhs.accountID != rhs.accountID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -255,7 +264,7 @@ extension Audit_GetAuditLogEntriesForAccountResponse: SwiftProtobuf.Message, Swi
 
 extension Audit_GetAuditLogEntriesForUserRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetAuditLogEntriesForUserRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}filter\0\u{3}user_id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -264,6 +273,7 @@ extension Audit_GetAuditLogEntriesForUserRequest: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._filter) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.userID) }()
       default: break
       }
     }
@@ -277,11 +287,15 @@ extension Audit_GetAuditLogEntriesForUserRequest: SwiftProtobuf.Message, SwiftPr
     try { if let v = self._filter {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    if !self.userID.isEmpty {
+      try visitor.visitSingularStringField(value: self.userID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Audit_GetAuditLogEntriesForUserRequest, rhs: Audit_GetAuditLogEntriesForUserRequest) -> Bool {
     if lhs._filter != rhs._filter {return false}
+    if lhs.userID != rhs.userID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

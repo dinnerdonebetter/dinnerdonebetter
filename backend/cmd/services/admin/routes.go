@@ -25,11 +25,15 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/users", ghttp.Adapt(s.UsersList))
 	r.Get("/api/users/search", ghttp.Adapt(s.UsersSearch))
 	r.Get(fmt.Sprintf("/api/users/{%s}/accounts", userIDURLParamKey), ghttp.Adapt(s.UserAccountsList))
+	r.Get(fmt.Sprintf("/api/users/{%s}/audit-log", userIDURLParamKey), ghttp.Adapt(s.UserAuditLogList))
+	r.Get(fmt.Sprintf("/api/users/{%s}/subscriptions", userIDURLParamKey), ghttp.Adapt(s.UserSubscriptionsList))
 
 	r.Get(fmt.Sprintf("/accounts/{%s}", accountIDURLParamKey), ghttp.Adapt(s.AccountPage))
 	r.Get("/accounts", ghttp.Adapt(s.AccountsList))
 	r.Get("/api/accounts/search", ghttp.Adapt(s.AccountsSearch))
 	r.Get(fmt.Sprintf("/api/accounts/{%s}/users", accountIDURLParamKey), ghttp.Adapt(s.AccountUsersList))
+	r.Get(fmt.Sprintf("/api/accounts/{%s}/audit-log", accountIDURLParamKey), ghttp.Adapt(s.AccountAuditLogList))
+	r.Get(fmt.Sprintf("/api/accounts/{%s}/subscriptions", accountIDURLParamKey), ghttp.Adapt(s.AccountSubscriptionsList))
 
 	r.Get(fmt.Sprintf("/oauth2_clients/{%s}", oauth2ClientIDURLParamKey), ghttp.Adapt(s.OAuth2ClientPage))
 	r.Get("/oauth2_clients", ghttp.Adapt(s.OAuth2ClientsList))
