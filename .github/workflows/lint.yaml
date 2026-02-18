@@ -39,9 +39,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - uses: DavidAnson/markdownlint-cli2-action@v22
-        with:
-          globs: '**/*.md'
+      - name: markdownlint
+        run: make lint_markdown
 
   golang:
     needs: [ changes ]
