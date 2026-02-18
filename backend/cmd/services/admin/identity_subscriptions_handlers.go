@@ -234,7 +234,8 @@ func (s *AdminFrontendServer) UserSubscriptionsList(_ http.ResponseWriter, req *
 	var rows []*userSubscriptionRow
 	var subsPageSize uint32 = 50
 	for _, acc := range accountsRes.Results {
-		subsRes, err := c.GetSubscriptionsForAccount(ctx, &paymentssvc.GetSubscriptionsForAccountRequest{
+		var subsRes *paymentssvc.GetSubscriptionsForAccountResponse
+		subsRes, err = c.GetSubscriptionsForAccount(ctx, &paymentssvc.GetSubscriptionsForAccountRequest{
 			AccountId: acc.Id,
 			Filter: &filtering.QueryFilter{
 				MaxResponseSize: &subsPageSize,

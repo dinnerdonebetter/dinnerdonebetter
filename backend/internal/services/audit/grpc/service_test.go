@@ -10,6 +10,7 @@ import (
 	grpcfiltering "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
@@ -76,10 +77,13 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForAccount), testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
+		accountID := identifiers.New()
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForAccount), testutils.ContextMatcher, accountID, testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
+			AccountId: accountID,
 			Filter: &grpcfiltering.QueryFilter{
 				MaxResponseSize: &grpcPageSize,
 			},
@@ -106,10 +110,13 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForAccount), testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
+		accountID := identifiers.New()
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForAccount), testutils.ContextMatcher, accountID, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
+			AccountId: accountID,
 			Filter: &grpcfiltering.QueryFilter{
 				MaxResponseSize: &grpcPageSize,
 			},
@@ -140,10 +147,13 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForUser), testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
+		userID := identifiers.New()
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForUser), testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
+			UserId: userID,
 			Filter: &grpcfiltering.QueryFilter{
 				MaxResponseSize: &grpcPageSize,
 			},
@@ -170,10 +180,13 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 			MaxResponseSize: &pageSize,
 		}
 
-		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForUser), testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
+		userID := identifiers.New()
+
+		mockRepo.On(reflection.GetMethodName(mockRepo.GetAuditLogEntriesForUser), testutils.ContextMatcher, userID, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
 		grpcPageSize := uint32(*filter.MaxResponseSize)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
+			UserId: userID,
 			Filter: &grpcfiltering.QueryFilter{
 				MaxResponseSize: &grpcPageSize,
 			},
