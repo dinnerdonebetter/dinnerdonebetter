@@ -15,6 +15,7 @@ import (
 	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	recipeanalysis "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	oauthmgr "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
+	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -36,6 +37,7 @@ import (
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	paymentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	uploadedmediarepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
 	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
@@ -54,6 +56,8 @@ import (
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
+	paymentsadapters "github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
+	paymentssvc "github.com/dinnerdonebetter/backend/internal/services/payments/grpc"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
 	uploadedmediacfg "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/config"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc"
@@ -96,6 +100,7 @@ func Build(
 		uploadedmediarepo.UploadedMediaRepoProviders,
 		webhooksrepo.WebhookProviders,
 		oauthrepo.OAuthRepoProviders,
+		paymentsrepo.PaymentsRepoProviders,
 		mealplanningrepo.MPRepoProviders,
 		waitlistsrepo.WaitlistsRepoProviders,
 		dataprivacyrepo.DataPrivProviders,
@@ -112,11 +117,14 @@ func Build(
 		uploadedmediasvc.UploadedMediaSvcProviders,
 		webhookssvc.WebhookSvcProviders,
 		oauthsvc.OAuthSvcProviders,
+		paymentssvc.PaymentsSvcProviders,
+		paymentsadapters.PaymentsAdapterProviders,
 		mealplanningsvc.MPSvcProviders,
 		waitlistssvc.WaitlistsSvcProviders,
 		uploadedmediacfg.UploadedMediaConfigProviders,
 		// manager
 		identitymgr.IDManagerProviders,
+		paymentsmanager.PaymentsManagerProviders,
 		oauthmgr.OAuthManagerProviders,
 		mealplanningmgr.MPManagerProviders,
 		authmgr.AuthManagerProviders,

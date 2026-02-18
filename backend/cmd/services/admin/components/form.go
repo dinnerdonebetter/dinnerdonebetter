@@ -57,21 +57,22 @@ type FormRow struct {
 type FormOptions[T any] struct {
 	FieldConfigs                map[string]*FieldConfig
 	Palette                     *design.Palette
-	CancelButtonText            string
-	FormID                      string
+	HTMXTarget                  string
+	Method                      string
 	CSSClasses                  string
 	CancelURL                   string
 	Action                      string
 	HTMXSwap                    string
-	HTMXTarget                  string
-	Method                      string
+	CancelButtonText            string
+	FormID                      string
 	SubmitButtonText            string
-	FormRows                    []*FormRow
+	HTMXExtension               string
 	AdditionalButtons           []g.Node
 	EnabledFields               []string
+	FormRows                    []*FormRow
 	ShowCancelButton            bool
 	HTMXPushURL                 bool
-	DisableAutoEnableZeroValues bool // If true, disables automatic enabling of zero-value fields
+	DisableAutoEnableZeroValues bool
 }
 
 // Form creates a generic HTML form from a struct with HTMX support.
@@ -236,6 +237,10 @@ func buildFormAttributes[T any](options *FormOptions[T]) []g.Node {
 
 	if options.HTMXPushURL {
 		attrs = append(attrs, g.Attr("hx-push-url", "true"))
+	}
+
+	if options.HTMXExtension != "" {
+		attrs = append(attrs, g.Attr("hx-ext", options.HTMXExtension))
 	}
 
 	return attrs

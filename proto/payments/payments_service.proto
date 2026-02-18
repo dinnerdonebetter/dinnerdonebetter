@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package payments;
+
+import "payments/payments_service_types.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments";
+
+service PaymentsService {
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+  rpc ArchiveProduct(ArchiveProductRequest) returns (ArchiveProductResponse);
+
+  rpc CreateCheckoutSession(CreateCheckoutSessionRequest) returns (CreateCheckoutSessionResponse);
+
+  rpc CreateSubscription(CreateSubscriptionRequest) returns (CreateSubscriptionResponse);
+  rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse);
+  rpc GetSubscriptionsForAccount(GetSubscriptionsForAccountRequest) returns (GetSubscriptionsForAccountResponse);
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (UpdateSubscriptionResponse);
+  rpc ArchiveSubscription(ArchiveSubscriptionRequest) returns (ArchiveSubscriptionResponse);
+  rpc CancelSubscription(CancelSubscriptionRequest) returns (CancelSubscriptionResponse);
+
+  rpc GetPurchasesForAccount(GetPurchasesForAccountRequest) returns (GetPurchasesForAccountResponse);
+  rpc GetPaymentHistoryForAccount(GetPaymentHistoryForAccountRequest) returns (GetPaymentHistoryForAccountResponse);
+}

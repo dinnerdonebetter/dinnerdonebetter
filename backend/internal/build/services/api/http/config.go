@@ -15,7 +15,6 @@ var (
 			"Queues",
 			"Email",
 			"Analytics",
-			"TextSearch",
 			"FeatureFlags",
 			"Encoding",
 			"Events",

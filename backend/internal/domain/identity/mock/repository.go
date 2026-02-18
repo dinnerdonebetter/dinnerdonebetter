@@ -2,6 +2,7 @@ package identitymock
 
 import (
 	"context"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
@@ -53,6 +54,11 @@ func (m *RepositoryMock) CreateAccount(ctx context.Context, input *identity.Acco
 // UpdateAccount is a mock function.
 func (m *RepositoryMock) UpdateAccount(ctx context.Context, updated *identity.Account) error {
 	return m.Called(ctx, updated).Error(0)
+}
+
+// UpdateAccountBillingFields is a mock function.
+func (m *RepositoryMock) UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error {
+	return m.Called(ctx, accountID, billingStatus, subscriptionPlanID, paymentProcessorCustomerID, lastPaymentProviderSyncOccurredAt).Error(0)
 }
 
 // ArchiveAccount is a mock function.

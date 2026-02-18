@@ -89,6 +89,10 @@ func main() {
 		"internal/repositories/postgres/issuereports/sqlc_queries/issue_reports.sql":                                buildIssueReportsQueries(databaseToUse),
 		"internal/repositories/postgres/uploadedmedia/sqlc_queries/uploaded_media.sql":                              buildUploadedMediaQueries(databaseToUse),
 		"internal/repositories/postgres/dataprivacy/sqlc_queries/user_data_disclosures.sql":                         buildUserDataDisclosuresQueries(databaseToUse),
+		"internal/repositories/postgres/payments/sqlc_queries/products.sql":                                         buildPaymentsProductsQueries(databaseToUse),
+		"internal/repositories/postgres/payments/sqlc_queries/subscriptions.sql":                                    buildPaymentsSubscriptionsQueries(databaseToUse),
+		"internal/repositories/postgres/payments/sqlc_queries/purchases.sql":                                        buildPaymentsPurchasesQueries(databaseToUse),
+		"internal/repositories/postgres/payments/sqlc_queries/payment_transactions.sql":                             buildPaymentsTransactionsQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

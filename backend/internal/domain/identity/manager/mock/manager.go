@@ -2,6 +2,7 @@ package mock
 
 import (
 	"context"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
@@ -132,6 +133,11 @@ func (m *IdentityDataManager) TransferAccountOwnership(ctx context.Context, acco
 // UpdateAccount is a mock function.
 func (m *IdentityDataManager) UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error {
 	return m.Called(ctx, accountID, input).Error(0)
+}
+
+// UpdateAccountBillingFields is a mock function.
+func (m *IdentityDataManager) UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error {
+	return m.Called(ctx, accountID, billingStatus, subscriptionPlanID, paymentProcessorCustomerID, lastPaymentProviderSyncOccurredAt).Error(0)
 }
 
 // UpdateAccountMemberPermissions is a mock function.

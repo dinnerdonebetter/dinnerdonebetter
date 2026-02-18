@@ -123,6 +123,7 @@ type (
 		GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Account], error)
 		CreateAccount(ctx context.Context, input *AccountDatabaseCreationInput) (*Account, error)
 		UpdateAccount(ctx context.Context, updated *Account) error
+		UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error
 		ArchiveAccount(ctx context.Context, accountID string, userID string) error
 	}
 

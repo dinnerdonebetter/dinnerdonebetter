@@ -13,6 +13,7 @@ import (
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	paymentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	uploadedmediasvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	waitlistssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/waitlists"
@@ -30,6 +31,7 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthgrpc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
+	paymentsgrpc "github.com/dinnerdonebetter/backend/internal/services/payments/grpc"
 	settingsgrpc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
 	uploadedmediagrpc "github.com/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc"
 	waitlistsgrpc "github.com/dinnerdonebetter/backend/internal/services/waitlists/grpc"
@@ -48,6 +50,7 @@ func BuildRegistrationFuncs(
 	mealPlanningService mealplanningsvc.MealPlanningServiceServer,
 	notificationsService notificationssvc.UserNotificationsServiceServer,
 	oauthService oauthsvc.OAuthServiceServer,
+	paymentsService paymentssvc.PaymentsServiceServer,
 	settingsService settingssvc.SettingsServiceServer,
 	uploadedMediaService uploadedmediasvc.UploadedMediaServiceServer,
 	waitlistsService waitlistssvc.WaitlistsServiceServer,
@@ -64,6 +67,7 @@ func BuildRegistrationFuncs(
 			mealplanningsvc.RegisterMealPlanningServiceServer(server, mealPlanningService)
 			notificationssvc.RegisterUserNotificationsServiceServer(server, notificationsService)
 			oauthsvc.RegisterOAuthServiceServer(server, oauthService)
+			paymentssvc.RegisterPaymentsServiceServer(server, paymentsService)
 			settingssvc.RegisterSettingsServiceServer(server, settingsService)
 			uploadedmediasvc.RegisterUploadedMediaServiceServer(server, uploadedMediaService)
 			waitlistssvc.RegisterWaitlistsServiceServer(server, waitlistsService)
@@ -110,6 +114,7 @@ func AggregateMethodPermissions(
 	mealplanningPermissions mealplanninggrpc.MealPlanningMethodPermissions,
 	notificationsPermissions notificationsgrpc.NotificationsMethodPermissions,
 	oauthPermissions oauthgrpc.OAuthMethodPermissions,
+	paymentsPermissions paymentsgrpc.PaymentsMethodPermissions,
 	settingsPermissions settingsgrpc.SettingsMethodPermissions,
 	uploadedmediaPermissions uploadedmediagrpc.UploadedMediaMethodPermissions,
 	waitlistsPermissions waitlistsgrpc.WaitlistsMethodPermissions,
@@ -124,6 +129,7 @@ func AggregateMethodPermissions(
 	maps.Copy(result, mealplanningPermissions)
 	maps.Copy(result, notificationsPermissions)
 	maps.Copy(result, oauthPermissions)
+	maps.Copy(result, paymentsPermissions)
 	maps.Copy(result, settingsPermissions)
 	maps.Copy(result, uploadedmediaPermissions)
 	maps.Copy(result, waitlistsPermissions)

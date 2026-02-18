@@ -1,0 +1,104 @@
+package payments
+
+import (
+	"context"
+	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/payments"
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
+)
+
+func (r *repository) CreatePaymentTransaction(ctx context.Context, input *payments.PaymentTransactionDatabaseCreationInput) (*payments.PaymentTransaction, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+	logger = logger.WithValue(keys.PaymentTransactionIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.PaymentTransactionIDKey, input.ID)
+
+	arg := &generated.CreatePaymentTransactionParams{
+		ID:                    input.ID,
+		BelongsToAccount:      input.BelongsToAccount,
+		SubscriptionID:        database.NullStringFromStringPointer(input.SubscriptionID),
+		PurchaseID:            database.NullStringFromStringPointer(input.PurchaseID),
+		ExternalTransactionID: input.ExternalTransactionID,
+		AmountCents:           input.AmountCents,
+		Currency:              input.Currency,
+		Status:                generated.PaymentTransactionStatus(input.Status),
+	}
+
+	if err := r.generatedQuerier.CreatePaymentTransaction(ctx, r.writeDB, arg); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating payment transaction")
+	}
+
+	return &payments.PaymentTransaction{
+		ID:                    input.ID,
+		BelongsToAccount:      input.BelongsToAccount,
+		SubscriptionID:        input.SubscriptionID,
+		PurchaseID:            input.PurchaseID,
+		ExternalTransactionID: input.ExternalTransactionID,
+		AmountCents:           input.AmountCents,
+		Currency:              input.Currency,
+		Status:                input.Status,
+		CreatedAt:             time.Now().UTC(),
+	}, nil
+}
+
+func (r *repository) GetPaymentTransactionsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[payments.PaymentTransaction], error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	params := &generated.GetPaymentTransactionsForAccountParams{
+		BelongsToAccount: accountID,
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.MaxResponseSize),
+	}
+
+	results, err := r.generatedQuerier.GetPaymentTransactionsForAccount(ctx, r.readDB, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching payment transactions for account")
+	}
+
+	return convertPaymentTransactionsResult(results, filter), nil
+}
+
+func convertPaymentTransactionsResult(rows []*generated.GetPaymentTransactionsForAccountRow, filter *filtering.QueryFilter) *filtering.QueryFilteredResult[payments.PaymentTransaction] {
+	data := make([]*payments.PaymentTransaction, 0, len(rows))
+	var filteredCount, totalCount uint64
+	for _, row := range rows {
+		data = append(data, &payments.PaymentTransaction{
+			ID:                    row.ID,
+			BelongsToAccount:      row.BelongsToAccount,
+			SubscriptionID:        database.StringPointerFromNullString(row.SubscriptionID),
+			PurchaseID:            database.StringPointerFromNullString(row.PurchaseID),
+			ExternalTransactionID: row.ExternalTransactionID,
+			AmountCents:           row.AmountCents,
+			Currency:              row.Currency,
+			Status:                string(row.Status),
+			CreatedAt:             row.CreatedAt,
+		})
+		filteredCount = uint64(row.FilteredCount)
+		totalCount = uint64(row.TotalCount)
+	}
+	return filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(p *payments.PaymentTransaction) string { return p.ID },
+		filter,
+	)
+}

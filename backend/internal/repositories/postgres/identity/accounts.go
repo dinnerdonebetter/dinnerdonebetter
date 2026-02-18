@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -290,6 +291,30 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 	logger.Info("account created")
 
 	return account, nil
+}
+
+// UpdateAccountBillingFields updates billing-related fields on an account. Used by the payments domain when processing webhook events.
+func (r *repository) UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if accountID == "" {
+		return database.ErrInvalidIDProvided
+	}
+	logger := r.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+
+	if _, err := r.generatedQuerier.UpdateAccountBillingFields(ctx, r.writeDB, &generated.UpdateAccountBillingFieldsParams{
+		ID:                                accountID,
+		BillingStatus:                     database.NullStringFromStringPointer(billingStatus),
+		SubscriptionPlanID:                database.NullStringFromStringPointer(subscriptionPlanID),
+		PaymentProcessorCustomerID:        database.NullStringFromStringPointer(paymentProcessorCustomerID),
+		LastPaymentProviderSyncOccurredAt: database.NullTimeFromTimePointer(lastPaymentProviderSyncOccurredAt),
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating account billing fields")
+	}
+
+	return nil
 }
 
 // UpdateAccount updates a particular account. Note that UpdateAccount expects the provided input to have a valid ID.

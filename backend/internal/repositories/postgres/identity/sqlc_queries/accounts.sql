@@ -195,6 +195,16 @@ WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
 
+-- name: UpdateAccountBillingFields :execrows
+UPDATE accounts SET
+	billing_status = COALESCE(sqlc.narg(billing_status), billing_status),
+	subscription_plan_id = COALESCE(sqlc.narg(subscription_plan_id), subscription_plan_id),
+	payment_processor_customer_id = COALESCE(sqlc.narg(payment_processor_customer_id), payment_processor_customer_id),
+	last_payment_provider_sync_occurred_at = COALESCE(sqlc.narg(last_payment_provider_sync_occurred_at), last_payment_provider_sync_occurred_at),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = sqlc.arg(id);
+
 -- name: UpdateAccountWebhookEncryptionKey :execrows
 UPDATE accounts SET
 	webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),

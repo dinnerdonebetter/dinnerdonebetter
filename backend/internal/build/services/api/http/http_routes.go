@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	paymentswebhook "github.com/dinnerdonebetter/backend/internal/services/payments/http"
 )
 
 // appleAppSiteAssociation represents the structure of the apple-app-site-association file
@@ -37,6 +38,7 @@ func ProvideAPIRouter(
 	metricsProvider metrics.Provider,
 	authService auth.AuthDataService,
 	aasaConfig config.AppleAppSiteAssociationConfig,
+	paymentsWebhookHandler *paymentswebhook.WebhookHandler,
 ) (routing.Router, error) {
 	router, err := routingConfig.ProvideRouter(logger, tracerProvider, metricsProvider)
 	if err != nil {
@@ -59,6 +61,10 @@ func ProvideAPIRouter(
 	router.Route("/oauth2", func(userRouter routing.Router) {
 		userRouter.Get("/authorize", authService.AuthorizeHandler)
 		userRouter.Post("/token", authService.TokenHandler)
+	})
+
+	router.Route("/api/payments/webhooks", func(paymentsRouter routing.Router) {
+		paymentsRouter.Post("/{provider}", paymentsWebhookHandler.Handle)
 	})
 
 	// Apple App Site Association for iOS Universal Links
