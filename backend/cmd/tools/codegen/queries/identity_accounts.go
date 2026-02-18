@@ -220,6 +220,25 @@ WHERE %s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "UpdateAccountBillingFields",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	billing_status = COALESCE(sqlc.narg(billing_status), billing_status),
+	subscription_plan_id = COALESCE(sqlc.narg(subscription_plan_id), subscription_plan_id),
+	payment_processor_customer_id = COALESCE(sqlc.narg(payment_processor_customer_id), payment_processor_customer_id),
+	last_payment_provider_sync_occurred_at = COALESCE(sqlc.narg(last_payment_provider_sync_occurred_at), last_payment_provider_sync_occurred_at),
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+					accountsTableName,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "UpdateAccountWebhookEncryptionKey",
 					Type: ExecRowsType,
 				},

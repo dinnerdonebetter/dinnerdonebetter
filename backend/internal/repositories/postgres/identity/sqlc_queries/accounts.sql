@@ -178,16 +178,6 @@ WHERE accounts.archived_at IS NULL
 ORDER BY accounts.id ASC
 LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
--- name: UpdateAccountBillingFields :execrows
-UPDATE accounts SET
-	billing_status = COALESCE(sqlc.narg(billing_status), billing_status),
-	payment_processor_customer_id = COALESCE(sqlc.narg(payment_processor_customer_id), payment_processor_customer_id),
-	subscription_plan_id = sqlc.narg(subscription_plan_id),
-	last_payment_provider_sync_occurred_at = COALESCE(sqlc.narg(last_payment_provider_sync_occurred_at), last_payment_provider_sync_occurred_at),
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);
-
 -- name: UpdateAccount :execrows
 UPDATE accounts SET
 	name = sqlc.arg(name),
@@ -203,6 +193,16 @@ UPDATE accounts SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);
+
+-- name: UpdateAccountBillingFields :execrows
+UPDATE accounts SET
+	billing_status = COALESCE(sqlc.narg(billing_status), billing_status),
+	subscription_plan_id = COALESCE(sqlc.narg(subscription_plan_id), subscription_plan_id),
+	payment_processor_customer_id = COALESCE(sqlc.narg(payment_processor_customer_id), payment_processor_customer_id),
+	last_payment_provider_sync_occurred_at = COALESCE(sqlc.narg(last_payment_provider_sync_occurred_at), last_payment_provider_sync_occurred_at),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
 
 -- name: UpdateAccountWebhookEncryptionKey :execrows
