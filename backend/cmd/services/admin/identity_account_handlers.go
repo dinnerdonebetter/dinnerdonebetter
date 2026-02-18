@@ -182,12 +182,42 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 		),
 	)
 
-	// Combine form and users section
+	// Create audit log section that will be loaded via HTMX
+	auditLogSection := components.CardWithHeader(
+		"Audit Log",
+		&design.StandardPalette,
+		nil,
+		g.El("div",
+			g.Attr("id", "account-audit-log-container"),
+			g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/audit-log", accountID)),
+			g.Attr("hx-trigger", "load"),
+			g.Attr("hx-swap", "innerHTML"),
+			components.LoadingSpinner(&design.StandardPalette),
+		),
+	)
+
+	// Create subscriptions section that will be loaded via HTMX
+	subscriptionsSection := components.CardWithHeader(
+		"Subscriptions",
+		&design.StandardPalette,
+		nil,
+		g.El("div",
+			g.Attr("id", "account-subscriptions-container"),
+			g.Attr("hx-get", fmt.Sprintf("/api/accounts/%s/subscriptions", accountID)),
+			g.Attr("hx-trigger", "load"),
+			g.Attr("hx-swap", "innerHTML"),
+			components.LoadingSpinner(&design.StandardPalette),
+		),
+	)
+
+	// Combine form, users, subscriptions, and audit log sections
 	return page("Accounts",
 		ghtml.Div(
 			ghtml.Class("space-y-6"),
 			formPageResult.Node,
 			usersSection,
+			subscriptionsSection,
+			auditLogSection,
 		),
 	), nil
 }
@@ -253,12 +283,12 @@ func (s *AdminFrontendServer) AccountUsersList(_ http.ResponseWriter, req *http.
 		TableID: "account-users-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
-			"Username",
-			"CreatedAt",
+			"id",
+			"username",
+			"created_at",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
-			"CreatedAt": renderTimestamp,
+			"created_at": renderTimestamp,
 		},
 		RowLinkGenerator: func(user *identitysvc.User) string {
 			// Link to user details page
@@ -358,24 +388,24 @@ func (s *AdminFrontendServer) AccountsList(_ http.ResponseWriter, req *http.Requ
 			TableID: "accounts-table",
 			Palette: &design.StandardPalette,
 			Fields: []string{
-				"ID",
-				"Name",
-				"BillingStatus",
-				"ContactPhone",
-				"PaymentProcessorCustomerID",
-				"SubscriptionPlanID",
-				"CreatedAt",
-				"LastUpdatedAt",
-				"ArchivedAt",
+				"id",
+				"name",
+				"billing_status",
+				"contact_phone",
+				"payment_processor_customer_id",
+				"subscription_plan_id",
+				"created_at",
+				"last_updated_at",
+				"archived_at",
 			},
 			FieldReplacements: map[string]string{
-				"PaymentProcessorCustomerID": "Payment Processor ID",
-				"SubscriptionPlanID":         "Subscription Plan",
+				"payment_processor_customer_id": "Payment Processor ID",
+				"subscription_plan_id":         "Subscription Plan",
 			},
 			FieldRenderers: map[string]components.FieldRenderer{
-				"CreatedAt":     renderTimestamp,
-				"LastUpdatedAt": renderTimestamp,
-				"ArchivedAt":    renderTimestamp,
+				"created_at":     renderTimestamp,
+				"last_updated_at": renderTimestamp,
+				"archived_at":    renderTimestamp,
 			},
 			Pagination:             pagination,
 			PaginationURLGenerator: paginationURLGenerator,
@@ -460,24 +490,24 @@ func (s *AdminFrontendServer) AccountsSearch(_ http.ResponseWriter, req *http.Re
 		TableID: "accounts-table",
 		Palette: &design.StandardPalette,
 		Fields: []string{
-			"ID",
-			"Name",
-			"BillingStatus",
-			"ContactPhone",
-			"PaymentProcessorCustomerID",
-			"SubscriptionPlanID",
-			"CreatedAt",
-			"LastUpdatedAt",
-			"ArchivedAt",
+			"id",
+			"name",
+			"billing_status",
+			"contact_phone",
+			"payment_processor_customer_id",
+			"subscription_plan_id",
+			"created_at",
+			"last_updated_at",
+			"archived_at",
 		},
 		FieldReplacements: map[string]string{
-			"PaymentProcessorCustomerID": "Payment Processor ID",
-			"SubscriptionPlanID":         "Subscription Plan",
+			"payment_processor_customer_id": "Payment Processor ID",
+			"subscription_plan_id":         "Subscription Plan",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
-			"CreatedAt":     renderTimestamp,
-			"LastUpdatedAt": renderTimestamp,
-			"ArchivedAt":    renderTimestamp,
+			"created_at":     renderTimestamp,
+			"last_updated_at": renderTimestamp,
+			"archived_at":    renderTimestamp,
 		},
 		Pagination:             pagination,
 		PaginationURLGenerator: paginationURLGenerator,

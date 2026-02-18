@@ -10,6 +10,7 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated
 
 message GetAuditLogEntriesForAccountRequest {
   filtering.QueryFilter filter = 1;
+  string account_id = 2;
 }
 
 message GetAuditLogEntriesForAccountResponse {
@@ -20,6 +21,7 @@ message GetAuditLogEntriesForAccountResponse {
 
 message GetAuditLogEntriesForUserRequest {
   filtering.QueryFilter filter = 1;
+  string user_id = 2;
 }
 
 message GetAuditLogEntriesForUserResponse {

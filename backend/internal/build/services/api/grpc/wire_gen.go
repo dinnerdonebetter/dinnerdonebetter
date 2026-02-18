@@ -8,10 +8,9 @@ package grpcapi
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
@@ -21,12 +20,12 @@ import (
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	manager3 "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	manager4 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	grpc15 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
@@ -35,7 +34,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
-	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -53,9 +52,9 @@ import (
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	grpc6 "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
 	grpc7 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
-	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 	grpc8 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	grpc9 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/payments/adapters"
@@ -202,6 +201,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	grpcConfig := &cfg.GRPCServer
 	oAuth2Config := &authenticationConfig.OAuth2
 	manageManager := authentication2.ProvideOAuth2ClientManager(logger, tracerProvider, oAuth2Config, oauthRepository)
+	auditMethodPermissions := grpc.ProvideMethodPermissions()
 	authMethodPermissions := grpc2.ProvideMethodPermissions()
 	identityMethodPermissions := grpc4.ProvideMethodPermissions()
 	issueReportsMethodPermissions := grpc6.ProvideMethodPermissions()
@@ -213,7 +213,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadedMediaMethodPermissions := grpc12.ProvideMethodPermissions()
 	waitlistsMethodPermissions := grpc14.ProvideMethodPermissions()
 	webhooksMethodPermissions := grpc13.ProvideMethodPermissions()
-	methodPermissionsMap := AggregateMethodPermissions(authMethodPermissions, identityMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
+	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, identityMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityRepository, manageManager, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()

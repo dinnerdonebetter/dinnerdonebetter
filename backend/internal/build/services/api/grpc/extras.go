@@ -6,6 +6,7 @@ import (
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
@@ -108,6 +109,7 @@ func ProvideUserTextSearcher(
 // Each service provides its permissions via a typed map (e.g., SettingsMethodPermissions),
 // which are then aggregated here for the auth interceptor.
 func AggregateMethodPermissions(
+	auditPermissions auditgrpc.AuditMethodPermissions,
 	authPermissions authgrpc.AuthMethodPermissions,
 	identityPermissions identitygrpc.IdentityMethodPermissions,
 	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
@@ -123,6 +125,7 @@ func AggregateMethodPermissions(
 	result := make(interceptors.MethodPermissionsMap)
 
 	// Copy all service permissions into the aggregated map
+	maps.Copy(result, auditPermissions)
 	maps.Copy(result, authPermissions)
 	maps.Copy(result, identityPermissions)
 	maps.Copy(result, issuereportsPermissions)

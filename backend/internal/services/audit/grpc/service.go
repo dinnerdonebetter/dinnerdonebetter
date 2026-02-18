@@ -50,7 +50,7 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 	logger := s.logger.WithValue("", "")
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForAccount(ctx, "TODO", filter)
+	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForAccount(ctx, request.AccountId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -77,7 +77,7 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 	logger := s.logger.WithValue("", "")
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForUser(ctx, "TODO", filter)
+	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForUser(ctx, request.UserId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
