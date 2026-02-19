@@ -1,0 +1,166 @@
+---
+concurrency:
+  group: ${{ github.ref }}
+
+on:
+  - pull_request
+  # push:
+  #   branches:
+  #     - main
+
+name: deploy prod
+jobs:
+  baseline-infra:
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # GKE credentials not needed for infra terraform (creates cluster, not k8s resources)
+      # Uncomment below + copy kubeconfig if infra terraform ever needs cluster access
+      # - name: get GKE credentials
+      #   uses: google-github-actions/get-gke-credentials@v2
+      #   with:
+      #     cluster_name: prod
+      #     context_name: prod_context
+      #     location: us-central1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}
+
+      - name: Terraform Init
+        working-directory: infra/deploy/environments/prod/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra/deploy/environments/prod/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: infra/deploy/environments/prod/terraform
+
+  backend-infra:
+    needs:
+      - baseline-infra
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.26.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: prod
+          context_name: prod_context
+          location: us-central1
+
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/prod
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/prod/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/prod/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: backend/deploy/environments/prod/terraform
+
+      - name: remove kubernetes config
+        working-directory: backend/deploy/environments/prod
+        run: rm -f terraform/terraform_kubeconfig || true
+
+  applications:
+    needs:
+      - backend-infra
+    if: always() && needs.backend-infra.result == 'success' && !cancelled()
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.26.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: prod
+          context_name: prod_context
+          location: us-central1
+
+      - name: setup Skaffold
+        run: gcloud components update && gcloud components install skaffold
+
+      - name: deploy kubernetes deps
+        run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+
+      - name: Skaffold deploy
+        run: skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod

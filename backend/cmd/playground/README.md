@@ -4,7 +4,7 @@ This is a place to use the available API for experiments.
 
 ## Connecting to the dev database
 
-To connect to dev, you'll need to run `make proxy_dev_db`, and then run code that connects to the database.
+To connect to prod, you'll need to run `make proxy_db`, and then run code that connects to the database.
 
 Since all Go files in this folder aren't saved, here's a handy template for what the database connection string needs to look like:
 

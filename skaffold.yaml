@@ -6,9 +6,9 @@ requires:
   - configs: ["dinner-done-better-infra"]
     path: ./infra/skaffold.yaml
     activeProfiles:
-      - name: dev
+      - name: prod
 
   - configs: ["dinner-done-better-backend"]
     path: ./backend/skaffold.yaml
     activeProfiles:
-      - name: dev
+      - name: prod

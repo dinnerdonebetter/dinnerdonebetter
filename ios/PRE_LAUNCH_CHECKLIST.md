@@ -123,16 +123,8 @@ Universal Links allow the app to open when users tap invitation links, password 
 
 The Apple App Site Association (AASA) endpoint is configured in the backend.
 
-- [ ] Set your Team ID in `backend/cmd/tools/codegen/configs/dev.go`:
+- [ ] Set your Team ID for prod: add `teamID` to the `appleAppSiteAssociation` section in `backend/deploy/environments/prod/kustomize/configs/api_service_config.json`, or set the `DINNER_DONE_BETTER_AASA_TEAM_ID` environment variable in your cluster secrets
 
-```go
-AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
-    TeamID:   "XXXXXXXXXX",           // Your 10-character Team ID
-    BundleID: "com.dinnerdonebetter.ios",
-},
-```
-
-- [ ] Run `make configs` in backend folder to regenerate config files
 - [ ] Deploy backend with updated configuration
 
 ### ADP (Apple Developer Portal)
@@ -159,6 +151,7 @@ AppleAppSiteAssociation: config.AppleAppSiteAssociationConfig{
 ### Verification
 
 - [ ] Verify AASA file is accessible at `https://www.dinnerdonebetter.dev/.well-known/apple-app-site-association`
+- [ ] Verify AASA file is accessible at `https://www.dinnerdonebetter.com/.well-known/apple-app-site-association` (production)
 - [ ] Validate with Apple's tool: <https://search.developer.apple.com/appsearch-validation-tool/>
 - [ ] Test on physical device (Universal Links don't work in Simulator):
   - [ ] Send test invitation email
@@ -366,7 +359,7 @@ Document what data is collected:
 - `backend/internal/config/configs.go` - `AppleAppSiteAssociationConfig` struct
 - `backend/internal/build/services/api/http/http_routes.go` - AASA endpoint
 - `backend/internal/build/services/api/http/config.go` - Wire provider
-- `backend/cmd/tools/codegen/configs/dev.go` - Dev environment config
+- `backend/deploy/environments/prod/kustomize/configs/api_service_config.json` - Prod API config (including AppleAppSiteAssociation)
 - `backend/cmd/tools/codegen/configs/localdev.go` - Local dev config
 
 ---
