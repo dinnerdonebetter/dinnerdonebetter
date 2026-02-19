@@ -174,5 +174,11 @@ jobs:
       - name: deploy kubernetes deps
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
+      - name: Enable Secret Manager secret sync
+        run: gcloud beta container clusters update prod --region us-central1 --enable-secret-sync
+
+      - name: Apply infra kustomize (SecretProviderClass, SecretSync, api-service-account)
+        run: kubectl apply -k infra/deploy/environments/prod/kustomize
+
       - name: Skaffold deploy
         run: KOCACHE="$HOME/.cache/ko" skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod
