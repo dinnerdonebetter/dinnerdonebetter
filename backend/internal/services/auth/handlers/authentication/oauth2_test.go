@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -51,7 +51,7 @@ func TestProvideOAuth2ServerImplementation(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		identityRepo := &identitymock.RepositoryMock{}
+		identityDataManager := &identitymanagermock.IdentityDataManager{}
 		authenticator := &mockauthn.Authenticator{}
 
 		ctx := t.Context()
@@ -65,7 +65,7 @@ func TestProvideOAuth2ServerImplementation(T *testing.T) {
 		dataManager := &oauthmock.RepositoryMock{}
 		manager := ProvideOAuth2ClientManager(logger, tracerProvider, cfg, dataManager)
 
-		server := ProvideOAuth2ServerImplementation(logger, tracerProvider, identityRepo, authenticator, tokenIssuer, manager)
+		server := ProvideOAuth2ServerImplementation(logger, tracerProvider, identityDataManager, authenticator, tokenIssuer, manager)
 
 		assert.NotNil(t, server)
 	})
@@ -195,7 +195,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 			"",
 		).Return(true, nil)
 
-		dataManager := &identitymock.RepositoryMock{}
+		dataManager := &identitymanagermock.IdentityDataManager{}
 		dataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -220,7 +220,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		authenticator := &mockauthn.Authenticator{}
-		dataManager := &identitymock.RepositoryMock{}
+		dataManager := &identitymanagermock.IdentityDataManager{}
 		dataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -256,7 +256,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 			"",
 		).Return(false, nil)
 
-		dataManager := &identitymock.RepositoryMock{}
+		dataManager := &identitymanagermock.IdentityDataManager{}
 		dataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -292,7 +292,7 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 			"",
 		).Return(false, errors.New("validation error"))
 
-		dataManager := &identitymock.RepositoryMock{}
+		dataManager := &identitymanagermock.IdentityDataManager{}
 		dataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,

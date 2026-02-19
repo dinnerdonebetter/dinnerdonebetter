@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -38,19 +38,18 @@ var useProvidersMutex = sync.Mutex{}
 type (
 	// service handles passwords service-wide.
 	service struct {
-		config                   *Config
-		logger                   logging.Logger
-		authenticator            authentication.Authenticator
-		analyticsReporter        analytics.EventReporter
-		featureFlagManager       featureflags.FeatureFlagManager
-		userDataManager          identity.UserDataManager
-		accountMembershipManager identity.AccountUserMembershipDataManager
-		encoderDecoder           encoding.ServerEncoderDecoder
-		authProviderFetcher      func(*http.Request) string
-		tracer                   tracing.Tracer
-		dataChangesPublisher     messagequeue.Publisher
-		oauth2Server             *server.Server
-		tokenIssuer              tokens.Issuer
+		config               *Config
+		logger               logging.Logger
+		authenticator        authentication.Authenticator
+		analyticsReporter    analytics.EventReporter
+		featureFlagManager   featureflags.FeatureFlagManager
+		identityDataManager  identitymanager.IdentityDataManager
+		encoderDecoder       encoding.ServerEncoderDecoder
+		authProviderFetcher  func(*http.Request) string
+		tracer               tracing.Tracer
+		dataChangesPublisher messagequeue.Publisher
+		oauth2Server         *server.Server
+		tokenIssuer          tokens.Issuer
 	}
 )
 
@@ -61,7 +60,7 @@ func ProvideService(
 	cfg *Config,
 	authenticator authentication.Authenticator,
 	oauthRepo oauth.Repository,
-	identityRepo identity.Repository,
+	identityDataManager identitymanager.IdentityDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -87,19 +86,18 @@ func ProvideService(
 	manager := ProvideOAuth2ClientManager(logger, tracerProvider, &cfg.OAuth2, oauthRepo)
 
 	svc := &service{
-		logger:                   logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:           encoder,
-		config:                   cfg,
-		userDataManager:          identityRepo,
-		accountMembershipManager: identityRepo,
-		authenticator:            authenticator,
-		tracer:                   tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		dataChangesPublisher:     dataChangesPublisher,
-		featureFlagManager:       featureFlagManager,
-		analyticsReporter:        analyticsReporter,
-		tokenIssuer:              signer,
-		authProviderFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:             ProvideOAuth2ServerImplementation(logger, tracerProvider, identityRepo, authenticator, signer, manager),
+		logger:               logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:       encoder,
+		config:               cfg,
+		identityDataManager:  identityDataManager,
+		authenticator:        authenticator,
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataChangesPublisher: dataChangesPublisher,
+		featureFlagManager:   featureFlagManager,
+		analyticsReporter:    analyticsReporter,
+		tokenIssuer:          signer,
+		authProviderFetcher:  routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
+		oauth2Server:         ProvideOAuth2ServerImplementation(logger, tracerProvider, identityDataManager, authenticator, signer, manager),
 	}
 
 	useProvidersMutex.Lock()

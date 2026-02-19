@@ -25,4 +25,6 @@ const (
 	UserEmailVerificationTokenKey = "user.email_verification_token"
 	// UserDataAggregationReportIDKey is the standard key for referring to a user data aggregation report.
 	UserDataAggregationReportIDKey = "user_data_aggregation_report" + idSuffix
+	// CommentIDKey is the standard key for referring to a comment ID.
+	CommentIDKey = "comment" + idSuffix
 )

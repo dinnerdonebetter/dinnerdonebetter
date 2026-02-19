@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -29,6 +30,10 @@ func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 
 	if err = s.recipeManager.ArchiveRecipe(ctx, request.RecipeId, sessionContextData.GetUserID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe")
+	}
+
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeRecipes, request.RecipeId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for recipe")
 	}
 
 	x := &mealplanning.ArchiveRecipeResponse{

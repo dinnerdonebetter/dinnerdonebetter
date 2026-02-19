@@ -19,11 +19,11 @@ const (
 )
 
 var (
-	_ types.UserNotificationDataManager = (*repository)(nil)
+	_ types.UserNotificationDataManager = (*Repository)(nil)
 )
 
 // UserNotificationExists fetches whether a user notification exists from the database.
-func (q *repository) UserNotificationExists(ctx context.Context, userID, userNotificationID string) (exists bool, err error) {
+func (q *Repository) UserNotificationExists(ctx context.Context, userID, userNotificationID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -53,7 +53,7 @@ func (q *repository) UserNotificationExists(ctx context.Context, userID, userNot
 }
 
 // GetUserNotification fetches a user notification from the database.
-func (q *repository) GetUserNotification(ctx context.Context, userID, userNotificationID string) (*types.UserNotification, error) {
+func (q *Repository) GetUserNotification(ctx context.Context, userID, userNotificationID string) (*types.UserNotification, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -92,7 +92,7 @@ func (q *repository) GetUserNotification(ctx context.Context, userID, userNotifi
 }
 
 // GetUserNotifications fetches a list of user notifications from the database that meet a particular filter.
-func (q *repository) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserNotification], error) {
+func (q *Repository) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserNotification], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -153,7 +153,7 @@ func (q *repository) GetUserNotifications(ctx context.Context, userID string, fi
 }
 
 // CreateUserNotification creates a user notification in the database.
-func (q *repository) CreateUserNotification(ctx context.Context, input *types.UserNotificationDatabaseCreationInput) (*types.UserNotification, error) {
+func (q *Repository) CreateUserNotification(ctx context.Context, input *types.UserNotificationDatabaseCreationInput) (*types.UserNotification, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (q *repository) CreateUserNotification(ctx context.Context, input *types.Us
 }
 
 // UpdateUserNotification updates a particular user notification.
-func (q *repository) UpdateUserNotification(ctx context.Context, updated *types.UserNotification) error {
+func (q *Repository) UpdateUserNotification(ctx context.Context, updated *types.UserNotification) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

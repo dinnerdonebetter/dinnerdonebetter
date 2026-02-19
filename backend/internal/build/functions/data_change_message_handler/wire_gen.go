@@ -10,6 +10,9 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/notifications/manager"
+	manager2 "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
+	manager3 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
@@ -62,17 +65,30 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	issuereportsRepository := issue_reports.ProvideIssueReportsRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
-	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
-	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
-	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
-	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, issuereportsRepository, mealplanningRepository, notificationsRepository, settingsRepository, uploadedmediaRepository, waitlistsRepository, webhooksRepository, client)
+	queuesConfig := &cfg.Queues
 	msgconfigConfig := &cfg.Events
-	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, msgconfigConfig)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
+	notificationsDataManager, err := manager.NewNotificationsDataManager(ctx, tracerProvider, logger, notificationsRepository, queuesConfig, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
+	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
+	settingsDataManager, err := manager2.NewSettingsDataManager(ctx, tracerProvider, logger, settingsRepository, queuesConfig, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
+	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	waitlistsDataManager, err := manager3.NewWaitlistDataManager(ctx, tracerProvider, logger, waitlistsRepository, queuesConfig, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
+	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
+	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, issuereportsRepository, mealplanningRepository, notificationsDataManager, settingsDataManager, uploadedmediaRepository, waitlistsDataManager, webhooksRepository, client)
+	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, msgconfigConfig)
 	if err != nil {
 		return nil, err
 	}

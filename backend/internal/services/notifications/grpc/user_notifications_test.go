@@ -32,9 +32,9 @@ func buildTestService(t *testing.T) (*serviceImpl, *notificationsmock.Repository
 	notificationsRepo := &notificationsmock.Repository{}
 
 	service := &serviceImpl{
-		tracer:                  tracer,
-		logger:                  logger,
-		notificationsRepository: notificationsRepo,
+		tracer:               tracer,
+		logger:               logger,
+		notificationsManager: notificationsRepo,
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{
@@ -54,9 +54,9 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	tracer := tracing.NewTracerForTest(t.Name())
 
 	service := &serviceImpl{
-		tracer:                  tracer,
-		logger:                  logger,
-		notificationsRepository: &notificationsmock.Repository{},
+		tracer:               tracer,
+		logger:               logger,
+		notificationsManager: &notificationsmock.Repository{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},

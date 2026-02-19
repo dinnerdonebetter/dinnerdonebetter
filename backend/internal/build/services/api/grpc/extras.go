@@ -6,6 +6,7 @@ import (
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
@@ -26,6 +27,7 @@ import (
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
+	commentsgrpc "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
@@ -44,6 +46,7 @@ import (
 func BuildRegistrationFuncs(
 	auditLogService auditsvc.AuditServiceServer,
 	authService authsvc.AuthServiceServer,
+	commentsService commentssvc.CommentsServiceServer,
 	dataPrivacyServer dataprivacysvc.DataPrivacyServiceServer,
 	identityServiceServer identitysvc.IdentityServiceServer,
 	internalOpsService internalopssvc.InternalOperationsServer,
@@ -61,6 +64,7 @@ func BuildRegistrationFuncs(
 		func(server *grpc.Server) {
 			auditsvc.RegisterAuditServiceServer(server, auditLogService)
 			authsvc.RegisterAuthServiceServer(server, authService)
+			commentssvc.RegisterCommentsServiceServer(server, commentsService)
 			dataprivacysvc.RegisterDataPrivacyServiceServer(server, dataPrivacyServer)
 			identitysvc.RegisterIdentityServiceServer(server, identityServiceServer)
 			internalopssvc.RegisterInternalOperationsServer(server, internalOpsService)
@@ -111,6 +115,7 @@ func ProvideUserTextSearcher(
 func AggregateMethodPermissions(
 	auditPermissions auditgrpc.AuditMethodPermissions,
 	authPermissions authgrpc.AuthMethodPermissions,
+	commentsPermissions commentsgrpc.CommentsMethodPermissions,
 	identityPermissions identitygrpc.IdentityMethodPermissions,
 	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
 	mealplanningPermissions mealplanninggrpc.MealPlanningMethodPermissions,
@@ -127,6 +132,7 @@ func AggregateMethodPermissions(
 	// Copy all service permissions into the aggregated map
 	maps.Copy(result, auditPermissions)
 	maps.Copy(result, authPermissions)
+	maps.Copy(result, commentsPermissions)
 	maps.Copy(result, identityPermissions)
 	maps.Copy(result, issuereportsPermissions)
 	maps.Copy(result, mealplanningPermissions)

@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -32,6 +33,10 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal")
 	}
 
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeMeals, request.MealId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for meal")
+	}
+
 	x := &mealplanningsvc.ArchiveMealResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
@@ -56,6 +61,10 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 
 	if err = s.mealPlanningManager.ArchiveMealPlan(ctx, request.MealPlanId, sessionContextData.GetActiveAccountID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan")
+	}
+
+	if err = s.commentsManager.ArchiveCommentsForReference(ctx, comments.CommentTargetTypeMealPlans, request.MealPlanId); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving comments for meal plan")
 	}
 
 	x := &mealplanningsvc.ArchiveMealPlanResponse{

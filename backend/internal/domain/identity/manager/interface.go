@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 )
@@ -25,6 +26,9 @@ type (
 		GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error)
 		GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error)
 		GetUser(ctx context.Context, userID string) (*identity.User, error)
+		GetUserByEmail(ctx context.Context, email string) (*identity.User, error)
+		GetUserByUsername(ctx context.Context, username string) (*identity.User, error)
+		GetAdminUserByUsername(ctx context.Context, username string) (*identity.User, error)
 		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error)
 		GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error)
 		SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error)
@@ -38,5 +42,9 @@ type (
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error
 		AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error
+
+		// Session/context helpers used by auth service and interceptors.
+		GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error)
+		BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error)
 	}
 )

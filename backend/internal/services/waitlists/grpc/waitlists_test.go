@@ -43,7 +43,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *waitlistmock.Repository) {
 				},
 			}, nil
 		},
-		waitlistRepository: waitlistRepo,
+		waitlistsManager: waitlistRepo,
 	}
 
 	return service, waitlistRepo
@@ -61,7 +61,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
-		waitlistRepository: &waitlistmock.Repository{},
+		waitlistsManager: &waitlistmock.Repository{},
 	}
 
 	return service

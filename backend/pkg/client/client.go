@@ -9,6 +9,7 @@ import (
 
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	commentsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
 	dataprivacygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
@@ -51,6 +52,10 @@ type Client interface {
 	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
+
+	// CommentsService returns the standalone CommentsService client. Use this to call
+	// CommentsService RPCs directly instead of via MealPlanningService.
+	CommentsService() commentsgrpc.CommentsServiceClient
 }
 
 type client struct {
@@ -68,6 +73,8 @@ type client struct {
 	uploadedmediagrpc.UploadedMediaServiceClient
 	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
+
+	commentsClient commentsgrpc.CommentsServiceClient
 }
 
 // BuildClient builds a new Client.
@@ -92,9 +99,14 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		UploadedMediaServiceClient:     uploadedmediagrpc.NewUploadedMediaServiceClient(conn),
 		WaitlistsServiceClient:         waitlistsgrpc.NewWaitlistsServiceClient(conn),
 		WebhooksServiceClient:          webhooksgrpc.NewWebhooksServiceClient(conn),
+		commentsClient:                 commentsgrpc.NewCommentsServiceClient(conn),
 	}
 
 	return c, nil
+}
+
+func (c *client) CommentsService() commentsgrpc.CommentsServiceClient {
+	return c.commentsClient
 }
 
 func BuildUnauthenticatedGRPCClient(grpcServerAddr string) (Client, error) {

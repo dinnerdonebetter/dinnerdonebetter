@@ -18,12 +18,12 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		settingsRepository := &mock.Repository{}
+		settingsManager := &mock.Repository{}
 
 		service := NewService(
 			logger,
 			tracerProvider,
-			settingsRepository,
+			settingsManager,
 		)
 
 		assert.NotNil(t, service)
@@ -33,7 +33,7 @@ func TestNewService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, settingsRepository, impl.serviceSettingsRepository)
+		assert.Equal(t, settingsManager, impl.settingsManager)
 		assert.NotNil(t, impl.sessionContextDataFetcher)
 	})
 }

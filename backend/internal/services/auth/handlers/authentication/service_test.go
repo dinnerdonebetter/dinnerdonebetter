@@ -7,7 +7,7 @@ import (
 
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -56,7 +56,7 @@ func buildTestService(t *testing.T) *service {
 		cfg,
 		&mockauthn.Authenticator{},
 		&oauthmock.RepositoryMock{},
-		&identitymock.RepositoryMock{},
+		&identitymanagermock.IdentityDataManager{},
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
@@ -106,7 +106,7 @@ func TestProvideService(T *testing.T) {
 			cfg,
 			&mockauthn.Authenticator{},
 			&oauthmock.RepositoryMock{},
-			&identitymock.RepositoryMock{},
+			&identitymanagermock.IdentityDataManager{},
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,

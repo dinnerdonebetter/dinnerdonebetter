@@ -25,7 +25,7 @@ func (s *serviceImpl) CreateServiceSetting(ctx context.Context, request *setting
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting")
 	}
 
-	created, err := s.serviceSettingsRepository.CreateServiceSetting(ctx, input)
+	created, err := s.settingsManager.CreateServiceSetting(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}
@@ -46,7 +46,7 @@ func (s *serviceImpl) GetServiceSetting(ctx context.Context, request *settingssv
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
 
-	serviceSetting, err := s.serviceSettingsRepository.GetServiceSetting(ctx, request.ServiceSettingId)
+	serviceSetting, err := s.settingsManager.GetServiceSetting(ctx, request.ServiceSettingId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting")
 	}
@@ -68,7 +68,7 @@ func (s *serviceImpl) GetServiceSettings(ctx context.Context, request *settingss
 	logger := s.logger.WithSpan(span)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
-	serviceSettings, err := s.serviceSettingsRepository.GetServiceSettings(ctx, filter)
+	serviceSettings, err := s.settingsManager.GetServiceSettings(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service settings")
 	}
@@ -96,7 +96,7 @@ func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *set
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	serviceSettings, err := s.serviceSettingsRepository.SearchForServiceSettings(ctx, request.Query, filter)
+	serviceSettings, err := s.settingsManager.SearchForServiceSettings(ctx, request.Query, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service settings")
 	}
@@ -121,7 +121,7 @@ func (s *serviceImpl) ArchiveServiceSetting(ctx context.Context, request *settin
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.ServiceSettingId)
 
-	if err := s.serviceSettingsRepository.ArchiveServiceSetting(ctx, request.ServiceSettingId); err != nil {
+	if err := s.settingsManager.ArchiveServiceSetting(ctx, request.ServiceSettingId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive service setting")
 	}
 

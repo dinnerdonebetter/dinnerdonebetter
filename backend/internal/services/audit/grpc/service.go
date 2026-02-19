@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	auditmanager "github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -25,21 +25,21 @@ var _ auditsvc.AuditServiceServer = (*serviceImpl)(nil)
 type (
 	serviceImpl struct {
 		auditsvc.UnimplementedAuditServiceServer
-		tracer          tracing.Tracer
-		logger          logging.Logger
-		auditRepository audit.Repository
+		tracer       tracing.Tracer
+		logger       logging.Logger
+		auditManager auditmanager.AuditDataManager
 	}
 )
 
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	auditRepository audit.Repository,
+	auditManager auditmanager.AuditDataManager,
 ) auditsvc.AuditServiceServer {
 	return &serviceImpl{
-		logger:          logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		auditRepository: auditRepository,
+		logger:       logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		auditManager: auditManager,
 	}
 }
 
@@ -50,7 +50,7 @@ func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 	logger := s.logger.WithValue("", "")
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForAccount(ctx, request.AccountId, filter)
+	auditLogEntries, err := s.auditManager.GetAuditLogEntriesForAccount(ctx, request.AccountId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -77,7 +77,7 @@ func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 	logger := s.logger.WithValue("", "")
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	auditLogEntries, err := s.auditRepository.GetAuditLogEntriesForUser(ctx, request.UserId, filter)
+	auditLogEntries, err := s.auditManager.GetAuditLogEntriesForUser(ctx, request.UserId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -102,7 +102,7 @@ func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 	defer span.End()
 
 	logger := s.logger.WithValue(keys.AuditLogEntryIDKey, request.AuditLogEntryId)
-	auditLogEntry, err := s.auditRepository.GetAuditLogEntry(ctx, request.AuditLogEntryId)
+	auditLogEntry, err := s.auditManager.GetAuditLogEntry(ctx, request.AuditLogEntryId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}

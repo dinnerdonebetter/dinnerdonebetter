@@ -13,6 +13,15 @@ const (
 	SubscriptionStatusPastDue    = "past_due"
 	SubscriptionStatusTrialing   = "trialing"
 	SubscriptionStatusIncomplete = "incomplete"
+
+	// SubscriptionCreatedServiceEventType indicates a subscription was created.
+	SubscriptionCreatedServiceEventType = "subscription_created"
+	// SubscriptionUpdatedServiceEventType indicates a subscription was updated.
+	SubscriptionUpdatedServiceEventType = "subscription_updated"
+	// SubscriptionArchivedServiceEventType indicates a subscription was archived.
+	SubscriptionArchivedServiceEventType = "subscription_archived"
+	// SubscriptionCanceledServiceEventType indicates a subscription was canceled.
+	SubscriptionCanceledServiceEventType = "subscription_canceled"
 )
 
 type (

@@ -41,7 +41,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *settingsmock.Repository) {
 				},
 			}, nil
 		},
-		serviceSettingsRepository: settingsRepo,
+		settingsManager: settingsRepo,
 	}
 
 	return service, settingsRepo
@@ -60,7 +60,7 @@ func buildTestServiceWithSessionError(t *testing.T) (*serviceImpl, *settingsmock
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
-		serviceSettingsRepository: settingsRepo,
+		settingsManager: settingsRepo,
 	}
 
 	return service, settingsRepo

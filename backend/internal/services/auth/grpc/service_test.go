@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	authmock "github.com/dinnerdonebetter/backend/internal/domain/auth/mock"
-	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	identitymanagermock "github.com/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -16,24 +16,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildTestService(t *testing.T) (*serviceImpl, *identitymock.RepositoryMock, *authmock.AuthManager, *authenticationmock.Manager) {
+func buildTestService(t *testing.T) (*serviceImpl, *identitymanagermock.IdentityDataManager, *authmock.AuthManager, *authenticationmock.Manager) {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	identityRepo := &identitymock.RepositoryMock{}
+	identityDataManager := &identitymanagermock.IdentityDataManager{}
 	authManager := &authmock.AuthManager{}
 	authenticationManager := &authenticationmock.Manager{}
 
 	service := &serviceImpl{
 		tracer:                tracer,
 		logger:                logger,
-		identityRepository:    identityRepo,
+		identityDataManager:   identityDataManager,
 		authManager:           authManager,
 		authenticationManager: authenticationManager,
 	}
 
-	return service, identityRepo, authManager, authenticationManager
+	return service, identityDataManager, authManager, authenticationManager
 }
 
 func TestNewAuthService(t *testing.T) {
@@ -44,11 +44,11 @@ func TestNewAuthService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		identityRepo := &identitymock.RepositoryMock{}
+		identityDataManager := &identitymanagermock.IdentityDataManager{}
 		authManager := &authmock.AuthManager{}
 		authenticationManager := &authenticationmock.Manager{}
 
-		service := NewAuthService(logger, tracerProvider, identityRepo, authManager, authenticationManager)
+		service := NewAuthService(logger, tracerProvider, identityDataManager, authManager, authenticationManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*authsvc.AuthServiceServer)(nil), service)
@@ -58,7 +58,7 @@ func TestNewAuthService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, identityRepo, impl.identityRepository)
+		assert.Equal(t, identityDataManager, impl.identityDataManager)
 		assert.Equal(t, authManager, impl.authManager)
 		assert.Equal(t, authenticationManager, impl.authenticationManager)
 	})

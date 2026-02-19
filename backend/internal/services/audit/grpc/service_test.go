@@ -27,15 +27,15 @@ func buildTestService(t *testing.T) (*serviceImpl, *auditmock.Repository) {
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	auditRepo := &auditmock.Repository{}
+	auditManager := &auditmock.Repository{}
 
 	service := &serviceImpl{
-		tracer:          tracer,
-		logger:          logger,
-		auditRepository: auditRepo,
+		tracer:       tracer,
+		logger:       logger,
+		auditManager: auditManager,
 	}
 
-	return service, auditRepo
+	return service, auditManager
 }
 
 func TestNewService(t *testing.T) {
@@ -46,9 +46,9 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		auditRepo := &auditmock.Repository{}
+		auditManager := &auditmock.Repository{}
 
-		service := NewService(logger, tracerProvider, auditRepo)
+		service := NewService(logger, tracerProvider, auditManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*auditsvc.AuditServiceServer)(nil), service)
@@ -58,7 +58,7 @@ func TestNewService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, auditRepo, impl.auditRepository)
+		assert.Equal(t, auditManager, impl.auditManager)
 	})
 }
 

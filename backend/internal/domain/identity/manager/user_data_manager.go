@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
@@ -609,6 +610,41 @@ func (m *manager) GetUser(ctx context.Context, userID string) (*identity.User, e
 	}
 
 	return user, nil
+}
+
+func (m *manager) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.identityRepo.GetUserByEmail(ctx, email)
+}
+
+func (m *manager) GetUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.identityRepo.GetUserByUsername(ctx, username)
+}
+
+func (m *manager) GetAdminUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.identityRepo.GetAdminUserByUsername(ctx, username)
+}
+
+func (m *manager) GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.identityRepo.GetDefaultAccountIDForUser(ctx, userID)
+}
+
+func (m *manager) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return m.identityRepo.BuildSessionContextDataForUser(ctx, userID)
 }
 
 func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {

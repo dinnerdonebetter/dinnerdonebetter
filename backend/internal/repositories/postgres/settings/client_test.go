@@ -19,7 +19,7 @@ const (
 	exampleQuantity = 3
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*Repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -33,15 +33,14 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 
 	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
-	require.NoError(t, err)
 
-	return c.(*repository), container
+	return c, container
 }
 
-func buildInertClientForTest(t *testing.T) *repository {
+func buildInertClientForTest(t *testing.T) *Repository {
 	t.Helper()
 
 	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
 
-	return c.(*repository)
+	return c
 }
