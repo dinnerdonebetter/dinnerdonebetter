@@ -46,4 +46,14 @@ spec:
                 name: dinner-done-better-webapp-svc
                 port:
                   number: 9000
+    - host: "admin.dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-admin-webapp-svc
+                port:
+                  number: 8888
 ---
