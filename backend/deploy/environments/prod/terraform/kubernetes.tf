@@ -96,7 +96,7 @@ resource "kubernetes_secret" "api_service_config" {
     SENDGRID_API_TOKEN              = var.SENDGRID_API_KEY
     SEGMENT_API_TOKEN               = var.SEGMENT_API_TOKEN
     POSTHOG_API_KEY                 = var.POSTHOG_API_KEY
-    POSTHOG_PERSONAL_API_KEY         = var.POSTHOG_PERSONAL_API_KEY
+    POSTHOG_PERSONAL_API_KEY        = var.POSTHOG_PERSONAL_API_KEY
     ALGOLIA_APPLICATION_ID          = var.ALGOLIA_APPLICATION_ID
     ALGOLIA_API_KEY                 = var.ALGOLIA_API_KEY
     GOOGLE_SSO_OAUTH2_CLIENT_ID     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
