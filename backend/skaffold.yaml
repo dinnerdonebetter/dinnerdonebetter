@@ -218,16 +218,16 @@ profiles:
             main: ./cmd/services/admin
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-mcp-server
-          ko:
-            dir: .
-            flags:
-              - -trimpath
-            ldflags:
-              - -s -w
-              - -extldflags "-static"
-            main: ./cmd/services/mcp
-            fromImage: golang:1.26-trixie
+        # - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-mcp-server
+        #   ko:
+        #     dir: .
+        #     flags:
+        #       - -trimpath
+        #     ldflags:
+        #       - -s -w
+        #       - -extldflags "-static"
+        #     main: ./cmd/services/mcp
+        #     fromImage: golang:1.26-trixie
 
     manifests:
       kustomize:
