@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "api_media" {
   provider                    = google
-  name                        = "media.dinnerdonebetter.com"
+  name                        = "dinner-done-better-prod-media"
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -43,12 +43,6 @@ resource "google_storage_bucket_iam_policy" "api_media_policy" {
   policy_data = data.google_iam_policy.public_policy.policy_data
 }
 
-resource "cloudflare_record" "api_media" {
-  zone_id = var.CLOUDFLARE_ZONE_ID
-  name    = "media"
-  content = "c.storage.googleapis.com"
-  type    = "CNAME"
-  proxied = true
-  ttl     = 1
-  comment = "Managed by Terraform"
-}
+# NOTE: media.dinnerdonebetter.com CNAME removed. Bucket uses storage.googleapis.com URLs.
+# To serve at media.dinnerdonebetter.com, verify domain ownership in Search Console first,
+# then create a bucket named media.dinnerdonebetter.com and restore this record.

@@ -12,6 +12,17 @@ data "google_container_cluster" "prod_cluster" {
   location = local.gcp_region
 }
 
+resource "kubernetes_namespace" "prod" {
+  metadata {
+    name = local.k8s_namespace
+    labels = {
+      (local.managed_by_label) = "terraform"
+    }
+  }
+
+  depends_on = [data.google_container_cluster.prod_cluster]
+}
+
 # Kubernetes secrets
 
 resource "kubernetes_secret" "cloudflare_api_key" {
@@ -28,7 +39,7 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     }
   }
 
-  depends_on = [data.google_container_cluster.prod_cluster]
+  depends_on = [kubernetes_namespace.prod]
 
   data = {
     "token" = var.CLOUDFLARE_API_TOKEN
@@ -49,7 +60,7 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
     }
   }
 
-  depends_on = [data.google_container_cluster.prod_cluster]
+  depends_on = [kubernetes_namespace.prod]
 
   data = {
     data_changes               = google_pubsub_topic.data_changes_topic.name
@@ -74,7 +85,7 @@ resource "kubernetes_secret" "api_service_config" {
     }
   }
 
-  depends_on = [data.google_container_cluster.prod_cluster]
+  depends_on = [kubernetes_namespace.prod]
 
   data = {
     OAUTH2_TOKEN_ENCRYPTION_KEY     = random_string.oauth2_token_encryption_key.result
@@ -109,7 +120,7 @@ resource "kubernetes_secret" "grafana_cloud_creds" {
     }
   }
 
-  depends_on = [data.google_container_cluster.prod_cluster]
+  depends_on = [kubernetes_namespace.prod]
 
   data = {
     GRAFANA_CLOUD_PROMETHEUS_USERNAME = var.GRAFANA_CLOUD_PROMETHEUS_USERNAME
