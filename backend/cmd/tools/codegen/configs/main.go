@@ -49,6 +49,9 @@ func main() {
 			APIServiceConfigPath: "integration-tests-config.json",
 			RootConfig:           buildIntegrationTestsConfig(),
 		},
+		"deploy/environments/prod/kustomize/configs": {
+			RootConfig: buildProdConfig(),
+		},
 	}
 
 	for p, cfg := range envConfigs {
