@@ -163,4 +163,4 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: Skaffold deploy
-        run: skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile prod
+        run: skaffold run --filename=skaffold.yaml --build-concurrency 0 --profile prod
