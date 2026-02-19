@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package comments;
+
+import "comments/comments_service_types.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments";
+
+service CommentsService {
+  rpc AddCommentToMeal(AddCommentToMealRequest) returns (AddCommentToMealResponse);
+  rpc AddCommentToMealPlan(AddCommentToMealPlanRequest) returns (AddCommentToMealPlanResponse);
+  rpc AddCommentToRecipe(AddCommentToRecipeRequest) returns (AddCommentToRecipeResponse);
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+  rpc ArchiveComment(ArchiveCommentRequest) returns (ArchiveCommentResponse);
+  rpc GetCommentsForReference(GetCommentsForReferenceRequest) returns (GetCommentsForReferenceResponse);
+  rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse);
+}

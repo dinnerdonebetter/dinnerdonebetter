@@ -2,14 +2,16 @@ syntax = "proto3";
 
 package mealplanning;
 
+import "comments/comments_service_types.proto";
 import "mealplanning/mealplanning_service_types.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
 service MealPlanningService {
-  rpc AddCommentToMeal(AddCommentToMealRequest) returns (AddCommentToMealResponse);
-  rpc AddCommentToMealPlan(AddCommentToMealPlanRequest) returns (AddCommentToMealPlanResponse);
-  rpc AddCommentToRecipe(AddCommentToRecipeRequest) returns (AddCommentToRecipeResponse);
+  rpc AddCommentToMeal(comments.AddCommentToMealRequest) returns (comments.AddCommentToMealResponse);
+  rpc AddCommentToMealPlan(comments.AddCommentToMealPlanRequest) returns (comments.AddCommentToMealPlanResponse);
+  rpc AddCommentToRecipe(comments.AddCommentToRecipeRequest) returns (comments.AddCommentToRecipeResponse);
+  rpc CreateComment(comments.CreateCommentRequest) returns (comments.CreateCommentResponse);
   rpc ArchiveMeal(ArchiveMealRequest) returns (ArchiveMealResponse);
   rpc ArchiveMealPlan(ArchiveMealPlanRequest) returns (ArchiveMealPlanResponse);
   rpc ArchiveMealPlanEvent(ArchiveMealPlanEventRequest) returns (ArchiveMealPlanEventResponse);
@@ -31,6 +33,7 @@ service MealPlanningService {
   rpc ArchiveRecipeStepProduct(ArchiveRecipeStepProductRequest) returns (ArchiveRecipeStepProductResponse);
   rpc ArchiveRecipeStepVessel(ArchiveRecipeStepVesselRequest) returns (ArchiveRecipeStepVesselResponse);
   rpc ArchiveValidIngredient(ArchiveValidIngredientRequest) returns (ArchiveValidIngredientResponse);
+  rpc ArchiveComment(comments.ArchiveCommentRequest) returns (comments.ArchiveCommentResponse);
   rpc ArchiveValidIngredientGroup(ArchiveValidIngredientGroupRequest) returns (ArchiveValidIngredientGroupResponse);
   rpc ArchiveValidIngredientMeasurementUnit(ArchiveValidIngredientMeasurementUnitRequest) returns (ArchiveValidIngredientMeasurementUnitResponse);
   rpc ArchiveValidIngredientPreparation(ArchiveValidIngredientPreparationRequest) returns (ArchiveValidIngredientPreparationResponse);
@@ -79,9 +82,8 @@ service MealPlanningService {
   rpc CreateValidPreparationInstrument(CreateValidPreparationInstrumentRequest) returns (CreateValidPreparationInstrumentResponse);
   rpc CreateValidPreparationVessel(CreateValidPreparationVesselRequest) returns (CreateValidPreparationVesselResponse);
   rpc CreateValidVessel(CreateValidVesselRequest) returns (CreateValidVesselResponse);
-  rpc ArchiveComment(ArchiveCommentRequest) returns (ArchiveCommentResponse);
   rpc FinalizeMealPlan(FinalizeMealPlanRequest) returns (FinalizeMealPlanResponse);
-  rpc GetCommentsForReference(GetCommentsForReferenceRequest) returns (GetCommentsForReferenceResponse);
+  rpc GetCommentsForReference(comments.GetCommentsForReferenceRequest) returns (comments.GetCommentsForReferenceResponse);
   rpc GetMeal(GetMealRequest) returns (GetMealResponse);
   rpc GetMealPlan(GetMealPlanRequest) returns (GetMealPlanResponse);
   rpc GetMealPlanEvent(GetMealPlanEventRequest) returns (GetMealPlanEventResponse);
@@ -224,6 +226,6 @@ service MealPlanningService {
   rpc GetUserIngredientPreference(GetUserIngredientPreferenceRequest) returns (GetUserIngredientPreferenceResponse);
   rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
   rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);
-  rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse);
+  rpc UpdateComment(comments.UpdateCommentRequest) returns (comments.UpdateCommentResponse);
   rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
 }

@@ -33,7 +33,8 @@ func init() {
 type (
 	// Comment represents a comment on a reference (recipe, meal, meal_plan).
 	Comment struct {
-		_               struct{}   `json:"-"`
+		_ struct{} `json:"-"`
+
 		CreatedAt       time.Time  `json:"createdAt"`
 		ParentCommentID *string    `json:"parentCommentId,omitempty"`
 		LastUpdatedAt   *time.Time `json:"lastUpdatedAt,omitempty"`
@@ -112,12 +113,11 @@ func (x *CommentCreationRequestInput) ValidateWithContext(ctx context.Context) e
 		ctx,
 		x,
 		validation.Field(&x.Content, validation.Required, validation.Length(1, 10000)),
-		validation.Field(&x.TargetType, validation.Required, validation.By(func(value interface{}) error {
-			if s, ok := value.(string); ok && !ValidCommentTargetTypes[s] {
-				return validation.NewError("validation_invalid_target_type", "target type must be one of: meals, recipes, meal_plans")
-			}
-			return nil
-		})),
+		validation.Field(&x.TargetType, validation.Required, validation.In(
+			CommentTargetTypeMeals,
+			CommentTargetTypeRecipes,
+			CommentTargetTypeMealPlans,
+		)),
 		validation.Field(&x.ReferencedID, validation.Required),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)
@@ -132,12 +132,11 @@ func (x *CommentDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Content, validation.Required, validation.Length(1, 10000)),
-		validation.Field(&x.TargetType, validation.Required, validation.By(func(value interface{}) error {
-			if s, ok := value.(string); ok && !ValidCommentTargetTypes[s] {
-				return validation.NewError("validation_invalid_target_type", "target type must be one of: meals, recipes, meal_plans")
-			}
-			return nil
-		})),
+		validation.Field(&x.TargetType, validation.Required, validation.In(
+			CommentTargetTypeMeals,
+			CommentTargetTypeRecipes,
+			CommentTargetTypeMealPlans,
+		)),
 		validation.Field(&x.ReferencedID, validation.Required),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)

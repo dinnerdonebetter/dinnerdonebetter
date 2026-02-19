@@ -7,10 +7,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	commentsfakes "github.com/dinnerdonebetter/backend/internal/domain/comments/fakes"
+	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
 	commentsmanagermock "github.com/dinnerdonebetter/backend/internal/domain/comments/manager/mock"
 	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
-	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	commentssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/reflection"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
@@ -20,6 +24,48 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// noopCommentsManager is a stub implementation for tests that only need service construction.
+type noopCommentsManager struct{}
+
+func (n *noopCommentsManager) CreateComment(_ context.Context, _ *comments.CommentCreationRequestInput) (*comments.Comment, error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) GetComment(_ context.Context, _ string) (*comments.Comment, error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) GetCommentsForReference(_ context.Context, _, _ string, _ *filtering.QueryFilter) (*filtering.QueryFilteredResult[comments.Comment], error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) UpdateComment(_ context.Context, _, _ string, _ *comments.CommentUpdateRequestInput) error {
+	return nil
+}
+func (n *noopCommentsManager) ArchiveComment(_ context.Context, _ string) error {
+	return nil
+}
+func (n *noopCommentsManager) ArchiveCommentsForReference(_ context.Context, _, _ string) error {
+	return nil
+}
+
+var _ commentsmanager.CommentsDataManager = (*noopCommentsManager)(nil)
+
+func buildCommentsServiceImplForTest(t *testing.T) *serviceImpl {
+	t.Helper()
+
+	return &serviceImpl{
+		tracer:              tracing.NewTracerForTest(t.Name()),
+		logger:              logging.NewNoopLogger(),
+		commentsManager:     &noopCommentsManager{},
+		mealPlanningManager: &mockmanagers.MockMealPlanningManager{},
+		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
+			return &sessions.ContextData{
+				Requester: sessions.RequesterInfo{
+					UserID: mealplanningfakes.BuildFakeID(),
+				},
+			}, nil
+		},
+	}
+}
+
 func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
 	T.Parallel()
 
@@ -27,7 +73,7 @@ func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		recipeID := mealplanningfakes.BuildFakeID()
 		userID := mealplanningfakes.BuildFakeID()
@@ -50,9 +96,9 @@ func TestServiceImpl_AddCommentToRecipe(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.AddCommentToRecipe(ctx, &mealplanninggrpc.AddCommentToRecipeRequest{
+		res, err := s.AddCommentToRecipe(ctx, &commentssvc.AddCommentToRecipeRequest{
 			RecipeId: recipeID,
-			Content:  content,
+			Input:    &commentssvc.CommentCreationRequestInput{Content: content},
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
@@ -70,7 +116,7 @@ func TestServiceImpl_AddCommentToMeal(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForMealPlanningTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		mealID := mealplanningfakes.BuildFakeID()
 		userID := mealplanningfakes.BuildFakeID()
@@ -92,9 +138,9 @@ func TestServiceImpl_AddCommentToMeal(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.AddCommentToMeal(ctx, &mealplanninggrpc.AddCommentToMealRequest{
-			MealId:  mealID,
-			Content: content,
+		res, err := s.AddCommentToMeal(ctx, &commentssvc.AddCommentToMealRequest{
+			MealId: mealID,
+			Input:  &commentssvc.CommentCreationRequestInput{Content: content},
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
@@ -111,7 +157,7 @@ func TestServiceImpl_AddCommentToMealPlan(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForMealPlanningTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		mealPlanID := mealplanningfakes.BuildFakeID()
 		accountID := mealplanningfakes.BuildFakeID()
@@ -136,9 +182,9 @@ func TestServiceImpl_AddCommentToMealPlan(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.AddCommentToMealPlan(ctx, &mealplanninggrpc.AddCommentToMealPlanRequest{
+		res, err := s.AddCommentToMealPlan(ctx, &commentssvc.AddCommentToMealPlanRequest{
 			MealPlanId: mealPlanID,
-			Content:    content,
+			Input:      &commentssvc.CommentCreationRequestInput{Content: content},
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
@@ -155,7 +201,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		recipeID := mealplanningfakes.BuildFakeID()
 		expected := commentsfakes.BuildFakeCommentList(comments.CommentTargetTypeRecipes, recipeID)
@@ -164,7 +210,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, comments.CommentTargetTypeRecipes, recipeID, testutils.QueryFilterMatcher).Return(expected, nil)
 		s.commentsManager = mcm
 
-		res, err := s.GetCommentsForReference(ctx, &mealplanninggrpc.GetCommentsForReferenceRequest{
+		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeRecipes,
 			ReferencedId: recipeID,
 		})
@@ -179,7 +225,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForMealPlanningTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		mealID := mealplanningfakes.BuildFakeID()
 		expected := commentsfakes.BuildFakeCommentList(comments.CommentTargetTypeMeals, mealID)
@@ -188,7 +234,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		mcm.On(reflection.GetMethodName(mcm.GetCommentsForReference), testutils.ContextMatcher, comments.CommentTargetTypeMeals, mealID, testutils.QueryFilterMatcher).Return(expected, nil)
 		s.commentsManager = mcm
 
-		res, err := s.GetCommentsForReference(ctx, &mealplanninggrpc.GetCommentsForReferenceRequest{
+		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeMeals,
 			ReferencedId: mealID,
 		})
@@ -203,7 +249,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForMealPlanningTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		mealPlanID := mealplanningfakes.BuildFakeID()
 		accountID := mealplanningfakes.BuildFakeID()
@@ -221,7 +267,7 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 			return &sessions.ContextData{ActiveAccountID: accountID}, nil
 		}
 
-		res, err := s.GetCommentsForReference(ctx, &mealplanninggrpc.GetCommentsForReferenceRequest{
+		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeMealPlans,
 			ReferencedId: mealPlanID,
 		})
@@ -236,9 +282,9 @@ func TestServiceImpl_GetCommentsForReference(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
-		res, err := s.GetCommentsForReference(ctx, &mealplanninggrpc.GetCommentsForReferenceRequest{
+		res, err := s.GetCommentsForReference(ctx, &commentssvc.GetCommentsForReferenceRequest{
 			TargetType:   "invalid",
 			ReferencedId: mealplanningfakes.BuildFakeID(),
 		})
@@ -257,7 +303,7 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
 		userID := mealplanningfakes.BuildFakeID()
@@ -278,9 +324,9 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.UpdateComment(ctx, &mealplanninggrpc.UpdateCommentRequest{
+		res, err := s.UpdateComment(ctx, &commentssvc.UpdateCommentRequest{
 			CommentId: commentID,
-			Content:   newContent,
+			Input:     &commentssvc.CommentUpdateRequestInput{Content: newContent},
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
@@ -293,7 +339,7 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
 		ownerID := commentsfakes.BuildFakeID()
@@ -313,9 +359,9 @@ func TestServiceImpl_UpdateComment(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.UpdateComment(ctx, &mealplanninggrpc.UpdateCommentRequest{
+		res, err := s.UpdateComment(ctx, &commentssvc.UpdateCommentRequest{
 			CommentId: commentID,
-			Content:   "updated",
+			Input:     &commentssvc.CommentUpdateRequestInput{Content: "updated"},
 		})
 		assert.Error(t, err)
 		assert.Nil(t, res)
@@ -334,7 +380,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
 		userID := mealplanningfakes.BuildFakeID()
@@ -354,7 +400,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.ArchiveComment(ctx, &mealplanninggrpc.ArchiveCommentRequest{
+		res, err := s.ArchiveComment(ctx, &commentssvc.ArchiveCommentRequest{
 			CommentId: commentID,
 		})
 		assert.NoError(t, err)
@@ -367,7 +413,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		s := buildServiceImplForRecipesTest(t)
+		s := buildCommentsServiceImplForTest(t)
 
 		commentID := commentsfakes.BuildFakeID()
 		ownerID := commentsfakes.BuildFakeID()
@@ -387,7 +433,7 @@ func TestServiceImpl_ArchiveComment(T *testing.T) {
 			}, nil
 		}
 
-		res, err := s.ArchiveComment(ctx, &mealplanninggrpc.ArchiveCommentRequest{
+		res, err := s.ArchiveComment(ctx, &commentssvc.ArchiveCommentRequest{
 			CommentId: commentID,
 		})
 		assert.Error(t, err)

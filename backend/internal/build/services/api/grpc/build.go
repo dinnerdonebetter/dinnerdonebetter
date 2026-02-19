@@ -52,6 +52,7 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	authhttpsvc "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	commentssvc "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -115,6 +116,7 @@ func Build(
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,
+		commentssvc.CommentsSvcProviders,
 		authsvc.AuthSvcProviders,
 		dataprivacysvc.DataPrivSvcProviders,
 		identitysvc.IDSvcProviders,

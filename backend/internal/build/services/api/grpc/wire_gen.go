@@ -37,7 +37,7 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	grpc15 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	grpc16 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
@@ -57,6 +57,7 @@ import (
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	grpc15 "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
 	grpc3 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	grpc4 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -243,6 +244,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	manageManager := authentication2.ProvideOAuth2ClientManager(logger, tracerProvider, oAuth2Config, oauthRepository)
 	auditMethodPermissions := grpc.ProvideMethodPermissions()
 	authMethodPermissions := grpc2.ProvideMethodPermissions()
+	commentsMethodPermissions := grpc15.ProvideMethodPermissions()
 	identityMethodPermissions := grpc4.ProvideMethodPermissions()
 	issueReportsMethodPermissions := grpc6.ProvideMethodPermissions()
 	mealPlanningMethodPermissions := grpc7.ProvideMethodPermissions()
@@ -253,12 +255,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadedMediaMethodPermissions := grpc12.ProvideMethodPermissions()
 	waitlistsMethodPermissions := grpc14.ProvideMethodPermissions()
 	webhooksMethodPermissions := grpc13.ProvideMethodPermissions()
-	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, identityMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
+	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()
-	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
-	server, err := grpc15.NewGRPCServer(grpcConfig, logger, v2, v3, v4...)
+	commentsServiceServer := grpc15.NewService(logger, tracerProvider, commentsDataManager, mealPlanningManager)
+	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, commentsServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, issueReportsServiceServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, paymentsServiceServer, settingsServiceServer, uploadedMediaServiceServer, waitlistsServiceServer, webhooksServiceServer)
+	server, err := grpc16.NewGRPCServer(grpcConfig, logger, v2, v3, v4...)
 	if err != nil {
 		return nil, err
 	}

@@ -23,9 +23,9 @@ internal enum Mealplanning_MealPlanningService {
         /// Namespace for "AddCommentToMeal" metadata.
         internal enum AddCommentToMeal {
             /// Request type for "AddCommentToMeal".
-            internal typealias Input = Mealplanning_AddCommentToMealRequest
+            internal typealias Input = Comments_AddCommentToMealRequest
             /// Response type for "AddCommentToMeal".
-            internal typealias Output = Mealplanning_AddCommentToMealResponse
+            internal typealias Output = Comments_AddCommentToMealResponse
             /// Descriptor for "AddCommentToMeal".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
@@ -35,9 +35,9 @@ internal enum Mealplanning_MealPlanningService {
         /// Namespace for "AddCommentToMealPlan" metadata.
         internal enum AddCommentToMealPlan {
             /// Request type for "AddCommentToMealPlan".
-            internal typealias Input = Mealplanning_AddCommentToMealPlanRequest
+            internal typealias Input = Comments_AddCommentToMealPlanRequest
             /// Response type for "AddCommentToMealPlan".
-            internal typealias Output = Mealplanning_AddCommentToMealPlanResponse
+            internal typealias Output = Comments_AddCommentToMealPlanResponse
             /// Descriptor for "AddCommentToMealPlan".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
@@ -47,13 +47,25 @@ internal enum Mealplanning_MealPlanningService {
         /// Namespace for "AddCommentToRecipe" metadata.
         internal enum AddCommentToRecipe {
             /// Request type for "AddCommentToRecipe".
-            internal typealias Input = Mealplanning_AddCommentToRecipeRequest
+            internal typealias Input = Comments_AddCommentToRecipeRequest
             /// Response type for "AddCommentToRecipe".
-            internal typealias Output = Mealplanning_AddCommentToRecipeResponse
+            internal typealias Output = Comments_AddCommentToRecipeResponse
             /// Descriptor for "AddCommentToRecipe".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
                 method: "AddCommentToRecipe"
+            )
+        }
+        /// Namespace for "CreateComment" metadata.
+        internal enum CreateComment {
+            /// Request type for "CreateComment".
+            internal typealias Input = Comments_CreateCommentRequest
+            /// Response type for "CreateComment".
+            internal typealias Output = Comments_CreateCommentResponse
+            /// Descriptor for "CreateComment".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "CreateComment"
             )
         }
         /// Namespace for "ArchiveMeal" metadata.
@@ -306,6 +318,18 @@ internal enum Mealplanning_MealPlanningService {
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
                 method: "ArchiveValidIngredient"
+            )
+        }
+        /// Namespace for "ArchiveComment" metadata.
+        internal enum ArchiveComment {
+            /// Request type for "ArchiveComment".
+            internal typealias Input = Comments_ArchiveCommentRequest
+            /// Response type for "ArchiveComment".
+            internal typealias Output = Comments_ArchiveCommentResponse
+            /// Descriptor for "ArchiveComment".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
+                method: "ArchiveComment"
             )
         }
         /// Namespace for "ArchiveValidIngredientGroup" metadata.
@@ -884,18 +908,6 @@ internal enum Mealplanning_MealPlanningService {
                 method: "CreateValidVessel"
             )
         }
-        /// Namespace for "ArchiveComment" metadata.
-        internal enum ArchiveComment {
-            /// Request type for "ArchiveComment".
-            internal typealias Input = Mealplanning_ArchiveCommentRequest
-            /// Response type for "ArchiveComment".
-            internal typealias Output = Mealplanning_ArchiveCommentResponse
-            /// Descriptor for "ArchiveComment".
-            internal static let descriptor = GRPCCore.MethodDescriptor(
-                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
-                method: "ArchiveComment"
-            )
-        }
         /// Namespace for "FinalizeMealPlan" metadata.
         internal enum FinalizeMealPlan {
             /// Request type for "FinalizeMealPlan".
@@ -911,9 +923,9 @@ internal enum Mealplanning_MealPlanningService {
         /// Namespace for "GetCommentsForReference" metadata.
         internal enum GetCommentsForReference {
             /// Request type for "GetCommentsForReference".
-            internal typealias Input = Mealplanning_GetCommentsForReferenceRequest
+            internal typealias Input = Comments_GetCommentsForReferenceRequest
             /// Response type for "GetCommentsForReference".
-            internal typealias Output = Mealplanning_GetCommentsForReferenceResponse
+            internal typealias Output = Comments_GetCommentsForReferenceResponse
             /// Descriptor for "GetCommentsForReference".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
@@ -2627,9 +2639,9 @@ internal enum Mealplanning_MealPlanningService {
         /// Namespace for "UpdateComment" metadata.
         internal enum UpdateComment {
             /// Request type for "UpdateComment".
-            internal typealias Input = Mealplanning_UpdateCommentRequest
+            internal typealias Input = Comments_UpdateCommentRequest
             /// Response type for "UpdateComment".
-            internal typealias Output = Mealplanning_UpdateCommentResponse
+            internal typealias Output = Comments_UpdateCommentResponse
             /// Descriptor for "UpdateComment".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "mealplanning.MealPlanningService"),
@@ -2653,6 +2665,7 @@ internal enum Mealplanning_MealPlanningService {
             AddCommentToMeal.descriptor,
             AddCommentToMealPlan.descriptor,
             AddCommentToRecipe.descriptor,
+            CreateComment.descriptor,
             ArchiveMeal.descriptor,
             ArchiveMealPlan.descriptor,
             ArchiveMealPlanEvent.descriptor,
@@ -2674,6 +2687,7 @@ internal enum Mealplanning_MealPlanningService {
             ArchiveRecipeStepProduct.descriptor,
             ArchiveRecipeStepVessel.descriptor,
             ArchiveValidIngredient.descriptor,
+            ArchiveComment.descriptor,
             ArchiveValidIngredientGroup.descriptor,
             ArchiveValidIngredientMeasurementUnit.descriptor,
             ArchiveValidIngredientPreparation.descriptor,
@@ -2722,7 +2736,6 @@ internal enum Mealplanning_MealPlanningService {
             CreateValidPreparationInstrument.descriptor,
             CreateValidPreparationVessel.descriptor,
             CreateValidVessel.descriptor,
-            ArchiveComment.descriptor,
             FinalizeMealPlan.descriptor,
             GetCommentsForReference.descriptor,
             GetMeal.descriptor,
@@ -2891,58 +2904,77 @@ extension Mealplanning_MealPlanningService {
         /// Call the "AddCommentToMeal" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToMealRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToMealRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToMealResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToMealRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToMealRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToMealResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func addCommentToMeal<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToMealRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToMealResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToMealRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToMealRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToMealResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "AddCommentToMealPlan" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToMealPlanRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToMealPlanRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToMealPlanResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToMealPlanRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToMealPlanRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToMealPlanResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func addCommentToMealPlan<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealPlanRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToMealPlanRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToMealPlanResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToMealPlanRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToMealPlanRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToMealPlanResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealPlanResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealPlanResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "AddCommentToRecipe" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToRecipeRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToRecipeRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToRecipeResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToRecipeRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToRecipeRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToRecipeResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func addCommentToRecipe<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToRecipeRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToRecipeRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToRecipeResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToRecipeRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToRecipeRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToRecipeResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToRecipeResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToRecipeResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "CreateComment" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Comments_CreateCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_CreateCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_CreateCommentResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func createComment<Result>(
+            request: GRPCCore.ClientRequest<Comments_CreateCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_CreateCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_CreateCommentResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_CreateCommentResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "ArchiveMeal" method.
@@ -3342,6 +3374,25 @@ extension Mealplanning_MealPlanningService {
             deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveValidIngredientResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveValidIngredientResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "ArchiveComment" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Comments_ArchiveCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_ArchiveCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_ArchiveCommentResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func archiveComment<Result>(
+            request: GRPCCore.ClientRequest<Comments_ArchiveCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_ArchiveCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_ArchiveCommentResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_ArchiveCommentResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "ArchiveValidIngredientGroup" method.
@@ -4256,25 +4307,6 @@ extension Mealplanning_MealPlanningService {
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_CreateValidVesselResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
-        /// Call the "ArchiveComment" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_ArchiveCommentRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_ArchiveCommentRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_ArchiveCommentResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        func archiveComment<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_ArchiveCommentRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_ArchiveCommentRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveCommentResponse>,
-            options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveCommentResponse>) async throws -> Result
-        ) async throws -> Result where Result: Sendable
-
         /// Call the "FinalizeMealPlan" method.
         ///
         /// - Parameters:
@@ -4297,20 +4329,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "GetCommentsForReference" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_GetCommentsForReferenceRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_GetCommentsForReferenceRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_GetCommentsForReferenceResponse` messages.
+        ///   - request: A request containing a single `Comments_GetCommentsForReferenceRequest` message.
+        ///   - serializer: A serializer for `Comments_GetCommentsForReferenceRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_GetCommentsForReferenceResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func getCommentsForReference<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_GetCommentsForReferenceRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetCommentsForReferenceRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetCommentsForReferenceResponse>,
+            request: GRPCCore.ClientRequest<Comments_GetCommentsForReferenceRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_GetCommentsForReferenceRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_GetCommentsForReferenceResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetCommentsForReferenceResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_GetCommentsForReferenceResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetMeal" method.
@@ -7014,20 +7046,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "UpdateComment" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_UpdateCommentRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_UpdateCommentRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_UpdateCommentResponse` messages.
+        ///   - request: A request containing a single `Comments_UpdateCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_UpdateCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_UpdateCommentResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         func updateComment<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_UpdateCommentRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_UpdateCommentRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UpdateCommentResponse>,
+            request: GRPCCore.ClientRequest<Comments_UpdateCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_UpdateCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_UpdateCommentResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateCommentResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_UpdateCommentResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "UpdateUserIngredientPreference" method.
@@ -7069,20 +7101,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "AddCommentToMeal" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToMealRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToMealRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToMealResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToMealRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToMealRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToMealResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func addCommentToMeal<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToMealRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToMealResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToMealRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToMealRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToMealResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
@@ -7099,20 +7131,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "AddCommentToMealPlan" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToMealPlanRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToMealPlanRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToMealPlanResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToMealPlanRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToMealPlanRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToMealPlanResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func addCommentToMealPlan<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealPlanRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToMealPlanRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToMealPlanResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToMealPlanRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToMealPlanRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToMealPlanResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealPlanResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealPlanResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
@@ -7129,26 +7161,56 @@ extension Mealplanning_MealPlanningService {
         /// Call the "AddCommentToRecipe" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_AddCommentToRecipeRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_AddCommentToRecipeRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_AddCommentToRecipeResponse` messages.
+        ///   - request: A request containing a single `Comments_AddCommentToRecipeRequest` message.
+        ///   - serializer: A serializer for `Comments_AddCommentToRecipeRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_AddCommentToRecipeResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func addCommentToRecipe<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_AddCommentToRecipeRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_AddCommentToRecipeRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_AddCommentToRecipeResponse>,
+            request: GRPCCore.ClientRequest<Comments_AddCommentToRecipeRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_AddCommentToRecipeRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_AddCommentToRecipeResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToRecipeResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToRecipeResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.AddCommentToRecipe.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "CreateComment" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Comments_CreateCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_CreateCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_CreateCommentResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func createComment<Result>(
+            request: GRPCCore.ClientRequest<Comments_CreateCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_CreateCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_CreateCommentResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_CreateCommentResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.CreateComment.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -7779,6 +7841,36 @@ extension Mealplanning_MealPlanningService {
             try await self.client.unary(
                 request: request,
                 descriptor: Mealplanning_MealPlanningService.Method.ArchiveValidIngredient.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "ArchiveComment" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `Comments_ArchiveCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_ArchiveCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_ArchiveCommentResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func archiveComment<Result>(
+            request: GRPCCore.ClientRequest<Comments_ArchiveCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_ArchiveCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_ArchiveCommentResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_ArchiveCommentResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: Mealplanning_MealPlanningService.Method.ArchiveComment.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -9226,36 +9318,6 @@ extension Mealplanning_MealPlanningService {
             )
         }
 
-        /// Call the "ArchiveComment" method.
-        ///
-        /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_ArchiveCommentRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_ArchiveCommentRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_ArchiveCommentResponse` messages.
-        ///   - options: Options to apply to this RPC.
-        ///   - handleResponse: A closure which handles the response, the result of which is
-        ///       returned to the caller. Returning from the closure will cancel the RPC if it
-        ///       hasn't already finished.
-        /// - Returns: The result of `handleResponse`.
-        internal func archiveComment<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_ArchiveCommentRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_ArchiveCommentRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_ArchiveCommentResponse>,
-            options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveCommentResponse>) async throws -> Result = { response in
-                try response.message
-            }
-        ) async throws -> Result where Result: Sendable {
-            try await self.client.unary(
-                request: request,
-                descriptor: Mealplanning_MealPlanningService.Method.ArchiveComment.descriptor,
-                serializer: serializer,
-                deserializer: deserializer,
-                options: options,
-                onResponse: handleResponse
-            )
-        }
-
         /// Call the "FinalizeMealPlan" method.
         ///
         /// - Parameters:
@@ -9289,20 +9351,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "GetCommentsForReference" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_GetCommentsForReferenceRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_GetCommentsForReferenceRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_GetCommentsForReferenceResponse` messages.
+        ///   - request: A request containing a single `Comments_GetCommentsForReferenceRequest` message.
+        ///   - serializer: A serializer for `Comments_GetCommentsForReferenceRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_GetCommentsForReferenceResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func getCommentsForReference<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_GetCommentsForReferenceRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_GetCommentsForReferenceRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_GetCommentsForReferenceResponse>,
+            request: GRPCCore.ClientRequest<Comments_GetCommentsForReferenceRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_GetCommentsForReferenceRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_GetCommentsForReferenceResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetCommentsForReferenceResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_GetCommentsForReferenceResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
@@ -13579,20 +13641,20 @@ extension Mealplanning_MealPlanningService {
         /// Call the "UpdateComment" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Mealplanning_UpdateCommentRequest` message.
-        ///   - serializer: A serializer for `Mealplanning_UpdateCommentRequest` messages.
-        ///   - deserializer: A deserializer for `Mealplanning_UpdateCommentResponse` messages.
+        ///   - request: A request containing a single `Comments_UpdateCommentRequest` message.
+        ///   - serializer: A serializer for `Comments_UpdateCommentRequest` messages.
+        ///   - deserializer: A deserializer for `Comments_UpdateCommentResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
         internal func updateComment<Result>(
-            request: GRPCCore.ClientRequest<Mealplanning_UpdateCommentRequest>,
-            serializer: some GRPCCore.MessageSerializer<Mealplanning_UpdateCommentRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Mealplanning_UpdateCommentResponse>,
+            request: GRPCCore.ClientRequest<Comments_UpdateCommentRequest>,
+            serializer: some GRPCCore.MessageSerializer<Comments_UpdateCommentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Comments_UpdateCommentResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateCommentResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_UpdateCommentResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
@@ -13644,23 +13706,23 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     /// Call the "AddCommentToMeal" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_AddCommentToMealRequest` message.
+    ///   - request: A request containing a single `Comments_AddCommentToMealRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToMeal<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealRequest>,
+        request: GRPCCore.ClientRequest<Comments_AddCommentToMealRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
         try await self.addCommentToMeal(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_AddCommentToMealRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_AddCommentToMealResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_AddCommentToMealRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_AddCommentToMealResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -13669,23 +13731,23 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     /// Call the "AddCommentToMealPlan" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_AddCommentToMealPlanRequest` message.
+    ///   - request: A request containing a single `Comments_AddCommentToMealPlanRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToMealPlan<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_AddCommentToMealPlanRequest>,
+        request: GRPCCore.ClientRequest<Comments_AddCommentToMealPlanRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealPlanResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealPlanResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
         try await self.addCommentToMealPlan(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_AddCommentToMealPlanRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_AddCommentToMealPlanResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_AddCommentToMealPlanRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_AddCommentToMealPlanResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -13694,23 +13756,48 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     /// Call the "AddCommentToRecipe" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_AddCommentToRecipeRequest` message.
+    ///   - request: A request containing a single `Comments_AddCommentToRecipeRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToRecipe<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_AddCommentToRecipeRequest>,
+        request: GRPCCore.ClientRequest<Comments_AddCommentToRecipeRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToRecipeResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToRecipeResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
         try await self.addCommentToRecipe(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_AddCommentToRecipeRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_AddCommentToRecipeResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_AddCommentToRecipeRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_AddCommentToRecipeResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "CreateComment" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Comments_CreateCommentRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func createComment<Result>(
+        request: GRPCCore.ClientRequest<Comments_CreateCommentRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_CreateCommentResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.createComment(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_CreateCommentRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_CreateCommentResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -14236,6 +14323,31 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_ArchiveValidIngredientRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_ArchiveValidIngredientResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchiveComment" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `Comments_ArchiveCommentRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveComment<Result>(
+        request: GRPCCore.ClientRequest<Comments_ArchiveCommentRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_ArchiveCommentResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.archiveComment(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_ArchiveCommentRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_ArchiveCommentResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -15441,31 +15553,6 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
-    /// Call the "ArchiveComment" method.
-    ///
-    /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_ArchiveCommentRequest` message.
-    ///   - options: Options to apply to this RPC.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func archiveComment<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_ArchiveCommentRequest>,
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveCommentResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        try await self.archiveComment(
-            request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_ArchiveCommentRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_ArchiveCommentResponse>(),
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
     /// Call the "FinalizeMealPlan" method.
     ///
     /// - Parameters:
@@ -15494,23 +15581,23 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     /// Call the "GetCommentsForReference" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_GetCommentsForReferenceRequest` message.
+    ///   - request: A request containing a single `Comments_GetCommentsForReferenceRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func getCommentsForReference<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_GetCommentsForReferenceRequest>,
+        request: GRPCCore.ClientRequest<Comments_GetCommentsForReferenceRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetCommentsForReferenceResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_GetCommentsForReferenceResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
         try await self.getCommentsForReference(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_GetCommentsForReferenceRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_GetCommentsForReferenceResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_GetCommentsForReferenceRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_GetCommentsForReferenceResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -19069,23 +19156,23 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     /// Call the "UpdateComment" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Mealplanning_UpdateCommentRequest` message.
+    ///   - request: A request containing a single `Comments_UpdateCommentRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func updateComment<Result>(
-        request: GRPCCore.ClientRequest<Mealplanning_UpdateCommentRequest>,
+        request: GRPCCore.ClientRequest<Comments_UpdateCommentRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateCommentResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_UpdateCommentResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
         try await self.updateComment(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Mealplanning_UpdateCommentRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Mealplanning_UpdateCommentResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Comments_UpdateCommentRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Comments_UpdateCommentResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -19131,14 +19218,14 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToMeal<Result>(
-        _ message: Mealplanning_AddCommentToMealRequest,
+        _ message: Comments_AddCommentToMealRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_AddCommentToMealRequest>(
+        let request = GRPCCore.ClientRequest<Comments_AddCommentToMealRequest>(
             message: message,
             metadata: metadata
         )
@@ -19160,14 +19247,14 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToMealPlan<Result>(
-        _ message: Mealplanning_AddCommentToMealPlanRequest,
+        _ message: Comments_AddCommentToMealPlanRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToMealPlanResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToMealPlanResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_AddCommentToMealPlanRequest>(
+        let request = GRPCCore.ClientRequest<Comments_AddCommentToMealPlanRequest>(
             message: message,
             metadata: metadata
         )
@@ -19189,18 +19276,47 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func addCommentToRecipe<Result>(
-        _ message: Mealplanning_AddCommentToRecipeRequest,
+        _ message: Comments_AddCommentToRecipeRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_AddCommentToRecipeResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_AddCommentToRecipeResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_AddCommentToRecipeRequest>(
+        let request = GRPCCore.ClientRequest<Comments_AddCommentToRecipeRequest>(
             message: message,
             metadata: metadata
         )
         return try await self.addCommentToRecipe(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "CreateComment" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func createComment<Result>(
+        _ message: Comments_CreateCommentRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_CreateCommentResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Comments_CreateCommentRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.createComment(
             request: request,
             options: options,
             onResponse: handleResponse
@@ -19810,6 +19926,35 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
             metadata: metadata
         )
         return try await self.archiveValidIngredient(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "ArchiveComment" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func archiveComment<Result>(
+        _ message: Comments_ArchiveCommentRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_ArchiveCommentResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<Comments_ArchiveCommentRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.archiveComment(
             request: request,
             options: options,
             onResponse: handleResponse
@@ -21208,35 +21353,6 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
         )
     }
 
-    /// Call the "ArchiveComment" method.
-    ///
-    /// - Parameters:
-    ///   - message: request message to send.
-    ///   - metadata: Additional metadata to send, defaults to empty.
-    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
-    ///   - handleResponse: A closure which handles the response, the result of which is
-    ///       returned to the caller. Returning from the closure will cancel the RPC if it
-    ///       hasn't already finished.
-    /// - Returns: The result of `handleResponse`.
-    internal func archiveComment<Result>(
-        _ message: Mealplanning_ArchiveCommentRequest,
-        metadata: GRPCCore.Metadata = [:],
-        options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_ArchiveCommentResponse>) async throws -> Result = { response in
-            try response.message
-        }
-    ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_ArchiveCommentRequest>(
-            message: message,
-            metadata: metadata
-        )
-        return try await self.archiveComment(
-            request: request,
-            options: options,
-            onResponse: handleResponse
-        )
-    }
-
     /// Call the "FinalizeMealPlan" method.
     ///
     /// - Parameters:
@@ -21277,14 +21393,14 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func getCommentsForReference<Result>(
-        _ message: Mealplanning_GetCommentsForReferenceRequest,
+        _ message: Comments_GetCommentsForReferenceRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_GetCommentsForReferenceResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_GetCommentsForReferenceResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_GetCommentsForReferenceRequest>(
+        let request = GRPCCore.ClientRequest<Comments_GetCommentsForReferenceRequest>(
             message: message,
             metadata: metadata
         )
@@ -25424,14 +25540,14 @@ extension Mealplanning_MealPlanningService.ClientProtocol {
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
     internal func updateComment<Result>(
-        _ message: Mealplanning_UpdateCommentRequest,
+        _ message: Comments_UpdateCommentRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Mealplanning_UpdateCommentResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Comments_UpdateCommentResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Mealplanning_UpdateCommentRequest>(
+        let request = GRPCCore.ClientRequest<Comments_UpdateCommentRequest>(
             message: message,
             metadata: metadata
         )

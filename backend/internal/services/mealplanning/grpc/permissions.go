@@ -274,10 +274,11 @@ func ProvideMethodPermissions() MealPlanningMethodPermissions {
 		mealplanningsvc.MealPlanningService_ArchiveRecipeRating_FullMethodName:       {authorization.ArchiveRecipeRatingsPermission},
 		mealplanningsvc.MealPlanningService_GetRecipeRatingsForRecipe_FullMethodName: {authorization.ReadRecipeRatingsPermission},
 
-		// Comments
+		// Comments (types imported from comments proto)
 		mealplanningsvc.MealPlanningService_AddCommentToRecipe_FullMethodName:      {authorization.CreateCommentsPermission},
 		mealplanningsvc.MealPlanningService_AddCommentToMeal_FullMethodName:        {authorization.CreateCommentsPermission},
 		mealplanningsvc.MealPlanningService_AddCommentToMealPlan_FullMethodName:    {authorization.CreateCommentsPermission},
+		mealplanningsvc.MealPlanningService_CreateComment_FullMethodName:           {authorization.CreateCommentsPermission},
 		mealplanningsvc.MealPlanningService_GetCommentsForReference_FullMethodName: {authorization.ReadCommentsPermission},
 		mealplanningsvc.MealPlanningService_UpdateComment_FullMethodName:           {authorization.UpdateCommentsPermission},
 		mealplanningsvc.MealPlanningService_ArchiveComment_FullMethodName:          {authorization.ArchiveCommentsPermission},
