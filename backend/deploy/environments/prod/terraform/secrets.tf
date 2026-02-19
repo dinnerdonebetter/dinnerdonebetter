@@ -30,7 +30,6 @@ variable "SEGMENT_API_TOKEN" {}
 
 # PostHog API tokens (Project API Key for events; Personal API Key for feature flags API)
 variable "POSTHOG_API_KEY" {}
-variable "POSTHOG_PERSONAL_API_KEY" {}
 
 # Grafana Cloud API keys
 # NOTE: the passwords are all effectively the same, but they maybe won't be one day? Who knows.
