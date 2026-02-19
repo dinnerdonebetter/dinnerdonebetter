@@ -63,11 +63,11 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
   depends_on = [kubernetes_namespace.prod]
 
   data = {
-    data_changes               = google_pubsub_topic.data_changes_topic.name
-    outbound_emails            = google_pubsub_topic.outbound_emails_topic.name
-    search_index_requests      = google_pubsub_topic.search_index_requests_topic.name
-    user_data_aggregator       = google_pubsub_topic.user_data_aggregator_topic.name
-    webhook_execution_requests = google_pubsub_topic.webhook_execution_requests_topic.name
+    data_changes               = google_pubsub_topic.data_changes_topic.id
+    outbound_emails            = google_pubsub_topic.outbound_emails_topic.id
+    search_index_requests      = google_pubsub_topic.search_index_requests_topic.id
+    user_data_aggregator       = google_pubsub_topic.user_data_aggregator_topic.id
+    webhook_execution_requests = google_pubsub_topic.webhook_execution_requests_topic.id
   }
 }
 
@@ -96,6 +96,7 @@ resource "kubernetes_secret" "api_service_config" {
     SENDGRID_API_TOKEN              = var.SENDGRID_API_KEY
     SEGMENT_API_TOKEN               = var.SEGMENT_API_TOKEN
     POSTHOG_API_KEY                 = var.POSTHOG_API_KEY
+    POSTHOG_PERSONAL_API_KEY         = var.POSTHOG_PERSONAL_API_KEY
     ALGOLIA_APPLICATION_ID          = var.ALGOLIA_APPLICATION_ID
     ALGOLIA_API_KEY                 = var.ALGOLIA_API_KEY
     GOOGLE_SSO_OAUTH2_CLIENT_ID     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID

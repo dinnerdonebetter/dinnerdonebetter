@@ -6,5 +6,5 @@
     name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
     valueFrom:
       secretKeyRef:
-        name: api-service-secrets
+        name: api-service-config
         key: SEGMENT_API_TOKEN

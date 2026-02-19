@@ -50,8 +50,8 @@ images:
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
-  ### API Server - needs database, pubsub, service secrets, and CSI volume for secrets
-  - path: patches/deployment-secrets-csi-volume.yaml
+  ### API Server - needs database, pubsub, service secrets (from Terraform api-service-config), workload identity
+  - path: patches/deployment-workload-identity.yaml
     target:
       version: v1
       kind: Deployment
@@ -72,8 +72,8 @@ patches:
       kind: Deployment
       name: dinner-done-better-service-api-deployment
 
-  ### Async Message Handler - needs database, pubsub, service secrets, environment, and CSI volume
-  - path: patches/deployment-secrets-csi-volume.yaml
+  ### Async Message Handler - needs database, pubsub, service secrets, environment, workload identity
+  - path: patches/deployment-workload-identity.yaml
     target:
       version: v1
       kind: Deployment
@@ -104,21 +104,13 @@ patches:
       kind: Deployment
       name: dinner-done-better-async-message-handler-deployment
 
-  ### DB Cleaner CronJob - needs database only and CSI volume
-  - path: patches/cronjob-secrets-csi-volume.yaml
-    target:
-      kind: CronJob
-      name: dinner-done-better-job-db-cleaner
+  ### DB Cleaner CronJob - needs database only
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
       name: dinner-done-better-job-db-cleaner
 
-  ### Meal Plan Finalizer CronJob - needs database, pubsub, and CSI volume
-  - path: patches/cronjob-secrets-csi-volume.yaml
-    target:
-      kind: CronJob
-      name: dinner-done-better-job-meal-plan-finalizer
+  ### Meal Plan Finalizer CronJob - needs database, pubsub
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
@@ -128,11 +120,7 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-finalizer
 
-  ### Meal Plan Grocery List Init CronJob - needs database, pubsub, segment, and CSI volume
-  - path: patches/cronjob-secrets-csi-volume.yaml
-    target:
-      kind: CronJob
-      name: dinner-done-better-job-meal-plan-grocery-list-init
+  ### Meal Plan Grocery List Init CronJob - needs database, pubsub, segment
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
@@ -146,11 +134,7 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-grocery-list-init
 
-  ### Meal Plan Task Creator CronJob - needs database, pubsub, segment, and CSI volume
-  - path: patches/cronjob-secrets-csi-volume.yaml
-    target:
-      kind: CronJob
-      name: dinner-done-better-job-meal-plan-task-creator
+  ### Meal Plan Task Creator CronJob - needs database, pubsub, segment
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob
@@ -164,11 +148,7 @@ patches:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-task-creator
 
-  ### Search Data Index Scheduler CronJob - needs database, pubsub, and CSI volume
-  - path: patches/cronjob-secrets-csi-volume.yaml
-    target:
-      kind: CronJob
-      name: dinner-done-better-job-search-data-index-scheduler
+  ### Search Data Index Scheduler CronJob - needs database, pubsub
   - path: patches/cronjob-database-env.yaml
     target:
       kind: CronJob

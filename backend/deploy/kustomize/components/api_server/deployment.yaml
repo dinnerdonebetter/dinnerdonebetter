@@ -23,6 +23,7 @@ spec:
         # this is the API server container
         - name: dinner-done-better-service-api
           image: dinner-done-better-service-api
+          args: ["serve"]
           imagePullPolicy: Always
           env:
             - name: "CONFIGURATION_FILEPATH"

@@ -1,3 +1,9 @@
+# Secret Manager API must be enabled for the CSI driver and SecretSync to fetch secrets
+resource "google_project_service" "secret_manager" {
+  project = local.project_id
+  service = "secretmanager.googleapis.com"
+}
+
 resource "google_project_iam_custom_role" "prod_cluster_role" {
   role_id     = "prod_cluster_role"
   title       = "Prod cluster role"
@@ -114,10 +120,26 @@ resource "google_service_account" "workload_identity_sa" {
   description  = "Service account for Kubernetes workloads to access GCP resources"
 }
 
-# Grant the workload identity SA access to secrets
+# Grant the workload identity SA access to secrets and Pub/Sub
 resource "google_project_iam_member" "workload_identity_secret_accessor" {
   project = local.project_id
   role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
+}
+resource "google_project_iam_member" "workload_identity_pubsub" {
+  project = local.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
+}
+resource "google_project_iam_member" "workload_identity_pubsub_subscriber" {
+  project = local.project_id
+  role    = "roles/pubsub.subscriber"
+  member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
+}
+# TopicAdminClient.GetTopic requires pubsub.topics.get (included in viewer)
+resource "google_project_iam_member" "workload_identity_pubsub_viewer" {
+  project = local.project_id
+  role    = "roles/pubsub.viewer"
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
