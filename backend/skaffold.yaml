@@ -125,13 +125,12 @@ profiles:
         namespace: localdev
         port: 8888
 
-  - name: dev
+  - name: prod
     build:
       tagPolicy:
         sha256: {}
       artifacts:
-        # backend artifacts (ko)
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-service-api
           ko:
             dir: .
             flags:
@@ -142,7 +141,7 @@ profiles:
             main: ./cmd/services/api
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-db-cleaner
           ko:
             dir: .
             flags:
@@ -153,7 +152,7 @@ profiles:
             main: ./cmd/workers/db_cleaner
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-finalizer
           ko:
             dir: .
             flags:
@@ -164,7 +163,7 @@ profiles:
             main: ./cmd/workers/meal_plan_finalizer
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-grocery-list-init
           ko:
             dir: .
             flags:
@@ -175,7 +174,7 @@ profiles:
             main: ./cmd/workers/meal_plan_grocery_list_initializer
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-meal-plan-task-creator
           ko:
             dir: .
             flags:
@@ -186,7 +185,7 @@ profiles:
             main: ./cmd/workers/meal_plan_task_creator
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-job-search-data-index-scheduler
           ko:
             dir: .
             flags:
@@ -197,7 +196,7 @@ profiles:
             main: ./cmd/workers/search_data_index_scheduler
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-async-message-handler
           ko:
             dir: .
             flags:
@@ -208,7 +207,7 @@ profiles:
             main: ./cmd/functions/async_message_handler
             fromImage: golang:1.26-trixie
 
-        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-webapp
+        - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-admin-webapp
           ko:
             dir: .
             flags:
@@ -219,8 +218,7 @@ profiles:
             main: ./cmd/services/admin
             fromImage: golang:1.26-trixie
 
-        # Uncomment to enable MCP server deployment
-        # - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-mcp-server
+        # - image: us-central1-docker.pkg.dev/dinner-done-better-prod/containers/dinner-done-better-mcp-server
         #   ko:
         #     dir: .
         #     flags:
@@ -234,8 +232,8 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - deploy/environments/dev/kustomize
+          - deploy/environments/prod/kustomize
 
     deploy:
       kubectl:
-        defaultNamespace: dev
+        defaultNamespace: prod

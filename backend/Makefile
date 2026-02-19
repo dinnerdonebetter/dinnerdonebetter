@@ -155,7 +155,7 @@ golang_lint: struct_usage_check
 
 .PHONY: lint_terraform
 lint_terraform: terraformat
-	@$(SCRIPTS_DIR)/lint_terraform.sh deploy/environments/dev/terraform
+	@$(SCRIPTS_DIR)/lint_terraform.sh deploy/environments/prod/terraform
 
 .PHONY: shellcheck
 shellcheck:
@@ -238,12 +238,12 @@ agent:
 
 # OPERATIONS
 
-GCP_DEV_PROJECT_NAME := dinner-done-better-dev
+GCP_PROJECT_NAME := dinner-done-better-prod
 
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
-.PHONY: proxy_dev_db
-proxy_dev_db:
-	$(SCRIPTS_DIR)/proxy_dev_db.sh $(GCP_DEV_PROJECT_NAME)
+.PHONY: proxy_db
+proxy_db:
+	$(SCRIPTS_DIR)/proxy_db.sh $(GCP_PROJECT_NAME) prod
 
 # Deploy backend to Docker Desktop Kubernetes (localdev profile)
 .PHONY: deploy_localdev

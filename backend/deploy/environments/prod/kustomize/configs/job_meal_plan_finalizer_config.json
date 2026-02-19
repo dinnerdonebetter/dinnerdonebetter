@@ -1,0 +1,94 @@
+{
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"events": {
+		"consumers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-prod"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		},
+		"publishers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-prod"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		}
+	},
+	"observability": {
+		"logging": {
+			"serviceName": "meal_plan_finalizer",
+			"level": "info",
+			"otelslog": {
+				"endpointURL": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"insecure": true,
+				"timeout": 2000000000
+			},
+			"provider": "otelslog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"metricsCollectorEndpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"collectionInterval": 30000000000,
+				"insecure": true,
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
+			},
+			"serviceName": "meal_plan_finalizer",
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "otel-collector-svc.prod.svc.cluster.local:4317",
+				"insecure": true
+			},
+			"service_name": "meal_plan_finalizer",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 0.1
+		}
+	},
+	"database": {
+		"oauth2TokenEncryptionKey": "",
+		"provider": "postgres",
+		"readConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"writeConnection": {
+			"username": "api_db_user",
+			"password": "",
+			"database": "dinner-done-better",
+			"hostname": "",
+			"port": 5432,
+			"disableSSL": false
+		},
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
+		"debug": false,
+		"logQueries": false,
+		"runMigrations": true
+	}
+}

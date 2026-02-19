@@ -68,7 +68,7 @@ flowchart TB
 
 ## Data Model
 
-### Migration: `00016_payments.sql`
+### Migration: `00011_payments.sql`
 
 - **products** — id, name, description, kind (recurring/one_time), amount_cents, currency, external_product_id
 - **subscriptions** — id, belongs_to_account, product_id, external_subscription_id, status, current_period_start/end
@@ -272,7 +272,7 @@ Admin uses gRPC or repository directly to list/create/edit products and subscrip
 | Adapter wire        | `internal/services/payments/adapters/wire.go`           |
 | Webhook HTTP        | `internal/services/payments/http/`                      |
 | gRPC service        | `internal/services/payments/grpc/`                      |
-| Migration           | `migrations/migration_files/00016_payments.sql`         |
+| Migration           | `migrations/migration_files/00011_payments.sql`         |
 | Admin products      | `cmd/services/admin/payments_products_handlers.go`      |
 | Admin subscriptions | `cmd/services/admin/payments_subscriptions_handlers.go` |
 | Integration tests   | `tests_integration/apiserver/payments_test.go`          |

@@ -366,7 +366,7 @@ If adding:
 
 1. Add field to `ServicesConfig` in [backend/internal/config/services_config.go](backend/internal/config/services_config.go)
 2. Add to `wire.FieldsOf(new(*ServicesConfig), "Xxx")` in [backend/internal/config/wire.go](backend/internal/config/wire.go)
-3. Add values in codegen configs: `cmd/tools/codegen/configs/localdev.go`, `dev.go`, `integrationtests.go`
+3. Add values in codegen configs: `cmd/tools/codegen/configs/localdev.go`, `integrationtests.go`. For prod, update `deploy/environments/prod/kustomize/configs/*.json` as needed.
 
 ---
 

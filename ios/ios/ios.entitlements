@@ -6,8 +6,8 @@
 	<array>
 		<!-- Development environment -->
 		<string>applinks:www.dinnerdonebetter.dev</string>
-		<!-- Production environment (uncomment when ready) -->
-		<!-- <string>applinks:www.dinnerdonebetter.com</string> -->
+		<!-- Production environment -->
+		<string>applinks:www.dinnerdonebetter.com</string>
 	</array>
 </dict>
 </plist>

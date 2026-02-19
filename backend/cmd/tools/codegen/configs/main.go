@@ -33,17 +33,12 @@ var (
 )
 
 func main() {
-	devOutputPath := "deploy/environments/dev/kustomize/configs"
-
 	// localdev config is generated to two locations:
 	// - config_files/ for docker-compose usage
 	// - kustomize/configs/ for Kubernetes usage (hostnames overridden via env vars)
 	localdevConfig := buildLocalDevConfig()
 
 	envConfigs := map[string]*config.EnvironmentConfigSet{
-		devOutputPath: {
-			RootConfig: buildDevEnvironmentServerConfig(),
-		},
 		"deploy/environments/localdev/config_files": {
 			RootConfig: localdevConfig,
 		},
@@ -54,13 +49,13 @@ func main() {
 			APIServiceConfigPath: "integration-tests-config.json",
 			RootConfig:           buildIntegrationTestsConfig(),
 		},
+		"deploy/environments/prod/kustomize/configs": {
+			RootConfig: buildProdConfig(),
+		},
 	}
 
 	for p, cfg := range envConfigs {
-		// we don't want to validate the cloud env configs because they use env vars and cluster secrets to load values
-		shouldRenderPrettyAndValidate := p != devOutputPath
-
-		if err := cfg.Render(p, true, shouldRenderPrettyAndValidate); err != nil {
+		if err := cfg.Render(p, true, true); err != nil {
 			panic(fmt.Errorf("validating config %s: %w", p, err))
 		}
 	}

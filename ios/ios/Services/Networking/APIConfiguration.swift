@@ -39,7 +39,7 @@ struct APIConfiguration {
     case .development:
       return "https://api.dinnerdonebetter.dev"
     case .production:
-      return "https://api.dinnerdonebetter.com"
+      return "https://http-api.dinnerdonebetter.com"
     }
   }
 
@@ -64,7 +64,7 @@ struct APIConfiguration {
     case .development:
       return "grpc.dinnerdonebetter.dev"
     case .production:
-      return "grpc.dinnerdonebetter.com"
+      return "api.dinnerdonebetter.com"
     }
   }
 

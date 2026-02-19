@@ -1,0 +1,50 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dinner-done-better-cert
+spec:
+  # Secret names are always required.
+  secretName: dinner-done-better-cert
+
+  # secretTemplate is optional. If set, these annotations and labels will be
+  # copied to the Secret named dinner-done-better-tls. These labels and annotations will
+  # be re-reconciled if the Certificate's secretTemplate changes. secretTemplate
+  # is also enforced, so relevant label and annotation changes on the Secret by a
+  # third party will be overwriten by cert-manager to match the secretTemplate.
+  secretTemplate:
+    annotations:
+      managed_by: "cert-manager"
+    labels:
+      managed_by: "cert-manager"
+
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+
+  isCA: false
+  usages:
+    - server auth
+    - client auth
+
+  subject:
+    organizations:
+      - dinner-done-better
+
+  dnsNames:
+    - api.dinnerdonebetter.com
+    - http-api.dinnerdonebetter.com
+    - app.dinnerdonebetter.com
+    - admin.dinnerdonebetter.com
+    - www.dinnerdonebetter.com
+
+  # Issuer references are always required.
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+    group: cert-manager.io
+---
