@@ -47,7 +47,3 @@ variable "ADMIN_WEBAPP_COOKIE_NAME" {
 variable "ADMIN_WEBAPP_COOKIE_DOMAIN" {
   default = "admin.dinnerdonebetter.com"
 }
-
-# Admin webapp OAuth2 credentials (for DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET)
-variable "ADMIN_WEBAPP_OAUTH2_CLIENT_ID" {}
-variable "ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET" {}
