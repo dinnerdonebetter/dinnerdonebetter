@@ -1,0 +1,14 @@
+name: Require dev for prod
+on:
+  pull_request:
+    branches: [prod]
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject non-dev merges into prod
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "Only dev can be merged into prod. Source branch: ${{ github.head_ref }}"
+            exit 1
+          fi
