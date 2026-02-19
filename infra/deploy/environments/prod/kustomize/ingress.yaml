@@ -1,0 +1,49 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dinner-done-better-ingress
+  annotations:
+    kubernetes.io/ingress.class: gce
+    external-dns.alpha.kubernetes.io/hostname: "dinnerdonebetter.com"
+spec:
+  tls:
+    - hosts:
+        - api.dinnerdonebetter.com
+        - http-api.dinnerdonebetter.com
+        - app.dinnerdonebetter.com
+        - admin.dinnerdonebetter.com
+        - www.dinnerdonebetter.com
+      secretName: dinner-done-better-cert
+  rules:
+    - host: "api.dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-api-svc
+                port:
+                  number: 8001
+    - host: "http-api.dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-api-svc
+                port:
+                  number: 8000
+    - host: "app.dinnerdonebetter.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: dinner-done-better-webapp-svc
+                port:
+                  number: 9000
+---

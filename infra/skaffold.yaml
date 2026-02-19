@@ -19,12 +19,12 @@ profiles:
       kubectl:
         defaultNamespace: localdev
 
-  - name: dev
+  - name: prod
     manifests:
       kustomize:
         paths:
-          - infra/deploy/environments/dev/kustomize
+          - infra/deploy/environments/prod/kustomize
 
     deploy:
       kubectl:
-        defaultNamespace: dev
+        defaultNamespace: prod

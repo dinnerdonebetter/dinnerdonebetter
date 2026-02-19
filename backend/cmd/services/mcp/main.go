@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	adminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
+	defaultMcpServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 
 	// TODO: get these values another way.
 	tempUsername     = "admin_user"
@@ -56,14 +56,22 @@ func main() {
 
 	ctx := context.Background()
 
-	// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
-	// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
-	must(os.Setenv(envvars.APIServiceHTTPAPIServerURLEnvVarKey, "http://localhost:8000"))
-	must(os.Setenv(envvars.APIServiceGrpcAPIServerURLEnvVarKey, ":8001"))
-	must(os.Setenv(envvars.APIServiceOauth2APIClientIDEnvVarKey, strings.Repeat("A", oauth.ClientIDSize)))
-	must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
+	configFilepath := os.Getenv(config.ConfigurationFilePathEnvVarKey)
+	if configFilepath == "" {
+		configFilepath = defaultMcpServerConfigurationFilepath
+	}
 
-	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, adminServerConfigurationFilepath)
+	// When running locally (not in Kubernetes), override with localhost values
+	if os.Getenv(config.RunningInKubernetesEnvVarKey) != "true" {
+		// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
+		// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
+		must(os.Setenv(envvars.APIServiceHTTPAPIServerURLEnvVarKey, "http://localhost:8000"))
+		must(os.Setenv(envvars.APIServiceGrpcAPIServerURLEnvVarKey, ":8001"))
+		must(os.Setenv(envvars.APIServiceOauth2APIClientIDEnvVarKey, strings.Repeat("A", oauth.ClientIDSize)))
+		must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
+	}
+
+	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, configFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}

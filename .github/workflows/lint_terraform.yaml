@@ -13,21 +13,21 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     outputs:
-      infra_dev: ${{ steps.filter.outputs.infra_dev }}
-      backend_dev: ${{ steps.filter.outputs.backend_dev }}
+      infra: ${{ steps.filter.outputs.infra }}
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            infra_dev:
-              - infra/deploy/environments/dev/terraform/*.tf
-            backend_dev:
-              - backend/deploy/environments/dev/terraform/*.tf
+            infra:
+              - infra/deploy/environments/prod/terraform/*.tf
+            backend:
+              - backend/deploy/environments/prod/terraform/*.tf
 
   infra:
     needs: [changes]
-    if: ${{ needs.changes.outputs.infra_dev == 'true' }}
+    if: ${{ needs.changes.outputs.infra == 'true' }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -46,21 +46,21 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.10.3
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}
 
       - name: Terraform Init
-        working-directory: backend/deploy/environments/dev/terraform
+        working-directory: infra/deploy/environments/prod/terraform
         id: init
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: backend/deploy/environments/dev/terraform
+        working-directory: infra/deploy/environments/prod/terraform
         id: validate
         run: terraform validate -no-color
 
   backend:
     needs: [changes]
-    if: ${{ needs.changes.outputs.backend_dev == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -79,14 +79,14 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.10.3
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}
 
       - name: Terraform Init
-        working-directory: backend/deploy/environments/dev/terraform
+        working-directory: backend/deploy/environments/prod/terraform
         id: init
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: backend/deploy/environments/dev/terraform
+        working-directory: backend/deploy/environments/prod/terraform
         id: validate
         run: terraform validate -no-color

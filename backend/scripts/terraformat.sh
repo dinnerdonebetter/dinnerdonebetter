@@ -4,7 +4,7 @@ set -euo pipefail
 # Format Terraform files
 # Usage: terraformat.sh [terraform_dir]
 
-TERRAFORM_DIR="${1:-deploy/environments/dev/terraform}"
+TERRAFORM_DIR="${1:-deploy/environments/prod/terraform}"
 
 (
   cd "${TERRAFORM_DIR}" || exit 1
