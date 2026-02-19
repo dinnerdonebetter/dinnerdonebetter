@@ -18,6 +18,7 @@ cfg, err := config.LoadConfigFromEnvironment[config.APIServiceConfig]()
 ```
 
 Both functions:
+
 1. Read and decode the JSON config file
 2. Call `ApplyEnvironmentVariables(cfg)` to apply env var overrides
 
@@ -32,6 +33,7 @@ Env vars follow this convention: `DINNER_DONE_BETTER_` + `PREFIX_` + `FIELD`.
 - **Field name**: From the `env` struct tag on each field (e.g. `PORT`, `DEBUG`, `DOMAIN`)
 
 For example, `config.GRPCServer.Port` maps to `DINNER_DONE_BETTER_GRPC_PORT` because:
+
 - `GRPCServer` has `envPrefix:"GRPC_"`
 - `Port` has `env:"PORT"`
 
@@ -39,7 +41,7 @@ For example, `config.GRPCServer.Port` maps to `DINNER_DONE_BETTER_GRPC_PORT` bec
 
 A canonical list of all valid environment variables is **programmatically generated** in:
 
-```
+```bash
 internal/config/envvars/env_vars.go
 ```
 
@@ -76,18 +78,18 @@ Port uint16 `env:"PORT" json:"port"`
 
 Backend Terraform (`backend/deploy/environments/prod/terraform`) requires these variables. Add them in Terraform Cloud: Workspace → Variables.
 
-| Variable | Description |
-|----------|-------------|
-| `POSTHOG_API_KEY` | PostHog Project API Key (for event ingestion) |
-| `POSTHOG_PERSONAL_API_KEY` | PostHog Personal API Key (for feature flags API; create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys)) |
-| `SENDGRID_API_KEY` | SendGrid API token |
-| `SEGMENT_API_TOKEN` | Segment API token |
-| `ALGOLIA_APPLICATION_ID` | Algolia app ID |
-| `ALGOLIA_API_KEY` | Algolia write API key |
-| `GOOGLE_SSO_OAUTH2_CLIENT_ID` | Google OAuth2 client ID |
-| `GOOGLE_SSO_OAUTH2_CLIENT_SECRET` | Google OAuth2 client secret |
-| `ADMIN_WEBAPP_OAUTH2_CLIENT_ID` | Admin OAuth2 client ID |
-| `ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET` | Admin OAuth2 client secret |
+| Variable                            | Description                                                                                                                                        |
+|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `POSTHOG_API_KEY`                   | PostHog Project API Key (for event ingestion)                                                                                                      |
+| `POSTHOG_PERSONAL_API_KEY`          | PostHog Personal API Key (for feature flags API; create in [PostHog Settings → Personal API Keys](https://app.posthog.com/settings/user-api-keys)) |
+| `SENDGRID_API_KEY`                  | SendGrid API token                                                                                                                                 |
+| `SEGMENT_API_TOKEN`                 | Segment API token                                                                                                                                  |
+| `ALGOLIA_APPLICATION_ID`            | Algolia app ID                                                                                                                                     |
+| `ALGOLIA_API_KEY`                   | Algolia write API key                                                                                                                              |
+| `GOOGLE_SSO_OAUTH2_CLIENT_ID`       | Google OAuth2 client ID                                                                                                                            |
+| `GOOGLE_SSO_OAUTH2_CLIENT_SECRET`   | Google OAuth2 client secret                                                                                                                        |
+| `ADMIN_WEBAPP_OAUTH2_CLIENT_ID`     | Admin OAuth2 client ID                                                                                                                             |
+| `ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET` | Admin OAuth2 client secret                                                                                                                         |
 
 ## Related
 

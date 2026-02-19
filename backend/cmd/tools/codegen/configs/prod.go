@@ -50,8 +50,6 @@ const (
 	prodOtelCollectorEndpoint = "otel-collector-svc.prod.svc.cluster.local:4317"
 	prodOAuth2Domain          = "https://dinnerdonebetter.com"
 	prodTokensAudience        = "https://http-api.dinnerdonebetter.com" //nolint:gosec // G101: audience URL, not a credential
-	prodCookieHashKey         = " "                                     // placeholder; overridden by env from Terraform secret
-	prodCookieBlockKey        = " "
 )
 
 func buildProdConfig() *config.APIServiceConfig {
