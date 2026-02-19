@@ -249,7 +249,7 @@ patches:
       kind: Deployment
       name: dinner-done-better-admin-webapp-deployment
 
-  ### MCP Server - needs API service URL and OAuth credentials from admin-webapp-config
+  ### MCP Server - needs API service URL from admin-webapp-config, OAuth credentials from mcp-server-config
   - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -273,7 +273,7 @@ patches:
           name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: mcp-server-config
               key: OAUTH2_CLIENT_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -281,7 +281,7 @@ patches:
           name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: mcp-server-config
               key: OAUTH2_CLIENT_SECRET
     target:
       version: v1

@@ -10,6 +10,16 @@ resource "random_string" "jwt_signing_key" {
   special = false
 }
 
+# Admin webapp cookie encryption keys (base64-encoded for COOKIE_HASH_KEY / COOKIE_BLOCK_KEY)
+resource "random_string" "admin_webapp_cookie_hash_key" {
+  length  = 32
+  special = false
+}
+resource "random_string" "admin_webapp_cookie_block_key" {
+  length  = 32
+  special = false
+}
+
 ### External API services ###
 
 # Sendgrid token
@@ -29,3 +39,15 @@ variable "GRAFANA_CLOUD_LOKI_USERNAME" {}
 variable "GRAFANA_CLOUD_LOKI_PASSWORD" {}
 variable "GRAFANA_CLOUD_TEMPO_USERNAME" {}
 variable "GRAFANA_CLOUD_TEMPO_PASSWORD" {}
+
+# Admin webapp config (cookie name and domain - required for admin webapp)
+variable "ADMIN_WEBAPP_COOKIE_NAME" {
+  default = "admin_webapp"
+}
+variable "ADMIN_WEBAPP_COOKIE_DOMAIN" {
+  default = "admin.dinnerdonebetter.com"
+}
+
+# Admin webapp OAuth2 credentials (for DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET)
+variable "ADMIN_WEBAPP_OAUTH2_CLIENT_ID" {}
+variable "ADMIN_WEBAPP_OAUTH2_CLIENT_SECRET" {}
