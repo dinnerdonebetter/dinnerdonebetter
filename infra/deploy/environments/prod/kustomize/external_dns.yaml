@@ -68,9 +68,7 @@ spec:
             - --events
             - --cloudflare-proxied
             - --source=ingress
-            # TODO: Replace with dinnerdonebetter.com zone ID from Cloudflare dashboard
             - --domain-filter=dinnerdonebetter.com
-            - --zone-id-filter=REPLACE_WITH_DINNERDONEBETTER_COM_ZONE_ID
             - --cloudflare-dns-records-per-page=5000
           env:
             - name: CF_API_TOKEN
