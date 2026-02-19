@@ -13,16 +13,13 @@ resource "random_string" "jwt_signing_key" {
 ### External API services ###
 
 # Sendgrid token
-variable "SENDGRID_API_TOKEN" {}
+variable "SENDGRID_API_KEY`" {}
 
 # Segment API token
 variable "SEGMENT_API_TOKEN" {}
 
 # PostHog API token
 variable "POSTHOG_API_KEY" {}
-
-# PostHog personal API key
-variable "POSTHOG_PERSONAL_API_KEY" {}
 
 # Grafana Cloud API keys
 # NOTE: the passwords are all effectively the same, but they maybe won't be one day? Who knows.
