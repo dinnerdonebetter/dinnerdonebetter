@@ -13,7 +13,7 @@ resource "random_string" "jwt_signing_key" {
 ### External API services ###
 
 # Sendgrid token
-variable "SENDGRID_API_KEY`" {}
+variable "SENDGRID_API_KEY" {}
 
 # Segment API token
 variable "SEGMENT_API_TOKEN" {}
