@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ types.Repository = (*repository)(nil)
+	_ types.Repository = (*Repository)(nil)
 )
 
 // WaitlistIsNotExpired checks if a waitlist exists and is not expired.
-func (r *repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string) (bool, error) {
+func (r *Repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string) (bool, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -48,7 +48,7 @@ func (r *repository) WaitlistIsNotExpired(ctx context.Context, waitlistID string
 }
 
 // GetWaitlist fetches a waitlist from the database.
-func (r *repository) GetWaitlist(ctx context.Context, waitlistID string) (*types.Waitlist, error) {
+func (r *Repository) GetWaitlist(ctx context.Context, waitlistID string) (*types.Waitlist, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -79,7 +79,7 @@ func (r *repository) GetWaitlist(ctx context.Context, waitlistID string) (*types
 }
 
 // GetWaitlists fetches waitlists with filtering.
-func (r *repository) GetWaitlists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Waitlist], error) {
+func (r *Repository) GetWaitlists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Waitlist], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -137,7 +137,7 @@ func (r *repository) GetWaitlists(ctx context.Context, filter *filtering.QueryFi
 }
 
 // GetActiveWaitlists fetches non-expired waitlists with filtering.
-func (r *repository) GetActiveWaitlists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Waitlist], error) {
+func (r *Repository) GetActiveWaitlists(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Waitlist], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -195,7 +195,7 @@ func (r *repository) GetActiveWaitlists(ctx context.Context, filter *filtering.Q
 }
 
 // CreateWaitlist creates a waitlist in the database.
-func (r *repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDatabaseCreationInput) (*types.Waitlist, error) {
+func (r *Repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDatabaseCreationInput) (*types.Waitlist, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -228,7 +228,7 @@ func (r *repository) CreateWaitlist(ctx context.Context, input *types.WaitlistDa
 }
 
 // UpdateWaitlist updates a waitlist.
-func (r *repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist) error {
+func (r *Repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -251,7 +251,7 @@ func (r *repository) UpdateWaitlist(ctx context.Context, updated *types.Waitlist
 }
 
 // ArchiveWaitlist archives a waitlist.
-func (r *repository) ArchiveWaitlist(ctx context.Context, waitlistID string) error {
+func (r *Repository) ArchiveWaitlist(ctx context.Context, waitlistID string) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -275,7 +275,7 @@ func (r *repository) ArchiveWaitlist(ctx context.Context, waitlistID string) err
 }
 
 // GetWaitlistSignup fetches a waitlist signup from the database.
-func (r *repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, waitlistID string) (*types.WaitlistSignup, error) {
+func (r *Repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, waitlistID string) (*types.WaitlistSignup, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -316,7 +316,7 @@ func (r *repository) GetWaitlistSignup(ctx context.Context, waitlistSignupID, wa
 }
 
 // GetWaitlistSignupsForWaitlist fetches waitlist signups for a waitlist with filtering.
-func (r *repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlistID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.WaitlistSignup], error) {
+func (r *Repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlistID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.WaitlistSignup], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -382,7 +382,7 @@ func (r *repository) GetWaitlistSignupsForWaitlist(ctx context.Context, waitlist
 }
 
 // GetWaitlistSignupsForUser fetches waitlist signups for a user with filtering.
-func (r *repository) GetWaitlistSignupsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.WaitlistSignup], error) {
+func (r *Repository) GetWaitlistSignupsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.WaitlistSignup], error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -446,7 +446,7 @@ func (r *repository) GetWaitlistSignupsForUser(ctx context.Context, userID strin
 }
 
 // CreateWaitlistSignup creates a waitlist signup in the database.
-func (r *repository) CreateWaitlistSignup(ctx context.Context, input *types.WaitlistSignupDatabaseCreationInput) (*types.WaitlistSignup, error) {
+func (r *Repository) CreateWaitlistSignup(ctx context.Context, input *types.WaitlistSignupDatabaseCreationInput) (*types.WaitlistSignup, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -481,7 +481,7 @@ func (r *repository) CreateWaitlistSignup(ctx context.Context, input *types.Wait
 }
 
 // UpdateWaitlistSignup updates a waitlist signup.
-func (r *repository) UpdateWaitlistSignup(ctx context.Context, updated *types.WaitlistSignup) error {
+func (r *Repository) UpdateWaitlistSignup(ctx context.Context, updated *types.WaitlistSignup) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -502,7 +502,7 @@ func (r *repository) UpdateWaitlistSignup(ctx context.Context, updated *types.Wa
 }
 
 // ArchiveWaitlistSignup archives a waitlist signup.
-func (r *repository) ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID string) error {
+func (r *Repository) ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID string) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 

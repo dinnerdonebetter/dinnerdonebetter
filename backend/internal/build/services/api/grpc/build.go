@@ -9,13 +9,21 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	auditmanager "github.com/dinnerdonebetter/backend/internal/domain/audit/manager"
 	authmgr "github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
+	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
+	dataprivacymanager "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/manager"
 	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	issuereportsmanager "github.com/dinnerdonebetter/backend/internal/domain/issuereports/manager"
 	grocerylistpreparation "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	recipeanalysis "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	notificationsmanager "github.com/dinnerdonebetter/backend/internal/domain/notifications/manager"
 	oauthmgr "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
+	settingsmanager "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
+	uploadedmediamanager "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/manager"
+	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -31,16 +39,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	commentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments"
 	dataprivacyrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issuereportsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
-	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	paymentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments"
-	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	uploadedmediarepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
-	waitlistsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
@@ -92,18 +98,20 @@ func Build(
 		objectstorage.Providers,
 		// repos
 		auditrepo.AuditRepoProviders,
+		auditmanager.AuditManagerProviders,
 		authrepo.AuthRepoProviders,
+		commentsrepo.CommentsRepoProviders,
 		identityrepo.IDRepoProviders,
 		issuereportsrepo.IssueReportsRepoProviders,
-		notificationsrepo.NotifRepoProviders,
-		settingsrepo.SettingsRepoProviders,
+		issuereportsmanager.IssueReportsManagerProviders,
 		uploadedmediarepo.UploadedMediaRepoProviders,
+		uploadedmediamanager.UploadedMediaManagerProviders,
 		webhooksrepo.WebhookProviders,
 		oauthrepo.OAuthRepoProviders,
 		paymentsrepo.PaymentsRepoProviders,
 		mealplanningrepo.MPRepoProviders,
-		waitlistsrepo.WaitlistsRepoProviders,
 		dataprivacyrepo.DataPrivProviders,
+		dataprivacymanager.DataPrivacyManagerProviders,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,
@@ -123,12 +131,16 @@ func Build(
 		waitlistssvc.WaitlistsSvcProviders,
 		uploadedmediacfg.UploadedMediaConfigProviders,
 		// manager
+		commentsmanager.CommentsManagerProviders,
 		identitymgr.IDManagerProviders,
+		notificationsmanager.NotificationsManagerProviders,
+		settingsmanager.SettingsManagerProviders,
 		paymentsmanager.PaymentsManagerProviders,
 		oauthmgr.OAuthManagerProviders,
 		mealplanningmgr.MPManagerProviders,
 		authmgr.AuthManagerProviders,
 		webhooksmanager.WebhookManagerProviders,
+		waitlistsmanager.WaitlistManagerProviders,
 		// workers
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,

@@ -93,6 +93,7 @@ func main() {
 		"internal/repositories/postgres/payments/sqlc_queries/subscriptions.sql":                                    buildPaymentsSubscriptionsQueries(databaseToUse),
 		"internal/repositories/postgres/payments/sqlc_queries/purchases.sql":                                        buildPaymentsPurchasesQueries(databaseToUse),
 		"internal/repositories/postgres/payments/sqlc_queries/payment_transactions.sql":                             buildPaymentsTransactionsQueries(databaseToUse),
+		"internal/repositories/postgres/comments/sqlc_queries/comments.sql":                                         buildCommentsQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

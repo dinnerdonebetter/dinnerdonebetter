@@ -1,0 +1,231 @@
+package manager
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+)
+
+const (
+	o11yName = "settings_data_manager"
+)
+
+// settingsRepo avoids wire cycles: manager takes this interface and produces settings.Repository.
+type settingsRepo interface {
+	settings.Repository
+}
+
+var (
+	_ settings.Repository = (*settingsManager)(nil)
+	_ SettingsDataManager = (*settingsManager)(nil)
+)
+
+type settingsManager struct {
+	tracer               tracing.Tracer
+	logger               logging.Logger
+	repo                 settingsRepo
+	dataChangesPublisher messagequeue.Publisher
+}
+
+// NewSettingsDataManager returns a new SettingsDataManager implementing settings.Repository.
+func NewSettingsDataManager(
+	ctx context.Context,
+	tracerProvider tracing.TracerProvider,
+	logger logging.Logger,
+	repo settingsRepo,
+	cfg *msgconfig.QueuesConfig,
+	publisherProvider messagequeue.PublisherProvider,
+) (SettingsDataManager, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
+	}
+
+	return &settingsManager{
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		repo:                 repo,
+		dataChangesPublisher: dataChangesPublisher,
+	}, nil
+}
+
+// CreateServiceSetting creates a service setting.
+func (m *settingsManager) CreateServiceSetting(ctx context.Context, input *settings.ServiceSettingDatabaseCreationInput) (*settings.ServiceSetting, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating service setting creation input")
+	}
+
+	created, err := m.repo.CreateServiceSetting(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingCreatedServiceEventType, map[string]any{
+		keys.ServiceSettingIDKey: created.ID,
+	}))
+
+	return created, nil
+}
+
+func (m *settingsManager) ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.ServiceSettingExists(ctx, serviceSettingID)
+}
+
+func (m *settingsManager) GetServiceSetting(ctx context.Context, serviceSettingID string) (*settings.ServiceSetting, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSetting(ctx, serviceSettingID)
+}
+
+func (m *settingsManager) GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[settings.ServiceSetting], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettings(ctx, filter)
+}
+
+func (m *settingsManager) SearchForServiceSettings(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[settings.ServiceSetting], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.SearchForServiceSettings(ctx, query, filter)
+}
+
+func (m *settingsManager) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+
+	if err := m.repo.ArchiveServiceSetting(ctx, serviceSettingID); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingArchivedServiceEventType, map[string]any{
+		keys.ServiceSettingIDKey: serviceSettingID,
+	}))
+
+	return nil
+}
+
+// ServiceSettingConfigurationExists checks the existence of a service setting configuration.
+func (m *settingsManager) ServiceSettingConfigurationExists(ctx context.Context, serviceSettingConfigurationID string) (bool, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.ServiceSettingConfigurationExists(ctx, serviceSettingConfigurationID)
+}
+
+func (m *settingsManager) GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*settings.ServiceSettingConfiguration, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettingConfiguration(ctx, serviceSettingConfigurationID)
+}
+
+func (m *settingsManager) GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationName string) (*settings.ServiceSettingConfiguration, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettingConfigurationForUserByName(ctx, userID, serviceSettingConfigurationName)
+}
+
+func (m *settingsManager) GetServiceSettingConfigurationForAccountByName(ctx context.Context, accountID, serviceSettingConfigurationName string) (*settings.ServiceSettingConfiguration, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettingConfigurationForAccountByName(ctx, accountID, serviceSettingConfigurationName)
+}
+
+func (m *settingsManager) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[settings.ServiceSettingConfiguration], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettingConfigurationsForUser(ctx, userID, filter)
+}
+
+func (m *settingsManager) GetServiceSettingConfigurationsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[settings.ServiceSettingConfiguration], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+	return m.repo.GetServiceSettingConfigurationsForAccount(ctx, accountID, filter)
+}
+
+func (m *settingsManager) CreateServiceSettingConfiguration(ctx context.Context, input *settings.ServiceSettingConfigurationDatabaseCreationInput) (*settings.ServiceSettingConfiguration, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating service setting configuration creation input")
+	}
+
+	created, err := m.repo.CreateServiceSettingConfiguration(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationCreatedServiceEventType, map[string]any{
+		keys.ServiceSettingConfigurationIDKey: created.ID,
+	}))
+
+	return created, nil
+}
+
+func (m *settingsManager) UpdateServiceSettingConfiguration(ctx context.Context, updated *settings.ServiceSettingConfiguration) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if updated == nil {
+		return internalerrors.ErrNilInputParameter
+	}
+	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
+
+	if err := m.repo.UpdateServiceSettingConfiguration(ctx, updated); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationUpdatedServiceEventType, map[string]any{
+		keys.ServiceSettingConfigurationIDKey: updated.ID,
+	}))
+
+	return nil
+}
+
+func (m *settingsManager) ArchiveServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+
+	if err := m.repo.ArchiveServiceSettingConfiguration(ctx, serviceSettingConfigurationID); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, settings.ServiceSettingConfigurationArchivedServiceEventType, map[string]any{
+		keys.ServiceSettingConfigurationIDKey: serviceSettingConfigurationID,
+	}))
+
+	return nil
+}

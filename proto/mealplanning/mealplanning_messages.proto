@@ -7,6 +7,17 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
+message Comment {
+  string id = 1;
+  string content = 2;
+  string target_type = 3;
+  string referenced_id = 4;
+  optional string parent_comment_id = 5;
+  string belongs_to_user = 6;
+  google.protobuf.Timestamp created_at = 7;
+  optional google.protobuf.Timestamp last_updated_at = 8;
+}
+
 message DataCollection {
   repeated AccountInstrumentOwnership account_instrument_ownerships = 2;
   repeated MealPlan meal_plans = 3;

@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -52,7 +52,7 @@ func ProvideOAuth2ClientManager(
 func ProvideOAuth2ServerImplementation(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	identityRepo identity.Repository,
+	identityDataManager identitymanager.IdentityDataManager,
 	authenticator authentication.Authenticator,
 	tokenIssuer tokens.Issuer,
 	manager *manage.Manager,
@@ -79,7 +79,7 @@ func ProvideOAuth2ServerImplementation(
 	oauth2Server.AccessTokenExpHandler = AccessTokenExpHandler(logger)
 	oauth2Server.ClientScopeHandler = ClientScopeHandler(logger)
 	oauth2Server.UserAuthorizationHandler = buildUserAuthorizationHandler(tracer, logger, tokenIssuer)
-	oauth2Server.PasswordAuthorizationHandler = buildPasswordAuthorizationHandler(logger, authenticator, identityRepo)
+	oauth2Server.PasswordAuthorizationHandler = buildPasswordAuthorizationHandler(logger, authenticator, identityDataManager)
 	// this allows GET requests to retrieve tokens
 	oauth2Server.SetAllowGetAccessRequest(true)
 	oauth2Server.ClientInfoHandler = buildClientInfoHandler()
@@ -126,7 +126,7 @@ func buildClientInfoHandler() func(*http.Request) (string, string, error) {
 	}
 }
 
-func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator authentication.Authenticator, dataManager identity.Repository) func(context.Context, string, string, string) (string, error) {
+func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator authentication.Authenticator, dataManager identitymanager.IdentityDataManager) func(context.Context, string, string, string) (string, error) {
 	return func(ctx context.Context, clientID, username, password string) (userID string, err error) {
 		l := logger.WithValue(keys.OAuth2ClientIDKey, clientID).WithValue(keys.UsernameKey, username)
 		l.Info("PasswordAuthorizationHandler invoked")

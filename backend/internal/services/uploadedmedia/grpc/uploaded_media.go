@@ -169,7 +169,7 @@ func (s *serviceImpl) Upload(stream uploadedmediasvc.UploadedMediaService_Upload
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media")
 	}
 
-	created, err := s.uploadedMediaRepository.CreateUploadedMedia(ctx, uploadedMediaInput)
+	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, uploadedMediaInput)
 	if err != nil {
 		return observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
@@ -208,7 +208,7 @@ func (s *serviceImpl) CreateUploadedMedia(ctx context.Context, request *uploaded
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate uploaded media creation request")
 	}
 
-	created, err := s.uploadedMediaRepository.CreateUploadedMedia(ctx, input)
+	created, err := s.uploadedMediaManager.CreateUploadedMedia(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media")
 	}
@@ -236,7 +236,7 @@ func (s *serviceImpl) GetUploadedMedia(ctx context.Context, request *uploadedmed
 	}
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
 
-	uploadedMedia, err := s.uploadedMediaRepository.GetUploadedMedia(ctx, request.UploadedMediaId)
+	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
@@ -273,7 +273,7 @@ func (s *serviceImpl) GetUploadedMediaWithIDs(ctx context.Context, request *uplo
 		return nil, observability.PrepareAndLogGRPCStatus(errors.New("no IDs provided"), logger, span, codes.InvalidArgument, "no IDs provided")
 	}
 
-	uploadedMediaList, err := s.uploadedMediaRepository.GetUploadedMediaWithIDs(ctx, request.Ids)
+	uploadedMediaList, err := s.uploadedMediaManager.GetUploadedMediaWithIDs(ctx, request.Ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
@@ -313,7 +313,7 @@ func (s *serviceImpl) GetUploadedMediaForUser(ctx context.Context, request *uplo
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	uploadedMediaList, err := s.uploadedMediaRepository.GetUploadedMediaForUser(ctx, request.UserId, filter)
+	uploadedMediaList, err := s.uploadedMediaManager.GetUploadedMediaForUser(ctx, request.UserId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media for user")
 	}
@@ -346,7 +346,7 @@ func (s *serviceImpl) UpdateUploadedMedia(ctx context.Context, request *uploaded
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media
-	uploadedMedia, err := s.uploadedMediaRepository.GetUploadedMedia(ctx, request.UploadedMediaId)
+	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
@@ -364,7 +364,7 @@ func (s *serviceImpl) UpdateUploadedMedia(ctx context.Context, request *uploaded
 
 	uploadedMedia.Update(updateInput)
 
-	if err = s.uploadedMediaRepository.UpdateUploadedMedia(ctx, uploadedMedia); err != nil {
+	if err = s.uploadedMediaManager.UpdateUploadedMedia(ctx, uploadedMedia); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update uploaded media")
 	}
 
@@ -392,7 +392,7 @@ func (s *serviceImpl) ArchiveUploadedMedia(ctx context.Context, request *uploade
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.Requester.UserID)
 
 	// Fetch the existing uploaded media to verify ownership
-	uploadedMedia, err := s.uploadedMediaRepository.GetUploadedMedia(ctx, request.UploadedMediaId)
+	uploadedMedia, err := s.uploadedMediaManager.GetUploadedMedia(ctx, request.UploadedMediaId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch uploaded media")
 	}
@@ -402,7 +402,7 @@ func (s *serviceImpl) ArchiveUploadedMedia(ctx context.Context, request *uploade
 		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "uploaded media does not belong to user")
 	}
 
-	if err = s.uploadedMediaRepository.ArchiveUploadedMedia(ctx, request.UploadedMediaId); err != nil {
+	if err = s.uploadedMediaManager.ArchiveUploadedMedia(ctx, request.UploadedMediaId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive uploaded media")
 	}
 

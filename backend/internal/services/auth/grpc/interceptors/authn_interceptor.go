@@ -10,7 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -36,7 +36,7 @@ const (
 type AuthInterceptor struct {
 	tracer                tracing.Tracer
 	logger                logging.Logger
-	identityRepository    identity.Repository
+	identityDataManager   identitymanager.IdentityDataManager
 	methodPermissions     map[string][]authorization.Permission
 	oauth2ClientManager   *manage.Manager
 	unauthenticatedRoutes []string
@@ -50,14 +50,14 @@ type MethodPermissionsMap map[string][]authorization.Permission
 func ProvideAuthInterceptor(
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
-	identityRepository identity.Repository,
+	identityDataManager identitymanager.IdentityDataManager,
 	oauth2ClientManager *manage.Manager,
 	aggregatedPermissions MethodPermissionsMap,
 ) *AuthInterceptor {
 	return &AuthInterceptor{
 		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
-		identityRepository:  identityRepository,
+		identityDataManager: identityDataManager,
 		oauth2ClientManager: oauth2ClientManager,
 		methodPermissions:   aggregatedPermissions,
 		// TODO: configure this elsewhere
@@ -93,7 +93,7 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metaData metada
 			return "", "", ErrUserNotAuthorizedToImpersonateOthers
 		}
 
-		if _, err = s.identityRepository.GetUser(ctx, zuckUserID); err != nil {
+		if _, err = s.identityDataManager.GetUser(ctx, zuckUserID); err != nil {
 			return "", "", observability.PrepareError(err, span, "fetching user info")
 		}
 
@@ -103,7 +103,7 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metaData metada
 		}
 
 		if len(zuckAccountIDs) > 0 {
-			accountID, err = s.identityRepository.GetDefaultAccountIDForUser(ctx, zuckUserID)
+			accountID, err = s.identityDataManager.GetDefaultAccountIDForUser(ctx, zuckUserID)
 			if err != nil {
 				return "", "", observability.PrepareError(err, span, "fetching account info")
 			}
@@ -136,7 +136,7 @@ func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Contex
 	}
 
 	if userID := token.GetUserID(); userID != "" {
-		sessionCtxData, sessionErr := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
+		sessionCtxData, sessionErr := s.identityDataManager.BuildSessionContextDataForUser(ctx, userID)
 		if sessionErr != nil {
 			return nil, observability.PrepareAndLogError(sessionErr, logger, span, "fetching user info for cookie")
 		}

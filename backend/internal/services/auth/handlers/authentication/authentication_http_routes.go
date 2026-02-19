@@ -231,7 +231,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	getUserTimer := timing.NewMetric("database").WithDesc("get user by email").Start()
-	user, err := s.userDataManager.GetUserByEmail(ctx, providedUser.Email)
+	user, err := s.identityDataManager.GetUserByEmail(ctx, providedUser.Email)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting user by email")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -241,7 +241,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	getUserTimer.Stop()
 
 	defaultAccountTimer := timing.NewMetric("database").WithDesc("get default account for user").Start()
-	defaultAccountID, err := s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, user.ID)
+	defaultAccountID, err := s.identityDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

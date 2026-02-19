@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	settingsmanager "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -22,19 +22,19 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
-		serviceSettingsRepository settings.Repository
+		settingsManager           settingsmanager.SettingsDataManager
 	}
 )
 
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	settingsRepository settings.Repository,
+	settingsManager settingsmanager.SettingsDataManager,
 ) settingssvc.SettingsServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		serviceSettingsRepository: settingsRepository,
+		settingsManager:           settingsManager,
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 	}
 }

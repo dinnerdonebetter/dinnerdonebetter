@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
+	dataprivacymanager "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/manager"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -32,7 +33,7 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
-		dataPrivacyRepo           dataprivacy.Repository
+		dataPrivacyManager        dataprivacymanager.DataPrivacyManager
 		uploadManager             uploads.UploadManager
 	}
 )
@@ -42,14 +43,14 @@ func NewDataPrivacyService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error),
-	dataPrivacyRepo dataprivacy.Repository,
+	dataPrivacyManager dataprivacymanager.DataPrivacyManager,
 	uploadManager uploads.UploadManager,
 ) dataprivacysvc.DataPrivacyServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		sessionContextDataFetcher: sessionContextDataFetcher,
-		dataPrivacyRepo:           dataPrivacyRepo,
+		dataPrivacyManager:        dataPrivacyManager,
 		uploadManager:             uploadManager,
 	}
 }
@@ -76,7 +77,7 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, _ *dataprivac
 	logger.Info("aggregating user data")
 
 	// Fetch all user data
-	collection, err := s.dataPrivacyRepo.FetchUserDataCollection(ctx, userID)
+	collection, err := s.dataPrivacyManager.FetchUserDataCollection(ctx, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user data collection")
 	}
@@ -117,7 +118,7 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, _ *dataprivacysvc.
 
 	logger.Info("destroying all user data")
 
-	if err = s.dataPrivacyRepo.DeleteUser(ctx, userID); err != nil {
+	if err = s.dataPrivacyManager.DeleteUser(ctx, userID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "deleting user")
 	}
 

@@ -40,7 +40,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *dataprivacymock.Repository, 
 		tracer:                    tracer,
 		logger:                    logger,
 		sessionContextDataFetcher: sessionFetcher,
-		dataPrivacyRepo:           mockRepo,
+		dataPrivacyManager:        mockRepo,
 		uploadManager:             mockUploads,
 	}
 

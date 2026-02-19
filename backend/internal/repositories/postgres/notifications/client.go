@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -15,8 +14,9 @@ const (
 	o11yName = "notifications_db_client"
 )
 
-// repository is the notifications repository implementation.
-type repository struct {
+// Repository is the notifications repository implementation.
+// Exported so the manager can wrap it; the manager is the sole provider of notifications.Repository for services.
+type Repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
@@ -32,8 +32,8 @@ func ProvideNotificationsRepository(
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	client database.Client,
-) notifications.Repository {
-	c := &repository{
+) *Repository {
+	c := &Repository{
 		Client:            client,
 		readDB:            client.ReadDB(),
 		writeDB:           client.WriteDB(),

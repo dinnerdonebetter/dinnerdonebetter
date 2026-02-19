@@ -24,8 +24,9 @@ func buildServiceImplForRecipesTest(t *testing.T) *serviceImpl {
 	t.Helper()
 
 	return &serviceImpl{
-		tracer: tracing.NewTracerForTest(t.Name()),
-		logger: logging.NewNoopLogger(),
+		tracer:          tracing.NewTracerForTest(t.Name()),
+		logger:          logging.NewNoopLogger(),
+		commentsManager: &noopCommentsManager{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
 				Requester: sessions.RequesterInfo{

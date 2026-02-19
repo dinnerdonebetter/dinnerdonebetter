@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -100,6 +101,39 @@ func (m *IdentityDataManager) GetSentAccountInvitations(ctx context.Context, use
 func (m *IdentityDataManager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
 	returnValues := m.Called(ctx, userID)
 	return returnValues.Get(0).(*identity.User), returnValues.Error(1)
+}
+
+// GetUserByEmail is a mock function.
+func (m *IdentityDataManager) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
+	returnValues := m.Called(ctx, email)
+	return returnValues.Get(0).(*identity.User), returnValues.Error(1)
+}
+
+// GetUserByUsername is a mock function.
+func (m *IdentityDataManager) GetUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	returnValues := m.Called(ctx, username)
+	return returnValues.Get(0).(*identity.User), returnValues.Error(1)
+}
+
+// GetAdminUserByUsername is a mock function.
+func (m *IdentityDataManager) GetAdminUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	returnValues := m.Called(ctx, username)
+	return returnValues.Get(0).(*identity.User), returnValues.Error(1)
+}
+
+// GetDefaultAccountIDForUser is a mock function.
+func (m *IdentityDataManager) GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error) {
+	returnValues := m.Called(ctx, userID)
+	return returnValues.String(0), returnValues.Error(1)
+}
+
+// BuildSessionContextDataForUser is a mock function.
+func (m *IdentityDataManager) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
+	returnValues := m.Called(ctx, userID)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*sessions.ContextData), returnValues.Error(1)
 }
 
 // GetUsers is a mock function.

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -31,6 +32,7 @@ type (
 		mealPlanFinalizerWorker              *mealplanfinalizer.Worker
 		mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker
 		mealPlanTaskCreatorWorker            *mealplantaskcreator.Worker
+		commentsManager                      commentsmanager.CommentsDataManager
 	}
 )
 
@@ -43,6 +45,7 @@ func NewService(
 	mealPlanFinalizerWorker *mealplanfinalizer.Worker,
 	mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker,
 	mealPlanTaskCreatorWorker *mealplantaskcreator.Worker,
+	commentsManager commentsmanager.CommentsDataManager,
 ) mealplanningsvc.MealPlanningServiceServer {
 	return &serviceImpl{
 		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
@@ -53,6 +56,7 @@ func NewService(
 		mealPlanFinalizerWorker:              mealPlanFinalizerWorker,
 		mealPlanGroceryListInitializerWorker: mealPlanGroceryListInitializerWorker,
 		mealPlanTaskCreatorWorker:            mealPlanTaskCreatorWorker,
+		commentsManager:                      commentsManager,
 		sessionContextDataFetcher:            sessions.FetchContextDataFromContext,
 	}
 }

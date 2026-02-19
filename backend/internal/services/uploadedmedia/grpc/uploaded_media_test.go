@@ -46,8 +46,8 @@ func buildTestService(t *testing.T) (*serviceImpl, *uploadedmediamock.Repository
 				},
 			}, nil
 		},
-		uploadedMediaRepository: uploadedMediaRepo,
-		uploadManager:           uploadManager,
+		uploadedMediaManager: uploadedMediaRepo,
+		uploadManager:        uploadManager,
 	}
 
 	return service, uploadedMediaRepo, uploadManager
@@ -65,8 +65,8 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
-		uploadedMediaRepository: &uploadedmediamock.Repository{},
-		uploadManager:           &mockuploads.MockUploadManager{},
+		uploadedMediaManager: &uploadedmediamock.Repository{},
+		uploadManager:        &mockuploads.MockUploadManager{},
 	}
 
 	return service

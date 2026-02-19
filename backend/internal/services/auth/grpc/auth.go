@@ -146,7 +146,7 @@ func (s *serviceImpl) GetActiveAccount(ctx context.Context, request *authsvc.Get
 	}
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
-	account, err := s.identityRepository.GetAccount(ctx, sessionContextData.GetActiveAccountID())
+	account, err := s.identityDataManager.GetAccount(ctx, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "failed to get active account")
@@ -176,7 +176,7 @@ func (s *serviceImpl) GetSelf(ctx context.Context, request *authsvc.GetSelfReque
 	}
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
-	user, err := s.identityRepository.GetUser(ctx, sessionContextData.GetUserID())
+	user, err := s.identityDataManager.GetUser(ctx, sessionContextData.GetUserID())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.NotFound, "failed to get user")

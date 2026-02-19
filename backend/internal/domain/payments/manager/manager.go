@@ -2,13 +2,17 @@ package manager
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitymanager "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -22,28 +26,38 @@ const (
 var _ PaymentsDataManager = (*paymentsManager)(nil)
 
 type paymentsManager struct {
-	tracer      tracing.Tracer
-	logger      logging.Logger
-	repo        payments.Repository
-	processor   payments.PaymentProcessor
-	identityMgr identitymanager.IdentityDataManager
+	tracer               tracing.Tracer
+	logger               logging.Logger
+	repo                 payments.Repository
+	processor            payments.PaymentProcessor
+	identityMgr          identitymanager.IdentityDataManager
+	dataChangesPublisher messagequeue.Publisher
 }
 
 // NewPaymentsDataManager returns a new PaymentsDataManager.
 func NewPaymentsDataManager(
+	ctx context.Context,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	repo payments.Repository,
 	processor payments.PaymentProcessor,
 	identityMgr identitymanager.IdentityDataManager,
-) PaymentsDataManager {
-	return &paymentsManager{
-		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:      logging.EnsureLogger(logger).WithName(o11yName),
-		repo:        repo,
-		processor:   processor,
-		identityMgr: identityMgr,
+	cfg *msgconfig.QueuesConfig,
+	publisherProvider messagequeue.PublisherProvider,
+) (PaymentsDataManager, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
 	}
+
+	return &paymentsManager{
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		repo:                 repo,
+		processor:            processor,
+		identityMgr:          identityMgr,
+		dataChangesPublisher: dataChangesPublisher,
+	}, nil
 }
 
 func (m *paymentsManager) CreateProduct(ctx context.Context, input *payments.ProductCreationRequestInput) (*payments.Product, error) {
@@ -67,7 +81,18 @@ func (m *paymentsManager) CreateProduct(ctx context.Context, input *payments.Pro
 		BillingIntervalMonths: input.BillingIntervalMonths,
 		ExternalProductID:     input.ExternalProductID,
 	}
-	return m.repo.CreateProduct(ctx, dbInput)
+	created, err := m.repo.CreateProduct(ctx, dbInput)
+	if err != nil {
+		return nil, err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.ProductIDKey, created.ID)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductCreatedServiceEventType, map[string]any{
+		keys.ProductIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
 func (m *paymentsManager) GetProduct(ctx context.Context, id string) (*payments.Product, error) {
@@ -115,14 +140,34 @@ func (m *paymentsManager) UpdateProduct(ctx context.Context, id string, input *p
 		product.ExternalProductID = *input.ExternalProductID
 	}
 
-	return m.repo.UpdateProduct(ctx, product)
+	if err = m.repo.UpdateProduct(ctx, product); err != nil {
+		return err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductUpdatedServiceEventType, map[string]any{
+		keys.ProductIDKey: id,
+	}))
+
+	return nil
 }
 
 func (m *paymentsManager) ArchiveProduct(ctx context.Context, id string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.repo.ArchiveProduct(ctx, id)
+	if err := m.repo.ArchiveProduct(ctx, id); err != nil {
+		return err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.ProductIDKey, id)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.ProductArchivedServiceEventType, map[string]any{
+		keys.ProductIDKey: id,
+	}))
+
+	return nil
 }
 
 func (m *paymentsManager) CreateSubscription(ctx context.Context, input *payments.SubscriptionCreationRequestInput) (*payments.Subscription, error) {
@@ -145,7 +190,18 @@ func (m *paymentsManager) CreateSubscription(ctx context.Context, input *payment
 		CurrentPeriodStart:     input.CurrentPeriodStart,
 		CurrentPeriodEnd:       input.CurrentPeriodEnd,
 	}
-	return m.repo.CreateSubscription(ctx, dbInput)
+	created, err := m.repo.CreateSubscription(ctx, dbInput)
+	if err != nil {
+		return nil, err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.SubscriptionIDKey, created.ID)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionCreatedServiceEventType, map[string]any{
+		keys.SubscriptionIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
 func (m *paymentsManager) GetSubscription(ctx context.Context, id string) (*payments.Subscription, error) {
@@ -181,14 +237,34 @@ func (m *paymentsManager) UpdateSubscription(ctx context.Context, id string, inp
 		sub.CurrentPeriodEnd = *input.CurrentPeriodEnd
 	}
 
-	return m.repo.UpdateSubscription(ctx, sub)
+	if err = m.repo.UpdateSubscription(ctx, sub); err != nil {
+		return err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionUpdatedServiceEventType, map[string]any{
+		keys.SubscriptionIDKey: id,
+	}))
+
+	return nil
 }
 
 func (m *paymentsManager) ArchiveSubscription(ctx context.Context, id string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.repo.ArchiveSubscription(ctx, id)
+	if err := m.repo.ArchiveSubscription(ctx, id); err != nil {
+		return err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionArchivedServiceEventType, map[string]any{
+		keys.SubscriptionIDKey: id,
+	}))
+
+	return nil
 }
 
 func (m *paymentsManager) CancelSubscription(ctx context.Context, id string) error {
@@ -207,7 +283,17 @@ func (m *paymentsManager) CancelSubscription(ctx context.Context, id string) err
 		return observability.PrepareError(err, span, "cancelling subscription with provider")
 	}
 
-	return m.repo.UpdateSubscriptionStatus(ctx, id, payments.SubscriptionStatusCancelled)
+	if err = m.repo.UpdateSubscriptionStatus(ctx, id, payments.SubscriptionStatusCancelled); err != nil {
+		return err
+	}
+
+	logger := m.logger.WithSpan(span)
+	tracing.AttachToSpan(span, keys.SubscriptionIDKey, id)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, payments.SubscriptionCanceledServiceEventType, map[string]any{
+		keys.SubscriptionIDKey: id,
+	}))
+
+	return nil
 }
 
 func (m *paymentsManager) CreateCheckoutSession(ctx context.Context, input *payments.CheckoutSessionRequestInput) (sessionURL, sessionID string, err error) {

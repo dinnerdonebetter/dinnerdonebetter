@@ -42,7 +42,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *issuereportmock.Repository) 
 				},
 			}, nil
 		},
-		issueReportRepository: issueReportRepo,
+		issueReportsManager: issueReportRepo,
 	}
 
 	return service, issueReportRepo
@@ -60,7 +60,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
-		issueReportRepository: &issuereportmock.Repository{},
+		issueReportsManager: &issuereportmock.Repository{},
 	}
 
 	return service

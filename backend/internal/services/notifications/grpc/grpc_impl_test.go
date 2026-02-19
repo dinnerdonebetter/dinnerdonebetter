@@ -19,9 +19,9 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		notificationsRepo := &notificationsmock.Repository{}
+		notificationsManager := &notificationsmock.Repository{}
 
-		service := NewService(logger, tracerProvider, notificationsRepo)
+		service := NewService(logger, tracerProvider, notificationsManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*notificationssvc.UserNotificationsServiceServer)(nil), service)
@@ -31,7 +31,7 @@ func TestNewService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, notificationsRepo, impl.notificationsRepository)
+		assert.Equal(t, notificationsManager, impl.notificationsManager)
 		assert.NotNil(t, impl.sessionContextDataFetcher)
 	})
 }

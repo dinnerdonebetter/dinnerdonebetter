@@ -1623,6 +1623,69 @@ message RecipeUpdateRequestInput {
   optional MealComponentType yields_component_type = 11;
 }
 
+message AddCommentToMealPlanRequest {
+  string meal_plan_id = 1;
+  string content = 2;
+  optional string parent_comment_id = 3;
+}
+
+message AddCommentToMealPlanResponse {
+  common.ResponseDetails response_details = 1;
+  Comment comment = 2;
+}
+
+message AddCommentToMealRequest {
+  string meal_id = 1;
+  string content = 2;
+  optional string parent_comment_id = 3;
+}
+
+message AddCommentToMealResponse {
+  common.ResponseDetails response_details = 1;
+  Comment comment = 2;
+}
+
+message AddCommentToRecipeRequest {
+  string recipe_id = 1;
+  string content = 2;
+  optional string parent_comment_id = 3;
+}
+
+message AddCommentToRecipeResponse {
+  common.ResponseDetails response_details = 1;
+  Comment comment = 2;
+}
+
+message ArchiveCommentRequest {
+  string comment_id = 1;
+}
+
+message ArchiveCommentResponse {
+  common.ResponseDetails response_details = 1;
+}
+
+message GetCommentsForReferenceRequest {
+  string target_type = 1;
+  string referenced_id = 2;
+  filtering.QueryFilter filter = 3;
+}
+
+message GetCommentsForReferenceResponse {
+  common.ResponseDetails response_details = 1;
+  repeated Comment data = 2;
+  filtering.Pagination pagination = 3;
+}
+
+message UpdateCommentRequest {
+  string comment_id = 1;
+  string content = 2;
+}
+
+message UpdateCommentResponse {
+  common.ResponseDetails response_details = 1;
+  Comment comment = 2;
+}
+
 message ArchiveRecipeRequest {
   string recipe_id = 1;
 }

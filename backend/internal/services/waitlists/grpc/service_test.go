@@ -19,9 +19,9 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		waitlistRepo := &waitlistmock.Repository{}
+		waitlistsManager := &waitlistmock.Repository{}
 
-		service := NewService(logger, tracerProvider, waitlistRepo)
+		service := NewService(logger, tracerProvider, waitlistsManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*waitlistssvc.WaitlistsServiceServer)(nil), service)

@@ -6,6 +6,9 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	notificationsmanager "github.com/dinnerdonebetter/backend/internal/domain/notifications/manager"
+	settingsmanager "github.com/dinnerdonebetter/backend/internal/domain/settings/manager"
+	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
@@ -24,10 +27,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
@@ -50,10 +50,10 @@ func Build(
 		identity.IDRepoProviders,
 		issue_reports.IssueReportsRepoProviders,
 		mealplanning.MPRepoProviders,
-		notifications.NotifRepoProviders,
-		settings.SettingsRepoProviders,
+		notificationsmanager.NotificationsManagerProviders,
+		settingsmanager.SettingsManagerProviders,
 		uploadedmedia.UploadedMediaRepoProviders,
-		waitlists.WaitlistsRepoProviders,
+		waitlistsmanager.WaitlistManagerProviders,
 		webhooks.WebhookProviders,
 		analyticscfg.Providers,
 		emailcfg.Providers,

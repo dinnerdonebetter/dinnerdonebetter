@@ -1,10 +1,14 @@
 package grpc
 
 import (
+	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/comments"
+	commentsmanager "github.com/dinnerdonebetter/backend/internal/domain/comments/manager"
 	mockmanagers "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers/mock"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
@@ -13,6 +17,30 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+// noopCommentsManager is a stub implementation for tests that only need service construction.
+type noopCommentsManager struct{}
+
+func (n *noopCommentsManager) CreateComment(_ context.Context, _ *comments.CommentCreationRequestInput) (*comments.Comment, error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) GetComment(_ context.Context, _ string) (*comments.Comment, error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) GetCommentsForReference(_ context.Context, _, _ string, _ *filtering.QueryFilter) (*filtering.QueryFilteredResult[comments.Comment], error) {
+	return nil, nil
+}
+func (n *noopCommentsManager) UpdateComment(_ context.Context, _, _ string, _ *comments.CommentUpdateRequestInput) error {
+	return nil
+}
+func (n *noopCommentsManager) ArchiveComment(_ context.Context, _ string) error {
+	return nil
+}
+func (n *noopCommentsManager) ArchiveCommentsForReference(_ context.Context, _, _ string) error {
+	return nil
+}
+
+var _ commentsmanager.CommentsDataManager = (*noopCommentsManager)(nil)
 
 func TestNewService(t *testing.T) {
 	t.Parallel()
@@ -28,6 +56,7 @@ func TestNewService(t *testing.T) {
 		mealPlanFinalizerWorker := &mealplanfinalizer.Worker{}
 		mealPlanGroceryListInitializerWorker := &mealplangrocerylistinitializer.Worker{}
 		mealPlanTaskCreatorWorker := &mealplantaskcreator.Worker{}
+		commentsManager := &noopCommentsManager{}
 
 		service := NewService(
 			logger,
@@ -38,6 +67,7 @@ func TestNewService(t *testing.T) {
 			mealPlanFinalizerWorker,
 			mealPlanGroceryListInitializerWorker,
 			mealPlanTaskCreatorWorker,
+			commentsManager,
 		)
 
 		assert.NotNil(t, service)
@@ -54,6 +84,7 @@ func TestNewService(t *testing.T) {
 		assert.Equal(t, mealPlanFinalizerWorker, impl.mealPlanFinalizerWorker)
 		assert.Equal(t, mealPlanGroceryListInitializerWorker, impl.mealPlanGroceryListInitializerWorker)
 		assert.Equal(t, mealPlanTaskCreatorWorker, impl.mealPlanTaskCreatorWorker)
+		assert.Equal(t, commentsManager, impl.commentsManager)
 		assert.NotNil(t, impl.sessionContextDataFetcher)
 	})
 }

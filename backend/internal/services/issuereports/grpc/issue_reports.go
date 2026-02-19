@@ -31,7 +31,7 @@ func (s *serviceImpl) CreateIssueReport(ctx context.Context, request *issuerepor
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate issue report creation request")
 	}
 
-	created, err := s.issueReportRepository.CreateIssueReport(ctx, input)
+	created, err := s.issueReportsManager.CreateIssueReport(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create issue report")
 	}
@@ -59,7 +59,7 @@ func (s *serviceImpl) GetIssueReport(ctx context.Context, request *issuereportss
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	issueReport, err := s.issueReportRepository.GetIssueReport(ctx, request.IssueReportId)
+	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
@@ -94,7 +94,7 @@ func (s *serviceImpl) GetIssueReports(ctx context.Context, request *issuereports
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	issueReports, err := s.issueReportRepository.GetIssueReports(ctx, filter)
+	issueReports, err := s.issueReportsManager.GetIssueReports(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports")
 	}
@@ -128,7 +128,7 @@ func (s *serviceImpl) GetIssueReportsForAccount(ctx context.Context, request *is
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	issueReports, err := s.issueReportRepository.GetIssueReportsForAccount(ctx, sessionContextData.ActiveAccountID, filter)
+	issueReports, err := s.issueReportsManager.GetIssueReportsForAccount(ctx, sessionContextData.ActiveAccountID, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for account")
 	}
@@ -162,7 +162,7 @@ func (s *serviceImpl) GetIssueReportsForTable(ctx context.Context, request *issu
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	issueReports, err := s.issueReportRepository.GetIssueReportsForTable(ctx, request.TableName, filter)
+	issueReports, err := s.issueReportsManager.GetIssueReportsForTable(ctx, request.TableName, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for table")
 	}
@@ -196,7 +196,7 @@ func (s *serviceImpl) GetIssueReportsForRecord(ctx context.Context, request *iss
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	issueReports, err := s.issueReportRepository.GetIssueReportsForRecord(ctx, request.TableName, request.RecordId, filter)
+	issueReports, err := s.issueReportsManager.GetIssueReportsForRecord(ctx, request.TableName, request.RecordId, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue reports for record")
 	}
@@ -229,7 +229,7 @@ func (s *serviceImpl) UpdateIssueReport(ctx context.Context, request *issuerepor
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report
-	issueReport, err := s.issueReportRepository.GetIssueReport(ctx, request.IssueReportId)
+	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
@@ -247,7 +247,7 @@ func (s *serviceImpl) UpdateIssueReport(ctx context.Context, request *issuerepor
 
 	issueReport.Update(updateInput)
 
-	if err = s.issueReportRepository.UpdateIssueReport(ctx, issueReport); err != nil {
+	if err = s.issueReportsManager.UpdateIssueReport(ctx, issueReport); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update issue report")
 	}
 
@@ -275,7 +275,7 @@ func (s *serviceImpl) ArchiveIssueReport(ctx context.Context, request *issuerepo
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
 	// Fetch the existing issue report to verify ownership
-	issueReport, err := s.issueReportRepository.GetIssueReport(ctx, request.IssueReportId)
+	issueReport, err := s.issueReportsManager.GetIssueReport(ctx, request.IssueReportId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch issue report")
 	}
@@ -285,7 +285,7 @@ func (s *serviceImpl) ArchiveIssueReport(ctx context.Context, request *issuerepo
 		return nil, observability.PrepareAndLogGRPCStatus(errors.New("permission denied"), logger, span, codes.PermissionDenied, "issue report does not belong to account")
 	}
 
-	if err = s.issueReportRepository.ArchiveIssueReport(ctx, request.IssueReportId); err != nil {
+	if err = s.issueReportsManager.ArchiveIssueReport(ctx, request.IssueReportId); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive issue report")
 	}
 

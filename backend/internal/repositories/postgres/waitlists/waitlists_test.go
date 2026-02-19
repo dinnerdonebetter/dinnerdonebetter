@@ -21,7 +21,7 @@ const (
 	exampleQuantity = 3
 )
 
-func createWaitlistForTest(t *testing.T, ctx context.Context, exampleWaitlist *types.Waitlist, dbc *repository) *types.Waitlist {
+func createWaitlistForTest(t *testing.T, ctx context.Context, exampleWaitlist *types.Waitlist, dbc *Repository) *types.Waitlist {
 	t.Helper()
 
 	if exampleWaitlist == nil {

@@ -69,15 +69,27 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	config2 := &cfg.Database
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
-	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
-	encodingConfig := cfg.Encoding
-	contentType := encoding.ProvideContentType(encodingConfig)
-	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
 		return nil, err
 	}
+	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	generator := random.NewGenerator(logger, tracerProvider)
+	hasher := authentication.ProvideHasher(authenticator)
+	textsearchcfgConfig := ProvideTextSearchConfig(cfg)
+	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	queuesConfig := &cfg.Queues
+	identityDataManager, err := manager.NewIdentityDataManager(ctx, tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	encodingConfig := cfg.Encoding
+	contentType := encoding.ProvideContentType(encodingConfig)
+	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	featureflagscfgConfig := &cfg.FeatureFlags
 	httpClient := tracing.BuildTracedHTTPClient()
 	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, httpClient)
@@ -94,26 +106,17 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	queuesConfig := &cfg.Queues
-	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, oauthRepository, identityRepository, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, queuesConfig)
+	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, oauthRepository, identityDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	appleAppSiteAssociationConfig := cfg.AppleAppSiteAssociation
 	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, client)
 	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
-	generator := random.NewGenerator(logger, tracerProvider)
-	hasher := authentication.ProvideHasher(authenticator)
-	textsearchcfgConfig := ProvideTextSearchConfig(cfg)
-	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	paymentsDataManager, err := manager2.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
-	identityDataManager, err := manager.NewIdentityDataManager(ctx, tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	paymentsDataManager := manager2.NewPaymentsDataManager(tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager)
 	webhookSignatureHeader := _wireWebhookSignatureHeaderValue
 	webhookHandler := http2.NewWebhookHandler(logger, tracerProvider, paymentsDataManager, webhookSignatureHeader)
 	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService, appleAppSiteAssociationConfig, webhookHandler)

@@ -19,9 +19,9 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		issueReportRepo := &issuereportmock.Repository{}
+		issueReportsManager := &issuereportmock.Repository{}
 
-		service := NewService(logger, tracerProvider, issueReportRepo)
+		service := NewService(logger, tracerProvider, issueReportsManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*issuereportssvc.IssueReportsServiceServer)(nil), service)

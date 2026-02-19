@@ -7,6 +7,9 @@ import "mealplanning/mealplanning_service_types.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
 service MealPlanningService {
+  rpc AddCommentToMeal(AddCommentToMealRequest) returns (AddCommentToMealResponse);
+  rpc AddCommentToMealPlan(AddCommentToMealPlanRequest) returns (AddCommentToMealPlanResponse);
+  rpc AddCommentToRecipe(AddCommentToRecipeRequest) returns (AddCommentToRecipeResponse);
   rpc ArchiveMeal(ArchiveMealRequest) returns (ArchiveMealResponse);
   rpc ArchiveMealPlan(ArchiveMealPlanRequest) returns (ArchiveMealPlanResponse);
   rpc ArchiveMealPlanEvent(ArchiveMealPlanEventRequest) returns (ArchiveMealPlanEventResponse);
@@ -76,7 +79,9 @@ service MealPlanningService {
   rpc CreateValidPreparationInstrument(CreateValidPreparationInstrumentRequest) returns (CreateValidPreparationInstrumentResponse);
   rpc CreateValidPreparationVessel(CreateValidPreparationVesselRequest) returns (CreateValidPreparationVesselResponse);
   rpc CreateValidVessel(CreateValidVesselRequest) returns (CreateValidVesselResponse);
+  rpc ArchiveComment(ArchiveCommentRequest) returns (ArchiveCommentResponse);
   rpc FinalizeMealPlan(FinalizeMealPlanRequest) returns (FinalizeMealPlanResponse);
+  rpc GetCommentsForReference(GetCommentsForReferenceRequest) returns (GetCommentsForReferenceResponse);
   rpc GetMeal(GetMealRequest) returns (GetMealResponse);
   rpc GetMealPlan(GetMealPlanRequest) returns (GetMealPlanResponse);
   rpc GetMealPlanEvent(GetMealPlanEventRequest) returns (GetMealPlanEventResponse);
@@ -219,5 +224,6 @@ service MealPlanningService {
   rpc GetUserIngredientPreference(GetUserIngredientPreferenceRequest) returns (GetUserIngredientPreferenceResponse);
   rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
   rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);
+  rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse);
   rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
 }

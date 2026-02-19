@@ -25,7 +25,7 @@ func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notifica
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
 	}
 
-	notification, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
+	notification, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -55,7 +55,7 @@ func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notific
 
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
-	notifs, err := s.notificationsRepository.GetUserNotifications(ctx, sessionContextData.GetUserID(), filter)
+	notifs, err := s.notificationsManager.GetUserNotifications(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user notifs")
 	}
@@ -86,7 +86,7 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 
 	logger = logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationId)
 
-	existing, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
+	existing, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
@@ -97,11 +97,11 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 	}
 
 	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: newStatus})
-	if err = s.notificationsRepository.UpdateUserNotification(ctx, existing); err != nil {
+	if err = s.notificationsManager.UpdateUserNotification(ctx, existing); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}
 
-	updated, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
+	updated, err := s.notificationsManager.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}

@@ -3,12 +3,17 @@ package manager
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -20,22 +25,32 @@ const (
 var _ WebhookDataManager = (*webhookManager)(nil)
 
 type webhookManager struct {
-	tracer tracing.Tracer
-	logger logging.Logger
-	repo   webhooks.Repository
+	tracer               tracing.Tracer
+	logger               logging.Logger
+	repo                 webhooks.Repository
+	dataChangesPublisher messagequeue.Publisher
 }
 
 // NewWebhookDataManager returns a new WebhookDataManager that delegates to the webhooks repository.
 func NewWebhookDataManager(
+	ctx context.Context,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	repo webhooks.Repository,
-) WebhookDataManager {
-	return &webhookManager{
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger: logging.EnsureLogger(logger).WithName(o11yName),
-		repo:   repo,
+	cfg *msgconfig.QueuesConfig,
+	publisherProvider messagequeue.PublisherProvider,
+) (WebhookDataManager, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(ctx, cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
 	}
+
+	return &webhookManager{
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:               logging.EnsureLogger(logger).WithName(o11yName),
+		repo:                 repo,
+		dataChangesPublisher: dataChangesPublisher,
+	}, nil
 }
 
 func (m *webhookManager) WebhookExists(ctx context.Context, webhookID, accountID string) (bool, error) {
@@ -52,6 +67,7 @@ func (m *webhookManager) CreateWebhook(ctx context.Context, userID, accountID st
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
+	logger := m.logger.WithSpan(span)
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating webhook creation input")
 	}
@@ -88,7 +104,17 @@ func (m *webhookManager) CreateWebhook(ctx context.Context, userID, accountID st
 		})
 	}
 
-	return m.repo.CreateWebhook(ctx, dbInput)
+	created, err := m.repo.CreateWebhook(ctx, dbInput)
+	if err != nil {
+		return nil, err
+	}
+
+	tracing.AttachToSpan(span, keys.WebhookIDKey, created.ID)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookCreatedServiceEventType, map[string]any{
+		keys.WebhookIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
 func (m *webhookManager) GetWebhook(ctx context.Context, webhookID, accountID string) (*webhooks.Webhook, error) {
@@ -109,7 +135,18 @@ func (m *webhookManager) ArchiveWebhook(ctx context.Context, webhookID, accountI
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.repo.ArchiveWebhook(ctx, webhookID, accountID)
+	logger := m.logger.WithSpan(span).WithValue(keys.WebhookIDKey, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+
+	if err := m.repo.ArchiveWebhook(ctx, webhookID, accountID); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookArchivedServiceEventType, map[string]any{
+		keys.WebhookIDKey: webhookID,
+	}))
+
+	return nil
 }
 
 func (m *webhookManager) AddWebhookTriggerConfig(ctx context.Context, accountID string, input *webhooks.WebhookTriggerConfigCreationRequestInput) (*webhooks.WebhookTriggerConfig, error) {
@@ -128,14 +165,39 @@ func (m *webhookManager) AddWebhookTriggerConfig(ctx context.Context, accountID 
 		BelongsToWebhook: input.BelongsToWebhook,
 		TriggerEventID:   input.TriggerEventID,
 	}
-	return m.repo.AddWebhookTriggerConfig(ctx, accountID, dbInput)
+	created, err := m.repo.AddWebhookTriggerConfig(ctx, accountID, dbInput)
+	if err != nil {
+		return nil, err
+	}
+
+	logger := m.logger.WithSpan(span).WithValue(keys.WebhookTriggerConfigIDKey, created.ID)
+	tracing.AttachToSpan(span, keys.WebhookTriggerConfigIDKey, created.ID)
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookTriggerConfigCreatedServiceEventType, map[string]any{
+		keys.WebhookIDKey:              input.BelongsToWebhook,
+		keys.WebhookTriggerConfigIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
 func (m *webhookManager) ArchiveWebhookTriggerConfig(ctx context.Context, webhookID, configID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return m.repo.ArchiveWebhookTriggerConfig(ctx, webhookID, configID)
+	logger := m.logger.WithSpan(span).WithValue(keys.WebhookIDKey, webhookID).WithValue(keys.WebhookTriggerConfigIDKey, configID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookTriggerConfigIDKey, configID)
+
+	if err := m.repo.ArchiveWebhookTriggerConfig(ctx, webhookID, configID); err != nil {
+		return err
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, webhooks.WebhookTriggerConfigArchivedServiceEventType, map[string]any{
+		keys.WebhookIDKey:              webhookID,
+		keys.WebhookTriggerConfigIDKey: configID,
+	}))
+
+	return nil
 }
 
 func (m *webhookManager) CreateWebhookTriggerEvent(ctx context.Context, input *webhooks.WebhookTriggerEventCreationRequestInput) (*webhooks.WebhookTriggerEvent, error) {

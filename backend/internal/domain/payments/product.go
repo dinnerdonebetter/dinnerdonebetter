@@ -12,6 +12,13 @@ const (
 	ProductKindRecurring = "recurring"
 	// ProductKindOneTime indicates a one-time purchase product.
 	ProductKindOneTime = "one_time"
+
+	// ProductCreatedServiceEventType indicates a product was created.
+	ProductCreatedServiceEventType = "product_created"
+	// ProductUpdatedServiceEventType indicates a product was updated.
+	ProductUpdatedServiceEventType = "product_updated"
+	// ProductArchivedServiceEventType indicates a product was archived.
+	ProductArchivedServiceEventType = "product_archived"
 )
 
 type (

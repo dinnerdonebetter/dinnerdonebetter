@@ -14,7 +14,7 @@ import (
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*Repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -27,13 +27,13 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 
 	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 
-	return c.(*repository), container
+	return c, container
 }
 
-func buildInertClientForTest(t *testing.T) *repository {
+func buildInertClientForTest(t *testing.T) *Repository {
 	t.Helper()
 
 	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &database.MockClient{})
 
-	return c.(*repository)
+	return c
 }

@@ -14,8 +14,8 @@ const (
 	o11yName = "waitlists_db_client"
 )
 
-// repository is the waitlists repository implementation.
-type repository struct {
+// Repository is the waitlists repository implementation.
+type Repository struct {
 	database.Client
 	tracer           tracing.Tracer
 	logger           logging.Logger
@@ -25,12 +25,13 @@ type repository struct {
 }
 
 // ProvideWaitlistsRepository provides a new repository.
+// Returns concrete *repository so the manager can wrap it; the manager is the sole provider of waitlists.Repository for services.
 func ProvideWaitlistsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	client database.Client,
-) waitlists.Repository {
-	c := &repository{
+) *Repository {
+	c := &Repository{
 		Client:           client,
 		readDB:           client.ReadDB(),
 		writeDB:          client.WriteDB(),
@@ -41,3 +42,6 @@ func ProvideWaitlistsRepository(
 
 	return c
 }
+
+// Ensure *Repository implements the interface.
+var _ waitlists.Repository = (*Repository)(nil)
