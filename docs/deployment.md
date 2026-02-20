@@ -46,6 +46,12 @@ This script only runs the Skaffold application deploy. It does **not** run Terra
 
 ---
 
+## Post-Deployment Verification
+
+After each deploy, run through [docs/post-deployment-checklist.md](post-deployment-checklist.md) to verify endpoints, TLS, workloads, observability, and queues.
+
+---
+
 ## Configuration and Secrets
 
 Backend configuration and secrets are documented in [backend/docs/configuration.md](backend/docs/configuration.md). Terraform uses Terraform Cloud for variables; application secrets are synced from GCP Secret Manager into the cluster.

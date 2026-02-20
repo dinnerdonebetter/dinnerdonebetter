@@ -11,7 +11,8 @@ resources:
   - ingress-admin.yaml
   - otel_collector.yaml
   - cert_issuer.yaml # the LetsEncrypt definition that will issue our cert
-  - cert_secret.yaml # the secret where the cert will get stored
+  # cert_secret.yaml REMOVED: it had empty data and overwrote cert-manager's issued cert on every deploy.
+  # cert-manager creates dinner-done-better-cert automatically when the Certificate is issued.
   - certificate.yaml # the certificate request itself for the issuer to fulfill
   - service_account.yaml # Workload Identity service account for accessing GCP resources
   - secret_provider_class.yaml # GCP Secret Manager integration via CSI driver
