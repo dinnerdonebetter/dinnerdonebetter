@@ -25,15 +25,6 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      # GKE credentials not needed for infra terraform (creates cluster, not k8s resources)
-      # Uncomment below + copy kubeconfig if infra terraform ever needs cluster access
-      # - name: get GKE credentials
-      #   uses: google-github-actions/get-gke-credentials@v2
-      #   with:
-      #     cluster_name: prod
-      #     context_name: prod_context
-      #     location: us-central1
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -61,14 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.26.x']
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ matrix.go-version }}
-
       - name: Checkout code
         uses: actions/checkout@v5
 
