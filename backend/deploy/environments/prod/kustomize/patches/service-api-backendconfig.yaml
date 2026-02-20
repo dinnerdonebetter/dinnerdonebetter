@@ -1,9 +1,11 @@
 ---
-# Attach BackendConfig to gRPC port so health checks use HTTP port 8000
+# - BackendConfig: health checks use HTTP port 8000 (gRPC doesn't respond to HTTP GET)
+# - app-protocols: LB must use HTTP/2 to backend; gRPC requires it (default is HTTP/1.1)
 apiVersion: v1
 kind: Service
 metadata:
   name: dinner-done-better-api-svc
   annotations:
     cloud.google.com/backend-config: '{"ports": {"8001": "api-grpc-backendconfig"}}'
+    cloud.google.com/app-protocols: '{"grpc": "HTTP2"}'
 ---
