@@ -55,6 +55,11 @@ patches:
     target:
       kind: Service
       name: dinner-done-better-api-svc
+  - path: patches/deployment-grpc-tls.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
   ### API Server - needs database, pubsub, service secrets (from Terraform api-service-config), workload identity
   - path: patches/deployment-workload-identity.yaml
     target:
