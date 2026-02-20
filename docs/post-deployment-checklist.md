@@ -9,7 +9,8 @@ Run this checklist after merging to `prod` and deploying. Items marked with a sc
 Verify each domain resolves and responds over HTTPS from the public internet.
 
 - [ ] **api.dinnerdonebetter.com** (gRPC, port 443)
-  - `curl -sI https://api.dinnerdonebetter.com` or `grpcurl -insecure api.dinnerdonebetter.com:443 list`
+  - `grpcurl -insecure api.dinnerdonebetter.com:443 list`
+  - If you see HTTP 520 through Cloudflare, see [Cloudflare + gRPC troubleshooting](#cloudflare--grpc-520-troubleshooting) below.
 - [ ] **http-api.dinnerdonebetter.com** (REST/HTTP)
   - `curl -sI https://http-api.dinnerdonebetter.com/_ops_/ready`
 - [ ] **admin.dinnerdonebetter.com** (Admin webapp)
@@ -156,6 +157,32 @@ If the certificate is stuck with `429 rateLimited`:
   - `kubectl get configmap -n prod admin-webapp-config`
 - [ ] **grafana-cloud-creds** for otel-collector
   - `kubectl get secret -n prod grafana-cloud-creds`
+
+---
+
+## Cloudflare + gRPC 520 Troubleshooting
+
+If `grpcurl -insecure api.dinnerdonebetter.com:443 list` returns **HTTP 520** or `unexpected content-type "text/plain"`, Cloudflare is returning an error page instead of proxying gRPC. Cloudflare [supports gRPC](https://developers.cloudflare.com/network/grpc-connections/) when enabled—520 usually means a **Cloudflare ↔ GCE origin** handshake/protocol issue.
+
+### Checklist (in order)
+
+1. **gRPC enabled in Cloudflare**  
+   Dashboard → Network → gRPC toggle = **On**
+
+2. **SSL/TLS mode**  
+   Dashboard → SSL/TLS → Overview: use **Full** or **Full (strict)** so Cloudflare connects to GCE over HTTPS.
+
+3. **HTTP/2 to Origin**  
+   Dashboard → Speed → Optimization → Protocol Optimization: **HTTP/2 to Origin** = **On** (gRPC requires HTTP/2).
+
+4. **Isolate the issue**  
+   Temporarily set `api.dinnerdonebetter.com` to **DNS only** (grey cloud) in Cloudflare DNS. If `grpcurl` works, the problem is between Cloudflare and GCE.
+
+5. **Origin / firewall**  
+   Ensure GCE or any firewall allows [Cloudflare IP ranges](https://www.cloudflare.com/ips/).
+
+6. **Origin logs**  
+   Check GCE LB / API pod logs when Cloudflare connects; look for connection errors or unexpected responses.
 
 ---
 

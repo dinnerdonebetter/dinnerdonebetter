@@ -110,15 +110,7 @@ func (c *client) CommentsService() commentsgrpc.CommentsServiceClient {
 }
 
 func BuildUnauthenticatedGRPCClient(grpcServerAddr string, opts ...grpc.DialOption) (Client, error) {
-	buildOpts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-
-	for _, opt := range opts {
-		buildOpts = append(buildOpts, opt)
-	}
-
-	return BuildClient(grpcServerAddr, buildOpts...)
+	return BuildClient(grpcServerAddr, append([]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}, opts...)...)
 }
 
 func WithOAuth2Credentials(
