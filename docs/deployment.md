@@ -48,7 +48,16 @@ This script only runs the Skaffold application deploy. It does **not** run Terra
 
 ## Post-Deployment Verification
 
-After each deploy, run through [docs/post-deployment-checklist.md](post-deployment-checklist.md) to verify endpoints, TLS, workloads, observability, and queues.
+After each deploy, run verification to ensure the deployment is useful:
+
+```bash
+# Wait 1-2 min for load balancer propagation, then:
+make verify_prod
+```
+
+Or manually: `skaffold verify --filename=skaffold.yaml --profile prod` followed by `./scripts/post-deploy-verify.sh`.
+
+The CI pipeline runs these verification steps automatically after `skaffold run`. See [post-deployment-checklist.md](post-deployment-checklist.md) for manual checks (observability, queues, etc.).
 
 ---
 
