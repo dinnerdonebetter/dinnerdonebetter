@@ -5,7 +5,7 @@ metadata:
   name: dinner-done-better-ingress
   annotations:
     kubernetes.io/ingress.class: gce
-    external-dns.alpha.kubernetes.io/hostname: "dinnerdonebetter.com"
+    external-dns.alpha.kubernetes.io/hostname: "api.dinnerdonebetter.com,http-api.dinnerdonebetter.com"
 spec:
   tls:
     - hosts:

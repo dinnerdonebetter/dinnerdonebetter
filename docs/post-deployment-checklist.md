@@ -33,6 +33,25 @@ Verify each domain resolves and responds over HTTPS from the public internet.
 
 **Monitor idea:** Grafana alert if `dinner-done-better-cert` Ready=False or renewal is near failure.
 
+### Rate limit recovery (Let's Encrypt 429)
+
+If the certificate is stuck with `429 rateLimited`:
+
+1. **Find retry-after**  
+   `kubectl describe certificate -n prod dinner-done-better-cert` → look for `retry after 2026-XX-XX HH:MM:SS UTC` in the Failure condition.
+
+2. **Wait until after that time** (no workaround; must wait for the 168h window to expire).
+
+3. **Trigger a retry** (only after the retry-after time):
+
+   ```bash
+   cmctl renew dinner-done-better-cert -n prod
+   ```
+
+   If `cmctl` is not installed, cert-manager will retry automatically (it backs off and retries); you can speed it up by restarting the cert-manager controller: `kubectl rollout restart deployment -n cert-manager cert-manager`.
+
+4. **Verify** — certificate should become Ready within a few minutes.
+
 ---
 
 ## 3. Ingress & Load Balancers
@@ -142,14 +161,14 @@ Verify each domain resolves and responds over HTTPS from the public internet.
 
 ## Automation Opportunities
 
-| Check | Automation |
-|-------|------------|
-| Endpoint reachability | Bash script + cron or GitHub Action |
-| Cert status | `kubectl` + Grafana/k8s alert |
-| Pod status | K8s liveness/readiness + Prometheus `kube_pod_status_phase` |
-| CronJob success | Grafana alert on `kube_job_status_succeeded` |
-| Dead letter queue depth | GCP Monitoring alert on Pub/Sub metrics |
-| Grafana data flow | Synthetic trace + Loki log check |
+| Check                   | Automation                                                  |
+|-------------------------|-------------------------------------------------------------|
+| Endpoint reachability   | Bash script + cron or GitHub Action                         |
+| Cert status             | `kubectl` + Grafana/k8s alert                               |
+| Pod status              | K8s liveness/readiness + Prometheus `kube_pod_status_phase` |
+| CronJob success         | Grafana alert on `kube_job_status_succeeded`                |
+| Dead letter queue depth | GCP Monitoring alert on Pub/Sub metrics                     |
+| Grafana data flow       | Synthetic trace + Loki log check                            |
 
 ---
 
