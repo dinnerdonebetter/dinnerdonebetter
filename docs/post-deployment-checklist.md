@@ -8,12 +8,12 @@ Run this checklist after merging to `prod` and deploying. Items marked with a sc
 
 Verify each domain resolves and responds over HTTPS from the public internet.
 
-- [ ] **api.dinnerdonebetter.com** (gRPC, port 443)
+- [x] **api.dinnerdonebetter.com** (gRPC, port 443)
   - `grpcurl -insecure api.dinnerdonebetter.com:443 list`
   - If you see HTTP 520 through Cloudflare, see [Cloudflare + gRPC troubleshooting](#cloudflare--grpc-520-troubleshooting) below.
-- [ ] **http-api.dinnerdonebetter.com** (REST/HTTP)
+- [x] **http-api.dinnerdonebetter.com** (REST/HTTP)
   - `curl -sI https://http-api.dinnerdonebetter.com/_ops_/ready`
-- [ ] **admin.dinnerdonebetter.com** (Admin webapp)
+- [x] **admin.dinnerdonebetter.com** (Admin webapp)
   - `curl -sI https://admin.dinnerdonebetter.com/login`
 
 **Script idea:** `scripts/post-deploy-check-endpoints.sh` — loop over URLs, `curl -sf --connect-timeout 5`, exit 1 if any fail.
@@ -22,13 +22,13 @@ Verify each domain resolves and responds over HTTPS from the public internet.
 
 ## 2. TLS Certificate
 
-- [ ] **cert-manager certificate is Ready**
+- [x] **cert-manager certificate is Ready**
   - `kubectl get certificate -n prod dinner-done-better-cert`
   - Status should be `Ready=True`
-- [ ] **Secret has cert data**
+- [x] **Secret has cert data**
   - `kubectl get secret -n prod dinner-done-better-cert -o jsonpath='{.data.tls\.crt}' | base64 -d | head -1`
   - Should start with `-----BEGIN CERTIFICATE-----`
-- [ ] **No rate limit errors**
+- [x] **No rate limit errors**
   - `kubectl describe certificate -n prod dinner-done-better-cert`
   - No `429 rateLimited` in Conditions/Events
 
@@ -57,13 +57,13 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 3. Ingress & Load Balancers
 
-- [ ] **Main ingress has an Address**
+- [x] **Main ingress has an Address**
   - `kubectl get ingress -n prod dinner-done-better-ingress`
   - `ADDRESS` column should show an IP (not blank)
-- [ ] **No translation/sync errors**
+- [x] **No translation/sync errors**
   - `kubectl describe ingress -n prod dinner-done-better-ingress`
   - No `Translation failed` or `Error 404: sslCertificates`
-- [ ] **Admin ingress** (if using standalone)
+- [x] **Admin ingress** (if using standalone)
   - `kubectl get ingress -n prod dinner-done-better-admin-ingress`
   - Should have Address if main ingress is broken
 
@@ -71,15 +71,15 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 4. Workload Health (Kubernetes)
 
-- [ ] **API server** — `dinner-done-better-service-api-deployment`
+- [x] **API server** — `dinner-done-better-service-api-deployment`
   - `kubectl get pods -n prod -l app.kubernetes.io/name=dinner-done-better-backend`
   - 1/1 Running, no CrashLoopBackOff
-- [ ] **Admin webapp** — `dinner-done-better-admin-webapp-deployment`
+- [x] **Admin webapp** — `dinner-done-better-admin-webapp-deployment`
   - `kubectl get pods -n prod -l app.kubernetes.io/name=dinner-done-better-admin-webapp`
-- [ ] **Async message handler** — `dinner-done-better-async-message-handler-deployment`
-  - `kubectl get pods -n prod -l app.kubernetes.io/name=dinner-done-better-async-message-handler`
-- [ ] **OpenTelemetry collector**
-  - `kubectl get pods -n prod -l app.kubernetes.io/name=opentelemetry-collector`
+- [x] **Async message handler** — `dinner-done-better-async-message-handler-deployment`
+  - `kubectl get pods -n prod -l app.kubernetes.io/name=dinner-done-better-backend-services`
+- [x] **OpenTelemetry collector**
+  - `kubectl get pods -n prod -l app.kubernetes.io/name=dinner-done-better-infra`
 
 **Script idea:** `kubectl get pods -n prod -o jsonpath='{range .items[?(@.status.phase!="Running")]}{.metadata.name}{"\n"}{end}'` — fail if any non-Running.
 
@@ -87,7 +87,7 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 5. CronJobs
 
-- [ ] **All CronJobs exist and have recent last schedule**
+- [x] **All CronJobs exist and have recent last schedule**
   - `kubectl get cronjobs -n prod`
   - Jobs: `dinner-done-better-job-db-cleaner`, `meal-plan-finalizer`, `meal-plan-grocery-list-init`, `meal-plan-task-creator`, `search-data-index-scheduler`
 - [ ] **No stuck/failed Job pods**
