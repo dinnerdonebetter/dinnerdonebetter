@@ -182,6 +182,9 @@ querier: queries queries_lint
 struct_usage_check:
 	$(SCRIPTS_DIR)/struct_usage_check.sh $(THIS)
 
+.PHONY: check_struct_usage
+check_struct_usage: struct_usage_check
+
 .PHONY: env_vars
 env_vars:
 	$(SCRIPTS_DIR)/env_vars.sh $(THIS)

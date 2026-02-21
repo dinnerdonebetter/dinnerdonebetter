@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -14,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
 
 	"github.com/codemodus/kace"
 )
@@ -30,7 +30,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	modulePath := getModulePath(dir)
+	modulePath, err := reflast.GetModulePath(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	structs := parseGoFiles(dir, modulePath)
 
 	outputLines := []string{}
@@ -77,25 +81,6 @@ const (
 	}
 }
 
-func getModulePath(dir string) string {
-	f, err := os.Open(filepath.Join(dir, "go.mod"))
-	if err != nil {
-		log.Fatalf("failed to open go.mod: %v", err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "module ") {
-			return strings.TrimSpace(strings.TrimPrefix(line, "module "))
-		}
-	}
-
-	log.Fatal("could not find module path in go.mod")
-	return ""
-}
-
 // parseGoFiles parses all Go files in the given directory and returns a map of struct entries
 // keyed by "relativeDir.TypeName" to avoid collisions between packages with the same name.
 func parseGoFiles(dir, modulePath string) map[string]*structEntry {
@@ -121,7 +106,7 @@ func parseGoFiles(dir, modulePath string) map[string]*structEntry {
 		}
 
 		relDir := filepath.ToSlash(mustRel(dir, filepath.Dir(path)))
-		fileImports := buildFileImports(node, modulePath)
+		fileImports := reflast.FilterModuleImports(reflast.BuildImportMap(node), modulePath)
 
 		for _, decl := range node.Decls {
 			genDecl, ok := decl.(*ast.GenDecl)
@@ -159,50 +144,6 @@ func mustRel(basePath, targetPath string) string {
 		log.Fatalf("failed to compute relative path from %s to %s: %v", basePath, targetPath, err)
 	}
 	return rel
-}
-
-// buildFileImports maps each import's local name (alias or last segment) to the
-// relative directory path within the module, for module-internal imports only.
-func buildFileImports(node *ast.File, modulePath string) map[string]string {
-	fileImports := make(map[string]string)
-
-	for _, imp := range node.Imports {
-		if imp.Path == nil {
-			continue
-		}
-
-		importPath := strings.Trim(imp.Path.Value, `"`)
-
-		if !strings.HasPrefix(importPath, modulePath+"/") {
-			continue
-		}
-
-		importRelDir := strings.TrimPrefix(importPath, modulePath+"/")
-
-		var localName string
-		if imp.Name != nil && imp.Name.Name != "_" && imp.Name.Name != "." {
-			localName = imp.Name.Name
-		} else {
-			parts := strings.Split(importPath, "/")
-			localName = parts[len(parts)-1]
-		}
-
-		fileImports[localName] = importRelDir
-	}
-
-	return fileImports
-}
-
-// getTagValue extracts the value of a specific tag from a struct field tag.
-func getTagValue(tag, key string) string {
-	for t := range strings.SplitSeq(tag, " ") {
-		parts := strings.SplitN(t, ":", 2)
-		if len(parts) == 2 && parts[0] == key {
-			return strings.Trim(strings.Split(parts[1], ",")[0], "\"")
-		}
-	}
-
-	return ""
 }
 
 // handleIdent resolves an unqualified type name (same-package reference).
@@ -257,7 +198,7 @@ func extractEnvVars(entry *structEntry, structs map[string]*structEntry, envVarP
 		}
 
 		fn := field.Names[0].Name
-		if envValue := getTagValue(tag, "env"); envValue != "" && envValue != "init" {
+		if envValue := reflast.GetTagValue(tag, "env"); envValue != "" && envValue != "init" {
 			if envVarPrefix != "" {
 				envValue = envVarPrefix + envValue
 			}
@@ -269,7 +210,7 @@ func extractEnvVars(entry *structEntry, structs map[string]*structEntry, envVarP
 			}
 		}
 
-		if prefixValue := getTagValue(tag, "envPrefix"); prefixValue != "" {
+		if prefixValue := reflast.GetTagValue(tag, "envPrefix"); prefixValue != "" {
 			if envVarPrefix != "" {
 				prefixValue = envVarPrefix + prefixValue
 			}
