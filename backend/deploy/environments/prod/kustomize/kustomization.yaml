@@ -176,7 +176,7 @@ patches:
           name: DINNER_DONE_BETTER_COOKIES_COOKIE_NAME
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: COOKIE_NAME
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -189,7 +189,7 @@ patches:
           name: DINNER_DONE_BETTER_COOKIES_HASH_KEY
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: COOKIE_HASH_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -197,7 +197,7 @@ patches:
           name: DINNER_DONE_BETTER_COOKIES_BLOCK_KEY
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: COOKIE_BLOCK_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -205,7 +205,7 @@ patches:
           name: DINNER_DONE_BETTER_COOKIES_DOMAIN
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: COOKIE_DOMAIN
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -233,7 +233,7 @@ patches:
           name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: OAUTH2_CLIENT_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -241,14 +241,14 @@ patches:
           name: DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: admin-webapp-config
+              name: dinner-done-better-admin-webapp-config
               key: OAUTH2_CLIENT_SECRET
     target:
       version: v1
       kind: Deployment
       name: dinner-done-better-admin-webapp-deployment
 
-  # ### MCP Server - needs API service URL from admin-webapp-config, OAuth credentials from mcp-server-config
+  # ### MCP Server - needs API service URL from dinner-done-better-admin-webapp-config, OAuth credentials from mcp-server-config
   # - patch: |-
   #     - op: add
   #       path: "/spec/template/spec/containers/0/env/-"
@@ -256,7 +256,7 @@ patches:
   #         name: DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL
   #         valueFrom:
   #           configMapKeyRef:
-  #             name: admin-webapp-config
+  #             name: dinner-done-better-admin-webapp-config
   #             key: API_SERVER_HTTP_URL
   #     - op: add
   #       path: "/spec/template/spec/containers/0/env/-"
@@ -264,7 +264,7 @@ patches:
   #         name: DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL
   #         valueFrom:
   #           configMapKeyRef:
-  #             name: admin-webapp-config
+  #             name: dinner-done-better-admin-webapp-config
   #             key: API_SERVER_GRPC_URL
   #     - op: add
   #       path: "/spec/template/spec/containers/0/env/-"
