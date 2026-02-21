@@ -56,4 +56,7 @@ ios/**/DerivedData/
 *.xcodeproj/project.xcworkspace/xcuserdata/
 *.swiftpm/
 
+# iOS secrets (use Secrets.xcconfig.example as template)
+ios/Secrets.xcconfig
+
 legacy_frontend

@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -34,7 +33,6 @@ type (
 		settingssvc.UnimplementedInternalOperationsServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		encoder                   encoding.ServerEncoderDecoder
 		msgConfig                 *msgconfig.Config
 		internalOpsRepo           internalops.InternalOpsDataManager
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
@@ -46,12 +44,10 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	msgConfig *msgconfig.Config,
 	repo internalops.InternalOpsDataManager,
-	encoder encoding.ServerEncoderDecoder,
 ) settingssvc.InternalOperationsServer {
 	return &serviceImpl{
 		msgConfig:                 msgConfig,
 		internalOpsRepo:           repo,
-		encoder:                   encoder,
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
@@ -93,8 +89,6 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		UserID: sessionContextData.Requester.UserID,
 	}
 
-	msgBytes := s.encoder.MustEncodeJSON(ctx, msg)
-
 	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
@@ -105,7 +99,7 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
 	}
 
-	if err = publisher.Publish(ctx, msgBytes); err != nil {
+	if err = publisher.Publish(ctx, msg); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "publishing test message")
 	}
 

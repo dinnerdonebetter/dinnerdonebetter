@@ -120,7 +120,7 @@ func ProvidePublisherProvider(ctx context.Context, logger logging.Logger, tracer
 			return nil, fmt.Errorf("establishing PubSub client: %w", err)
 		}
 
-		return pubsub.ProvidePubSubPublisherProvider(logger, tracerProvider, client), nil
+		return pubsub.ProvidePubSubPublisherProvider(logger, tracerProvider, client, c.Publisher.PubSub.ProjectID), nil
 	default:
 		logger.Info("Using noop publisher provider")
 		return &messagequeue.NoopPublisherProvider{}, nil

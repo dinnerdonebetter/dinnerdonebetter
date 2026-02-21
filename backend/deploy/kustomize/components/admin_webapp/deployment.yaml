@@ -41,14 +41,14 @@ spec:
               name: http
           livenessProbe:
             httpGet:
-              path: "/login"
+              path: "/_ops_/live"
               port: 8888
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: "/login"
+              path: "/_ops_/ready"
               port: 8888
             initialDelaySeconds: 10
             periodSeconds: 5

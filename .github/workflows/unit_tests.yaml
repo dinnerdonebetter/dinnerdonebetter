@@ -74,6 +74,10 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Create Secrets.xcconfig
+        working-directory: ios
+        run: cp Secrets.xcconfig.example Secrets.xcconfig
+
       - name: Run unit tests
         working-directory: ios
         env:

@@ -19,6 +19,19 @@ const (
 func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r := router.WithMiddleware(s.authMiddleware)
 
+	router.Route("/_ops_", func(metaRouter routing.Router) {
+		// Expose a liveness check on /live
+		metaRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
+
+		// Expose a readiness check on /ready
+		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			// TODO: check readiness here lol
+			res.WriteHeader(http.StatusOK)
+		})
+	})
+
 	r.Get("/", ghttp.Adapt(s.HomePage))
 
 	r.Get(fmt.Sprintf("/users/{%s}", userIDURLParamKey), ghttp.Adapt(s.UserPage))

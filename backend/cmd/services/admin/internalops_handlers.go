@@ -17,11 +17,11 @@ var queueOptions = []*struct {
 	Label string
 	Value string
 }{
-	{Label: "Data Changes", Value: "data-changes"},
-	{Label: "Outbound Emails", Value: "outbound-emails"},
-	{Label: "Search Index Requests", Value: "search-index-requests"},
-	{Label: "User Data Aggregation", Value: "user-data-aggregation"},
-	{Label: "Webhook Execution Requests", Value: "webhook-execution-requests"},
+	{Label: "Data Changes", Value: "data_changes"},
+	{Label: "Outbound Emails", Value: "outbound_emails"},
+	{Label: "Search Index Requests", Value: "search_index_requests"},
+	{Label: "User Data Aggregation", Value: "user_data_aggregation"},
+	{Label: "Webhook Execution Requests", Value: "webhook_execution_requests"},
 }
 
 func (s *AdminFrontendServer) QueueTestPage(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
