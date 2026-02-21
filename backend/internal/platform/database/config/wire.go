@@ -22,6 +22,8 @@ var (
 	)
 
 	// DatabaseConfigProviders are what we provide to dependency injection.
+	// Include with repositories.RepositoryProviders for builds that run migrations on startup.
+	// Requires wire.FieldsOf(..., "Database") on the parent config to supply *Config.
 	DatabaseConfigProviders = wire.NewSet(
 		ProvideDatabase,
 		ProvideClientConfig,

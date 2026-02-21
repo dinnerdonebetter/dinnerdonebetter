@@ -26,7 +26,6 @@ import (
 	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -37,6 +36,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/repositories"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	commentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments"
@@ -89,8 +89,8 @@ func Build(
 		sessions.SessionProviders,
 		observability.O11yProviders,
 		random.RandProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
+		databasecfg.DatabaseConfigProviders,
+		repositories.RepositoryProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,
 		tokenscfg.TokenIssuerProviders,

@@ -100,13 +100,13 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 6. Observability (Grafana Cloud)
 
-- [ ] **Metrics in Grafana**
+- [x] **Metrics in Grafana**
   - Grafana Cloud → Prometheus — verify `dinner_done_better` (or service names) data arriving
   - Note: `prometheusremotewrite` may be commented out in otel config; enable if metrics are missing
-- [ ] **Logs in Grafana**
+- [x] **Logs in Grafana**
   - Grafana Cloud → Loki — verify logs from API, async handler, admin, cronjobs
   - Look for `service_name` = `dinner_done_better`, `admin_webapp`, etc.
-- [ ] **Traces in Grafana**
+- [x] **Traces in Grafana**
   - Grafana Cloud → Tempo — verify traces for recent requests
 
 **Monitor idea:** Grafana synthetic check that a trace appears for a health-check request to `http-api.dinnerdonebetter.com/_ops_/ready`.
@@ -115,13 +115,13 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 7. Pub/Sub Queues
 
-- [ ] **No messages stuck in dead letter topics**
+- [x] **No messages stuck in dead letter topics**
   - GCP Console → Pub/Sub → Subscriptions
   - Check: `data_changes`, `outbound_emails`, `search_index_requests`, `user_data_aggregation_requests`, `webhook_execution_requests`
   - Dead letter topics: `*-deadletter` — ideally 0 unacked
-- [ ] **Subscription backlogs reasonable**
+- [x] **Subscription backlogs reasonable**
   - `gcloud pubsub subscriptions pull --auto-ack <sub-id>` or check metrics in GCP
-- [ ] **Async handler consuming**
+- [x] **Async handler consuming**
   - Trigger a flow that publishes (e.g. user signup → outbound_emails), confirm delivery
 
 **Script idea:** `gcloud pubsub subscriptions describe` + parse `numUndeliveredMessages`; alert if > threshold.
@@ -132,10 +132,10 @@ If the certificate is stuck with `429 rateLimited`:
 
 - [ ] **SendGrid** — domain auth, deliverability
   - Send a test email (e.g. password reset or welcome) and confirm inbox delivery
-- [ ] **Algolia** — indices populated
+- [x] **Algolia** — indices populated
   - Algolia Dashboard → Indices: `recipes`, `meals`, `valid_ingredients`, etc.
   - Run a search in the app and confirm results
-- [ ] **Cloud SQL (Postgres)** — connectivity from workloads
+- [x] **Cloud SQL (Postgres)** — connectivity from workloads
   - Pods use private IP; no direct curl. Implicit if API responds.
 
 ---
@@ -143,19 +143,21 @@ If the certificate is stuck with `429 rateLimited`:
 ## 9. Database & Migrations
 
 - [ ] **Migrations applied**
-  - API server runs migrations on startup; successful health check implies they ran
-  - Check API logs for migration errors: `kubectl logs -n prod -l app.kubernetes.io/name=dinner-done-better-backend --tail=200`
+  - API server runs migrations on startup when `runMigrations: true` in config; successful health check implies they ran
+  - Check API logs for migration success: `kubectl logs -n prod -l app.kubernetes.io/name=dinner-done-better-backend --tail=200 | grep -i migrat`
+  - Check for migration errors: `kubectl logs -n prod -l app.kubernetes.io/name=dinner-done-better-backend --tail=200`
+  - *Historical note: A prior bug caused the API to skip migrations at startup despite `runMigrations: true`; the Wire build now correctly invokes the migrator.*
 
 ---
 
 ## 10. Secrets & Config
 
-- [ ] **api-service-secrets** exists and is populated
-  - `kubectl get secret -n prod api-service-secrets`
-- [ ] **admin-webapp-config** (secret + configmap) exist
+- [x] **api-service-config** exists and is populated
+  - `kubectl get secret -n prod api-service-config`
+- [x] **admin-webapp-config** (secret + configmap) exist
   - `kubectl get secret -n prod admin-webapp-config`
   - `kubectl get configmap -n prod admin-webapp-config`
-- [ ] **grafana-cloud-creds** for otel-collector
+- [x] **grafana-cloud-creds** for otel-collector
   - `kubectl get secret -n prod grafana-cloud-creds`
 
 ---
