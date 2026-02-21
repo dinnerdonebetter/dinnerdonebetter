@@ -60,11 +60,11 @@ func main() {
 				if slices.Contains(generatedEnvVars, kace.Pascal(envVar)) {
 					continue
 				}
-				structName := strings.ReplaceAll(structName, "internal/config.", "")
+				sn := strings.ReplaceAll(structName, "internal/config.", "")
 				outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set to override `+"`"+`%s%s`+"`"+`.
 	%sEnvVarKey = "%s%s"
 
-`, kace.Pascal(envVar), structName, fieldPath, kace.Pascal(envVar), config.EnvVarPrefix, envVar))
+`, kace.Pascal(envVar), sn, fieldPath, kace.Pascal(envVar), config.EnvVarPrefix, envVar))
 				generatedEnvVars = append(generatedEnvVars, kace.Pascal(envVar))
 			}
 		}

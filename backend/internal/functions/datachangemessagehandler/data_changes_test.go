@@ -30,7 +30,7 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
-		handler, identityRepo, webhookRepo, _, _, analyticsReporter, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, identityRepo, webhookRepo, _, _, analyticsReporter, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 
@@ -46,6 +46,12 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 
 		rawMsg, err := json.Marshal(dataChangeMessage)
 		assert.NoError(t, err)
+
+		// Set up decoder mock: DataChangesEventHandler decodes rawMsg into a DataChangeMessage
+		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.Anything).Run(func(args mock.Arguments) {
+			dest := args.Get(2).(*audit.DataChangeMessage)
+			*dest = *dataChangeMessage
+		}).Return(nil).Once()
 
 		// Set up mock expectations
 		analyticsReporter.On(reflection.GetMethodName(analyticsReporter.EventOccurred), mock.Anything, dataChangeMessage.EventType, dataChangeMessage.UserID, dataChangeMessage.Context).Return(nil).Once()
@@ -66,20 +72,24 @@ func TestAsyncDataChangeMessageHandler_DataChangesEventHandler(t *testing.T) {
 
 		assert.NoError(t, handler.DataChangesEventHandler(ctx, rawMsg))
 
-		mock.AssertExpectationsForObjects(t, analyticsReporter, webhookRepo, identityRepo)
+		mock.AssertExpectationsForObjects(t, analyticsReporter, webhookRepo, identityRepo, decoder)
 	})
 
 	t.Run("with invalid JSON", func(t *testing.T) {
 		t.Parallel()
 
-		handler, _, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
+		handler, _, _, _, _, _, _, _, _, decoder, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()
 		rawMsg := []byte("invalid json")
 
+		decoder.On(reflection.GetMethodName(decoder.DecodeBytes), mock.Anything, rawMsg, mock.Anything).Return(errors.New("invalid character 'i' looking for beginning of value")).Once()
+
 		err := handler.DataChangesEventHandler(ctx, rawMsg)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "decoding JSON body")
+		assert.Contains(t, err.Error(), "decoding message body")
+
+		mock.AssertExpectationsForObjects(t, decoder)
 	})
 }
 

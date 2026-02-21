@@ -17,12 +17,6 @@ const (
 	defaultAdminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 )
 
-func must(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func main() {
 	ctx := context.Background()
 

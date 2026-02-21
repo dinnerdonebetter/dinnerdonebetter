@@ -13,7 +13,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-var queueOptions = []struct {
+var queueOptions = []*struct {
 	Label string
 	Value string
 }{
@@ -49,7 +49,7 @@ func (s *AdminFrontendServer) QueueTestPage(_ http.ResponseWriter, req *http.Req
 			Palette:  palette,
 		},
 			components.Card(palette,
-				ghtml.FormEl(
+				ghtml.Form(
 					g.Attr("hx-post", "/api/queue_test"),
 					g.Attr("hx-target", "#queue-test-result"),
 					g.Attr("hx-swap", "innerHTML"),

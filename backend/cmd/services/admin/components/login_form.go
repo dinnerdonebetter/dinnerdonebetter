@@ -151,6 +151,7 @@ func (r *ComponentRenderer) LoginForm(props *LoginFormProps) g.Node {
 				g.Attr("hx-ext", "json-enc"),
 				g.Attr("hx-target", "#login-container"),
 				g.Attr("hx-swap", "outerHTML"),
+				g.Attr("hx-request", `{"credentials":"include"}`),
 
 				r.wrapInputElement("username", props.UsernameError, r.UsernameInput("username", "username", "")),
 				r.inputElement("password", props.PasswordError, "password", "password", ""),
