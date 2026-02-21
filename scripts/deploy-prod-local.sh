@@ -20,4 +20,5 @@ KOCACHE="${KOCACHE:-$HOME/.cache/ko}" skaffold run \
   --filename=skaffold.yaml \
   --build-concurrency 0 \
   --profile prod \
+  --label "deploy-source=local" \
   "$@"

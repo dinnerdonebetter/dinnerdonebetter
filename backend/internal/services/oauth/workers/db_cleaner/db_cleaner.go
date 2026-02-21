@@ -3,7 +3,7 @@ package dbcleaner
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/maintenance"
+	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -20,14 +20,14 @@ type Job struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	handledRecordsCounter metrics.Int64Counter
-	dataManager           maintenance.MaintenanceDataManager
+	dataManager           internalops.InternalOpsDataManager
 }
 
 func NewDBCleaner(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
-	dataManager maintenance.MaintenanceDataManager,
+	dataManager internalops.InternalOpsDataManager,
 ) (*Job, error) {
 	handledRecordsCounter, err := metricsProvider.NewInt64Counter("db_cleaner.handled_records")
 	if err != nil {

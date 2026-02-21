@@ -20,14 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InternalOperations_PublishArbitraryQueueMessage_FullMethodName = "/internalops.InternalOperations/PublishArbitraryQueueMessage"
+	InternalOperations_TestQueueMessage_FullMethodName = "/internalops.InternalOperations/TestQueueMessage"
 )
 
 // InternalOperationsClient is the client API for InternalOperations service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InternalOperationsClient interface {
-	PublishArbitraryQueueMessage(ctx context.Context, in *PublishArbitraryQueueMessageRequest, opts ...grpc.CallOption) (*PublishArbitraryQueueMessageResponse, error)
+	TestQueueMessage(ctx context.Context, in *TestQueueMessageRequest, opts ...grpc.CallOption) (*TestQueueMessageResponse, error)
 }
 
 type internalOperationsClient struct {
@@ -38,10 +38,10 @@ func NewInternalOperationsClient(cc grpc.ClientConnInterface) InternalOperations
 	return &internalOperationsClient{cc}
 }
 
-func (c *internalOperationsClient) PublishArbitraryQueueMessage(ctx context.Context, in *PublishArbitraryQueueMessageRequest, opts ...grpc.CallOption) (*PublishArbitraryQueueMessageResponse, error) {
+func (c *internalOperationsClient) TestQueueMessage(ctx context.Context, in *TestQueueMessageRequest, opts ...grpc.CallOption) (*TestQueueMessageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PublishArbitraryQueueMessageResponse)
-	err := c.cc.Invoke(ctx, InternalOperations_PublishArbitraryQueueMessage_FullMethodName, in, out, cOpts...)
+	out := new(TestQueueMessageResponse)
+	err := c.cc.Invoke(ctx, InternalOperations_TestQueueMessage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *internalOperationsClient) PublishArbitraryQueueMessage(ctx context.Cont
 // All implementations must embed UnimplementedInternalOperationsServer
 // for forward compatibility.
 type InternalOperationsServer interface {
-	PublishArbitraryQueueMessage(context.Context, *PublishArbitraryQueueMessageRequest) (*PublishArbitraryQueueMessageResponse, error)
+	TestQueueMessage(context.Context, *TestQueueMessageRequest) (*TestQueueMessageResponse, error)
 	mustEmbedUnimplementedInternalOperationsServer()
 }
 
@@ -63,8 +63,8 @@ type InternalOperationsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedInternalOperationsServer struct{}
 
-func (UnimplementedInternalOperationsServer) PublishArbitraryQueueMessage(context.Context, *PublishArbitraryQueueMessageRequest) (*PublishArbitraryQueueMessageResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PublishArbitraryQueueMessage not implemented")
+func (UnimplementedInternalOperationsServer) TestQueueMessage(context.Context, *TestQueueMessageRequest) (*TestQueueMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestQueueMessage not implemented")
 }
 func (UnimplementedInternalOperationsServer) mustEmbedUnimplementedInternalOperationsServer() {}
 func (UnimplementedInternalOperationsServer) testEmbeddedByValue()                            {}
@@ -87,20 +87,20 @@ func RegisterInternalOperationsServer(s grpc.ServiceRegistrar, srv InternalOpera
 	s.RegisterService(&InternalOperations_ServiceDesc, srv)
 }
 
-func _InternalOperations_PublishArbitraryQueueMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishArbitraryQueueMessageRequest)
+func _InternalOperations_TestQueueMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestQueueMessageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InternalOperationsServer).PublishArbitraryQueueMessage(ctx, in)
+		return srv.(InternalOperationsServer).TestQueueMessage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InternalOperations_PublishArbitraryQueueMessage_FullMethodName,
+		FullMethod: InternalOperations_TestQueueMessage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InternalOperationsServer).PublishArbitraryQueueMessage(ctx, req.(*PublishArbitraryQueueMessageRequest))
+		return srv.(InternalOperationsServer).TestQueueMessage(ctx, req.(*TestQueueMessageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -113,8 +113,8 @@ var InternalOperations_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*InternalOperationsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "PublishArbitraryQueueMessage",
-			Handler:    _InternalOperations_PublishArbitraryQueueMessage_Handler,
+			MethodName: "TestQueueMessage",
+			Handler:    _InternalOperations_TestQueueMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

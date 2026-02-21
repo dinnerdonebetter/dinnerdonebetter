@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
@@ -46,6 +47,7 @@ func NewIndexScheduler(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	messageQueuePublisherProvider messagequeue.PublisherProvider,
+	queues *msgconfig.QueuesConfig,
 	indexFunctions map[string]Function,
 ) (*IndexScheduler, error) {
 	handledRecordsCounter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s.handled_records", serviceName))
@@ -53,7 +55,7 @@ func NewIndexScheduler(
 		return nil, err
 	}
 
-	searchDataIndexPublisher, err := messageQueuePublisherProvider.ProvidePublisher(ctx, "TODO")
+	searchDataIndexPublisher, err := messageQueuePublisherProvider.ProvidePublisher(ctx, queues.SearchIndexRequestsTopicName)
 	if err != nil {
 		return nil, err
 	}

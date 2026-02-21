@@ -6,6 +6,7 @@ import (
 	"errors"
 	"testing"
 
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
@@ -18,6 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/metric"
 )
+
+var testQueuesConfig = &msgconfig.QueuesConfig{SearchIndexRequestsTopicName: "search_index_requests"}
 
 func TestNewIndexScheduler(T *testing.T) {
 	T.Parallel()
@@ -37,7 +40,7 @@ func TestNewIndexScheduler(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		indexFunctions := map[string]Function{
 			"test_type": func(ctx context.Context) ([]string, error) {
@@ -45,7 +48,7 @@ func TestNewIndexScheduler(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		assert.NoError(t, err)
 		assert.NotNil(t, scheduler)
 		assert.Equal(t, []string{"test_type"}, scheduler.allIndexTypes)
@@ -69,9 +72,9 @@ func TestNewIndexScheduler(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, scheduler)
 		assert.Empty(t, scheduler.allIndexTypes)
@@ -94,7 +97,7 @@ func TestNewIndexScheduler(T *testing.T) {
 		int64Counter := &mockmetrics.Int64Counter{}
 		metricsProvider.On(reflection.GetMethodName(metricsProvider.NewInt64Counter), "indexer.handled_records", []metric.Int64CounterOption(nil)).Return(int64Counter, errors.New("metrics error"))
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, nil)
 		assert.Error(t, err)
 		assert.Nil(t, scheduler)
 		assert.Contains(t, err.Error(), "metrics error")
@@ -117,9 +120,9 @@ func TestNewIndexScheduler(T *testing.T) {
 
 		// Mock message queue provider to return error - need to return a valid interface and error
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, errors.New("message queue error"))
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, errors.New("message queue error"))
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, nil)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, nil)
 		assert.Error(t, err)
 		assert.Nil(t, scheduler)
 		assert.Contains(t, err.Error(), "message queue error")
@@ -146,7 +149,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function
 		indexFunctions := map[string]Function{
@@ -155,7 +158,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls
@@ -188,7 +191,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function that returns empty results
 		indexFunctions := map[string]Function{
@@ -197,7 +200,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		// No publisher calls expected for empty results
@@ -225,7 +228,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function that returns sql.ErrNoRows
 		indexFunctions := map[string]Function{
@@ -234,7 +237,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		// sql.ErrNoRows should be handled gracefully and return nil
@@ -259,7 +262,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function that returns an error
 		indexFunctions := map[string]Function{
@@ -268,7 +271,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		err = scheduler.IndexTypes(ctx)
@@ -293,10 +296,10 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Create scheduler with empty index functions
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, map[string]Function{})
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, map[string]Function{})
 		require.NoError(t, err)
 
 		// This should not happen in normal operation since random.Element would return empty string
@@ -325,7 +328,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function
 		indexFunctions := map[string]Function{
@@ -334,7 +337,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls - some succeed, some fail
@@ -366,7 +369,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 
 		// Mock message queue provider
 		publisher := &mockpublishers.Publisher{}
-		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), "TODO").Return(publisher, nil)
+		messageQueueProvider.On(reflection.GetMethodName(messageQueueProvider.ProvidePublisher), testQueuesConfig.SearchIndexRequestsTopicName).Return(publisher, nil)
 
 		// Mock index function
 		indexFunctions := map[string]Function{
@@ -375,7 +378,7 @@ func TestIndexScheduler_IndexTypes(T *testing.T) {
 			},
 		}
 
-		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, indexFunctions)
+		scheduler, err := NewIndexScheduler(ctx, logger, tracerProvider, metricsProvider, messageQueueProvider, testQueuesConfig, indexFunctions)
 		require.NoError(t, err)
 
 		// Mock publisher calls - all fail

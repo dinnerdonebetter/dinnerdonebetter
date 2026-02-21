@@ -3,11 +3,40 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 )
+
+func (s *AdminFrontendServer) buildAuthedClient(ctx context.Context, accessToken string) (client.Client, error) {
+	conn := s.config.APIServiceConnection
+
+	if s.developingLocally {
+		return localdev.BuildInsecureOAuthedGRPCClient(
+			ctx,
+			conn.OAuth2APIClientID,
+			conn.OAuth2APIClientSecret,
+			conn.HTTPAPIServerURL,
+			conn.GRPCAPIServerURL,
+			accessToken,
+		)
+	}
+
+	oauthOpt, err := client.WithOAuth2Credentials(
+		ctx,
+		conn.HTTPAPIServerURL,
+		conn.OAuth2APIClientID,
+		conn.OAuth2APIClientSecret,
+		accessToken,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("building OAuth2 credentials: %w", err)
+	}
+
+	return client.BuildTLSGRPCClient(conn.GRPCAPIServerURL, oauthOpt)
+}
 
 func (s *AdminFrontendServer) authMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -35,14 +64,7 @@ func (s *AdminFrontendServer) authMiddleware(handler http.Handler) http.Handler 
 			return
 		}
 
-		c, err := localdev.BuildInsecureOAuthedGRPCClient(
-			ctx,
-			s.config.APIServiceConnection.OAuth2APIClientID,
-			s.config.APIServiceConnection.OAuth2APIClientSecret,
-			s.config.APIServiceConnection.HTTPAPIServerURL,
-			s.config.APIServiceConnection.GRPCAPIServerURL,
-			payload.AccessToken,
-		)
+		c, err := s.buildAuthedClient(ctx, payload.AccessToken)
 		if err != nil {
 			logger.Error("building client", err)
 			http.Redirect(res, req, "/login", http.StatusFound)

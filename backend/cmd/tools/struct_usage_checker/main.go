@@ -5,8 +5,11 @@ import (
 	"go/ast"
 	"go/token"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
+
+	reflast "github.com/dinnerdonebetter/backend/internal/platform/reflection/ast"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/tools/go/packages"
@@ -18,6 +21,8 @@ const (
 	// PatternTypeStructLiterals checks struct usage in struct literals (e.g., return &SomeType{}).
 	PatternTypeStructLiterals = "struct_literals"
 )
+
+var modulePath string
 
 type CheckConfig struct {
 	TypeFilter      func(string) bool
@@ -77,7 +82,7 @@ func loadPackageAST(importPath string) ([]fileWithPath, *token.FileSet, error) {
 }
 
 func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*ast.StructType {
-	importPath := getSourceImportPath(pkg)
+	importPath := sourceImportPath(pkg)
 	filesWithPath, _, err := loadPackageAST(importPath)
 	if err != nil {
 		log.Fatalf("failed to parse package: %v", err)
@@ -102,57 +107,15 @@ func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*
 	return foundTypes
 }
 
-func getFieldsForStruct(structType *ast.StructType) map[string]string {
-	structFields := make(map[string]string)
-
-	for _, field := range structType.Fields.List {
-		fieldType := ""
-		switch t := field.Type.(type) {
-		case *ast.Ident:
-			fieldType = t.Name
-		case *ast.SelectorExpr:
-			fieldType = fmt.Sprintf("%s.%s", t.X, t.Sel.Name)
-		}
-
-		for _, name := range field.Names {
-			if name.Name != "_" {
-				structFields[name.Name] = fieldType
-			}
-		}
-	}
-
-	return structFields
-}
-
-// getSourceImportPath converts a relative package path to a full import path.
-// Assumes the module is github.com/dinnerdonebetter/backend.
-func getSourceImportPath(relativePath string) string {
-	return "github.com/dinnerdonebetter/backend/" + relativePath
-}
-
-// buildImportMap builds a map of import aliases to their package paths for a file.
-func buildImportMap(f *ast.File) map[string]string {
-	importMap := make(map[string]string)
-	for _, imp := range f.Imports {
-		importPath := strings.Trim(imp.Path.Value, `"`)
-		var alias string
-		if imp.Name != nil {
-			alias = imp.Name.Name
-		} else {
-			// Extract package name from import path
-			parts := strings.Split(importPath, "/")
-			alias = parts[len(parts)-1]
-		}
-		importMap[alias] = importPath
-	}
-	return importMap
+func sourceImportPath(relativePath string) string {
+	return modulePath + "/" + relativePath
 }
 
 func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 	paramTypes := fetchTypesForPackage(config.SourcePkg, config.TypeFilter)
-	sourceImportPath := getSourceImportPath(config.SourcePkg)
+	srcImportPath := sourceImportPath(config.SourcePkg)
 
-	filesWithPath, fileset, err := loadPackageAST(getSourceImportPath(auxPackage))
+	filesWithPath, fileset, err := loadPackageAST(sourceImportPath(auxPackage))
 	if err != nil {
 		log.Fatalf("failed to parse package: %v", err)
 	}
@@ -162,12 +125,12 @@ func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 
 	var count int
 	for _, fwp := range filesWithPath {
-		importMap := buildImportMap(fwp.file)
+		importMap := reflast.BuildImportMap(fwp.file)
 		ast.Inspect(fwp.file, func(n ast.Node) bool {
 			switch config.PatternType {
 			case PatternTypeFunctionCallArgs:
 				if et, ok := n.(*ast.CallExpr); ok {
-					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, sourceImportPath, importMap)
+					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, srcImportPath, importMap)
 					structCount += count
 					if err != nil {
 						errors = multierror.Append(errors, err)
@@ -175,7 +138,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 				}
 			case PatternTypeStructLiterals:
 				if cl, ok := n.(*ast.CompositeLit); ok {
-					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, sourceImportPath, importMap)
+					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, srcImportPath, importMap)
 					structCount += count
 					if err != nil {
 						errors = multierror.Append(errors, err)
@@ -184,14 +147,14 @@ func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 			default:
 				// Check both patterns for backward compatibility
 				if et, ok := n.(*ast.CallExpr); ok {
-					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, sourceImportPath, importMap)
+					count, err = checkFunctionCallArgs(et, paramTypes, fwp.path, config.TargetFieldName, fileset, srcImportPath, importMap)
 					structCount += count
 					if err != nil {
 						errors = multierror.Append(errors, err)
 					}
 				}
 				if cl, ok := n.(*ast.CompositeLit); ok {
-					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, sourceImportPath, importMap)
+					count, err = checkStructLiteral(cl, paramTypes, fwp.path, fileset, srcImportPath, importMap)
 					structCount += count
 					if err != nil {
 						errors = multierror.Append(errors, err)
@@ -205,7 +168,7 @@ func comparePackages(config *CheckConfig, auxPackage string) (int, error) {
 	return structCount, errors.ErrorOrNil()
 }
 
-func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
+func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructType, fileName, targetFieldName string, fileset *token.FileSet, srcImportPath string, importMap map[string]string) (int, error) {
 	if targetFieldName == "" {
 		return 0, nil // Skip if no target field name specified
 	}
@@ -218,7 +181,7 @@ func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructTy
 					thirdParam := et.Args[2]
 					if ue, isUE := thirdParam.(*ast.UnaryExpr); isUE {
 						if se, isSE := ue.X.(*ast.CompositeLit); isSE {
-							return checkCompositeFields(se, paramTypes, fileName, fileset, sourceImportPath, importMap)
+							return checkCompositeFields(se, paramTypes, fileName, fileset, srcImportPath, importMap)
 						}
 					}
 				}
@@ -228,11 +191,11 @@ func checkFunctionCallArgs(et *ast.CallExpr, paramTypes map[string]*ast.StructTy
 	return 0, nil
 }
 
-func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
-	return checkCompositeFields(cl, paramTypes, fileName, fileset, sourceImportPath, importMap)
+func checkStructLiteral(cl *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, srcImportPath string, importMap map[string]string) (int, error) {
+	return checkCompositeFields(cl, paramTypes, fileName, fileset, srcImportPath, importMap)
 }
 
-func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, sourceImportPath string, importMap map[string]string) (int, error) {
+func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.StructType, fileName string, fileset *token.FileSet, srcImportPath string, importMap map[string]string) (int, error) {
 	var errors *multierror.Error
 	pos := fileset.Position(se.Pos())
 	lineNum := pos.Line
@@ -247,7 +210,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 				return 0, nil
 			}
 			// Compare the full import path with the source import path
-			if importPath != sourceImportPath {
+			if importPath != srcImportPath {
 				// This struct is from a different package, skip it
 				return 0, nil
 			}
@@ -265,7 +228,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 				}
 			}
 
-			structsForField := getFieldsForStruct(fieldDef)
+			structsForField := reflast.GetStructFields(fieldDef)
 			for fieldName := range structsForField {
 				if _, used := fieldsUsed[fieldName]; !used {
 					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in backend/%s:%d", fieldName, lookup, fileName, lineNum))
@@ -289,7 +252,7 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 				}
 			}
 
-			structsForField := getFieldsForStruct(fieldDef)
+			structsForField := reflast.GetStructFields(fieldDef)
 			for fieldName := range structsForField {
 				if _, used := fieldsUsed[fieldName]; !used {
 					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in %s:%d", fieldName, lookup, fileName, lineNum))
@@ -302,6 +265,16 @@ func checkCompositeFields(se *ast.CompositeLit, paramTypes map[string]*ast.Struc
 }
 
 func main() {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	modulePath, err = reflast.GetModulePath(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var errors *multierror.Error
 
 	// Configuration for different check types
@@ -332,12 +305,12 @@ func main() {
 			Description:     "identity Params",
 		},
 		{
-			SourcePkg:       "internal/repositories/postgres/maintenance/generated",
-			TargetPkgs:      []string{"internal/repositories/postgres/maintenance"},
+			SourcePkg:       "internal/repositories/postgres/internalops/generated",
+			TargetPkgs:      []string{"internal/repositories/postgres/internalops"},
 			TypeFilter:      func(s string) bool { return strings.HasSuffix(s, "Params") },
 			PatternType:     PatternTypeFunctionCallArgs,
 			TargetFieldName: "generatedQuerier",
-			Description:     "maintenance Params",
+			Description:     "internalops Params",
 		},
 		{
 			SourcePkg:       "internal/repositories/postgres/mealplanning/generated",
@@ -434,7 +407,8 @@ func main() {
 	totalCount := 0
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			count, err := comparePackages(config, targetPkg)
+			var count int
+			count, err = comparePackages(config, targetPkg)
 			totalCount += count
 			if err != nil {
 				errors = multierror.Append(errors, err)

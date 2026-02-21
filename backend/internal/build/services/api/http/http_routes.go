@@ -46,7 +46,7 @@ func ProvideAPIRouter(
 	}
 
 	router.Route("/_ops_", func(metaRouter routing.Router) {
-		// Expose a readiness check on /ready
+		// Expose a liveness check on /live
 		metaRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusOK)
 		})

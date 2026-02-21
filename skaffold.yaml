@@ -12,3 +12,36 @@ requires:
     path: ./backend/skaffold.yaml
     activeProfiles:
       - name: prod
+
+profiles:
+  - name: prod
+    verify:
+      - name: http-api-ready
+        container:
+          name: http-api-ready
+          image: curlimages/curl:8.17.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              curl -sf --connect-timeout 15 --max-time 30 https://http-api.dinnerdonebetter.com/_ops_/ready || exit 1
+              echo "http-api.dinnerdonebetter.com: OK"
+      - name: admin-responds
+        container:
+          name: admin-responds
+          image: curlimages/curl:8.17.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              code=$(curl -sL -o /dev/null -w "%{http_code}" --connect-timeout 15 --max-time 30 https://admin.dinnerdonebetter.com/login)
+              [ "${code:0:1}" = "2" ] || [ "${code:0:1}" = "3" ] || { echo "admin returned $code"; exit 1; }
+              echo "admin.dinnerdonebetter.com: OK"
+      - name: grpc-api-list
+        container:
+          name: grpc-api-list
+          image: fullstorydev/grpcurl:v1.9.3
+          args:
+            - -insecure
+            - -connect-timeout
+            - "15"
+            - api.dinnerdonebetter.com:443
+            - list

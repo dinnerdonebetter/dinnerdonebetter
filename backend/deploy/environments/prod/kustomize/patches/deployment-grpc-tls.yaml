@@ -1,0 +1,25 @@
+# gRPC backend TLS: mount the self-signed cert from cert-manager and point
+# the gRPC server at it. Required because GCE L7 LB HTTP2 protocol negotiates
+# TLS with the backend.
+- op: add
+  path: "/spec/template/spec/volumes/-"
+  value:
+    name: grpc-tls
+    secret:
+      secretName: grpc-backend-tls
+- op: add
+  path: "/spec/template/spec/containers/0/volumeMounts/-"
+  value:
+    name: grpc-tls
+    mountPath: /etc/grpc-tls
+    readOnly: true
+- op: add
+  path: "/spec/template/spec/containers/0/env/-"
+  value:
+    name: DINNER_DONE_BETTER_GRPC_TLS_CERTIFICATE_FILEPATH
+    value: /etc/grpc-tls/tls.crt
+- op: add
+  path: "/spec/template/spec/containers/0/env/-"
+  value:
+    name: DINNER_DONE_BETTER_GRPC_TLS_CERTIFICATE_KEY_FILEPATH
+    value: /etc/grpc-tls/tls.key

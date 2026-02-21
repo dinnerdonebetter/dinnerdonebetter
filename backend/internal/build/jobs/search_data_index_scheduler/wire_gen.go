@@ -47,6 +47,7 @@ func Build(ctx context.Context, cfg *config.SearchDataIndexSchedulerConfig) (*in
 	if err != nil {
 		return nil, err
 	}
+	queuesConfig := &cfg.Queues
 	databasecfgConfig := cfg.Database
 	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
 	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
@@ -57,7 +58,7 @@ func Build(ctx context.Context, cfg *config.SearchDataIndexSchedulerConfig) (*in
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	v := ProvideIndexFunctions(identityRepository, mealplanningRepository)
-	indexScheduler, err := indexing.NewIndexScheduler(ctx, logger, tracerProvider, provider, publisherProvider, v)
+	indexScheduler, err := indexing.NewIndexScheduler(ctx, logger, tracerProvider, provider, publisherProvider, queuesConfig, v)
 	if err != nil {
 		return nil, err
 	}

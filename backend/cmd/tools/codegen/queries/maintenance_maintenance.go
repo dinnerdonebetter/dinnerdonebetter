@@ -36,7 +36,7 @@ func buildMaintenanceQueries(database string) []*Query {
 	switch database {
 	case postgres:
 		const oneDayAgo = `(NOW() - interval '1 day')`
-		return []*Query{
+		queries := []*Query{
 			{
 				Annotation: QueryAnnotation{
 					Name: "DeleteExpiredOAuth2ClientTokens",
@@ -52,6 +52,7 @@ func buildMaintenanceQueries(database string) []*Query {
 				Content: fmt.Sprintf(`TRUNCATE %s CASCADE;`, strings.Join(getAllTables(), ", ")),
 			},
 		}
+		return append(queries, buildQueueTestMessagesQueries(database)...)
 	default:
 		return nil
 	}

@@ -28,14 +28,14 @@ func NewCookieManager(cfg *Config, tracerProvider tracing.TracerProvider) (Manag
 		return nil, internalerrors.NilConfigError("cookie manager")
 	}
 
-	decodedHashkey, err := base64.RawURLEncoding.DecodeString(cfg.Base64EncodedHashKey)
+	decodedHashkey, err := base64.StdEncoding.DecodeString(cfg.Base64EncodedHashKey)
 	if err != nil {
-		return nil, fmt.Errorf("decoding HashKey: %w", err)
+		return nil, fmt.Errorf("decoding HashKey %q: %w", cfg.Base64EncodedHashKey, err)
 	}
 
-	decodedBlockKey, err := base64.RawURLEncoding.DecodeString(cfg.Base64EncodedBlockKey)
+	decodedBlockKey, err := base64.StdEncoding.DecodeString(cfg.Base64EncodedBlockKey)
 	if err != nil {
-		return nil, fmt.Errorf("decoding BlockKey: %w", err)
+		return nil, fmt.Errorf("decoding BlockKey %q: %w", cfg.Base64EncodedBlockKey, err)
 	}
 
 	return &manager{

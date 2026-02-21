@@ -20,21 +20,21 @@ internal enum Internalops_InternalOperations {
     internal static let descriptor = GRPCCore.ServiceDescriptor(fullyQualifiedService: "internalops.InternalOperations")
     /// Namespace for method metadata.
     internal enum Method {
-        /// Namespace for "PublishArbitraryQueueMessage" metadata.
-        internal enum PublishArbitraryQueueMessage {
-            /// Request type for "PublishArbitraryQueueMessage".
-            internal typealias Input = Internalops_PublishArbitraryQueueMessageRequest
-            /// Response type for "PublishArbitraryQueueMessage".
-            internal typealias Output = Internalops_PublishArbitraryQueueMessageResponse
-            /// Descriptor for "PublishArbitraryQueueMessage".
+        /// Namespace for "TestQueueMessage" metadata.
+        internal enum TestQueueMessage {
+            /// Request type for "TestQueueMessage".
+            internal typealias Input = Internalops_TestQueueMessageRequest
+            /// Response type for "TestQueueMessage".
+            internal typealias Output = Internalops_TestQueueMessageResponse
+            /// Descriptor for "TestQueueMessage".
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "internalops.InternalOperations"),
-                method: "PublishArbitraryQueueMessage"
+                method: "TestQueueMessage"
             )
         }
         /// Descriptors for all methods in the "internalops.InternalOperations" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
-            PublishArbitraryQueueMessage.descriptor
+            TestQueueMessage.descriptor
         ]
     }
 }
@@ -54,23 +54,23 @@ extension Internalops_InternalOperations {
     /// You don't need to implement this protocol directly, use the generated
     /// implementation, ``Client``.
     internal protocol ClientProtocol: Sendable {
-        /// Call the "PublishArbitraryQueueMessage" method.
+        /// Call the "TestQueueMessage" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Internalops_PublishArbitraryQueueMessageRequest` message.
-        ///   - serializer: A serializer for `Internalops_PublishArbitraryQueueMessageRequest` messages.
-        ///   - deserializer: A deserializer for `Internalops_PublishArbitraryQueueMessageResponse` messages.
+        ///   - request: A request containing a single `Internalops_TestQueueMessageRequest` message.
+        ///   - serializer: A serializer for `Internalops_TestQueueMessageRequest` messages.
+        ///   - deserializer: A deserializer for `Internalops_TestQueueMessageResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
-        func publishArbitraryQueueMessage<Result>(
-            request: GRPCCore.ClientRequest<Internalops_PublishArbitraryQueueMessageRequest>,
-            serializer: some GRPCCore.MessageSerializer<Internalops_PublishArbitraryQueueMessageRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Internalops_PublishArbitraryQueueMessageResponse>,
+        func testQueueMessage<Result>(
+            request: GRPCCore.ClientRequest<Internalops_TestQueueMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<Internalops_TestQueueMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Internalops_TestQueueMessageResponse>,
             options: GRPCCore.CallOptions,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_PublishArbitraryQueueMessageResponse>) async throws -> Result
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_TestQueueMessageResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
     }
 
@@ -90,29 +90,29 @@ extension Internalops_InternalOperations {
             self.client = client
         }
 
-        /// Call the "PublishArbitraryQueueMessage" method.
+        /// Call the "TestQueueMessage" method.
         ///
         /// - Parameters:
-        ///   - request: A request containing a single `Internalops_PublishArbitraryQueueMessageRequest` message.
-        ///   - serializer: A serializer for `Internalops_PublishArbitraryQueueMessageRequest` messages.
-        ///   - deserializer: A deserializer for `Internalops_PublishArbitraryQueueMessageResponse` messages.
+        ///   - request: A request containing a single `Internalops_TestQueueMessageRequest` message.
+        ///   - serializer: A serializer for `Internalops_TestQueueMessageRequest` messages.
+        ///   - deserializer: A deserializer for `Internalops_TestQueueMessageResponse` messages.
         ///   - options: Options to apply to this RPC.
         ///   - handleResponse: A closure which handles the response, the result of which is
         ///       returned to the caller. Returning from the closure will cancel the RPC if it
         ///       hasn't already finished.
         /// - Returns: The result of `handleResponse`.
-        internal func publishArbitraryQueueMessage<Result>(
-            request: GRPCCore.ClientRequest<Internalops_PublishArbitraryQueueMessageRequest>,
-            serializer: some GRPCCore.MessageSerializer<Internalops_PublishArbitraryQueueMessageRequest>,
-            deserializer: some GRPCCore.MessageDeserializer<Internalops_PublishArbitraryQueueMessageResponse>,
+        internal func testQueueMessage<Result>(
+            request: GRPCCore.ClientRequest<Internalops_TestQueueMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<Internalops_TestQueueMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<Internalops_TestQueueMessageResponse>,
             options: GRPCCore.CallOptions = .defaults,
-            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_PublishArbitraryQueueMessageResponse>) async throws -> Result = { response in
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_TestQueueMessageResponse>) async throws -> Result = { response in
                 try response.message
             }
         ) async throws -> Result where Result: Sendable {
             try await self.client.unary(
                 request: request,
-                descriptor: Internalops_InternalOperations.Method.PublishArbitraryQueueMessage.descriptor,
+                descriptor: Internalops_InternalOperations.Method.TestQueueMessage.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -125,26 +125,26 @@ extension Internalops_InternalOperations {
 // Helpers providing default arguments to 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Internalops_InternalOperations.ClientProtocol {
-    /// Call the "PublishArbitraryQueueMessage" method.
+    /// Call the "TestQueueMessage" method.
     ///
     /// - Parameters:
-    ///   - request: A request containing a single `Internalops_PublishArbitraryQueueMessageRequest` message.
+    ///   - request: A request containing a single `Internalops_TestQueueMessageRequest` message.
     ///   - options: Options to apply to this RPC.
     ///   - handleResponse: A closure which handles the response, the result of which is
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
-    internal func publishArbitraryQueueMessage<Result>(
-        request: GRPCCore.ClientRequest<Internalops_PublishArbitraryQueueMessageRequest>,
+    internal func testQueueMessage<Result>(
+        request: GRPCCore.ClientRequest<Internalops_TestQueueMessageRequest>,
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_PublishArbitraryQueueMessageResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_TestQueueMessageResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        try await self.publishArbitraryQueueMessage(
+        try await self.testQueueMessage(
             request: request,
-            serializer: GRPCProtobuf.ProtobufSerializer<Internalops_PublishArbitraryQueueMessageRequest>(),
-            deserializer: GRPCProtobuf.ProtobufDeserializer<Internalops_PublishArbitraryQueueMessageResponse>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<Internalops_TestQueueMessageRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<Internalops_TestQueueMessageResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -154,7 +154,7 @@ extension Internalops_InternalOperations.ClientProtocol {
 // Helpers providing sugared APIs for 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension Internalops_InternalOperations.ClientProtocol {
-    /// Call the "PublishArbitraryQueueMessage" method.
+    /// Call the "TestQueueMessage" method.
     ///
     /// - Parameters:
     ///   - message: request message to send.
@@ -164,19 +164,19 @@ extension Internalops_InternalOperations.ClientProtocol {
     ///       returned to the caller. Returning from the closure will cancel the RPC if it
     ///       hasn't already finished.
     /// - Returns: The result of `handleResponse`.
-    internal func publishArbitraryQueueMessage<Result>(
-        _ message: Internalops_PublishArbitraryQueueMessageRequest,
+    internal func testQueueMessage<Result>(
+        _ message: Internalops_TestQueueMessageRequest,
         metadata: GRPCCore.Metadata = [:],
         options: GRPCCore.CallOptions = .defaults,
-        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_PublishArbitraryQueueMessageResponse>) async throws -> Result = { response in
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<Internalops_TestQueueMessageResponse>) async throws -> Result = { response in
             try response.message
         }
     ) async throws -> Result where Result: Sendable {
-        let request = GRPCCore.ClientRequest<Internalops_PublishArbitraryQueueMessageRequest>(
+        let request = GRPCCore.ClientRequest<Internalops_TestQueueMessageRequest>(
             message: message,
             metadata: metadata
         )
-        return try await self.publishArbitraryQueueMessage(
+        return try await self.testQueueMessage(
             request: request,
             options: options,
             onResponse: handleResponse

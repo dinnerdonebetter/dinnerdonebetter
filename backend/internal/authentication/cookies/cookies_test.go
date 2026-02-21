@@ -16,8 +16,8 @@ const (
 
 func buildConfigForTest() *Config {
 	return &Config{
-		Base64EncodedHashKey:  base64.RawURLEncoding.EncodeToString([]byte(testKey)),
-		Base64EncodedBlockKey: base64.RawURLEncoding.EncodeToString([]byte(testKey)),
+		Base64EncodedHashKey:  base64.StdEncoding.EncodeToString([]byte(testKey)),
+		Base64EncodedBlockKey: base64.StdEncoding.EncodeToString([]byte(testKey)),
 	}
 }
 

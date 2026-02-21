@@ -15,7 +15,7 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/maintenance"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 )
 
@@ -45,8 +45,8 @@ func Build(ctx context.Context, cfg *config.DBCleanerConfig) (*dbcleaner.Job, er
 	if err != nil {
 		return nil, err
 	}
-	maintenanceDataManager := maintenance.ProvideMaintenanceRepository(logger, tracerProvider, client)
-	job, err := dbcleaner.NewDBCleaner(logger, tracerProvider, provider, maintenanceDataManager)
+	internalOpsDataManager := internalops.ProvideInternalOpsRepository(logger, tracerProvider, client)
+	job, err := dbcleaner.NewDBCleaner(logger, tracerProvider, provider, internalOpsDataManager)
 	if err != nil {
 		return nil, err
 	}

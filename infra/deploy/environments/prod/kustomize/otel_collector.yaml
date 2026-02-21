@@ -28,7 +28,7 @@ spec:
           ports:
             - containerPort: 4317
               name: otlp-grpc
-            - containerPort: 13313
+            - containerPort: 13133
               name: health
           volumeMounts:
             - name: opentelemetry-config
@@ -59,7 +59,7 @@ spec:
       protocol: TCP
       targetPort: otlp-grpc
     - name: health
-      port: 13313
+      port: 13133
       protocol: TCP
       targetPort: health
   type: ClusterIP
