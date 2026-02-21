@@ -30,6 +30,7 @@ import (
 	manager5 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	manager12 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
@@ -44,6 +45,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
@@ -176,7 +178,11 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadManager := objectstorage.ProvideUploadManager(uploader)
 	dataPrivacyServiceServer := grpc3.NewDataPrivacyService(logger, tracerProvider, v, dataPrivacyManager, uploadManager)
 	identityServiceServer := grpc4.NewService(logger, tracerProvider, v, identityDataManager)
-	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig)
+	internalOpsDataManager := internalops.ProvideInternalOpsRepository(logger, tracerProvider, client)
+	encodingConfig := cfg.Encoding
+	contentType := encoding.ProvideContentType(encodingConfig)
+	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
+	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig, internalOpsDataManager, serverEncoderDecoder)
 	issueReportsDataManager, err := manager7.NewIssueReportsDataManager(ctx, tracerProvider, logger, issuereportsRepository, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err

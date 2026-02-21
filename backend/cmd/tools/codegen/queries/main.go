@@ -27,7 +27,7 @@ func main() {
 	databaseToUse := *databaseFlag
 
 	queryOutput := map[string][]*Query{
-		"internal/repositories/postgres/maintenance/sqlc_queries/maintenance.sql":                                   buildMaintenanceQueries(databaseToUse),
+		"internal/repositories/postgres/internalops/sqlc_queries/internalops.sql":                                   buildMaintenanceQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_ingredients.sql":                            buildValidIngredientsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_instruments.sql":                            buildValidInstrumentsQueries(databaseToUse),
 		"internal/repositories/postgres/mealplanning/sqlc_queries/valid_preparations.sql":                           buildValidPreparationsQueries(databaseToUse),

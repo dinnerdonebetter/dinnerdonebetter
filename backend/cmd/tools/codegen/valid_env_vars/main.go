@@ -168,7 +168,7 @@ func handleSelectorExpr(currentEntry *structEntry, structs map[string]*structEnt
 	}
 
 	key := fmt.Sprintf("%s.%s", importRelDir, fieldType.Sel.Name)
-	if nestedEntry, found := structs[key]; found {
+	if nestedEntry, alsoFound := structs[key]; alsoFound {
 		maps.Copy(envVars, extractEnvVars(nestedEntry, structs, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName), visited))
 	}
 }

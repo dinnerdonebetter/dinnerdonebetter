@@ -305,12 +305,12 @@ func main() {
 			Description:     "identity Params",
 		},
 		{
-			SourcePkg:       "internal/repositories/postgres/maintenance/generated",
-			TargetPkgs:      []string{"internal/repositories/postgres/maintenance"},
+			SourcePkg:       "internal/repositories/postgres/internalops/generated",
+			TargetPkgs:      []string{"internal/repositories/postgres/internalops"},
 			TypeFilter:      func(s string) bool { return strings.HasSuffix(s, "Params") },
 			PatternType:     PatternTypeFunctionCallArgs,
 			TargetFieldName: "generatedQuerier",
-			Description:     "maintenance Params",
+			Description:     "internalops Params",
 		},
 		{
 			SourcePkg:       "internal/repositories/postgres/mealplanning/generated",
@@ -407,7 +407,8 @@ func main() {
 	totalCount := 0
 	for _, config := range configs {
 		for _, targetPkg := range config.TargetPkgs {
-			count, err := comparePackages(config, targetPkg)
+			var count int
+			count, err = comparePackages(config, targetPkg)
 			totalCount += count
 			if err != nil {
 				errors = multierror.Append(errors, err)

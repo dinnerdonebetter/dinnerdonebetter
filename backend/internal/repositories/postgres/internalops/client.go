@@ -1,20 +1,19 @@
-package maintenance
+package internalops
 
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/maintenance"
+	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/maintenance/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops/generated"
 )
 
 const (
-	o11yName = "maintenance_db_client"
+	o11yName = "internalops_db_client"
 )
 
-// repository is the maintenance repository implementation.
 type repository struct {
 	database.Client
 	tracer           tracing.Tracer
@@ -24,8 +23,8 @@ type repository struct {
 	writeDB          *sql.DB
 }
 
-// ProvideMaintenanceRepository provides a new repository.
-func ProvideMaintenanceRepository(logger logging.Logger, tracerProvider tracing.TracerProvider, client database.Client) maintenance.MaintenanceDataManager {
+// ProvideInternalOpsRepository provides a new repository.
+func ProvideInternalOpsRepository(logger logging.Logger, tracerProvider tracing.TracerProvider, client database.Client) internalops.InternalOpsDataManager {
 	c := &repository{
 		Client:           client,
 		readDB:           client.ReadDB(),
@@ -34,9 +33,6 @@ func ProvideMaintenanceRepository(logger logging.Logger, tracerProvider tracing.
 		generatedQuerier: generated.New(),
 		logger:           logging.EnsureLogger(logger).WithName(o11yName),
 	}
-
-	// these are here for future use
-	_, _ = c.readDB, c.writeDB
 
 	return c
 }

@@ -26,6 +26,7 @@ import (
 	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -42,6 +43,7 @@ import (
 	commentsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments"
 	dataprivacyrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	internalopsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issuereportsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -93,6 +95,7 @@ func Build(
 		repositories.RepositoryProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,
+		encoding.Providers,
 		tokenscfg.TokenIssuerProviders,
 		interceptors.InterceptorProviders,
 		uploadscfg.Providers,
@@ -113,6 +116,7 @@ func Build(
 		mealplanningrepo.MPRepoProviders,
 		dataprivacyrepo.DataPrivProviders,
 		dataprivacymanager.DataPrivacyManagerProviders,
+		internalopsrepo.Providers,
 		// services
 		authhttpsvc.AuthHTTPServiceProviders,
 		auditsvc.AuditSvcProviders,

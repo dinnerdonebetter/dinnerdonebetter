@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -36,6 +37,7 @@ type AsyncDataChangeMessageHandler struct {
 	searchDataIndexPublisher                  messagequeue.Publisher
 	identityRepo                              identity.Repository
 	dataPrivacyRepo                           dataprivacy.Repository
+	internalOpsRepo                           internalops.InternalOpsDataManager
 	logger                                    logging.Logger
 	decoder                                   encoding.ServerEncoderDecoder
 	webhookExecutionTimestampHistogram        metrics.Float64Histogram
@@ -72,6 +74,7 @@ func NewAsyncDataChangeMessageHandler(
 	identityRepo identity.Repository,
 	dataPrivacyRepo dataprivacy.Repository,
 	webhookRepo webhooks.Repository,
+	internalOpsRepo internalops.InternalOpsDataManager,
 	consumerProvider messagequeue.ConsumerProvider,
 	publisherProvider messagequeue.PublisherProvider,
 	analyticsEventReporter analytics.EventReporter,
@@ -129,6 +132,7 @@ func NewAsyncDataChangeMessageHandler(
 		identityRepo:                         identityRepo,
 		dataPrivacyRepo:                      dataPrivacyRepo,
 		webhookRepo:                          webhookRepo,
+		internalOpsRepo:                      internalOpsRepo,
 		consumerProvider:                     consumerProvider,
 		analyticsEventReporter:               analyticsEventReporter,
 		outboundEmailsPublisher:              outboundEmailsPublisher,
@@ -196,7 +200,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 
 	userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
-		a.queuesConfig.WebhookExecutionRequestsTopicName,
+		a.queuesConfig.UserDataAggregationTopicName,
 		a.UserDataAggregationEventHandler,
 	)
 	if err != nil {

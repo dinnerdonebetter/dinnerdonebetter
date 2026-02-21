@@ -25,6 +25,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	internalopsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/uploadedmedia"
@@ -55,6 +56,7 @@ func Build(
 		uploadedmedia.UploadedMediaRepoProviders,
 		waitlistsmanager.WaitlistManagerProviders,
 		webhooks.WebhookProviders,
+		internalopsrepo.Providers,
 		analyticscfg.Providers,
 		emailcfg.Providers,
 		metricscfg.MetricsConfigProviders,

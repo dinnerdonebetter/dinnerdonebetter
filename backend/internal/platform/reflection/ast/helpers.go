@@ -15,7 +15,6 @@ func GetModulePath(dir string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("opening go.mod: %w", err)
 	}
-	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -23,6 +22,10 @@ func GetModulePath(dir string) (string, error) {
 		if strings.HasPrefix(line, "module ") {
 			return strings.TrimSpace(strings.TrimPrefix(line, "module ")), nil
 		}
+	}
+
+	if err = f.Close(); err != nil {
+		return "", fmt.Errorf("closing go.mod file: %w", err)
 	}
 
 	return "", fmt.Errorf("no module directive found in go.mod")

@@ -142,7 +142,7 @@ If the certificate is stuck with `429 rateLimited`:
 
 ## 9. Database & Migrations
 
-- [ ] **Migrations applied**
+- [x] **Migrations applied**
   - API server runs migrations on startup when `runMigrations: true` in config; successful health check implies they ran
   - Check API logs for migration success: `kubectl logs -n prod -l app.kubernetes.io/name=dinner-done-better-backend --tail=200 | grep -i migrat`
   - Check for migration errors: `kubectl logs -n prod -l app.kubernetes.io/name=dinner-done-better-backend --tail=200`
