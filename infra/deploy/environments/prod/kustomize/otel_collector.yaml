@@ -18,6 +18,7 @@ spec:
         app: dinner-done-better-infra
         app.kubernetes.io/name: dinner-done-better-infra
     spec:
+      serviceAccountName: api-service-account
       containers:
         - name: opentelemetry-collector
           image: otel/opentelemetry-collector-contrib:0.115.1

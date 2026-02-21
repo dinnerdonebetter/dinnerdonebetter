@@ -3,9 +3,10 @@ concurrency:
   group: ${{ github.ref }}
 
 on:
-  push:
-    branches:
-      - prod
+  pull_request:
+  # push:
+  #   branches:
+  #     - prod
 
 name: deploy prod
 jobs:
