@@ -20,16 +20,51 @@ enum AppEnvironment: String, CaseIterable {
     case .production: return "Production"
     }
   }
+
+  var subtitle: String {
+    switch self {
+    case .local: return "localhost"
+    case .development: return "dinnerdonebetter.dev"
+    case .production: return "dinnerdonebetter.com"
+    }
+  }
+
+  var iconName: String {
+    switch self {
+    case .local: return "laptopcomputer"
+    case .development: return "hammer"
+    case .production: return "globe"
+    }
+  }
 }
 
 struct APIConfiguration {
-  /// Current environment - defaults based on build configuration.
-  /// Can be changed at runtime for testing purposes.
-  #if DEBUG
-    static var currentEnvironment: AppEnvironment = .local
-  #else
-    static var currentEnvironment: AppEnvironment = .production
-  #endif
+  private static let environmentKey = "selectedEnvironment"
+
+  /// Current environment, persisted across launches via UserDefaults.
+  /// Defaults to `.local` in DEBUG builds and `.production` in release builds
+  /// if no selection has been saved.
+  static var currentEnvironment: AppEnvironment {
+    get {
+      if let saved = UserDefaults.standard.string(forKey: environmentKey),
+        let env = AppEnvironment(rawValue: saved)
+      {
+        return env
+      }
+      #if DEBUG
+        return .local
+      #else
+        return .production
+      #endif
+    }
+    set {
+      let oldValue = currentEnvironment
+      UserDefaults.standard.set(newValue.rawValue, forKey: environmentKey)
+      if oldValue != newValue {
+        NotificationCenter.default.post(name: .environmentDidChange, object: newValue)
+      }
+    }
+  }
 
   /// The base URL for API requests (HTTP/REST endpoints)
   static var serverURL: String {
@@ -68,9 +103,25 @@ struct APIConfiguration {
     }
   }
 
-  /// The gRPC port (typically the same across environments)
+  /// The gRPC port for the current environment
   static var grpcPort: Int {
-    return 8001
+    switch currentEnvironment {
+    case .local:
+      return 8001
+    case .development, .production:
+      return 443
+    }
+  }
+
+  /// Whether the gRPC connection should use TLS.
+  /// Local development uses plaintext; remote environments use TLS.
+  static var grpcUsesTLS: Bool {
+    switch currentEnvironment {
+    case .local:
+      return false
+    case .development, .production:
+      return true
+    }
   }
 
   // OAuth2 Configuration
@@ -87,4 +138,8 @@ struct APIConfiguration {
   static var oauth2TokenURL: String {
     return "\(serverURL)/oauth2/token"
   }
+}
+
+extension Notification.Name {
+  static let environmentDidChange = Notification.Name("environmentDidChange")
 }
