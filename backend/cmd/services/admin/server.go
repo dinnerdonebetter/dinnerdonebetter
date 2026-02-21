@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
@@ -26,16 +27,17 @@ type AdminFrontendServer struct {
 	logger                                  logging.Logger
 	encoder                                 encoding.ServerEncoderDecoder
 	cookieManager                           cookies.Manager
-	userIDRouteParamFetcher                 func(req *http.Request) string
-	accountIDRouteParamFetcher              func(req *http.Request) string
+	server                                  phttp.Server
+	validMeasurementUnitIDRouteParamFetcher func(req *http.Request) string
+	validPreparationIDRouteParamFetcher     func(req *http.Request) string
 	settingIDRouteParamFetcher              func(req *http.Request) string
 	oauth2ClientIDRouteParamFetcher         func(req *http.Request) string
 	validIngredientIDRouteParamFetcher      func(req *http.Request) string
 	validInstrumentIDRouteParamFetcher      func(req *http.Request) string
 	validVesselIDRouteParamFetcher          func(req *http.Request) string
-	validMeasurementUnitIDRouteParamFetcher func(req *http.Request) string
+	userIDRouteParamFetcher                 func(req *http.Request) string
 	validIngredientStateIDRouteParamFetcher func(req *http.Request) string
-	validPreparationIDRouteParamFetcher     func(req *http.Request) string
+	accountIDRouteParamFetcher              func(req *http.Request) string
 	recipeIDRouteParamFetcher               func(req *http.Request) string
 	waitlistIDRouteParamFetcher             func(req *http.Request) string
 	issueReportIDRouteParamFetcher          func(req *http.Request) string
@@ -43,8 +45,8 @@ type AdminFrontendServer struct {
 	productIDRouteParamFetcher              func(req *http.Request) string
 	subscriptionIDRouteParamFetcher         func(req *http.Request) string
 	config                                  *config.AdminWebappConfig
-	server                                  phttp.Server
 	componentRenderer                       *components.ComponentRenderer
+	developingLocally                       bool
 }
 
 func NewAdminFrontendServer(
@@ -78,6 +80,7 @@ func NewAdminFrontendServer(
 	s := &AdminFrontendServer{
 		tracer:                                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:                                  logging.EnsureLogger(logger).WithName(o11yName),
+		developingLocally:                       os.Getenv("DEVELOPING_LOCALLY") == "true",
 		componentRenderer:                       components.NewComponentRenderer(),
 		userIDRouteParamFetcher:                 rpm.BuildRouteParamStringIDFetcher(userIDURLParamKey),
 		accountIDRouteParamFetcher:              rpm.BuildRouteParamStringIDFetcher(accountIDURLParamKey),

@@ -17,6 +17,8 @@ spec:
               env:
                 - name: "CONFIGURATION_FILEPATH"
                   value: "/etc/service-config.json"
+                - name: "RUNNING_IN_KUBERNETES"
+                  value: "true"
                 - name: "SEARCH_INDEXING_TOPIC_NAME"
                   value: "search_index_requests"
                 - name: "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"

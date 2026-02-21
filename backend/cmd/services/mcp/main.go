@@ -71,7 +71,7 @@ func main() {
 		must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
 	}
 
-	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, configFilepath)
+	cfg, err := config.LoadConfigFromPath[config.MCPServiceConfig](ctx, configFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}

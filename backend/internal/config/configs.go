@@ -60,12 +60,14 @@ type (
 			MealPlanTaskCreatorConfig |
 			SearchDataIndexSchedulerConfig |
 			AsyncMessageHandlerConfig |
-			AdminWebappConfig
+			AdminWebappConfig |
+			MCPServiceConfig
 	}
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_                       struct{}                      `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues                  msgconfig.QueuesConfig        `envPrefix:"QUEUES_"        json:"queues"`
 		AppleAppSiteAssociation AppleAppSiteAssociationConfig `envPrefix:"AASA_"          json:"appleAppSiteAssociation"`
 		Routing                 routingcfg.Config             `envPrefix:"ROUTING_"       json:"routing"`
@@ -158,6 +160,17 @@ type (
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
 
+	APIServiceUserConnectionConfig struct {
+		_ struct{} `json:"-"`
+
+		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"      json:"httpAPIServerURL"`
+		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"      json:"grpcAPIServerURL"`
+		Username              string `env:"USERNAME"                 json:"username"`
+		Password              string `env:"PASSWORD"                 json:"password"`
+		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
+		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
+	}
+
 	NamedCacheConfig struct {
 		_ struct{} `json:"-"`
 
@@ -188,6 +201,17 @@ type (
 		Observability        observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Meta                 MetaSettings                     `envPrefix:"META_"          json:"meta"`
 		HTTPServer           http.Config                      `envPrefix:"SERVER_"        json:"server"`
+	}
+
+	// MCPServiceConfig configures an instance of the service. It is composed of all the other setting structs.
+	MCPServiceConfig struct {
+		_ struct{} `json:"-"`
+
+		APIServiceConnection APIServiceUserConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
+		Observability        observability.Config           `envPrefix:"OBSERVABILITY_" json:"observability"`
+		GRPCServer           grpc.Config                    `envPrefix:"GRPC_"          json:"grpc"`
+		Meta                 MetaSettings                   `envPrefix:"META_"          json:"meta"`
+		HTTPServer           http.Config                    `envPrefix:"HTTP_"          json:"http"`
 	}
 )
 
@@ -394,6 +418,27 @@ func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Meta":          cfg.Meta.ValidateWithContext,
 		"Routing":       cfg.Routing.ValidateWithContext,
+		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*APIServiceConfig)(nil)
+
+// ValidateWithContext validates a MCPServiceConfig struct.
+func (cfg *MCPServiceConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Meta":          cfg.Meta.ValidateWithContext,
+		"Observability": cfg.Observability.ValidateWithContext,
 		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 	}
 

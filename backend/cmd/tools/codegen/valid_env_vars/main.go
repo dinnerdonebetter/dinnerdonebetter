@@ -41,7 +41,14 @@ func main() {
 
 	structsToEvaluate := []string{
 		"internal/config.APIServiceConfig",
+		"internal/config.DBCleanerConfig",
+		"internal/config.MealPlanFinalizerConfig",
+		"internal/config.MealPlanGroceryListInitializerConfig",
+		"internal/config.MealPlanTaskCreatorConfig",
+		"internal/config.SearchDataIndexSchedulerConfig",
+		"internal/config.AsyncMessageHandlerConfig",
 		"internal/config.AdminWebappConfig",
+		"internal/config.MCPServiceConfig",
 	}
 	generatedEnvVars := []string{}
 
@@ -53,10 +60,11 @@ func main() {
 				if slices.Contains(generatedEnvVars, kace.Pascal(envVar)) {
 					continue
 				}
-				outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set to override `+"`"+`config%s`+"`"+`.
+				structName := strings.ReplaceAll(structName, "internal/config.", "")
+				outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set to override `+"`"+`%s%s`+"`"+`.
 	%sEnvVarKey = "%s%s"
 
-`, kace.Pascal(envVar), fieldPath, kace.Pascal(envVar), config.EnvVarPrefix, envVar))
+`, kace.Pascal(envVar), structName, fieldPath, kace.Pascal(envVar), config.EnvVarPrefix, envVar))
 				generatedEnvVars = append(generatedEnvVars, kace.Pascal(envVar))
 			}
 		}

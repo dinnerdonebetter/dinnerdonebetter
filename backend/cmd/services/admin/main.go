@@ -2,17 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"log"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/config/envvars"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 )
@@ -29,20 +25,6 @@ func must(err error) {
 
 func main() {
 	ctx := context.Background()
-
-	// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
-	// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
-	must(os.Setenv(envvars.CookiesCookieNameEnvVarKey, "dev_admin_frontend"))
-	must(os.Setenv(envvars.CookiesHashKeyEnvVarKey, base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP"))))
-	must(os.Setenv(envvars.CookiesBlockKeyEnvVarKey, base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP"))))
-	must(os.Setenv(envvars.APIServiceHTTPAPIServerURLEnvVarKey, "http://localhost:8000"))
-	must(os.Setenv(envvars.APIServiceGrpcAPIServerURLEnvVarKey, ":8001"))
-	must(os.Setenv(envvars.APIServiceOauth2APIClientIDEnvVarKey, strings.Repeat("A", oauth.ClientIDSize)))
-	must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
-	must(os.Setenv(envvars.ServerPortEnvVarKey, "8888"))
-	must(os.Setenv(envvars.ServerStartupDeadlineEnvVarKey, time.Minute.String()))
-	must(os.Setenv(envvars.CookiesDomainEnvVarKey, "localhost"))
-	must(os.Setenv(envvars.CookiesLifetimeEnvVarKey, (7 * 24 * time.Hour).String()))
 
 	configFilepath := os.Getenv("CONFIGURATION_FILEPATH")
 	if configFilepath == "" {
