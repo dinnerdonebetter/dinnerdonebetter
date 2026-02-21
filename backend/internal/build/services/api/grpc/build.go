@@ -94,7 +94,6 @@ func Build(
 		repositories.RepositoryProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,
-		encoding.Providers,
 		tokenscfg.TokenIssuerProviders,
 		interceptors.InterceptorProviders,
 		uploadscfg.Providers,

@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -89,17 +90,6 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		},
 		UserID: sessionContextData.Requester.UserID,
 	}
-
-	msg := &audit.DataChangeMessage{
-		EventType: internalops.QueueTestMessageEventType,
-		Context: map[string]any{
-			"test_id":    testID,
-			"queue_name": request.QueueName,
-		},
-		UserID: sessionContextData.Requester.UserID,
-	}
-
-	msgBytes := s.encoder.MustEncodeJSON(ctx, msg)
 
 	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
