@@ -124,11 +124,14 @@ struct APIConfiguration {
     }
   }
 
-  // OAuth2 Configuration
-  // swiftlint:disable:next todo
-  // FIXME: Find some way to configure these per environment
-  static let oauth2ClientID = "AAAAAAAAAAAAAAAA"
-  static let oauth2ClientSecret = "AAAAAAAAAAAAAAAA"
+  // OAuth2 Configuration — values injected via Secrets.xcconfig -> Info.plist at build time
+  static var oauth2ClientID: String {
+    Bundle.main.infoDictionary?["OAuth2ClientID"] as? String ?? ""
+  }
+
+  static var oauth2ClientSecret: String {
+    Bundle.main.infoDictionary?["OAuth2ClientSecret"] as? String ?? ""
+  }
 
   // OAuth2 endpoints
   static var oauth2AuthorizeURL: String {

@@ -31,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00F1A2B32F0123450033A550 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		00D164F42EE78B510033A550 /* ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D165062EE78B520033A550 /* iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D165102EE78B520033A550 /* iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,6 +107,7 @@
 		00D164EB2EE78B510033A550 = {
 			isa = PBXGroup;
 			children = (
+				00F1A2B32F0123450033A550 /* Secrets.xcconfig */,
 				00D164F62EE78B510033A550 /* ios */,
 				00D165092EE78B520033A550 /* iosTests */,
 				00D165132EE78B520033A550 /* iosUITests */,
@@ -430,6 +432,7 @@
 		};
 		00D1651B2EE78B520033A550 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00F1A2B32F0123450033A550 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -468,6 +471,7 @@
 		};
 		00D1651C2EE78B520033A550 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00F1A2B32F0123450033A550 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
