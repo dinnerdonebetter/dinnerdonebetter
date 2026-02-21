@@ -1,8 +1,14 @@
-data "grafana_data_sources" "all" {}
+data "grafana_data_source" "prometheus" {
+  name = "grafanacloud-dinnerdonebetter-prom"
+}
+
+data "grafana_data_source" "loki" {
+  name = "grafanacloud-dinnerdonebetter-logs"
+}
 
 locals {
-  prometheus_ds_uid = [for ds in data.grafana_data_sources.all.data_sources : ds.uid if ds.type == "prometheus"][0]
-  loki_ds_uid      = [for ds in data.grafana_data_sources.all.data_sources : ds.uid if ds.type == "loki"][0]
+  prometheus_ds_uid = data.grafana_data_source.prometheus.uid
+  loki_ds_uid      = data.grafana_data_source.loki.uid
 }
 
 resource "grafana_folder" "alerts" {
