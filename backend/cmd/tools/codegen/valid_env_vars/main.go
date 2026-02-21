@@ -47,6 +47,10 @@ func main() {
 		"internal/config.MealPlanTaskCreatorConfig",
 		"internal/config.SearchDataIndexSchedulerConfig",
 		"internal/config.AsyncMessageHandlerConfig",
+		"internal/config.OutboundEmailHandlerConfig",
+		"internal/config.SearchIndexRequestHandlerConfig",
+		"internal/config.WebhookExecutionRequestHandlerConfig",
+		"internal/config.UserDataAggregationHandlerConfig",
 		"internal/config.AdminWebappConfig",
 		"internal/config.MCPServiceConfig",
 	}

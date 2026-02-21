@@ -419,6 +419,97 @@ func TestAsyncMessageHandlerConfig_ValidateWithContext(T *testing.T) {
 	})
 }
 
+func TestOutboundEmailHandlerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &OutboundEmailHandlerConfig{
+			Observability: observability.Config{},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		_ = err
+	})
+}
+
+func TestSearchIndexRequestHandlerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &SearchIndexRequestHandlerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ReadConnection: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		_ = err
+	})
+}
+
+func TestWebhookExecutionRequestHandlerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &WebhookExecutionRequestHandlerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ReadConnection: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		_ = err
+	})
+}
+
+func TestUserDataAggregationHandlerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &UserDataAggregationHandlerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ReadConnection: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		_ = err
+	})
+}
+
 func TestAdminWebappConfig_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
