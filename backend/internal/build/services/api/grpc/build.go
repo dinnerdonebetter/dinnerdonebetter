@@ -26,6 +26,7 @@ import (
 	waitlistsmanager "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	webhooksmanager "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -94,6 +95,7 @@ func Build(
 		repositories.RepositoryProviders,
 		grpc.ProvidersGRPC,
 		qrcodes.QRCodeProviders,
+		encoding.Providers,
 		tokenscfg.TokenIssuerProviders,
 		interceptors.InterceptorProviders,
 		uploadscfg.Providers,

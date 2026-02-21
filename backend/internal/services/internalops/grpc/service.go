@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -33,6 +34,7 @@ type (
 		settingssvc.UnimplementedInternalOperationsServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
+		encoder                   encoding.ServerEncoderDecoder
 		msgConfig                 *msgconfig.Config
 		internalOpsRepo           internalops.InternalOpsDataManager
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
@@ -44,10 +46,12 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	msgConfig *msgconfig.Config,
 	repo internalops.InternalOpsDataManager,
+	encoder encoding.ServerEncoderDecoder,
 ) settingssvc.InternalOperationsServer {
 	return &serviceImpl{
 		msgConfig:                 msgConfig,
 		internalOpsRepo:           repo,
+		encoder:                   encoder,
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,

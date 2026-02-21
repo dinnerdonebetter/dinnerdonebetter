@@ -23,10 +23,6 @@ type EnvironmentConfigSet struct {
 	MealPlanTaskCreatorConfigPath            string
 	SearchDataIndexSchedulerConfigPath       string
 	AsyncMessageHandlerConfigPath            string
-	OutboundEmailHandlerConfigPath           string
-	SearchIndexRequestHandlerConfigPath      string
-	WebhookExecutionRequestHandlerConfigPath string
-	UserDataAggregationHandlerConfigPath     string
 	AdminWebappConfigPath                    string
 }
 
@@ -67,10 +63,6 @@ const (
 	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
 	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
 	amhConfigObservabilityServiceName   = "async_message_handler"
-	oehConfigObservabilityServiceName   = "outbound_email_handler"
-	sirhConfigObservabilityServiceName  = "search_index_request_handler"
-	werhConfigObservabilityServiceName  = "webhook_execution_request_handler"
-	udahConfigObservabilityServiceName  = "user_data_aggregation_handler"
 	awaConfigObservabilityServiceName   = "admin_webapp"
 )
 
@@ -152,51 +144,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 
-	oehConfig := &OutboundEmailHandlerConfig{
-		Queues:        s.RootConfig.Queues,
-		Events:        s.RootConfig.Events,
-		Observability: s.RootConfig.Observability,
-		Email:         s.RootConfig.Email,
-		Analytics:     s.RootConfig.Analytics,
-	}
-	oehConfig.Observability.Tracing.ServiceName = oehConfigObservabilityServiceName
-	oehConfig.Observability.Metrics.ServiceName = oehConfigObservabilityServiceName
-	oehConfig.Observability.Logging.ServiceName = oehConfigObservabilityServiceName
-
-	sirhConfig := &SearchIndexRequestHandlerConfig{
-		Queues:        s.RootConfig.Queues,
-		Events:        s.RootConfig.Events,
-		Observability: s.RootConfig.Observability,
-		Database:      s.RootConfig.Database,
-		Search:        s.RootConfig.TextSearch,
-	}
-	sirhConfig.Observability.Tracing.ServiceName = sirhConfigObservabilityServiceName
-	sirhConfig.Observability.Metrics.ServiceName = sirhConfigObservabilityServiceName
-	sirhConfig.Observability.Logging.ServiceName = sirhConfigObservabilityServiceName
-
-	werhConfig := &WebhookExecutionRequestHandlerConfig{
-		Queues:        s.RootConfig.Queues,
-		Encoding:      s.RootConfig.Encoding,
-		Events:        s.RootConfig.Events,
-		Observability: s.RootConfig.Observability,
-		Database:      s.RootConfig.Database,
-	}
-	werhConfig.Observability.Tracing.ServiceName = werhConfigObservabilityServiceName
-	werhConfig.Observability.Metrics.ServiceName = werhConfigObservabilityServiceName
-	werhConfig.Observability.Logging.ServiceName = werhConfigObservabilityServiceName
-
-	udahConfig := &UserDataAggregationHandlerConfig{
-		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
-		Queues:        s.RootConfig.Queues,
-		Encoding:      s.RootConfig.Encoding,
-		Events:        s.RootConfig.Events,
-		Observability: s.RootConfig.Observability,
-		Database:      s.RootConfig.Database,
-	}
-	udahConfig.Observability.Tracing.ServiceName = udahConfigObservabilityServiceName
-	udahConfig.Observability.Metrics.ServiceName = udahConfigObservabilityServiceName
-	udahConfig.Observability.Logging.ServiceName = udahConfigObservabilityServiceName
-
 	awaConfig := &AdminWebappConfig{
 		// No equivalent for the following configs, I'll just have to rely on env vars to set them for now:
 		//	- Cookies
@@ -226,10 +173,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			mptcConfig,
 			sdisConfig,
 			amhConfig,
-			oehConfig,
-			sirhConfig,
-			werhConfig,
-			udahConfig,
 			awaConfig,
 		}
 		for i, cfg := range allConfigs {
@@ -251,10 +194,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.OutboundEmailHandlerConfigPath, "outbound_email_handler_config.json")):                           renderJSON(oehConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.SearchIndexRequestHandlerConfigPath, "search_index_request_handler_config.json")):                renderJSON(sirhConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.WebhookExecutionRequestHandlerConfigPath, "webhook_execution_request_handler_config.json")):      renderJSON(werhConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.UserDataAggregationHandlerConfigPath, "user_data_aggregation_handler_config.json")):              renderJSON(udahConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
 	}
 

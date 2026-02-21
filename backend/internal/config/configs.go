@@ -60,10 +60,6 @@ type (
 			MealPlanTaskCreatorConfig |
 			SearchDataIndexSchedulerConfig |
 			AsyncMessageHandlerConfig |
-			OutboundEmailHandlerConfig |
-			SearchIndexRequestHandlerConfig |
-			WebhookExecutionRequestHandlerConfig |
-			UserDataAggregationHandlerConfig |
 			AdminWebappConfig |
 			MCPServiceConfig
 	}
@@ -152,50 +148,6 @@ type (
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-	}
-
-	// OutboundEmailHandlerConfig configures the outbound email handler function.
-	OutboundEmailHandlerConfig struct {
-		_ struct{} `json:"-"`
-
-		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-	}
-
-	// SearchIndexRequestHandlerConfig configures the search index request handler function.
-	SearchIndexRequestHandlerConfig struct {
-		_             struct{}               `json:"-"`
-		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-	}
-
-	// WebhookExecutionRequestHandlerConfig configures the webhook execution request handler function.
-	WebhookExecutionRequestHandlerConfig struct {
-		_ struct{} `json:"-"`
-
-		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-	}
-
-	// UserDataAggregationHandlerConfig configures the user data aggregation handler function.
-	UserDataAggregationHandlerConfig struct {
-		_ struct{} `json:"-"`
-
-		Storage       objectstorage.Config   `envPrefix:"STORAGE_"       json:"storage"`
-		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
@@ -442,93 +394,6 @@ func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) e
 		"Database":      cfg.Database.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"TextSearch":    cfg.Search.ValidateWithContext,
-		"Storage":       cfg.Storage.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*OutboundEmailHandlerConfig)(nil)
-
-// ValidateWithContext validates a OutboundEmailHandlerConfig struct.
-func (cfg *OutboundEmailHandlerConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Queues":        cfg.Queues.ValidateWithContext,
-		"Analytics":     cfg.Analytics.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Email":         cfg.Email.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*SearchIndexRequestHandlerConfig)(nil)
-
-// ValidateWithContext validates a SearchIndexRequestHandlerConfig struct.
-func (cfg *SearchIndexRequestHandlerConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Queues":        cfg.Queues.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Database":      cfg.Database.ValidateWithContext,
-		"TextSearch":    cfg.Search.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*WebhookExecutionRequestHandlerConfig)(nil)
-
-// ValidateWithContext validates a WebhookExecutionRequestHandlerConfig struct.
-func (cfg *WebhookExecutionRequestHandlerConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Queues":        cfg.Queues.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Database":      cfg.Database.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*UserDataAggregationHandlerConfig)(nil)
-
-// ValidateWithContext validates a UserDataAggregationHandlerConfig struct.
-func (cfg *UserDataAggregationHandlerConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Queues":        cfg.Queues.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Database":      cfg.Database.ValidateWithContext,
 		"Storage":       cfg.Storage.ValidateWithContext,
 	}
 

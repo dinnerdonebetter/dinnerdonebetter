@@ -16,10 +16,6 @@ PROTO_OUTPUT_PATH      := internal/grpc
 WIRE_TARGETS           := internal/build/services/api/grpc \
 	 internal/build/services/api/http \
 	 internal/build/functions/data_change_message_handler \
-	 internal/build/functions/outbound_email_handler \
-	 internal/build/functions/search_index_request_handler \
-	 internal/build/functions/webhook_execution_request_handler \
-	 internal/build/functions/user_data_aggregation_handler \
 	 internal/build/jobs/db_cleaner \
 	 internal/build/jobs/search_data_index_scheduler \
 	 internal/build/jobs/meal_plan_finalizer \
