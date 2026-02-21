@@ -11,7 +11,6 @@ import (
 	paymentsmanager "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -23,6 +22,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	"github.com/dinnerdonebetter/backend/internal/repositories"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -48,8 +48,8 @@ func Build(
 		tracing.ProvidersTracing,
 		tracingcfg.TracingConfigProviders,
 		observability.O11yProviders,
-		databasecfg.ClientConfigProviders,
-		postgres.PGProviders,
+		databasecfg.DatabaseConfigProviders,
+		repositories.RepositoryProviders,
 		loggingcfg.LogConfigProviders,
 		authservice.AuthHTTPServiceProviders,
 		metricscfg.MetricsConfigProviders,

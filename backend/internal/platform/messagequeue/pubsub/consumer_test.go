@@ -46,7 +46,10 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	require.NoError(t, err)
 	require.NotNil(t, pubSubTopic)
 
-	subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pubsubpb.Subscription{Topic: pubSubTopic.GetName()})
+	subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pubsubpb.Subscription{
+		Name:  subscriptionNameForTopic(pubSubTopic.GetName()),
+		Topic: pubSubTopic.GetName(),
+	})
 	require.NoError(t, err)
 	require.NotNil(t, subscription)
 
@@ -54,7 +57,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	provider := ProvidePubSubConsumerProvider(logger, client)
 	require.NotNil(t, provider)
 
-	publisher, err = provider.ProvideConsumer(ctx, topic, handlerFunc)
+	publisher, err = provider.ProvideConsumer(ctx, pubSubTopic.GetName(), handlerFunc)
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 

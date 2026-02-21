@@ -6,6 +6,7 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - ../../../kustomize/components/api_server
+  - backend_config_api_grpc.yaml
   - ../../../kustomize/components/workers
   - ../../../kustomize/components/async_functions
   - ../../../kustomize/components/admin_webapp
@@ -50,6 +51,15 @@ images:
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
+  - path: patches/service-api-backendconfig.yaml
+    target:
+      kind: Service
+      name: dinner-done-better-api-svc
+  - path: patches/deployment-grpc-tls.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
   ### API Server - needs database, pubsub, service secrets (from Terraform api-service-config), workload identity
   - path: patches/deployment-workload-identity.yaml
     target:
@@ -195,19 +205,23 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
+          name: DINNER_DONE_BETTER_COOKIES_SECURE_ONLY
+          value: "true"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVER_PORT
+          value: "8888"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
           name: DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL
-          valueFrom:
-            configMapKeyRef:
-              name: admin-webapp-config
-              key: API_SERVER_HTTP_URL
+          value: "https://http-api.dinnerdonebetter.com"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL
-          valueFrom:
-            configMapKeyRef:
-              name: admin-webapp-config
-              key: API_SERVER_GRPC_URL
+          value: "api.dinnerdonebetter.com:443"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:

@@ -99,6 +99,25 @@ deploy_localdev:
 	@echo "  - API Server: http://localhost:8000"
 	@echo "  - Admin Webapp: http://localhost:8888"
 
+# Prod deploy + verify. Run from repo root. Requires kubectl pointed at prod, grpcurl.
+.PHONY: deploy_prod
+deploy_prod:
+	./scripts/deploy-prod-local.sh
+
+.PHONY: verify_prod
+verify_prod:
+	@echo "=== Skaffold verify (endpoint checks) ==="
+	skaffold verify --filename=skaffold.yaml --profile prod
+	@echo ""
+	@echo "=== Post-deploy verify (K8s + endpoints) ==="
+	./scripts/post-deploy-verify.sh
+
+.PHONY: deploy_prod_verify
+deploy_prod_verify: deploy_prod
+	@echo "Waiting 60s for load balancer..."
+	@sleep 60
+	$(MAKE) verify_prod
+
 .PHONY: nuke_localdev
 nuke_localdev:
 	kubectl delete namespace localdev --ignore-not-found

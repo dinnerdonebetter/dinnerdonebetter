@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	dataprivacymock "github.com/dinnerdonebetter/backend/internal/domain/dataprivacy/mock"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	internalopsmock "github.com/dinnerdonebetter/backend/internal/domain/internalops/mock"
 	webhooksmock "github.com/dinnerdonebetter/backend/internal/domain/webhooks/mock"
 	analyticsmock "github.com/dinnerdonebetter/backend/internal/platform/analytics/mock"
 	emailmock "github.com/dinnerdonebetter/backend/internal/platform/email/mock"
@@ -56,9 +57,12 @@ func buildTestAsyncDataChangeMessageHandler(t *testing.T) (*AsyncDataChangeMessa
 	noop, _ := mockHistogram.NewFloat64Histogram("test")
 	metricsProvider.On(reflection.GetMethodName(metricsProvider.NewFloat64Histogram), mock.AnythingOfType("string"), mock.Anything).Return(noop, nil).Maybe()
 
+	internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
+
 	handler := &AsyncDataChangeMessageHandler{
 		identityRepo:                         identityRepo,
 		webhookRepo:                          webhookRepo,
+		internalOpsRepo:                      internalOpsRepo,
 		consumerProvider:                     consumerProvider,
 		analyticsEventReporter:               analyticsEventReporter,
 		emailer:                              emailer,
@@ -129,6 +133,8 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "search-index-requests").Return(mockPublisher, nil)
 		publisherProvider.On(reflection.GetMethodName(publisherProvider.ProvidePublisher), "webhook-execution-requests").Return(mockPublisher, nil)
 
+		internalOpsRepo := &internalopsmock.InternalOpsDataManager{}
+
 		handler, err := NewAsyncDataChangeMessageHandler(
 			ctx,
 			logger,
@@ -137,6 +143,7 @@ func TestNewAsyncDataChangeMessageHandler(t *testing.T) {
 			identityRepo,
 			dataPrivacyRepo,
 			webhookRepo,
+			internalOpsRepo,
 			consumerProvider,
 			publisherProvider,
 			analyticsEventReporter,

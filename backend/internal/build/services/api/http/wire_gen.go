@@ -15,7 +15,6 @@ import (
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/payments/manager"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -26,6 +25,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	"github.com/dinnerdonebetter/backend/internal/repositories"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
@@ -60,15 +60,14 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	databasecfgConfig := cfg.Database
-	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	databasecfgConfig := &cfg.Database
+	migrator := repositories.ProvideMigrator(databasecfgConfig, logger)
+	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator)
 	if err != nil {
 		return nil, err
 	}
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	config2 := &cfg.Database
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
@@ -101,8 +100,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	config3 := &cfg.Routing
-	routeParamManager, err := routingcfg.ProvideRouteParamManager(config3)
+	config2 := &cfg.Routing
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(config2)
 	if err != nil {
 		return nil, err
 	}

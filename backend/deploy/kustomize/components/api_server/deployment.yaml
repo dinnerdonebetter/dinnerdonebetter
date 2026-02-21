@@ -37,6 +37,8 @@ spec:
           ports:
             - containerPort: 8000
               name: http
+            - containerPort: 8001
+              name: grpc
           livenessProbe:
             httpGet:
               path: "/_ops_/live"

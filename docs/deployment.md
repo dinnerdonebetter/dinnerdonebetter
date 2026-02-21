@@ -46,6 +46,21 @@ This script only runs the Skaffold application deploy. It does **not** run Terra
 
 ---
 
+## Post-Deployment Verification
+
+After each deploy, run verification to ensure the deployment is useful:
+
+```bash
+# Wait 1-2 min for load balancer propagation, then:
+make verify_prod
+```
+
+Or manually: `skaffold verify --filename=skaffold.yaml --profile prod` followed by `./scripts/post-deploy-verify.sh`.
+
+The CI pipeline runs these verification steps automatically after `skaffold run`. See [post-deployment-checklist.md](post-deployment-checklist.md) for manual checks (observability, queues, etc.).
+
+---
+
 ## Configuration and Secrets
 
 Backend configuration and secrets are documented in [backend/docs/configuration.md](backend/docs/configuration.md). Terraform uses Terraform Cloud for variables; application secrets are synced from GCP Secret Manager into the cluster.

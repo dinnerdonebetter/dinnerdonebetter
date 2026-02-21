@@ -22,7 +22,7 @@ func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenc
 
 			next.ServeHTTP(ww, req.WithContext(ctx))
 
-			if !silenceRouteLogging {
+			if !silenceRouteLogging && req.URL.Path != "/_ops_/live" && req.URL.Path != "/_ops_/ready" {
 				logger.WithRequest(req).WithSpan(span).WithValues(map[string]any{
 					"status":  ww.Status(),
 					"elapsed": time.Since(start).Milliseconds(),

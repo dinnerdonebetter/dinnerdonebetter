@@ -489,14 +489,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
-      - "internal/repositories/postgres/maintenance/sqlc_queries"
+      - "internal/repositories/postgres/internalops/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/repositories/postgres/maintenance/generated"
+        out: "internal/repositories/postgres/internalops/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -666,4 +666,4 @@ rules:
   - name: no-delete
     message: "don't use delete statements"
     rule: |-
-      query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken") && query.name != "DeleteUser"
+      query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken") && query.name != "DeleteUser" && query.name != "PruneQueueTestMessages"

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -27,6 +28,7 @@ import (
 
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/metadata"
@@ -109,12 +111,17 @@ func (c *client) CommentsService() commentsgrpc.CommentsServiceClient {
 	return c.commentsClient
 }
 
-func BuildUnauthenticatedGRPCClient(grpcServerAddr string) (Client, error) {
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
+// BuildUnauthenticatedGRPCClient connects without TLS or auth tokens.
+// Use only for plaintext backends (e.g. kubectl port-forward).
+func BuildUnauthenticatedGRPCClient(grpcServerAddr string, opts ...grpc.DialOption) (Client, error) {
+	return BuildClient(grpcServerAddr, append([]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}, opts...)...)
+}
 
-	return BuildClient(grpcServerAddr, opts...)
+// BuildTLSGRPCClient connects with TLS but no auth tokens.
+// Suitable for reaching a TLS-enabled gRPC server (e.g. api.dinnerdonebetter.com:443)
+// without supplying OAuth2 credentials.
+func BuildTLSGRPCClient(grpcServerAddr string, opts ...grpc.DialOption) (Client, error) {
+	return BuildClient(grpcServerAddr, append([]grpc.DialOption{grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{}))}, opts...)...)
 }
 
 func WithOAuth2Credentials(

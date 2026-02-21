@@ -51,8 +51,24 @@ func (s *Server) Run() {
 	)
 
 	// Run servers
-	go s.httpServer.Serve()
-	go s.grpcServer.Serve()
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				s.logger.Error("HTTP server panic", fmt.Errorf("%v", err))
+				panic(err)
+			}
+		}()
+		s.httpServer.Serve()
+	}()
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				s.logger.Error("gRPC server panic", fmt.Errorf("%v", err))
+				panic(err)
+			}
+		}()
+		s.grpcServer.Serve()
+	}()
 
 	// Wait for shutdown signal
 	sig := <-signalChan
