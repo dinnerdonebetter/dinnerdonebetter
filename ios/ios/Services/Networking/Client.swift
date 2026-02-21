@@ -151,21 +151,31 @@ internal class ClientManager<Transport: GRPCCore.ClientTransport> {
   /// - Parameters:
   ///   - host: The server host (e.g., "127.0.0.1" or "localhost")
   ///   - port: The server port (default: 8001)
+  ///   - useTLS: Whether to use TLS for the connection (default: false for plaintext)
   ///   - defaultCallOptions: Default call options to use for all RPC calls (default: 5 second timeout)
   /// - Throws: An error if the transport cannot be created
   internal convenience init(
     host: String = "127.0.0.1",
     port: Int = 8001,
+    useTLS: Bool = false,
     defaultCallOptions: GRPCCore.CallOptions = {
       var options = GRPCCore.CallOptions.defaults
       options.timeout = .seconds(5)
       return options
     }()
   ) throws where Transport == HTTP2ClientTransport.TransportServices {
-    let transport = try HTTP2ClientTransport.TransportServices(
-      target: .dns(host: host, port: port),
-      transportSecurity: .plaintext
-    )
+    let transport: HTTP2ClientTransport.TransportServices
+    if useTLS {
+      transport = try HTTP2ClientTransport.TransportServices(
+        target: .dns(host: host, port: port),
+        transportSecurity: .tls
+      )
+    } else {
+      transport = try HTTP2ClientTransport.TransportServices(
+        target: .dns(host: host, port: port),
+        transportSecurity: .plaintext
+      )
+    }
     try self.init(transport: transport, defaultCallOptions: defaultCallOptions)
   }
 

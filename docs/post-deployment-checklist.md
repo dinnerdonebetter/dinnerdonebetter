@@ -154,9 +154,9 @@ If the certificate is stuck with `429 rateLimited`:
 
 - [x] **api-service-config** exists and is populated
   - `kubectl get secret -n prod api-service-config`
-- [x] **admin-webapp-config** (secret + configmap) exist
-  - `kubectl get secret -n prod admin-webapp-config`
-  - `kubectl get configmap -n prod admin-webapp-config`
+- [x] **dinner-done-better-admin-webapp-config** (secret + configmap) exist
+  - `kubectl get secret -n prod dinner-done-better-admin-webapp-config`
+  - `kubectl get configmap -n prod dinner-done-better-admin-webapp-config`
 - [x] **grafana-cloud-creds** for otel-collector
   - `kubectl get secret -n prod grafana-cloud-creds`
 

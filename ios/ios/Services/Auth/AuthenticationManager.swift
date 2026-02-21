@@ -30,14 +30,12 @@ class AuthenticationManager: AuthenticationManaging {
   var userID: String = ""
   var accountID: String = ""
 
-  // For iOS Simulator, localhost may not work with TransportServices
-  // Use your Mac's IP address instead (e.g., 192.168.1.150)
-  // Set this to nil to use localhost, or provide an IP address string
-  private let serverHost: String? = "0.0.0.0"
-
   // Client manager following grpc-swift issue #2211 pattern
   // Reuses a single GRPCClient instance across all service clients
   private var clientManager: ClientManager<HTTP2ClientTransport.TransportServices>?
+
+  // Tracks which environment the current client was created for
+  private var clientEnvironment: AppEnvironment?
 
   // Mock support for UI tests
   private var mockManager: MockAuthenticationManager?
@@ -47,6 +45,9 @@ class AuthenticationManager: AuthenticationManaging {
 
   init() {
     print("🔧 AuthenticationManager: Initialized")
+    print(
+      "🔧 Environment: \(APIConfiguration.currentEnvironment.displayName) (\(APIConfiguration.grpcHost):\(APIConfiguration.grpcPort))"
+    )
 
     // Check if we should use mock behavior (for UI tests)
     if isUsingMock {
@@ -57,18 +58,30 @@ class AuthenticationManager: AuthenticationManaging {
       } else if launchArguments.contains("--mock-success") {
         mock.configure(behavior: .success)
       } else {
-        // Default to requires TOTP for UI tests
         mock.configure(behavior: .requiresTOTP)
       }
       self.mockManager = mock
       print("🎭 AuthenticationManager: Using mock mode")
-    } else {
-      if let host = serverHost {
-        print("🔧 Using custom server host: \(host)")
-      } else {
-        print("🔧 Using localhost for server connection")
-      }
     }
+
+    NotificationCenter.default.addObserver(
+      forName: .environmentDidChange,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.handleEnvironmentChange()
+    }
+  }
+
+  /// Tear down the existing gRPC client so the next request creates one
+  /// pointing at the newly selected environment.
+  private func handleEnvironmentChange() {
+    print(
+      "🔄 Environment changed to \(APIConfiguration.currentEnvironment.displayName), resetting connection"
+    )
+    clientManager = nil
+    clientEnvironment = nil
+    logout()
   }
 
   /// Get or create the client manager, following the grpc-swift issue #2211 pattern.
@@ -79,14 +92,22 @@ class AuthenticationManager: AuthenticationManaging {
       return try mock.getClientManager()
     }
 
-    if let existing = clientManager {
+    let env = APIConfiguration.currentEnvironment
+    if let existing = clientManager, clientEnvironment == env {
       return existing
     }
 
-    let host = serverHost ?? "127.0.0.1"
-    print("🔧 Creating ClientManager with HTTP2ClientTransport, host: \(host):8001")
-    let manager = try ClientManager<HTTP2ClientTransport.TransportServices>(host: host, port: 8001)
+    let host = APIConfiguration.grpcHost
+    let port = APIConfiguration.grpcPort
+    let useTLS = APIConfiguration.grpcUsesTLS
+    print(
+      "🔧 Creating ClientManager for \(env.displayName): \(host):\(port) (TLS: \(useTLS))"
+    )
+    let manager = try ClientManager<HTTP2ClientTransport.TransportServices>(
+      host: host, port: port, useTLS: useTLS
+    )
     clientManager = manager
+    clientEnvironment = env
     return manager
   }
 
