@@ -3,6 +3,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
@@ -36,18 +37,25 @@ func buildPubSubConsumer(
 	}
 }
 
+func subscriptionNameForTopic(topic string) string {
+	return strings.Replace(topic, "/topics/", "/subscriptions/", 1)
+}
+
 func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	if stopChan == nil {
 		stopChan = make(chan bool, 1)
 	}
 
-	ctx := context.Background()
-	sub, err := c.consumer.SubscriptionAdminClient.CreateSubscription(ctx, &pubsubpb.Subscription{
-		Name:  c.topic,
-		Topic: c.topic,
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	subscriptionName := subscriptionNameForTopic(c.topic)
+
+	sub, err := c.consumer.SubscriptionAdminClient.GetSubscription(ctx, &pubsubpb.GetSubscriptionRequest{
+		Subscription: subscriptionName,
 	})
 	if err != nil {
-		c.logger.Error(fmt.Sprintf("creating %s subscription", c.topic), err)
+		c.logger.Error(fmt.Sprintf("getting %s subscription", subscriptionName), err)
 		errors <- err
 		return
 	}
@@ -56,19 +64,16 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 
 	go func() {
 		<-stopChan
-		if err = c.consumer.SubscriptionAdminClient.DeleteSubscription(ctx, &pubsubpb.DeleteSubscriptionRequest{Subscription: sub.GetName()}); err != nil {
-			c.logger.Error(fmt.Sprintf("deleting %s subscription", c.topic), err)
-			errors <- err
-		}
+		cancel()
 	}()
 
 	if err = subscriber.Receive(ctx, func(receivedContext context.Context, m *pubsub.Message) {
 		if handleErr := c.handlerFunc(receivedContext, m.Data); handleErr != nil {
-			errors <- err
+			errors <- handleErr
 		} else {
 			m.Ack()
 		}
-	}); err != nil {
+	}); err != nil && ctx.Err() == nil {
 		c.logger.Error(fmt.Sprintf("receiving %s pub/sub data", c.topic), err)
 	}
 }

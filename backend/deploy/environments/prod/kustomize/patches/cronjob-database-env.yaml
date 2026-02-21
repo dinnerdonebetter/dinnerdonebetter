@@ -3,7 +3,7 @@
 - op: add
   path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
   value:
-    name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+    name: DINNER_DONE_BETTER_DATABASE_READ_CONNECTION_HOST
     valueFrom:
       secretKeyRef:
         name: api-service-config
@@ -11,7 +11,23 @@
 - op: add
   path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
   value:
-    name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+    name: DINNER_DONE_BETTER_DATABASE_READ_CONNECTION_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: api-service-config
+        key: DATABASE_PASSWORD
+- op: add
+  path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
+  value:
+    name: DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_HOST
+    valueFrom:
+      secretKeyRef:
+        name: api-service-config
+        key: DATABASE_HOST
+- op: add
+  path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
+  value:
+    name: DINNER_DONE_BETTER_DATABASE_WRITE_CONNECTION_PASSWORD
     valueFrom:
       secretKeyRef:
         name: api-service-config

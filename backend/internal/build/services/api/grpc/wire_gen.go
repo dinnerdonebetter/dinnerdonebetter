@@ -30,7 +30,6 @@ import (
 	manager5 "github.com/dinnerdonebetter/backend/internal/domain/waitlists/manager"
 	manager12 "github.com/dinnerdonebetter/backend/internal/domain/webhooks/manager"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
@@ -39,11 +38,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	grpc16 "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/repositories"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/comments"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/internalops"
 	issue_reports "github.com/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
@@ -91,9 +92,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := cfg.Database
-	clientConfig := databasecfg.ProvideClientConfig(databasecfgConfig)
-	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, clientConfig)
+	databasecfgConfig := &cfg.Database
+	migrator := repositories.ProvideMigrator(databasecfgConfig, logger)
+	client, err := databasecfg.ProvideDatabase(ctx, logger, tracerProvider, databasecfgConfig, migrator)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +177,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadManager := objectstorage.ProvideUploadManager(uploader)
 	dataPrivacyServiceServer := grpc3.NewDataPrivacyService(logger, tracerProvider, v, dataPrivacyManager, uploadManager)
 	identityServiceServer := grpc4.NewService(logger, tracerProvider, v, identityDataManager)
-	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig)
+	internalOpsDataManager := internalops.ProvideInternalOpsRepository(logger, tracerProvider, client)
+	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig, internalOpsDataManager)
 	issueReportsDataManager, err := manager7.NewIssueReportsDataManager(ctx, tracerProvider, logger, issuereportsRepository, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
@@ -216,8 +218,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	mealPlanningServiceServer := grpc7.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker, commentsDataManager)
 	userNotificationsServiceServer := grpc8.NewService(logger, tracerProvider, notificationsDataManager)
-	config3 := &cfg.Database
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config3, client)
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	oAuth2Manager, err := manager9.NewOAuth2Manager(ctx, logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
@@ -246,6 +247,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	authMethodPermissions := grpc2.ProvideMethodPermissions()
 	commentsMethodPermissions := grpc15.ProvideMethodPermissions()
 	identityMethodPermissions := grpc4.ProvideMethodPermissions()
+	internalOpsMethodPermissions := grpc5.ProvideMethodPermissions()
 	issueReportsMethodPermissions := grpc6.ProvideMethodPermissions()
 	mealPlanningMethodPermissions := grpc7.ProvideMethodPermissions()
 	notificationsMethodPermissions := grpc8.ProvideMethodPermissions()
@@ -255,7 +257,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	uploadedMediaMethodPermissions := grpc12.ProvideMethodPermissions()
 	waitlistsMethodPermissions := grpc14.ProvideMethodPermissions()
 	webhooksMethodPermissions := grpc13.ProvideMethodPermissions()
-	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
+	methodPermissionsMap := AggregateMethodPermissions(auditMethodPermissions, authMethodPermissions, commentsMethodPermissions, identityMethodPermissions, internalOpsMethodPermissions, issueReportsMethodPermissions, mealPlanningMethodPermissions, notificationsMethodPermissions, oAuthMethodPermissions, paymentsMethodPermissions, settingsMethodPermissions, uploadedMediaMethodPermissions, waitlistsMethodPermissions, webhooksMethodPermissions)
 	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityDataManager, manageManager, methodPermissionsMap)
 	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()

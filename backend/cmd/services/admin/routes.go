@@ -19,6 +19,19 @@ const (
 func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r := router.WithMiddleware(s.authMiddleware)
 
+	router.Route("/_ops_", func(metaRouter routing.Router) {
+		// Expose a liveness check on /live
+		metaRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
+
+		// Expose a readiness check on /ready
+		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			// TODO: check readiness here lol
+			res.WriteHeader(http.StatusOK)
+		})
+	})
+
 	r.Get("/", ghttp.Adapt(s.HomePage))
 
 	r.Get(fmt.Sprintf("/users/{%s}", userIDURLParamKey), ghttp.Adapt(s.UserPage))
@@ -173,6 +186,10 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get(fmt.Sprintf("/issue_reports/{%s}", issueReportIDURLParamKey), ghttp.Adapt(s.IssueReportPage))
 	r.Get("/issue_reports", ghttp.Adapt(s.IssueReportsList))
 	r.Get("/api/issue_reports/search", ghttp.Adapt(s.IssueReportsSearch))
+
+	// Queue Test
+	r.Get("/queue_test", ghttp.Adapt(s.QueueTestPage))
+	r.Post("/api/queue_test", ghttp.Adapt(s.QueueTestSubmit))
 
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))

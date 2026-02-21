@@ -4,13 +4,6 @@ resource "google_compute_network" "private_network" {
   name = "private-network"
 }
 
-resource "google_compute_address" "static_ip" {
-  name = "prod"
-  labels = {
-    (local.managed_by_label) = "terraform"
-  }
-}
-
 resource "google_compute_global_address" "private_ip_address" {
   provider = google
 

@@ -111,7 +111,7 @@ resource "kubernetes_secret" "api_service_config" {
 # Maps to env vars DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID / _SECRET
 resource "kubernetes_secret" "admin_webapp_config" {
   metadata {
-    name      = "admin-webapp-config"
+    name      = "dinner-done-better-admin-webapp-config"
     namespace = local.k8s_namespace
 
     annotations = {
@@ -132,28 +132,6 @@ resource "kubernetes_secret" "admin_webapp_config" {
     COOKIE_HASH_KEY      = base64encode(random_string.admin_webapp_cookie_hash_key.result)
     COOKIE_BLOCK_KEY     = base64encode(random_string.admin_webapp_cookie_block_key.result)
     COOKIE_DOMAIN        = var.ADMIN_WEBAPP_COOKIE_DOMAIN
-  }
-}
-
-resource "kubernetes_config_map_v1" "admin_webapp_config" {
-  metadata {
-    name      = "admin-webapp-config"
-    namespace = local.k8s_namespace
-
-    annotations = {
-      (local.managed_by_label) = "terraform"
-    }
-
-    labels = {
-      (local.managed_by_label) = "terraform"
-    }
-  }
-
-  depends_on = [kubernetes_namespace.prod]
-
-  data = {
-    API_SERVER_HTTP_URL = "https://http-api.dinnerdonebetter.com"
-    API_SERVER_GRPC_URL = "https://api.dinnerdonebetter.com"
   }
 }
 

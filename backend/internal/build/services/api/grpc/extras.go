@@ -30,6 +30,7 @@ import (
 	commentsgrpc "github.com/dinnerdonebetter/backend/internal/services/comments/grpc"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	internalopsgrpc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	issuereportsgrpc "github.com/dinnerdonebetter/backend/internal/services/issuereports/grpc"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
 	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
@@ -117,6 +118,7 @@ func AggregateMethodPermissions(
 	authPermissions authgrpc.AuthMethodPermissions,
 	commentsPermissions commentsgrpc.CommentsMethodPermissions,
 	identityPermissions identitygrpc.IdentityMethodPermissions,
+	internalopsPermissions internalopsgrpc.InternalOpsMethodPermissions,
 	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
 	mealplanningPermissions mealplanninggrpc.MealPlanningMethodPermissions,
 	notificationsPermissions notificationsgrpc.NotificationsMethodPermissions,
@@ -134,6 +136,7 @@ func AggregateMethodPermissions(
 	maps.Copy(result, authPermissions)
 	maps.Copy(result, commentsPermissions)
 	maps.Copy(result, identityPermissions)
+	maps.Copy(result, internalopsPermissions)
 	maps.Copy(result, issuereportsPermissions)
 	maps.Copy(result, mealplanningPermissions)
 	maps.Copy(result, notificationsPermissions)

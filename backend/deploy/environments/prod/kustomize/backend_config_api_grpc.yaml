@@ -1,0 +1,19 @@
+---
+# BackendConfig for the gRPC port (8001). GCE L7 health checks default to HTTP GET /
+# on the backend port; gRPC doesn't respond to that, so backends get marked unhealthy -> 502.
+# Use the HTTP port (8000) and /_ops_/ready for health checks instead.
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: api-grpc-backendconfig
+  namespace: prod
+spec:
+  healthCheck:
+    checkIntervalSec: 10
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    type: HTTP
+    port: 8000
+    requestPath: /_ops_/ready
+---

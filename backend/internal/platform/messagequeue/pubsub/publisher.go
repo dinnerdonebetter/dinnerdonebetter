@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -52,16 +53,18 @@ type publisherProvider struct {
 	publisherCache    map[string]messagequeue.Publisher
 	pubsubClient      *pubsub.Client
 	tracerProvider    tracing.TracerProvider
+	projectID         string
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvidePubSubPublisherProvider returns a PublisherProvider for a given address.
-func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, client *pubsub.Client) messagequeue.PublisherProvider {
+func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, client *pubsub.Client, projectID string) messagequeue.PublisherProvider {
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),
 		pubsubClient:   client,
 		publisherCache: map[string]messagequeue.Publisher{},
 		tracerProvider: tracerProvider,
+		projectID:      projectID,
 	}
 }
 
@@ -72,29 +75,39 @@ func (p *publisherProvider) Close() {
 	}
 }
 
+// qualifyTopicName ensures the topic name is fully qualified (projects/{project}/topics/{topic}).
+func (p *publisherProvider) qualifyTopicName(topicName string) string {
+	if strings.HasPrefix(topicName, "projects/") {
+		return topicName
+	}
+	return fmt.Sprintf("projects/%s/topics/%s", p.projectID, topicName)
+}
+
 // ProvidePublisher returns a pubSubPublisher for a given topic.
 func (p *publisherProvider) ProvidePublisher(ctx context.Context, topicName string) (messagequeue.Publisher, error) {
 	if topicName == "" {
 		return nil, messagequeue.ErrEmptyTopicName
 	}
 
+	qualifiedName := p.qualifyTopicName(topicName)
+
 	logger := logging.EnsureLogger(p.logger.Clone())
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()
-	if cachedPub, ok := p.publisherCache[topicName]; ok {
+	if cachedPub, ok := p.publisherCache[qualifiedName]; ok {
 		return cachedPub, nil
 	}
 
-	topic, err := p.pubsubClient.TopicAdminClient.GetTopic(ctx, &pubsubpb.GetTopicRequest{Topic: topicName})
+	topic, err := p.pubsubClient.TopicAdminClient.GetTopic(ctx, &pubsubpb.GetTopicRequest{Topic: qualifiedName})
 	if err != nil {
 		return nil, fmt.Errorf("error getting topic admin client: %w", err)
 	}
 
 	publisher := p.pubsubClient.Publisher(topic.GetName())
 
-	pub := buildPubSubPublisher(logger, publisher, p.tracerProvider, topicName)
-	p.publisherCache[topicName] = pub
+	pub := buildPubSubPublisher(logger, publisher, p.tracerProvider, qualifiedName)
+	p.publisherCache[qualifiedName] = pub
 
 	return pub, nil
 }

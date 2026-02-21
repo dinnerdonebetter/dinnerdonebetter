@@ -20,21 +20,19 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-public struct Internalops_PublishArbitraryQueueMessageRequest: Sendable {
+public struct Internalops_TestQueueMessageRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var queueName: String = String()
 
-  public var body: String = String()
-
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
+public struct Internalops_TestQueueMessageResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -50,6 +48,10 @@ public struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
 
   public var success: Bool = false
 
+  public var testID: String = String()
+
+  public var roundTripMs: Int64 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -61,9 +63,9 @@ public struct Internalops_PublishArbitraryQueueMessageResponse: Sendable {
 
 fileprivate let _protobuf_package = "internalops"
 
-extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}queue_name\0\u{1}body\0")
+extension Internalops_TestQueueMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TestQueueMessageRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}queue_name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -72,7 +74,6 @@ extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.queueName) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.body) }()
       default: break
       }
     }
@@ -82,23 +83,19 @@ extension Internalops_PublishArbitraryQueueMessageRequest: SwiftProtobuf.Message
     if !self.queueName.isEmpty {
       try visitor.visitSingularStringField(value: self.queueName, fieldNumber: 1)
     }
-    if !self.body.isEmpty {
-      try visitor.visitSingularStringField(value: self.body, fieldNumber: 2)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Internalops_PublishArbitraryQueueMessageRequest, rhs: Internalops_PublishArbitraryQueueMessageRequest) -> Bool {
+  public static func ==(lhs: Internalops_TestQueueMessageRequest, rhs: Internalops_TestQueueMessageRequest) -> Bool {
     if lhs.queueName != rhs.queueName {return false}
-    if lhs.body != rhs.body {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".PublishArbitraryQueueMessageResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}success\0")
+extension Internalops_TestQueueMessageResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TestQueueMessageResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}success\0\u{3}test_id\0\u{3}round_trip_ms\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -108,6 +105,8 @@ extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Messag
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
       case 2: try { try decoder.decodeSingularBoolField(value: &self.success) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.testID) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.roundTripMs) }()
       default: break
       }
     }
@@ -124,12 +123,20 @@ extension Internalops_PublishArbitraryQueueMessageResponse: SwiftProtobuf.Messag
     if self.success != false {
       try visitor.visitSingularBoolField(value: self.success, fieldNumber: 2)
     }
+    if !self.testID.isEmpty {
+      try visitor.visitSingularStringField(value: self.testID, fieldNumber: 3)
+    }
+    if self.roundTripMs != 0 {
+      try visitor.visitSingularInt64Field(value: self.roundTripMs, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Internalops_PublishArbitraryQueueMessageResponse, rhs: Internalops_PublishArbitraryQueueMessageResponse) -> Bool {
+  public static func ==(lhs: Internalops_TestQueueMessageResponse, rhs: Internalops_TestQueueMessageResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
     if lhs.success != rhs.success {return false}
+    if lhs.testID != rhs.testID {return false}
+    if lhs.roundTripMs != rhs.roundTripMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

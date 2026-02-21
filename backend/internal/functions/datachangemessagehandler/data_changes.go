@@ -1,9 +1,7 @@
 package datachangemessagehandler
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -14,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/internalops"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -34,8 +33,8 @@ func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Cont
 	start := time.Now()
 
 	var dataChangeMessage audit.DataChangeMessage
-	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
-		return fmt.Errorf("decoding JSON body: %w", err)
+	if err := a.decoder.DecodeBytes(ctx, rawMsg, &dataChangeMessage); err != nil {
+		return fmt.Errorf("decoding message body: %w", err)
 	}
 
 	if err := a.handleDataChangeMessage(ctx, &dataChangeMessage); err != nil {
@@ -63,6 +62,10 @@ func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(
 		if err := a.analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "notifying customer data platform")
 		}
+	}
+
+	if changeMessage.EventType == internalops.QueueTestMessageEventType {
+		return a.handleQueueTestMessage(ctx, logger, span, changeMessage)
 	}
 
 	var wg sync.WaitGroup

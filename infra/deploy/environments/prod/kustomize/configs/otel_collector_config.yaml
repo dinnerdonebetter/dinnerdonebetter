@@ -25,17 +25,13 @@ extensions:
       password: ${env:TEMPO_PASSWORD}
 
 exporters:
-  debug:
-
   prometheusremotewrite:
     endpoint: "https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push"
     auth:
       authenticator: basicauth/prometheus
 
   otlp:
-    endpoint: "https://tempo-prod-04-prod-us-east-0.grafana.net:443"
-    tls:
-      insecure: true
+    endpoint: "tempo-prod-04-prod-us-east-0.grafana.net:443"
     auth:
       authenticator: basicauth/tempo
 
@@ -45,6 +41,11 @@ exporters:
       authenticator: basicauth/loki
 
 processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 400
+    spike_limit_mib: 100
+
   batch:
     timeout: 1s
     send_batch_size: 500
@@ -53,7 +54,7 @@ processors:
   logdedup:
     interval: 60s
     log_count_attribute: dedup_count
-    timezone: 'America/Chicago'
+    timezone: 'UTC'
     exclude_fields:
       - body.time
 
@@ -66,11 +67,6 @@ processors:
         key: service_name
         from_attribute: service.name
 
-  redaction:
-    allow_all_keys: true
-    blocked_values: []
-    summary: debug
-
 service:
   telemetry:
     logs:
@@ -78,7 +74,7 @@ service:
       disable_caller: true
       disable_stacktrace: true
     metrics:
-      level: none
+      level: basic
 
   extensions:
     - health_check
@@ -90,6 +86,8 @@ service:
       receivers:
         - otlp
       processors:
+        - memory_limiter
+        - probabilistic_sampler
         - batch
       exporters:
         - otlp
@@ -97,14 +95,15 @@ service:
       receivers:
         - otlp
       processors:
+        - memory_limiter
         - batch
       exporters:
-        - debug
-        # - prometheusremotewrite
+        - prometheusremotewrite
     logs:
       receivers:
         - otlp
       processors:
+        - memory_limiter
         - resource
         - logdedup
         - batch

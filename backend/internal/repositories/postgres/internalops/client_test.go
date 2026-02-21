@@ -1,4 +1,4 @@
-package maintenance
+package internalops
 
 import (
 	"testing"
@@ -25,7 +25,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 	require.NotNil(t, pgc)
 	require.NoError(t, err)
 
-	c := ProvideMaintenanceRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
+	c := ProvideInternalOpsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 	require.NoError(t, err)
 
 	return c.(*repository), container
@@ -34,7 +34,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 func buildInertClientForTest(t *testing.T) *repository {
 	t.Helper()
 
-	c := ProvideMaintenanceRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &database.MockClient{})
+	c := ProvideInternalOpsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &database.MockClient{})
 
 	return c.(*repository)
 }
