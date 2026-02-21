@@ -93,8 +93,6 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		UserID: sessionContextData.Requester.UserID,
 	}
 
-	msgBytes := s.encoder.MustEncodeJSON(ctx, msg)
-
 	pp, err := msgconfig.ProvidePublisherProvider(ctx, s.logger, tracing.NewNoopTracerProvider(), s.msgConfig)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "establishing publisher provider")
@@ -105,7 +103,7 @@ func (s *serviceImpl) TestQueueMessage(ctx context.Context, request *settingssvc
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
 	}
 
-	if err = publisher.Publish(ctx, msgBytes); err != nil {
+	if err = publisher.Publish(ctx, msg); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "publishing test message")
 	}
 

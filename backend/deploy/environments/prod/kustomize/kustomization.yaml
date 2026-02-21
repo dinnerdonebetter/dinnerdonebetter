@@ -181,6 +181,11 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
+          name: DINNER_DONE_BETTER_COOKIES_LIFETIME
+          value: "168h"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
           name: DINNER_DONE_BETTER_COOKIES_HASH_KEY
           valueFrom:
             secretKeyRef:

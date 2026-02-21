@@ -50,7 +50,7 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	require.NotNil(t, pubSubTopic)
 
 	logger := logging.NewNoopLogger()
-	provider := ProvidePubSubPublisherProvider(logger, tracing.NewNoopTracerProvider(), client)
+	provider := ProvidePubSubPublisherProvider(logger, tracing.NewNoopTracerProvider(), client, projectID)
 	require.NotNil(t, provider)
 
 	publisher, err = provider.ProvidePublisher(ctx, pubSubTopic.GetName())

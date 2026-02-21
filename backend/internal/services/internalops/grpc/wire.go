@@ -5,5 +5,6 @@ import "github.com/google/wire"
 var (
 	InternalOpsSvcProviders = wire.NewSet(
 		NewService,
+		ProvideMethodPermissions,
 	)
 )
