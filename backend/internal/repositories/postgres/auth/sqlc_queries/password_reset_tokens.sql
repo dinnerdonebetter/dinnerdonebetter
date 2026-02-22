@@ -36,6 +36,7 @@ SELECT
 	password_reset_tokens.last_updated_at
 FROM password_reset_tokens
 WHERE password_reset_tokens.redeemed_at IS NULL
+	AND NOW() < password_reset_tokens.expires_at
 	AND password_reset_tokens.id = sqlc.arg(id);
 
 -- name: RedeemPasswordResetToken :exec

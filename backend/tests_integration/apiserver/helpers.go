@@ -44,6 +44,17 @@ var (
 	adminClient client.Client
 )
 
+func getAccountIDForTest(t *testing.T, c client.Client) string {
+	t.Helper()
+	ctx := t.Context()
+
+	status, err := c.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+	require.NoError(t, err)
+	require.NotNil(t, status)
+	require.NotEmpty(t, status.ActiveAccount)
+	return status.ActiveAccount
+}
+
 func buildUnauthenticatedGRPCClientForTest(t *testing.T) client.Client {
 	t.Helper()
 

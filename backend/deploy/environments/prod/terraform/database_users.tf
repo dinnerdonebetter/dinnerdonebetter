@@ -9,7 +9,7 @@ locals {
   search_data_index_scheduler_username        = "search_data_index_scheduler"
 }
 
-# api_database_username
+# db_user_manager
 
 resource "random_password" "db_user_manager_username_database_password" {
   length           = 64

@@ -81,9 +81,14 @@ func TestWebhooks_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
 		_, testClient := createUserAndClientForTest(t)
-		createWebhookForTest(t, testClient)
+		created := createWebhookForTest(t, testClient)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "webhooks", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -195,6 +200,10 @@ func TestWebhooks_Archiving(T *testing.T) {
 
 		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookId: createdWebhook.ID})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "archived", ResourceType: "webhooks", RelevantID: createdWebhook.ID},
+		})
 	})
 
 	T.Run("nonexistentID", func(t *testing.T) {
@@ -229,7 +238,7 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 		createdWebhook := createWebhookForTest(t, testClient)
 		catalogEvent := createWebhookTriggerEventCatalogForTest(t, ctx, testClient, "webhook_archived", "when webhook is archived")
 
-		_, err := testClient.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{
+		addedConfig, err := testClient.AddWebhookTriggerConfig(ctx, &webhookssvc.AddWebhookTriggerConfigRequest{
 			WebhookId: createdWebhook.ID,
 			Input: &webhookssvc.WebhookTriggerConfigCreationRequestInput{
 				BelongsToWebhook: createdWebhook.ID,
@@ -237,6 +246,10 @@ func TestWebhookTriggerEvents_Adding(T *testing.T) {
 			},
 		})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "webhook_trigger_configs", RelevantID: addedConfig.Created.Id},
+		})
 	})
 
 	T.Run("nonexistentID", func(t *testing.T) {

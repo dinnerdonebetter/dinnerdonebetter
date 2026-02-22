@@ -224,6 +224,10 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, tokenRes)
 		assert.NotEmpty(t, tokenRes.Result.AccessToken)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "updated", ResourceType: "users", RelevantID: user.ID},
+		})
 	})
 
 	T.Run("with inadequate new password", func(t *testing.T) {
@@ -262,6 +266,10 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 			UserId:    user.ID,
 		})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "updated", ResourceType: "users", RelevantID: user.ID},
+		})
 	})
 
 	T.Run("fails with invalid token", func(t *testing.T) {
@@ -341,6 +349,11 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 			NewPassword: user.HashedPassword + "blah",
 		})
 		require.Error(t, err)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "password_reset_tokens"},
+			{EventType: "updated", ResourceType: "password_reset_tokens"},
+		})
 	})
 }
 

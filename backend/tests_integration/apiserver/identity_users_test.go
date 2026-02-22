@@ -17,8 +17,15 @@ func TestUsers_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
-		createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "users", RelevantID: user.ID},
+			{EventType: "created", ResourceType: "accounts"},
+			{EventType: "created", ResourceType: "account_user_memberships"},
+		})
 	})
 
 	T.Run("rejects duplicate registration", func(t *testing.T) {
@@ -168,6 +175,11 @@ func TestUsers_Archiving(T *testing.T) {
 			UserId: user.ID,
 		})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, adminClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "users", RelevantID: user.ID},
+			{EventType: "archived", ResourceType: "users", RelevantID: user.ID},
+		})
 	})
 
 	T.Run("nonexistent user", func(t *testing.T) {

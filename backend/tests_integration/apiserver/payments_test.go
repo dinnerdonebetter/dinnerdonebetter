@@ -5,10 +5,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments/fakes"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	paymentsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
 	paymentssvcconverters "github.com/dinnerdonebetter/backend/internal/services/payments/grpc/converters"
-	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -61,17 +59,6 @@ func createSubscriptionForTest(t *testing.T, productID, accountID string) *payme
 	require.NotNil(t, res)
 
 	return paymentssvcconverters.ConvertGRPCSubscriptionToSubscription(res.Result)
-}
-
-func getAccountIDForTest(t *testing.T, c client.Client) string {
-	t.Helper()
-	ctx := t.Context()
-
-	status, err := c.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
-	require.NoError(t, err)
-	require.NotNil(t, status)
-	require.NotEmpty(t, status.ActiveAccount)
-	return status.ActiveAccount
 }
 
 func TestPayments_CreateProduct(T *testing.T) {
@@ -301,12 +288,17 @@ func TestPayments_CreateSubscription(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
 		product := createProductForTest(t)
 		_, accountClient := createUserAndClientForTest(t)
 		accountID := getAccountIDForTest(t, accountClient)
 
-		createSubscriptionForTest(t, product.ID, accountID)
+		created := createSubscriptionForTest(t, product.ID, accountID)
+
+		AssertAuditLogContainsFuzzy(t, ctx, accountClient, accountID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "subscriptions", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -445,6 +437,11 @@ func TestPayments_UpdateSubscription(T *testing.T) {
 		res, err := adminClient.GetSubscription(ctx, &paymentsgrpc.GetSubscriptionRequest{SubscriptionId: created.ID})
 		require.NoError(t, err)
 		assert.Equal(t, newStatus, res.Result.Status)
+
+		AssertAuditLogContainsFuzzy(t, ctx, accountClient, accountID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "subscriptions", RelevantID: created.ID},
+			{EventType: "updated", ResourceType: "subscriptions", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -502,6 +499,10 @@ func TestPayments_ArchiveSubscription(T *testing.T) {
 		res, err := adminClient.GetSubscription(ctx, &paymentsgrpc.GetSubscriptionRequest{SubscriptionId: created.ID})
 		assert.Nil(t, res)
 		assert.Error(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, accountClient, accountID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "subscriptions", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
