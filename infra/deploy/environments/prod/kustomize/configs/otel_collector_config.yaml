@@ -13,16 +13,19 @@ receivers:
           static_configs:
             - targets: ['kube-state-metrics.prod.svc.cluster.local:8080']
 
-  googlecloudmonitoring:
-    project_id: dinner-done-better-prod
-    collection_interval: 5m
-    metrics_list:
-      - metric_name: "pubsub.googleapis.com/subscription/num_undelivered_messages"
-      - metric_name: "pubsub.googleapis.com/subscription/oldest_unacked_message_age"
-      - metric_name: "cloudsql.googleapis.com/database/cpu/utilization"
-      - metric_name: "cloudsql.googleapis.com/database/disk/utilization"
-      - metric_name: "cloudsql.googleapis.com/database/memory/utilization"
-      - metric_name: "cloudsql.googleapis.com/database/postgresql/num_backends"
+  # TODO: re-enable once Workload Identity credentials issue is resolved.
+  # The googlecloudmonitoring receiver crashes the entire collector if it can't
+  # find GCP credentials, taking down all telemetry pipelines.
+  # googlecloudmonitoring:
+  #   project_id: dinner-done-better-prod
+  #   collection_interval: 5m
+  #   metrics_list:
+  #     - metric_name: "pubsub.googleapis.com/subscription/num_undelivered_messages"
+  #     - metric_name: "pubsub.googleapis.com/subscription/oldest_unacked_message_age"
+  #     - metric_name: "cloudsql.googleapis.com/database/cpu/utilization"
+  #     - metric_name: "cloudsql.googleapis.com/database/disk/utilization"
+  #     - metric_name: "cloudsql.googleapis.com/database/memory/utilization"
+  #     - metric_name: "cloudsql.googleapis.com/database/postgresql/num_backends"
 
 extensions:
   health_check:
@@ -114,7 +117,7 @@ service:
       receivers:
         - otlp
         - prometheus
-        - googlecloudmonitoring
+        # - googlecloudmonitoring
       processors:
         - memory_limiter
         - batch
