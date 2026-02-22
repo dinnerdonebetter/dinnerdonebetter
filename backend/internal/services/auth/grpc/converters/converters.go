@@ -65,10 +65,14 @@ func ConvertGRPCCheckPermissionsRequestToUserPermissionsRequestInput(request *au
 }
 
 func ConvertGRPCUserLoginInputToUserLoginInput(request *authsvc.UserLoginInput) *auth.UserLoginInput {
+	if request == nil {
+		return &auth.UserLoginInput{}
+	}
 	return &auth.UserLoginInput{
-		Username:  request.Username,
-		Password:  request.Password,
-		TOTPToken: request.TotpToken,
+		Username:         request.GetUsername(),
+		Password:         request.GetPassword(),
+		TOTPToken:        request.GetTotpToken(),
+		DesiredAccountID: request.GetDesiredAccountId(),
 	}
 }
 

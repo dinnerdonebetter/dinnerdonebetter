@@ -128,8 +128,8 @@ func (m *IdentityDataManager) GetDefaultAccountIDForUser(ctx context.Context, us
 }
 
 // BuildSessionContextDataForUser is a mock function.
-func (m *IdentityDataManager) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
-	returnValues := m.Called(ctx, userID)
+func (m *IdentityDataManager) BuildSessionContextDataForUser(ctx context.Context, userID, activeAccountID string) (*sessions.ContextData, error) {
+	returnValues := m.Called(ctx, userID, activeAccountID)
 	if returnValues.Get(0) == nil {
 		return nil, returnValues.Error(1)
 	}

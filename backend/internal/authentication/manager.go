@@ -31,7 +31,7 @@ const (
 type (
 	Manager interface {
 		ProcessLogin(ctx context.Context, adminOnly bool, loginData *auth.UserLoginInput) (*auth.TokenResponse, error)
-		ExchangeTokenForUser(ctx context.Context, refreshToken string) (*auth.TokenResponse, error)
+		ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error)
 	}
 
 	manager struct {
@@ -170,14 +170,29 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 		return nil, observability.PrepareError(errors.New("TOTP code required but not provided"), span, "processing login")
 	}
 
-	defaultAccountID, err := m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+	var accountID string
+	if loginData.DesiredAccountID != "" {
+		var isMember bool
+		isMember, err = m.userAuthDataManager.UserIsMemberOfAccount(ctx, user.ID, loginData.DesiredAccountID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating account membership")
+		}
+		if !isMember {
+			return nil, observability.PrepareError(errors.New("user does not have access to account"), span, "user does not have access to the desired account")
+		}
+		accountID = loginData.DesiredAccountID
+	} else {
+		var defaultAccountID string
+		defaultAccountID, err = m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating input")
+		}
+		accountID = defaultAccountID
 	}
 
 	dcm := &audit.DataChangeMessage{
 		EventType: identity.UserLoggedInServiceEventType,
-		AccountID: defaultAccountID,
+		AccountID: accountID,
 		UserID:    user.ID,
 	}
 
@@ -187,16 +202,16 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 
 	response := &auth.TokenResponse{
 		UserID:     user.ID,
-		AccountID:  defaultAccountID,
+		AccountID:  accountID,
 		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
 	}
 
-	response.AccessToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime)
+	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating access token")
 	}
 
-	response.RefreshToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime)
+	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating refresh token")
 	}
@@ -204,7 +219,7 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	return response, nil
 }
 
-func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string) (*auth.TokenResponse, error) {
+func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken, desiredAccountID string) (*auth.TokenResponse, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -231,14 +246,29 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string)
 		return nil, observability.PrepareError(err, span, "user is banned")
 	}
 
-	defaultAccountID, err := m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+	var accountID string
+	if desiredAccountID != "" {
+		var isMember bool
+		isMember, err = m.userAuthDataManager.UserIsMemberOfAccount(ctx, user.ID, desiredAccountID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating account membership")
+		}
+		if !isMember {
+			return nil, observability.PrepareError(errors.New("user does not have access to account"), span, "user does not have access to the desired account")
+		}
+		accountID = desiredAccountID
+	} else {
+		var defaultAccountID string
+		defaultAccountID, err = m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "validating input")
+		}
+		accountID = defaultAccountID
 	}
 
 	dcm := &audit.DataChangeMessage{
 		EventType: identity.UserLoggedInServiceEventType,
-		AccountID: defaultAccountID,
+		AccountID: accountID,
 		UserID:    user.ID,
 	}
 
@@ -248,16 +278,16 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string)
 
 	response := &auth.TokenResponse{
 		UserID:     user.ID,
-		AccountID:  defaultAccountID,
+		AccountID:  accountID,
 		ExpiresUTC: time.Now().Add(m.maxAccessTokenLifetime).UTC(),
 	}
 
-	response.AccessToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime)
+	response.AccessToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxAccessTokenLifetime, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
 	}
 
-	response.RefreshToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime)
+	response.RefreshToken, err = m.tokenIssuer.IssueTokenWithAccount(ctx, user, m.maxRefreshTokenLifetime, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
 	}

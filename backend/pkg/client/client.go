@@ -211,3 +211,33 @@ func ImpersonateUseAndAccountContext(ctx context.Context, userID, accountID stri
 		zuckModeAccountHeader: accountID,
 	}))
 }
+
+// bearerTokenCredential adds a static Bearer token to each RPC.
+type bearerTokenCredential struct {
+	token string
+}
+
+func (b bearerTokenCredential) GetRequestMetadata(_ context.Context, _ ...string) (map[string]string, error) {
+	return map[string]string{
+		"authorization": "Bearer " + b.token,
+	}, nil
+}
+
+func (bearerTokenCredential) RequireTransportSecurity() bool {
+	return false
+}
+
+// WithBearerTokenCredentials returns a DialOption that attaches the given token as a Bearer token to every RPC.
+// Use this when the token is a JWT (e.g. from LoginForToken) that should be sent directly without OAuth2 exchange.
+func WithBearerTokenCredentials(token string) grpc.DialOption {
+	return grpc.WithPerRPCCredentials(bearerTokenCredential{token: token})
+}
+
+// BuildUnauthenticatedGRPCClientWithBearerToken connects with a Bearer token (e.g. JWT from LoginForToken).
+// Use this when the token includes an account_id claim and you want the session to use that account.
+func BuildUnauthenticatedGRPCClientWithBearerToken(grpcServerAddr, token string) (Client, error) {
+	return BuildClient(grpcServerAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		WithBearerTokenCredentials(token),
+	)
+}

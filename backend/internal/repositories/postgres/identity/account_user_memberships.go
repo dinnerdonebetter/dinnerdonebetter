@@ -26,7 +26,8 @@ var (
 )
 
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a ContextData struct from the results.
-func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
+// When activeAccountID is non-empty, it is used as the active account if the user is a member; otherwise the default account is used.
+func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID, activeAccountID string) (*sessions.ContextData, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -51,6 +52,18 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID 
 		}
 	}
 
+	effectiveAccountID := defaultAccountID
+	if activeAccountID != "" {
+		isMember, memberErr := r.UserIsMemberOfAccount(ctx, userID, activeAccountID)
+		if memberErr != nil {
+			return nil, observability.PrepareAndLogError(memberErr, logger, span, "checking account membership")
+		}
+		if !isMember {
+			return nil, observability.PrepareAndLogError(errors.New("user is not a member of the specified account"), logger, span, "user is not a member of the specified account")
+		}
+		effectiveAccountID = activeAccountID
+	}
+
 	user, err := r.GetUser(ctx, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
@@ -66,7 +79,7 @@ func (r *repository) BuildSessionContextDataForUser(ctx context.Context, userID 
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRole),
 		},
 		AccountPermissions: accountRolesMap,
-		ActiveAccountID:    defaultAccountID,
+		ActiveAccountID:    effectiveAccountID,
 	}
 
 	logger.Debug("fetched session context data for user")

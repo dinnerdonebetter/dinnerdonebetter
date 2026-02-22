@@ -40,4 +40,5 @@ message UserLoginInput {
   string username = 1;
   string password = 2;
   string totp_token = 3;
+  string desired_account_id = 4;
 }

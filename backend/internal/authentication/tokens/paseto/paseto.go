@@ -45,10 +45,16 @@ type tokenPayload struct {
 	Issuer     string
 	JTI        string
 	Subject    string
+	AccountID  string `json:"account_id,omitempty"`
 }
 
 // IssueToken issues a new PASETO token.
 func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.Duration) (string, error) {
+	return s.IssueTokenWithAccount(ctx, user, expiry, "")
+}
+
+// IssueTokenWithAccount issues a new PASETO token, optionally including an account ID.
+func (s *signer) IssueTokenWithAccount(ctx context.Context, user tokens.User, expiry time.Duration, accountID string) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -65,6 +71,9 @@ func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.D
 		Expiration: time.Now().Add(expiry).UTC(),
 		NotBefore:  time.Now().Add(-1 * time.Minute).UTC(),
 	}
+	if accountID != "" {
+		t.AccountID = accountID
+	}
 
 	tokenString, err := paseto.NewV2().Encrypt(s.signingKey, t, "footer")
 	if err != nil {
@@ -76,6 +85,12 @@ func (s *signer) IssueToken(ctx context.Context, user tokens.User, expiry time.D
 
 // ParseUserIDFromToken parses a AccessToken and returns the associated user ID.
 func (s *signer) ParseUserIDFromToken(ctx context.Context, providedToken string) (string, error) {
+	userID, _, err := s.ParseUserIDAndAccountIDFromToken(ctx, providedToken)
+	return userID, err
+}
+
+// ParseUserIDAndAccountIDFromToken parses a PASETO token and returns the user ID and optional account ID.
+func (s *signer) ParseUserIDAndAccountIDFromToken(ctx context.Context, providedToken string) (userID, accountID string, err error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,10 +98,10 @@ func (s *signer) ParseUserIDFromToken(ctx context.Context, providedToken string)
 		parsedToken tokenPayload
 		footer      string
 	)
-	if err := paseto.NewV2().Decrypt(providedToken, s.signingKey, &parsedToken, &footer); err != nil {
-		s.logger.Error("parsing JWT", err)
-		return "", err
+	if err = paseto.NewV2().Decrypt(providedToken, s.signingKey, &parsedToken, &footer); err != nil {
+		s.logger.Error("parsing PASETO token", err)
+		return "", "", err
 	}
 
-	return parsedToken.Subject, nil
+	return parsedToken.Subject, parsedToken.AccountID, nil
 }

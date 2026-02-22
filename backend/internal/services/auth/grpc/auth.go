@@ -47,12 +47,12 @@ func (s *serviceImpl) ExchangeToken(ctx context.Context, request *authsvc.Exchan
 
 	logger := s.logger.WithSpan(span)
 
-	sessionContextData, err := s.fetchSessionContext(ctx)
+	_, err := s.fetchSessionContext(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	newToken, err := s.authenticationManager.ExchangeTokenForUser(ctx, request.RefreshToken)
+	newToken, err := s.authenticationManager.ExchangeTokenForUser(ctx, request.RefreshToken, request.DesiredAccountId)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to exchange token")
 	}
@@ -61,8 +61,8 @@ func (s *serviceImpl) ExchangeToken(ctx context.Context, request *authsvc.Exchan
 		ResponseDetails: &types.ResponseDetails{
 			TraceId: span.SpanContext().TraceID().String(),
 		},
-		UserId:       sessionContextData.GetUserID(),
-		AccountId:    sessionContextData.GetActiveAccountID(),
+		UserId:       newToken.UserID,
+		AccountId:    newToken.AccountID,
 		RefreshToken: newToken.RefreshToken,
 		AccessToken:  newToken.AccessToken,
 		ExpiresUtc:   grpcconverters.ConvertTimeToPBTimestamp(newToken.ExpiresUTC),
