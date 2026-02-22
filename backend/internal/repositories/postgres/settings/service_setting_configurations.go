@@ -534,6 +534,17 @@ func (q *Repository) ArchiveServiceSettingConfiguration(ctx context.Context, ser
 		return sql.ErrNoRows
 	}
 
+	// ArchiveServiceSettingConfiguration does not have account ID in signature; create audit entry without it
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeServiceSettingConfigurations,
+		RelevantID:   serviceSettingConfigurationID,
+		EventType:    audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}

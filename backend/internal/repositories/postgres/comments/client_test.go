@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/comments"
 	"github.com/dinnerdonebetter/backend/internal/domain/comments/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -22,7 +23,7 @@ import (
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -37,7 +38,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 
 	c := ProvideCommentsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 
-	return c.(*repository), container
+	return c.(*repository), auditLogEntryRepo, container
 }
 
 func buildInertClientForTest(t *testing.T) *repository {
@@ -77,7 +78,7 @@ func TestQuerier_Integration_Comments(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -95,6 +96,9 @@ func TestQuerier_Integration_Comments(t *testing.T) {
 
 	// create
 	created := createCommentForTest(t, ctx, input, dbc)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+	})
 
 	// fetch as list
 	result, err := dbc.GetCommentsForReference(ctx, targetType, referencedID, nil)
@@ -107,6 +111,10 @@ func TestQuerier_Integration_Comments(t *testing.T) {
 	newContent := "updated content"
 	err = dbc.UpdateComment(ctx, created.ID, user.ID, newContent)
 	assert.NoError(t, err)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+	})
 
 	updated, err := dbc.GetComment(ctx, created.ID)
 	assert.NoError(t, err)
@@ -117,6 +125,11 @@ func TestQuerier_Integration_Comments(t *testing.T) {
 	// archive
 	err = dbc.ArchiveComment(ctx, created.ID)
 	assert.NoError(t, err)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+		{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeComments, RelevantID: created.ID},
+	})
 
 	fetchedAfterArchive, err := dbc.GetComment(ctx, created.ID)
 	assert.Error(t, err)
@@ -130,7 +143,7 @@ func TestQuerier_Integration_Comments_WithReplies(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -182,7 +195,7 @@ func TestQuerier_Integration_ArchiveCommentsForReference(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -203,6 +216,10 @@ func TestQuerier_Integration_ArchiveCommentsForReference(t *testing.T) {
 	// archive all for reference
 	err := dbc.ArchiveCommentsForReference(ctx, targetType, referencedID)
 	assert.NoError(t, err)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeComments, RelevantID: created.ID},
+		{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeComments, RelevantID: created.ID},
+	})
 
 	// comment should no longer be fetchable (GetComment returns archived)
 	fetched, err := dbc.GetComment(ctx, created.ID)
@@ -340,7 +357,7 @@ func TestQuerier_Integration_Comments_CursorPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	defer func(t *testing.T) {
 		t.Helper()

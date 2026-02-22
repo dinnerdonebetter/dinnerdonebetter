@@ -161,7 +161,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -230,7 +230,7 @@ func TestQuerier_Integration_GetRecipesWithIDs(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 	defer func() {
 		assert.NoError(t, container.Terminate(ctx))
 	}()
@@ -649,7 +649,7 @@ func TestQuerier_Integration_Recipes_CursorBasedPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -694,7 +694,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		dbc, container := buildDatabaseClientForTest(t)
+		dbc, _, container := buildDatabaseClientForTest(t)
 		defer func() {
 			assert.NoError(t, container.Terminate(ctx))
 		}()
@@ -940,7 +940,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		dbc, container := buildDatabaseClientForTest(t)
+		dbc, _, container := buildDatabaseClientForTest(t)
 		defer func() {
 			assert.NoError(t, container.Terminate(ctx))
 		}()
@@ -1185,7 +1185,7 @@ func TestQuerier_GetRecipe_AssociatedRecipes(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		dbc, container := buildDatabaseClientForTest(t)
+		dbc, _, container := buildDatabaseClientForTest(t)
 		defer func() {
 			assert.NoError(t, container.Terminate(ctx))
 		}()

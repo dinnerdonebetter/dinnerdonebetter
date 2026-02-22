@@ -71,14 +71,16 @@ func (r *repository) CreatePasswordResetToken(ctx context.Context, input *auth.P
 		Token:         input.Token,
 		BelongsToUser: input.BelongsToUser,
 	}); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing password reset token creation query")
 	}
 
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
-		ID:           identifiers.New(),
-		ResourceType: resourceTypePasswordResetTokens,
-		RelevantID:   input.ID,
-		EventType:    audit.AuditLogEventTypeCreated,
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypePasswordResetTokens,
+		RelevantID:    input.ID,
+		EventType:     audit.AuditLogEventTypeCreated,
+		BelongsToUser: input.BelongsToUser,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -114,8 +116,34 @@ func (r *repository) RedeemPasswordResetToken(ctx context.Context, passwordReset
 	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
 	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
 
-	if err := r.generatedQuerier.RedeemPasswordResetToken(ctx, r.writeDB, passwordResetTokenID); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving password reset token")
+	token, err := r.generatedQuerier.GetPasswordResetTokenByID(ctx, r.readDB, passwordResetTokenID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching password reset token for redeem")
+	}
+
+	tx, err := r.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = r.generatedQuerier.RedeemPasswordResetToken(ctx, tx, passwordResetTokenID); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "redeeming password reset token")
+	}
+
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypePasswordResetTokens,
+		RelevantID:    passwordResetTokenID,
+		EventType:     audit.AuditLogEventTypeUpdated,
+		BelongsToUser: token.BelongsToUser,
+	}); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil

@@ -110,7 +110,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	appleAppSiteAssociationConfig := cfg.AppleAppSiteAssociation
-	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, client)
+	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
 	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
 	paymentsDataManager, err := manager2.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {

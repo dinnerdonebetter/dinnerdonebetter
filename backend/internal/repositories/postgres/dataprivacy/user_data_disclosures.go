@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -14,7 +16,8 @@ import (
 )
 
 const (
-	disclosureIDKey = "disclosure_id"
+	disclosureIDKey                = "disclosure_id"
+	resourceTypeUserDataDisclosure = "user_data_disclosure"
 )
 
 // CreateUserDataDisclosure creates a new user data disclosure record.
@@ -42,6 +45,16 @@ func (r *repository) CreateUserDataDisclosure(ctx context.Context, input *datapr
 		ExpiresAt:     input.ExpiresAt,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating user data disclosure")
+	}
+
+	if _, err := r.auditLogRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUserDataDisclosure,
+		RelevantID:    input.ID,
+		EventType:     audit.AuditLogEventTypeCreated,
+		BelongsToUser: input.BelongsToUser,
+	}); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating audit log entry")
 	}
 
 	disclosure, err := r.GetUserDataDisclosure(ctx, input.ID)
@@ -223,8 +236,34 @@ func (r *repository) ArchiveUserDataDisclosure(ctx context.Context, disclosureID
 	tracing.AttachToSpan(span, disclosureIDKey, disclosureID)
 	logger := r.logger.WithValue(disclosureIDKey, disclosureID)
 
-	if err := r.generatedQuerier.ArchiveUserDataDisclosure(ctx, r.writeDB, disclosureID); err != nil {
+	disclosure, err := r.GetUserDataDisclosure(ctx, disclosureID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching disclosure for archive")
+	}
+
+	tx, err := r.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = r.generatedQuerier.ArchiveUserDataDisclosure(ctx, tx, disclosureID); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving disclosure")
+	}
+
+	if _, err = r.auditLogRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUserDataDisclosure,
+		RelevantID:    disclosureID,
+		EventType:     audit.AuditLogEventTypeArchived,
+		BelongsToUser: disclosure.BelongsToUser,
+	}); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil

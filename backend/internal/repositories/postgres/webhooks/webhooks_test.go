@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
@@ -54,7 +55,7 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -127,6 +128,13 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 
 	createdWebhooks[0].TriggerConfigs = append(createdWebhooks[0].TriggerConfigs, createdConfig)
 
+	// Assert audit log entries were written for creates (pre-cleanup)
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeWebhooks, RelevantID: createdWebhooks[0].ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeWebhookTriggerConfigs, RelevantID: createdWebhooks[0].TriggerConfigs[0].ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeWebhookTriggerConfigs, RelevantID: createdConfig.ID},
+	})
+
 	// delete: archive trigger configs then archive webhook; archive catalog event if needed
 	for _, webhook := range createdWebhooks {
 		for _, cfg := range webhook.TriggerConfigs {
@@ -134,7 +142,15 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 		}
 
 		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, account.ID))
+	}
 
+	// Assert audit log entries were written for webhook archives (ArchiveWebhookTriggerConfig
+	// does not set BelongsToAccount, so those entries are not returned by GetAuditLogEntriesForAccount)
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeWebhooks, RelevantID: createdWebhooks[0].ID},
+	})
+
+	for _, webhook := range createdWebhooks {
 		var exists bool
 		exists, err = dbc.WebhookExists(ctx, webhook.ID, account.ID)
 		assert.NoError(t, err)
@@ -297,7 +313,7 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

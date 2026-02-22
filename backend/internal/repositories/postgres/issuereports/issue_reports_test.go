@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/issuereports"
 	"github.com/dinnerdonebetter/backend/internal/domain/issuereports/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -54,7 +55,7 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -75,6 +76,10 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 
 	// create
 	createdIssueReports = append(createdIssueReports, createIssueReportForTest(t, ctx, exampleIssueReport, dbc))
+
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeIssueReports, RelevantID: createdIssueReports[0].ID},
+	})
 
 	// create more
 	for i := range exampleQuantity {
@@ -112,6 +117,11 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 	createdIssueReports[0].Details = "Updated details"
 	assert.NoError(t, dbc.UpdateIssueReport(ctx, createdIssueReports[0]))
 
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeIssueReports, RelevantID: createdIssueReports[0].ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeIssueReports, RelevantID: createdIssueReports[0].ID},
+	})
+
 	// fetch again to verify update
 	updated, err := dbc.GetIssueReport(ctx, createdIssueReports[0].ID)
 	assert.NoError(t, err)
@@ -120,6 +130,10 @@ func TestQuerier_Integration_IssueReports(t *testing.T) {
 	// delete
 	for _, issueReport := range createdIssueReports {
 		assert.NoError(t, dbc.ArchiveIssueReport(ctx, issueReport.ID))
+
+		pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+			{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeIssueReports, RelevantID: issueReport.ID},
+		})
 
 		var y *types.IssueReport
 		y, err = dbc.GetIssueReport(ctx, issueReport.ID)
@@ -155,7 +169,7 @@ func TestQuerier_GetIssueReports(T *testing.T) {
 		}
 
 		ctx := t.Context()
-		dbc, container := buildDatabaseClientForTest(t)
+		dbc, _, container := buildDatabaseClientForTest(t)
 
 		databaseURI, err := container.ConnectionString(ctx)
 		require.NoError(t, err)
@@ -294,7 +308,7 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

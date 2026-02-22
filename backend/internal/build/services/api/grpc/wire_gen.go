@@ -159,7 +159,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
-	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, repository, client)
 	waitlistsDataManager, err := manager5.NewWaitlistDataManager(ctx, tracerProvider, logger, waitlistsRepository, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
@@ -224,7 +224,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	oAuthServiceServer := grpc9.NewService(logger, tracerProvider, oAuth2Manager)
-	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, client)
+	paymentsRepository := payments.ProvidePaymentsRepository(logger, tracerProvider, repository, client)
 	stubPaymentProcessor := adapters.NewStubPaymentProcessor()
 	paymentsDataManager, err := manager10.NewPaymentsDataManager(ctx, tracerProvider, logger, paymentsRepository, stubPaymentProcessor, identityDataManager, queuesConfig, publisherProvider)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authconverters "github.com/dinnerdonebetter/backend/internal/domain/auth/converters"
 	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
@@ -45,7 +46,7 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -63,7 +64,11 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 	createdPasswordResetTokens := []*auth.PasswordResetToken{}
 
 	// create
-	createdPasswordResetTokens = append(createdPasswordResetTokens, createPasswordResetTokenForTest(t, ctx, examplePasswordResetToken, dbc))
+	created := createPasswordResetTokenForTest(t, ctx, examplePasswordResetToken, dbc)
+	createdPasswordResetTokens = append(createdPasswordResetTokens, created)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypePasswordResetTokens, RelevantID: created.ID},
+	})
 
 	// create more
 	for range exampleQuantity {
@@ -72,10 +77,14 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 		createdPasswordResetTokens = append(createdPasswordResetTokens, createPasswordResetTokenForTest(t, ctx, input, dbc))
 	}
 
-	// delete
+	// redeem (update)
 	for _, passwordResetToken := range createdPasswordResetTokens {
 		assert.NoError(t, dbc.RedeemPasswordResetToken(ctx, passwordResetToken.ID))
 	}
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypePasswordResetTokens, RelevantID: created.ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypePasswordResetTokens, RelevantID: created.ID},
+	})
 }
 
 func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {

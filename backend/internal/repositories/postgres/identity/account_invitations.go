@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -15,6 +16,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+)
+
+const (
+	resourceTypeAccountInvitations = "account_invitations"
 )
 
 var (
@@ -419,6 +424,16 @@ func (r *repository) CreateAccountInvitation(ctx context.Context, input *identit
 		ToUser:             database.NullStringFromStringPointer(input.ToUser),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account invitation creation query")
+	}
+
+	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &input.DestinationAccountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountInvitations,
+		RelevantID:       input.ID,
+		EventType:        audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	x := &identity.AccountInvitation{

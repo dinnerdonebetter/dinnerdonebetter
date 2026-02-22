@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error
 	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error)
+	GetPasswordResetTokenByID(ctx context.Context, db DBTX, id string) (*GetPasswordResetTokenByIDRow, error)
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 }
 

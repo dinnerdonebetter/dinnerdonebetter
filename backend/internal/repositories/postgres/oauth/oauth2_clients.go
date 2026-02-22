@@ -222,5 +222,14 @@ func (q *repository) ArchiveOAuth2Client(ctx context.Context, clientID string) e
 		return sql.ErrNoRows
 	}
 
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeOAuth2Clients,
+		RelevantID:   clientID,
+		EventType:    audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	return nil
 }

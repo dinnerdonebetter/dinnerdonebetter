@@ -282,7 +282,7 @@ func (q *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.O
 	return oauth2ClientToken, nil
 }
 
-// DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
+// DeleteOAuth2ClientTokenByAccess deletes an OAuth2 client token from the database by its access token.
 func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -300,8 +300,9 @@ func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 		return observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
-	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, q.writeDB, encryptedAccess); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by access")
+	_, err = q.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, q.writeDB, encryptedAccess)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by access")
 	}
 
 	logger.Info("oauth2 client token deleted by access")
@@ -309,7 +310,7 @@ func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 	return nil
 }
 
-// DeleteOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its access code.
+// DeleteOAuth2ClientTokenByCode deletes an OAuth2 client token from the database by its authorization code.
 func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -327,8 +328,9 @@ func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 		return observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
-	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, q.writeDB, encryptedCode); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by code")
+	_, err = q.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, q.writeDB, encryptedCode)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by code")
 	}
 
 	logger.Info("oauth2 client token deleted by code")
@@ -336,7 +338,7 @@ func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 	return nil
 }
 
-// DeleteOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its refresh token.
+// DeleteOAuth2ClientTokenByRefresh deletes an OAuth2 client token from the database by its refresh token.
 func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -354,8 +356,9 @@ func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refre
 		return observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
-	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByRefresh(ctx, q.writeDB, encryptedRefresh); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
+	_, err = q.generatedQuerier.DeleteOAuth2ClientTokenByRefresh(ctx, q.writeDB, encryptedRefresh)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "deleting oauth2 client token by refresh")
 	}
 
 	logger.Info("oauth2 client token deleted by refresh")

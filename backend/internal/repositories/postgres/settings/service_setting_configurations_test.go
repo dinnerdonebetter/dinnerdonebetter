@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
@@ -60,7 +61,7 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -84,9 +85,19 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	// create
 	createdServiceSettingConfigurations = append(createdServiceSettingConfigurations, createServiceSettingConfigurationForTest(t, ctx, exampleServiceSettingConfiguration, dbc))
 
+	// Assert audit log entry for create
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeServiceSettingConfigurations, RelevantID: createdServiceSettingConfigurations[0].ID},
+	})
+
 	// update
 	createdServiceSettingConfigurations[0].Value = "new value"
 	require.NoError(t, dbc.UpdateServiceSettingConfiguration(ctx, createdServiceSettingConfigurations[0]))
+
+	// Assert audit log entry for update
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeServiceSettingConfigurations, RelevantID: createdServiceSettingConfigurations[0].ID},
+	})
 
 	// delete
 	for _, serviceSettingConfiguration := range createdServiceSettingConfigurations {
@@ -230,7 +241,7 @@ func TestQuerier_Integration_ServiceSettingConfigurationsForUser_CursorBasedPagi
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -281,7 +292,7 @@ func TestQuerier_Integration_ServiceSettingConfigurationsForAccount_CursorBasedP
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

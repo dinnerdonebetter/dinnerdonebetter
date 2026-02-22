@@ -515,6 +515,15 @@ func (r *repository) CreateWebhookTriggerEvent(ctx context.Context, input *types
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook trigger event")
 	}
 
+	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeWebhookTriggerEvents,
+		RelevantID:   input.ID,
+		EventType:    audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	return &types.WebhookTriggerEvent{
 		ID:            input.ID,
 		Name:          input.Name,
@@ -614,6 +623,16 @@ func (r *repository) UpdateWebhookTriggerEvent(ctx context.Context, id string, i
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
 	}
+
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeWebhookTriggerEvents,
+		RelevantID:   id,
+		EventType:    audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	return nil
 }
 
@@ -633,5 +652,15 @@ func (r *repository) ArchiveWebhookTriggerEvent(ctx context.Context, id string) 
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
 	}
+
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeWebhookTriggerEvents,
+		RelevantID:   id,
+		EventType:    audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	return nil
 }

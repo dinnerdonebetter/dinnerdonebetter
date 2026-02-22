@@ -16,6 +16,7 @@ const (
 	AuditLogEventTypeCreated  AuditLogEventType = "created"
 	AuditLogEventTypeUpdated  AuditLogEventType = "updated"
 	AuditLogEventTypeArchived AuditLogEventType = "archived"
+	AuditLogEventTypeDeleted  AuditLogEventType = "deleted"
 )
 
 func (e *AuditLogEventType) Scan(src interface{}) error {
@@ -58,7 +59,8 @@ func (e AuditLogEventType) Valid() bool {
 	case AuditLogEventTypeOther,
 		AuditLogEventTypeCreated,
 		AuditLogEventTypeUpdated,
-		AuditLogEventTypeArchived:
+		AuditLogEventTypeArchived,
+		AuditLogEventTypeDeleted:
 		return true
 	}
 	return false
@@ -70,5 +72,6 @@ func AllAuditLogEventTypeValues() []AuditLogEventType {
 		AuditLogEventTypeCreated,
 		AuditLogEventTypeUpdated,
 		AuditLogEventTypeArchived,
+		AuditLogEventTypeDeleted,
 	}
 }

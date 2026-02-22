@@ -27,7 +27,7 @@ func TestIntegration_MealListItems(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 	defer func() {
 		assert.NoError(t, container.Terminate(ctx))
 	}()

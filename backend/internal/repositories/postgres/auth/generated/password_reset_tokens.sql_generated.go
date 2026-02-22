@@ -76,6 +76,45 @@ func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token stri
 	return &i, err
 }
 
+const getPasswordResetTokenByID = `-- name: GetPasswordResetTokenByID :one
+SELECT
+	password_reset_tokens.id,
+	password_reset_tokens.token,
+	password_reset_tokens.expires_at,
+	password_reset_tokens.redeemed_at,
+	password_reset_tokens.belongs_to_user,
+	password_reset_tokens.created_at,
+	password_reset_tokens.last_updated_at
+FROM password_reset_tokens
+WHERE password_reset_tokens.redeemed_at IS NULL
+	AND password_reset_tokens.id = $1
+`
+
+type GetPasswordResetTokenByIDRow struct {
+	ID            string
+	Token         string
+	ExpiresAt     time.Time
+	RedeemedAt    sql.NullTime
+	BelongsToUser string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+}
+
+func (q *Queries) GetPasswordResetTokenByID(ctx context.Context, db DBTX, id string) (*GetPasswordResetTokenByIDRow, error) {
+	row := db.QueryRowContext(ctx, getPasswordResetTokenByID, id)
+	var i GetPasswordResetTokenByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Token,
+		&i.ExpiresAt,
+		&i.RedeemedAt,
+		&i.BelongsToUser,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+	)
+	return &i, err
+}
+
 const redeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
 UPDATE password_reset_tokens SET
 	redeemed_at = NOW()

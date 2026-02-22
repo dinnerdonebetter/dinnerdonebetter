@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -14,6 +15,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+)
+
+const (
+	resourceTypeMealPlans = "meal_plans"
 )
 
 var (
@@ -221,7 +226,7 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}
 
 	// create the meal plan.
-	if err = q.generatedQuerier.CreateMealPlan(ctx, q.writeDB, &generated.CreateMealPlanParams{
+	if err = q.generatedQuerier.CreateMealPlan(ctx, tx, &generated.CreateMealPlanParams{
 		ID:               input.ID,
 		Notes:            input.Notes,
 		Status:           generated.MealPlanStatus(status),
@@ -231,6 +236,17 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &input.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeMealPlans,
+		RelevantID:       input.ID,
+		EventType:        audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	x := &types.MealPlan{
@@ -366,6 +382,16 @@ func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &updated.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeMealPlans,
+		RelevantID:       updated.ID,
+		EventType:        audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	logger.Info("meal plan updated")
 
 	return nil
@@ -395,11 +421,21 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 		ID:               mealPlanID,
 	})
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &accountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeMealPlans,
+		RelevantID:       mealPlanID,
+		EventType:        audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	return nil

@@ -214,13 +214,38 @@ func (q *repository) UpdateComment(ctx context.Context, id, belongsToUser, conte
 	logger := q.logger.WithValue(keys.CommentIDKey, id)
 	tracing.AttachToSpan(span, keys.CommentIDKey, id)
 
-	_, err := q.generatedQuerier.UpdateComment(ctx, q.writeDB, &generated.UpdateCommentParams{
+	tx, err := q.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	rowsAffected, err := q.generatedQuerier.UpdateComment(ctx, tx, &generated.UpdateCommentParams{
 		Content:       content,
 		ID:            id,
 		BelongsToUser: belongsToUser,
 	})
 	if err != nil {
+		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating comment")
+	}
+	if rowsAffected == 0 {
+		q.RollbackTransaction(ctx, tx)
+		return sql.ErrNoRows
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeComments,
+		RelevantID:    id,
+		EventType:     audit.AuditLogEventTypeUpdated,
+		BelongsToUser: belongsToUser,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil
@@ -237,9 +262,39 @@ func (q *repository) ArchiveComment(ctx context.Context, id string) error {
 	logger := q.logger.WithValue(keys.CommentIDKey, id)
 	tracing.AttachToSpan(span, keys.CommentIDKey, id)
 
-	_, err := q.generatedQuerier.ArchiveComment(ctx, q.writeDB, id)
+	comment, err := q.GetComment(ctx, id)
 	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching comment for archive")
+	}
+
+	tx, err := q.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	rowsAffected, err := q.generatedQuerier.ArchiveComment(ctx, tx, id)
+	if err != nil {
+		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving comment")
+	}
+	if rowsAffected == 0 {
+		q.RollbackTransaction(ctx, tx)
+		return sql.ErrNoRows
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeComments,
+		RelevantID:    id,
+		EventType:     audit.AuditLogEventTypeArchived,
+		BelongsToUser: comment.BelongsToUser,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil
@@ -257,12 +312,43 @@ func (q *repository) ArchiveCommentsForReference(ctx context.Context, targetType
 	tracing.AttachToSpan(span, "target_type", targetType)
 	tracing.AttachToSpan(span, "referenced_id", referencedID)
 
-	_, err := q.generatedQuerier.ArchiveCommentsForReference(ctx, q.writeDB, &generated.ArchiveCommentsForReferenceParams{
+	filter := filtering.DefaultQueryFilter()
+	maxSize := uint8(filtering.MaxQueryFilterLimit)
+	filter.MaxResponseSize = &maxSize
+	commentsResult, err := q.GetCommentsForReference(ctx, targetType, referencedID, filter)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching comments for archive")
+	}
+
+	tx, err := q.writeDB.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	_, err = q.generatedQuerier.ArchiveCommentsForReference(ctx, tx, &generated.ArchiveCommentsForReferenceParams{
 		TargetType:   targetTypeToGenerated(targetType),
 		ReferencedID: referencedID,
 	})
 	if err != nil {
+		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving comments for reference")
+	}
+
+	for _, c := range commentsResult.Data {
+		if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+			ID:            identifiers.New(),
+			ResourceType:  resourceTypeComments,
+			RelevantID:    c.ID,
+			EventType:     audit.AuditLogEventTypeArchived,
+			BelongsToUser: c.BelongsToUser,
+		}); err != nil {
+			q.RollbackTransaction(ctx, tx)
+			return observability.PrepareError(err, span, "creating audit log entry")
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil

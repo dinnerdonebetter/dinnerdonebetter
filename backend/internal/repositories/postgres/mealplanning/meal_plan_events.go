@@ -353,6 +353,15 @@ func (q *repository) UpdateMealPlanEvent(ctx context.Context, updated *types.Mea
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
 	}
 
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeMealPlanEvents,
+		RelevantID:   updated.ID,
+		EventType:    audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	logger.Info("meal plan event updated")
 
 	return nil
@@ -387,6 +396,15 @@ func (q *repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealP
 
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeMealPlanEvents,
+		RelevantID:   mealPlanEventID,
+		EventType:    audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	return nil
