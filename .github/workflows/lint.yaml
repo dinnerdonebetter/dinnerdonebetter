@@ -1,11 +1,11 @@
 ---
 on: 
-  gollum:
-  # pull_request:
-  #   paths:
-  #     - backend/**/*.go
-  #     - ios/**/*.swift
-  #     - ./**/*.md
+  # gollum:
+  pull_request:
+    paths:
+      - backend/**/*.go
+      - ios/**/*.swift
+      - ./**/*.md
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

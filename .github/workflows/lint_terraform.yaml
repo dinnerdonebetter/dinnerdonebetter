@@ -1,10 +1,10 @@
 ---
 on: 
-  gollum:
-  # pull_request:
-  #   paths:
-  #     - infra/deploy/environments/prod/terraform/*.tf
-  #     - backend/deploy/environments/prod/terraform/*.tf
+  # gollum:
+  pull_request:
+    paths:
+      - infra/deploy/environments/prod/terraform/*.tf
+      - backend/deploy/environments/prod/terraform/*.tf
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
