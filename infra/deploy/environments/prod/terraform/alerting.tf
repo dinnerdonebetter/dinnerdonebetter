@@ -44,9 +44,10 @@ resource "grafana_rule_group" "pod_health" {
   disable_provenance = true
 
   rule {
-    name      = "Pod not ready"
-    condition = "C"
-    for       = "5m"
+    name          = "Pod not ready"
+    condition     = "C"
+    for           = "5m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -94,9 +95,10 @@ resource "grafana_rule_group" "pod_health" {
   }
 
   rule {
-    name      = "Pod crash looping"
-    condition = "C"
-    for       = "0s"
+    name          = "Pod crash looping"
+    condition     = "C"
+    for           = "0s"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -144,9 +146,10 @@ resource "grafana_rule_group" "pod_health" {
   }
 
   rule {
-    name      = "Pod not running"
-    condition = "C"
-    for       = "3m"
+    name          = "Pod not running"
+    condition     = "C"
+    for           = "3m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -205,9 +208,10 @@ resource "grafana_rule_group" "async_handler" {
   disable_provenance = true
 
   rule {
-    name      = "Async handler unavailable"
-    condition = "C"
-    for       = "3m"
+    name          = "Async handler unavailable"
+    condition     = "C"
+    for           = "3m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -255,9 +259,10 @@ resource "grafana_rule_group" "async_handler" {
   }
 
   rule {
-    name      = "Async handler errors"
-    condition = "C"
-    for       = "0s"
+    name          = "Async handler errors"
+    condition     = "C"
+    for           = "0s"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -316,9 +321,10 @@ resource "grafana_rule_group" "cronjob_health" {
   disable_provenance = true
 
   rule {
-    name      = "CronJob not scheduled"
-    condition = "C"
-    for       = "0s"
+    name          = "CronJob not scheduled"
+    condition     = "C"
+    for           = "0s"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -366,9 +372,10 @@ resource "grafana_rule_group" "cronjob_health" {
   }
 
   rule {
-    name      = "Job failed"
-    condition = "C"
-    for       = "5m"
+    name          = "Job failed"
+    condition     = "C"
+    for           = "5m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -427,9 +434,10 @@ resource "grafana_rule_group" "pubsub_health" {
   disable_provenance = true
 
   rule {
-    name      = "Dead letter messages"
-    condition = "C"
-    for       = "5m"
+    name          = "Dead letter messages"
+    condition     = "C"
+    for           = "5m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -477,9 +485,10 @@ resource "grafana_rule_group" "pubsub_health" {
   }
 
   rule {
-    name      = "Subscription backlog growing"
-    condition = "C"
-    for       = "10m"
+    name          = "Subscription backlog growing"
+    condition     = "C"
+    for           = "10m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -527,9 +536,10 @@ resource "grafana_rule_group" "pubsub_health" {
   }
 
   rule {
-    name      = "Old unacked messages"
-    condition = "C"
-    for       = "5m"
+    name          = "Old unacked messages"
+    condition     = "C"
+    for           = "5m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -588,9 +598,10 @@ resource "grafana_rule_group" "cloudsql_health" {
   disable_provenance = true
 
   rule {
-    name      = "Disk utilization high"
-    condition = "C"
-    for       = "10m"
+    name          = "Disk utilization high"
+    condition     = "C"
+    for           = "10m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -638,9 +649,10 @@ resource "grafana_rule_group" "cloudsql_health" {
   }
 
   rule {
-    name      = "CPU utilization high"
-    condition = "C"
-    for       = "15m"
+    name          = "CPU utilization high"
+    condition     = "C"
+    for           = "15m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -688,9 +700,10 @@ resource "grafana_rule_group" "cloudsql_health" {
   }
 
   rule {
-    name      = "Too many connections"
-    condition = "C"
-    for       = "5m"
+    name          = "Too many connections"
+    condition     = "C"
+    for           = "5m"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -749,9 +762,10 @@ resource "grafana_rule_group" "error_rates" {
   disable_provenance = true
 
   rule {
-    name      = "High error rate"
-    condition = "C"
-    for       = "0s"
+    name          = "High error rate"
+    condition     = "C"
+    for           = "0s"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
@@ -799,9 +813,10 @@ resource "grafana_rule_group" "error_rates" {
   }
 
   rule {
-    name      = "Database errors"
-    condition = "C"
-    for       = "0s"
+    name          = "Database errors"
+    condition     = "C"
+    for           = "0s"
+    no_data_state = "OK"
 
     data {
       ref_id         = "A"
