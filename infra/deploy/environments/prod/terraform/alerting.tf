@@ -19,7 +19,7 @@ resource "grafana_contact_point" "default" {
   name = "DinnerDoneBetter Default"
 
   email {
-    addresses               = []
+    addresses               = ["verygoodsoftwarenotvirus@protonmail.com"]
     disable_resolve_message = true
   }
 }
