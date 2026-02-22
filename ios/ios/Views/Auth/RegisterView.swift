@@ -84,6 +84,7 @@ struct RegisterView: View {
           DSTextField(
             "Username",
             text: $username,
+            type: .username,
             isDisabled: isLoading
           )
           .accessibilityIdentifier("registrationUsernameInput")

@@ -43,6 +43,7 @@ struct LoginView: View {
         DSTextField(
           "Username",
           text: $username,
+          type: .username,
           isDisabled: isLoading
         )
         .accessibilityIdentifier("usernameTextField")
@@ -163,7 +164,8 @@ struct LoginView: View {
       } else {
         if result.requiresTOTP {
           requiresTOTP = true
-          errorMessage = result.error ?? "Please enter your 2FA code."
+          // Don't show error text when 2FA field first appears—the field itself is the prompt
+          errorMessage = ""
         } else {
           errorMessage = result.error ?? "Unknown error occurred"
         }
@@ -190,7 +192,9 @@ struct EnvironmentPickerSheet: View {
             HStack(spacing: DSTheme.Spacing.md) {
               Image(systemName: env.iconName)
                 .font(.system(size: 18))
-                .foregroundColor(env == selectedEnvironment ? DSTheme.Colors.primary : DSTheme.Colors.textSecondary)
+                .foregroundColor(
+                  env == selectedEnvironment ? DSTheme.Colors.primary : DSTheme.Colors.textSecondary
+                )
                 .frame(width: 28)
 
               VStack(alignment: .leading, spacing: DSTheme.Spacing.xxs) {
