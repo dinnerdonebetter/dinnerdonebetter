@@ -55,9 +55,14 @@ func TestUploadedMedia_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(t)
-		createUploadedMediaForTest(t, testClient)
+		user, testClient := createUserAndClientForTest(t)
+		created := createUploadedMediaForTest(t, testClient)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "uploaded_media", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -266,7 +271,7 @@ func TestUploadedMedia_Updating(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 		createdUploadedMedia := createUploadedMediaForTest(t, testClient)
 
 		newStoragePath := "updated/path/to/file.jpg"
@@ -291,6 +296,11 @@ func TestUploadedMedia_Updating(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, newStoragePath, retrieved.Result.StoragePath)
 		assert.Equal(t, newMimeType, retrieved.Result.MimeType)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "uploaded_media", RelevantID: createdUploadedMedia.ID},
+			{EventType: "updated", ResourceType: "uploaded_media", RelevantID: createdUploadedMedia.ID},
+		})
 	})
 
 	T.Run("nonexistent ID", func(t *testing.T) {
@@ -353,7 +363,7 @@ func TestUploadedMedia_Archiving(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 		createdUploadedMedia := createUploadedMediaForTest(t, testClient)
 
 		archived, err := testClient.ArchiveUploadedMedia(ctx, &uploadedmediasvc.ArchiveUploadedMediaRequest{
@@ -366,6 +376,10 @@ func TestUploadedMedia_Archiving(T *testing.T) {
 		retrieved, err := testClient.GetUploadedMedia(ctx, &uploadedmediasvc.GetUploadedMediaRequest{UploadedMediaId: createdUploadedMedia.ID})
 		assert.Error(t, err)
 		assert.Nil(t, retrieved)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "uploaded_media", RelevantID: createdUploadedMedia.ID},
+		})
 	})
 
 	T.Run("nonexistent ID", func(t *testing.T) {

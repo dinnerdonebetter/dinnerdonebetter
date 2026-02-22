@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications/fakes"
@@ -49,7 +50,7 @@ func TestQuerier_Integration_UserNotifications(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -68,12 +69,21 @@ func TestQuerier_Integration_UserNotifications(t *testing.T) {
 	// create
 	createdUserNotifications = append(createdUserNotifications, createUserNotificationForTest(t, ctx, user.ID, exampleUserNotification, dbc))
 
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeUserNotifications, RelevantID: createdUserNotifications[0].ID},
+	})
+
 	// update
 	updatedUserNotification := fakes.BuildFakeUserNotification()
 	updatedUserNotification.ID = createdUserNotifications[0].ID
 	updatedUserNotification.BelongsToUser = user.ID
 	assert.NoError(t, dbc.UpdateUserNotification(ctx, updatedUserNotification))
 	createdUserNotifications[0] = updatedUserNotification
+
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeUserNotifications, RelevantID: createdUserNotifications[0].ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeUserNotifications, RelevantID: createdUserNotifications[0].ID},
+	})
 
 	// create more
 	for i := range exampleQuantity {

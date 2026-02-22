@@ -457,6 +457,11 @@ func (r *repository) ArchiveIssueReport(ctx context.Context, issueReportID strin
 
 	logger := r.logger.WithValue(keys.IssueReportIDKey, issueReportID)
 
+	issueReport, err := r.GetIssueReport(ctx, issueReportID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching issue report for archive")
+	}
+
 	tx, err := r.writeDB.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
@@ -469,15 +474,16 @@ func (r *repository) ArchiveIssueReport(ctx context.Context, issueReportID strin
 	}
 
 	if rowsAffected == 0 {
+		r.RollbackTransaction(ctx, tx)
 		return sql.ErrNoRows
 	}
 
-	// Note: We don't have account ID here, so we'll create audit log without it
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
-		ID:           identifiers.New(),
-		ResourceType: resourceTypeIssueReports,
-		RelevantID:   issueReportID,
-		EventType:    audit.AuditLogEventTypeArchived,
+		BelongsToAccount: &issueReport.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeIssueReports,
+		RelevantID:       issueReportID,
+		EventType:        audit.AuditLogEventTypeArchived,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")

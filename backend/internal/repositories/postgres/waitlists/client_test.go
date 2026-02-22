@@ -3,18 +3,20 @@ package waitlists
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*Repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (c *Repository, auditLogEntryRepo audit.Repository, container *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -25,15 +27,16 @@ func buildDatabaseClientForTest(t *testing.T) (*Repository, *pgcontainers.Postgr
 	require.NotNil(t, pgc)
 	require.NoError(t, err)
 
-	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
+	auditLogEntryRepo = auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
+	c = ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 
-	return c, container
+	return c, auditLogEntryRepo, container
 }
 
 func buildInertClientForTest(t *testing.T) *Repository {
 	t.Helper()
 
-	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &database.MockClient{})
+	c := ProvideWaitlistsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
 
 	return c
 }

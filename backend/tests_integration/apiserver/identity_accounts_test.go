@@ -36,6 +36,10 @@ func TestAccounts_Creating(T *testing.T) {
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		assert.NoError(t, err)
 		assert.NotNil(t, createdAccount)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, createdAccount.Created.Id, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "accounts", RelevantID: createdAccount.Created.Id},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -197,6 +201,11 @@ func TestAccounts_Updating(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, updatedClient)
 		assert.Equal(t, converted.Name, updatedClient.Result.Name)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, converted.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "accounts", RelevantID: converted.ID},
+			{EventType: "updated", ResourceType: "accounts", RelevantID: converted.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -264,6 +273,11 @@ func TestAccounts_Archiving(T *testing.T) {
 
 		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountId: createdAccount.Created.Id})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, createdAccount.Created.Id, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "accounts", RelevantID: createdAccount.Created.Id},
+			{EventType: "archived", ResourceType: "accounts", RelevantID: createdAccount.Created.Id},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -333,6 +347,10 @@ func TestAccounts_Inviting(T *testing.T) {
 			},
 		})
 		require.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, accountID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_invitations", RelevantID: invitation.Created.Id},
+		})
 
 		// verify that we can retrieve the invitation we just created
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
@@ -411,6 +429,10 @@ func TestAccounts_Inviting(T *testing.T) {
 			},
 		})
 		require.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, accountID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_invitations", RelevantID: invitation.Created.Id},
+		})
 
 		// verify that we can retrieve the invitation we just created
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
@@ -506,6 +528,10 @@ func TestAccounts_Inviting(T *testing.T) {
 		})
 		require.NoError(t, err)
 
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_invitations", RelevantID: invitation.Created.Id},
+		})
+
 		// verify that we can retrieve the invitation we just created
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
 		require.NoError(t, err)
@@ -580,6 +606,10 @@ func TestAccounts_Inviting(T *testing.T) {
 			},
 		})
 		require.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_invitations", RelevantID: invitation.Created.Id},
+		})
 
 		// verify that we can retrieve the invitation we just created
 		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
@@ -665,6 +695,10 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookId: createdWebhook.ID})
 		require.NoError(t, err)
 		require.NotNil(t, webhook)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, accountID, 15, []*ExpectedAuditEntry{
+			{EventType: "updated", ResourceType: "account_user_memberships"},
+		})
 	})
 }
 
@@ -753,5 +787,11 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 		assert.NotEqual(t, account, accountID)
 
 		require.True(t, found)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, accountID, 20, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_invitations", RelevantID: inviteRes.Created.Id},
+			{EventType: "updated", ResourceType: "account_user_memberships"},
+			{EventType: "archived", ResourceType: "account_user_memberships"},
+		})
 	})
 }

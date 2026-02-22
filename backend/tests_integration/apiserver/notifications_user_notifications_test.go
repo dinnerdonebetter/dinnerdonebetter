@@ -93,6 +93,11 @@ func TestUserNotifications_Updating(T *testing.T) {
 		require.NotNil(t, updated.LastUpdatedAt)
 
 		assertRoughEquality(t, created, updated, defaultIgnoredFields()...)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "user_notifications", RelevantID: created.ID},
+			{EventType: "updated", ResourceType: "user_notifications", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -142,6 +147,10 @@ func TestUserNotifications_Listing(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 		assert.True(t, len(retrieved.Results) >= len(createdUserNotifications))
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, u.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "user_notifications"},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

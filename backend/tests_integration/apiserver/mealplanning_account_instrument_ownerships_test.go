@@ -45,9 +45,14 @@ func TestAccountInstrumentOwnerships_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
 		_, testClient := createUserAndClientForTest(t)
-		createAccountInstrumentOwnershipForTest(t, testClient)
+		created := createAccountInstrumentOwnershipForTest(t, testClient)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_instrument_ownerships", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -141,6 +146,11 @@ func TestAccountInstrumentOwnerships_Archiving(T *testing.T) {
 		x, err := testClient.GetAccountInstrumentOwnership(ctx, &settingssvc.GetAccountInstrumentOwnershipRequest{AccountInstrumentOwnershipId: created.ID})
 		assert.Nil(t, x)
 		assert.Error(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "account_instrument_ownerships", RelevantID: created.ID},
+			{EventType: "archived", ResourceType: "account_instrument_ownerships", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

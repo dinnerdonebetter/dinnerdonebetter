@@ -58,9 +58,14 @@ func TestIssueReports_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
 		_, testClient := createUserAndClientForTest(t)
-		createIssueReportForTest(t, testClient)
+		created := createIssueReportForTest(t, testClient)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "issue_reports", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -293,6 +298,11 @@ func TestIssueReports_Updating(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, updated)
 		assert.Equal(t, newDetails, updated.Updated.Details)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "issue_reports", RelevantID: createdIssueReport.ID},
+			{EventType: "updated", ResourceType: "issue_reports", RelevantID: createdIssueReport.ID},
+		})
 	})
 
 	T.Run("nonexistent ID", func(t *testing.T) {
@@ -333,6 +343,11 @@ func TestIssueReports_Archiving(T *testing.T) {
 
 		_, err := testClient.ArchiveIssueReport(ctx, &issuereportssvc.ArchiveIssueReportRequest{IssueReportId: createdIssueReport.ID})
 		assert.NoError(t, err)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "issue_reports", RelevantID: createdIssueReport.ID},
+			{EventType: "archived", ResourceType: "issue_reports", RelevantID: createdIssueReport.ID},
+		})
 	})
 
 	T.Run("nonexistentID", func(t *testing.T) {

@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
@@ -20,7 +21,7 @@ const (
 	exampleQuantity = 3
 )
 
-func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*repository, audit.Repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -38,7 +39,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 	c := ProvideMealPlanningRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identitiesRepo, pgc)
 	require.NoError(t, err)
 
-	return c.(*repository), container
+	return c.(*repository), auditLogEntryRepo, container
 }
 
 func buildInertClientForTest(t *testing.T) *repository {

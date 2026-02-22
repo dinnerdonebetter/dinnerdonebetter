@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -61,7 +62,7 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -100,6 +101,12 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 	toBeAcceptedInput.ToUser = &toUserC.ID
 	toBeAcceptedInput.ToEmail = toUserC.EmailAddress
 	toBeAccepted := createAccountInvitationForTest(t, ctx, toBeAcceptedInput, dbc)
+
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccountInvitations, RelevantID: toBeCancelled.ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccountInvitations, RelevantID: toBeRejected.ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccountInvitations, RelevantID: toBeAccepted.ID},
+	})
 
 	outboundInvites, err := dbc.GetPendingAccountInvitationsFromUser(ctx, fromUser.ID, nil)
 	assert.NoError(t, err)

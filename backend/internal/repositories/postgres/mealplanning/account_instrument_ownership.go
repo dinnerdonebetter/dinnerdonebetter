@@ -4,13 +4,19 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+)
+
+const (
+	resourceTypeAccountInstrumentOwnerships = "account_instrument_ownerships"
 )
 
 var (
@@ -197,6 +203,16 @@ func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account instrument ownership creation query")
 	}
 
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &input.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountInstrumentOwnerships,
+		RelevantID:       input.ID,
+		EventType:        audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	x := &types.AccountInstrumentOwnership{
 		ID:               input.ID,
 		Notes:            input.Notes,
@@ -230,6 +246,16 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 		Quantity:          int32(updated.Quantity),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating account instrument ownership")
+	}
+
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &updated.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountInstrumentOwnerships,
+		RelevantID:       updated.ID,
+		EventType:        audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	logger.Info("account instrument ownership updated")
@@ -266,6 +292,16 @@ func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, acco
 
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
+	}
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, q.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		BelongsToAccount: &accountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountInstrumentOwnerships,
+		RelevantID:       accountInstrumentOwnershipID,
+		EventType:        audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	return nil

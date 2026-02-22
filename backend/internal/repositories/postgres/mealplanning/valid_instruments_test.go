@@ -45,7 +45,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -227,7 +227,7 @@ func TestQuerier_Integration_ValidInstruments_CursorBasedPagination(t *testing.T
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

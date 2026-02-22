@@ -79,6 +79,26 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetPasswordResetTokenByID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s < %s.%s
+	AND %s.%s = sqlc.arg(%s);`,
+					strings.Join(applyToEach(passwordResetTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("password_reset_tokens.%s", s)
+					}), ",\n\t"),
+					passwordResetTokensTableName,
+					passwordResetTokensTableName, redeemedAtColumn,
+					currentTimeExpression, passwordResetTokensTableName, passwordResetTokenExpiresAtColumn,
+					passwordResetTokensTableName, idColumn, idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "RedeemPasswordResetToken",
 					Type: ExecType,
 				},

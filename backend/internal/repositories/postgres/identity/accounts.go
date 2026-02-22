@@ -487,7 +487,7 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, ownerID stri
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       accountID,
-		EventType:        audit.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeArchived,
 		BelongsToUser:    ownerID,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)

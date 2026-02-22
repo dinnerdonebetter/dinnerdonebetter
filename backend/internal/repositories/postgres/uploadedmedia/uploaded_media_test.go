@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 	"github.com/dinnerdonebetter/backend/internal/domain/uploadedmedia/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -51,7 +52,7 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -79,6 +80,11 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 		createdUploadedMedia = append(createdUploadedMedia, createUploadedMediaForTest(t, ctx, input, dbc))
 	}
 
+	// Assert audit log entries for creates (uploaded media is user-scoped)
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeUploadedMedia, RelevantID: createdUploadedMedia[0].ID},
+	})
+
 	// fetch as list for user
 	uploadedMediaList, err := dbc.GetUploadedMediaForUser(ctx, user.ID, nil)
 	assert.NoError(t, err)
@@ -97,6 +103,11 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 	createdUploadedMedia[0].StoragePath = "/new/storage/path.png"
 	assert.NoError(t, dbc.UpdateUploadedMedia(ctx, createdUploadedMedia[0]))
 
+	// Assert audit log entry for update
+	pgtesting.AssertAuditLogContainsForUser(t, ctx, auditRepo, user.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeUploadedMedia, RelevantID: createdUploadedMedia[0].ID},
+	})
+
 	// fetch again to verify update
 	updated, err := dbc.GetUploadedMedia(ctx, createdUploadedMedia[0].ID)
 	assert.NoError(t, err)
@@ -105,7 +116,9 @@ func TestQuerier_Integration_UploadedMedia(t *testing.T) {
 	// delete
 	for _, uploadedMedia := range createdUploadedMedia {
 		assert.NoError(t, dbc.ArchiveUploadedMedia(ctx, uploadedMedia.ID))
+	}
 
+	for _, uploadedMedia := range createdUploadedMedia {
 		var y *types.UploadedMedia
 		y, err = dbc.GetUploadedMedia(ctx, uploadedMedia.ID)
 		assert.Nil(t, y)
@@ -178,7 +191,7 @@ func TestQuerier_GetUploadedMediaForUser(T *testing.T) {
 		}
 
 		ctx := t.Context()
-		dbc, container := buildDatabaseClientForTest(t)
+		dbc, _, container := buildDatabaseClientForTest(t)
 
 		databaseURI, err := container.ConnectionString(ctx)
 		require.NoError(t, err)
@@ -255,7 +268,7 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

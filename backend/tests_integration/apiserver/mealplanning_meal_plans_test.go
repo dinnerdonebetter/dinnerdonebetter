@@ -88,6 +88,18 @@ func TestMealPlans_Listing(T *testing.T) {
 			len(actual.Results),
 		)
 
+		// assert audit log entries for created meal plans (pre-cleanup)
+		accountID := getAccountIDForTest(t, userClient)
+		expectedAudit := make([]*ExpectedAuditEntry, 0, len(expected))
+		for _, mp := range expected {
+			expectedAudit = append(expectedAudit, &ExpectedAuditEntry{
+				EventType:    "created",
+				ResourceType: "meal_plans",
+				RelevantID:   mp.ID,
+			})
+		}
+		AssertAuditLogContainsFuzzy(t, ctx, userClient, accountID, 15, expectedAudit)
+
 		for _, createdMealPlan := range expected {
 			_, err = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 			assert.NoError(t, err)

@@ -57,7 +57,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -319,7 +319,7 @@ func TestQuerier_Integration_RecipeStepProducts_CursorBasedPagination(t *testing
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

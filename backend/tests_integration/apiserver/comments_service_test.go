@@ -39,7 +39,7 @@ func TestCommentsService_AddCommentToRecipe(T *testing.T) {
 		ctx := t.Context()
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 
 		comment := commentsServiceAddCommentToRecipe(t, createdRecipe.ID, testClient, "via CommentsService")
 
@@ -47,6 +47,10 @@ func TestCommentsService_AddCommentToRecipe(T *testing.T) {
 		assert.Equal(t, comments.CommentTargetTypeRecipes, comment.TargetType)
 		assert.Equal(t, createdRecipe.ID, comment.ReferencedId)
 		assert.Equal(t, "via CommentsService", comment.Content)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: comment.Id},
+		})
 
 		listRes, err := testClient.CommentsService().GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeRecipes,
@@ -83,7 +87,7 @@ func TestCommentsService_AddCommentToMeal(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
+		user, userClient := createUserAndClientForTest(t)
 		createdMeal := createMealForTest(t, userClient, nil)
 
 		res, err := userClient.CommentsService().AddCommentToMeal(ctx, &commentsgrpc.AddCommentToMealRequest{
@@ -94,6 +98,10 @@ func TestCommentsService_AddCommentToMeal(T *testing.T) {
 		require.NotNil(t, res.Comment)
 		assert.Equal(t, comments.CommentTargetTypeMeals, res.Comment.TargetType)
 		assert.Equal(t, createdMeal.ID, res.Comment.ReferencedId)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, userClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: res.Comment.Id},
+		})
 
 		listRes, err := userClient.CommentsService().GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeMeals,
@@ -113,7 +121,7 @@ func TestCommentsService_AddCommentToMealPlan(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
+		user, userClient := createUserAndClientForTest(t)
 		createdMealPlan := createMealPlanForTest(t, userClient, nil)
 
 		res, err := userClient.CommentsService().AddCommentToMealPlan(ctx, &commentsgrpc.AddCommentToMealPlanRequest{
@@ -124,6 +132,10 @@ func TestCommentsService_AddCommentToMealPlan(T *testing.T) {
 		require.NotNil(t, res.Comment)
 		assert.Equal(t, comments.CommentTargetTypeMealPlans, res.Comment.TargetType)
 		assert.Equal(t, createdMealPlan.ID, res.Comment.ReferencedId)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, userClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: res.Comment.Id},
+		})
 
 		listRes, err := userClient.CommentsService().GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeMealPlans,
@@ -144,7 +156,7 @@ func TestCommentsService_CreateComment(T *testing.T) {
 		ctx := t.Context()
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 
 		res, err := testClient.CommentsService().CreateComment(ctx, &commentsgrpc.CreateCommentRequest{
 			Input: &commentsgrpc.CommentCreationRequestInput{
@@ -159,6 +171,10 @@ func TestCommentsService_CreateComment(T *testing.T) {
 		assert.Equal(t, createdRecipe.ID, res.Comment.ReferencedId)
 		assert.Equal(t, "created via CreateComment", res.Comment.Content)
 
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: res.Comment.Id},
+		})
+
 		_, _ = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
 	})
 
@@ -166,7 +182,7 @@ func TestCommentsService_CreateComment(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
+		user, userClient := createUserAndClientForTest(t)
 		createdMealPlan := createMealPlanForTest(t, userClient, nil)
 
 		res, err := userClient.CommentsService().CreateComment(ctx, &commentsgrpc.CreateCommentRequest{
@@ -180,6 +196,10 @@ func TestCommentsService_CreateComment(T *testing.T) {
 		require.NotNil(t, res.Comment)
 		assert.Equal(t, comments.CommentTargetTypeMealPlans, res.Comment.TargetType)
 		assert.Equal(t, createdMealPlan.ID, res.Comment.ReferencedId)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, userClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: res.Comment.Id},
+		})
 
 		_, _ = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 	})
@@ -255,7 +275,7 @@ func TestCommentsService_UpdateComment(T *testing.T) {
 		ctx := t.Context()
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 		createdComment := commentsServiceAddCommentToRecipe(t, createdRecipe.ID, testClient, "original")
 
 		_, err := testClient.CommentsService().UpdateComment(ctx, &commentsgrpc.UpdateCommentRequest{
@@ -263,6 +283,11 @@ func TestCommentsService_UpdateComment(T *testing.T) {
 			Input:     &commentsgrpc.CommentUpdateRequestInput{Content: "updated via CommentsService"},
 		})
 		require.NoError(t, err)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: createdComment.Id},
+			{EventType: "updated", ResourceType: "comments", RelevantID: createdComment.Id},
+		})
 
 		listRes, err := testClient.CommentsService().GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeRecipes,
@@ -288,13 +313,18 @@ func TestCommentsService_ArchiveComment(T *testing.T) {
 		ctx := t.Context()
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 		createdComment := commentsServiceAddCommentToRecipe(t, createdRecipe.ID, testClient, "")
 
 		_, err := testClient.CommentsService().ArchiveComment(ctx, &commentsgrpc.ArchiveCommentRequest{
 			CommentId: createdComment.Id,
 		})
 		require.NoError(t, err)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: createdComment.Id},
+			{EventType: "archived", ResourceType: "comments", RelevantID: createdComment.Id},
+		})
 
 		listRes, err := testClient.CommentsService().GetCommentsForReference(ctx, &commentsgrpc.GetCommentsForReferenceRequest{
 			TargetType:   comments.CommentTargetTypeRecipes,

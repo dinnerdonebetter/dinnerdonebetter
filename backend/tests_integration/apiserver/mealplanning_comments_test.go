@@ -39,7 +39,7 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 		ctx := t.Context()
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
-		_, testClient := createUserAndClientForTest(t)
+		user, testClient := createUserAndClientForTest(t)
 		createdComment := createCommentForRecipeForTest(t, createdRecipe.ID, testClient, "initial content")
 
 		assert.NotEmpty(t, createdComment.Id)
@@ -102,6 +102,12 @@ func TestComments_RecipeCompleteLifecycle(T *testing.T) {
 		for _, c := range listRes3.Data {
 			assert.NotEqual(t, createdComment.Id, c.Id, "archived comment should not appear")
 		}
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, testClient, user.ID, 15, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments", RelevantID: createdComment.Id},
+			{EventType: "updated", ResourceType: "comments", RelevantID: createdComment.Id},
+			{EventType: "archived", ResourceType: "comments", RelevantID: createdComment.Id},
+		})
 
 		// Cleanup
 		_, _ = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeId: createdRecipe.ID})
@@ -188,7 +194,7 @@ func TestComments_MealCompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
+		user, userClient := createUserAndClientForTest(t)
 		createdMeal := createMealForTest(t, userClient, nil)
 
 		res, err := userClient.AddCommentToMeal(ctx, &commentsgrpc.AddCommentToMealRequest{
@@ -208,6 +214,10 @@ func TestComments_MealCompleteLifecycle(T *testing.T) {
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(listRes.Data), 1)
 
+		AssertAuditLogContainsFuzzyForUser(t, ctx, userClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments"},
+		})
+
 		_, _ = userClient.ArchiveMeal(ctx, &mealplanninggrpc.ArchiveMealRequest{MealId: createdMeal.ID})
 	})
 }
@@ -219,7 +229,7 @@ func TestComments_MealPlanCompleteLifecycle(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, userClient := createUserAndClientForTest(t)
+		user, userClient := createUserAndClientForTest(t)
 		createdMealPlan := createMealPlanForTest(t, userClient, nil)
 
 		res, err := userClient.AddCommentToMealPlan(ctx, &commentsgrpc.AddCommentToMealPlanRequest{
@@ -238,6 +248,10 @@ func TestComments_MealPlanCompleteLifecycle(T *testing.T) {
 		})
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(listRes.Data), 1)
+
+		AssertAuditLogContainsFuzzyForUser(t, ctx, userClient, user.ID, 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "comments"},
+		})
 
 		_, _ = userClient.ArchiveMealPlan(ctx, &mealplanninggrpc.ArchiveMealPlanRequest{MealPlanId: createdMealPlan.ID})
 	})

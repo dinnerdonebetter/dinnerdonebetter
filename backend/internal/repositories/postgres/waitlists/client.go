@@ -3,6 +3,7 @@ package waitlists
 import (
 	"database/sql"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -17,27 +18,30 @@ const (
 // Repository is the waitlists repository implementation.
 type Repository struct {
 	database.Client
-	tracer           tracing.Tracer
-	logger           logging.Logger
-	generatedQuerier generated.Querier
-	readDB           *sql.DB
-	writeDB          *sql.DB
+	tracer            tracing.Tracer
+	logger            logging.Logger
+	generatedQuerier  generated.Querier
+	auditLogEntryRepo audit.Repository
+	readDB            *sql.DB
+	writeDB           *sql.DB
 }
 
 // ProvideWaitlistsRepository provides a new repository.
-// Returns concrete *repository so the manager can wrap it; the manager is the sole provider of waitlists.Repository for services.
+// Returns concrete *Repository so the manager can wrap it; the manager is the sole provider of waitlists.Repository for services.
 func ProvideWaitlistsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
+	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) *Repository {
 	c := &Repository{
-		Client:           client,
-		readDB:           client.ReadDB(),
-		writeDB:          client.WriteDB(),
-		tracer:           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier: generated.New(),
-		logger:           logging.EnsureLogger(logger).WithName(o11yName),
+		Client:            client,
+		readDB:            client.ReadDB(),
+		writeDB:           client.WriteDB(),
+		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		generatedQuerier:  generated.New(),
+		auditLogEntryRepo: auditLogEntryRepo,
+		logger:            logging.EnsureLogger(logger).WithName(o11yName),
 	}
 
 	return c

@@ -45,9 +45,14 @@ func TestServiceSettingConfigurations_Creating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
 
 		_, testClient := createUserAndClientForTest(t)
-		createServiceSettingConfigurationForTest(t, testClient)
+		created := createServiceSettingConfigurationForTest(t, testClient)
+
+		AssertAuditLogContainsFuzzy(t, ctx, testClient, getAccountIDForTest(t, testClient), 10, []*ExpectedAuditEntry{
+			{EventType: "created", ResourceType: "service_setting_configurations", RelevantID: created.ID},
+		})
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
@@ -130,7 +131,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -154,6 +155,10 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 
 	// create
 	createdMealPlans = append(createdMealPlans, createMealPlanForTest(t, ctx, exampleMealPlan, dbc))
+
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, accountID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeMealPlans, RelevantID: createdMealPlans[0].ID},
+	})
 
 	// create more
 	for range exampleQuantity {
@@ -183,6 +188,10 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrAlreadyFinalized)
 		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, accountID))
+
+		pgtesting.AssertAuditLogContains(t, ctx, auditRepo, accountID, []*audit.AuditLogEntry{
+			{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeMealPlans, RelevantID: mealPlan.ID},
+		})
 
 		var exists bool
 		exists, err = dbc.MealPlanExists(ctx, mealPlan.ID, accountID)
@@ -373,7 +382,7 @@ func TestQuerier_Integration_MealPlans_CursorBasedPagination(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -418,7 +427,7 @@ func TestQuerier_Integration_MealPlans_WithSelections(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, _, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)

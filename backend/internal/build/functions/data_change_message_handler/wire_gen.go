@@ -82,7 +82,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	uploadedmediaRepository := uploadedmedia.ProvideUploadedMediaRepository(logger, tracerProvider, repository, client)
-	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, client)
+	waitlistsRepository := waitlists.ProvideWaitlistsRepository(logger, tracerProvider, repository, client)
 	waitlistsDataManager, err := manager3.NewWaitlistDataManager(ctx, tracerProvider, logger, waitlistsRepository, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err

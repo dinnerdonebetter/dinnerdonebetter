@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -55,7 +56,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -77,11 +78,26 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	// create
 	createdAccounts = append(createdAccounts, createAccountForTest(t, ctx, exampleAccount, dbc))
 
+	accountWithMembers, err := dbc.GetAccount(ctx, createdAccounts[0].ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, accountWithMembers.Members, "account should have owner as member")
+
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, createdAccounts[0].ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccounts, RelevantID: createdAccounts[0].ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccountUserMemberships, RelevantID: accountWithMembers.Members[0].ID},
+	})
+
 	// update
 	updatedAccount := fakes.BuildFakeAccount()
 	updatedAccount.ID = createdAccounts[0].ID
 	updatedAccount.BelongsToUser = createdAccounts[0].BelongsToUser
 	assert.NoError(t, dbc.UpdateAccount(ctx, updatedAccount))
+
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, createdAccounts[0].ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccounts, RelevantID: createdAccounts[0].ID},
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeAccountUserMemberships, RelevantID: accountWithMembers.Members[0].ID},
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeAccounts, RelevantID: createdAccounts[0].ID},
+	})
 
 	// create more
 	for i := range exampleQuantity {
@@ -100,6 +116,10 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	// delete
 	for _, account := range createdAccounts {
 		assert.NoError(t, dbc.ArchiveAccount(ctx, account.ID, exampleUser.ID))
+
+		pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+			{EventType: audit.AuditLogEventTypeArchived, ResourceType: resourceTypeAccounts, RelevantID: account.ID},
+		})
 
 		var y *identity.Account
 		y, err = dbc.GetAccount(ctx, account.ID)

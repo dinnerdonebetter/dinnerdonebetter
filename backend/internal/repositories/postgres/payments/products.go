@@ -3,13 +3,19 @@ package payments
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/payments"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/payments/generated"
+)
+
+const (
+	resourceTypeProducts = "products"
 )
 
 func (r *repository) CreateProduct(ctx context.Context, input *payments.ProductDatabaseCreationInput) (*payments.Product, error) {
@@ -33,6 +39,15 @@ func (r *repository) CreateProduct(ctx context.Context, input *payments.ProductD
 
 	if err := r.generatedQuerier.CreateProduct(ctx, r.writeDB, arg); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating product")
+	}
+
+	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeProducts,
+		RelevantID:   input.ID,
+		EventType:    audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	return r.GetProduct(ctx, input.ID)
@@ -106,7 +121,20 @@ func (r *repository) UpdateProduct(ctx context.Context, product *payments.Produc
 	}
 
 	_, err := r.generatedQuerier.UpdateProduct(ctx, r.writeDB, arg)
-	return observability.PrepareAndLogError(err, logger, span, "updating product")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating product")
+	}
+
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeProducts,
+		RelevantID:   product.ID,
+		EventType:    audit.AuditLogEventTypeUpdated,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	return nil
 }
 
 func (r *repository) ArchiveProduct(ctx context.Context, id string) error {
@@ -121,7 +149,20 @@ func (r *repository) ArchiveProduct(ctx context.Context, id string) error {
 	tracing.AttachToSpan(span, keys.ProductIDKey, id)
 
 	_, err := r.generatedQuerier.ArchiveProduct(ctx, r.writeDB, id)
-	return observability.PrepareAndLogError(err, logger, span, "archiving product")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving product")
+	}
+
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, r.writeDB, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeProducts,
+		RelevantID:   id,
+		EventType:    audit.AuditLogEventTypeArchived,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	return nil
 }
 
 func (r *repository) ProductExists(ctx context.Context, id string) (bool, error) {

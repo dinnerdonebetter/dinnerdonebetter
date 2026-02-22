@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/waitlists"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/waitlists/fakes"
@@ -53,7 +54,7 @@ func TestQuerier_Integration_Waitlists(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	dbc, container := buildDatabaseClientForTest(t)
+	dbc, auditRepo, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -91,7 +92,38 @@ func TestQuerier_Integration_Waitlists(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, notExpired)
 
-	// create signup (requires identity tables - skip or use mock; integration test may need identity setup)
+	// Create user and account for signup (enables audit assertions for account-scoped waitlist signups)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.writeDB)
+
+	signupInput := &types.WaitlistSignupDatabaseCreationInput{
+		ID:                fakes.BuildFakeID(),
+		Notes:             "test signup",
+		BelongsToWaitlist: createdWaitlists[0].ID,
+		BelongsToUser:     user.ID,
+		BelongsToAccount:  account.ID,
+	}
+	createdSignup, err := dbc.CreateWaitlistSignup(ctx, signupInput)
+	assert.NoError(t, err)
+	require.NotNil(t, createdSignup)
+
+	// Assert audit log entries for waitlist signup create
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeCreated, ResourceType: resourceTypeWaitlistSignups, RelevantID: createdSignup.ID},
+	})
+
+	// update signup
+	createdSignup.Notes = "updated notes"
+	assert.NoError(t, dbc.UpdateWaitlistSignup(ctx, createdSignup))
+
+	// Assert audit log entry for signup update
+	pgtesting.AssertAuditLogContains(t, ctx, auditRepo, account.ID, []*audit.AuditLogEntry{
+		{EventType: audit.AuditLogEventTypeUpdated, ResourceType: resourceTypeWaitlistSignups, RelevantID: createdSignup.ID},
+	})
+
+	// archive signup before archiving waitlists
+	assert.NoError(t, dbc.ArchiveWaitlistSignup(ctx, createdSignup.ID))
+
 	// For a minimal integration test we just archive waitlists
 	for _, wl := range createdWaitlists {
 		assert.NoError(t, dbc.ArchiveWaitlist(ctx, wl.ID))
