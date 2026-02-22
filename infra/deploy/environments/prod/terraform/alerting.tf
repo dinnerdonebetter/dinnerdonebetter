@@ -73,15 +73,12 @@ resource "grafana_rule_group" "pod_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -126,15 +123,12 @@ resource "grafana_rule_group" "pod_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -179,15 +173,12 @@ resource "grafana_rule_group" "pod_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -243,15 +234,12 @@ resource "grafana_rule_group" "async_handler" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -296,15 +284,12 @@ resource "grafana_rule_group" "async_handler" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -360,15 +345,12 @@ resource "grafana_rule_group" "cronjob_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -413,15 +395,12 @@ resource "grafana_rule_group" "cronjob_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -477,15 +456,12 @@ resource "grafana_rule_group" "pubsub_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -530,15 +506,12 @@ resource "grafana_rule_group" "pubsub_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -583,15 +556,12 @@ resource "grafana_rule_group" "pubsub_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -647,15 +617,12 @@ resource "grafana_rule_group" "cloudsql_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -700,15 +667,12 @@ resource "grafana_rule_group" "cloudsql_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -753,15 +717,12 @@ resource "grafana_rule_group" "cloudsql_health" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -817,15 +778,12 @@ resource "grafana_rule_group" "error_rates" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
@@ -870,15 +828,12 @@ resource "grafana_rule_group" "error_rates" {
       model = jsonencode({
         refId      = "C"
         type       = "threshold"
+        expression = "A"
         conditions = [{
-          type = "query"
           evaluator = {
             type   = "gt"
             params = [0]
           }
-          operator = { type = "and" }
-          query    = { params = ["A"] }
-          reducer  = { type = "last" }
         }]
       })
     }
