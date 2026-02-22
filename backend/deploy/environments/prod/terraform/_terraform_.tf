@@ -29,5 +29,9 @@ terraform {
       source  = "philippe-vandermoere/algolia"
       version = "0.7.0"
     }
+    grafana = {
+      source  = "grafana/grafana"
+      version = "4.25.0"
+    }
   }
 }
