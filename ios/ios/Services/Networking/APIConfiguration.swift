@@ -70,7 +70,7 @@ struct APIConfiguration {
     case .development:
       return "https://api.dinnerdonebetter.dev"
     case .production:
-      return "https://api-http.dinnerdonebetter.com"
+      return "https://http-api.dinnerdonebetter.com"
     }
   }
 

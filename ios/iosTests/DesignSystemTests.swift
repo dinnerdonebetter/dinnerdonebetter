@@ -252,7 +252,7 @@ struct ComponentInstantiationTests {
   @MainActor
   func testDSTextFieldTypes() {
     let binding = Binding<String>(get: { "" }, set: { _ in })
-    let types: [DSTextFieldType] = [.text, .email, .password, .phone, .number, .multiline]
+    let types: [DSTextFieldType] = [.text, .username, .email, .password, .phone, .number, .multiline]
     for type in types {
       let field = DSTextField("Label", text: binding, type: type)
       #expect(field != nil)

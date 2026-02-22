@@ -110,51 +110,51 @@ struct AccountSettingsView: View {
           isDisabled: !viewModel.isAccountAdmin
         )
 
-        DSTextField(
-          "Contact Phone",
-          text: Binding(get: { viewModel.contactPhone }, set: { viewModel.contactPhone = $0 }),
-          type: .phone,
-          isDisabled: !viewModel.isAccountAdmin
-        )
-
-        DSTextField(
-          "Address Line 1",
-          text: Binding(get: { viewModel.addressLine1 }, set: { viewModel.addressLine1 = $0 }),
-          isDisabled: !viewModel.isAccountAdmin
-        )
-
-        DSTextField(
-          "Address Line 2",
-          text: Binding(get: { viewModel.addressLine2 }, set: { viewModel.addressLine2 = $0 }),
-          isDisabled: !viewModel.isAccountAdmin
-        )
-
-        HStack(spacing: DSTheme.Spacing.md) {
-          DSTextField(
-            "City",
-            text: Binding(get: { viewModel.city }, set: { viewModel.city = $0 }),
-            isDisabled: !viewModel.isAccountAdmin
-          )
-
-          DSTextField(
-            "State",
-            text: Binding(get: { viewModel.state }, set: { viewModel.state = $0 }),
-            isDisabled: !viewModel.isAccountAdmin
-          )
-
-          DSTextField(
-            "Zip Code",
-            text: Binding(get: { viewModel.zipCode }, set: { viewModel.zipCode = $0 }),
-            type: .number,
-            isDisabled: !viewModel.isAccountAdmin
-          )
-        }
-
-        DSTextField(
-          "Country",
-          text: Binding(get: { viewModel.country }, set: { viewModel.country = $0 }),
-          isDisabled: !viewModel.isAccountAdmin
-        )
+        // DSTextField(
+        //   "Contact Phone",
+        //   text: Binding(get: { viewModel.contactPhone }, set: { viewModel.contactPhone = $0 }),
+        //   type: .phone,
+        //   isDisabled: !viewModel.isAccountAdmin
+        // )
+        //
+        //        DSTextField(
+        //          "Address Line 1",
+        //          text: Binding(get: { viewModel.addressLine1 }, set: { viewModel.addressLine1 = $0 }),
+        //          isDisabled: !viewModel.isAccountAdmin
+        //        )
+        //
+        //        DSTextField(
+        //          "Address Line 2",
+        //          text: Binding(get: { viewModel.addressLine2 }, set: { viewModel.addressLine2 = $0 }),
+        //          isDisabled: !viewModel.isAccountAdmin
+        //        )
+        //
+        //        HStack(spacing: DSTheme.Spacing.md) {
+        //          DSTextField(
+        //            "City",
+        //            text: Binding(get: { viewModel.city }, set: { viewModel.city = $0 }),
+        //            isDisabled: !viewModel.isAccountAdmin
+        //          )
+        //
+        //          DSTextField(
+        //            "State",
+        //            text: Binding(get: { viewModel.state }, set: { viewModel.state = $0 }),
+        //            isDisabled: !viewModel.isAccountAdmin
+        //          )
+        //
+        //          DSTextField(
+        //            "Zip Code",
+        //            text: Binding(get: { viewModel.zipCode }, set: { viewModel.zipCode = $0 }),
+        //            type: .number,
+        //            isDisabled: !viewModel.isAccountAdmin
+        //          )
+        //        }
+        //
+        //        DSTextField(
+        //          "Country",
+        //          text: Binding(get: { viewModel.country }, set: { viewModel.country = $0 }),
+        //          isDisabled: !viewModel.isAccountAdmin
+        //        )
 
         if viewModel.isAccountAdmin && viewModel.accountDataHasChanged {
           DSButton("Update Household", icon: "checkmark", fullWidth: true) {

@@ -11,6 +11,7 @@ import SwiftUI
 
 enum DSTextFieldType {
   case text
+  case username
   case email
   case password
   case phone
@@ -34,6 +35,8 @@ enum DSTextFieldType {
     switch self {
     case .email:
       return .emailAddress
+    case .username:
+      return .username
     case .password:
       return .password
     case .phone:
@@ -45,7 +48,7 @@ enum DSTextFieldType {
 
   var autocapitalization: TextInputAutocapitalization {
     switch self {
-    case .email, .password:
+    case .email, .password, .username:
       return .never
     default:
       return .sentences
@@ -54,7 +57,7 @@ enum DSTextFieldType {
 
   var disableAutocorrection: Bool {
     switch self {
-    case .email, .password:
+    case .email, .password, .username:
       return true
     default:
       return false
@@ -98,6 +101,7 @@ enum DSTextFieldStyle {
 ///
 /// Usage:
 /// ```swift
+/// DSTextField("Username", text: $username, type: .username)
 /// DSTextField("Email", text: $email, type: .email)
 /// DSTextField("Password", text: $password, type: .password)
 /// DSTextField("Phone", text: $phone, type: .phone)
@@ -302,7 +306,7 @@ struct DSFieldGroup<Content: View>: View {
 
         Text("With Helper").font(.caption).foregroundColor(.secondary)
         DSTextField(
-          "Username", text: .constant(""), helperText: "Choose a unique username")
+          "Username", text: .constant(""), type: .username, helperText: "Choose a unique username")
 
         Text("Disabled").font(.caption).foregroundColor(.secondary)
         DSTextField("Email", text: .constant("disabled@example.com"), isDisabled: true)
