@@ -18,9 +18,27 @@ spec:
         app: dinner-done-better-infra
         app.kubernetes.io/name: dinner-done-better-infra
     spec:
+      serviceAccountName: api-service-account
+      initContainers:
+        - name: wait-for-workload-identity
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              for i in $(seq 1 30); do
+                code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Metadata-Flavor: Google' \
+                  http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email)
+                if [ "$code" = "200" ]; then
+                  exit 0
+                fi
+                sleep 1
+              done
+              echo "Timed out waiting for Workload Identity metadata" >&2
+              exit 1
       containers:
         - name: opentelemetry-collector
-          image: otel/opentelemetry-collector-contrib:0.115.1
+          image: otel/opentelemetry-collector-contrib:0.146.0
           command:
             - "/otelcol-contrib"
             - "--config"
@@ -36,6 +54,8 @@ spec:
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
+            - name: "GCE_METADATA_HOST"
+              value: "169.254.169.254"
       volumes:
         # this volume contains the configuration file for the OTel collector.
         - name: opentelemetry-config

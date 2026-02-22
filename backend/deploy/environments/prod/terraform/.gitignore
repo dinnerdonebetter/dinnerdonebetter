@@ -1,4 +1,3 @@
-*.json
 *.yaml
 *.config
 .terraform/

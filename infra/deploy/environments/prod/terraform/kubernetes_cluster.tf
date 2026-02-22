@@ -143,6 +143,12 @@ resource "google_project_iam_member" "workload_identity_pubsub_viewer" {
   member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
 }
 
+resource "google_project_iam_member" "workload_identity_monitoring_viewer" {
+  project = local.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.workload_identity_sa.email}"
+}
+
 # Allow the Kubernetes service account to impersonate the GCP service account
 resource "google_service_account_iam_member" "workload_identity_binding" {
   service_account_id = google_service_account.workload_identity_sa.name

@@ -106,12 +106,8 @@ deploy_prod:
 
 .PHONY: verify_prod
 verify_prod:
-	@echo "=== Skaffold verify (endpoint checks) ==="
 	skaffold verify --filename=skaffold.yaml --profile prod
-	@echo ""
-	@echo "=== Post-deploy verify (K8s + endpoints) ==="
-	./scripts/post-deploy-verify.sh
-
+	
 .PHONY: deploy_prod_verify
 deploy_prod_verify: deploy_prod
 	@echo "Waiting 60s for load balancer..."

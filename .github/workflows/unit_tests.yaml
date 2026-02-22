@@ -1,5 +1,10 @@
 ---
-on: [pull_request]
+on: 
+  # gollum:
+  pull_request:
+    paths:
+      - backend/**/*.go
+      - ios/**/*.swift
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

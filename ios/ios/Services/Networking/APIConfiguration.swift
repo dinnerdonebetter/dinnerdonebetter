@@ -51,11 +51,7 @@ struct APIConfiguration {
       {
         return env
       }
-      #if DEBUG
-        return .local
-      #else
-        return .production
-      #endif
+      return .production
     }
     set {
       let oldValue = currentEnvironment
@@ -74,7 +70,7 @@ struct APIConfiguration {
     case .development:
       return "https://api.dinnerdonebetter.dev"
     case .production:
-      return "https://http-api.dinnerdonebetter.com"
+      return "https://api-http.dinnerdonebetter.com"
     }
   }
 
