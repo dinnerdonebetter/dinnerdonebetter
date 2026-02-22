@@ -15,7 +15,7 @@ receivers:
 
   googlecloudmonitoring:
     project_id: dinner-done-better-prod
-    collection_interval: 60s
+    collection_interval: 5m
     metrics_list:
       - metric_name: "pubsub.googleapis.com/subscription/num_undelivered_messages"
       - metric_name: "pubsub.googleapis.com/subscription/oldest_unacked_message_age"
