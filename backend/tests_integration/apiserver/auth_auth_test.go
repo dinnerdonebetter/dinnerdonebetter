@@ -2,6 +2,9 @@ package integration
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -9,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -468,9 +472,53 @@ func TestAuth_InvalidateToken(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
-		/*
-			there's currently no logout mechanism surfaced in the client, but there should be, and it should be tested
-		*/
-		t.Skipf("TODO")
+		ctx := t.Context()
+
+		user, _ := createUserAndClientForTest(t)
+		loginInput := &authsvc.UserLoginInput{
+			Username:  user.Username,
+			Password:  user.HashedPassword,
+			TotpToken: generateTOTPCodeForUserForTest(t, user),
+		}
+
+		oauth2Token, err := localdev.FetchOAuth2TokenForUser(
+			ctx,
+			httpTestServerAddress,
+			fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port),
+			createdClientID,
+			createdClientSecret,
+			loginInput,
+		)
+		require.NoError(t, err)
+		require.NotNil(t, oauth2Token)
+		require.NotEmpty(t, oauth2Token.AccessToken)
+
+		// Verify token works before revocation
+		clientWithToken, err := buildAuthedGRPCClientWithBearerToken(oauth2Token.AccessToken)
+		require.NoError(t, err)
+		_, err = clientWithToken.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		require.NoError(t, err)
+
+		// Revoke the access token
+		form := url.Values{}
+		form.Set("token", oauth2Token.AccessToken)
+		form.Set("token_type_hint", "access_token")
+		form.Set("client_id", createdClientID)
+		form.Set("client_secret", createdClientSecret)
+
+		revokeReq, err := http.NewRequestWithContext(ctx, http.MethodPost, httpTestServerAddress+"/oauth2/revoke", strings.NewReader(form.Encode()))
+		require.NoError(t, err)
+		revokeReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		httpClient := &http.Client{}
+		revokeRes, err := httpClient.Do(revokeReq)
+		require.NoError(t, err)
+		defer revokeRes.Body.Close()
+
+		assert.Equal(t, http.StatusOK, revokeRes.StatusCode, "revoke endpoint should return 200")
+
+		// Token should be invalid after revocation
+		_, err = clientWithToken.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		assert.Error(t, err, "API calls with revoked token should fail")
 	})
 }

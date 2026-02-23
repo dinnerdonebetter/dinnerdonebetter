@@ -362,3 +362,78 @@ func FetchLoginTokenForUser(ctx context.Context, grpcServerAddr string, loginInp
 
 	return tokenRes.Result.AccessToken, nil
 }
+
+// FetchOAuth2TokenForUser performs the OAuth2 authorization code flow using the given JWT
+// and returns the OAuth2 access and refresh tokens. Used by integration tests for token revocation.
+func FetchOAuth2TokenForUser(
+	ctx context.Context,
+	httpServerAddress, grpcServerAddress, clientID, clientSecret string,
+	loginInput *authsvc.UserLoginInput,
+) (*oauth2.Token, error) {
+	jwt, err := FetchLoginTokenForUser(ctx, grpcServerAddress, loginInput)
+	if err != nil {
+		return nil, fmt.Errorf("fetching JWT for OAuth2 exchange: %w", err)
+	}
+
+	state, err := random.GenerateBase64EncodedString(ctx, 32)
+	if err != nil {
+		return nil, fmt.Errorf("generating state: %w", err)
+	}
+
+	oauth2Config := oauth2.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Scopes:       []string{"anything"},
+		RedirectURL:  httpServerAddress,
+		Endpoint: oauth2.Endpoint{
+			AuthStyle: oauth2.AuthStyleInParams,
+			AuthURL:   httpServerAddress + "/oauth2/authorize",
+			TokenURL:  httpServerAddress + "/oauth2/token",
+		},
+	}
+
+	authCodeURL := oauth2Config.AuthCodeURL(
+		state,
+		oauth2.SetAuthURLParam("code_challenge_method", "plain"),
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, authCodeURL, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("creating auth request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Location", "localhost")
+
+	httpClient := tracing.BuildTracedHTTPClient()
+	httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	res, err := httpClient.Do(req) //nolint:gosec // G704: authCodeURL from OAuth config
+	if err != nil {
+		return nil, fmt.Errorf("fetching OAuth2 code: %w", err)
+	}
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			log.Println("failed to close oauth2 response body", err)
+		}
+	}()
+
+	rl, err := res.Location()
+	if err != nil {
+		return nil, fmt.Errorf("getting location from response: %w", err)
+	}
+
+	code := rl.Query().Get("code")
+	if code == "" {
+		return nil, fmt.Errorf("code not returned from oauth2 redirect")
+	}
+
+	oauth2Token, err := oauth2Config.Exchange(ctx, code)
+	if err != nil {
+		return nil, fmt.Errorf("exchanging OAuth2 code: %w", err)
+	}
+
+	return oauth2Token, nil
+}

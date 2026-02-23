@@ -49,6 +49,7 @@ type (
 		tracer               tracing.Tracer
 		dataChangesPublisher messagequeue.Publisher
 		oauth2Server         *server.Server
+		oauthRepo            oauth.Repository
 		tokenIssuer          tokens.Issuer
 	}
 )
@@ -98,6 +99,7 @@ func ProvideService(
 		tokenIssuer:          signer,
 		authProviderFetcher:  routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:         ProvideOAuth2ServerImplementation(logger, tracerProvider, identityDataManager, authenticator, signer, manager),
+		oauthRepo:            oauthRepo,
 	}
 
 	useProvidersMutex.Lock()
